@@ -6,7 +6,6 @@ import eu.robojob.irscw.external.device.WorkArea;
 public class InterventionStep extends AbstractProcessStep {
 
 	private AbstractDevice device;
-	private WorkArea workArea;
 	private int frequency;
 	
 	private AbstractDevice.AbstractDeviceInterventionSettings interventionSettings;
@@ -15,10 +14,9 @@ public class InterventionStep extends AbstractProcessStep {
 	
 	private boolean canContinue;
 	
-	public InterventionStep(Process parentProcess, AbstractDevice device, WorkArea workArea, AbstractDevice.AbstractDeviceInterventionSettings interventionSettings, int frequency) {
+	public InterventionStep(Process parentProcess, AbstractDevice device, AbstractDevice.AbstractDeviceInterventionSettings interventionSettings, int frequency) {
 		super(parentProcess);
 		this.device = device;
-		this.workArea = workArea;
 		this.frequency = frequency;
 		this.interventionSettings = interventionSettings;
 		this.canContinue = false;
@@ -31,14 +29,14 @@ public class InterventionStep extends AbstractProcessStep {
 		if (!device.lock(parentProcess)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
-			device.prepareForIntervention(workArea, interventionSettings);
+			device.prepareForIntervention(interventionSettings);
 			canContinue = false;
 			try {
 				interventionOver.wait();
 			} catch (InterruptedException e) {
 				if (canContinue) {
 					canContinue = false;
-					device.interventionFinished(workArea, interventionSettings);
+					device.interventionFinished(interventionSettings);
 				} else {
 					throw new IllegalStateException("Waiting for intervention to be finished interrupted, but intervention is not signalled as being over");
 				}
@@ -78,7 +76,7 @@ public class InterventionStep extends AbstractProcessStep {
 
 	@Override
 	public String toString() {
-		return "InterventionStep, " + "device: " + device + "(" + workArea + ")";
+		return "InterventionStep, " + "device: " + device;
 	}
 
 }

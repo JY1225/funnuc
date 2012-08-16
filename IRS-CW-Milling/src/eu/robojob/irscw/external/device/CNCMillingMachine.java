@@ -32,61 +32,61 @@ public class CNCMillingMachine extends AbstractProcessingDevice {
 	public class CNCMillingMachineClampingSettings extends AbstractDeviceClampingSettings {}
 
 	@Override
-	public void startCyclus(WorkArea workArea, AbstractProcessingDeviceStartCyclusSettings startCylusSettings) {
+	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) {
 		CNCMillingMachineStartCylusSettings cncStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCylusSettings;
 		// TODO implement method
 	}
 
 	@Override
-	public void prepareForStartCyclus(WorkArea workArea, AbstractProcessingDeviceStartCyclusSettings startCylusSettings) {
+	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) {
 		CNCMillingMachineStartCylusSettings cncStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCylusSettings;
 		// TODO implement method
 	}
 
 	@Override
-	public void releasePiece(WorkArea workArea, AbstractDeviceClampingSettings clampingSettings) {
+	public void releasePiece(AbstractDeviceClampingSettings clampingSettings) {
 		CNCMillingMachineClampingSettings cncClampingSettings = (CNCMillingMachineClampingSettings) clampingSettings;
 		// TODO implement method
 	}
 
 	@Override
-	public void grabPiece(WorkArea workArea, AbstractDeviceClampingSettings clampingSettings) {
+	public void grabPiece(AbstractDeviceClampingSettings clampingSettings) {
 		CNCMillingMachineClampingSettings cncClampingSettings = (CNCMillingMachineClampingSettings) clampingSettings;
 		// TODO implement method
 	}
 
 	@Override
-	public void prepareForPick(WorkArea workArea, AbstractDevicePickSettings pickSettings) {
+	public void prepareForPick(AbstractDevicePickSettings pickSettings) {
 		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
 		// TODO implement method
 	}
 
 	@Override
-	public void prepareForPut(WorkArea workArea, AbstractDevicePutSettings putSettings) {
+	public void prepareForPut(AbstractDevicePutSettings putSettings) {
 		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
 		// TODO implement method
 	}
 
 	@Override
-	public void prepareForIntervention(WorkArea workArea, AbstractDeviceInterventionSettings interventionSettings) {
+	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) {
 		CNCMillingMachineInterventionSettings cncInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
 		// TODO implement method
 	}
 
 	@Override
-	public void pickFinished(WorkArea workArea, AbstractDevicePickSettings pickSettings) {
+	public void pickFinished(AbstractDevicePickSettings pickSettings) {
 		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
 		// TODO implement method
 	}
 
 	@Override
-	public void putFinished(WorkArea workArea, AbstractDevicePutSettings putSettings) {
+	public void putFinished(AbstractDevicePutSettings putSettings) {
 		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
 		// TODO implement method
 	}
 
 	@Override
-	public void interventionFinished(WorkArea workArea, AbstractDeviceInterventionSettings interventionSettings) {
+	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) {
 		CNCMillingMachineInterventionSettings cncInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
 		// TODO implement method
 	}

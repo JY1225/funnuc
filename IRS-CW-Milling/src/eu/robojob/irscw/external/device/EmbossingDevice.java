@@ -12,52 +12,52 @@ public class EmbossingDevice extends AbstractProcessingDevice {
 	}
 
 	@Override
-	public void startCyclus(WorkArea workArea, AbstractProcessingDeviceStartCyclusSettings startCylusSettings) {
+	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) {
 		// TODO implement method
 	}
 
 	@Override
-	public void prepareForStartCyclus(WorkArea workArea, AbstractProcessingDeviceStartCyclusSettings startCylusSettings) {
+	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) {
 		// TODO implement method
 	}
 
 	@Override
-	public void prepareForPick(WorkArea workArea, AbstractDevicePickSettings pickSettings) {
+	public void prepareForPick(AbstractDevicePickSettings pickSettings) {
 		// TODO implement method
 	}
 
 	@Override
-	public void prepareForPut(WorkArea workArea, AbstractDevicePutSettings putSettings) {
+	public void prepareForPut(AbstractDevicePutSettings putSettings) {
 		// TODO implement method
 	}
 
 	@Override
-	public void prepareForIntervention(WorkArea workArea, AbstractDeviceInterventionSettings interventionSettings) {
+	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) {
 		// TODO implement method
 	}
 
 	@Override
-	public void pickFinished(WorkArea workArea, AbstractDevicePickSettings pickSettings) {
+	public void pickFinished(AbstractDevicePickSettings pickSettings) {
 		// TODO implement method
 	}
 
 	@Override
-	public void putFinished(WorkArea workArea, AbstractDevicePutSettings putSettings) {
+	public void putFinished(AbstractDevicePutSettings putSettings) {
 		// TODO implement method
 	}
 
 	@Override
-	public void interventionFinished(WorkArea workArea, AbstractDeviceInterventionSettings interventionSettings) {
+	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) {
 		// TODO implement method
 	}
 
 	@Override
-	public void releasePiece(WorkArea workArea, AbstractDeviceClampingSettings clampingSettings) {
+	public void releasePiece(AbstractDeviceClampingSettings clampingSettings) {
 		// TODO implement method
 	}
 
 	@Override
-	public void grabPiece(WorkArea workArea, AbstractDeviceClampingSettings clampingSettings) {
+	public void grabPiece(AbstractDeviceClampingSettings clampingSettings) {
 		// TODO implement method
 	}
 

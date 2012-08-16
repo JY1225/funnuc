@@ -12,11 +12,11 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	public abstract Coordinates getPosition();
 	
-	public abstract void pick(WorkArea workArea, AbstractRobotPickSettings pickSettings);
-	public abstract void put(WorkArea workArea, AbstractRobotPutSettings putSettings);
+	public abstract void pick(AbstractRobotPickSettings pickSettings);
+	public abstract void put(AbstractRobotPutSettings putSettings);
 	
-	public abstract void releasePiece(WorkArea workArea, AbstractRobotGriperSettings griperSettings);
-	public abstract void grabPiece(WorkArea workArea, AbstractRobotGriperSettings griperSettings);
+	public abstract void releasePiece(AbstractRobotGriperSettings griperSettings);
+	public abstract void grabPiece(AbstractRobotGriperSettings griperSettings);
 	
 	public String toString() {
 		return "Robot: " + id;

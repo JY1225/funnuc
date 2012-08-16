@@ -9,16 +9,16 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	protected List<Zone> zones;
 	
-	public abstract void prepareForPick(WorkArea workArea, AbstractDevicePickSettings pickSettings);
-	public abstract void prepareForPut(WorkArea workArea, AbstractDevicePutSettings putSettings);
-	public abstract void prepareForIntervention(WorkArea workArea, AbstractDeviceInterventionSettings interventionSettings);
+	public abstract void prepareForPick(AbstractDevicePickSettings pickSettings);
+	public abstract void prepareForPut(AbstractDevicePutSettings putSettings);
+	public abstract void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings);
 	
-	public abstract void pickFinished(WorkArea workArea, AbstractDevicePickSettings pickSettings);
-	public abstract void putFinished(WorkArea workArea, AbstractDevicePutSettings putSettings);
-	public abstract void interventionFinished(WorkArea workArea, AbstractDeviceInterventionSettings interventionSettings);
+	public abstract void pickFinished(AbstractDevicePickSettings pickSettings);
+	public abstract void putFinished(AbstractDevicePutSettings putSettings);
+	public abstract void interventionFinished(AbstractDeviceInterventionSettings interventionSettings);
 	
-	public abstract void releasePiece(WorkArea workArea, AbstractDeviceClampingSettings clampingSettings);
-	public abstract void grabPiece(WorkArea workArea, AbstractDeviceClampingSettings clampingSettings);
+	public abstract void releasePiece(AbstractDeviceClampingSettings clampingSettings);
+	public abstract void grabPiece(AbstractDeviceClampingSettings clampingSettings);
 	
 	public AbstractDevice (String id, List<Zone> zones) {
 		super(id);
@@ -61,10 +61,18 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return "Device: " + id;
 	}
 	
-	public abstract class AbstractDevicePickSettings{}
-	public abstract class AbstractDevicePutSettings{}
-	public abstract class AbstractDeviceInterventionSettings{}
-	public abstract class AbstractDeviceClampingSettings{}
+	public abstract class AbstractDevicePickSettings {
+		protected WorkArea workArea;
+	}
+	public abstract class AbstractDevicePutSettings {
+		protected WorkArea workArea;
+	}
+	public abstract class AbstractDeviceInterventionSettings {
+		protected WorkArea workArea;
+	}
+	public abstract class AbstractDeviceClampingSettings {
+		protected WorkArea workArea;
+	}
 	
 	
 }

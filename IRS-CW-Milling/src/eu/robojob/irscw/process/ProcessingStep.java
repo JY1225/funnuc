@@ -5,15 +5,13 @@ import eu.robojob.irscw.external.device.WorkArea;
 
 public class ProcessingStep extends AbstractProcessStep {
 
-	private WorkArea workArea;
 	private AbstractProcessingDevice processingDevice;
 	private AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings startCyclusSettings;
 	
-	public ProcessingStep(Process parentProcess, AbstractProcessingDevice processingDevice, WorkArea workArea,
+	public ProcessingStep(Process parentProcess, AbstractProcessingDevice processingDevice,
 			AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings startCyclusSettings) {
 		super(parentProcess);
 		this.processingDevice = processingDevice;
-		this.workArea = workArea;
 		this.startCyclusSettings = startCyclusSettings;
 	}
 	
@@ -23,8 +21,8 @@ public class ProcessingStep extends AbstractProcessStep {
 		if (!processingDevice.lock(parentProcess)) {
 			throw new IllegalStateException("Device " + processingDevice + " was already locked by: " + processingDevice.getLockingProcess());
 		} else {
-			processingDevice.prepareForStartCyclus(workArea, startCyclusSettings);
-			processingDevice.startCyclus(workArea, startCyclusSettings);
+			processingDevice.prepareForStartCyclus(startCyclusSettings);
+			processingDevice.startCyclus(startCyclusSettings);
 		}
 	}
 
@@ -47,7 +45,7 @@ public class ProcessingStep extends AbstractProcessStep {
 
 	@Override
 	public String toString() {
-		return "Processing step, " + "device: " + processingDevice + "(" + workArea + ")"; 
+		return "Processing step, " + "device: " + processingDevice; 
 	}
 	
 }

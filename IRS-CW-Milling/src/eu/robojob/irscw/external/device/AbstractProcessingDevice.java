@@ -20,8 +20,8 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 		return isInvasive;
 	}
 	
-	public abstract void startCyclus(WorkArea workArea, AbstractProcessingDeviceStartCyclusSettings startCylusSettings);	
-	public abstract void prepareForStartCyclus(WorkArea workArea, AbstractProcessingDeviceStartCyclusSettings startCylusSettings);
+	public abstract void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings);	
+	public abstract void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings);
 	
 	public String toString() {
 		return "ProcessingDevice: " + id;
@@ -30,6 +30,8 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 	public class AbstractProcessingDevicePutSettings extends AbstractDevicePutSettings {}
 	public class AbstractProcessingDevicePickSettings extends AbstractDevicePickSettings {}
 	public class AbstractProcessingDeviceInterventionSettings extends AbstractDeviceInterventionSettings {}
-	public class AbstractProcessingDeviceStartCyclusSettings {}
+	public class AbstractProcessingDeviceStartCyclusSettings {
+		protected WorkArea workArea;
+	}
 	
 }
