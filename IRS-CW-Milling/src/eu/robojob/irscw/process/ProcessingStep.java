@@ -1,7 +1,6 @@
 package eu.robojob.irscw.process;
 
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
-import eu.robojob.irscw.external.device.WorkArea;
 
 public class ProcessingStep extends AbstractProcessStep {
 

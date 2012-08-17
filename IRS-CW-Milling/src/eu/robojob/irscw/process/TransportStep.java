@@ -1,7 +1,6 @@
 package eu.robojob.irscw.process;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.Gripper;
 
@@ -57,12 +56,19 @@ public class TransportStep extends AbstractProcessStep {
 					robot.pick(robotPickSettings);
 					robot.grabPiece(robotGriperSettings);
 					deviceFrom.releasePiece(fromClampingSettings);
-					deviceFrom.pickFinished(pickSettings);
 					
 					deviceTo.prepareForPut(putSettings);
 					robot.put(robotPutSettings);
+					
+					if (!deviceTo.equals(deviceFrom)) {
+						deviceFrom.pickFinished(pickSettings);
+					}
+					
 					deviceTo.grabPiece(toClampingSettings);
 					robot.releasePiece(robotGriperSettings);
+					
+					
+					deviceFrom.pickFinished(pickSettings);
 					deviceTo.putFinished(putSettings);
 				}
 			}

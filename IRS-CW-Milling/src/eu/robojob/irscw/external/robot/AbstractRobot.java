@@ -6,8 +6,11 @@ import eu.robojob.irscw.positioning.Coordinates;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {
 	
-	public AbstractRobot(String id) {
+	private GripperBody gripperBody;
+	
+	public AbstractRobot(String id, GripperBody gripperBody) {
 		super(id);
+		this.gripperBody = gripperBody;
 	}
 	
 	public abstract Coordinates getPosition();
@@ -25,5 +28,13 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract class AbstractRobotPickSettings{}
 	public abstract class AbstractRobotPutSettings{}
 	public abstract class AbstractRobotGriperSettings{}
+	
+	public GripperBody getGripperBody() {
+		return gripperBody;
+	}
 
+	public void setGripperBody(GripperBody gripperBody) {
+		this.gripperBody = gripperBody;
+	}
+	
 }
