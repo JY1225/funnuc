@@ -72,26 +72,14 @@ public abstract class AbstractJob {
 		}
 		
 		AbstractProcessStep step = mainProcess.getCurrentStep();
-		
-		if (secondProcess == null) {
-			logger.debug("No second process found, so this should be the last workpiece");
-			step.executeStep();
-			return;
-		} 
-		
-		AbstractProcessStep mainStep = mainProcess.getCurrentStep();
-		AbstractProcessStep secondStep = secondProcess.getCurrentStep();
-		
-		// is secondStep is processing, execute main step
-		if ((secondStep instanceof ProcessingStep) && (secondStep.isInProcess())) {
-			mainStep.executeStep();
-		}
+		step.executeStep();
 		
 	}
 	
 	private void updateActiveProcesses() {
 		while (activeProcesses.getFirst().hasFinished()) {
 			activeProcesses.removeFirst();
+			finishedWorkpiecesAmount++;
 		}
 		if (activeProcesses.size() > 0) {
 			mainProcess = activeProcesses.getFirst();
@@ -105,6 +93,18 @@ public abstract class AbstractJob {
 		} else if (hasNextProcess()) {
 			secondProcess = activeProcesses.get(1);
 		}
+	}
+
+	public int getFinishedWorkpiecesAmount() {
+		return finishedWorkpiecesAmount;
+	}
+
+	public void setFinishedWorkpiecesAmount(int finishedWorkpiecesAmount) {
+		this.finishedWorkpiecesAmount = finishedWorkpiecesAmount;
+	}
+
+	public boolean isFinished() {
+		return finished;
 	}
 	
 }

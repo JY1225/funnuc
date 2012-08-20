@@ -3,6 +3,7 @@ package eu.robojob.irscw.process;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractStackingDevice;
 
 public class Process {
@@ -54,6 +55,14 @@ public class Process {
 		}
 	}
 	
+	public AbstractProcessStep getNextStep() {
+		if ((currentStepNumber != -1) && (currentStepNumber < (processSteps.size() - 1))) {
+			return processSteps.get(currentStepNumber + 1);
+		} else {
+			return null;
+		}
+	}
+	
 	public void nextStep() {
 		currentStepNumber++;
 		if (currentStepNumber >= processSteps.size()) {
@@ -75,5 +84,15 @@ public class Process {
 	
 	public boolean isActive() {
 		return getCurrentStep().isInProcess();
+	}
+	
+
+	public boolean willNeedDevice(AbstractDevice device) {
+		for (int i = currentStepNumber; i < processSteps.size(); i++) {
+			if (processSteps.get(i).getDevice().equals(device)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
