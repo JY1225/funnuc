@@ -67,7 +67,6 @@ public class TransportStep extends AbstractProcessStep {
 					deviceTo.grabPiece(toClampingSettings);
 					robot.releasePiece(robotGriperSettings);
 					
-					
 					deviceFrom.pickFinished(pickSettings);
 					deviceTo.putFinished(putSettings);
 				}

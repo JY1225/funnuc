@@ -93,6 +93,7 @@ public class Process {
 	//TODO catch exceptions
 	private void executeStep(AbstractProcessStep step) {
 		logger.info("Starting execution of step: " + step);
+		this.currentStep = step;
 		step.executeStep();
 		logger.info("Finished execution of step: " + step);
 	}
