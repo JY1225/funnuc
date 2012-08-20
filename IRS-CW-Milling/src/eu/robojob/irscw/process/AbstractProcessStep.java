@@ -3,15 +3,18 @@ package eu.robojob.irscw.process;
 import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
+import eu.robojob.irscw.external.device.AbstractDevice;
 
 public abstract class AbstractProcessStep implements Runnable {
 	
 	protected Process parentProcess;
 	private boolean inProcess;
+	protected AbstractDevice device; 
 	
-	public AbstractProcessStep(Process parentProcess) {
+	public AbstractProcessStep(Process parentProcess, AbstractDevice device) {
 		this.parentProcess = parentProcess;
 		inProcess = false;
+		this.device = device;
 	}
 	
 	public abstract void executeStep();
@@ -44,5 +47,9 @@ public abstract class AbstractProcessStep implements Runnable {
 	}
 	
 	public abstract Set<AbstractServiceProvider> getServiceProviders();
+	
+	public AbstractDevice getDevice() {
+		return device;
+	}
 	
 }

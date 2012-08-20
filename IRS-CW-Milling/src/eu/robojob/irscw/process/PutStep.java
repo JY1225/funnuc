@@ -12,40 +12,38 @@ public class PutStep extends AbstractTransportStep {
 
 	private AbstractRobot robot;
 	private Gripper gripper;
-	private AbstractDevice deviceTo;
 	private AbstractDevice.AbstractDevicePutSettings putSettings;
 	private AbstractRobot.AbstractRobotPutSettings robotPutSettings;
 	
 	public PutStep(Process parentProcess, AbstractRobot robot, Gripper gripper, AbstractDevice deviceTo,
 			AbstractDevice.AbstractDevicePutSettings putSettings, AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
-		super(parentProcess);
+		super(parentProcess, deviceTo);
 		this.robot = robot;
 		this.gripper = gripper;
-		this.deviceTo = deviceTo;
 		this.robotPutSettings = robotPutSettings;
 	}
 
 	@Override
 	public void executeStep() {
-		deviceTo.prepareForPut(putSettings);
+		device.prepareForPut(putSettings);
 		robot.put(robotPutSettings);
-		deviceTo.grabPiece(putSettings);
+		device.grabPiece(putSettings);
 		robot.releasePiece(robotPutSettings);
 	}
 
 	@Override
 	public AbstractProcessStep clone(Process parentProcess) {
-		return new PutStep(parentProcess, robot, gripper, deviceTo, putSettings, robotPutSettings);
+		return new PutStep(parentProcess, robot, gripper, device, putSettings, robotPutSettings);
 	}
 
 	@Override
 	public String toString() {
-		return "PutStep to " + deviceTo + " using " + robot;
+		return "PutStep to " + device + " using " + robot;
 	}
 
 	@Override
 	public void finalize() {
-		deviceTo.putFinished(putSettings);
+		device.putFinished(putSettings);
 	}
 
 	public AbstractRobot getRobot() {
@@ -55,15 +53,11 @@ public class PutStep extends AbstractTransportStep {
 	public Gripper getGripper() {
 		return gripper;
 	}
-
-	public AbstractDevice getDeviceTo() {
-		return deviceTo;
-	}
 	
 	@Override
 	public Set<AbstractServiceProvider> getServiceProviders() {
 		Set<AbstractServiceProvider> providers = new HashSet<AbstractServiceProvider>();
-		providers.add(deviceTo);
+		providers.add(device);
 		providers.add(robot);
 		return providers;
 	}

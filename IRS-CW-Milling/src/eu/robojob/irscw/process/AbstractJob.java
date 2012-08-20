@@ -1,11 +1,8 @@
 package eu.robojob.irscw.process;
 
 import java.util.LinkedList;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
-
-import eu.robojob.irscw.external.AbstractServiceProvider;
 
 public abstract class AbstractJob {
 	
@@ -18,7 +15,6 @@ public abstract class AbstractJob {
 	private Process secondProcess;
 	
 	private Process process;
-	private int mainProcessIndex;
 	
 	private Object canContinue;
 	
@@ -72,36 +68,25 @@ public abstract class AbstractJob {
 		
 		if (mainProcess == null) {
 			finished = true;
+			return;
 		}
 		
-		// main Process dictates the flow
 		AbstractProcessStep step = mainProcess.getCurrentStep();
-		ProcessStepExecution mainProcessExecution = new ProcessStepExecution(step);
 		
-		Thread mainProcessExecutionThread = new Thread(mainProcessExecution);
-		mainProcessExecutionThread.start();
+		if (secondProcess == null) {
+			logger.debug("No second process found, so this should be the last workpiece");
+			step.executeStep();
+			return;
+		} 
 		
-		while(!mainProcessExecution.hasFinished()) {
-			if (secondProcess != null) {
-				if (!secondProcess.isActive()) {
-					Set<AbstractServiceProvider> mainServiceProviders = step.getServiceProviders();
-					Set<AbstractServiceProvider> secondServiceProviders = secondProcess.getCurrentStep().getServiceProviders();
-					mainServiceProviders.retainAll(secondServiceProviders);
-					if (mainServiceProviders.size() == 0) {
-						ProcessStepExecution secondProcessStepExecution = new ProcessStepExecution(secondProcess.getCurrentStep());
-						Thread secondProcessExecutionThread = new Thread(secondProcessStepExecution);
-						secondProcessExecutionThread.start();
-					}
-				}
-			} else {
-				try {
-					mainProcessExecutionThread.join();
-				} catch (InterruptedException e) {
-					logger.error(e);
-				}
-			}
-			
+		AbstractProcessStep mainStep = mainProcess.getCurrentStep();
+		AbstractProcessStep secondStep = secondProcess.getCurrentStep();
+		
+		// is secondStep is processing, execute main step
+		if ((secondStep instanceof ProcessingStep) && (secondStep.isInProcess())) {
+			mainStep.executeStep();
 		}
+		
 	}
 	
 	private void updateActiveProcesses() {
@@ -112,15 +97,13 @@ public abstract class AbstractJob {
 			mainProcess = activeProcesses.getFirst();
 		} else {
 			mainProcess = null;
+			finished = true;
 		}
 		if ((activeProcesses.size() < 2) && (hasNextProcess())) {
 			secondProcess = new Process(process);
 			activeProcesses.add(secondProcess);
 		} else if (hasNextProcess()) {
 			secondProcess = activeProcesses.get(1);
-		}
-		if (secondProcess.hasFinished()) {
-			secondProcess = null;
 		}
 	}
 	

@@ -3,8 +3,6 @@ package eu.robojob.irscw.process;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import eu.robojob.irscw.external.device.AbstractStackingDevice;
 
 public class Process {
@@ -14,9 +12,7 @@ public class Process {
 	
 	private AbstractStackingDevice source;
 	private AbstractStackingDevice destination;
-	
-	private static Logger logger = Logger.getLogger(Process.class.getName());
-		
+			
 	public Process(List<AbstractProcessStep>processSteps) {
 		setUpProcess(processSteps);
 	}
@@ -37,8 +33,8 @@ public class Process {
 		} else {
 			// Process should start with a PickStep and end with a PutStep, both with a StackingDevice as device
 			// If this is not the case, a ClassCastException will be thrown!
-			source = (AbstractStackingDevice) ((PickStep) processSteps.get(0)).getDeviceFrom();
-			destination = (AbstractStackingDevice) ((PutStep) processSteps.get(processSteps.size() - 1)).getDeviceTo();
+			source = (AbstractStackingDevice) ((PickStep) processSteps.get(0)).getDevice();
+			destination = (AbstractStackingDevice) ((PutStep) processSteps.get(processSteps.size() - 1)).getDevice();
 		}
 	}
 	

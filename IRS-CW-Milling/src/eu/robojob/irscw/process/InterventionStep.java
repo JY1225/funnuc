@@ -8,7 +8,6 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 
 public class InterventionStep extends AbstractProcessStep {
 
-	private AbstractDevice device;
 	private int frequency;
 	
 	private AbstractDevice.AbstractDeviceInterventionSettings interventionSettings;
@@ -18,8 +17,7 @@ public class InterventionStep extends AbstractProcessStep {
 	private boolean canContinue;
 	
 	public InterventionStep(Process parentProcess, AbstractDevice device, AbstractDevice.AbstractDeviceInterventionSettings interventionSettings, int frequency) {
-		super(parentProcess);
-		this.device = device;
+		super(parentProcess, device);
 		this.frequency = frequency;
 		this.interventionSettings = interventionSettings;
 		this.canContinue = false;
@@ -49,14 +47,6 @@ public class InterventionStep extends AbstractProcessStep {
 				}
 			}
 		}
-	}
-
-	public AbstractDevice getDevice() {
-		return device;
-	}
-
-	public void setDevice(AbstractDevice device) {
-		this.device = device;
 	}
 
 	public AbstractDevice.AbstractDeviceInterventionSettings getInterventionSettings() {
