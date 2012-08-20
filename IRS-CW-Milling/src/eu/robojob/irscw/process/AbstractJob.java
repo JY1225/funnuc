@@ -8,10 +8,10 @@ public abstract class AbstractJob {
 	
 	private static Logger logger = Logger.getLogger(AbstractJob.class);
 
-	private int finishedWorkpiecesAmount;
+	protected int finishedWorkpiecesAmount;
 	
 	private LinkedList<Process> activeProcesses;
-	private Process mainProcess;
+	protected Process mainProcess;
 	private Process secondProcess;
 	
 	private Process process;
@@ -20,6 +20,15 @@ public abstract class AbstractJob {
 	
 	private boolean isActive;
 	private boolean finished;
+	
+	public AbstractJob(Process process) {
+		this.process = process;
+		this.canContinue = new Object();
+		this.isActive = false;
+		this.finished = false;
+		activeProcesses = new LinkedList<Process>();
+		finishedWorkpiecesAmount = 0;
+	}
 	
 	public void pauzeExecution() {
 		if (this.isActive = false) {
@@ -80,7 +89,7 @@ public abstract class AbstractJob {
 		
 	}
 	
-	private void updateActiveProcesses() {
+	protected void updateActiveProcesses() {
 		while (activeProcesses.getFirst().hasFinished()) {
 			activeProcesses.removeFirst();
 			finishedWorkpiecesAmount++;
