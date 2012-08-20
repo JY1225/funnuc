@@ -5,56 +5,54 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.device.AbstractStackingDevice;
+
 public class Process {
 	
 	private List<AbstractProcessStep> processSteps;
 	private int currentStepNumber;
 	private boolean isActive;
 	
+	private AbstractStackingDevice source;
+	private AbstractStackingDevice destination;
+	
 	private static Logger logger = Logger.getLogger(Process.class.getName());
 	
 	private Object canContinue;
 	
 	public Process(List<AbstractProcessStep>processSteps) {
+		setUpProcess(processSteps);
+	}
+	
+	public Process(Process aProcess) {
+		List<AbstractProcessStep> processStepsCopy = new ArrayList<AbstractProcessStep>();
+		for (AbstractProcessStep processStep : processSteps) {
+			AbstractProcessStep newStep = processStep.clone(this);
+			processStepsCopy.add(newStep);
+		}
+		setUpProcess(processStepsCopy);
+	}
+	
+	private void setUpProcess(List<AbstractProcessStep> processSteps) {
 		this.processSteps = processSteps;
-		if (processSteps.size() > 0) {
-			currentStepNumber = 0;
+		if (processSteps.size() < 2) {
+			throw new IllegalArgumentException("A process should have a minimum of 2 step (Pick & Put)");
 		} else {
-			currentStepNumber = -1;
+			// Process should start with a PickStep and end with a PutStep, both with a StackingDevice as device
+			// If this is not the case, a ClassCastException will be thrown!
+			source = (AbstractStackingDevice) ((PickStep) processSteps.get(0)).getDeviceFrom();
+			destination = (AbstractStackingDevice) ((PutStep) processSteps.get(processSteps.size() - 1)).getDeviceTo();
 		}
 		isActive = false;
 		canContinue = new Object();
 	}
 	
-	public Process() {
-		this(new ArrayList<AbstractProcessStep>());
+	public AbstractStackingDevice getSource() {
+		return source;
 	}
-	
-	public Process(Process aProcess) {
-		this();
-		for (AbstractProcessStep processStep : processSteps) {
-			AbstractProcessStep newStep = processStep.clone(this);
-			addProcessStep(newStep);
-		}
-	}
-	
-	public void addProcessStep(AbstractProcessStep step) {
-		processSteps.add(step);
-		if (processSteps.size() == 1) {
-			currentStepNumber = 0;
-		}
-	}
-	
-	public void removeProcessStep(AbstractProcessStep step) {
-		if ((currentStepNumber != -1) && (processSteps.get(currentStepNumber).equals(step))) {
-			currentStepNumber = -1;
-		}
-		processSteps.remove(step);
-	}
-	
-	public void removeAllProcessSteps() {
-		currentStepNumber = -1;
-		processSteps.clear();
+
+	public AbstractStackingDevice getDestination() {
+		return destination;
 	}
 	
 	public AbstractProcessStep getCurrentStep() {

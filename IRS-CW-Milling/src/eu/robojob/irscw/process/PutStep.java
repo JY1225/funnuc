@@ -23,26 +23,37 @@ public class PutStep extends AbstractTransportStep {
 
 	@Override
 	public void executeStep() {
-		// TODO Auto-generated method stub
-		
+		deviceTo.prepareForPut(putSettings);
+		robot.put(robotPutSettings);
+		deviceTo.grabPiece(putSettings);
+		robot.releasePiece(robotPutSettings);
 	}
 
 	@Override
 	public AbstractProcessStep clone(Process parentProcess) {
-		// TODO Auto-generated method stub
-		return null;
+		return new PutStep(parentProcess, robot, gripper, deviceTo, putSettings, robotPutSettings);
 	}
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		return "PutStep to " + deviceTo + " using " + robot;
 	}
 
 	@Override
 	public void finalize() {
-		// TODO Auto-generated method stub
-		
+		deviceTo.putFinished(putSettings);
+	}
+
+	public AbstractRobot getRobot() {
+		return robot;
+	}
+
+	public Gripper getGripper() {
+		return gripper;
+	}
+
+	public AbstractDevice getDeviceTo() {
+		return deviceTo;
 	}
 
 }

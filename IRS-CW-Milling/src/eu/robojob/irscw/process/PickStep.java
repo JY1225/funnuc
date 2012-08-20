@@ -62,4 +62,16 @@ public class PickStep extends AbstractTransportStep {
 		return "PickStep from " + deviceFrom + " with: " + robot;
 	}
 
+	public AbstractRobot getRobot() {
+		return robot;
+	}
+
+	public Gripper getGripper() {
+		return gripper;
+	}
+
+	public AbstractDevice getDeviceFrom() {
+		return deviceFrom;
+	}
+
 }
