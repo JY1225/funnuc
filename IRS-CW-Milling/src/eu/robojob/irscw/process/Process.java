@@ -11,15 +11,12 @@ public class Process {
 	
 	private List<AbstractProcessStep> processSteps;
 	private int currentStepNumber;
-	private boolean isActive;
 	
 	private AbstractStackingDevice source;
 	private AbstractStackingDevice destination;
 	
 	private static Logger logger = Logger.getLogger(Process.class.getName());
-	
-	private Object canContinue;
-	
+		
 	public Process(List<AbstractProcessStep>processSteps) {
 		setUpProcess(processSteps);
 	}
@@ -43,8 +40,6 @@ public class Process {
 			source = (AbstractStackingDevice) ((PickStep) processSteps.get(0)).getDeviceFrom();
 			destination = (AbstractStackingDevice) ((PutStep) processSteps.get(processSteps.size() - 1)).getDeviceTo();
 		}
-		isActive = false;
-		canContinue = new Object();
 	}
 	
 	public AbstractStackingDevice getSource() {
@@ -63,67 +58,15 @@ public class Process {
 		}
 	}
 	
-	public boolean isActive() {
-		return isActive;
-	}
-	
-	public void pauzeExecution() {
-		if (this.isActive = false) {
-			throw new IllegalStateException("Process was already pauzed");
-		}
-		this.isActive = false;
-	}
-	
-	public void continueExecution() {
-		if (this.isActive = true) {
-			throw new IllegalStateException("Process was already active");
-		} else {
-			this.isActive = true;
-			canContinue.notify();
-		}
-	}
-	
-	public void startExecution() {
-		this.isActive = true;
-		for (int i = 0; i < processSteps.size(); i++) {
-			if (!isActive) {
-				try {
-					canContinue.wait();
-				} catch (InterruptedException e) {
-					if (isActive) {
-						executeStep(i); 
-					} else {
-						throw new IllegalStateException("Waiting for process re-activation was interrupted, but status was not changed to active");
-					}
-				}
-			} else {
-				executeStep(i);
-			}
-		}
-	}
-	
-	//TODO catch exceptions
-	private void executeStep(int stepNumber) { 
-		if ((stepNumber < 0) || (stepNumber > (processSteps.size() - 1))) {
-			throw new IllegalArgumentException("Wrong stepNumber provided");
-		}
-		logger.info("Starting execution of step: " + stepNumber);
-		currentStepNumber = stepNumber;
-		processSteps.get(stepNumber).executeStep();
-		logger.info("Finished execution of step: " + stepNumber);
+	public void nextStep() {
 		currentStepNumber++;
-	}
-	
-	public void executeCurrentStep() {
-		executeStep(currentStepNumber);
+		if (currentStepNumber >= processSteps.size()) {
+			throw new IllegalStateException("The current step number is larger than the amount of steps");
+		}
 	}
 	
 	public boolean hasFinished() {
-		if ((currentStepNumber == (processSteps.size() - 1)) && (isActive == false)) {
-			return true;
-		} else {
-			return false;
-		}
+		return hasNextStep();
 	}
 	
 	public boolean hasNextStep() {
@@ -132,5 +75,9 @@ public class Process {
 		} else {
 			return true;
 		}
+	}
+	
+	public boolean isActive() {
+		return getCurrentStep().isInProcess();
 	}
 }

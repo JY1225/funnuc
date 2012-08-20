@@ -1,5 +1,9 @@
 package eu.robojob.irscw.process;
 
+import java.util.Set;
+
+import eu.robojob.irscw.external.AbstractServiceProvider;
+
 public abstract class AbstractProcessStep implements Runnable {
 	
 	protected Process parentProcess;
@@ -20,6 +24,7 @@ public abstract class AbstractProcessStep implements Runnable {
 		inProcess = true;
 		executeStep();
 		inProcess = false;
+		parentProcess.nextStep();
 	}
 
 	public boolean isInProcess() {
@@ -37,5 +42,7 @@ public abstract class AbstractProcessStep implements Runnable {
 	public void setParentProcess(Process parentProcess) {
 		this.parentProcess = parentProcess;
 	}
+	
+	public abstract Set<AbstractServiceProvider> getServiceProviders();
 	
 }

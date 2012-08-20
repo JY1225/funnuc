@@ -1,5 +1,9 @@
 package eu.robojob.irscw.process;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.Gripper;
@@ -72,6 +76,14 @@ public class PickStep extends AbstractTransportStep {
 
 	public AbstractDevice getDeviceFrom() {
 		return deviceFrom;
+	}
+	
+	@Override
+	public Set<AbstractServiceProvider> getServiceProviders() {
+		Set<AbstractServiceProvider> providers = new HashSet<AbstractServiceProvider>();
+		providers.add(deviceFrom);
+		providers.add(robot);
+		return providers;
 	}
 
 }

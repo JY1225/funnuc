@@ -1,5 +1,9 @@
 package eu.robojob.irscw.process;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.AbstractDevice;
 
 public class InterventionStep extends AbstractProcessStep {
@@ -80,6 +84,13 @@ public class InterventionStep extends AbstractProcessStep {
 	@Override
 	public String toString() {
 		return "InterventionStep, " + "device: " + device;
+	}
+
+	@Override
+	public Set<AbstractServiceProvider> getServiceProviders() {
+		Set<AbstractServiceProvider> providers = new HashSet<AbstractServiceProvider>();
+		providers.add(device);
+		return providers;
 	}
 
 }
