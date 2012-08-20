@@ -27,11 +27,25 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 		return "ProcessingDevice: " + id;
 	}
 	
-	public class AbstractProcessingDevicePutSettings extends AbstractDevicePutSettings {}
-	public class AbstractProcessingDevicePickSettings extends AbstractDevicePickSettings {}
-	public class AbstractProcessingDeviceInterventionSettings extends AbstractDeviceInterventionSettings {}
-	public class AbstractProcessingDeviceStartCyclusSettings {
-		protected WorkArea workArea;
+	public class AbstractProcessingDevicePutSettings extends AbstractDevicePutSettings {
+		public AbstractProcessingDevicePutSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
+	public class AbstractProcessingDevicePickSettings extends AbstractDevicePickSettings {
+		public AbstractProcessingDevicePickSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
+	public class AbstractProcessingDeviceInterventionSettings extends AbstractDeviceInterventionSettings {
+		public AbstractProcessingDeviceInterventionSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
+	public class AbstractProcessingDeviceStartCyclusSettings extends AbstractDeviceActionSettings {
+		public AbstractProcessingDeviceStartCyclusSettings(WorkArea workArea) {
+			super(workArea);
+		}
 	}
 	
 }

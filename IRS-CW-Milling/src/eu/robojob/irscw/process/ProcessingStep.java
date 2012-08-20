@@ -14,6 +14,10 @@ public class ProcessingStep extends AbstractProcessStep {
 		this.startCyclusSettings = startCyclusSettings;
 	}
 	
+	public ProcessingStep clone(Process parentProcess) {
+		return new ProcessingStep(parentProcess, processingDevice, startCyclusSettings);
+	}
+
 	@Override
 	public void executeStep() {
 		// check if the parent process has locked the device to be used

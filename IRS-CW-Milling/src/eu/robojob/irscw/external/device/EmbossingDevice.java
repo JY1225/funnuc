@@ -1,6 +1,8 @@
 package eu.robojob.irscw.external.device;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
+import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
+import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
 
 public class EmbossingDevice extends AbstractProcessingDevice {
 
@@ -52,12 +54,12 @@ public class EmbossingDevice extends AbstractProcessingDevice {
 	}
 
 	@Override
-	public void releasePiece(AbstractDeviceClampingSettings clampingSettings) {
+	public void releasePiece(AbstractDevicePickSettings pickSettings){
 		// TODO implement method
 	}
 
 	@Override
-	public void grabPiece(AbstractDeviceClampingSettings clampingSettings) {
+	public void grabPiece(AbstractDevicePutSettings putSettings) {
 		// TODO implement method
 	}
 

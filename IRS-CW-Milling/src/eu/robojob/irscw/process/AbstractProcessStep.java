@@ -9,8 +9,10 @@ public abstract class AbstractProcessStep implements Runnable {
 		this.parentProcess = parentProcess;
 		inProcess = false;
 	}
-
+	
 	public abstract void executeStep();
+	
+	public abstract AbstractProcessStep clone(Process parentProcess);
 	
 	public abstract String toString();
 	
@@ -26,6 +28,14 @@ public abstract class AbstractProcessStep implements Runnable {
 
 	public void setInProcess(boolean inProcess) {
 		this.inProcess = inProcess;
+	}
+	
+	public Process getParentProcess() {
+		return parentProcess;
+	}
+
+	public void setParentProcess(Process parentProcess) {
+		this.parentProcess = parentProcess;
 	}
 	
 }

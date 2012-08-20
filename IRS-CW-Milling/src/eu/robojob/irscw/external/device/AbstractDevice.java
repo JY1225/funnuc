@@ -17,8 +17,8 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	public abstract void putFinished(AbstractDevicePutSettings putSettings);
 	public abstract void interventionFinished(AbstractDeviceInterventionSettings interventionSettings);
 	
-	public abstract void releasePiece(AbstractDeviceClampingSettings clampingSettings);
-	public abstract void grabPiece(AbstractDeviceClampingSettings clampingSettings);
+	public abstract void releasePiece(AbstractDevicePickSettings pickSettings);
+	public abstract void grabPiece(AbstractDevicePutSettings putSettings);
 	
 	public AbstractDevice (String id, List<Zone> zones) {
 		super(id);
@@ -61,18 +61,34 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return "Device: " + id;
 	}
 	
-	public abstract class AbstractDevicePickSettings {
-		protected WorkArea workArea;
-	}
-	public abstract class AbstractDevicePutSettings {
-		protected WorkArea workArea;
-	}
-	public abstract class AbstractDeviceInterventionSettings {
-		protected WorkArea workArea;
-	}
-	public abstract class AbstractDeviceClampingSettings {
-		protected WorkArea workArea;
+	public abstract class AbstractDeviceActionSettings {
+		final private WorkArea workArea;
+		
+		public AbstractDeviceActionSettings(WorkArea workArea) {
+			this.workArea = workArea;
+		}
+
+		public WorkArea getWorkArea() {
+			return workArea;
+		}
 	}
 	
+	public abstract class AbstractDevicePickSettings extends AbstractDeviceActionSettings {
+		public AbstractDevicePickSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
+	
+	public abstract class AbstractDevicePutSettings extends AbstractDeviceActionSettings {
+		public AbstractDevicePutSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
+	
+	public abstract class AbstractDeviceInterventionSettings extends AbstractDeviceActionSettings {
+		public AbstractDeviceInterventionSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
 	
 }

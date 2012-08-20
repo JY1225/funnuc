@@ -1,6 +1,8 @@
 package eu.robojob.irscw.external.device;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
+import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
+import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
 
 public class CNCMillingMachine extends AbstractProcessingDevice {
 
@@ -25,11 +27,26 @@ public class CNCMillingMachine extends AbstractProcessingDevice {
 		return null;
 	}
 	
-	public class CNCMillingMachinePutSettings extends AbstractDevicePutSettings{}
-	public class CNCMillingMachinePickSettings extends AbstractDevicePickSettings{}
-	public class CNCMillingMachineInterventionSettings extends AbstractDeviceInterventionSettings{}
-	public class CNCMillingMachineStartCylusSettings extends AbstractProcessingDeviceStartCyclusSettings {}
-	public class CNCMillingMachineClampingSettings extends AbstractDeviceClampingSettings {}
+	public class CNCMillingMachinePutSettings extends AbstractDevicePutSettings{
+		public CNCMillingMachinePutSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
+	public class CNCMillingMachinePickSettings extends AbstractDevicePickSettings{
+		public CNCMillingMachinePickSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
+	public class CNCMillingMachineInterventionSettings extends AbstractDeviceInterventionSettings{
+		public CNCMillingMachineInterventionSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
+	public class CNCMillingMachineStartCylusSettings extends AbstractProcessingDeviceStartCyclusSettings {
+		public CNCMillingMachineStartCylusSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
 
 	@Override
 	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) {
@@ -44,14 +61,14 @@ public class CNCMillingMachine extends AbstractProcessingDevice {
 	}
 
 	@Override
-	public void releasePiece(AbstractDeviceClampingSettings clampingSettings) {
-		CNCMillingMachineClampingSettings cncClampingSettings = (CNCMillingMachineClampingSettings) clampingSettings;
+	public void releasePiece(AbstractDevicePickSettings pickSettings) {
+	CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
 		// TODO implement method
 	}
 
 	@Override
-	public void grabPiece(AbstractDeviceClampingSettings clampingSettings) {
-		CNCMillingMachineClampingSettings cncClampingSettings = (CNCMillingMachineClampingSettings) clampingSettings;
+	public void grabPiece(AbstractDevicePutSettings putSettings) {
+		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
 		// TODO implement method
 	}
 
