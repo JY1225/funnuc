@@ -2,7 +2,7 @@ package eu.robojob.irscw.external;
 
 import java.io.IOException;
 
-import eu.robojob.irscw.process.Process;
+import eu.robojob.irscw.process.ProcessFlow;
 
 public abstract class AbstractServiceProvider {
 	
@@ -10,7 +10,7 @@ public abstract class AbstractServiceProvider {
 	public static final String CONNECTED = "CONNECTED";
 	
 	private boolean isLocked;
-	private Process ownerProcess;
+	private ProcessFlow ownerProcess;
 	protected String id;
 	
 	public AbstractServiceProvider(String id) {
@@ -20,7 +20,7 @@ public abstract class AbstractServiceProvider {
 	}
 	
 	//TODO: add timer to auto-expire the lock after a certain delay
-	public synchronized boolean lock(Process ownerProcess) {
+	public synchronized boolean lock(ProcessFlow ownerProcess) {
 		if (isLocked) {
 			if (this.ownerProcess.equals(ownerProcess)) {
 				return true;
@@ -34,7 +34,7 @@ public abstract class AbstractServiceProvider {
 		}
 	}
 	
-	public synchronized boolean release(Process ownerProcess) {
+	public synchronized boolean release(ProcessFlow ownerProcess) {
 		if (this.ownerProcess.equals(ownerProcess)) {
 			isLocked = false;
 			ownerProcess = null;
@@ -50,7 +50,7 @@ public abstract class AbstractServiceProvider {
 	
 	public abstract String getStatus() throws IOException;
 	
-	public synchronized boolean hasLock(Process parentProcess) {
+	public synchronized boolean hasLock(ProcessFlow parentProcess) {
 		if (this.ownerProcess.equals(parentProcess)) {
 			return true;
 		} else {
@@ -58,7 +58,7 @@ public abstract class AbstractServiceProvider {
 		}
 	}
 	
-	public synchronized Process getLockingProcess() {
+	public synchronized ProcessFlow getLockingProcess() {
 		return ownerProcess;
 	}
 

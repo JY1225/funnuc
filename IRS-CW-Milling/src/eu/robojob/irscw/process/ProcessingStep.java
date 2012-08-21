@@ -11,20 +11,24 @@ public class ProcessingStep extends AbstractProcessStep {
 
 	private AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings startCyclusSettings;
 	
-	public ProcessingStep(Process parentProcess, AbstractProcessingDevice processingDevice,
+	public ProcessingStep(ProcessFlow processFlow, AbstractProcessingDevice processingDevice,
 			AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings startCyclusSettings) {
-		super(parentProcess, processingDevice);
+		super(processFlow, processingDevice);
 		this.startCyclusSettings = startCyclusSettings;
 	}
 	
-	public ProcessingStep clone(Process parentProcess) {
+	public ProcessingStep(AbstractProcessingDevice processingDevice, AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings startCyclusSettings) {
+		this(null, processingDevice, startCyclusSettings);
+	}
+	
+	public ProcessingStep clone(ProcessFlow parentProcess) {
 		return new ProcessingStep(parentProcess, (AbstractProcessingDevice) device, startCyclusSettings);
 	}
 
 	@Override
 	public void executeStep() throws IOException {
 		// check if the parent process has locked the device to be used
-		if (!device.lock(parentProcess)) {
+		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
 			((AbstractProcessingDevice) device).prepareForStartCyclus(startCyclusSettings);

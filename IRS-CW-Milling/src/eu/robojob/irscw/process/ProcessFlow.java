@@ -6,7 +6,7 @@ import java.util.List;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractStackingDevice;
 
-public class Process {
+public class ProcessFlow {
 	
 	private List<AbstractProcessStep> processSteps;
 	private int currentStepNumber;
@@ -15,12 +15,17 @@ public class Process {
 	private AbstractStackingDevice destination;
 	
 	private boolean finished;
+	
+	public ProcessFlow() {
+		this.processSteps = new ArrayList<AbstractProcessStep>();
+		this.finished = false;
+	}
 			
-	public Process(List<AbstractProcessStep>processSteps) {
+	public ProcessFlow(List<AbstractProcessStep>processSteps) {
 		setUpProcess(processSteps);
 	}
 	
-	public Process(Process aProcess) {
+	public ProcessFlow(ProcessFlow aProcess) {
 		List<AbstractProcessStep> processStepsCopy = new ArrayList<AbstractProcessStep>();
 		for (AbstractProcessStep processStep : processSteps) {
 			AbstractProcessStep newStep = processStep.clone(this);
@@ -97,5 +102,10 @@ public class Process {
 			}
 		}
 		return false;
+	}
+	
+	public void addStep(AbstractProcessStep newStep) {
+		processSteps.add(newStep);
+		newStep.setProcessFlow(this);
 	}
 }

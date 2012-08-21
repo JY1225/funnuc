@@ -13,23 +13,23 @@ public abstract class AbstractJob {
 	protected int finishedWorkpiecesAmount;
 	
 	// for now, we keep it simple with always just one active process
-	private Process activeProcess;
+	private ProcessFlow activeProcess;
 	
 	private List<AbstractTransportStep> pendingTransportSteps;
 	
-	private Process process;
+	private ProcessFlow process;
 	
 	private Object canContinue;
 	
 	private boolean isActive;
 	private boolean finished;
 	
-	public AbstractJob(Process process) {
+	public AbstractJob(ProcessFlow process) {
 		this.process = process;
 		this.canContinue = new Object();
 		this.isActive = false;
 		this.finished = false;
-		activeProcess = new Process(process);
+		activeProcess = new ProcessFlow(process);
 		finishedWorkpiecesAmount = 0;
 		this.pendingTransportSteps = new ArrayList<AbstractTransportStep>();
 	}
@@ -85,7 +85,7 @@ public abstract class AbstractJob {
 			if (process.hasFinished()) {
 				finishedWorkpiecesAmount++;
 				if (hasNextProcess()) {
-					activeProcess = new Process(process);
+					activeProcess = new ProcessFlow(process);
 				}
 			}
 		} catch (IOException e) {

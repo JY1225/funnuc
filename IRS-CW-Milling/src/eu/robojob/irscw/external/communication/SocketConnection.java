@@ -36,7 +36,7 @@ public class SocketConnection {
 		connected = true;
 	}
 	
-	public void connect() throws UnknownHostException, IOException {
+	public synchronized void connect() throws UnknownHostException, IOException {
 		if (connected) {
 			logger.info("Socket was already connected");
 		} else {
@@ -68,7 +68,7 @@ public class SocketConnection {
 		} 
 	}
 	
-	private void disConnect() {
+	private synchronized void disConnect() {
 		try {
 			logger.info("Closing " + this.toString());
 			connected = false;
@@ -107,7 +107,7 @@ public class SocketConnection {
 	// an alternative (better) approach would be to let the server
 	// send heartbeat-messages...
 	//TODO hearbeat-messages
-	public boolean isConnected() {
+	public synchronized boolean isConnected() {
 		if ((socket == null) || (out == null)) {
 			connected = false;
 			return false;
@@ -116,7 +116,7 @@ public class SocketConnection {
 		}
 	}
 	
-	public void sendString(String message) {
+	public synchronized void sendString(String message) {
 		if (isConnected()) {
 			logger.info("Sending '" + message + "' to " + this.toString());
 			out.println(message);
@@ -124,7 +124,7 @@ public class SocketConnection {
 		}
 	}
 	
-	public String readString() throws IOException {
+	public synchronized String readString() throws IOException {
 		if (isConnected()) {
 			logger.info("Reading from " + this.toString());
 			try {
@@ -141,7 +141,7 @@ public class SocketConnection {
 		return null;
 	}
 	
-	public String synchronizedSendAndRead(String message) throws IOException {
+	public synchronized String synchronizedSendAndRead(String message) throws IOException {
 		sendString(message);
 		return readString();
 	}

@@ -16,27 +16,32 @@ public class PickStep extends AbstractTransportStep {
 	private AbstractDevice.AbstractDevicePickSettings pickSettings;
 	private AbstractRobot.AbstractRobotPickSettings robotPickSettings;
 	
-	public PickStep(Process parentProcess, AbstractRobot robot, Gripper gripper, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
+	public PickStep(ProcessFlow processFlow, AbstractRobot robot, Gripper gripper, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
 			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
-		super(parentProcess, deviceFrom);
+		super(processFlow, deviceFrom);
 		this.robot = robot;
 		this.gripper = gripper;
 		this.pickSettings = pickSettings;
 		this.robotPickSettings = robotPickSettings;
 	}
 	
+	public PickStep(AbstractRobot robot, Gripper gripper, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
+			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
+		this(null, robot, gripper, deviceFrom, pickSettings, robotPickSettings);
+	}
+	
 	@Override
-	public PickStep clone(Process parentProcess) {
+	public PickStep clone(ProcessFlow parentProcess) {
 		return new PickStep(parentProcess, robot, gripper, device, pickSettings, robotPickSettings);
 	}
 
 	@Override
 	public void executeStep() throws IOException {
 		// check if the parent process has locked the devices to be used
-		if (!device.lock(parentProcess)) {
+		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
-			if (!robot.lock(parentProcess)) {
+			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
 				device.prepareForPick(pickSettings);
@@ -49,10 +54,10 @@ public class PickStep extends AbstractTransportStep {
 	
 	@Override
 	public void finalize() throws IOException {
-		if (!device.lock(parentProcess)) {
+		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
-			if (!robot.lock(parentProcess)) {
+			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
 				device.pickFinished(pickSettings);

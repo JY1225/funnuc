@@ -16,12 +16,17 @@ public class PutStep extends AbstractTransportStep {
 	private AbstractDevice.AbstractDevicePutSettings putSettings;
 	private AbstractRobot.AbstractRobotPutSettings robotPutSettings;
 	
-	public PutStep(Process parentProcess, AbstractRobot robot, Gripper gripper, AbstractDevice deviceTo,
+	public PutStep(ProcessFlow processFlow, AbstractRobot robot, Gripper gripper, AbstractDevice deviceTo,
 			AbstractDevice.AbstractDevicePutSettings putSettings, AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
-		super(parentProcess, deviceTo);
+		super(processFlow, deviceTo);
 		this.robot = robot;
 		this.gripper = gripper;
 		this.robotPutSettings = robotPutSettings;
+	}
+	
+	public PutStep(AbstractRobot robot, Gripper gripper, AbstractDevice deviceTo, AbstractDevice.AbstractDevicePutSettings putSettings,
+			AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
+		this(null, robot, gripper, deviceTo, putSettings, robotPutSettings);
 	}
 
 	@Override
@@ -33,7 +38,7 @@ public class PutStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public AbstractProcessStep clone(Process parentProcess) {
+	public AbstractProcessStep clone(ProcessFlow parentProcess) {
 		return new PutStep(parentProcess, robot, gripper, device, putSettings, robotPutSettings);
 	}
 

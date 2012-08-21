@@ -62,7 +62,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return "Device: " + id;
 	}
 	
-	public abstract class AbstractDeviceActionSettings {
+	public static abstract class AbstractDeviceActionSettings {
 		final private WorkArea workArea;
 		
 		public AbstractDeviceActionSettings(WorkArea workArea) {
@@ -74,19 +74,19 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		}
 	}
 	
-	public abstract class AbstractDevicePickSettings extends AbstractDeviceActionSettings {
+	public static abstract class AbstractDevicePickSettings extends AbstractDeviceActionSettings {
 		public AbstractDevicePickSettings(WorkArea workArea) {
 			super(workArea);
 		}
 	}
 	
-	public abstract class AbstractDevicePutSettings extends AbstractDeviceActionSettings {
+	public static abstract class AbstractDevicePutSettings extends AbstractDeviceActionSettings {
 		public AbstractDevicePutSettings(WorkArea workArea) {
 			super(workArea);
 		}
 	}
 	
-	public abstract class AbstractDeviceInterventionSettings extends AbstractDeviceActionSettings {
+	public static abstract class AbstractDeviceInterventionSettings extends AbstractDeviceActionSettings {
 		public AbstractDeviceInterventionSettings(WorkArea workArea) {
 			super(workArea);
 		}

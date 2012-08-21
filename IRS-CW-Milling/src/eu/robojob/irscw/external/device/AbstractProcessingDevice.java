@@ -28,22 +28,22 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 		return "ProcessingDevice: " + id;
 	}
 	
-	public class AbstractProcessingDevicePutSettings extends AbstractDevicePutSettings {
+	public static class AbstractProcessingDevicePutSettings extends AbstractDevicePutSettings {
 		public AbstractProcessingDevicePutSettings(WorkArea workArea) {
 			super(workArea);
 		}
 	}
-	public class AbstractProcessingDevicePickSettings extends AbstractDevicePickSettings {
+	public static class AbstractProcessingDevicePickSettings extends AbstractDevicePickSettings {
 		public AbstractProcessingDevicePickSettings(WorkArea workArea) {
 			super(workArea);
 		}
 	}
-	public class AbstractProcessingDeviceInterventionSettings extends AbstractDeviceInterventionSettings {
+	public static class AbstractProcessingDeviceInterventionSettings extends AbstractDeviceInterventionSettings {
 		public AbstractProcessingDeviceInterventionSettings(WorkArea workArea) {
 			super(workArea);
 		}
 	}
-	public class AbstractProcessingDeviceStartCyclusSettings extends AbstractDeviceActionSettings {
+	public static class AbstractProcessingDeviceStartCyclusSettings extends AbstractDeviceActionSettings {
 		public AbstractProcessingDeviceStartCyclusSettings(WorkArea workArea) {
 			super(workArea);
 		}

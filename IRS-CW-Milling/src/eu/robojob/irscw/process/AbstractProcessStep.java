@@ -8,19 +8,23 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 
 public abstract class AbstractProcessStep {
 	
-	protected Process parentProcess;
+	protected ProcessFlow processFlow;
 	private boolean inProcess;
 	protected AbstractDevice device; 
 	
-	public AbstractProcessStep(Process parentProcess, AbstractDevice device) {
-		this.parentProcess = parentProcess;
+	public AbstractProcessStep(ProcessFlow processFlow, AbstractDevice device) {
+		this.processFlow = processFlow;
 		inProcess = false;
 		this.device = device;
 	}
 	
+	public AbstractProcessStep(AbstractDevice device) {
+		this(null, device);
+	}
+	
 	public abstract void executeStep() throws IOException;
 	
-	public abstract AbstractProcessStep clone(Process parentProcess);
+	public abstract AbstractProcessStep clone(ProcessFlow processFlow);
 	
 	public abstract String toString();
 	
@@ -32,12 +36,12 @@ public abstract class AbstractProcessStep {
 		this.inProcess = inProcess;
 	}
 	
-	public Process getParentProcess() {
-		return parentProcess;
+	public ProcessFlow getProcessFlow() {
+		return processFlow;
 	}
 
-	public void setParentProcess(Process parentProcess) {
-		this.parentProcess = parentProcess;
+	public void setProcessFlow(ProcessFlow processFlow) {
+		this.processFlow = processFlow;
 	}
 	
 	public abstract Set<AbstractServiceProvider> getServiceProviders();

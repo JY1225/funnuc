@@ -17,22 +17,26 @@ public class InterventionStep extends AbstractProcessStep {
 	
 	private boolean canContinue;
 	
-	public InterventionStep(Process parentProcess, AbstractDevice device, AbstractDevice.AbstractDeviceInterventionSettings interventionSettings, int frequency) {
-		super(parentProcess, device);
+	public InterventionStep(ProcessFlow processFlow, AbstractDevice device, AbstractDevice.AbstractDeviceInterventionSettings interventionSettings, int frequency) {
+		super(processFlow, device);
 		this.frequency = frequency;
 		this.interventionSettings = interventionSettings;
 		this.canContinue = false;
 		interventionOver = new Object();
 	}
 	
-	public InterventionStep clone(Process parentProcess) {
+	public InterventionStep(AbstractDevice device, AbstractDevice.AbstractDeviceInterventionSettings interventionSettings, int frequency) {
+		this(null, device, interventionSettings, frequency);
+	}
+	
+	public InterventionStep clone(ProcessFlow parentProcess) {
 		return new InterventionStep(parentProcess, device, interventionSettings, frequency);
 	}
 	
 	@Override
 	public void executeStep() throws IOException {
 		// check if the parent process has locked the device to be used
-		if (!device.lock(parentProcess)) {
+		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
 			device.prepareForIntervention(interventionSettings);

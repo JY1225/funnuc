@@ -4,7 +4,7 @@ public class FixedAmountJob extends AbstractJob {
 	
 	private int workpieceAmount;
 	
-	public FixedAmountJob(Process process, int workpieceAmount) {
+	public FixedAmountJob(ProcessFlow process, int workpieceAmount) {
 		super(process);
 		this.workpieceAmount = workpieceAmount;
 	}

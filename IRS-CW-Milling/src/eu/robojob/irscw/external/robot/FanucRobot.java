@@ -3,6 +3,7 @@ package eu.robojob.irscw.external.robot;
 import java.io.IOException;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
+import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
 
 public class FanucRobot extends AbstractRobot {
@@ -20,6 +21,10 @@ public class FanucRobot extends AbstractRobot {
 	public FanucRobot(String id, GripperBody gripperBody, SocketConnection socketConnection) {
 		super(id, gripperBody);
 		this.socketConnection = socketConnection;
+	}
+	
+	public FanucRobot(String id, SocketConnection socketConnection) {
+		this(id, null, socketConnection);
 	}
 	
 	@Override
@@ -87,6 +92,23 @@ public class FanucRobot extends AbstractRobot {
 		} else {
 			String response = socketConnection.synchronizedSendAndRead(MOVE_TO_SAFE_POINT);
 		}
+	}
+	
+	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
+
+		public FanucRobotPickSettings(WorkArea workArea, Gripper gripper,
+				GripperBody gripperBody, GripperHead gripperHead) {
+			super(workArea, gripper, gripperBody, gripperHead);
+		}
+		
+	}
+	public static class FanucRobotPutSettings extends AbstractRobotPutSettings {
+
+		public FanucRobotPutSettings(WorkArea workArea, Gripper gripper,
+				GripperBody gripperBody, GripperHead gripperHead) {
+			super(workArea, gripper, gripperBody, gripperHead);
+		}
+		
 	}
 
 }

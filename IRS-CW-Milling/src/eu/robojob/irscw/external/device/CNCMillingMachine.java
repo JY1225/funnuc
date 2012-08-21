@@ -46,22 +46,22 @@ public class CNCMillingMachine extends AbstractProcessingDevice {
 		}
 	}
 	
-	public class CNCMillingMachinePutSettings extends AbstractDevicePutSettings{
+	public static class CNCMillingMachinePutSettings extends AbstractDevicePutSettings{
 		public CNCMillingMachinePutSettings(WorkArea workArea) {
 			super(workArea);
 		}
 	}
-	public class CNCMillingMachinePickSettings extends AbstractDevicePickSettings{
+	public static class CNCMillingMachinePickSettings extends AbstractDevicePickSettings{
 		public CNCMillingMachinePickSettings(WorkArea workArea) {
 			super(workArea);
 		}
 	}
-	public class CNCMillingMachineInterventionSettings extends AbstractDeviceInterventionSettings{
+	public static class CNCMillingMachineInterventionSettings extends AbstractDeviceInterventionSettings{
 		public CNCMillingMachineInterventionSettings(WorkArea workArea) {
 			super(workArea);
 		}
 	}
-	public class CNCMillingMachineStartCylusSettings extends AbstractProcessingDeviceStartCyclusSettings {
+	public static class CNCMillingMachineStartCylusSettings extends AbstractProcessingDeviceStartCyclusSettings {
 		public CNCMillingMachineStartCylusSettings(WorkArea workArea) {
 			super(workArea);
 		}

@@ -15,6 +15,10 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.gripperBody = gripperBody;
 	}
 	
+	public AbstractRobot(String id) {
+		this(id, null);
+	}
+	
 	public abstract Coordinates getPosition() throws IOException;
 	
 	public abstract void pick(AbstractRobotPickSettings pickSettings) throws IOException;
@@ -29,7 +33,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		return "Robot: " + id;
 	}
 	
-	public abstract class AbstractRobotActionSettings{
+	public static abstract class AbstractRobotActionSettings{
 		final private WorkArea workArea;
 		final private Gripper gripper;
 		final private GripperBody gripperBody;
@@ -54,12 +58,12 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		}
 	}
 	
-	public abstract class AbstractRobotPickSettings extends AbstractRobotActionSettings {
+	public static abstract class AbstractRobotPickSettings extends AbstractRobotActionSettings {
 		public AbstractRobotPickSettings(WorkArea workArea, Gripper gripper, GripperBody gripperBody, GripperHead gripperHead) {
 			super(workArea, gripper, gripperBody, gripperHead);
 		}
 	}
-	public abstract class AbstractRobotPutSettings extends AbstractRobotActionSettings {
+	public static abstract class AbstractRobotPutSettings extends AbstractRobotActionSettings {
 		public AbstractRobotPutSettings(WorkArea workArea, Gripper gripper, GripperBody gripperBody, GripperHead gripperHead) {
 			super(workArea, gripper, gripperBody, gripperHead);
 		}

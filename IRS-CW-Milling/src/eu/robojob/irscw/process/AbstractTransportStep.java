@@ -6,8 +6,12 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 
 public abstract class AbstractTransportStep extends AbstractProcessStep {
 
-	public AbstractTransportStep(Process parentProcess, AbstractDevice device) {
-		super(parentProcess, device);
+	public AbstractTransportStep(ProcessFlow processFlow, AbstractDevice device) {
+		super(processFlow, device);
+	}
+	
+	public AbstractTransportStep(AbstractDevice device) {
+		this(null, device);
 	}
 	
 	public abstract void finalize() throws IOException;
