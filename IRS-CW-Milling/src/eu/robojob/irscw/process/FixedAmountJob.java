@@ -10,16 +10,6 @@ public class FixedAmountJob extends AbstractJob {
 	}
 
 	@Override
-	public boolean hasNextStep() {
-		updateActiveProcesses();
-		if (mainProcess != null) {
-			return mainProcess.hasNextStep();
-		} else {
-			return false;
-		}
-	}
-
-	@Override
 	public boolean hasNextProcess() {
 		if (finishedWorkpiecesAmount < workpieceAmount) {
 			return true;

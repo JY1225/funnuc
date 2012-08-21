@@ -13,6 +13,8 @@ public class Process {
 	
 	private AbstractStackingDevice source;
 	private AbstractStackingDevice destination;
+	
+	private boolean finished;
 			
 	public Process(List<AbstractProcessStep>processSteps) {
 		setUpProcess(processSteps);
@@ -37,6 +39,7 @@ public class Process {
 			source = (AbstractStackingDevice) ((PickStep) processSteps.get(0)).getDevice();
 			destination = (AbstractStackingDevice) ((PutStep) processSteps.get(processSteps.size() - 1)).getDevice();
 		}
+		this.finished = false;
 	}
 	
 	public AbstractStackingDevice getSource() {
@@ -66,12 +69,12 @@ public class Process {
 	public void nextStep() {
 		currentStepNumber++;
 		if (currentStepNumber >= processSteps.size()) {
-			throw new IllegalStateException("The current step number is larger than the amount of steps");
+			finished = true;
 		}
 	}
 	
 	public boolean hasFinished() {
-		return hasNextStep();
+		return finished;
 	}
 	
 	public boolean hasNextStep() {

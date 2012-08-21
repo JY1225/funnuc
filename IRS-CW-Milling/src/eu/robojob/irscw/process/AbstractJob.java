@@ -1,7 +1,8 @@
 package eu.robojob.irscw.process;
 
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -11,9 +12,10 @@ public abstract class AbstractJob {
 
 	protected int finishedWorkpiecesAmount;
 	
-	private LinkedList<Process> activeProcesses;
-	protected Process mainProcess;
-	private Process secondProcess;
+	// for now, we keep it simple with always just one active process
+	private Process activeProcess;
+	
+	private List<AbstractTransportStep> pendingTransportSteps;
 	
 	private Process process;
 	
@@ -27,8 +29,9 @@ public abstract class AbstractJob {
 		this.canContinue = new Object();
 		this.isActive = false;
 		this.finished = false;
-		activeProcesses = new LinkedList<Process>();
+		activeProcess = new Process(process);
 		finishedWorkpiecesAmount = 0;
+		this.pendingTransportSteps = new ArrayList<AbstractTransportStep>();
 	}
 	
 	public void pauzeExecution() {
@@ -51,7 +54,7 @@ public abstract class AbstractJob {
 	
 	public void startExecution() {
 		this.isActive = true;
-		while (hasNextStep()) {
+		while (activeProcess != null) {
 			if (!isActive) {
 				try {
 					logger.info("Awaiting process-resumption");
@@ -68,50 +71,26 @@ public abstract class AbstractJob {
 				executeStep();
 			}
 		}
+		finished = true;
+		logger.info("Job finished");
 	}
 	
-	public abstract boolean hasNextStep();
 	public abstract boolean hasNextProcess();
 	
 	//TODO optimize processing (multiple processes at the same time)
 	public void executeStep() {
-		
-		// update active processes, main and second process
-		updateActiveProcesses();
-		
-		if (mainProcess == null) {
-			finished = true;
-			return;
-		}
-		
-		AbstractProcessStep step = mainProcess.getCurrentStep();
-		logger.info("executing: " + step);
 		try {
-			step.executeStep();
+			process.getCurrentStep().executeStep();
+			process.nextStep();
+			if (process.hasFinished()) {
+				finishedWorkpiecesAmount++;
+				if (hasNextProcess()) {
+					activeProcess = new Process(process);
+				}
+			}
 		} catch (IOException e) {
 			logger.error(e);
-			//TODO notify user of ioexception
 			isActive = false;
-		}
-		
-	}
-	
-	protected void updateActiveProcesses() {
-		while (activeProcesses.getFirst().hasFinished()) {
-			activeProcesses.removeFirst();
-			finishedWorkpiecesAmount++;
-		}
-		if (activeProcesses.size() > 0) {
-			mainProcess = activeProcesses.getFirst();
-		} else {
-			mainProcess = null;
-			finished = true;
-		}
-		if ((activeProcesses.size() < 2) && (hasNextProcess())) {
-			secondProcess = new Process(process);
-			activeProcesses.add(secondProcess);
-		} else if (hasNextProcess()) {
-			secondProcess = activeProcesses.get(1);
 		}
 	}
 
@@ -123,7 +102,7 @@ public abstract class AbstractJob {
 		this.finishedWorkpiecesAmount = finishedWorkpiecesAmount;
 	}
 
-	public boolean isFinished() {
+	public boolean hasFinished() {
 		return finished;
 	}
 	
