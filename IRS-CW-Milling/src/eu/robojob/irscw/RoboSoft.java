@@ -19,6 +19,7 @@ import eu.robojob.irscw.external.robot.Gripper;
 import eu.robojob.irscw.external.robot.GripperBody;
 import eu.robojob.irscw.external.robot.GripperHead;
 import eu.robojob.irscw.positioning.UserFrame;
+import eu.robojob.irscw.process.FixedAmountJob;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessingStep;
@@ -28,11 +29,11 @@ public class RoboSoft {
 
 	static Logger logger = Logger.getLogger(RoboSoft.class.getName());
 	
-	private static final int ROBOT_PORT = 49152;
-	private static final int CNC_MACHINE_PORT = 49152;
+	private static final int ROBOT_PORT = 1235;
+	private static final int CNC_MACHINE_PORT = 1234;
 	
 	public static void main(String[] args) throws UnknownHostException, IOException {
-		SocketConnection robotSocketConnection = new SocketConnection("Robot connection", "localhost", ROBOT_PORT);
+		SocketConnection robotSocketConnection = new SocketConnection("Robot connection", "127.0.0.1", ROBOT_PORT);
 		robotSocketConnection.connect();
 		FanucRobot fanucRobot = new FanucRobot("Fanuc robot", robotSocketConnection);
 		Gripper gripperA = new Gripper("Gripper A", 20, "Test gripper A");
@@ -40,7 +41,7 @@ public class RoboSoft {
 		GripperBody gripperBody = new GripperBody(1, "Default gripper body");
 		GripperHead gripperHead = new GripperHead(2, gripperA);
 		gripperBody.addGripperHead(gripperHead);
-		SocketConnection machineSocketConnection = new SocketConnection("Machine connection", "localhsot", CNC_MACHINE_PORT);
+		SocketConnection machineSocketConnection = new SocketConnection("Machine connection", "127.0.0.1", CNC_MACHINE_PORT);
 		machineSocketConnection.connect();
 		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("CNC Milling Machine", machineSocketConnection);
 		Zone zone1 = new Zone("zone 1", cncMillingMachine);
@@ -65,5 +66,8 @@ public class RoboSoft {
 		processFlow.addStep(pickStep);
 		processFlow.addStep(putStep);
 		processFlow.addStep(processingStep);
+		
+		FixedAmountJob job = new FixedAmountJob(processFlow, 20);
+		job.startExecution();
 	}
 }

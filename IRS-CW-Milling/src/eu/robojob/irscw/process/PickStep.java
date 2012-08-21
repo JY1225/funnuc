@@ -6,20 +6,19 @@ import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceActionSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.Gripper;
 
 public class PickStep extends AbstractTransportStep {
 
-	private AbstractRobot robot;
 	private Gripper gripper;
 	private AbstractDevice.AbstractDevicePickSettings pickSettings;
 	private AbstractRobot.AbstractRobotPickSettings robotPickSettings;
 	
 	public PickStep(ProcessFlow processFlow, AbstractRobot robot, Gripper gripper, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
 			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
-		super(processFlow, deviceFrom);
-		this.robot = robot;
+		super(processFlow, deviceFrom, robot);
 		this.gripper = gripper;
 		this.pickSettings = pickSettings;
 		this.robotPickSettings = robotPickSettings;
@@ -61,6 +60,8 @@ public class PickStep extends AbstractTransportStep {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
 				device.pickFinished(pickSettings);
+				device.release(processFlow);
+				robot.release(processFlow);
 			}
 		}
 	}
@@ -68,10 +69,6 @@ public class PickStep extends AbstractTransportStep {
 	@Override
 	public String toString() {
 		return "PickStep from " + device + " with: " + robot;
-	}
-
-	public AbstractRobot getRobot() {
-		return robot;
 	}
 
 	public Gripper getGripper() {
@@ -84,6 +81,11 @@ public class PickStep extends AbstractTransportStep {
 		providers.add(device);
 		providers.add(robot);
 		return providers;
+	}
+
+	@Override
+	public AbstractDeviceActionSettings getDeviceSettings() {
+		return pickSettings;
 	}
 
 }

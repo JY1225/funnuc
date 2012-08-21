@@ -6,21 +6,21 @@ import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceActionSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.Gripper;
 
 public class PutStep extends AbstractTransportStep {
 
-	private AbstractRobot robot;
 	private Gripper gripper;
 	private AbstractDevice.AbstractDevicePutSettings putSettings;
 	private AbstractRobot.AbstractRobotPutSettings robotPutSettings;
 	
 	public PutStep(ProcessFlow processFlow, AbstractRobot robot, Gripper gripper, AbstractDevice deviceTo,
 			AbstractDevice.AbstractDevicePutSettings putSettings, AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
-		super(processFlow, deviceTo);
-		this.robot = robot;
+		super(processFlow, deviceTo, robot);
 		this.gripper = gripper;
+		this.putSettings = putSettings;
 		this.robotPutSettings = robotPutSettings;
 	}
 	
@@ -49,11 +49,17 @@ public class PutStep extends AbstractTransportStep {
 
 	@Override
 	public void finalize() throws IOException {
-		device.putFinished(putSettings);
-	}
-
-	public AbstractRobot getRobot() {
-		return robot;
+		if (!device.lock(processFlow)) {
+			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
+		} else {
+			if (!robot.lock(processFlow)) {
+				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
+			} else {
+				device.putFinished(putSettings);
+				device.release(processFlow);
+				robot.release(processFlow);
+			}
+		}
 	}
 
 	public Gripper getGripper() {
@@ -66,6 +72,11 @@ public class PutStep extends AbstractTransportStep {
 		providers.add(device);
 		providers.add(robot);
 		return providers;
+	}
+
+	@Override
+	public AbstractDeviceActionSettings getDeviceSettings() {
+		return putSettings;
 	}
 
 }

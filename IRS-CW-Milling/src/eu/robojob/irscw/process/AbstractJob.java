@@ -80,12 +80,48 @@ public abstract class AbstractJob {
 	//TODO optimize processing (multiple processes at the same time)
 	public void executeStep() {
 		try {
-			process.getCurrentStep().executeStep();
-			process.nextStep();
-			if (process.hasFinished()) {
+			AbstractProcessStep currentStep = activeProcess.getCurrentStep();
+			currentStep.executeStep();
+			if (currentStep instanceof AbstractTransportStep) {
+				if (pendingTransportSteps.size() > 0) {
+					if((!pendingTransportSteps.get(0).getDeviceSettings().getWorkArea().equals(((AbstractTransportStep) currentStep).getDeviceSettings().getWorkArea()))) {
+						for (AbstractTransportStep step : pendingTransportSteps) {
+							step.finalize();
+						}
+						pendingTransportSteps.clear();
+					}
+				}
+				pendingTransportSteps.add((AbstractTransportStep) currentStep);
+			} else {
+				if (pendingTransportSteps.size() != 0) {
+					pendingTransportSteps.get(0).getRobot().moveToSafePoint();
+					for (AbstractTransportStep step : pendingTransportSteps) {
+						step.finalize();
+					}
+					pendingTransportSteps.clear();
+				}
+			}
+			activeProcess.nextStep();
+			if (activeProcess.hasFinished()) {
 				finishedWorkpiecesAmount++;
+				logger.debug("Another piece finished! Total is now: " + finishedWorkpiecesAmount);
 				if (hasNextProcess()) {
 					activeProcess = new ProcessFlow(process);
+					logger.debug("created new process");
+				} else {
+					activeProcess = null;
+					if (pendingTransportSteps.size() != 0) {
+						if (!pendingTransportSteps.get(0).getRobot().lock(pendingTransportSteps.get(0).getProcessFlow())) {
+							throw new IllegalStateException("Robot " + pendingTransportSteps.get(0).getRobot() + " was already locked by: " + pendingTransportSteps.get(0).getRobot().getLockingProcess());
+						} else {
+							pendingTransportSteps.get(0).getRobot().moveToSafePoint();
+							pendingTransportSteps.get(0).getRobot().release(pendingTransportSteps.get(0).getProcessFlow());
+						}
+						for (AbstractTransportStep step : pendingTransportSteps) {
+							step.finalize();
+						}
+						pendingTransportSteps.clear();
+					}
 				}
 			}
 		} catch (IOException e) {

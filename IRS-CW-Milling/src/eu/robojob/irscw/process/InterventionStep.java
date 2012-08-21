@@ -50,6 +50,8 @@ public class InterventionStep extends AbstractProcessStep {
 				} else {
 					throw new IllegalStateException("Waiting for intervention to be finished interrupted, but intervention is not signalled as being over");
 				}
+			} finally {
+				device.release(processFlow);
 			}
 		}
 	}

@@ -33,6 +33,7 @@ public class ProcessingStep extends AbstractProcessStep {
 		} else {
 			((AbstractProcessingDevice) device).prepareForStartCyclus(startCyclusSettings);
 			((AbstractProcessingDevice) device).startCyclus(startCyclusSettings);
+			device.release(processFlow);
 		}
 	}
 
