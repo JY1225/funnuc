@@ -1,4 +1,4 @@
-package eu.robojob.fanucrobotsimulator;
+package eu.robojob.robotsimulator.fanucrobot;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -6,8 +6,8 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.fanucrobotsimulator.communication.SocketLoggingThread;
 import eu.robojob.irscw.external.communication.SocketConnection;
+import eu.robojob.robotsimulator.fanucrobot.communication.SocketLoggingThread;
 
 public class FanucRobotSimulator {
 	

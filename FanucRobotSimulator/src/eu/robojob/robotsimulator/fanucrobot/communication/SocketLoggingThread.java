@@ -1,4 +1,4 @@
-package eu.robojob.fanucrobotsimulator.communication;
+package eu.robojob.robotsimulator.fanucrobot.communication;
 
 import java.io.IOException;
 
