@@ -8,6 +8,13 @@ import eu.robojob.irscw.external.communication.SocketConnection;
 
 public class WaitAndRespondThread implements Runnable {
 	
+	private int waitDurationMs;
+	
+	public WaitAndRespondThread(SocketConnection socketConnection, int waitDurationMs) {
+		this.socketConnection = socketConnection;
+		this.waitDurationMs = waitDurationMs;
+	}
+	
 	private SocketConnection socketConnection;
 	private static Logger logger = Logger.getLogger(WaitAndRespondThread.class.getName());
 
@@ -19,7 +26,7 @@ public class WaitAndRespondThread implements Runnable {
 				inputString = socketConnection.readString();
 				logger.info("received message: " + inputString);
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(waitDurationMs);
 					socketConnection.sendString("OK");
 				} catch (InterruptedException e) {
 					logger.error(e);
