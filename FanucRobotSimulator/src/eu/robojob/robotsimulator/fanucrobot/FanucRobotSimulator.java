@@ -6,8 +6,8 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.devicesimulator.cncmillingmachine.communication.WaitAndRespondThread;
 import eu.robojob.irscw.external.communication.SocketConnection;
-import eu.robojob.robotsimulator.fanucrobot.communication.SocketLoggingThread;
 
 public class FanucRobotSimulator {
 	
@@ -25,7 +25,7 @@ public class FanucRobotSimulator {
 				logger.debug("new socket-connection!");
 				counter++;
 				SocketConnection socketConnection = new SocketConnection("connection " + counter + ": ", socket);
-				SocketLoggingThread thread = new SocketLoggingThread(socketConnection);
+				WaitAndRespondThread thread = new WaitAndRespondThread(socketConnection, 2000);
 				thread.run();
 			}
 		} catch (IOException e) {
