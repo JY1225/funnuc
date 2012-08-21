@@ -1,5 +1,6 @@
 package eu.robojob.irscw.process;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ public class ProcessingStep extends AbstractProcessStep {
 	}
 
 	@Override
-	public void executeStep() {
+	public void executeStep() throws IOException {
 		// check if the parent process has locked the device to be used
 		if (!device.lock(parentProcess)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());

@@ -1,5 +1,6 @@
 package eu.robojob.irscw.process;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +25,7 @@ public class PutStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public void executeStep() {
+	public void executeStep() throws IOException {
 		device.prepareForPut(putSettings);
 		robot.put(robotPutSettings);
 		device.grabPiece(putSettings);
@@ -42,7 +43,7 @@ public class PutStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public void finalize() {
+	public void finalize() throws IOException {
 		device.putFinished(putSettings);
 	}
 

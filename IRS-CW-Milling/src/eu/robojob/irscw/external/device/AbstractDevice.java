@@ -1,5 +1,6 @@
 package eu.robojob.irscw.external.device;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,16 +10,16 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	protected List<Zone> zones;
 	
-	public abstract void prepareForPick(AbstractDevicePickSettings pickSettings);
-	public abstract void prepareForPut(AbstractDevicePutSettings putSettings);
-	public abstract void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings);
+	public abstract void prepareForPick(AbstractDevicePickSettings pickSettings) throws IOException;
+	public abstract void prepareForPut(AbstractDevicePutSettings putSettings) throws IOException;
+	public abstract void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws IOException;
 	
-	public abstract void pickFinished(AbstractDevicePickSettings pickSettings);
-	public abstract void putFinished(AbstractDevicePutSettings putSettings);
-	public abstract void interventionFinished(AbstractDeviceInterventionSettings interventionSettings);
+	public abstract void pickFinished(AbstractDevicePickSettings pickSettings) throws IOException;
+	public abstract void putFinished(AbstractDevicePutSettings putSettings) throws IOException;
+	public abstract void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws IOException;
 	
-	public abstract void releasePiece(AbstractDevicePickSettings pickSettings);
-	public abstract void grabPiece(AbstractDevicePutSettings putSettings);
+	public abstract void releasePiece(AbstractDevicePickSettings pickSettings) throws IOException;
+	public abstract void grabPiece(AbstractDevicePutSettings putSettings) throws IOException;
 	
 	public AbstractDevice (String id, List<Zone> zones) {
 		super(id);

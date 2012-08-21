@@ -1,5 +1,7 @@
 package eu.robojob.irscw.external.robot;
 
+import java.io.IOException;
+
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
@@ -13,20 +15,19 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.gripperBody = gripperBody;
 	}
 	
-	public abstract Coordinates getPosition();
+	public abstract Coordinates getPosition() throws IOException;
 	
-	public abstract void pick(AbstractRobotPickSettings pickSettings);
-	public abstract void put(AbstractRobotPutSettings putSettings);
+	public abstract void pick(AbstractRobotPickSettings pickSettings) throws IOException;
+	public abstract void put(AbstractRobotPutSettings putSettings) throws IOException;
 	
-	public abstract void releasePiece(AbstractRobotPutSettings putSettings);
-	public abstract void grabPiece(AbstractRobotPickSettings pickSettings);
+	public abstract void releasePiece(AbstractRobotPutSettings putSettings) throws IOException;
+	public abstract void grabPiece(AbstractRobotPickSettings pickSettings) throws IOException;
 	
-	public abstract void moveToSafePoint();
+	public abstract void moveToSafePoint() throws IOException;
 	
 	public String toString() {
 		return "Robot: " + id;
 	}
-	
 	
 	public abstract class AbstractRobotActionSettings{
 		final private WorkArea workArea;

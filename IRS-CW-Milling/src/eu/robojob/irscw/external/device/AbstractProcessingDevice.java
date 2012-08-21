@@ -1,5 +1,6 @@
 package eu.robojob.irscw.external.device;
 
+import java.io.IOException;
 import java.util.List;
 
 public abstract class AbstractProcessingDevice extends AbstractDevice {
@@ -20,8 +21,8 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 		return isInvasive;
 	}
 	
-	public abstract void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings);	
-	public abstract void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings);
+	public abstract void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException;	
+	public abstract void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException;
 	
 	public String toString() {
 		return "ProcessingDevice: " + id;

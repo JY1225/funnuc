@@ -1,8 +1,13 @@
 package eu.robojob.irscw.external;
 
+import java.io.IOException;
+
 import eu.robojob.irscw.process.Process;
 
 public abstract class AbstractServiceProvider {
+	
+	public static final String DISCONNECTED = "DISCONNECTED";
+	public static final String CONNECTED = "CONNECTED";
 	
 	private boolean isLocked;
 	private Process ownerProcess;
@@ -43,7 +48,7 @@ public abstract class AbstractServiceProvider {
 		return isLocked;
 	}
 	
-	public abstract String getStatus();
+	public abstract String getStatus() throws IOException;
 	
 	public synchronized boolean hasLock(Process parentProcess) {
 		if (this.ownerProcess.equals(parentProcess)) {

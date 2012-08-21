@@ -1,5 +1,6 @@
 package eu.robojob.irscw.process;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
@@ -85,7 +86,13 @@ public abstract class AbstractJob {
 		
 		AbstractProcessStep step = mainProcess.getCurrentStep();
 		logger.info("executing: " + step);
-		step.executeStep();
+		try {
+			step.executeStep();
+		} catch (IOException e) {
+			logger.error(e);
+			//TODO notify user of ioexception
+			isActive = false;
+		}
 		
 	}
 	

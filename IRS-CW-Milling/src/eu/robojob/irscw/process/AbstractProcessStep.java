@@ -1,11 +1,12 @@
 package eu.robojob.irscw.process;
 
+import java.io.IOException;
 import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.AbstractDevice;
 
-public abstract class AbstractProcessStep implements Runnable {
+public abstract class AbstractProcessStep {
 	
 	protected Process parentProcess;
 	private boolean inProcess;
@@ -17,19 +18,12 @@ public abstract class AbstractProcessStep implements Runnable {
 		this.device = device;
 	}
 	
-	public abstract void executeStep();
+	public abstract void executeStep() throws IOException;
 	
 	public abstract AbstractProcessStep clone(Process parentProcess);
 	
 	public abstract String toString();
 	
-	public void run() {
-		inProcess = true;
-		executeStep();
-		inProcess = false;
-		parentProcess.nextStep();
-	}
-
 	public boolean isInProcess() {
 		return inProcess;
 	}

@@ -6,7 +6,6 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -21,8 +20,17 @@ public class DatabaseMapper {
 	private Connection conn = null;
 	private Statement stmt = null;
 	
-	public DatabaseMapper () {
+	private static DatabaseMapper instance = null;
+	
+	private DatabaseMapper () {
 		createConnection();
+	}
+	
+	public static DatabaseMapper getInstance() {
+		if (instance == null) {
+			instance = new DatabaseMapper();
+		}
+		return instance;
 	}
 	
 	private void createConnection() {

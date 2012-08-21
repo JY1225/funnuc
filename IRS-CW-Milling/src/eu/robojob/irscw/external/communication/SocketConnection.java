@@ -129,6 +129,7 @@ public class SocketConnection {
 			logger.info("Reading from " + this.toString());
 			try {
 				String msg = in.readLine();
+				logger.info("message: " + msg);
 				return msg;
 			} catch (IOException e) {
 				connected = false;

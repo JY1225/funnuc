@@ -1,5 +1,7 @@
 package eu.robojob.irscw.external.device;
 
+import java.io.IOException;
+
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
@@ -14,58 +16,82 @@ public class EmbossingDevice extends AbstractProcessingDevice {
 	}
 
 	@Override
-	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) {
-		// TODO implement method
+	public void startCyclus(
+			AbstractProcessingDeviceStartCyclusSettings startCylusSettings)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) {
-		// TODO implement method
+	public void prepareForStartCyclus(
+			AbstractProcessingDeviceStartCyclusSettings startCylusSettings)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void prepareForPick(AbstractDevicePickSettings pickSettings) {
-		// TODO implement method
+	public void prepareForPick(AbstractDevicePickSettings pickSettings)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void prepareForPut(AbstractDevicePutSettings putSettings) {
-		// TODO implement method
+	public void prepareForPut(AbstractDevicePutSettings putSettings)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) {
-		// TODO implement method
+	public void prepareForIntervention(
+			AbstractDeviceInterventionSettings interventionSettings)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void pickFinished(AbstractDevicePickSettings pickSettings) {
-		// TODO implement method
+	public void pickFinished(AbstractDevicePickSettings pickSettings)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void putFinished(AbstractDevicePutSettings putSettings) {
-		// TODO implement method
+	public void putFinished(AbstractDevicePutSettings putSettings)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) {
-		// TODO implement method
+	public void interventionFinished(
+			AbstractDeviceInterventionSettings interventionSettings)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings){
-		// TODO implement method
+	public void releasePiece(AbstractDevicePickSettings pickSettings)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings) {
-		// TODO implement method
+	public void grabPiece(AbstractDevicePutSettings putSettings)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public String getStatus() {
-		// TODO implement method		
+		// TODO Auto-generated method stub
 		return null;
 	}
 
