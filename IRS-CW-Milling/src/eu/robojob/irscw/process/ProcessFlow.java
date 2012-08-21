@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.AbstractStackingDevice;
 
 public class ProcessFlow {
 	
