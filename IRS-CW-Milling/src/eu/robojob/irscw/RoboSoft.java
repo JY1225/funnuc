@@ -1,35 +1,29 @@
 package eu.robojob.irscw;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.SocketConnection;
-import eu.robojob.irscw.external.device.CNCMillingMachine;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePickSettings;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePutSettings;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineStartCylusSettings;
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.Zone;
-import eu.robojob.irscw.external.robot.FanucRobot;
-import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPickSettings;
-import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPutSettings;
-import eu.robojob.irscw.external.robot.Gripper;
-import eu.robojob.irscw.external.robot.GripperBody;
-import eu.robojob.irscw.external.robot.GripperHead;
-import eu.robojob.irscw.positioning.UserFrame;
-import eu.robojob.irscw.process.FixedAmountJob;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessingStep;
-import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.ui.MainPresenter;
+import eu.robojob.irscw.ui.RoboSoftAppFactory;
 
-public class RoboSoft {
+public class RoboSoft extends Application {
 
 	static Logger logger = Logger.getLogger(RoboSoft.class.getName());
+
+	@Override
+	public void start(Stage arg0) throws Exception {
+		RoboSoftAppFactory factory = new RoboSoftAppFactory();
+		MainPresenter mainPresenter = factory.getMainPresenter();
+		mainPresenter.showProcessView();
+		Scene scene = new Scene(mainPresenter.getView(), 800, 600);
+		
+	}
 	
-	private static final int ROBOT_PORT = 1235;
+	
+/*	private static final int ROBOT_PORT = 1235;
 	private static final int CNC_MACHINE_PORT = 1234;
 	
 	public static void main(String[] args) throws UnknownHostException, IOException {
@@ -69,5 +63,5 @@ public class RoboSoft {
 		
 		FixedAmountJob job = new FixedAmountJob(processFlow, 20);
 		job.startExecution();
-	}
+	}*/
 }
