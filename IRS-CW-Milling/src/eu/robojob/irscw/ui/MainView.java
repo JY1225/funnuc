@@ -11,11 +11,11 @@ public class MainView extends BorderPane {
 	}
 
 	public void setHeader(Node header) {
-		setHeader(header);
+		setTop(header);
 	}
 	
 	public void setContent(Node content) {
-		setContent(content);
+		setCenter(content);
 	}
 	
 	public void setPresenter(MainPresenter presenter) {

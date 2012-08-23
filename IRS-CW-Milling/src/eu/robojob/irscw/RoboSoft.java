@@ -12,13 +12,20 @@ import eu.robojob.irscw.ui.RoboSoftAppFactory;
 public class RoboSoft extends Application {
 
 	static Logger logger = Logger.getLogger(RoboSoft.class.getName());
+	
+	public static void main(String[] args) {
+		launch(args);
+	}
 
 	@Override
-	public void start(Stage arg0) throws Exception {
+	public void start(Stage stage) throws Exception {
 		RoboSoftAppFactory factory = new RoboSoftAppFactory();
 		MainPresenter mainPresenter = factory.getMainPresenter();
 		mainPresenter.showProcessView();
 		Scene scene = new Scene(mainPresenter.getView(), 800, 600);
-		
+		scene.getStylesheets().add("style.css");
+		stage.setScene(scene);
+		stage.setTitle("RoboSoft");
+		stage.show();
 	}
 }

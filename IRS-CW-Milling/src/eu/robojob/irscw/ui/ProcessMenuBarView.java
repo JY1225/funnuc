@@ -2,6 +2,8 @@ package eu.robojob.irscw.ui;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -79,6 +81,7 @@ public class ProcessMenuBarView extends HBox {
 		getChildren().add(btnAdmin);
 		
 		setHgrow(hBoxProcessMenuItems, Priority.ALWAYS);
+		hBoxProcessMenuItems.setAlignment(Pos.CENTER);
 	}
 	
 	public void setConfigureActive() {
