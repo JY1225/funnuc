@@ -5,8 +5,11 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.text.Text;
 import eu.robojob.irscw.util.Translator;
 
 public class ProcessMenuBarView extends ToolBar {
@@ -27,9 +30,9 @@ public class ProcessMenuBarView extends ToolBar {
 	private Button selectedBtn;
 	
 	private static final String BTN_SELECTED = "selected";
-	private static final int BTN_HEIGHT = 40;
+	private static final int BTN_HEIGHT = 49;
 	private static final int BTN_WIDTH_SMALL = 60;
-	private static final int BTN_WIDTH_LARGE = 120;
+	private static final int BTN_WIDTH_LARGE = 130;
 	
 	public ProcessMenuBarView() {
 		translator = Translator.getInstance();
@@ -44,7 +47,9 @@ public class ProcessMenuBarView extends ToolBar {
 		
 		selectedBtn = null;
 		
-		btnAlarms = new Button(translator.getTranslation("Alarms"));
+		Image alarmsIcon = new Image(getClass().getResourceAsStream("/img/icon_alarms.png"));
+		btnAlarms = new Button();
+		btnAlarms.setGraphic(new ImageView(alarmsIcon));
 		btnAlarms.setPrefSize(BTN_WIDTH_SMALL, BTN_HEIGHT);
 		btnAlarms.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
@@ -52,7 +57,9 @@ public class ProcessMenuBarView extends ToolBar {
 			}
 		});
 		
-		btnAdmin = new Button(translator.getTranslation("Admin"));
+		Image adminIcon = new Image(getClass().getResourceAsStream("/img/icon_admin.png"));
+		btnAdmin = new Button();
+		btnAdmin.setGraphic(new ImageView(adminIcon));
 		btnAdmin.setPrefSize(BTN_WIDTH_SMALL, BTN_HEIGHT);
 		btnAdmin.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
@@ -63,7 +70,9 @@ public class ProcessMenuBarView extends ToolBar {
 		hBoxProcessMenuItems = new HBox();
 		hBoxProcessMenuItems.setSpacing(0);
 		
-		btnConfigure = new Button(translator.getTranslation("Configure"));
+		btnConfigure = new Button();
+		Text btnConfigureText = new Text(translator.getTranslation("Configure"));
+		btnConfigure.setGraphic(btnConfigureText);
 		btnConfigure.getStyleClass().add("first");
 		btnConfigure.setPrefSize(BTN_WIDTH_LARGE, BTN_HEIGHT);
 		btnConfigure.setOnAction(new EventHandler<ActionEvent>() {
@@ -71,7 +80,9 @@ public class ProcessMenuBarView extends ToolBar {
 				presenter.showConfigureView();
 			}
 		});
-		btnTeach = new Button(translator.getTranslation("Teach"));
+		btnTeach = new Button();
+		Text btnTeachText = new Text(translator.getTranslation("Teach"));
+		btnTeach.setGraphic(btnTeachText);
 		btnTeach.getStyleClass().add("bar");
 		btnTeach.setPrefSize(BTN_WIDTH_LARGE, BTN_HEIGHT);
 		btnTeach.setOnAction(new EventHandler<ActionEvent>() {
@@ -79,7 +90,9 @@ public class ProcessMenuBarView extends ToolBar {
 				presenter.showTeachView();
 			}
 		});
-		btnAutomate = new Button(translator.getTranslation("Automate"));
+		btnAutomate = new Button();
+		Text btnAutomateText = new Text(translator.getTranslation("Automate"));
+		btnAutomate.setGraphic(btnAutomateText);
 		btnAutomate.setPrefSize(BTN_WIDTH_LARGE, BTN_HEIGHT);
 		btnAutomate.getStyleClass().add("last");
 		btnAutomate.setOnAction(new EventHandler<ActionEvent>() {

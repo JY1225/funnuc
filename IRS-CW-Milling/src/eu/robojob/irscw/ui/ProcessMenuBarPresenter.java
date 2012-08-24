@@ -1,7 +1,11 @@
 package eu.robojob.irscw.ui;
 
+import org.apache.log4j.Logger;
+
 public class ProcessMenuBarPresenter {
 
+	private static Logger logger = Logger.getLogger(ProcessMenuBarPresenter.class);
+	
 	private ProcessMenuBarView processMenuBarView;
 	private ProcessMainContentPresenter processMainContentPresenter; 
 	private MainPresenter mainPresenter;
@@ -19,6 +23,7 @@ public class ProcessMenuBarPresenter {
 	}
 	
 	public void showAlarmsView() {
+		logger.debug("show alarms clicked");
 		processMainContentPresenter.showAlarmsView();
 	}
 	
