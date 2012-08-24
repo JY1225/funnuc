@@ -30,7 +30,7 @@ public class ProcessMenuBarView extends ToolBar {
 	private Button selectedBtn;
 	
 	private static final String BTN_SELECTED = "selected";
-	private static final int BTN_HEIGHT = 49;
+	private static final int BTN_HEIGHT = 45;
 	private static final int BTN_WIDTH_SMALL = 60;
 	private static final int BTN_WIDTH_LARGE = 130;
 	
@@ -46,7 +46,7 @@ public class ProcessMenuBarView extends ToolBar {
 	protected void buildView() {
 		
 		selectedBtn = null;
-		
+				
 		Image alarmsIcon = new Image(getClass().getResourceAsStream("/img/icon_alarms.png"));
 		btnAlarms = new Button();
 		btnAlarms.setGraphic(new ImageView(alarmsIcon));
@@ -145,7 +145,8 @@ public class ProcessMenuBarView extends ToolBar {
 	}
 	
 	private void setActive(Button button) {
-		btnConfigure.getStyleClass().add(BTN_SELECTED);
+		this.selectedBtn = button;
+		selectedBtn.getStyleClass().add(BTN_SELECTED);
 	}
 	
 }
