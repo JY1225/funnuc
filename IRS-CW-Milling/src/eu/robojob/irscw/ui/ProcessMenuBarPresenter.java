@@ -7,10 +7,10 @@ public class ProcessMenuBarPresenter {
 	private static Logger logger = Logger.getLogger(ProcessMenuBarPresenter.class);
 	
 	private ProcessMenuBarView view;
-	private ProcessMainContentPresenter processMainContentPresenter; 
+	private ProcessConfigurePresenter processMainContentPresenter; 
 	private MainPresenter mainPresenter;
 	
-	public ProcessMenuBarPresenter(ProcessMenuBarView processMenuBarView, ProcessMainContentPresenter processMainContentPresenter, 
+	public ProcessMenuBarPresenter(ProcessMenuBarView processMenuBarView, ProcessConfigurePresenter processMainContentPresenter, 
 			MainPresenter mainPresenter) {
 		this.view = processMenuBarView;
 		this.processMainContentPresenter = processMainContentPresenter;

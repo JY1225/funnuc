@@ -4,13 +4,14 @@ public class RoboSoftAppFactory {
 
 	private MainPresenter mainPresenter;
 	private ProcessMenuBarPresenter processMenuBarPresenter;
-	private ProcessMainContentPresenter processMainContentPresenter;
+	private ProcessConfigurePresenter processConfigurePresenter;
+	private KeyboardPresenter keyboardPresenter;
 	
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
 			MainView mainView = new MainView();
 			mainPresenter = new MainPresenter(mainView);
-			mainPresenter.setProcessMainContentPresenter(getProcessMainContentPresenter());
+			mainPresenter.setProcessMainContentPresenter(getProcessConfigurePresenter());
 			mainPresenter.setProcessMenuBarPresenter(getProcessMenuBarPresenter());
 		}
 		return mainPresenter;
@@ -19,16 +20,24 @@ public class RoboSoftAppFactory {
 	public ProcessMenuBarPresenter getProcessMenuBarPresenter() {
 		if (processMenuBarPresenter == null) {
 			ProcessMenuBarView processMenuBarView = new ProcessMenuBarView();
-			processMenuBarPresenter = new ProcessMenuBarPresenter(processMenuBarView, getProcessMainContentPresenter(), getMainPresenter());
+			processMenuBarPresenter = new ProcessMenuBarPresenter(processMenuBarView, getProcessConfigurePresenter(), getMainPresenter());
 		}
 		return processMenuBarPresenter;
 	}
 	
-	public ProcessMainContentPresenter getProcessMainContentPresenter() {
-		if (processMainContentPresenter == null) {
-			ProcessMainContentView processMainContentView = new ProcessMainContentView();
-			processMainContentPresenter = new ProcessMainContentPresenter(processMainContentView);
+	public ProcessConfigurePresenter getProcessConfigurePresenter() {
+		if (processConfigurePresenter == null) {
+			ProcessConfigureView processConfigureView = new ProcessConfigureView();
+			processConfigurePresenter = new ProcessConfigurePresenter(processConfigureView, getKeyboardPresenter());
 		}
-		return processMainContentPresenter;
+		return processConfigurePresenter;
+	}
+	
+	public KeyboardPresenter getKeyboardPresenter() {
+		if (keyboardPresenter == null) {
+			KeyboardView keyboardView = new KeyboardView();
+			keyboardPresenter = new KeyboardPresenter(keyboardView);
+		}
+		return keyboardPresenter;
 	}
 }

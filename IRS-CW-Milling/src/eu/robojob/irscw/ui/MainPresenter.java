@@ -5,7 +5,7 @@ public class MainPresenter {
 	private MainView view;
 	
 	private ProcessMenuBarPresenter processMenuBarPresenter;
-	private ProcessMainContentPresenter processMainContentPresenter;
+	private ProcessConfigurePresenter processConfigurePresenter;
 		
 	public MainPresenter(MainView view) {
 		this.view = view;
@@ -16,13 +16,13 @@ public class MainPresenter {
 		this.processMenuBarPresenter = processMenuBarPresenter;
 	}
 	
-	public void setProcessMainContentPresenter(ProcessMainContentPresenter processMainContentPresenter) {
-		this.processMainContentPresenter = processMainContentPresenter;
+	public void setProcessMainContentPresenter(ProcessConfigurePresenter processConfigurePresenter) {
+		this.processConfigurePresenter = processConfigurePresenter;
 	}
 	
 	public void showProcessView() {
 		view.setHeader(processMenuBarPresenter.getView());
-		view.setContent(processMainContentPresenter.getView());
+		view.setContent(processConfigurePresenter.getView());
 	}
 	
 	public void showAdminView() {

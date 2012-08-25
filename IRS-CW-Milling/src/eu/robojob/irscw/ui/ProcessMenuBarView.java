@@ -47,25 +47,23 @@ public class ProcessMenuBarView extends ToolBar {
 		
 		selectedBtn = null;
 				
-		Image alarmsIcon = new Image(getClass().getResourceAsStream("/img/icon_alarms.png"));
 		btnAlarms = new Button();
-		btnAlarms.setGraphic(new ImageView(alarmsIcon));
 		btnAlarms.setPrefSize(BTN_WIDTH_SMALL, BTN_HEIGHT);
 		btnAlarms.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
 				presenter.showAlarmsView();
 			}
 		});
+		btnAlarms.setId("btnAlarms");
 		
-		Image adminIcon = new Image(getClass().getResourceAsStream("/img/icon_admin.png"));
 		btnAdmin = new Button();
-		btnAdmin.setGraphic(new ImageView(adminIcon));
 		btnAdmin.setPrefSize(BTN_WIDTH_SMALL, BTN_HEIGHT);
 		btnAdmin.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
 				presenter.showAdminView();
 			}
 		});
+		btnAdmin.setId("btnAdmin");
 
 		hBoxProcessMenuItems = new HBox();
 		hBoxProcessMenuItems.setSpacing(0);

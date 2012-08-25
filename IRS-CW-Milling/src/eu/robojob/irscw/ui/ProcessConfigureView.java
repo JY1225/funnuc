@@ -5,18 +5,18 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public class ProcessMainContentView extends VBox {
+public class ProcessConfigureView extends VBox {
 	
 	private Pane top;
 	private Pane bottom;
 	
-	private ProcessMainContentPresenter presenter;
+	private ProcessConfigurePresenter presenter;
 	
-	public ProcessMainContentView () {
+	public ProcessConfigureView () {
 		buildView();
 	}
 	
-	public void setPresenter(ProcessMainContentPresenter presenter) {
+	public void setPresenter(ProcessConfigurePresenter presenter) {
 		this.presenter = presenter;
 	}
 	

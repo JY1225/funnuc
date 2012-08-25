@@ -3,6 +3,7 @@ package eu.robojob.irscw;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import org.apache.log4j.Logger;
 
@@ -26,6 +27,10 @@ public class RoboSoft extends Application {
 		scene.getStylesheets().add("style.css");
 		stage.setScene(scene);
 		stage.setTitle("RoboSoft");
+		stage.centerOnScreen();
+		stage.setResizable(false);
+		stage.setIconified(false);
+		stage.initStyle(StageStyle.UNDECORATED);
 		stage.show();
 	}
 }

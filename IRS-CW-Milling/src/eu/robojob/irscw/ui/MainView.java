@@ -8,6 +8,7 @@ public class MainView extends BorderPane {
 	private MainPresenter presenter;
 	
 	public MainView() {
+		this.getStyleClass().add("main");
 	}
 
 	public void setHeader(Node header) {

@@ -1,10 +1,14 @@
+.main {
+	-fx-background-color: #ededed;
+}
+
 .tool-bar {
 	-fx-background-color: 
-		linear-gradient(#bababa 0%, #636363 100%),
 		#343434,
+		linear-gradient(#bababa 0%, #696969 100%),
 		linear-gradient(#858585 0%, #4d4f53 100%);
-		-fx-background-insets: 0 0 1 0, 1 0 0 0, 1 0 1 0;
-	-fx-effect: dropshadow(gaussian, #111111, 8, 0, 0, 1);
+		-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 0;
+	-fx-effect: dropshadow(gaussian, #111111, 10, 0, 0, 1);
 }
 
 .button {
@@ -22,7 +26,6 @@
 	
 	-fx-font-family: "Helvetica";
 	-fx-font-weight: bold;
-	
 }
 
 .button Text {
@@ -62,4 +65,17 @@
 .selected Text {
 	-fx-effect: dropshadow(gaussian, #016ee7, 25, 0, 0, 0);
 	-fx-fill: linear-gradient(#7dffff 0%, #05a2f1 100%);
+}
+
+
+#btnAlarms {
+	-fx-background-image: url('img/icon_alarms.png');
+	-fx-background-image-repeat: no-repeat;
+	-fx-background-image-position: center;
+}
+
+#btnAdmin {
+	-fx-background-image: url('img/icon_admin.png');
+	-fx-background-image-repeat: no-repeat;
+	-fx-background-image-position: center;
 }
