@@ -1,29 +1,32 @@
 package eu.robojob.irscw.ui.process;
 
+import javafx.scene.control.TextField;
+
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.ui.KeyboardParentPresenter;
 import eu.robojob.irscw.ui.KeyboardPresenter;
 
-public class ProcessConfigurePresenter implements KeyboardParentPresenter {
+public class ConfigurePresenter implements KeyboardParentPresenter {
 
-	private static Logger logger = Logger.getLogger(ProcessConfigurePresenter.class);
+	private static Logger logger = Logger.getLogger(ConfigurePresenter.class);
 	
-	private ProcessConfigureView view;
+	private ConfigureView view;
 	
 	private KeyboardPresenter keyboardPresenter;
+	private ProcessConfigurationPresenter processConfigurationPresenter;
 	
 	private boolean keyboardActive;
 	
-	public ProcessConfigurePresenter(ProcessConfigureView view, KeyboardPresenter keyboardPresenter) {
+	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, ProcessConfigurationPresenter processConfigurationPresenter) {
 		this.view = view;
 		this.keyboardPresenter = keyboardPresenter;
+		this.processConfigurationPresenter = processConfigurationPresenter;
 		view.setPresenter(this);
 		keyboardActive = false;
-		activateKeyoard();
 	}
 	
-	public ProcessConfigureView getView() {
+	public ConfigureView getView() {
 		return view;
 	}
 	
@@ -43,9 +46,12 @@ public class ProcessConfigurePresenter implements KeyboardParentPresenter {
 		
 	}
 	
-	public void activateKeyoard() {
-		view.addNodeToTop(keyboardPresenter.getView());
-		keyboardActive = true;
+	public void activateKeyoard(TextField textfield) {
+		keyboardPresenter.setTargetTextInput(textfield);
+		if (!keyboardActive) {
+			view.addNodeToTop(keyboardPresenter.getView());
+			keyboardActive = true;
+		}
 	}
 	
 	@Override

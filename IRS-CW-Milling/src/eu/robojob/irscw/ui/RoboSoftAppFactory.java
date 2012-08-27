@@ -1,41 +1,43 @@
 package eu.robojob.irscw.ui;
 
-import eu.robojob.irscw.ui.process.ProcessConfigurePresenter;
-import eu.robojob.irscw.ui.process.ProcessConfigureView;
-import eu.robojob.irscw.ui.process.ProcessMenuBarPresenter;
-import eu.robojob.irscw.ui.process.ProcessMenuBarView;
+import eu.robojob.irscw.ui.process.ConfigurePresenter;
+import eu.robojob.irscw.ui.process.ConfigureView;
+import eu.robojob.irscw.ui.process.MenuBarPresenter;
+import eu.robojob.irscw.ui.process.MenuBarView;
+import eu.robojob.irscw.ui.process.ProcessConfigurationPresenter;
 
 public class RoboSoftAppFactory {
 
 	private MainPresenter mainPresenter;
-	private ProcessMenuBarPresenter processMenuBarPresenter;
-	private ProcessConfigurePresenter processConfigurePresenter;
+	private MenuBarPresenter menuBarPresenter;
+	private ConfigurePresenter configurePresenter;
 	private KeyboardPresenter keyboardPresenter;
+	private ProcessConfigurationPresenter processConfigurationPresenter;
 	
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
 			MainView mainView = new MainView();
 			mainPresenter = new MainPresenter(mainView);
-			mainPresenter.setProcessMainContentPresenter(getProcessConfigurePresenter());
-			mainPresenter.setProcessMenuBarPresenter(getProcessMenuBarPresenter());
+			mainPresenter.setProcessMainContentPresenter(getConfigurePresenter());
+			mainPresenter.setProcessMenuBarPresenter(getMenuBarPresenter());
 		}
 		return mainPresenter;
 	}
 	
-	public ProcessMenuBarPresenter getProcessMenuBarPresenter() {
-		if (processMenuBarPresenter == null) {
-			ProcessMenuBarView processMenuBarView = new ProcessMenuBarView();
-			processMenuBarPresenter = new ProcessMenuBarPresenter(processMenuBarView, getProcessConfigurePresenter(), getMainPresenter());
+	public MenuBarPresenter getMenuBarPresenter() {
+		if (menuBarPresenter == null) {
+			MenuBarView processMenuBarView = new MenuBarView();
+			menuBarPresenter = new MenuBarPresenter(processMenuBarView, getConfigurePresenter(), getMainPresenter());
 		}
-		return processMenuBarPresenter;
+		return menuBarPresenter;
 	}
 	
-	public ProcessConfigurePresenter getProcessConfigurePresenter() {
-		if (processConfigurePresenter == null) {
-			ProcessConfigureView processConfigureView = new ProcessConfigureView();
-			processConfigurePresenter = new ProcessConfigurePresenter(processConfigureView, getKeyboardPresenter());
+	public ConfigurePresenter getConfigurePresenter() {
+		if (configurePresenter == null) {
+			ConfigureView processConfigureView = new ConfigureView();
+			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getProcessConfigurationPresenter());
 		}
-		return processConfigurePresenter;
+		return configurePresenter;
 	}
 	
 	public KeyboardPresenter getKeyboardPresenter() {
@@ -44,5 +46,12 @@ public class RoboSoftAppFactory {
 			keyboardPresenter = new KeyboardPresenter(keyboardView);
 		}
 		return keyboardPresenter;
+	}
+	
+	public ProcessConfigurationPresenter getProcessConfigurationPresenter() {
+		if (processConfigurationPresenter == null) {
+			//ProcessConfigurationView processConfigurationView = new 
+		}
+		return processConfigurationPresenter;
 	}
 }

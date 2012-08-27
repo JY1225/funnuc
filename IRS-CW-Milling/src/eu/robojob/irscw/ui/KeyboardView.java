@@ -25,6 +25,7 @@ public class KeyboardView extends GridPane {
 		buildView();
 	}
 	
+	//TODO refactor this method so it uses counters for rows and columns
 	private void buildView() {
 			
 		gridPane = new GridPane();

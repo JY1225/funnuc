@@ -7,23 +7,23 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-public class ProcessConfigureView extends VBox {
+public class ConfigureView extends VBox {
 	
 	private StackPane top;
 	private VBox bottom;
 	private StackPane bottomLeft;
 	private Pane bottomRight;
 	
-	private ProcessConfigurePresenter presenter;
+	private ConfigurePresenter presenter;
 	
 	private static final int HEIGHT_TOP = 251;
 	private static final int WIDTH = 800;
 	
-	public ProcessConfigureView () {
+	public ConfigureView () {
 		buildView();
 	}
 	
-	public void setPresenter(ProcessConfigurePresenter presenter) {
+	public void setPresenter(ConfigurePresenter presenter) {
 		this.presenter = presenter;
 	}
 	

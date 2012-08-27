@@ -1,25 +1,25 @@
 package eu.robojob.irscw.ui;
 
-import eu.robojob.irscw.ui.process.ProcessConfigurePresenter;
-import eu.robojob.irscw.ui.process.ProcessMenuBarPresenter;
+import eu.robojob.irscw.ui.process.ConfigurePresenter;
+import eu.robojob.irscw.ui.process.MenuBarPresenter;
 
 public class MainPresenter {
 
 	private MainView view;
 	
-	private ProcessMenuBarPresenter processMenuBarPresenter;
-	private ProcessConfigurePresenter processConfigurePresenter;
+	private MenuBarPresenter processMenuBarPresenter;
+	private ConfigurePresenter processConfigurePresenter;
 		
 	public MainPresenter(MainView view) {
 		this.view = view;
 		view.setPresenter(this);
 	}
 	
-	public void setProcessMenuBarPresenter(ProcessMenuBarPresenter processMenuBarPresenter) {
+	public void setProcessMenuBarPresenter(MenuBarPresenter processMenuBarPresenter) {
 		this.processMenuBarPresenter = processMenuBarPresenter;
 	}
 	
-	public void setProcessMainContentPresenter(ProcessConfigurePresenter processConfigurePresenter) {
+	public void setProcessMainContentPresenter(ConfigurePresenter processConfigurePresenter) {
 		this.processConfigurePresenter = processConfigurePresenter;
 	}
 	

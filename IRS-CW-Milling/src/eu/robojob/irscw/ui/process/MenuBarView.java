@@ -12,7 +12,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 import eu.robojob.irscw.util.Translator;
 
-public class ProcessMenuBarView extends ToolBar {
+public class MenuBarView extends ToolBar {
 	
 	private Button btnAlarms;
 	private Button btnAdmin;
@@ -24,7 +24,7 @@ public class ProcessMenuBarView extends ToolBar {
 	private Button btnTeach;
 	private Button btnAutomate;
 	
-	private ProcessMenuBarPresenter presenter;
+	private MenuBarPresenter presenter;
 	private Translator translator;
 	
 	private Button selectedBtn;
@@ -34,12 +34,12 @@ public class ProcessMenuBarView extends ToolBar {
 	private static final int BTN_WIDTH_SMALL = 60;
 	private static final int BTN_WIDTH_LARGE = 130;
 	
-	public ProcessMenuBarView() {
+	public MenuBarView() {
 		translator = Translator.getInstance();
 		buildView();
 	}
 	
-	public void setPresenter(ProcessMenuBarPresenter presenter) {
+	public void setPresenter(MenuBarPresenter presenter) {
 		this.presenter = presenter;
 	}
 	

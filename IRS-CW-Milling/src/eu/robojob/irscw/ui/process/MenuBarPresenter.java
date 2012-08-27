@@ -4,15 +4,15 @@ import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.ui.MainPresenter;
 
-public class ProcessMenuBarPresenter {
+public class MenuBarPresenter {
 
-	private static Logger logger = Logger.getLogger(ProcessMenuBarPresenter.class);
+	private static Logger logger = Logger.getLogger(MenuBarPresenter.class);
 	
-	private ProcessMenuBarView view;
-	private ProcessConfigurePresenter processMainContentPresenter; 
+	private MenuBarView view;
+	private ConfigurePresenter processMainContentPresenter; 
 	private MainPresenter mainPresenter;
 	
-	public ProcessMenuBarPresenter(ProcessMenuBarView processMenuBarView, ProcessConfigurePresenter processMainContentPresenter, 
+	public MenuBarPresenter(MenuBarView processMenuBarView, ConfigurePresenter processMainContentPresenter, 
 			MainPresenter mainPresenter) {
 		this.view = processMenuBarView;
 		this.processMainContentPresenter = processMainContentPresenter;
@@ -20,7 +20,7 @@ public class ProcessMenuBarPresenter {
 		processMenuBarView.setPresenter(this);
 	}
 	
-	public ProcessMenuBarView getView() {
+	public MenuBarView getView() {
 		return view;
 	}
 	
