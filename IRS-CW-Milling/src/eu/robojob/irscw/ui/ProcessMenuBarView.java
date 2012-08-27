@@ -54,6 +54,7 @@ public class ProcessMenuBarView extends ToolBar {
 				presenter.showAlarmsView();
 			}
 		});
+		btnAlarms.getStyleClass().add("header-button");
 		btnAlarms.setId("btnAlarms");
 		
 		btnAdmin = new Button();
@@ -63,6 +64,7 @@ public class ProcessMenuBarView extends ToolBar {
 				presenter.showAdminView();
 			}
 		});
+		btnAdmin.getStyleClass().add("header-button");
 		btnAdmin.setId("btnAdmin");
 
 		hBoxProcessMenuItems = new HBox();
@@ -71,7 +73,7 @@ public class ProcessMenuBarView extends ToolBar {
 		btnConfigure = new Button();
 		Text btnConfigureText = new Text(translator.getTranslation("Configure"));
 		btnConfigure.setGraphic(btnConfigureText);
-		btnConfigure.getStyleClass().add("first");
+		btnConfigure.getStyleClass().addAll("first", "header-button");
 		btnConfigure.setPrefSize(BTN_WIDTH_LARGE, BTN_HEIGHT);
 		btnConfigure.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
@@ -81,7 +83,7 @@ public class ProcessMenuBarView extends ToolBar {
 		btnTeach = new Button();
 		Text btnTeachText = new Text(translator.getTranslation("Teach"));
 		btnTeach.setGraphic(btnTeachText);
-		btnTeach.getStyleClass().add("bar");
+		btnTeach.getStyleClass().addAll("bar", "header-button");
 		btnTeach.setPrefSize(BTN_WIDTH_LARGE, BTN_HEIGHT);
 		btnTeach.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
@@ -92,7 +94,7 @@ public class ProcessMenuBarView extends ToolBar {
 		Text btnAutomateText = new Text(translator.getTranslation("Automate"));
 		btnAutomate.setGraphic(btnAutomateText);
 		btnAutomate.setPrefSize(BTN_WIDTH_LARGE, BTN_HEIGHT);
-		btnAutomate.getStyleClass().add("last");
+		btnAutomate.getStyleClass().addAll("last", "header-button");
 		btnAutomate.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
 				presenter.showAutomateView();

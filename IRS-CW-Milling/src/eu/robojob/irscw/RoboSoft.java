@@ -24,13 +24,12 @@ public class RoboSoft extends Application {
 		MainPresenter mainPresenter = factory.getMainPresenter();
 		mainPresenter.showProcessView();
 		Scene scene = new Scene(mainPresenter.getView(), 800, 600);
-		scene.getStylesheets().add("style.css");
+		scene.getStylesheets().addAll("header-style.css", "keyboard-style.css");
 		stage.setScene(scene);
 		stage.setTitle("RoboSoft");
 		stage.centerOnScreen();
 		stage.setResizable(false);
-		stage.setIconified(false);
-		stage.initStyle(StageStyle.UNDECORATED);
+		//stage.initStyle(StageStyle.UNDECORATED);
 		stage.show();
 	}
 }

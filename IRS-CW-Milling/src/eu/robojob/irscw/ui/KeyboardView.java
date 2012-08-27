@@ -2,6 +2,8 @@ package eu.robojob.irscw.ui;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
@@ -10,10 +12,13 @@ import javafx.scene.text.Text;
 public class KeyboardView extends GridPane {
 	
 	private KeyboardPresenter presenter;
+	private GridPane gridPane;
 	
-	private static final int BTN_WIDTH = 50;
-	private static final int BTN_HEIGHT = 50;
-	private static final int SPACING = 7;
+	private static final int BTN_WIDTH = 45;
+	private static final int BTN_HEIGHT = 45;
+	private static final int SPACING = 12;
+	
+	private static final int MARGIN = 15;
 	
 	public KeyboardView() {
 		super();
@@ -21,8 +26,11 @@ public class KeyboardView extends GridPane {
 	}
 	
 	private void buildView() {
-		setHgap(SPACING);
-		setVgap(SPACING);
+			
+		gridPane = new GridPane();
+		
+		gridPane.setHgap(SPACING);
+		gridPane.setVgap(SPACING);
 		
 		addKey("Esc", KeyCode.ESCAPE, 0, 0, 1, 1, "key-escape", null);
 		addKey("1", KeyCode.DIGIT1, 1, 0, 1, 1, "key-1", null);
@@ -38,16 +46,16 @@ public class KeyboardView extends GridPane {
 		addKey(".", KeyCode.DECIMAL, 11, 0, 1, 1, "key-decimal", null);
 		
 		addKey("A", KeyCode.A, 1, 1, 1, 1, "key-A", null);
-		addKey("Z", KeyCode.B, 2, 1, 1, 1, "key-Z", null);
-		addKey("E", KeyCode.C, 3, 1, 1, 1, "key-E", null);
-		addKey("R", KeyCode.D, 4, 1, 1, 1, "key-R", null);
-		addKey("T", KeyCode.E, 5, 1, 1, 1, "key-T", null);
-		addKey("Y", KeyCode.F, 6, 1, 1, 1, "key-Y", null);
-		addKey("U", KeyCode.G, 7, 1, 1, 1, "key-U", null);
-		addKey("I", KeyCode.H, 8, 1, 1, 1, "key-I", null);
-		addKey("O", KeyCode.I, 9, 1, 1, 1, "key-O", null);
-		addKey("P", KeyCode.J, 10, 1, 1, 1, "key-P", null);
-		addKey("Clr", KeyCode.K, 11, 1, 1, 1, "key-Clr", null);
+		addKey("Z", KeyCode.Z, 2, 1, 1, 1, "key-Z", null);
+		addKey("E", KeyCode.E, 3, 1, 1, 1, "key-E", null);
+		addKey("R", KeyCode.R, 4, 1, 1, 1, "key-R", null);
+		addKey("T", KeyCode.T, 5, 1, 1, 1, "key-T", null);
+		addKey("Y", KeyCode.Y, 6, 1, 1, 1, "key-Y", null);
+		addKey("U", KeyCode.U, 7, 1, 1, 1, "key-U", null);
+		addKey("I", KeyCode.I, 8, 1, 1, 1, "key-I", null);
+		addKey("O", KeyCode.O, 9, 1, 1, 1, "key-O", null);
+		addKey("P", KeyCode.P, 10, 1, 1, 1, "key-P", null);
+		addKey("Clr", KeyCode.DELETE, 11, 1, 1, 1, "key-Clr", null);
 		
 		addKey("Q", KeyCode.Q, 1, 2, 1, 1, "key-Q", null);
 		addKey("S", KeyCode.S, 2, 2, 1, 1, "key-S", null);
@@ -59,7 +67,7 @@ public class KeyboardView extends GridPane {
 		addKey("K", KeyCode.K, 8, 2, 1, 1, "key-K", null);
 		addKey("L", KeyCode.L, 9, 2, 1, 1, "key-L", null);
 		addKey("M", KeyCode.M, 10, 2, 1, 1, "key-M", null);
-		addKey("<-", KeyCode.BACK_SPACE, 11, 2, 1, 1, "key-back-space", null);
+		addKey("←", KeyCode.BACK_SPACE, 11, 2, 1, 1, "key-back-space", null);
 		
 		addKey("-", KeyCode.MINUS, 1, 3, 1, 1, "key-minus", null);
 		addKey("_", KeyCode.UNDERSCORE, 2, 3, 1, 1, "key-underscore", null);
@@ -72,11 +80,19 @@ public class KeyboardView extends GridPane {
 		addKey("", KeyCode.SPACE, 9, 3, 2, 1, "key-space", null);
 		addKey("OK", KeyCode.ENTER, 11, 3, 1, 1, "key-OK", null);
 		
+		this.setPrefWidth(800);
+		this.getStyleClass().add("keyboard-background");
+		setAlignment(Pos.CENTER);
+		setMargin(gridPane, new Insets(MARGIN, 0, MARGIN, 0));
+		
+		this.getChildren().add(gridPane);
+		
 	}
 	
 	private void addKey(String text, KeyCode keyCode, int columnIndex, int rowIndex, int colspan, int rowspan, String id, String extraClassName) {
 		Button btn = new Button();
 		Text btnText = new Text(text);
+		btn.setId(id);
 		btn.setGraphic(btnText);
 		btn.setPrefSize((BTN_WIDTH*colspan) + (colspan-1)*SPACING, (BTN_HEIGHT*rowspan) + (rowspan-1)*SPACING);
 		btn.getStyleClass().add("keyboard-button");
@@ -84,7 +100,7 @@ public class KeyboardView extends GridPane {
 			btn.getStyleClass().add(extraClassName);
 		}
 		btn.setOnAction(new KeyboardClickedEventHandler(keyCode));
-		add(btn, columnIndex, rowIndex, colspan, rowspan);
+		gridPane.add(btn, columnIndex, rowIndex, colspan, rowspan);
 	}
 	
 	public void setPresenter(KeyboardPresenter presenter) {
