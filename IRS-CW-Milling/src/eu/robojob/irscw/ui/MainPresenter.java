@@ -1,5 +1,8 @@
 package eu.robojob.irscw.ui;
 
+import eu.robojob.irscw.ui.process.ProcessConfigurePresenter;
+import eu.robojob.irscw.ui.process.ProcessMenuBarPresenter;
+
 public class MainPresenter {
 
 	private MainView view;

@@ -1,6 +1,9 @@
-package eu.robojob.irscw.ui;
+package eu.robojob.irscw.ui.process;
 
 import org.apache.log4j.Logger;
+
+import eu.robojob.irscw.ui.KeyboardParentPresenter;
+import eu.robojob.irscw.ui.KeyboardPresenter;
 
 public class ProcessConfigurePresenter implements KeyboardParentPresenter {
 
@@ -49,7 +52,7 @@ public class ProcessConfigurePresenter implements KeyboardParentPresenter {
 	public void closeKeyboard() {
 		if (keyboardActive) {
 			// we assume the keyboard view is always on top
-			view.removeNode(keyboardPresenter.getView());
+			view.removeNodeFromTop(keyboardPresenter.getView());
 		} else {
 			logger.error("Keyboard was already de-activated");
 		}

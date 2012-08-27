@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui;
+package eu.robojob.irscw.ui.process;
 
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;

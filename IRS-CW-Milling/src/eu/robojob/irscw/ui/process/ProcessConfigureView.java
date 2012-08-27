@@ -1,0 +1,79 @@
+package eu.robojob.irscw.ui.process;
+
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+
+public class ProcessConfigureView extends VBox {
+	
+	private StackPane top;
+	private VBox bottom;
+	private StackPane bottomLeft;
+	private Pane bottomRight;
+	
+	private ProcessConfigurePresenter presenter;
+	
+	private static final int HEIGHT_TOP = 251;
+	private static final int WIDTH = 800;
+	
+	public ProcessConfigureView () {
+		buildView();
+	}
+	
+	public void setPresenter(ProcessConfigurePresenter presenter) {
+		this.presenter = presenter;
+	}
+	
+	protected void buildView() {
+		this.setFillWidth(true);
+		this.setAlignment(Pos.CENTER);
+		
+		top = new StackPane();
+		getChildren().add(top);
+		top.setPrefHeight(HEIGHT_TOP);
+		top.setPrefWidth(WIDTH);
+		
+		bottom = new VBox();
+		getChildren().add(bottom);
+		VBox.setVgrow(bottom, Priority.ALWAYS);
+		
+		bottomLeft = new StackPane();
+		bottom.getChildren().add(bottomLeft);
+		
+		bottomRight = new Pane();
+		bottom.getChildren().add(bottomRight);
+	}
+
+	public void addNodeToTop(Node node) {
+		this.top.getChildren().add(node);
+	}
+	
+	public void removeNodeFromTop(Node node) {
+		this.top.getChildren().remove(node);
+	}
+	
+	public void setTop(Node node) {
+		this.top.getChildren().clear();
+		this.top.getChildren().add(node);
+	}
+	
+	public void addNodeToBottomLeft(Node node) {
+		this.bottomLeft.getChildren().add(node);
+	}
+	
+	public void removeNodeFromBottomLef(Node node) {
+		this.bottomLeft.getChildren().remove(node);
+	}
+	
+	public void setBottomLeft(Node bottom) {
+		this.bottomLeft.getChildren().clear();
+		this.bottomLeft.getChildren().add(bottom);
+	}
+	
+	public void setBottomRight(Node node) {
+		this.bottomRight.getChildren().add(node);
+	}
+}
