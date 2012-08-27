@@ -1,14 +1,12 @@
 package eu.robojob.irscw.ui.process;
 
-import javafx.scene.control.TextField;
-
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.ui.KeyboardParentPresenter;
 import eu.robojob.irscw.ui.KeyboardPresenter;
-import eu.robojob.irscw.ui.MainPresenter;
+import eu.robojob.irscw.ui.controls.TextFieldFocussedListener;
 
-public class ConfigurePresenter implements KeyboardParentPresenter {
+public class ConfigurePresenter implements TextFieldFocussedListener, KeyboardParentPresenter {
 
 	private static Logger logger = Logger.getLogger(ConfigurePresenter.class);
 		
@@ -50,14 +48,20 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 		
 	}
 	
-	public void activateKeyoard(TextField textfield) {
-		keyboardPresenter.setTargetTextInput(textfield);
+	@Override
+	public void textFieldFocussed(eu.robojob.irscw.ui.controls.TextField textField) {
+		keyboardPresenter.setTargetTextInput(textField);
 		if (!keyboardActive) {
 			view.addNodeToTop(keyboardPresenter.getView());
 			keyboardActive = true;
 		}
 	}
-	
+
+	@Override
+	public void textFieldLostFocus(eu.robojob.irscw.ui.controls.TextField textField) {
+		closeKeyboard();
+	}
+
 	@Override
 	public void closeKeyboard() {
 		logger.debug("Close keyboard");
@@ -70,4 +74,5 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 		}
 		keyboardActive = false;
 	}
+
 }

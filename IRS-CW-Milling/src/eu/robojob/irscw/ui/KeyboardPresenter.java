@@ -6,6 +6,8 @@ import javafx.scene.input.KeyCode;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.ui.controls.TextFieldFocussedListener;
+
 public class KeyboardPresenter {
 
 	private KeyboardView view;
