@@ -3,14 +3,14 @@ package eu.robojob.irscw.ui;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public class ProcessConfigureView extends VBox {
 	
-	private GridPane top;
-	private GridPane bottom;
+	private StackPane top;
+	private VBox bottom;
 	
 	private ProcessConfigurePresenter presenter;
 	
@@ -26,23 +26,24 @@ public class ProcessConfigureView extends VBox {
 		this.setFillWidth(true);
 		this.setAlignment(Pos.CENTER);
 		
-		top = new GridPane();
+		top = new StackPane();
 		getChildren().add(top);
 		
-		bottom = new GridPane();
+		bottom = new VBox();
 		getChildren().add(bottom);
 		VBox.setVgrow(bottom, Priority.ALWAYS);
 	}
 
-	public void setTop(Node top) {
+	public void addNodeToTop(Node top) {
 		this.top.setPrefWidth(800);
-		this.top.getStyleClass().add("yellow");
-		this.top.getChildren().clear();
 		this.top.getChildren().add(top);
 	}
 	
+	public void removeNode(Node node) {
+		this.top.getChildren().remove(node);
+	}
+	
 	public void setBottom(Node bottom) {
-		this.bottom.getChildren().clear();
 		this.bottom.getChildren().clear();
 		this.bottom.getChildren().add(bottom);
 	}
