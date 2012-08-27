@@ -73,7 +73,7 @@ public class KeyboardPresenter {
 				if (string.length() >= 1) {
 				 newString = string.substring(0, caretPos);
 				}
-				newString = newString + keyCode.toString();
+				newString = newString + getChar(keyCode);
 				if (target.getCaretPosition() < string.length()) {
 					newString = newString + string.substring(caretPos);
 				}
@@ -82,6 +82,20 @@ public class KeyboardPresenter {
 				target.forward();
 				break;
 		}
+	}
+	
+	public char getChar(KeyCode keyCode) {
+		char returnChar = keyCode.toString().charAt(keyCode.toString().length()-1);
+		if (keyCode.equals(KeyCode.UNDERSCORE)) {
+			returnChar = '_';
+		} else if (keyCode.equals(KeyCode.DECIMAL)) {
+			returnChar = '.';
+		} else if (keyCode.equals(KeyCode.MINUS)) {
+			returnChar = '-';
+		} else if (keyCode.equals(KeyCode.SPACE)) {
+			returnChar = ' ';
+		}
+		return returnChar;
 	}
 	
 	public KeyboardView getView() {
