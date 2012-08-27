@@ -1,5 +1,7 @@
 package eu.robojob.irscw.ui;
 
+import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
+import eu.robojob.irscw.ui.keyboard.KeyboardView;
 import eu.robojob.irscw.ui.process.ConfigurePresenter;
 import eu.robojob.irscw.ui.process.ConfigureView;
 import eu.robojob.irscw.ui.process.MenuBarPresenter;

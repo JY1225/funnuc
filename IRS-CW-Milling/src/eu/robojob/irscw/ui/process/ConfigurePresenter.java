@@ -2,11 +2,11 @@ package eu.robojob.irscw.ui.process;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.ui.KeyboardParentPresenter;
-import eu.robojob.irscw.ui.KeyboardPresenter;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.keyboard.KeyboardParentPresenter;
+import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 
-public class ConfigurePresenter implements TextFieldListener, KeyboardParentPresenter {
+public class ConfigurePresenter implements KeyboardParentPresenter {
 
 	private static Logger logger = Logger.getLogger(ConfigurePresenter.class);
 		
@@ -48,7 +48,6 @@ public class ConfigurePresenter implements TextFieldListener, KeyboardParentPres
 		
 	}
 	
-	@Override
 	public void textFieldFocussed(eu.robojob.irscw.ui.controls.TextField textField) {
 		keyboardPresenter.setTargetTextInput(textField);
 		if (!keyboardActive) {
@@ -58,21 +57,14 @@ public class ConfigurePresenter implements TextFieldListener, KeyboardParentPres
 	}
 
 	@Override
-	public void textFieldLostFocus(eu.robojob.irscw.ui.controls.TextField textField) {
-		closeKeyboard();
-	}
-
-	@Override
-	public void closeKeyboard() {
-		logger.debug("Close keyboard");
+	public synchronized void closeKeyboard() {
 		if (keyboardActive) {
+			keyboardActive = false;
+			logger.debug("Close keyboard");
 			// we assume the keyboard view is always on top
 			view.removeNodeFromTop(keyboardPresenter.getView());
 			view.requestFocus();
-		} else {
-			logger.error("Keyboard was already de-activated");
-		}
-		keyboardActive = false;
+		} 
 	}
 
 }

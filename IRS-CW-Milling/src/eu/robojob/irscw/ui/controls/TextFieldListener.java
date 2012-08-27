@@ -1,6 +1,6 @@
 package eu.robojob.irscw.ui.controls;
 
-import eu.robojob.irscw.ui.KeyboardParentPresenter;
+import eu.robojob.irscw.ui.keyboard.KeyboardParentPresenter;
 
 
 public interface TextFieldListener extends KeyboardParentPresenter {

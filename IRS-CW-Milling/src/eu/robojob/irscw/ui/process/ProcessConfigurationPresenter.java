@@ -32,7 +32,7 @@ public class ProcessConfigurationPresenter implements TextFieldListener {
 
 	@Override
 	public void textFieldLostFocus(eu.robojob.irscw.ui.controls.TextField textField) {
-		parent.textFieldLostFocus(textField);
+		parent.closeKeyboard();
 	}
 
 	@Override

@@ -1,12 +1,9 @@
-package eu.robojob.irscw.ui;
+package eu.robojob.irscw.ui.keyboard;
 
-import javafx.scene.control.FocusModel;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCode;
 
 import org.apache.log4j.Logger;
-
-import eu.robojob.irscw.ui.controls.TextFieldListener;
 
 public class KeyboardPresenter {
 
