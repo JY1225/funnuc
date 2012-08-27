@@ -94,6 +94,12 @@ public class KeyboardPresenter {
 			returnChar = '-';
 		} else if (keyCode.equals(KeyCode.SPACE)) {
 			returnChar = ' ';
+		} else if (keyCode.equals(KeyCode.COLORED_KEY_0)) {
+			return 'Ü';
+		} else if (keyCode.equals(KeyCode.COLORED_KEY_1)) {
+			return 'Ö';
+		} else if (keyCode.equals(KeyCode.COLORED_KEY_2)) {
+			return 'Ä';
 		}
 		return returnChar;
 	}

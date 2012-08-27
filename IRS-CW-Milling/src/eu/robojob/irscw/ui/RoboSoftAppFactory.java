@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui;
 
 import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.KeyboardView;
+import eu.robojob.irscw.ui.keyboard.KeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.process.ConfigurePresenter;
 import eu.robojob.irscw.ui.process.ConfigureView;
 import eu.robojob.irscw.ui.process.MenuBarPresenter;
@@ -45,7 +46,7 @@ public class RoboSoftAppFactory {
 	
 	public KeyboardPresenter getKeyboardPresenter() {
 		if (keyboardPresenter == null) {
-			KeyboardView keyboardView = new KeyboardView();
+			KeyboardView keyboardView = new KeyboardView(KeyboardType.QWERTY_DE);
 			keyboardPresenter = new KeyboardPresenter(keyboardView);
 		}
 		return keyboardPresenter;
