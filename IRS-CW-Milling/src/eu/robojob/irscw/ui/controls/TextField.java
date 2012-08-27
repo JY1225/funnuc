@@ -2,23 +2,43 @@ package eu.robojob.irscw.ui.controls;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 public abstract class TextField extends javafx.scene.control.TextField {
 
-	protected TextFieldFocussedListener focusListener;
+	protected TextFieldListener listener;
+	private String originalText;
 	
 	public TextField() {
 		this.focusedProperty().addListener(new TextFieldFocusListener(this));
+		this.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode().equals(KeyCode.ENTER)) {
+					listener.closeKeyboard();
+				} else {
+					if (event.getCode().equals(KeyCode.ESCAPE)) {
+						if (originalText.equals(null)) {
+							throw new IllegalStateException("No original text value was set.");
+						} 
+						setText(originalText);
+						listener.closeKeyboard();
+					}
+				}
+			}
+			
+		});
 	}
 	
-	public void setFocusListener(TextFieldFocussedListener focusListener) {
-		this.focusListener = focusListener;
+	public void setFocusListener(TextFieldListener listener) {
+		this.listener = listener;
 	}
 	
 	@Override
 	public void replaceText(int start, int end, String text) {
-		// If the replaced text would end up being invalid, then simply
-		// ignore this call!
 		if (text.matches(getMatchingExpression())) {
 			super.replaceText(start, end, text);
 		}
@@ -45,12 +65,12 @@ public abstract class TextField extends javafx.scene.control.TextField {
 		@Override
 		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 			if (newValue) {
-				focusListener.textFieldFocussed(textField);
+				originalText = textField.getText();
+				listener.textFieldFocussed(textField);
 			} else {
-				focusListener.textFieldLostFocus(textField);
+				listener.textFieldLostFocus(textField);
 			}
 		}
-		
 	}
 
 }

@@ -4,9 +4,9 @@ import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.ui.KeyboardParentPresenter;
 import eu.robojob.irscw.ui.KeyboardPresenter;
-import eu.robojob.irscw.ui.controls.TextFieldFocussedListener;
+import eu.robojob.irscw.ui.controls.TextFieldListener;
 
-public class ConfigurePresenter implements TextFieldFocussedListener, KeyboardParentPresenter {
+public class ConfigurePresenter implements TextFieldListener, KeyboardParentPresenter {
 
 	private static Logger logger = Logger.getLogger(ConfigurePresenter.class);
 		

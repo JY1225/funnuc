@@ -1,9 +1,9 @@
 package eu.robojob.irscw.ui.process;
 
-import eu.robojob.irscw.ui.controls.TextFieldFocussedListener;
+import eu.robojob.irscw.ui.controls.TextFieldListener;
 import javafx.scene.control.TextField;
 
-public class ProcessConfigurationPresenter implements TextFieldFocussedListener {
+public class ProcessConfigurationPresenter implements TextFieldListener {
 
 	private ProcessConfigurationView view;
 	private ConfigurePresenter parent;
@@ -33,5 +33,10 @@ public class ProcessConfigurationPresenter implements TextFieldFocussedListener 
 	@Override
 	public void textFieldLostFocus(eu.robojob.irscw.ui.controls.TextField textField) {
 		parent.textFieldLostFocus(textField);
+	}
+
+	@Override
+	public void closeKeyboard() {
+		parent.closeKeyboard();
 	}
 }
