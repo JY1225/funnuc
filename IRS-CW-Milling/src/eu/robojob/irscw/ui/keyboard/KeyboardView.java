@@ -30,30 +30,15 @@ public class KeyboardView extends GridPane {
 		super();
 		this.type = type;
 			
-		gridPane = new GridPane();
-		
-		gridPane.setHgap(SPACING);
-		gridPane.setVgap(SPACING);
-		
-		switch(type) {
-			case AZERTY:
-				buildViewAzerty();
-				break;
-			case QWERTY:
-				buildViewQwerty();
-				break;
-			case QWERTY_DE:
-				buildViewQwertyDE();
-				break;
-			default:
-				buildViewAzerty();
-				break;
-		}
-		buildGeneral();
+		buildKeyboard();
 	}
 	
-	//TODO refactor this method so it uses counters for rows and columns
+	public void changeType(KeyboardType type) {
+		this.type = type;
+		buildKeyboard();
+	}
 	
+	//TODO these methods could perhaps be simplified!
 	private void buildViewQwertyDE() {
 		int row = 0;
 		int column = 0;
@@ -243,7 +228,28 @@ public class KeyboardView extends GridPane {
 		
 	}
 	
-	private void buildGeneral() {
+	private void buildKeyboard() {
+		this.getChildren().clear();
+		
+		gridPane = new GridPane();
+		
+		gridPane.setHgap(SPACING);
+		gridPane.setVgap(SPACING);
+		
+		switch(type) {
+			case AZERTY:
+				buildViewAzerty();
+				break;
+			case QWERTY:
+				buildViewQwerty();
+				break;
+			case QWERTY_DE:
+				buildViewQwertyDE();
+				break;
+			default:
+				buildViewAzerty();
+				break;
+		}
 		this.setPrefWidth(800);
 		this.getStyleClass().add("keyboard-background");
 		setAlignment(Pos.CENTER);
