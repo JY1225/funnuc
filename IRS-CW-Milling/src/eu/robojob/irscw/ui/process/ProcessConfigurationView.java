@@ -10,6 +10,7 @@ public class ProcessConfigurationView extends GridPane {
 	private ProcessConfigurationPresenter presenter;
 	
 	private TextField name;
+	private TextField test;
 	
 	public ProcessConfigurationView() {
 		buildView();
@@ -19,6 +20,9 @@ public class ProcessConfigurationView extends GridPane {
 		name = new TextField();
 		name.focusedProperty().addListener(new TextFieldFocusListener(name));
 		add(name, 0, 0);
+		test = new TextField();
+		test.focusedProperty().addListener(new TextFieldFocusListener(test));
+		add(test, 0, 1);
 	}
 	
 	public void setPresenter(ProcessConfigurationPresenter presenter) {
@@ -42,6 +46,8 @@ public class ProcessConfigurationView extends GridPane {
 		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 			if (newValue) {
 				presenter.textFieldFocussed(textField);
+			} else {
+				presenter.textFieldLostFocus();
 			}
 		}
 		

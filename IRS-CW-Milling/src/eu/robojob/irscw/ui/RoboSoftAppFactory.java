@@ -5,6 +5,7 @@ import eu.robojob.irscw.ui.process.ConfigureView;
 import eu.robojob.irscw.ui.process.MenuBarPresenter;
 import eu.robojob.irscw.ui.process.MenuBarView;
 import eu.robojob.irscw.ui.process.ProcessConfigurationPresenter;
+import eu.robojob.irscw.ui.process.ProcessConfigurationView;
 
 public class RoboSoftAppFactory {
 
@@ -50,7 +51,8 @@ public class RoboSoftAppFactory {
 	
 	public ProcessConfigurationPresenter getProcessConfigurationPresenter() {
 		if (processConfigurationPresenter == null) {
-			//ProcessConfigurationView processConfigurationView = new 
+			ProcessConfigurationView processConfigurationView = new ProcessConfigurationView();
+			processConfigurationPresenter = new ProcessConfigurationPresenter(processConfigurationView);
 		}
 		return processConfigurationPresenter;
 	}

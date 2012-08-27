@@ -1,5 +1,6 @@
 package eu.robojob.irscw.ui;
 
+import javafx.scene.control.FocusModel;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCode;
 
@@ -37,6 +38,8 @@ public class KeyboardPresenter {
 					throw new IllegalStateException("No original text value was set.");
 				}
 				target.setText(originalText);
+				target.selectAll();
+				target.forward();
 				parentPresenter.closeKeyboard();
 				break;
 			case ENTER:
@@ -44,15 +47,21 @@ public class KeyboardPresenter {
 				break;
 			case DELETE:
 				target.setText("");
+				target.selectAll();
+				target.forward();
 				break;
 			case BACK_SPACE:
 				String s = target.getText();
 				if (s.length() >= 1) {
 					target.setText(s.substring(0, s.length() - 1));
+					target.selectAll();
+					target.forward();
 				}
 				break;
 			default:
 				target.setText(target.getText() + keyCode.toString());
+				target.selectAll();
+				target.forward();
 				break;
 		}
 	}

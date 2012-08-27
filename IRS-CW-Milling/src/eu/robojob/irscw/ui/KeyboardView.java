@@ -95,6 +95,7 @@ public class KeyboardView extends GridPane {
 		Text btnText = new Text(text);
 		btn.setId(id);
 		btn.setGraphic(btnText);
+		btn.focusTraversableProperty().set(false);
 		btn.setPrefSize((BTN_WIDTH*colspan) + (colspan-1)*SPACING, (BTN_HEIGHT*rowspan) + (rowspan-1)*SPACING);
 		btn.getStyleClass().add("keyboard-button");
 		if (extraClassName != null) {

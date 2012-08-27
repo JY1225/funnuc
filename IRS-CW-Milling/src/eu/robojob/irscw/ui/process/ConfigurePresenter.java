@@ -6,11 +6,12 @@ import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.ui.KeyboardParentPresenter;
 import eu.robojob.irscw.ui.KeyboardPresenter;
+import eu.robojob.irscw.ui.MainPresenter;
 
 public class ConfigurePresenter implements KeyboardParentPresenter {
 
 	private static Logger logger = Logger.getLogger(ConfigurePresenter.class);
-	
+		
 	private ConfigureView view;
 	
 	private KeyboardPresenter keyboardPresenter;
@@ -21,8 +22,11 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, ProcessConfigurationPresenter processConfigurationPresenter) {
 		this.view = view;
 		this.keyboardPresenter = keyboardPresenter;
+		keyboardPresenter.setParentPresenter(this);
 		this.processConfigurationPresenter = processConfigurationPresenter;
+		processConfigurationPresenter.setParent(this);
 		view.setPresenter(this);
+		showConfigureView();
 		keyboardActive = false;
 	}
 	
@@ -35,7 +39,7 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 	}
 	
 	public void showConfigureView() {
-		
+		view.setBottomRight(processConfigurationPresenter.getView());
 	}
 	
 	public void showTeachView() {
@@ -56,9 +60,11 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 	
 	@Override
 	public void closeKeyboard() {
+		logger.debug("Close keyboard");
 		if (keyboardActive) {
 			// we assume the keyboard view is always on top
 			view.removeNodeFromTop(keyboardPresenter.getView());
+			view.requestFocus();
 		} else {
 			logger.error("Keyboard was already de-activated");
 		}

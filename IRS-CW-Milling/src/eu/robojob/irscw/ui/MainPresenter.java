@@ -23,8 +23,9 @@ public class MainPresenter {
 		this.processConfigurePresenter = processConfigurePresenter;
 	}
 	
-	public void showProcessView() {
+	public void showProcessConfigureView() {
 		view.setHeader(processMenuBarPresenter.getView());
+		processMenuBarPresenter.showConfigureView();
 		view.setContent(processConfigurePresenter.getView());
 	}
 	

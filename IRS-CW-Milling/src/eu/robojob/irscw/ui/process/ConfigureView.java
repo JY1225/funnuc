@@ -74,6 +74,7 @@ public class ConfigureView extends VBox {
 	}
 	
 	public void setBottomRight(Node node) {
+		this.bottomRight.getChildren().clear();
 		this.bottomRight.getChildren().add(node);
 	}
 }

@@ -22,7 +22,7 @@ public class RoboSoft extends Application {
 	public void start(Stage stage) throws Exception {
 		RoboSoftAppFactory factory = new RoboSoftAppFactory();
 		MainPresenter mainPresenter = factory.getMainPresenter();
-		mainPresenter.showProcessView();
+		mainPresenter.showProcessConfigureView();
 		Scene scene = new Scene(mainPresenter.getView(), 800, 600);
 		scene.getStylesheets().addAll("header-style.css", "keyboard-style.css");
 		stage.setScene(scene);
