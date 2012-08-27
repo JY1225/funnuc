@@ -30,7 +30,8 @@ public class KeyboardPresenter {
 		if (target == null) {
 			throw new IllegalStateException("Target was not set.");
 		}
-		
+		int caretPos = target.getCaretPosition();
+		String newString = "";
 		switch(keyCode) {
 			case ESCAPE: 
 				if (originalText.equals(null)) {
@@ -51,15 +52,33 @@ public class KeyboardPresenter {
 				break;
 			case BACK_SPACE:
 				String s = target.getText();
-				if (s.length() >= 1) {
-					target.setText(s.substring(0, s.length() - 1));
-					target.selectAll();
+				if (caretPos > 0) {
+					if (s.length() >= 1) {
+						newString = s.substring(0, caretPos -1);
+						if (caretPos < (s.length())) {
+							newString = newString + s.substring(caretPos, s.length());
+						}
+						target.setText(newString);
+					}
+				}
+				if (caretPos > 1) {
+					target.selectPositionCaret(caretPos - 1);
 					target.forward();
+				} else {
+					target.backward();
 				}
 				break;
 			default:
-				target.setText(target.getText() + keyCode.toString());
-				target.selectAll();
+				String string = target.getText();
+				if (string.length() >= 1) {
+				 newString = string.substring(0, caretPos);
+				}
+				newString = newString + keyCode.toString();
+				if (target.getCaretPosition() < string.length()) {
+					newString = newString + string.substring(caretPos);
+				}
+				target.setText(newString);
+				target.selectPositionCaret(caretPos + 1);
 				target.forward();
 				break;
 		}
