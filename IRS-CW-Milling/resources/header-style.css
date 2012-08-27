@@ -58,7 +58,7 @@
 		linear-gradient(#494949 0%, #46474a 100%);
 	-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);
 }
-
+/* 
 .header-button:pressed Text{
 	-fx-effect: dropshadow(gaussian, #016ee7, 25, 0, 0, 0);
 	-fx-fill: linear-gradient(#7dffff 0%, #05a2f1 100%);
@@ -68,7 +68,7 @@
 	-fx-effect: dropshadow(gaussian, #016ee7, 25, 0, 0, 0);
 	-fx-fill: linear-gradient(#7dffff 0%, #05a2f1 100%);
 }
-
+*/
 
 #btnAlarms {
 	-fx-background-image: url('img/icon_alarms.png');

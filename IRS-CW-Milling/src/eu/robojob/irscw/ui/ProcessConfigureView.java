@@ -14,6 +14,8 @@ public class ProcessConfigureView extends VBox {
 	
 	private ProcessConfigurePresenter presenter;
 	
+	private static final int HEIGHT_TOP = 251;
+	
 	public ProcessConfigureView () {
 		buildView();
 	}
@@ -28,6 +30,7 @@ public class ProcessConfigureView extends VBox {
 		
 		top = new StackPane();
 		getChildren().add(top);
+		top.setPrefHeight(HEIGHT_TOP);
 		
 		bottom = new VBox();
 		getChildren().add(bottom);

@@ -1,7 +1,11 @@
 package eu.robojob.irscw.ui;
 
-public class ProcessConfigurePresenter {
+import org.apache.log4j.Logger;
 
+public class ProcessConfigurePresenter implements KeyboardParentPresenter {
+
+	private static Logger logger = Logger.getLogger(ProcessConfigurePresenter.class);
+	
 	private ProcessConfigureView view;
 	
 	private KeyboardPresenter keyboardPresenter;
@@ -41,10 +45,13 @@ public class ProcessConfigurePresenter {
 		keyboardActive = true;
 	}
 	
-	public void deactivateKeyboard() {
+	@Override
+	public void closeKeyboard() {
 		if (keyboardActive) {
 			// we assume the keyboard view is always on top
 			view.removeNode(keyboardPresenter.getView());
+		} else {
+			logger.error("Keyboard was already de-activated");
 		}
 		keyboardActive = false;
 	}

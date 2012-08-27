@@ -1,24 +1,24 @@
 .keyboard-background {
-	-fx-background-color: linear-gradient(#4b4b4b 0%, #2f2f2f 100%);
+	-fx-background-color: linear-gradient(#a2a2a2 0%, #717171 100%);
 }
 
 .keyboard-button {
 	-fx-background-color: 
-		#5c5c5c,
-		#343434,
-		linear-gradient(white 0%, #a2a2a2 100%),
+		#525252,
+		linear-gradient(white 0%, #d2d3d9 100%),
 		linear-gradient(#f6f6f6 0%, #c9cdd0 100%);
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 2 3 2;
+	-fx-background-insets: 0, 1, 2;
 	-fx-font-size: 18px;
 	-fx-font-smoothing-type: lcd;
 	-fx-text-alignment: center;
 	
 	-fx-font-family: "Helvetica";
 	-fx-font-weight: bold;
-	
 	-fx-padding: 0;
 	
-	-fx-border-radius: 6, 5, 4, 3;
+	-fx-border-radius: 5, 4, 3;
+	
+	-fx-effect: dropshadow(gaussian, #434343, 2, 0, 0, 1);
 }
 
 .keyboard-button Text {
@@ -29,7 +29,6 @@
 .keyboard-button:pressed {
 		-fx-background-color: 
 		#5c5c5c,
-		#343434,
 		linear-gradient(#cecece 0%, #969696 100%),
 		linear-gradient(#cecece 0%, #969696 100%);
 		-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);
@@ -43,8 +42,7 @@
 #key-OK {
 	-fx-background-color: 
 		#5c5c5c,
-		#343434,
-		linear-gradient(#d3ff7d 0%, #59800e 100%),
+		linear-gradient(#d3ff7d 0%, #6e9f0e 100%),
 		linear-gradient(#c0ff46 0%, #6e9f0e 100%);
 }
 
@@ -55,7 +53,6 @@
 #key-OK:pressed {
 	-fx-background-color: 
 		#5c5c5c,
-		#343434,
 		linear-gradient(#9dd72a 0%, #59800e 100%),
 		linear-gradient(#9dd72a 0%, #59800e 100%);
 	-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);

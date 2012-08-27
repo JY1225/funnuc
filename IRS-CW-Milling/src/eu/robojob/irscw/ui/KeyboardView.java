@@ -14,9 +14,9 @@ public class KeyboardView extends GridPane {
 	private KeyboardPresenter presenter;
 	private GridPane gridPane;
 	
-	private static final int BTN_WIDTH = 45;
-	private static final int BTN_HEIGHT = 45;
-	private static final int SPACING = 12;
+	private static final int BTN_WIDTH = 50;
+	private static final int BTN_HEIGHT = 50;
+	private static final int SPACING = 7;
 	
 	private static final int MARGIN = 15;
 	
