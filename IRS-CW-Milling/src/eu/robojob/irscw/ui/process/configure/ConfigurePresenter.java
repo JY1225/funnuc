@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.process;
+package eu.robojob.irscw.ui.process.configure;
 
 import org.apache.log4j.Logger;
 

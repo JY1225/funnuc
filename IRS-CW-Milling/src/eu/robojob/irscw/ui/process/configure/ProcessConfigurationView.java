@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.process;
+package eu.robojob.irscw.ui.process.configure;
 
 import javafx.scene.layout.GridPane;
 import eu.robojob.irscw.ui.controls.FullTextField;

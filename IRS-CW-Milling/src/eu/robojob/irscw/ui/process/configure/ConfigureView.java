@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.process;
+package eu.robojob.irscw.ui.process.configure;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;

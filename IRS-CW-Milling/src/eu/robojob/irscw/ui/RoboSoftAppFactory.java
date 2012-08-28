@@ -5,12 +5,12 @@ import eu.robojob.irscw.ui.keyboard.KeyboardView;
 import eu.robojob.irscw.ui.keyboard.KeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardView;
-import eu.robojob.irscw.ui.process.ConfigurePresenter;
-import eu.robojob.irscw.ui.process.ConfigureView;
 import eu.robojob.irscw.ui.process.MenuBarPresenter;
 import eu.robojob.irscw.ui.process.MenuBarView;
-import eu.robojob.irscw.ui.process.ProcessConfigurationPresenter;
-import eu.robojob.irscw.ui.process.ProcessConfigurationView;
+import eu.robojob.irscw.ui.process.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.process.configure.ConfigureView;
+import eu.robojob.irscw.ui.process.configure.ProcessConfigurationPresenter;
+import eu.robojob.irscw.ui.process.configure.ProcessConfigurationView;
 
 public class RoboSoftAppFactory {
 
