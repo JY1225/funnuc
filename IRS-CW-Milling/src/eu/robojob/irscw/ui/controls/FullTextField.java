@@ -7,7 +7,7 @@ public class FullTextField extends TextField {
 
 	@Override
 	public String getMatchingExpression() {
-		return "[A-Z0-9_ \\.\\r-]*$";
+		return "[A-Z0-9ÖÜÄ_ \\.\\r-]*$";
 	}
 
 	@Override
