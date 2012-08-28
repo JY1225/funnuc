@@ -14,7 +14,7 @@ public class ProcessFlowView extends VBox  {
 	private HBox row1;
 	private ProcessFlow processFlow;
 	
-	private ProcessFlowPresenter processFlowPresenter;
+	private ProcessFlowPresenter presenter;
 	
 	public ProcessFlowView(ProcessFlow processFlow) {
 		this.processFlow = processFlow;
@@ -26,6 +26,10 @@ public class ProcessFlowView extends VBox  {
 		buildView();
 	}
 	
+	public void setPresenter(ProcessFlowPresenter presenter) {
+		this.presenter = presenter;
+	}
+
 	private void buildView() {
 		AbstractDevice previousDevice = null;
 		for(AbstractProcessStep step : processFlow.getProcessSteps()) {
@@ -37,3 +41,4 @@ public class ProcessFlowView extends VBox  {
 		}
 	}
 }
+
