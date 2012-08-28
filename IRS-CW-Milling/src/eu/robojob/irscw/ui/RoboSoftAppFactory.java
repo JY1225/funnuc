@@ -49,7 +49,7 @@ public class RoboSoftAppFactory {
 	
 	public KeyboardPresenter getKeyboardPresenter() {
 		if (keyboardPresenter == null) {
-			KeyboardView keyboardView = new KeyboardView(KeyboardType.AZERTY);
+			KeyboardView keyboardView = new KeyboardView(KeyboardType.QWERTZ_DE);
 			keyboardPresenter = new KeyboardPresenter(keyboardView);
 		}
 		return keyboardPresenter;

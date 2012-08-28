@@ -3,8 +3,6 @@ package eu.robojob.irscw.ui.keyboard;
 import javafx.scene.input.KeyCode;
 
 public class NumericKeyboardView extends AbstractKeyboardView {
-
-	private static final int MARGIN = 7;
 	
 	public NumericKeyboardView() {
 		buildView();
@@ -49,8 +47,4 @@ public class NumericKeyboardView extends AbstractKeyboardView {
 		addKey("OK", KeyCode.ENTER, column++, row, 1, 1, "key-OK", null);
 	}
 
-	@Override
-	public int getMargin() {
-		return MARGIN;
-	}
 }

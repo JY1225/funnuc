@@ -5,7 +5,7 @@ import javafx.scene.input.KeyCode;
 public class KeyboardView extends AbstractKeyboardView {
 	
 	public enum KeyboardType {
-		AZERTY, QWERTY, QWERTY_DE
+		AZERTY, QWERTY, QWERTZ_DE
 	}
 	
 	private KeyboardType type;
@@ -34,7 +34,7 @@ public class KeyboardView extends AbstractKeyboardView {
 			case QWERTY:
 				buildViewQwerty();
 				break;
-			case QWERTY_DE:
+			case QWERTZ_DE:
 				buildViewQwertyDE();
 				break;
 			default:

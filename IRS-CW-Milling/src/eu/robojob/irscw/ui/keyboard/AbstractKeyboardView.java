@@ -15,7 +15,7 @@ public abstract class AbstractKeyboardView extends GridPane {
 	
 	private static final int BTN_WIDTH = 50;
 	private static final int BTN_HEIGHT = 50;
-	private static final int SPACING = 7;
+	private static final int SPACING = 5;
 	
 	private static final int MARGIN = 15;
 	
