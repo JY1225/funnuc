@@ -1,5 +1,5 @@
 .keyboard-background {
-	-fx-background-color: linear-gradient(#a2a2a2 0%, #717171 100%);
+	-fx-background-color: linear-gradient(rgba(162,162,162,0.8) 0%, rgba(113,113,113,0.8) 100%);
 }
 
 .keyboard-button {
