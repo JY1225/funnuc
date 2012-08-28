@@ -3,6 +3,8 @@ package eu.robojob.irscw.ui;
 import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.KeyboardView;
 import eu.robojob.irscw.ui.keyboard.KeyboardView.KeyboardType;
+import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
+import eu.robojob.irscw.ui.keyboard.NumericKeyboardView;
 import eu.robojob.irscw.ui.process.ConfigurePresenter;
 import eu.robojob.irscw.ui.process.ConfigureView;
 import eu.robojob.irscw.ui.process.MenuBarPresenter;
@@ -17,6 +19,7 @@ public class RoboSoftAppFactory {
 	private ConfigurePresenter configurePresenter;
 	private KeyboardPresenter keyboardPresenter;
 	private ProcessConfigurationPresenter processConfigurationPresenter;
+	private NumericKeyboardPresenter numericKeyboardPresenter;
 	
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
@@ -39,17 +42,25 @@ public class RoboSoftAppFactory {
 	public ConfigurePresenter getConfigurePresenter() {
 		if (configurePresenter == null) {
 			ConfigureView processConfigureView = new ConfigureView();
-			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getProcessConfigurationPresenter());
+			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNumericKeyboardPresenter(), getProcessConfigurationPresenter());
 		}
 		return configurePresenter;
 	}
 	
 	public KeyboardPresenter getKeyboardPresenter() {
 		if (keyboardPresenter == null) {
-			KeyboardView keyboardView = new KeyboardView(KeyboardType.QWERTY_DE);
+			KeyboardView keyboardView = new KeyboardView(KeyboardType.AZERTY);
 			keyboardPresenter = new KeyboardPresenter(keyboardView);
 		}
 		return keyboardPresenter;
+	}
+	
+	public NumericKeyboardPresenter getNumericKeyboardPresenter() {
+		if (numericKeyboardPresenter == null) {
+			NumericKeyboardView numericKeyboardView = new NumericKeyboardView();
+			numericKeyboardPresenter = new NumericKeyboardPresenter(numericKeyboardView);
+		}
+		return numericKeyboardPresenter;
 	}
 	
 	public ProcessConfigurationPresenter getProcessConfigurationPresenter() {

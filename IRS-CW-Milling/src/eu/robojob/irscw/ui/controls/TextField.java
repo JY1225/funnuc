@@ -39,14 +39,20 @@ public abstract class TextField extends javafx.scene.control.TextField {
 	
 	@Override
 	public void replaceText(int start, int end, String text) {
-		if (text.matches(getMatchingExpression())) {
+		String currentText = getText();
+		String newString = currentText.substring(0, start) + text + currentText.substring(end);
+		
+		if (newString.matches(getMatchingExpression())) {
 			super.replaceText(start, end, text);
 		}
 	}
 
 	@Override
 	public void replaceSelection(String text) {
-		if (text.matches(getMatchingExpression())) {
+		String currentText = getText();
+		String newString = currentText.substring(0, getSelection().getStart()) + text + currentText.substring(getSelection().getEnd());
+		
+		if (newString.matches(getMatchingExpression())) {
 			super.replaceSelection(text);
 		}
 	}

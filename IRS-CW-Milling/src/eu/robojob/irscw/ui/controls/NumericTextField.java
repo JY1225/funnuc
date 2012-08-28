@@ -7,7 +7,7 @@ public class NumericTextField extends TextField {
 
 	@Override
 	public String getMatchingExpression() {
-		return "[0-9\\.\\r]*$";
+		return "^[0-9]*\\.?[0-9]*$";
 	}
 
 }

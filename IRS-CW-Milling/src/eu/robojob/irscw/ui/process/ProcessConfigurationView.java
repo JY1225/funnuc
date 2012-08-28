@@ -2,13 +2,14 @@ package eu.robojob.irscw.ui.process;
 
 import javafx.scene.layout.GridPane;
 import eu.robojob.irscw.ui.controls.FullTextField;
+import eu.robojob.irscw.ui.controls.NumericTextField;
 
 public class ProcessConfigurationView extends GridPane {
 
 	private ProcessConfigurationPresenter presenter;
 	
 	private FullTextField name;
-	private FullTextField test;
+	private NumericTextField test;
 	
 	public ProcessConfigurationView() {
 		buildView();
@@ -17,7 +18,7 @@ public class ProcessConfigurationView extends GridPane {
 	private void buildView() {
 		name = new FullTextField();
 		add(name, 0, 0);
-		test = new FullTextField();
+		test = new NumericTextField();
 		add(test, 0, 1);
 	}
 	

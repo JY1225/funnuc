@@ -1,15 +1,8 @@
 package eu.robojob.irscw.ui.keyboard;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 
-public class KeyboardView extends GridPane {
+public class KeyboardView extends AbstractKeyboardView {
 	
 	public enum KeyboardType {
 		AZERTY, QWERTY, QWERTY_DE
@@ -17,25 +10,37 @@ public class KeyboardView extends GridPane {
 	
 	private KeyboardType type;
 	
-	private KeyboardPresenter presenter;
-	private GridPane gridPane;
-	
-	private static final int BTN_WIDTH = 50;
-	private static final int BTN_HEIGHT = 50;
-	private static final int SPACING = 7;
-	
-	private static final int MARGIN = 15;
-	
 	public KeyboardView(KeyboardType type) {
-		super();
 		this.type = type;
-			
-		buildKeyboard();
+		buildView();
 	}
 	
 	public void changeType(KeyboardType type) {
 		this.type = type;
-		buildKeyboard();
+		buildView();
+	}
+	
+	@Override
+	public double getPreferedWidth() {
+		return 800;
+	}
+	
+	@Override
+	protected void buildKeyboard() {
+		switch(type) {
+			case AZERTY:
+				buildViewAzerty();
+				break;
+			case QWERTY:
+				buildViewQwerty();
+				break;
+			case QWERTY_DE:
+				buildViewQwertyDE();
+				break;
+			default:
+				buildViewAzerty();
+				break;
+		}
 	}
 	
 	//TODO these methods could perhaps be simplified!
@@ -228,67 +233,8 @@ public class KeyboardView extends GridPane {
 		
 	}
 	
-	private void buildKeyboard() {
-		this.getChildren().clear();
-		
-		gridPane = new GridPane();
-		
-		gridPane.setHgap(SPACING);
-		gridPane.setVgap(SPACING);
-		
-		switch(type) {
-			case AZERTY:
-				buildViewAzerty();
-				break;
-			case QWERTY:
-				buildViewQwerty();
-				break;
-			case QWERTY_DE:
-				buildViewQwertyDE();
-				break;
-			default:
-				buildViewAzerty();
-				break;
-		}
-		this.setPrefWidth(800);
-		this.getStyleClass().add("keyboard-background");
-		setAlignment(Pos.CENTER);
-		setMargin(gridPane, new Insets(MARGIN, 0, MARGIN, 0));
-		
-		this.getChildren().add(gridPane);
-	}
-	
-	private void addKey(String text, KeyCode keyCode, int columnIndex, int rowIndex, int colspan, int rowspan, String id, String extraClassName) {
-		Button btn = new Button();
-		Text btnText = new Text(text);
-		btn.setId(id);
-		btn.setGraphic(btnText);
-		btn.focusTraversableProperty().set(false);
-		btn.setPrefSize((BTN_WIDTH*colspan) + (colspan-1)*SPACING, (BTN_HEIGHT*rowspan) + (rowspan-1)*SPACING);
-		btn.getStyleClass().add("keyboard-button");
-		if (extraClassName != null) {
-			btn.getStyleClass().add(extraClassName);
-		}
-		btn.setOnAction(new KeyboardClickedEventHandler(keyCode));
-		gridPane.add(btn, columnIndex, rowIndex, colspan, rowspan);
-	}
-	
 	public void setPresenter(KeyboardPresenter presenter) {
-		this.presenter = presenter;
+		super.setPresenter(presenter);
 	}
-	
-	private class KeyboardClickedEventHandler implements EventHandler<ActionEvent> {
-		
-		private KeyCode keyCode;
 
-		public KeyboardClickedEventHandler(KeyCode keyCode) {
-			this.keyCode = keyCode;
-		}
-		
-		@Override
-		public void handle(ActionEvent event) {
-			presenter.keyPressed(keyCode);
-		}
-		
-	}
 }

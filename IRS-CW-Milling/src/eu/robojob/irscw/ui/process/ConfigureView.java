@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui.process;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -10,7 +11,7 @@ import javafx.scene.layout.VBox;
 public class ConfigureView extends VBox {
 	
 	private StackPane top;
-	private VBox bottom;
+	private HBox bottom;
 	private StackPane bottomLeft;
 	private Pane bottomRight;
 	
@@ -36,12 +37,13 @@ public class ConfigureView extends VBox {
 		top.setPrefHeight(HEIGHT_TOP);
 		top.setPrefWidth(WIDTH);
 		
-		bottom = new VBox();
+		bottom = new HBox();
 		getChildren().add(bottom);
 		VBox.setVgrow(bottom, Priority.ALWAYS);
 		
 		bottomLeft = new StackPane();
 		bottom.getChildren().add(bottomLeft);
+		bottomLeft.setPrefWidth(200);
 		
 		bottomRight = new Pane();
 		bottom.getChildren().add(bottomRight);
@@ -64,7 +66,7 @@ public class ConfigureView extends VBox {
 		this.bottomLeft.getChildren().add(node);
 	}
 	
-	public void removeNodeFromBottomLef(Node node) {
+	public void removeNodeFromBottomLeft(Node node) {
 		this.bottomLeft.getChildren().remove(node);
 	}
 	

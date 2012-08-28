@@ -1,7 +1,8 @@
 package eu.robojob.irscw.ui.process;
 
+import eu.robojob.irscw.ui.controls.FullTextField;
+import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
-import javafx.scene.control.TextField;
 
 public class ProcessConfigurationPresenter implements TextFieldListener {
 
@@ -27,7 +28,12 @@ public class ProcessConfigurationPresenter implements TextFieldListener {
 
 	@Override
 	public void textFieldFocussed(eu.robojob.irscw.ui.controls.TextField textField) {
-		parent.textFieldFocussed(textField);
+		if (textField instanceof FullTextField)
+			parent.textFieldFocussed((FullTextField) textField);
+		else if (textField instanceof NumericTextField)
+			parent.textFieldFocussed((NumericTextField) textField);
+		else 
+			throw new IllegalArgumentException("Unknown type of textfield focussed");
 	}
 
 	@Override
