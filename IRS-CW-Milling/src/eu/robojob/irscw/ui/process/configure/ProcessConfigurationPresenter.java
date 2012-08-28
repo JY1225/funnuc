@@ -27,7 +27,7 @@ public class ProcessConfigurationPresenter implements TextFieldListener {
 	}
 
 	@Override
-	public void textFieldFocussed(eu.robojob.irscw.ui.controls.TextField textField) {
+	public void textFieldFocussed(eu.robojob.irscw.ui.controls.AbstractTextField textField) {
 		if (textField instanceof FullTextField)
 			parent.textFieldFocussed((FullTextField) textField);
 		else if (textField instanceof NumericTextField)
@@ -37,7 +37,7 @@ public class ProcessConfigurationPresenter implements TextFieldListener {
 	}
 
 	@Override
-	public void textFieldLostFocus(eu.robojob.irscw.ui.controls.TextField textField) {
+	public void textFieldLostFocus(eu.robojob.irscw.ui.controls.AbstractTextField textField) {
 		parent.closeKeyboard();
 	}
 

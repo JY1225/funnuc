@@ -5,7 +5,7 @@ import eu.robojob.irscw.ui.keyboard.KeyboardParentPresenter;
 
 public interface TextFieldListener extends KeyboardParentPresenter {
 
-	public void textFieldFocussed(TextField textField);
-	public void textFieldLostFocus(TextField textField);
+	public void textFieldFocussed(AbstractTextField textField);
+	public void textFieldLostFocus(AbstractTextField textField);
 		
 }

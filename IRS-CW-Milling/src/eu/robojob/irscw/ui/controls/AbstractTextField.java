@@ -6,12 +6,12 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
-public abstract class TextField extends javafx.scene.control.TextField {
+public abstract class AbstractTextField extends javafx.scene.control.TextField {
 
 	protected TextFieldListener listener;
 	private String originalText;
 	
-	public TextField() {
+	public AbstractTextField() {
 		this.focusedProperty().addListener(new TextFieldFocusListener(this));
 		this.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 
@@ -62,9 +62,9 @@ public abstract class TextField extends javafx.scene.control.TextField {
 
 	private class TextFieldFocusListener implements ChangeListener<Boolean> {
 
-		private TextField textField;
+		private AbstractTextField textField;
 		
-		public TextFieldFocusListener(TextField textField) {
+		public TextFieldFocusListener(AbstractTextField textField) {
 			this.textField = textField;
 		}
 		
@@ -74,9 +74,12 @@ public abstract class TextField extends javafx.scene.control.TextField {
 				originalText = textField.getText();
 				listener.textFieldFocussed(textField);
 			} else {
+				cleanText();
 				listener.textFieldLostFocus(textField);
 			}
 		}
 	}
+	
+	public abstract void cleanText();
 
 }

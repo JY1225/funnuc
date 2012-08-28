@@ -4,13 +4,13 @@ import javafx.scene.input.KeyCode;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.ui.controls.TextField;
+import eu.robojob.irscw.ui.controls.AbstractTextField;
 
 public abstract class AbstractKeyboardPresenter {
 
 	private AbstractKeyboardView view;
 	private KeyboardParentPresenter parent;
-	private TextField target;
+	private AbstractTextField target;
 	
 	private String originalText;
 	
@@ -25,7 +25,7 @@ public abstract class AbstractKeyboardPresenter {
 		this.parent = parent;
 	}
 	
-	public void setTarget(TextField target) {
+	public void setTarget(AbstractTextField target) {
 		this.target = target;
 		originalText = target.getText();
 	}
