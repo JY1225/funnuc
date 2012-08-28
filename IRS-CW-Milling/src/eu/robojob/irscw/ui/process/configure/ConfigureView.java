@@ -17,8 +17,10 @@ public class ConfigureView extends VBox {
 	
 	private ConfigurePresenter presenter;
 	
-	private static final int HEIGHT_TOP = 251;
+	private static final int HEIGHT_TOP = 245;
+	private static final int HEIGHT_BOTTOM = 300;
 	private static final int WIDTH = 800;
+	private static final int WIDTH_BOTTOM_LEFT = 250;
 	
 	public ConfigureView () {
 		buildView();
@@ -39,11 +41,12 @@ public class ConfigureView extends VBox {
 		
 		bottom = new HBox();
 		getChildren().add(bottom);
+		bottom.setPrefHeight(HEIGHT_BOTTOM);
 		VBox.setVgrow(bottom, Priority.ALWAYS);
 		
 		bottomLeft = new StackPane();
 		bottom.getChildren().add(bottomLeft);
-		bottomLeft.setPrefWidth(200);
+		bottomLeft.setPrefWidth(WIDTH_BOTTOM_LEFT);
 		
 		bottomRight = new Pane();
 		bottom.getChildren().add(bottomRight);

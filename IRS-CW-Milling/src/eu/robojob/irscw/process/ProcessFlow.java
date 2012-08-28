@@ -103,4 +103,9 @@ public class ProcessFlow {
 		logger.debug("Added new step: " + newStep);
 		newStep.setProcessFlow(this);
 	}
+	
+	public int getStepIndex (AbstractProcessStep step) {
+		return processSteps.indexOf(step);
+	}
+	
 }
