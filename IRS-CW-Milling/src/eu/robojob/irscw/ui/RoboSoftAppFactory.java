@@ -11,6 +11,8 @@ import eu.robojob.irscw.ui.process.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.process.configure.ConfigureView;
 import eu.robojob.irscw.ui.process.configure.ProcessConfigurationPresenter;
 import eu.robojob.irscw.ui.process.configure.ProcessConfigurationView;
+import eu.robojob.irscw.ui.process.flow.ProcessFlowPresenter;
+import eu.robojob.irscw.ui.process.flow.ProcessFlowView;
 
 public class RoboSoftAppFactory {
 
@@ -20,6 +22,7 @@ public class RoboSoftAppFactory {
 	private KeyboardPresenter keyboardPresenter;
 	private ProcessConfigurationPresenter processConfigurationPresenter;
 	private NumericKeyboardPresenter numericKeyboardPresenter;
+	private ProcessFlowPresenter processFlowPresenter;
 	
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
@@ -42,7 +45,7 @@ public class RoboSoftAppFactory {
 	public ConfigurePresenter getConfigurePresenter() {
 		if (configurePresenter == null) {
 			ConfigureView processConfigureView = new ConfigureView();
-			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNumericKeyboardPresenter(), getProcessConfigurationPresenter());
+			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNumericKeyboardPresenter(), getProcessFlowPresenter(), getProcessConfigurationPresenter());
 		}
 		return configurePresenter;
 	}
@@ -69,5 +72,13 @@ public class RoboSoftAppFactory {
 			processConfigurationPresenter = new ProcessConfigurationPresenter(processConfigurationView);
 		}
 		return processConfigurationPresenter;
+	}
+	
+	public ProcessFlowPresenter getProcessFlowPresenter() {
+		if (processFlowPresenter == null) {
+			ProcessFlowView processFlowView = new ProcessFlowView();
+			processFlowPresenter = new ProcessFlowPresenter(processFlowView);
+		}
+		return processFlowPresenter;
 	}
 }

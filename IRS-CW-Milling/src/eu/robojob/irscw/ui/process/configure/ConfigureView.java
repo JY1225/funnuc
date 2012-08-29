@@ -38,6 +38,7 @@ public class ConfigureView extends VBox {
 		getChildren().add(top);
 		top.setPrefHeight(HEIGHT_TOP);
 		top.setPrefWidth(WIDTH);
+		top.getStyleClass().add("top-panel");
 		
 		bottom = new HBox();
 		getChildren().add(bottom);

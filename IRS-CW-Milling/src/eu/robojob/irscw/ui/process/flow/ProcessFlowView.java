@@ -1,10 +1,13 @@
 package eu.robojob.irscw.ui.process.flow;
 
+import org.apache.log4j.Logger;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.ProcessFlow;
 
 //for now, we only allow one row, in the future, multiple rows could be possible
 // to accomplish this, more HBox's are to be added and the components should be
@@ -12,17 +15,14 @@ import eu.robojob.irscw.process.ProcessFlow;
 public class ProcessFlowView extends VBox  {
 
 	private HBox row1;
-	private ProcessFlow processFlow;
+	
+	private static Logger logger = Logger.getLogger(ProcessFlowView.class);
 	
 	private ProcessFlowPresenter presenter;
 	
-	public ProcessFlowView(ProcessFlow processFlow) {
-		this.processFlow = processFlow;
-		buildView();
-	}
+	private static final int BUTTON_HEIGHT = 40;
 	
 	public ProcessFlowView() {
-		this.processFlow = new ProcessFlow();
 		buildView();
 	}
 	
@@ -31,14 +31,11 @@ public class ProcessFlowView extends VBox  {
 	}
 
 	private void buildView() {
+		row1 = new HBox();
+		getChildren().add(row1);
 		AbstractDevice previousDevice = null;
-		for(AbstractProcessStep step : processFlow.getProcessSteps()) {
-			if (previousDevice == null) {
-				// first step
-			} else if (step.getDevice() != previousDevice) {
-				// insert arrow and new device-representation
-			}
-		}
+		//row1.getChildren().add(new ProcessFlowTransportButton());
+		row1.getChildren().add(new TransportButton());
 	}
 }
 

@@ -43,6 +43,7 @@ public class ProcessFlowDeviceView extends VBox {
 		deviceButton = new Button();
 		deviceButton.getStyleClass().add(type.getClassName());
 		deviceLabel = new Label(deviceName);
+		deviceLabel.getStyleClass().add("device-label");
 		this.getChildren().add(deviceButton);
 		this.getChildren().add(deviceLabel);
 	}

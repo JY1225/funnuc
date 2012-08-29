@@ -24,7 +24,7 @@ public class RoboSoft extends Application {
 		MainPresenter mainPresenter = factory.getMainPresenter();
 		mainPresenter.showProcessConfigureView();
 		Scene scene = new Scene(mainPresenter.getView(), 800, 600);
-		scene.getStylesheets().addAll("header-style.css", "keyboard-style.css");
+		scene.getStylesheets().addAll("general-style.css", "header-style.css", "keyboard-style.css", "processflow-style.css");
 		stage.setScene(scene);
 		stage.setTitle("RoboSoft");
 		stage.centerOnScreen();

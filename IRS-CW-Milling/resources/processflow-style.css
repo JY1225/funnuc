@@ -1,0 +1,9 @@
+.arrow-shape {
+	-fx-fill: linear-gradient(#619bff 0%, #76b9ff 100%);
+	-fx-effect: innershadow(gaussian, #3e64a4, 7, 0, 0, 1);
+}
+
+.question-mark-shape {
+	-fx-fill: linear-gradient(white 0%, #e6e6e6 100%);
+	-fx-effect: dropshadow(gaussian, #848484, 8, 0, 0, 0);
+}
