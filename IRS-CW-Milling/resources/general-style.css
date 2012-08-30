@@ -1,3 +1,32 @@
 .top-panel {
 	-fx-background-image: url('img/bg.jpg');
 }
+
+#bottom-panel {
+	-fx-effect: dropshadow(gaussian, #111111, 10, 0, 0, -1);
+}
+
+.bottom-left {
+	-fx-background-color: #dbdbdb;
+	-fx-border-color: #9f9f9f;
+	-fx-border-width: 1 1 0 0;
+}
+
+.bottom-right {
+	-fx-border-color: #9f9f9f;
+	-fx-border-width: 1 0 0 0;
+}
+
+
+
+.green {
+	-fx-background-color: rgba(0, 255, 0, 0.5);
+}
+
+.red {
+	-fx-background-color: rgba(255, 0, 0, 0.5);
+}
+
+.yellow {
+	-fx-background-color: rgba(255, 255, 0, 0.5);
+}

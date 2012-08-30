@@ -73,7 +73,7 @@ public class ProcessFlowView extends GridPane  {
 		device1.toFront();
 		device2.toFront();
 		device3.toFront();
-		device3.animate();
+		//device3.animate();
 		device4.toFront();
 		
 		this.setAlignment(Pos.CENTER);

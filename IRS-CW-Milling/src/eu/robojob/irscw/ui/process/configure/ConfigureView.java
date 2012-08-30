@@ -43,14 +43,20 @@ public class ConfigureView extends VBox {
 		bottom = new HBox();
 		getChildren().add(bottom);
 		bottom.setPrefHeight(HEIGHT_BOTTOM);
+		bottom.setPrefWidth(WIDTH);
 		VBox.setVgrow(bottom, Priority.ALWAYS);
+		bottom.getStyleClass().add("bottom");
 		
 		bottomLeft = new StackPane();
 		bottom.getChildren().add(bottomLeft);
 		bottomLeft.setPrefWidth(WIDTH_BOTTOM_LEFT);
+		bottomLeft.getStyleClass().add("bottom-left");
 		
 		bottomRight = new Pane();
 		bottom.getChildren().add(bottomRight);
+		bottomRight.getStyleClass().add("bottom-right");
+		bottomRight.setPrefWidth(WIDTH-WIDTH_BOTTOM_LEFT);
+
 	}
 
 	public void addNodeToTop(Node node) {

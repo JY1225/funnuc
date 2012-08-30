@@ -10,7 +10,7 @@
 		linear-gradient(#ababab 0%, #696969 100%),
 		linear-gradient(#858585 0%, #4d4f53 100%);
 		-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 0;
-	-fx-effect: dropshadow(gaussian, #111111, 10, 0, 0, 1);
+	-fx-effect: dropshadow(gaussian, #4c4c4c, 10, 0, 0, 1);
 }
 
 .header-button {
@@ -29,6 +29,13 @@
 	-fx-font-family: "Helvetica";
 	-fx-font-weight: bold;
 	
+}
+
+.header-button-shape {
+	-fx-fill: white;
+    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 3, 0.0 , 0 , -1 );
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 0 5;
 }
 
 .header-button Text {
@@ -70,28 +77,3 @@
 	-fx-fill: linear-gradient(#7dffff 0%, #05a2f1 100%);
 }
 */
-
-#btnAlarms {
-	-fx-background-image: url('img/icon_alarms.png');
-	-fx-background-image-repeat: no-repeat;
-	-fx-background-image-position: center;
-}
-
-#btnAdmin {
-	-fx-background-image: url('img/icon_admin.png');
-	-fx-background-image-repeat: no-repeat;
-	-fx-background-image-position: center;
-}
-
-
-.green {
-	-fx-background-color: rgba(0, 255, 0, 0.5);
-}
-
-.red {
-	-fx-background-color: rgba(255, 0, 0, 0.5);
-}
-
-.yellow {
-	-fx-background-color: rgba(255, 255, 0, 0.5);
-}

@@ -62,6 +62,8 @@ public class DeviceButton extends VBox {
 		deviceName.setPrefWidth(LABEL_WIDTH);
 		deviceName.setAlignment(Pos.CENTER);
 		deviceName.setTextAlignment(TextAlignment.CENTER);
+		deviceName.getStyleClass().add("device-label");
+		setMargin(deviceName, new Insets(6, 0, 0, 0));
 		
 		this.getChildren().add(mainButton);
 		this.getChildren().add(deviceName);
