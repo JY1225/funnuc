@@ -1,13 +1,13 @@
 package eu.robojob.irscw.ui.process.flow;
 
-import org.apache.log4j.Logger;
-
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Button;
+import javafx.geometry.Insets;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.ui.process.flow.DeviceButton.DeviceType;
 
 //for now, we only allow one row, in the future, multiple rows could be possible
 // to accomplish this, more HBox's are to be added and the components should be
@@ -34,7 +34,10 @@ public class ProcessFlowView extends VBox  {
 		row1 = new HBox();
 		getChildren().add(row1);
 		AbstractDevice previousDevice = null;
+		setPadding(new Insets(20, 20, 20, 20));
 		//row1.getChildren().add(new ProcessFlowTransportButton());
+		row1.getChildren().add(new TransportButton());
+		row1.getChildren().add(new DeviceButton("test", DeviceType.PRE_STACKING));
 		row1.getChildren().add(new TransportButton());
 	}
 }

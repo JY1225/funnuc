@@ -27,26 +27,63 @@ public class TransportButton extends Pane {
 	public TransportButton() {
 		super();
 		build();
+		
+		setLeftQuestionMarkActive(true);
+		setRightQuestionMarkActive(false);
+		setActive(false);
 	}
 	
 	private void build() {
 		arrowShape = new SVGPath();
 		arrowShape.setContent(arrowPath);
-		arrowShape.getStyleClass().add("arrow-shape");
+		
 		questionMarkLeft = new SVGPath();
 		questionMarkLeft.setContent(questionMarkLeftPath);
 		questionMarkLeft.getStyleClass().add("question-mark-shape");
+		
 		questionMarkRight = new SVGPath();
 		questionMarkRight.setContent(questionMarkRightPath);
 		questionMarkRight.getStyleClass().add("question-mark-shape");
+		
 		firstCircle = new SVGPath();
 		firstCircle.setContent(firstCirclePath);
-		firstCircle.getStyleClass().add("finished");
+		firstCircle.getStyleClass().add("arrow-shape-active");
+		
 		this.getChildren().addAll(arrowShape);
 	}
 	
 	public void setOnAction(EventHandler<MouseEvent> value) {
 		this.addEventHandler(MouseEvent.MOUSE_CLICKED, value);
+	}
+	
+	public void setLeftQuestionMarkActive(boolean active) {
+		this.getChildren().remove(questionMarkLeft);
+		if (active) {
+			this.getChildren().add(questionMarkLeft);
+		}
+	}
+	
+	public void setRightQuestionMarkActive(boolean active) {
+		this.getChildren().remove(questionMarkRight);
+		if (active) {
+			this.getChildren().add(questionMarkRight);
+		}
+	}
+	
+	public void setActive(boolean active) {
+		arrowShape.getStyleClass().clear();
+		if (active) {
+			arrowShape.getStyleClass().add("arrow-shape-active");
+		} else {
+			arrowShape.getStyleClass().add("arrow-shape-inactive");
+		}
+	}
+	
+	public void setFirstPartActive() {
+		arrowShape.getStyleClass().clear();
+		arrowShape.getStyleClass().add("arrow-shape-inactive");
+		this.getChildren().remove(firstCircle);
+		this.getChildren().add(firstCircle);
 	}
 	
 }
