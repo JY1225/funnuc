@@ -1,10 +1,17 @@
 package eu.robojob.irscw.ui.process.flow;
 
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Scale;
+import javafx.util.Duration;
 
 public class DeviceButton extends VBox {
 	
@@ -20,9 +27,10 @@ public class DeviceButton extends VBox {
 	
 	private static final int BUTTON_WIDTH = 60;
 	private static final int BUTTON_HEIGHT = 60;
+	private static final int LABEL_WIDTH = 120;
 	
 	private Button mainButton;
-	private SVGPath path;
+	private SVGPath imagePath;
 	private Label deviceName;
 	private DeviceType type;
 	private String name;
@@ -30,8 +38,8 @@ public class DeviceButton extends VBox {
 	public DeviceButton(String name, DeviceType type) {
 		deviceName = new Label(name);
 		this.name = name;
-		this.type = type;
 		build();
+		setType(type);
 	}
 	
 	public String getName() {
@@ -43,12 +51,60 @@ public class DeviceButton extends VBox {
 	}
 	
 	private void build() {
-		path = new SVGPath();
-		path.setContent(cncMachinePath);
+		imagePath = new SVGPath();
 		mainButton = new Button();
-		mainButton.setGraphic(path);
+		mainButton.setGraphic(imagePath);
 		mainButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		mainButton.setAlignment(Pos.CENTER);
+		mainButton.getStyleClass().add("device-button");
+
+		deviceName = new Label(name);
+		deviceName.setPrefWidth(LABEL_WIDTH);
+		deviceName.setAlignment(Pos.CENTER);
+		deviceName.setTextAlignment(TextAlignment.CENTER);
+		
 		this.getChildren().add(mainButton);
+		this.getChildren().add(deviceName);
+		this.setPadding(new Insets(0, -(LABEL_WIDTH-BUTTON_WIDTH)/2, 0, -(LABEL_WIDTH-BUTTON_WIDTH)/2));
+		this.setPrefWidth(BUTTON_WIDTH);
+		this.setAlignment(Pos.CENTER);
+	}
+	
+	public void setType(DeviceType type) {
+		this.type = type;
+		switch(type) {
+			case PRE_STACKING:	
+				imagePath.setContent(preStackingPath);
+				imagePath.getStyleClass().add("pre-process");
+				break;
+			case PRE_PROCESSING:
+				imagePath.setContent(prePocessingPath);
+				imagePath.getStyleClass().add("pre-process");
+				break;
+			case CNC_MACHINE:
+				imagePath.setContent(cncMachinePath);
+				imagePath.getStyleClass().add("cnc-machine");
+				break;
+			case POST_PROCESSING:
+				imagePath.setContent(postProcessingPath);
+				imagePath.getStyleClass().add("post-process");
+				break;
+			case POST_STACKING:
+				imagePath.setContent(postStackingPath);
+				imagePath.getStyleClass().add("post-process");
+				break;
+			default:
+				throw new IllegalArgumentException("Unknown Device type");
+		}
+	}
+	
+	public void animate() {
+		RotateTransition rt = new RotateTransition(Duration.millis(5000), imagePath);
+		rt.setFromAngle(0);
+		rt.setToAngle(360);
+		rt.setInterpolator(Interpolator.LINEAR);
+		rt.setCycleCount(Timeline.INDEFINITE);
+		rt.play();
 	}
 	
 }

@@ -20,6 +20,8 @@ public class TransportButton extends Pane {
 	private String firstCirclePath = "M38.82,19.318c0,10.645-8.629,19.275-19.275,19.275c-10.646,0-19.275-8.63-19.275-19.275 S8.899,0.042,19.545,0.042C30.191,0.042,38.82,8.673,38.82,19.318z";
 	private String secondCirclePath = "M141.989,19.294c0,10.645-8.629,19.275-19.275,19.275c-10.646,0-19.275-8.63-19.275-19.275 s8.63-19.275,19.275-19.275C133.36,0.019,141.989,8.649,141.989,19.294z";
 	
+	private static final double WIDTH = 142.075;
+	
 	private boolean showQuestionLeft;
 	private boolean showQuestionRight;
 	
@@ -28,9 +30,9 @@ public class TransportButton extends Pane {
 		super();
 		build();
 		
-		setLeftQuestionMarkActive(true);
+		setLeftQuestionMarkActive(false);
 		setRightQuestionMarkActive(false);
-		setActive(false);
+		setActive(true);
 	}
 	
 	private void build() {
@@ -50,6 +52,8 @@ public class TransportButton extends Pane {
 		firstCircle.getStyleClass().add("arrow-shape-active");
 		
 		this.getChildren().addAll(arrowShape);
+		
+		this.setPrefWidth(WIDTH);
 	}
 	
 	public void setOnAction(EventHandler<MouseEvent> value) {

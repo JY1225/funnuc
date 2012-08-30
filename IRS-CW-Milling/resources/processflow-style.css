@@ -12,3 +12,23 @@
 	-fx-fill: linear-gradient(white 0%, #e6e6e6 100%);
 	-fx-effect: dropshadow(gaussian, #848484, 8, 0, 0, 0);
 }
+
+.device-button {
+	-fx-background-color: linear-gradient(white 0%, #ebebeb 100%);
+	-fx-effect: dropshadow(gaussian, #808080, 15, 0, 0, 0);
+}
+
+.pre-process {
+	-fx-fill: radial-gradient(center 50% 50%, radius 30%, #f39500, #f37200);
+	-fx-effect: innershadow(gaussian, #717171, 1, 0, 0, 1);
+}
+
+.post-process {
+	-fx-fill: radial-gradient(center 50% 50%, radius 30%, #67be00, #5caa00);
+	-fx-effect: innershadow(gaussian, #717171, 1, 0, 0, 1);
+}
+
+.cnc-machine {
+	-fx-fill: radial-gradient(center 50% 50%, radius 50%, #ba83ff, #6300dd);
+	-fx-effect: innershadow(gaussian, #717171, 1, 0, 0, 1);
+}
