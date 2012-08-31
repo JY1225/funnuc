@@ -43,6 +43,7 @@ public class DeviceInformation {
 
 	public void setPutStep(PutStep putStep) {
 		this.putStep = putStep;
+		setDevice(putStep.getDevice());
 	}
 
 
@@ -53,6 +54,7 @@ public class DeviceInformation {
 	public void setInterventionStepBeforePick(
 			InterventionStep interventionStepBeforePick) {
 		this.interventionStepBeforePick = interventionStepBeforePick;
+		setDevice(interventionStepBeforePick.getDevice());
 	}
 
 	public ProcessingStep getProcessingStep() {
@@ -61,6 +63,7 @@ public class DeviceInformation {
 
 	public void setProcessingStep(ProcessingStep processingStep) {
 		this.processingStep = processingStep;
+		setDevice(processingStep.getDevice());
 	}
 
 	public InterventionStep getInterventionStepAfterPut() {
@@ -70,6 +73,7 @@ public class DeviceInformation {
 	public void setInterventionStepAfterPut(
 			InterventionStep interventionStepAfterPut) {
 		this.interventionStepAfterPut = interventionStepAfterPut;
+		setDevice(interventionStepAfterPut.getDevice());
 	}
 
 	public PickStep getPickStep() {
@@ -78,6 +82,7 @@ public class DeviceInformation {
 
 	public void setPickStep(PickStep pickStep) {
 		this.pickStep = pickStep;
+		setDevice(pickStep.getDevice());
 	}
 	
 	public boolean hasPutStep() {

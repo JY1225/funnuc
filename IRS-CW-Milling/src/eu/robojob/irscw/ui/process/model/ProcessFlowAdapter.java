@@ -12,7 +12,7 @@ public class ProcessFlowAdapter {
 
 	private ProcessFlow processFlow;
 	
-	private ProcessFlowAdapter(ProcessFlow processFlow) {
+	public ProcessFlowAdapter(ProcessFlow processFlow) {
 		this.processFlow = processFlow;
 	}
 	
@@ -37,7 +37,7 @@ public class ProcessFlowAdapter {
 	}
 	
 	public DeviceInformation getDeviceInformation(int index) {
-		if ((index > getDeviceStepCount()) || (index == 0)) {
+		if ((index > getDeviceStepCount()) || (index < 0)) {
 			throw new IllegalArgumentException("Incorrect index");
 		}
 		
@@ -89,7 +89,7 @@ public class ProcessFlowAdapter {
 	}
 	
 	public TransportInformation getTransportInformation(int index) {
-		if ((index > getTransportStepCount()) || (index == 0)) {
+		if ((index > getTransportStepCount()) || (index < 0)) {
 			throw new IllegalArgumentException("Incorrect index");
 		}
 		

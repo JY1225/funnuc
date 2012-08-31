@@ -1,34 +1,38 @@
 package eu.robojob.irscw.external.device;
 
 import java.io.IOException;
+import java.util.List;
 
-import eu.robojob.irscw.external.communication.SocketConnection;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
+import eu.robojob.irscw.positioning.Coordinates;
 
-public class EmbossingDevice extends AbstractProcessingDevice {
+public class Conveyor extends AbstractStackingDevice {
 
-	private SocketConnection socketConnection;
-	
-	public EmbossingDevice(String id, SocketConnection socketConnection) {
-		super(id, false);
-		this.socketConnection = socketConnection;
+	public Conveyor(String id, List<Zone> zones) {
+		super(id, zones);
 	}
 
 	@Override
-	public void startCyclus(
-			AbstractProcessingDeviceStartCyclusSettings startCylusSettings)
-			throws IOException {
+	public boolean canPickWorkpiece() {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
-	public void prepareForStartCyclus(
-			AbstractProcessingDeviceStartCyclusSettings startCylusSettings)
-			throws IOException {
+	public boolean canPutWorkpiece() {
 		// TODO Auto-generated method stub
-		
+		return false;
+	}
+
+	@Override
+	public Coordinates getPickLocation(WorkArea workArea) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Coordinates getPutLocation(WorkArea workArea) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -90,7 +94,7 @@ public class EmbossingDevice extends AbstractProcessingDevice {
 	}
 
 	@Override
-	public String getStatus() {
+	public String getStatus() throws IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}
