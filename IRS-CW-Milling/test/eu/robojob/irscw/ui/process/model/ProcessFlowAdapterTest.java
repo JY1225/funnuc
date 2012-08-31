@@ -71,7 +71,35 @@ public class ProcessFlowAdapterTest {
 	@Test
 	public void testGetDeviceInformation() {
 		Assert.assertEquals(processFlowAdapter.getDeviceInformation(0).getPickStep(), pick1);
-		Assert.assertEquals(processFlowAdapter.getDeviceInformation(0).getPutStep(), put1);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(0).getPutStep(), null);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(0).getInterventionStepAfterPut(), null);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(0).getInterventionStepBeforePick(), null);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(0).getProcessingStep(), null);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(1).getPickStep(), pick2);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(1).getPutStep(), put1);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(1).getInterventionStepAfterPut(), null);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(1).getInterventionStepBeforePick(), null);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(1).getProcessingStep(), processing1);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(2).getPickStep(), pick3);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(2).getPutStep(), put2);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(2).getInterventionStepAfterPut(), null);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(2).getInterventionStepBeforePick(), intervention);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(2).getProcessingStep(), processing2);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(3).getPickStep(), null);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(3).getPutStep(), put3);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(3).getInterventionStepAfterPut(), null);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(3).getInterventionStepBeforePick(), null);
+		Assert.assertEquals(processFlowAdapter.getDeviceInformation(3).getProcessingStep(), null);
+	}
+	
+	@Test
+	public void testGetTransportInformation() {
+		Assert.assertEquals(processFlowAdapter.getTransportInformation(0).getPickStep(), pick1);
+		Assert.assertEquals(processFlowAdapter.getTransportInformation(0).getPutStep(), put1);
+		Assert.assertEquals(processFlowAdapter.getTransportInformation(1).getPickStep(), pick2);
+		Assert.assertEquals(processFlowAdapter.getTransportInformation(1).getPutStep(), put2);
+		Assert.assertEquals(processFlowAdapter.getTransportInformation(2).getPickStep(), pick3);
+		Assert.assertEquals(processFlowAdapter.getTransportInformation(2).getPutStep(), put3);
 	}
 
 }

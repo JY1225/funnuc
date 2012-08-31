@@ -42,46 +42,35 @@ public class ProcessFlowAdapter {
 		}
 		
 		DeviceInformation deviceInformation = new DeviceInformation();
-		
-		int curIndex = 0;
-		
+				
 		// if not the first, include pick step and possible intervention and processing steps
 		int curDevIndex = 0;
-		if (index != 0) {
-			for (int i = 0; i < processFlow.getProcessSteps().size(); i++) {
-				AbstractProcessStep step = processFlow.getStep(i);
-				if (step.getType() == ProcessStepType.PUT_STEP) {
-					curDevIndex++;
-				}
-				if (curDevIndex == index) {
-					curIndex = i;
-					switch(step.getType()) {
-						case PUT_STEP:
-							deviceInformation.setPutStep((PutStep) step);
-							curIndex++;
-							break;
-						case INTERVENTION_STEP:
-							// as the index is greater than zero, there always is a previous step!
-							if (processFlow.getStep(i-1).getType() == ProcessStepType.PUT_STEP) {
-								deviceInformation.setInterventionStepAfterPut((InterventionStep) step);
-								curIndex++;
-							} 
-							break;
-						case PROCESSING_STEP:
-							deviceInformation.setProcessingStep((ProcessingStep) step);
-							curIndex++;
-							break;
-					}
+		for (int i = 0; i < processFlow.getProcessSteps().size(); i++) {
+			AbstractProcessStep step = processFlow.getStep(i);
+			if (step.getType() == ProcessStepType.PUT_STEP) {
+				curDevIndex++;
+			}
+			if (curDevIndex == index) {
+				switch(step.getType()) {
+					case PICK_STEP:
+						deviceInformation.setPickStep((PickStep) step);
+						break;
+					case PUT_STEP:
+						deviceInformation.setPutStep((PutStep) step);
+						break;
+					case INTERVENTION_STEP:
+						// as the index is greater than zero, there always is a previous step!
+						if (processFlow.getStep(i-1).getType() == ProcessStepType.PUT_STEP) {
+							deviceInformation.setInterventionStepAfterPut((InterventionStep) step);
+						} else {
+							deviceInformation.setInterventionStepBeforePick((InterventionStep) step);
+						}
+						break;
+					case PROCESSING_STEP:
+						deviceInformation.setProcessingStep((ProcessingStep) step);
+						break;
 				}
 			}
-		}
-		deviceInformation.setDevice(processFlow.getStep(curIndex).getDevice());
-		if (processFlow.getStep(curIndex).getType() == ProcessStepType.INTERVENTION_STEP) {
-			deviceInformation.setInterventionStepBeforePick((InterventionStep) processFlow.getStep(curIndex));
-			curIndex++;
-		}
-		if (processFlow.getStep(curIndex).getType() == ProcessStepType.PICK_STEP) {
-			deviceInformation.setPickStep((PickStep) processFlow.getStep(curIndex));
 		}
 		
 		return deviceInformation;
