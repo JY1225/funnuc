@@ -54,6 +54,8 @@ public class TransportButton extends Pane {
 		
 		this.getChildren().addAll(arrowShape);
 		
+		this.getStyleClass().add("transport-button");
+		
 		this.setPrefWidth(WIDTH);
 	}
 	

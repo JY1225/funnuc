@@ -34,14 +34,14 @@ public class DeviceButton extends VBox {
 	
 	private DeviceInformation deviceInfo;
 	
-	public DeviceButton(String name, DeviceInformation deviceInfo) {
-		deviceName = new Label(name);
+	public DeviceButton(DeviceInformation deviceInfo) {
 		build();
 		setDeviceInformation(deviceInfo);
 	}
 	
 	public void setDeviceInformation(DeviceInformation deviceInfo) {
 		this.deviceInfo = deviceInfo;
+		deviceName.setText(deviceInfo.getDevice().getId());
 		setImage();
 	}
 	
@@ -53,7 +53,7 @@ public class DeviceButton extends VBox {
 		mainButton.setAlignment(Pos.CENTER);
 		mainButton.getStyleClass().add("device-button");
 
-		deviceName = new Label(deviceInfo.getDevice().getId());
+		deviceName = new Label();
 		deviceName.setPrefWidth(LABEL_WIDTH);
 		deviceName.setAlignment(Pos.CENTER);
 		deviceName.setTextAlignment(TextAlignment.CENTER);

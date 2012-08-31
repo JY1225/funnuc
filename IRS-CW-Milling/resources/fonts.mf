@@ -1,2 +1,0 @@
-Myriad=MYRIADAM.ttf
-MyriadSemiBold = MYRIADAS.ttf
