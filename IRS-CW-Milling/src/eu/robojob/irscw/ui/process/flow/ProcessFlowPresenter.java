@@ -19,4 +19,12 @@ public class ProcessFlowPresenter {
 	public ProcessFlowView getView() {
 		return view;
 	}
+	
+	public void deviceClicked(String id) {
+		
+	}
+	
+	public void transportClicked(String id) {
+		
+	}
 }

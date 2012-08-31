@@ -37,10 +37,7 @@
 }
 
 .device-selected {
-	-fx-background-color: 
-		#ffa800,
-		linear-gradient(white 0%, #d2d3d9 100%),
-		linear-gradient(#fff6e6 0%, #ffd584 100%);
+	
 }
 
 .pre-process {

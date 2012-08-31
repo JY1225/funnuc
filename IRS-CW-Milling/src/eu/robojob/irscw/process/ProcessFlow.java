@@ -98,14 +98,22 @@ public class ProcessFlow {
 		return false;
 	}
 	
+	public void addStep(int index, AbstractProcessStep newStep) {
+		processSteps.add(index, newStep);
+		newStep.setProcessFlow(this);
+	}
+	
 	public void addStep(AbstractProcessStep newStep) {
 		processSteps.add(newStep);
-		logger.debug("Added new step: " + newStep);
 		newStep.setProcessFlow(this);
 	}
 	
 	public int getStepIndex (AbstractProcessStep step) {
 		return processSteps.indexOf(step);
+	}
+	
+	public AbstractProcessStep getStep(int index) {
+		return processSteps.get(index);
 	}
 	
 }
