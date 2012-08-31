@@ -57,5 +57,10 @@ public class ProcessingStep extends AbstractProcessStep {
 		providers.add(device);
 		return providers;
 	}
+
+	@Override
+	public ProcessStepType getType() {
+		return ProcessStepType.PROCESSING_STEP;
+	}
 	
 }

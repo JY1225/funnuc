@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.process;
+package eu.robojob.irscw.ui.process.model;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.process.InterventionStep;
@@ -10,19 +10,23 @@ public class DeviceInformation {
 
 	private AbstractDevice device;
 	private PutStep putStep;
-	private InterventionStep interventionStepBefore;
+	private InterventionStep interventionStepBeforePick;
 	private ProcessingStep processingStep;
-	private InterventionStep interventionStepAfter;
+	private InterventionStep interventionStepAfterPut;
 	private PickStep pickStep;
 
-	public DeviceInformation(AbstractDevice device, PutStep putStep, InterventionStep interventionStepBefore, ProcessingStep processingStep,
-			InterventionStep interventionStepAfter, PickStep pickStep) {
+	public DeviceInformation(AbstractDevice device, PutStep putStep, InterventionStep interventionStepBeforePick, ProcessingStep processingStep,
+			InterventionStep interventionStepAfterPut, PickStep pickStep) {
 		this.device = device;
 		this.putStep = putStep;
-		this.interventionStepBefore = interventionStepBefore;
+		this.interventionStepBeforePick = interventionStepBeforePick;
 		this.processingStep = processingStep;
-		this.interventionStepAfter = interventionStepAfter;
+		this.interventionStepAfterPut = interventionStepAfterPut;
 		this.pickStep = pickStep;
+	}
+	
+	public DeviceInformation() {
+		this(null, null, null, null, null, null);
 	}
 
 	public AbstractDevice getDevice() {
@@ -41,12 +45,14 @@ public class DeviceInformation {
 		this.putStep = putStep;
 	}
 
-	public InterventionStep getInterventionStepBefore() {
-		return interventionStepBefore;
+
+	public InterventionStep getInterventionStepBeforePick() {
+		return interventionStepBeforePick;
 	}
 
-	public void setInterventionStepBefore(InterventionStep interventionStepBefore) {
-		this.interventionStepBefore = interventionStepBefore;
+	public void setInterventionStepBeforePick(
+			InterventionStep interventionStepBeforePick) {
+		this.interventionStepBeforePick = interventionStepBeforePick;
 	}
 
 	public ProcessingStep getProcessingStep() {
@@ -57,12 +63,13 @@ public class DeviceInformation {
 		this.processingStep = processingStep;
 	}
 
-	public InterventionStep getInterventionStepAfter() {
-		return interventionStepAfter;
+	public InterventionStep getInterventionStepAfterPut() {
+		return interventionStepAfterPut;
 	}
 
-	public void setInterventionStepAfter(InterventionStep interventionStepAfter) {
-		this.interventionStepAfter = interventionStepAfter;
+	public void setInterventionStepAfterPut(
+			InterventionStep interventionStepAfterPut) {
+		this.interventionStepAfterPut = interventionStepAfterPut;
 	}
 
 	public PickStep getPickStep() {
@@ -81,8 +88,8 @@ public class DeviceInformation {
 		}
 	}
 	
-	public boolean hasInterventionStepBefore() {
-		if (interventionStepBefore != null) {
+	public boolean hasInterventionStepBeforePick() {
+		if (interventionStepBeforePick != null) {
 			return true;
 		} else {
 			return false;
@@ -97,15 +104,15 @@ public class DeviceInformation {
 		}
 	}
 	
-	public boolean hasInterventionStepAfter() {
-		if (interventionStepAfter != null) {
+	public boolean hasInterventionStepAfterPut() {
+		if (interventionStepAfterPut != null) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
-	public boolean haasPickStep() {
+	public boolean hasPickStep() {
 		if (putStep != null) {
 			return true;
 		} else {

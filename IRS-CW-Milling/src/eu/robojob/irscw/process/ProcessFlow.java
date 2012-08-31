@@ -116,4 +116,12 @@ public class ProcessFlow {
 		return processSteps.get(index);
 	}
 	
+	public boolean occursMultipleTimes(AbstractProcessStep step) {
+		if ((processSteps.indexOf(step) != -1) && (processSteps.indexOf(step) != processSteps.lastIndexOf(step))) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 }

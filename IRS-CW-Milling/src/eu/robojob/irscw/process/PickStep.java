@@ -88,4 +88,9 @@ public class PickStep extends AbstractTransportStep {
 		return pickSettings;
 	}
 
+	@Override
+	public ProcessStepType getType() {
+		return ProcessStepType.PICK_STEP;
+	}
+
 }

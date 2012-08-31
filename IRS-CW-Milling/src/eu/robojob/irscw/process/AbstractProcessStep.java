@@ -50,4 +50,5 @@ public abstract class AbstractProcessStep {
 		return device;
 	}
 	
+	public abstract ProcessStepType getType();
 }

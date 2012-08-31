@@ -90,4 +90,9 @@ public class InterventionStep extends AbstractProcessStep {
 		return providers;
 	}
 
+	@Override
+	public ProcessStepType getType() {
+		return ProcessStepType.INTERVENTION_STEP;
+	}
+
 }

@@ -79,4 +79,9 @@ public class PutStep extends AbstractTransportStep {
 		return putSettings;
 	}
 
+	@Override
+	public ProcessStepType getType() {
+		return ProcessStepType.PUT_STEP;
+	}
+
 }
