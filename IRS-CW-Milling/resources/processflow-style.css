@@ -1,13 +1,15 @@
-.arrow-shape-active {
+.arrow-shape-enabled {
 	-fx-fill: linear-gradient(#76b9ff 0%, #619bff 100%);
 	-fx-effect: dropshadow(gaussian, #434343, 2, 0, 0, 1);
 	-fx-stroke: #0094e0;
 	-fx-stroke-width: 1px;
 }
 
-.arrow-shape-inactive {
-	-fx-fill: linear-gradient(#f3f3f3 0%, white 100%);
-	-fx-effect: innershadow(gaussian, #717171, 4, 0, 0, 1);
+.arrow-shape-disabled {
+	-fx-fill: linear-gradient(#e7e7e7 0%, #d5d5d5 100%);
+	-fx-effect: innershadow(gaussian, #717171, 2, 0, 0, -1);
+	-fx-stroke: #c0c0c0;
+	-fx-stroke-width: 1px;
 }
 
 .question-mark-shape {
@@ -26,6 +28,21 @@
 	-fx-effect: dropshadow(gaussian, #434343, 2, 0, 0, 1);
 }
 
+.device-button:pressed {
+	-fx-background-color: 
+		#5c5c5c,
+		linear-gradient(#dbdbdb 0%, #cbcbcb 100%),
+		linear-gradient(#dbdbdb 0%, #cbcbcb 100%);
+		-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);
+}
+
+.device-selected {
+	-fx-background-color: 
+		#ffa800,
+		linear-gradient(white 0%, #d2d3d9 100%),
+		linear-gradient(#fff6e6 0%, #ffd584 100%);
+}
+
 .pre-process {
 	-fx-fill: radial-gradient(center 50% 50%, radius 30%, #f39500, #f37200);
 }
@@ -36,6 +53,10 @@
 
 .cnc-machine {
 	-fx-fill: radial-gradient(center 50% 50%, radius 50%, #ba83ff, #6300dd);
+}
+
+.button-shape-inactive {
+	-fx-fill: radial-gradient(center 50% 50%, radius 50%, #c4c4c4, #919191);
 }
 
 .device-label {

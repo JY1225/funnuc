@@ -32,7 +32,7 @@ public class TransportButton extends Pane {
 		
 		setLeftQuestionMarkActive(false);
 		setRightQuestionMarkActive(false);
-		setActive(true);
+		setEnabled(true);
 	}
 	
 	private void build() {
@@ -74,18 +74,18 @@ public class TransportButton extends Pane {
 		}
 	}
 	
-	public void setActive(boolean active) {
+	public void setEnabled(boolean active) {
 		arrowShape.getStyleClass().clear();
 		if (active) {
-			arrowShape.getStyleClass().add("arrow-shape-active");
+			arrowShape.getStyleClass().add("arrow-shape-enabled");
 		} else {
-			arrowShape.getStyleClass().add("arrow-shape-inactive");
+			arrowShape.getStyleClass().add("arrow-shape-disabled");
 		}
 	}
 	
 	public void setFirstPartActive() {
 		arrowShape.getStyleClass().clear();
-		arrowShape.getStyleClass().add("arrow-shape-inactive");
+		arrowShape.getStyleClass().add("arrow-shape-disabled");
 		this.getChildren().remove(firstCircle);
 		this.getChildren().add(firstCircle);
 	}

@@ -3,6 +3,8 @@ package eu.robojob.irscw.ui.process.flow;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -10,7 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 
 public class DeviceButton extends VBox {
@@ -101,12 +102,31 @@ public class DeviceButton extends VBox {
 	}
 	
 	public void animate() {
-		RotateTransition rt = new RotateTransition(Duration.millis(5000), imagePath);
-		rt.setFromAngle(0);
-		rt.setToAngle(360);
-		rt.setInterpolator(Interpolator.LINEAR);
-		rt.setCycleCount(Timeline.INDEFINITE);
-		rt.play();
+		if (type == DeviceType.CNC_MACHINE) {
+			RotateTransition rt = new RotateTransition(Duration.millis(5000), imagePath);
+			rt.setFromAngle(0);
+			rt.setToAngle(360);
+			rt.setInterpolator(Interpolator.LINEAR);
+			rt.setCycleCount(Timeline.INDEFINITE);
+			rt.play();
+		}
 	}
 	
+	public void setOnAction(EventHandler<ActionEvent> handler) {
+		mainButton.setOnAction(handler);
+	}
+	
+	public void setSelected(boolean selected) {
+		mainButton.getStyleClass().remove("device-selected");
+		if (selected) {
+			mainButton.getStyleClass().add("device-selected");
+		}
+	}
+	
+	public void setEnabled(boolean enabled) {
+		imagePath.getStyleClass().remove("button-shape-inactive");
+		if (!enabled) {
+			imagePath.getStyleClass().add("button-shape-inactive");
+		}
+	}
 }
