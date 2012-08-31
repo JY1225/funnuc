@@ -15,20 +15,26 @@ public class ProcessFlow {
 	private int currentStepNumber;
 	
 	private boolean finished;
+	private boolean needsTeaching;
 	
+	
+	//TODO refactor constructors so there is one constructor, called by the others
 	public ProcessFlow() {
 		this.processSteps = new ArrayList<AbstractProcessStep>();
 		this.finished = false;
+		needsTeaching = true;
 	}
 			
 	public ProcessFlow(List<AbstractProcessStep>processSteps) {
 		this.finished = false;
+		needsTeaching = true;
 		this.currentStepNumber = 0;
 		setUpProcess(processSteps);
 	}
 	
 	public ProcessFlow(ProcessFlow aProcess) {
 		this.finished = false;
+		needsTeaching = true;
 		this.currentStepNumber = 0;
 		List<AbstractProcessStep> processStepsCopy = new ArrayList<AbstractProcessStep>();
 		for (AbstractProcessStep processStep : aProcess.getProcessSteps()) {
@@ -57,6 +63,14 @@ public class ProcessFlow {
 		}
 	}
 	
+	public boolean needsTeaching() {
+		return needsTeaching;
+	}
+
+	public void setNeedsTeaching(boolean needsTeaching) {
+		this.needsTeaching = needsTeaching;
+	}
+
 	public AbstractProcessStep getNextStep() {
 		if ((currentStepNumber != -1) && (currentStepNumber < (processSteps.size() - 1))) {
 			return processSteps.get(currentStepNumber + 1);

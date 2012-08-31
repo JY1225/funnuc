@@ -13,12 +13,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+import eu.robojob.irscw.external.device.DeviceType;
+import eu.robojob.irscw.ui.process.model.DeviceInformation;
 
 public class DeviceButton extends VBox {
-	
-	public enum DeviceType {
-		PRE_STACKING, PRE_PROCESSING, CNC_MACHINE, POST_PROCESSING, POST_STACKING
-	}
 	
 	private String preStackingPath = "M 45.516149,13.002635 27.32012,0.6258018 v 6.315935 C 1.6407593,8.3113848 0.51614826,34.845316 0.51614826,35.100909 l 4.44510294,-0.0033 c 0,-0.04779 2.4225812,-15.47896 22.3588688,-16.492999 v 6.758224 L 45.516149,13.002635 z";
 	private String postStackingPath = "M 45.516149,22.724076 27.32012,35.100909 V 28.784974 C 1.6407593,27.415326 0.51614826,0.8813948 0.51614826,0.6258018 l 4.44510294,0.0033 c 0,0.04779 2.4225812,15.4789602 22.3588688,16.4929992 v -6.758224 l 18.196029,12.360199 z";
@@ -33,22 +31,18 @@ public class DeviceButton extends VBox {
 	private Button mainButton;
 	private SVGPath imagePath;
 	private Label deviceName;
-	private DeviceType type;
-	private String name;
 	
-	public DeviceButton(String name, DeviceType type) {
+	private DeviceInformation deviceInfo;
+	
+	public DeviceButton(String name, DeviceInformation deviceInfo) {
 		deviceName = new Label(name);
-		this.name = name;
 		build();
-		setType(type);
+		setDeviceInformation(deviceInfo);
 	}
 	
-	public String getName() {
-		return name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
+	public void setDeviceInformation(DeviceInformation deviceInfo) {
+		this.deviceInfo = deviceInfo;
+		setImage();
 	}
 	
 	private void build() {
@@ -59,7 +53,7 @@ public class DeviceButton extends VBox {
 		mainButton.setAlignment(Pos.CENTER);
 		mainButton.getStyleClass().add("device-button");
 
-		deviceName = new Label(name);
+		deviceName = new Label(deviceInfo.getDevice().getId());
 		deviceName.setPrefWidth(LABEL_WIDTH);
 		deviceName.setAlignment(Pos.CENTER);
 		deviceName.setTextAlignment(TextAlignment.CENTER);
@@ -73,12 +67,20 @@ public class DeviceButton extends VBox {
 		this.setAlignment(Pos.CENTER);
 	}
 	
-	public void setType(DeviceType type) {
-		this.type = type;
-		switch(type) {
-			case PRE_STACKING:	
-				imagePath.setContent(preStackingPath);
-				imagePath.getStyleClass().add("pre-process");
+	private void setImage() {
+		switch(deviceInfo.getDevice().getType()) {
+			case STACKING:	
+				if (deviceInfo.getPutStep() == null) {
+					imagePath.setContent(preStackingPath);
+					imagePath.getStyleClass().add("pre-process");
+				} else {
+					if (deviceInfo.getPickStep() == null) {
+						imagePath.setContent(postStackingPath);
+						imagePath.getStyleClass().add("post-process");
+					} else {
+						throw new IllegalStateException("Unknown stacking-device type");
+					}
+				}
 				break;
 			case PRE_PROCESSING:
 				imagePath.setContent(prePocessingPath);
@@ -92,17 +94,13 @@ public class DeviceButton extends VBox {
 				imagePath.setContent(postProcessingPath);
 				imagePath.getStyleClass().add("post-process");
 				break;
-			case POST_STACKING:
-				imagePath.setContent(postStackingPath);
-				imagePath.getStyleClass().add("post-process");
-				break;
 			default:
 				throw new IllegalArgumentException("Unknown Device type");
 		}
 	}
 	
 	public void animate() {
-		if (type == DeviceType.CNC_MACHINE) {
+		if (deviceInfo.getDevice().getType() == DeviceType.CNC_MACHINE) {
 			RotateTransition rt = new RotateTransition(Duration.millis(5000), imagePath);
 			rt.setFromAngle(0);
 			rt.setToAngle(360);

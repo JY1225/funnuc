@@ -99,4 +99,9 @@ public class Conveyor extends AbstractStackingDevice {
 		return null;
 	}
 
+	@Override
+	public DeviceType getType() {
+		return DeviceType.STACKING;
+	}
+
 }

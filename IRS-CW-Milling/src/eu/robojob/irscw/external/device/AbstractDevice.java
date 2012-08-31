@@ -92,4 +92,6 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		}
 	}
 	
+	public abstract DeviceType getType();
+	
 }

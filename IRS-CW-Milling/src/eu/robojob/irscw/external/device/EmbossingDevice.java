@@ -95,4 +95,9 @@ public class EmbossingDevice extends AbstractProcessingDevice {
 		return null;
 	}
 
+	@Override
+	public DeviceType getType() {
+		return DeviceType.PRE_PROCESSING;
+	}
+
 }

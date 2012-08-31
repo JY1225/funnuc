@@ -46,17 +46,17 @@ public class CNCMillingMachine extends AbstractProcessingDevice {
 		}
 	}
 	
-	public static class CNCMillingMachinePutSettings extends AbstractDevicePutSettings{
+	public static class CNCMillingMachinePutSettings extends AbstractProcessingDevicePutSettings{
 		public CNCMillingMachinePutSettings(WorkArea workArea) {
 			super(workArea);
 		}
 	}
-	public static class CNCMillingMachinePickSettings extends AbstractDevicePickSettings{
+	public static class CNCMillingMachinePickSettings extends AbstractProcessingDevicePickSettings{
 		public CNCMillingMachinePickSettings(WorkArea workArea) {
 			super(workArea);
 		}
 	}
-	public static class CNCMillingMachineInterventionSettings extends AbstractDeviceInterventionSettings{
+	public static class CNCMillingMachineInterventionSettings extends AbstractProcessingDeviceInterventionSettings{
 		public CNCMillingMachineInterventionSettings(WorkArea workArea) {
 			super(workArea);
 		}
@@ -165,5 +165,10 @@ public class CNCMillingMachine extends AbstractProcessingDevice {
 		} else {
 			String response = socketConnection.synchronizedSendAndRead(INTERVENTION_FINISHED);
 		}
+	}
+
+	@Override
+	public DeviceType getType() {
+		return DeviceType.CNC_MACHINE;
 	}
 }

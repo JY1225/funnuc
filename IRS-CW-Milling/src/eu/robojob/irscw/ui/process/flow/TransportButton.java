@@ -4,7 +4,10 @@ import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
-import javafx.scene.transform.Scale;
+import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.AbstractProcessingDevice;
+import eu.robojob.irscw.external.device.DeviceType;
+import eu.robojob.irscw.ui.process.model.TransportInformation;
 
 public class TransportButton extends Pane {
 
@@ -22,16 +25,14 @@ public class TransportButton extends Pane {
 	
 	private static final double WIDTH = 142.075;
 	
-	private boolean showQuestionLeft;
-	private boolean showQuestionRight;
+	private TransportInformation transportInfo;
 	
-	
-	public TransportButton() {
+	public TransportButton(TransportInformation transportInfo) {
 		super();
+		
 		build();
 		
-		setLeftQuestionMarkActive(false);
-		setRightQuestionMarkActive(false);
+		setTransportInformation(transportInfo);
 		setEnabled(true);
 	}
 	
@@ -54,6 +55,20 @@ public class TransportButton extends Pane {
 		this.getChildren().addAll(arrowShape);
 		
 		this.setPrefWidth(WIDTH);
+	}
+	
+	public void setTransportInformation(TransportInformation transportInfo) {
+		this.transportInfo = transportInfo;
+		if (transportInfo.getPickStep().getProcessFlow().needsTeaching()) {
+			AbstractDevice device = transportInfo.getPickStep().getDevice();
+			if (device instanceof AbstractProcessingDevice) {
+				AbstractProcessingDevice procDevice = (AbstractProcessingDevice) device;
+				if (procDevice.isInvasive()) {
+					setLeftQuestionMarkActive(true);
+				}
+			}
+		}
+		
 	}
 	
 	public void setOnAction(EventHandler<MouseEvent> value) {
