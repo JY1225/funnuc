@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui.process.flow;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
@@ -65,7 +66,7 @@ public class TransportButton extends Pane {
 		this.getStyleClass().add("transport-button");
 		
 		this.setPrefWidth(WIDTH);
-		
+				
 		this.setEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {

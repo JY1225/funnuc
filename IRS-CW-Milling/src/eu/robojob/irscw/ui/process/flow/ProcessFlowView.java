@@ -41,7 +41,7 @@ public class ProcessFlowView extends GridPane  {
 	}
 
 	private void buildView() {
-		setPadding(new Insets(20, 10, 20, 10));
+		setPadding(new Insets(20, 0, 20, 0));
 		int column = 0;
 		int row = 0;
 		for (int i = 0; i < processFlowAdapter.getDeviceStepCount(); i++) {
@@ -49,14 +49,14 @@ public class ProcessFlowView extends GridPane  {
 			this.add(device, column, row);
 			deviceButtons.put(i, device);
 			device.setOnAction(new DeviceEventHandler(i));
-			device.toBack();
 			column++;
 			if (i < processFlowAdapter.getTransportStepCount()) {
 				TransportButton transport = new TransportButton(processFlowAdapter.getTransportInformation(i));
 				this.add(transport, column, row);
 				transportButtons.put(i, transport);
 				transport.setOnAction(new TransportEventHandler(i));
-				setMargin(transport, new Insets(10, 0, 0, 1));
+				transport.toBack();
+				setMargin(transport, new Insets(10, 0, 0, 0));
 				column++;
 			}
 		}
