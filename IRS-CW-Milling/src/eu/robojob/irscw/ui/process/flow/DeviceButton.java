@@ -9,6 +9,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.TextAlignment;
@@ -27,6 +29,7 @@ public class DeviceButton extends VBox {
 	private static final int BUTTON_WIDTH = 60;
 	private static final int BUTTON_HEIGHT = 60;
 	private static final int LABEL_WIDTH = 120;
+	private static final int LABEL_HEIGHT= 40;
 	
 	private Button mainButton;
 	private SVGPath imagePath;
@@ -48,17 +51,26 @@ public class DeviceButton extends VBox {
 	private void build() {
 		imagePath = new SVGPath();
 		mainButton = new Button();
-		mainButton.setGraphic(imagePath);
+		StackPane pane = new StackPane();
+		pane.getChildren().add(imagePath);
+		Pane pane2 = new Pane();
+		pane2.getStyleClass().add("effect");
+		pane2.setPrefHeight(BUTTON_WIDTH);
+		pane2.setPrefWidth(BUTTON_WIDTH);
+		pane.getChildren().add(pane2);
+		mainButton.setGraphic(pane);
 		mainButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		mainButton.setAlignment(Pos.CENTER);
 		mainButton.getStyleClass().add("device-button");
 
 		deviceName = new Label();
 		deviceName.setPrefWidth(LABEL_WIDTH);
-		deviceName.setAlignment(Pos.CENTER);
+		deviceName.setPrefHeight(LABEL_HEIGHT);
+		deviceName.setWrapText(true);
+		deviceName.setAlignment(Pos.TOP_CENTER);
 		deviceName.setTextAlignment(TextAlignment.CENTER);
 		deviceName.getStyleClass().add("device-label");
-		setMargin(deviceName, new Insets(6, 0, 0, 0));
+		VBox.setMargin(deviceName, new Insets(5, 0, 0, 0));
 		
 		this.getChildren().add(mainButton);
 		this.getChildren().add(deviceName);
@@ -123,8 +135,10 @@ public class DeviceButton extends VBox {
 	
 	public void setEnabled(boolean enabled) {
 		imagePath.getStyleClass().remove("button-shape-inactive");
+		deviceName.getStyleClass().remove("button-label-inactive");
 		if (!enabled) {
 			imagePath.getStyleClass().add("button-shape-inactive");
+			deviceName.getStyleClass().add("button-label-inactive");
 		}
 	}
 }

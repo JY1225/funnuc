@@ -10,7 +10,7 @@
 		linear-gradient(#ababab 0%, #696969 100%),
 		linear-gradient(#858585 0%, #4d4f53 100%);
 		-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 0;
-	-fx-effect: dropshadow(gaussian, #4c4c4c, 10, 0, 0, 1);
+	-fx-effect: dropshadow(gaussian, #4c4c4c, 25, 0, 0, 1);
 }
 
 .header-button {

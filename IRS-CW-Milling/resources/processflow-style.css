@@ -1,7 +1,7 @@
 .arrow-shape-enabled {
 	-fx-fill: linear-gradient(#76b9ff 0%, #619bff 100%);
-	-fx-effect: dropshadow(gaussian, #434343, 2, 0, 0, 1);
-	-fx-stroke: #0094e0;
+	-fx-effect: dropshadow(gaussian, #b6b6b6, 15, 0, 0, 5);	
+	-fx-stroke: linear-gradient(#0cadff 100%, #007ab8 0%);
 	-fx-stroke-width: 1px;
 }
 
@@ -12,6 +12,11 @@
 	-fx-stroke-width: 1px;
 }
 
+.arrow-shape-pressed {
+	-fx-fill: linear-gradient(#76b9ff 0%, #619bff 100%);
+	-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);
+}
+
 .question-mark-shape {
 	-fx-fill: linear-gradient(white 0%, #e6e6e6 100%);
 	-fx-effect: dropshadow(gaussian, #848484, 8, 0, 0, 0);
@@ -19,28 +24,25 @@
 
 .device-button {
 	-fx-background-color: 
-		#8d8d8d,
-		linear-gradient(white 0%, #d2d3d9 100%),
-		linear-gradient(white 0%, #dedede 100%);
-	-fx-background-insets: 0, 1, 2;
-	-fx-border-radius: 5, 4, 3;
-	
-	-fx-effect: dropshadow(gaussian, #434343, 2, 0, 0, 1);
+		linear-gradient(#c0c0c0 0%, #8d8d8d 100%),
+		linear-gradient(white 0%, #d1d1d1 80%, #cccccc 100%),
+		radial-gradient(center 50% -40%, radius 200%, rgba(255, 255, 255, 0.1) 45%, rgba(203, 203, 203, 0.1) 50%);
+	-fx-background-insets: 0, 1 1 2 1, 1 1 2 1;
+	-fx-background-radius: 5, 4, 4;
+	-fx-padding: 0 0 0 0;
+	-fx-effect: dropshadow(gaussian, #b6b6b6, 15, 0, 0, 5);
 }
 
-.device-button:pressed {
-	-fx-background-color: 
-		#5c5c5c,
-		linear-gradient(#dbdbdb 0%, #cbcbcb 100%),
-		linear-gradient(#dbdbdb 0%, #cbcbcb 100%);
-		-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);
+.device-button Pane.effect {
+	-fx-background-color: radial-gradient(center 50% -40%, radius 200%, rgba(255, 255, 255, 0.2) 45%, rgba(203, 203, 203, 0.1) 50%);
+	-fx-background-insets: 1 1 2 1;
+	-fx-background-radius: 4;
 }
 
-.device-selected {
-	
-}
-
-.transport-button {
+.device-button:pressed Pane.effect {
+	-fx-background-color: rgba(113, 113, 113, 0.3);
+	-fx-background-insets: 1 1 2 1;
+	-fx-background-radius: 4;
 }
 
 .pre-process {
@@ -66,4 +68,8 @@
 	
 	-fx-font-family: "Helvetica";
 	-fx-font-weight: bold;
+}
+
+.button-label-inactive {
+	-fx-text-fill: #B8B8B8;
 }

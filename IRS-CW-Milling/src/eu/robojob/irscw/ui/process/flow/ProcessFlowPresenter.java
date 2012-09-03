@@ -1,5 +1,7 @@
 package eu.robojob.irscw.ui.process.flow;
 
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.device.CNCMillingMachine;
 import eu.robojob.irscw.external.device.Conveyor;
 import eu.robojob.irscw.external.device.EmbossingDevice;
@@ -16,6 +18,8 @@ public class ProcessFlowPresenter {
 	private ProcessFlowView view;
 	private ConfigurePresenter parent;
 	
+	private static Logger logger = Logger.getLogger(ProcessFlowPresenter.class);
+	
 	public ProcessFlowPresenter(ProcessFlowView view) {
 		this.view = view;
 		view.setPresenter(this);
@@ -30,19 +34,21 @@ public class ProcessFlowPresenter {
 		return view;
 	}
 	
-	public void deviceClicked(String id) {
-		
+	public void deviceClicked(int index) {
+		logger.debug("Clicked device with index: " + index);
+		view.focusDevice(index);
 	}
 	
-	public void transportClicked(String id) {
-		
+	public void transportClicked(int index) {
+		logger.debug("Clicked transport with index: " + index);
+		view.focusTransport(index);
 	}
 	
 	private void createFakeTest() {
 		ProcessFlow processFlow = new ProcessFlow();
 		Conveyor conveyor = new Conveyor("conveyor", null);
-		EmbossingDevice embossing = new EmbossingDevice("embossing", null);
-		CNCMillingMachine cncMilling = new CNCMillingMachine("cnc milling", null);
+		EmbossingDevice embossing = new EmbossingDevice("embossing tes tes test", null);
+		CNCMillingMachine cncMilling = new CNCMillingMachine("cnc", null);
 		FanucRobot robot = new FanucRobot("robot", null);
 		PickStep pick1 = new PickStep(robot, null, conveyor, null, null);
 		PutStep put1 = new PutStep(robot, null, embossing, null, null);

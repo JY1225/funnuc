@@ -1,12 +1,12 @@
 package eu.robojob.irscw.ui.process.flow;
 
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
-import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.ui.process.model.TransportInformation;
 
 public class TransportButton extends Pane {
@@ -23,7 +23,7 @@ public class TransportButton extends Pane {
 	private String firstCirclePath = "M38.82,19.318c0,10.645-8.629,19.275-19.275,19.275c-10.646,0-19.275-8.63-19.275-19.275 S8.899,0.042,19.545,0.042C30.191,0.042,38.82,8.673,38.82,19.318z";
 	private String secondCirclePath = "M141.989,19.294c0,10.645-8.629,19.275-19.275,19.275c-10.646,0-19.275-8.63-19.275-19.275 s8.63-19.275,19.275-19.275C133.36,0.019,141.989,8.649,141.989,19.294z";
 	
-	private static final double WIDTH = 142.075;
+	private static final double WIDTH = 142.275;
 	
 	private TransportInformation transportInfo;
 	
@@ -57,6 +57,21 @@ public class TransportButton extends Pane {
 		this.getStyleClass().add("transport-button");
 		
 		this.setPrefWidth(WIDTH);
+		
+		this.setEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				arrowShape.getStyleClass().remove("arrow-shape-pressed");
+				arrowShape.getStyleClass().add("arrow-shape-pressed");
+			}
+		});
+		
+		this.setEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				arrowShape.getStyleClass().remove("arrow-shape-pressed");			}
+		});
+		
 	}
 	
 	public void setTransportInformation(TransportInformation transportInfo) {
@@ -73,8 +88,13 @@ public class TransportButton extends Pane {
 		
 	}
 	
-	public void setOnAction(EventHandler<MouseEvent> value) {
-		this.addEventHandler(MouseEvent.MOUSE_CLICKED, value);
+	public void setOnAction(final EventHandler<ActionEvent> value) {
+		this.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {			
+			@Override
+			public void handle(MouseEvent event) {
+				value.handle(new ActionEvent());
+			}
+		});
 	}
 	
 	public void setLeftQuestionMarkActive(boolean active) {
