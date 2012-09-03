@@ -19,6 +19,9 @@
 	-fx-font-weight: bold;
 	-fx-font-family: "Helvetica";
 	-fx-padding: 0;
+	-fx-background-color:  #b8b8b8, white;
+	-fx-background-insets: 0, 0 1 1 1;
+	-fx-background-radius: 0;
 }
 
 .left-menu-button .left-menu-item-label {
@@ -28,6 +31,14 @@
 .left-menu-item-panel {
 }
 
+.left-menu-top {
+	-fx-background-radius: 5 5 0 0;
+	-fx-background-insets: 0, 1 1 1 1;
+}
+
+.left-menu-bottom {
+	-fx-background-radius: 0 0 5 5;
+}
 
 .green {
 	-fx-background-color: rgba(0, 255, 0, 0.5);

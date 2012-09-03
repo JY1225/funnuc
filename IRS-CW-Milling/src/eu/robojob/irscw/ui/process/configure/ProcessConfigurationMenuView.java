@@ -52,7 +52,7 @@ public class ProcessConfigurationMenuView extends VBox {
 	private void build() {
 		configureProcess = new Button();
 		configureProcess.setGraphic(getGraphic(configurePath, translator.getTranslation("ConfigureProcess"), true));
-		configureProcess.getStyleClass().add("left-menu-button");
+		configureProcess.getStyleClass().addAll("left-menu-button", "left-menu-top");
 		configureProcess.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		configureProcess.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -85,7 +85,7 @@ public class ProcessConfigurationMenuView extends VBox {
 		this.getChildren().add(openProcess);
 		newProcess = new Button();
 		newProcess.setGraphic(getGraphic(newPath, translator.getTranslation("NewProcess"), true));
-		newProcess.getStyleClass().add("left-menu-button");
+		newProcess.getStyleClass().addAll("left-menu-button", "left-menu-bottom");
 		newProcess.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		newProcess.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
