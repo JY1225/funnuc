@@ -126,19 +126,14 @@ public class DeviceButton extends VBox {
 		mainButton.setOnAction(handler);
 	}
 	
-	public void setSelected(boolean selected) {
-		mainButton.getStyleClass().remove("device-selected");
-		if (selected) {
-			mainButton.getStyleClass().add("device-selected");
-		}
-	}
-	
 	public void setEnabled(boolean enabled) {
 		imagePath.getStyleClass().remove("button-shape-inactive");
 		deviceName.getStyleClass().remove("button-label-inactive");
+		mainButton.getStyleClass().remove("device-button-inactive");
 		if (!enabled) {
 			imagePath.getStyleClass().add("button-shape-inactive");
 			deviceName.getStyleClass().add("button-label-inactive");
-		}
+			mainButton.getStyleClass().add("device-button-inactive");
+		} 
 	}
 }

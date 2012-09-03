@@ -69,5 +69,6 @@ public class ProcessFlowPresenter {
 		processFlow.addStep(pick3);
 		processFlow.addStep(put3);
 		view.setProcessFlow(processFlow);
+		//view.startDeviceAnimation(2);
 	}
 }

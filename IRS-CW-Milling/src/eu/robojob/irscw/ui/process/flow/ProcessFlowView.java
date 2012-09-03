@@ -49,6 +49,7 @@ public class ProcessFlowView extends GridPane  {
 			this.add(device, column, row);
 			deviceButtons.put(i, device);
 			device.setOnAction(new DeviceEventHandler(i));
+			device.toBack();
 			column++;
 			if (i < processFlowAdapter.getTransportStepCount()) {
 				TransportButton transport = new TransportButton(processFlowAdapter.getTransportInformation(i));
@@ -56,7 +57,6 @@ public class ProcessFlowView extends GridPane  {
 				transportButtons.put(i, transport);
 				transport.setOnAction(new TransportEventHandler(i));
 				setMargin(transport, new Insets(10, 0, 0, 1));
-				transport.toBack();
 				column++;
 			}
 		}
@@ -117,6 +117,14 @@ public class ProcessFlowView extends GridPane  {
 		public void handle(ActionEvent event) {
 			presenter.transportClicked(index);
 		}	
+	}
+	
+	public void startDeviceAnimation(int index) {
+		if ((index<0) || (index>=processFlowAdapter.getDeviceStepCount()) || (deviceButtons.get(index) == null)) {
+			throw new IllegalArgumentException("Index is out of bounds or incorrect.");
+		} else {
+			deviceButtons.get(index).animate();
+		}
 	}
 }
 
