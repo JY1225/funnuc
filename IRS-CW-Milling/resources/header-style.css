@@ -9,7 +9,7 @@
 		#343434,
 		linear-gradient(#ababab 0%, #696969 100%),
 		linear-gradient(#858585 0%, #4d4f53 100%);
-		-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 0;
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 0;
 	-fx-effect: dropshadow(gaussian, #4c4c4c, 25, 0, 0, 1);
 }
 
@@ -66,14 +66,3 @@
 		linear-gradient(#676767 0%, #4a4a4a 100%);
 	-fx-effect: innershadow(gaussian, #1f1f1f, 7, 0, 0, 2);
 }
-/* 
-.header-button:pressed Text{
-	-fx-effect: dropshadow(gaussian, #016ee7, 25, 0, 0, 0);
-	-fx-fill: linear-gradient(#7dffff 0%, #05a2f1 100%);
-}
-
-.selected Text {
-	-fx-effect: dropshadow(gaussian, #016ee7, 25, 0, 0, 0);
-	-fx-fill: linear-gradient(#7dffff 0%, #05a2f1 100%);
-}
-*/

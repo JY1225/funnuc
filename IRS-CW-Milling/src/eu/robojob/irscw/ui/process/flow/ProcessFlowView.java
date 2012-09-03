@@ -7,11 +7,13 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.ui.process.configure.ConfigureView;
 import eu.robojob.irscw.ui.process.model.ProcessFlowAdapter;
 
 //for now, we only allow one row, in the future, multiple rows could be possible
@@ -61,6 +63,16 @@ public class ProcessFlowView extends GridPane  {
 			}
 		}
 		this.setAlignment(Pos.CENTER);
+		this.setPrefHeight(ConfigureView.HEIGHT_TOP);
+		this.setPrefWidth(ConfigureView.WIDTH);
+		this.getStyleClass().add("process-flow-view");
+		this.setEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent> () {
+			@Override
+			public void handle(MouseEvent arg0) {
+				presenter.backgroundClicked();
+				arg0.consume();
+			}
+		});
 	}
 	
 	public void focusDevice(int index) {
@@ -94,6 +106,15 @@ public class ProcessFlowView extends GridPane  {
 					transportButtons.get(i).setEnabled(false);
 				}
 			}
+		}
+	}
+	
+	public void focusAll() {
+		for (DeviceButton device : deviceButtons.values()) {
+			device.setEnabled(true);
+		}
+		for (TransportButton transport : transportButtons.values()) {
+			transport.setEnabled(true);
 		}
 	}
 

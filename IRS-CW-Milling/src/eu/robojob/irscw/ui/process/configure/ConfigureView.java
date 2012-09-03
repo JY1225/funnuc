@@ -17,10 +17,10 @@ public class ConfigureView extends VBox {
 	
 	private ConfigurePresenter presenter;
 	
-	private static final int HEIGHT_TOP = 245;
-	private static final int HEIGHT_BOTTOM = 300;
-	private static final int WIDTH = 800;
-	private static final int WIDTH_BOTTOM_LEFT = 250;
+	public static final int HEIGHT_TOP = 245;
+	public static final int HEIGHT_BOTTOM = 300;
+	public static final int WIDTH = 800;
+	public static final int WIDTH_BOTTOM_LEFT = 250;
 	
 	public ConfigureView () {
 		buildView();

@@ -72,13 +72,15 @@ public class TransportButton extends Pane {
 			public void handle(MouseEvent event) {
 				effect.getStyleClass().remove("clicked");
 				effect.getStyleClass().add("clicked");
+				event.consume();
 			}
 		});
 		
 		this.setEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				effect.getStyleClass().remove("clicked");			
+				effect.getStyleClass().remove("clicked");	
+				event.consume();
 			}
 		});
 		
@@ -103,6 +105,7 @@ public class TransportButton extends Pane {
 			@Override
 			public void handle(MouseEvent event) {
 				value.handle(new ActionEvent());
+				event.consume();
 			}
 		});
 	}

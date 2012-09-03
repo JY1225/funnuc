@@ -44,6 +44,11 @@ public class ProcessFlowPresenter {
 		view.focusTransport(index);
 	}
 	
+	public void backgroundClicked() {
+		logger.debug("Clicked process-flow background");
+		view.focusAll();
+	}
+	
 	private void createFakeTest() {
 		ProcessFlow processFlow = new ProcessFlow();
 		Conveyor conveyor = new Conveyor("conveyor", null);
