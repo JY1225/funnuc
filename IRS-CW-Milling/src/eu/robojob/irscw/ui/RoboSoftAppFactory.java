@@ -9,6 +9,8 @@ import eu.robojob.irscw.ui.process.MenuBarPresenter;
 import eu.robojob.irscw.ui.process.MenuBarView;
 import eu.robojob.irscw.ui.process.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.process.configure.ConfigureView;
+import eu.robojob.irscw.ui.process.configure.ProcessConfigurationMenuPresenter;
+import eu.robojob.irscw.ui.process.configure.ProcessConfigurationMenuView;
 import eu.robojob.irscw.ui.process.configure.ProcessConfigurationPresenter;
 import eu.robojob.irscw.ui.process.configure.ProcessConfigurationView;
 import eu.robojob.irscw.ui.process.flow.ProcessFlowPresenter;
@@ -23,6 +25,7 @@ public class RoboSoftAppFactory {
 	private ProcessConfigurationPresenter processConfigurationPresenter;
 	private NumericKeyboardPresenter numericKeyboardPresenter;
 	private ProcessFlowPresenter processFlowPresenter;
+	private ProcessConfigurationMenuPresenter processConfigurationMenuPresenter;
 	
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
@@ -45,7 +48,7 @@ public class RoboSoftAppFactory {
 	public ConfigurePresenter getConfigurePresenter() {
 		if (configurePresenter == null) {
 			ConfigureView processConfigureView = new ConfigureView();
-			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNumericKeyboardPresenter(), getProcessFlowPresenter(), getProcessConfigurationPresenter());
+			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNumericKeyboardPresenter(), getProcessFlowPresenter(), getProcessConfigurationMenuPresenter(), getProcessConfigurationPresenter());
 		}
 		return configurePresenter;
 	}
@@ -80,5 +83,13 @@ public class RoboSoftAppFactory {
 			processFlowPresenter = new ProcessFlowPresenter(processFlowView);
 		}
 		return processFlowPresenter;
+	}
+	
+	public ProcessConfigurationMenuPresenter getProcessConfigurationMenuPresenter() {
+		if (processConfigurationMenuPresenter == null) {
+			ProcessConfigurationMenuView processConfigurationMenuView = new ProcessConfigurationMenuView();
+			processConfigurationMenuPresenter = new ProcessConfigurationMenuPresenter(processConfigurationMenuView);
+		}
+		return processConfigurationMenuPresenter;
 	}
 }

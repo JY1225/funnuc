@@ -19,13 +19,15 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 	private NumericKeyboardPresenter numericKeyboardPresenter;
 	
 	private ProcessFlowPresenter processFlowPresenter;
+	private ProcessConfigurationMenuPresenter processConfigurationMenuPresenter;
 	private ProcessConfigurationPresenter processConfigurationPresenter;
 	
 	private boolean keyboardActive;
 	private boolean numericKeyboardActive;
 	
 	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
-			ProcessFlowPresenter processFlowPresenter, ProcessConfigurationPresenter processConfigurationPresenter) {
+			ProcessFlowPresenter processFlowPresenter, ProcessConfigurationMenuPresenter processConfigurationMenuPresenter,
+				ProcessConfigurationPresenter processConfigurationPresenter) {
 		this.view = view;
 		this.keyboardPresenter = keyboardPresenter;
 		keyboardPresenter.setParent(this);
@@ -35,6 +37,8 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 		processConfigurationPresenter.setParent(this);
 		this.processFlowPresenter = processFlowPresenter;
 		processConfigurationPresenter.setParent(this);
+		this.processConfigurationMenuPresenter = processConfigurationMenuPresenter;
+		processConfigurationMenuPresenter.setParent(this);
 		view.setPresenter(this);
 		showConfigureView();
 		keyboardActive = false;
@@ -52,6 +56,7 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 	public void showConfigureView() {
 		view.setTop(processFlowPresenter.getView());
 		view.setBottomRight(processConfigurationPresenter.getView());
+		view.setBottomLeft(processConfigurationMenuPresenter.getView());
 	}
 	
 	public void showTeachView() {

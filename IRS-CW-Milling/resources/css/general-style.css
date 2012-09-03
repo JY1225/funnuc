@@ -2,12 +2,8 @@
 	
 }
 
-#bottom-panel {
-	-fx-effect: dropshadow(gaussian, #111111, 10, 0, 0, -1);
-}
-
 .bottom-left {
-	-fx-background-color: #a0a0a0, #e9e9e9, #dddee0;
+	-fx-background-color: #b8b8b8, #e9e9e9, #dddee0;
 	-fx-background-insets: 0, 1 1 0 0, 2 2 0 0;
 }
 
@@ -15,6 +11,23 @@
 	-fx-border-color: #9f9f9f;
 	-fx-border-width: 1 0 0 0;
 }
+
+.left-menu-button {
+	-fx-font-size: 14px;
+	-fx-font-smoothing-type: lcd;
+	-fx-text-alignment: center;
+	-fx-font-weight: bold;
+	-fx-font-family: "Helvetica";
+	-fx-padding: 0;
+}
+
+.left-menu-button .left-menu-item-label {
+	-fx-padding: 0 0 0 5;
+}
+
+.left-menu-item-panel {
+}
+
 
 .green {
 	-fx-background-color: rgba(0, 255, 0, 0.5);
@@ -27,3 +40,4 @@
 .yellow {
 	-fx-background-color: rgba(255, 255, 0, 0.5);
 }
+
