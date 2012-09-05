@@ -4,14 +4,18 @@ import javafx.scene.Node;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.controls.AbstractTextField;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
+import eu.robojob.irscw.ui.main.configure.device.DeviceMenuPresenter;
+import eu.robojob.irscw.ui.main.configure.device.DeviceMenuView;
 import eu.robojob.irscw.ui.main.configure.process.ProcessMenuPresenter;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowPresenter;
+import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
 
 public class ConfigurePresenter implements TextFieldListener {
 
@@ -28,6 +32,9 @@ public class ConfigurePresenter implements TextFieldListener {
 	private boolean keyboardActive;
 	private boolean numericKeyboardActive;
 	
+	private ProcessFlow processFlow;
+	private ProcessFlowAdapter processFlowAdapter;
+	
 	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
 			ProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processConfigurationMenuPresenter) {
 		this.view = view;
@@ -43,6 +50,7 @@ public class ConfigurePresenter implements TextFieldListener {
 		showConfigureView();
 		keyboardActive = false;
 		numericKeyboardActive = false;
+		processFlow = null;
 	}
 	
 	public ConfigureView getView() {
@@ -120,6 +128,20 @@ public class ConfigurePresenter implements TextFieldListener {
 	@Override
 	public void textFieldLostFocus(AbstractTextField textField) {
 		closeKeyboard();
+	}
+	
+	public void configureDevice(int index) {
+		DeviceMenuView deviceMenuView = new DeviceMenuView(processFlowAdapter.getDeviceInformation(index));
+		DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(deviceMenuView);
+		deviceMenuPresenter.setParent(this);
+		view.setBottomLeft(deviceMenuPresenter.getView());
+		
+	}
+	
+	public void loadProcessFlow(ProcessFlow processFlow) {
+		this.processFlow = processFlow;
+		processFlowAdapter = new ProcessFlowAdapter(processFlow);
+		processFlowPresenter.loadProcessFlow(processFlow);
 	}
 
 }

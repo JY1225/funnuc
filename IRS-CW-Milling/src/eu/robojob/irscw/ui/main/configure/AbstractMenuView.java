@@ -1,5 +1,6 @@
 package eu.robojob.irscw.ui.main.configure;
 
+import eu.robojob.irscw.util.Translator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -16,6 +17,8 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 
 	protected T presenter;
 	
+	protected Translator translator = Translator.getInstance();
+	
 	private static String arrowRightPath = "M 1.6875 0 L 0 1.65625 L 3.375 5 L 0.0625 8.3125 L 1.71875 10 L 6.65625 5.0625 L 6.5625 4.96875 L 6.625 4.90625 L 1.6875 0 z ";
 	
 	private static int BUTTON_WIDTH = 210;
@@ -27,7 +30,6 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 	
 	public AbstractMenuView() {
 		super();
-		build();
 		setAlignment(Pos.CENTER);
 	}
 	
