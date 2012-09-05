@@ -1,10 +1,11 @@
 package eu.robojob.irscw.ui.main.configure.process;
 
-import javafx.scene.layout.GridPane;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
+import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.main.configure.AbstractFormView;
 
-public class ProcessConfigureView extends GridPane {
+public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePresenter> {
 
 	private ProcessConfigurePresenter presenter;
 	
@@ -12,24 +13,25 @@ public class ProcessConfigureView extends GridPane {
 	private NumericTextField test;
 	
 	public ProcessConfigureView() {
-		buildView();
+		super();	
 	}
 	
-	private void buildView() {
+	public ProcessConfigurePresenter getPresenter() {
+		return presenter;
+	}
+
+	@Override
+	protected void build() {
 		name = new FullTextField();
 		add(name, 0, 0);
 		test = new NumericTextField();
 		add(test, 0, 1);
 	}
 	
-	public void setPresenter(ProcessConfigurePresenter presenter) {
-		this.presenter = presenter;
-		name.setFocusListener(presenter);
-		test.setFocusListener(presenter);
-	}
-	
-	public ProcessConfigurePresenter getPresenter() {
-		return presenter;
+	@Override
+	public void setTextFieldListener(TextFieldListener listener) {
+		name.setFocusListener(listener);
+		test.setFocusListener(listener);
 	}
 
 }

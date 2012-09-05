@@ -7,9 +7,12 @@ public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> {
 	
 	public AbstractMenuPresenter(T view) {
 		this.view = view;
+		setPresenter();
 	}
 	
 	public void setParent(ConfigurePresenter parent) {
 		this.parent = parent;
 	}
+	
+	protected abstract void setPresenter();
 }

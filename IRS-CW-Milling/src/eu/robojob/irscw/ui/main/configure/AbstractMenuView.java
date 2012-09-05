@@ -12,7 +12,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 
-public class AbstractMenuView<T extends AbstractMenuPresenter<?>> extends VBox {
+public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> extends VBox {
 
 	protected T presenter;
 	
@@ -26,14 +26,21 @@ public class AbstractMenuView<T extends AbstractMenuPresenter<?>> extends VBox {
 	private static int ICON_ARROW_WIDTH = 10;
 	
 	public AbstractMenuView() {
-		
+		super();
+		build();
+		setAlignment(Pos.CENTER);
 	}
 	
 	public void setPresenter(T presenter) {
 		this.presenter = presenter;
 	}
 	
-	protected void addMenuItem(int index, String iconPath, String text, boolean isRightNav, EventHandler<ActionEvent> clickedEventHandler, boolean isLastItem) {
+	protected abstract void build();
+	
+	protected void addMenuItem(int index, String iconPath, String text, boolean isRightNav, EventHandler<ActionEvent> clickedEventHandler) {
+		if ((index < 0) || (index > getChildren().size()) || ((getChildren().size() > 0) && (index < getChildren().size() -1) && getChildren().get(index) != null)) {
+			throw new IllegalArgumentException("Wrong index value!");
+		}
 		Button button = new Button();
 		HBox hbox = new HBox();
 		StackPane iconPane = new StackPane();
@@ -64,7 +71,10 @@ public class AbstractMenuView<T extends AbstractMenuPresenter<?>> extends VBox {
 		if (index == 0) {
 			button.getStyleClass().add("left-menu-top");
 		}
-		if (isLastItem) {
+		if (index == getChildren().size()) {
+			if (index > 0) {
+				getChildren().get(index-1).getStyleClass().remove("left-menu-bottom");
+			}
 			button.getStyleClass().add("left-menu-bottom");
 		}
 		getChildren().add(button);

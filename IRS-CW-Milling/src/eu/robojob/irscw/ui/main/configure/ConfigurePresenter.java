@@ -4,15 +4,16 @@ import javafx.scene.Node;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.ui.controls.AbstractTextField;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
-import eu.robojob.irscw.ui.keyboard.KeyboardParentPresenter;
+import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.main.configure.process.ProcessMenuPresenter;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowPresenter;
 
-public class ConfigurePresenter implements KeyboardParentPresenter {
+public class ConfigurePresenter implements TextFieldListener {
 
 	private static Logger logger = Logger.getLogger(ConfigurePresenter.class);
 		
@@ -66,23 +67,6 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 		
 	}
 	
-	public void textFieldFocussed(FullTextField textField) {
-		keyboardPresenter.setTarget(textField);
-		if (!keyboardActive) {
-			view.addNodeToTop(keyboardPresenter.getView());
-			keyboardActive = true;
-		}
-	}
-	
-	public void textFieldFocussed(NumericTextField textField) {
-		numericKeyboardPresenter.setTarget(textField);
-		if (!numericKeyboardActive) {
-			logger.debug("Opening numeric keyboard");
-			view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
-			numericKeyboardActive = true;
-		}
-	}
-
 	@Override
 	public synchronized void closeKeyboard() {
 		if (keyboardActive && numericKeyboardActive) {
@@ -104,6 +88,38 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 	
 	public void setBottomRightView(Node bottomRight) {
 		view.setBottomRight(bottomRight);
+	}
+
+	public void textFieldFocussed(AbstractTextField textField) {
+		if (textField instanceof FullTextField) {
+			this.textFieldFocussed((FullTextField) textField);
+		} else if (textField instanceof NumericTextField) {
+			this.textFieldFocussed((NumericTextField) textField);
+		} else {
+			throw new IllegalArgumentException("Unknown keyboard-type");
+		}
+	}
+	
+	private void textFieldFocussed(FullTextField textField) {
+		keyboardPresenter.setTarget(textField);
+		if (!keyboardActive) {
+			view.addNodeToTop(keyboardPresenter.getView());
+			keyboardActive = true;
+		}
+	}
+	
+	private void textFieldFocussed(NumericTextField textField) {
+		numericKeyboardPresenter.setTarget(textField);
+		if (!numericKeyboardActive) {
+			logger.debug("Opening numeric keyboard");
+			view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
+			numericKeyboardActive = true;
+		}
+	}
+
+	@Override
+	public void textFieldLostFocus(AbstractTextField textField) {
+		closeKeyboard();
 	}
 
 }

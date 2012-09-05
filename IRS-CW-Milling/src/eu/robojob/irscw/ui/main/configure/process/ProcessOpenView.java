@@ -1,14 +1,23 @@
 package eu.robojob.irscw.ui.main.configure.process;
 
-public class ProcessOpenView {
+import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.main.configure.AbstractFormView;
 
-	private ProcessOpenPresenter presenter;
+public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 	
 	public ProcessOpenView() {
 		
 	}
-	
-	public void setPresenter(ProcessOpenPresenter presenter) {
-		this.presenter = presenter;
+
+	@Override
+	protected void build() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setTextFieldListener(TextFieldListener listener) {
+		// TODO Auto-generated method stub
+		
 	}
 }

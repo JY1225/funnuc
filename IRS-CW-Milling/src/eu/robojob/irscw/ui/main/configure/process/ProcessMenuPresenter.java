@@ -1,24 +1,27 @@
 package eu.robojob.irscw.ui.main.configure.process;
 
+import eu.robojob.irscw.ui.main.configure.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
 
-public class ProcessMenuPresenter {
+public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView> {
 
-	private ProcessMenuView view;
 	private ConfigurePresenter parent;
 	
 	private ProcessConfigurePresenter configurePresenter;
 		
 	public ProcessMenuPresenter(ProcessMenuView view, ProcessConfigurePresenter configurePresenter) {
-		this.view = view;
-		view.setPresenter(this);
+		super(view);
 		this.configurePresenter = configurePresenter;
 	}
+
+	@Override
+	protected void setPresenter() {
+		view.setPresenter(this);
+	}
 	
-	//TODO review this design decision, assigning parent of menu-presenter to other presenters
 	public void setParent(ConfigurePresenter parent) {
 		this.parent = parent;
-		configurePresenter.setParent(parent);
+		configurePresenter.setTextFieldListener(parent);
 	}
 
 	public ProcessMenuView getView() {
@@ -40,5 +43,6 @@ public class ProcessMenuPresenter {
 	public void newProcess() {
 		
 	}
+
 
 }
