@@ -1,8 +1,8 @@
 package eu.robojob.irscw.ui.main.configure;
 
-import eu.robojob.irscw.util.Translator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -12,6 +12,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
+import eu.robojob.irscw.util.Translator;
 
 public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> extends VBox {
 
@@ -30,7 +31,9 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 	
 	public AbstractMenuView() {
 		super();
-		setAlignment(Pos.CENTER);
+		setAlignment(Pos.TOP_CENTER);
+		setPadding(new Insets(15, 0, 0, 0));
+		this.getStyleClass().add("left-menu");
 	}
 	
 	public void setPresenter(T presenter) {
@@ -48,6 +51,7 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 		StackPane iconPane = new StackPane();
 		SVGPath icon = new SVGPath();
 		icon.setContent(iconPath);
+		icon.getStyleClass().add("menu-icon");
 		hbox.setAlignment(Pos.CENTER);
 		iconPane.getChildren().add(icon);
 		iconPane.setPrefSize(ICON_WIDTH + 2* ICON_MARGIN, BUTTON_HEIGHT);
@@ -63,6 +67,7 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 			SVGPath rightArrow = new SVGPath();
 			rightArrow.setContent(arrowRightPath);
 			arrowPane.getChildren().add(rightArrow);
+			rightArrow.getStyleClass().add("menu-icon");
 		}
 		hbox.getChildren().add(arrowPane);
 		hbox.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);

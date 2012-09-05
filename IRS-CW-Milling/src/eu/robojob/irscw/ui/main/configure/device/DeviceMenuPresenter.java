@@ -20,4 +20,8 @@ public class DeviceMenuPresenter extends AbstractMenuPresenter<DeviceMenuView> {
 	public void configurePut() {
 		
 	}
+	
+	public void configureDevice() {
+		
+	}
 }

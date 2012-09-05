@@ -20,7 +20,7 @@ public class ConfigureView extends VBox {
 	public static final int HEIGHT_TOP = 245;
 	public static final int HEIGHT_BOTTOM = 300;
 	public static final int WIDTH = 800;
-	public static final int WIDTH_BOTTOM_LEFT = 250;
+	public static final int WIDTH_BOTTOM_LEFT = 230;
 	
 	public ConfigureView () {
 		buildView();
@@ -45,7 +45,7 @@ public class ConfigureView extends VBox {
 		bottom.setPrefHeight(HEIGHT_BOTTOM);
 		bottom.setPrefWidth(WIDTH);
 		VBox.setVgrow(bottom, Priority.ALWAYS);
-		bottom.getStyleClass().add("bottom");
+		bottom.getStyleClass().add("bottompane");
 		
 		bottomLeft = new StackPane();
 		bottom.getChildren().add(bottomLeft);

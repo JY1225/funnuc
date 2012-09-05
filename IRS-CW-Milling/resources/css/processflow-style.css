@@ -90,5 +90,5 @@
 }
 
 .process-flow-view {
-	-fx-background-image: url('../img/bg.jpg');
+	-fx-background-color: #ededed;
 }
