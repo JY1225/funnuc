@@ -13,9 +13,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import eu.robojob.irscw.util.Translator;
 
-public class ProcessConfigurationMenuView extends VBox {
+public class ProcessMenuView extends VBox {
 
-	private ProcessConfigurationMenuPresenter presenter;
+	private ProcessMenuPresenter presenter;
 	private Translator translator = Translator.getInstance();
 	
 	private Button saveData;
@@ -41,11 +41,11 @@ public class ProcessConfigurationMenuView extends VBox {
 	private SVGPath openIcon; 
 	private SVGPath newIcon;
 	
-	public ProcessConfigurationMenuView() {
+	public ProcessMenuView() {
 		build();
 	}
 	
-	public void setPresenter(ProcessConfigurationMenuPresenter presenter) {
+	public void setPresenter(ProcessMenuPresenter presenter) {
 		this.presenter = presenter;
 	}
 	

@@ -9,8 +9,8 @@ import eu.robojob.irscw.ui.main.MenuBarPresenter;
 import eu.robojob.irscw.ui.main.MenuBarView;
 import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.main.configure.ConfigureView;
-import eu.robojob.irscw.ui.main.configure.process.ProcessConfigurationMenuPresenter;
-import eu.robojob.irscw.ui.main.configure.process.ProcessConfigurationMenuView;
+import eu.robojob.irscw.ui.main.configure.process.ProcessMenuPresenter;
+import eu.robojob.irscw.ui.main.configure.process.ProcessMenuView;
 import eu.robojob.irscw.ui.main.configure.process.ProcessConfigurationPresenter;
 import eu.robojob.irscw.ui.main.configure.process.ProcessConfigurationView;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowPresenter;
@@ -25,7 +25,7 @@ public class RoboSoftAppFactory {
 	private ProcessConfigurationPresenter processConfigurationPresenter;
 	private NumericKeyboardPresenter numericKeyboardPresenter;
 	private ProcessFlowPresenter processFlowPresenter;
-	private ProcessConfigurationMenuPresenter processConfigurationMenuPresenter;
+	private ProcessMenuPresenter processConfigurationMenuPresenter;
 	
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
@@ -85,10 +85,10 @@ public class RoboSoftAppFactory {
 		return processFlowPresenter;
 	}
 	
-	public ProcessConfigurationMenuPresenter getProcessConfigurationMenuPresenter() {
+	public ProcessMenuPresenter getProcessConfigurationMenuPresenter() {
 		if (processConfigurationMenuPresenter == null) {
-			ProcessConfigurationMenuView processConfigurationMenuView = new ProcessConfigurationMenuView();
-			processConfigurationMenuPresenter = new ProcessConfigurationMenuPresenter(processConfigurationMenuView, getProcessConfigurationPresenter());
+			ProcessMenuView processConfigurationMenuView = new ProcessMenuView();
+			processConfigurationMenuPresenter = new ProcessMenuPresenter(processConfigurationMenuView, getProcessConfigurationPresenter());
 		}
 		return processConfigurationMenuPresenter;
 	}

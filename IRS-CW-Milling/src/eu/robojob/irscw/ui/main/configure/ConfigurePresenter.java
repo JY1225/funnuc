@@ -9,7 +9,7 @@ import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.keyboard.KeyboardParentPresenter;
 import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
-import eu.robojob.irscw.ui.main.configure.process.ProcessConfigurationMenuPresenter;
+import eu.robojob.irscw.ui.main.configure.process.ProcessMenuPresenter;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowPresenter;
 
 public class ConfigurePresenter implements KeyboardParentPresenter {
@@ -22,13 +22,13 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 	private NumericKeyboardPresenter numericKeyboardPresenter;
 	
 	private ProcessFlowPresenter processFlowPresenter;
-	private ProcessConfigurationMenuPresenter processConfigurationMenuPresenter;
+	private ProcessMenuPresenter processConfigurationMenuPresenter;
 	
 	private boolean keyboardActive;
 	private boolean numericKeyboardActive;
 	
 	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
-			ProcessFlowPresenter processFlowPresenter, ProcessConfigurationMenuPresenter processConfigurationMenuPresenter) {
+			ProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processConfigurationMenuPresenter) {
 		this.view = view;
 		this.keyboardPresenter = keyboardPresenter;
 		keyboardPresenter.setParent(this);
