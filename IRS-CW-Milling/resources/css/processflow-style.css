@@ -37,6 +37,16 @@
 	-fx-effect: dropshadow(gaussian, #b6b6b6, 15, 0, 0, 5);
 }
 
+.device-button Pane.effect {
+	-fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.device-button:pressed Pane.effect {
+	-fx-background-color: rgba(113, 113, 113, 0.3);
+	-fx-background-insets: 1 1 2 1;
+	-fx-background-radius: 4;
+}
+
 .clicked {
 	-fx-fill: rgba(0, 0, 0, 0.3);
 }
