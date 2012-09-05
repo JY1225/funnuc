@@ -18,8 +18,8 @@
 		#7b7b7b,
 		#343434,
 		linear-gradient(#ababab 0%, #373737 100%),
-		linear-gradient(#898989 0%, #414346 100%);
-	
+		linear-gradient(#898989 0%, #414346 100%);	
+
 	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 2 3 2;
 	-fx-border-radius: 6, 5, 4, 3;
 	-fx-font-size: 14px;
