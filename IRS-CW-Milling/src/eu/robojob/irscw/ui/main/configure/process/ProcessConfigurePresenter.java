@@ -5,12 +5,12 @@ import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
 
-public class ProcessConfigurationPresenter implements TextFieldListener {
+public class ProcessConfigurePresenter implements TextFieldListener {
 
-	private ProcessConfigurationView view;
+	private ProcessConfigureView view;
 	private ConfigurePresenter parent;
 	
-	public ProcessConfigurationPresenter(ProcessConfigurationView view) {
+	public ProcessConfigurePresenter(ProcessConfigureView view) {
 		this.view = view;
 		view.setPresenter(this);
 	}
@@ -19,7 +19,7 @@ public class ProcessConfigurationPresenter implements TextFieldListener {
 		this.parent = parent;
 	}
 
-	public ProcessConfigurationView getView() {
+	public ProcessConfigureView getView() {
 		return view;
 	}
 	

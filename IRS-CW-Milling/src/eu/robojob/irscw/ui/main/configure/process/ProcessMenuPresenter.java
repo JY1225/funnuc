@@ -1,6 +1,5 @@
 package eu.robojob.irscw.ui.main.configure.process;
 
-import eu.robojob.irscw.ui.keyboard.KeyboardParentPresenter;
 import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
 
 public class ProcessMenuPresenter {
@@ -8,9 +7,9 @@ public class ProcessMenuPresenter {
 	private ProcessMenuView view;
 	private ConfigurePresenter parent;
 	
-	private ProcessConfigurationPresenter configurePresenter;
+	private ProcessConfigurePresenter configurePresenter;
 		
-	public ProcessMenuPresenter(ProcessMenuView view, ProcessConfigurationPresenter configurePresenter) {
+	public ProcessMenuPresenter(ProcessMenuView view, ProcessConfigurePresenter configurePresenter) {
 		this.view = view;
 		view.setPresenter(this);
 		this.configurePresenter = configurePresenter;
