@@ -20,19 +20,19 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter>{
 	@Override
 	protected void build() {
 		int index = 0;
-		if (deviceInfo.getPickStep() != null) {
-			addMenuItem(index++, pickPath, translator.getTranslation("ConfigurePick"), true, new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					presenter.configurePick();
-				}
-			});
-		}
 		if (deviceInfo.getPutStep() != null) {
 			addMenuItem(index++, putPath, translator.getTranslation("ConfigurePut"), true, new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
 					presenter.configurePut();
+				}
+			});
+		}
+		if (deviceInfo.getPickStep() != null) {
+			addMenuItem(index++, pickPath, translator.getTranslation("ConfigurePick"), true, new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					presenter.configurePick();
 				}
 			});
 		}

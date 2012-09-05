@@ -63,8 +63,7 @@ public class ConfigurePresenter implements TextFieldListener {
 	
 	public void showConfigureView() {
 		view.setTop(processFlowPresenter.getView());
-		view.setBottomLeft(processConfigurationMenuPresenter.getView());
-		processConfigurationMenuPresenter.configureProcess();
+		configureProcess();
 	}
 	
 	public void showTeachView() {
@@ -142,6 +141,11 @@ public class ConfigurePresenter implements TextFieldListener {
 		this.processFlow = processFlow;
 		processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		processFlowPresenter.loadProcessFlow(processFlow);
+	}
+	
+	public void configureProcess() {
+		view.setBottomLeft(processConfigurationMenuPresenter.getView());
+		processConfigurationMenuPresenter.configureProcess();
 	}
 
 }

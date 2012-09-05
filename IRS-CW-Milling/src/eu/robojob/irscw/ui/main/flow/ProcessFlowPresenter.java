@@ -39,6 +39,7 @@ public class ProcessFlowPresenter {
 	public void backgroundClicked() {
 		logger.debug("Clicked process-flow background");
 		view.focusAll();
+		parent.configureProcess();
 	}
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {
