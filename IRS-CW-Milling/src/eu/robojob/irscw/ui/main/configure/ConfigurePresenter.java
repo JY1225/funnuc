@@ -1,4 +1,6 @@
-package eu.robojob.irscw.ui.process.configure;
+package eu.robojob.irscw.ui.main.configure;
+
+import javafx.scene.Node;
 
 import org.apache.log4j.Logger;
 
@@ -7,7 +9,8 @@ import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.keyboard.KeyboardParentPresenter;
 import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
-import eu.robojob.irscw.ui.process.flow.ProcessFlowPresenter;
+import eu.robojob.irscw.ui.main.configure.process.ProcessConfigurationMenuPresenter;
+import eu.robojob.irscw.ui.main.flow.ProcessFlowPresenter;
 
 public class ConfigurePresenter implements KeyboardParentPresenter {
 
@@ -20,23 +23,19 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 	
 	private ProcessFlowPresenter processFlowPresenter;
 	private ProcessConfigurationMenuPresenter processConfigurationMenuPresenter;
-	private ProcessConfigurationPresenter processConfigurationPresenter;
 	
 	private boolean keyboardActive;
 	private boolean numericKeyboardActive;
 	
 	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
-			ProcessFlowPresenter processFlowPresenter, ProcessConfigurationMenuPresenter processConfigurationMenuPresenter,
-				ProcessConfigurationPresenter processConfigurationPresenter) {
+			ProcessFlowPresenter processFlowPresenter, ProcessConfigurationMenuPresenter processConfigurationMenuPresenter) {
 		this.view = view;
 		this.keyboardPresenter = keyboardPresenter;
 		keyboardPresenter.setParent(this);
 		this.numericKeyboardPresenter = numericKeyboardPresenter;
 		numericKeyboardPresenter.setParent(this);
-		this.processConfigurationPresenter = processConfigurationPresenter;
-		processConfigurationPresenter.setParent(this);
 		this.processFlowPresenter = processFlowPresenter;
-		processConfigurationPresenter.setParent(this);
+		processFlowPresenter.setParent(this);
 		this.processConfigurationMenuPresenter = processConfigurationMenuPresenter;
 		processConfigurationMenuPresenter.setParent(this);
 		view.setPresenter(this);
@@ -55,8 +54,8 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 	
 	public void showConfigureView() {
 		view.setTop(processFlowPresenter.getView());
-		view.setBottomRight(processConfigurationPresenter.getView());
 		view.setBottomLeft(processConfigurationMenuPresenter.getView());
+		processConfigurationMenuPresenter.configureProcess();
 	}
 	
 	public void showTeachView() {
@@ -101,6 +100,10 @@ public class ConfigurePresenter implements KeyboardParentPresenter {
 			view.removeNodeFromBottomLeft(numericKeyboardPresenter.getView());
 			view.requestFocus();
 		}
+	}
+	
+	public void setBottomRightView(Node bottomRight) {
+		view.setBottomRight(bottomRight);
 	}
 
 }

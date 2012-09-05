@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.process.flow;
+package eu.robojob.irscw.ui.main.flow;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,8 +13,8 @@ import javafx.scene.layout.GridPane;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.process.configure.ConfigureView;
-import eu.robojob.irscw.ui.process.model.ProcessFlowAdapter;
+import eu.robojob.irscw.ui.main.configure.ConfigureView;
+import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
 
 //for now, we only allow one row, in the future, multiple rows could be possible
 // to accomplish this, more HBox's are to be added and the components should be

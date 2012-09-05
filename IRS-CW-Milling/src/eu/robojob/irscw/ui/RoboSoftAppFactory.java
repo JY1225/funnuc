@@ -5,16 +5,16 @@ import eu.robojob.irscw.ui.keyboard.KeyboardView;
 import eu.robojob.irscw.ui.keyboard.KeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardView;
-import eu.robojob.irscw.ui.process.MenuBarPresenter;
-import eu.robojob.irscw.ui.process.MenuBarView;
-import eu.robojob.irscw.ui.process.configure.ConfigurePresenter;
-import eu.robojob.irscw.ui.process.configure.ConfigureView;
-import eu.robojob.irscw.ui.process.configure.ProcessConfigurationMenuPresenter;
-import eu.robojob.irscw.ui.process.configure.ProcessConfigurationMenuView;
-import eu.robojob.irscw.ui.process.configure.ProcessConfigurationPresenter;
-import eu.robojob.irscw.ui.process.configure.ProcessConfigurationView;
-import eu.robojob.irscw.ui.process.flow.ProcessFlowPresenter;
-import eu.robojob.irscw.ui.process.flow.ProcessFlowView;
+import eu.robojob.irscw.ui.main.MenuBarPresenter;
+import eu.robojob.irscw.ui.main.MenuBarView;
+import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.main.configure.ConfigureView;
+import eu.robojob.irscw.ui.main.configure.process.ProcessConfigurationMenuPresenter;
+import eu.robojob.irscw.ui.main.configure.process.ProcessConfigurationMenuView;
+import eu.robojob.irscw.ui.main.configure.process.ProcessConfigurationPresenter;
+import eu.robojob.irscw.ui.main.configure.process.ProcessConfigurationView;
+import eu.robojob.irscw.ui.main.flow.ProcessFlowPresenter;
+import eu.robojob.irscw.ui.main.flow.ProcessFlowView;
 
 public class RoboSoftAppFactory {
 
@@ -48,7 +48,7 @@ public class RoboSoftAppFactory {
 	public ConfigurePresenter getConfigurePresenter() {
 		if (configurePresenter == null) {
 			ConfigureView processConfigureView = new ConfigureView();
-			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNumericKeyboardPresenter(), getProcessFlowPresenter(), getProcessConfigurationMenuPresenter(), getProcessConfigurationPresenter());
+			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNumericKeyboardPresenter(), getProcessFlowPresenter(), getProcessConfigurationMenuPresenter());
 		}
 		return configurePresenter;
 	}
@@ -88,7 +88,7 @@ public class RoboSoftAppFactory {
 	public ProcessConfigurationMenuPresenter getProcessConfigurationMenuPresenter() {
 		if (processConfigurationMenuPresenter == null) {
 			ProcessConfigurationMenuView processConfigurationMenuView = new ProcessConfigurationMenuView();
-			processConfigurationMenuPresenter = new ProcessConfigurationMenuPresenter(processConfigurationMenuView);
+			processConfigurationMenuPresenter = new ProcessConfigurationMenuPresenter(processConfigurationMenuView, getProcessConfigurationPresenter());
 		}
 		return processConfigurationMenuPresenter;
 	}

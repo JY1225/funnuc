@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.process.model;
+package eu.robojob.irscw.ui.main.model;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.process.InterventionStep;

@@ -32,7 +32,7 @@
 	-fx-background-color: 
 		linear-gradient(#c0c0c0 0%, #8d8d8d 100%),
 		linear-gradient(white 0%, #d1d1d1 80%, #cccccc 100%),
-		radial-gradient(center 50% -40%, radius 200%, rgba(255, 255, 255, 0.2) 45%, rgba(203, 203, 203, 0.1) 50%);
+		radial-gradient(center 50% -40%, radius 200%, rgba(255, 255, 255, 0.2) 45%, rgba(203, 203, 203, 0.2) 50%);
 	-fx-background-insets: 0, 1 1 2 1, 1 1 2 1;
 	-fx-background-radius: 5, 4, 4;
 	-fx-padding: 0 0 0 0;
@@ -40,7 +40,7 @@
 }
 
 .device-button Pane.effect {
-	-fx-background-color: radial-gradient(center 50% -40%, radius 200%, rgba(255, 255, 255, 0.2) 45%, rgba(203, 203, 203, 0.1) 50%);
+	-fx-background-color: radial-gradient(center 50% -40%, radius 200%, rgba(255, 255, 255, 0.2) 45%, rgba(203, 203, 203, 0.2) 50%);
 	-fx-background-insets: 1 1 2 1;
 	-fx-background-radius: 4;
 }
@@ -83,7 +83,7 @@
 	-fx-font-family: "Helvetica";
 	-fx-font-weight: bold;
 	
-	-fx-effect: dropshadow(gaussian,rgb(0, 0, 0, 0.1), 5, 0, 0, 5);
+	/*-fx-effect: dropshadow(gaussian,rgb(0, 0, 0, 0.1), 5, 0, 0, 5);*/
 }
 
 .button-label-inactive {

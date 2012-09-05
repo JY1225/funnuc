@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.process.configure;
+package eu.robojob.irscw.ui.main.configure.process;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -62,7 +62,7 @@ public class ProcessConfigurationMenuView extends VBox {
 		});
 		this.getChildren().add(configureProcess);
 		saveData = new Button();
-		saveData.setGraphic(getGraphic(saveIconPath, translator.getTranslation("SaveData"), true));
+		saveData.setGraphic(getGraphic(saveIconPath, translator.getTranslation("SaveData"), false));
 		saveData.getStyleClass().add("left-menu-button");
 		saveData.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		saveData.setOnAction(new EventHandler<ActionEvent>() {

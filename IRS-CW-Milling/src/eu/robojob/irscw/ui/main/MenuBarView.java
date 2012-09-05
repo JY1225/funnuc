@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.process;
+package eu.robojob.irscw.ui.main;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

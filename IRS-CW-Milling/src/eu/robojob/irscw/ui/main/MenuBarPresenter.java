@@ -1,9 +1,9 @@
-package eu.robojob.irscw.ui.process;
+package eu.robojob.irscw.ui.main;
 
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.ui.MainPresenter;
-import eu.robojob.irscw.ui.process.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
 
 public class MenuBarPresenter {
 

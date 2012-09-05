@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.process.flow;
+package eu.robojob.irscw.ui.main.flow;
 
 import org.apache.log4j.Logger;
 
@@ -11,7 +11,7 @@ import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.ui.process.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
 
 public class ProcessFlowPresenter {
 

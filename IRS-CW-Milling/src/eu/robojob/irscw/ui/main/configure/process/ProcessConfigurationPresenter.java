@@ -1,8 +1,9 @@
-package eu.robojob.irscw.ui.process.configure;
+package eu.robojob.irscw.ui.main.configure.process;
 
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
 
 public class ProcessConfigurationPresenter implements TextFieldListener {
 
