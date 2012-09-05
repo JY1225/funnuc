@@ -47,7 +47,7 @@ public class ProcessMenuView extends AbstractMenuView<ProcessMenuPresenter> {
 			}
 		});
 		
-		addMenuItem(3, newPath, translator.getTranslation("NewProcess"), true, new EventHandler<ActionEvent>() {
+		addMenuItem(3, newPath, translator.getTranslation("NewProcess"), false, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				presenter.newProcess();

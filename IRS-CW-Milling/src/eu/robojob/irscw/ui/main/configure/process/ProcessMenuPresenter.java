@@ -8,10 +8,12 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	private ConfigurePresenter parent;
 	
 	private ProcessConfigurePresenter configurePresenter;
+	private ProcessOpenPresenter openPresenter;
 		
-	public ProcessMenuPresenter(ProcessMenuView view, ProcessConfigurePresenter configurePresenter) {
+	public ProcessMenuPresenter(ProcessMenuView view, ProcessConfigurePresenter configurePresenter, ProcessOpenPresenter openPresenter) {
 		super(view);
 		this.configurePresenter = configurePresenter;
+		this.openPresenter = openPresenter;
 	}
 
 	@Override
@@ -37,7 +39,7 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	}
 	
 	public void openProcess() {
-		
+		parent.setBottomRightView(openPresenter.getView());
 	}
 	
 	public void newProcess() {
