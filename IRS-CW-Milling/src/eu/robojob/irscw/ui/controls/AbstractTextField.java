@@ -11,7 +11,9 @@ public abstract class AbstractTextField extends javafx.scene.control.TextField {
 	protected TextFieldListener listener;
 	private String originalText;
 	
-	public AbstractTextField() {
+	private int maxLength;
+	
+	public AbstractTextField(int maxLength) {
 		this.focusedProperty().addListener(new TextFieldFocusListener(this));
 		this.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 
@@ -31,6 +33,8 @@ public abstract class AbstractTextField extends javafx.scene.control.TextField {
 			}
 			
 		});
+		
+		this.maxLength = maxLength;
 	}
 	
 	public void setFocusListener(TextFieldListener listener) {
@@ -42,7 +46,7 @@ public abstract class AbstractTextField extends javafx.scene.control.TextField {
 		String currentText = getText();
 		String newString = currentText.substring(0, start) + text + currentText.substring(end);
 		
-		if (newString.matches(getMatchingExpression())) {
+		if (newString.matches(getMatchingExpression()) && newString.length() <= maxLength) {
 			super.replaceText(start, end, text);
 		}
 	}
@@ -52,7 +56,7 @@ public abstract class AbstractTextField extends javafx.scene.control.TextField {
 		String currentText = getText();
 		String newString = currentText.substring(0, getSelection().getStart()) + text + currentText.substring(getSelection().getEnd());
 		
-		if (newString.matches(getMatchingExpression())) {
+		if (newString.matches(getMatchingExpression()) && newString.length() <= maxLength) {
 			super.replaceSelection(text);
 		}
 	}

@@ -56,6 +56,7 @@ public class ConfigureView extends VBox {
 		bottom.getChildren().add(bottomRight);
 		bottomRight.getStyleClass().add("bottom-right");
 		bottomRight.setPrefWidth(WIDTH-WIDTH_BOTTOM_LEFT);
+		bottomRight.setPrefHeight(HEIGHT_BOTTOM);
 
 	}
 

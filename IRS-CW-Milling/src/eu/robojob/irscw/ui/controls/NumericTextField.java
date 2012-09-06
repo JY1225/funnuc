@@ -4,7 +4,8 @@ import java.text.DecimalFormat;
 
 public class NumericTextField extends AbstractTextField {
 
-	public NumericTextField() {
+	public NumericTextField(int maxLength) {
+		super(maxLength);
 	}
 
 	@Override

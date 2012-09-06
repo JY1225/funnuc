@@ -2,7 +2,8 @@ package eu.robojob.irscw.ui.controls;
 
 public class FullTextField extends AbstractTextField {
 
-	public FullTextField() {
+	public FullTextField(int maxLength) {
+		super(maxLength);
 	}
 
 	@Override
