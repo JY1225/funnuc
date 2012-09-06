@@ -19,4 +19,6 @@ public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> {
 	public T getView() {
 		return view;
 	}
+	
+	public abstract void openFirst();
 }

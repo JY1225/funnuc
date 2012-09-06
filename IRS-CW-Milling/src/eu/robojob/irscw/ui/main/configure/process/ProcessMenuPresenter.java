@@ -31,19 +31,25 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	}
 	
 	public void saveData() {
-		
 	}
 	
 	public void configureProcess() {
+		view.setConfigureActive();
 		parent.setBottomRightView(configurePresenter.getView());
 	}
 	
 	public void openProcess() {
+		view.setOpenActive();
 		parent.setBottomRightView(openPresenter.getView());
 	}
 	
 	public void newProcess() {
 		
+	}
+
+	@Override
+	public void openFirst() {
+		configureProcess();
 	}
 
 

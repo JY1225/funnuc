@@ -54,4 +54,20 @@ public class ProcessMenuView extends AbstractMenuView<ProcessMenuPresenter> {
 		});
 	}
 	
+	public void setConfigureActive() {
+		setMenuItemSelected(0);
+	}
+	
+	public void setSaveActive() {
+		setMenuItemSelected(1);
+	}
+	
+	public void setOpenActive() {
+		setMenuItemSelected(2);
+	}
+	
+	public void setNewActive() {
+		setMenuItemSelected(3);
+	}
+	
 }

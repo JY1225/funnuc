@@ -10,7 +10,7 @@
 .bottom-left {
 	-fx-background-color: #5a5757, #807c7c, linear-gradient(#656161 0%, #616264 100%);
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.4), 5, 0, -4, 0);
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.4), 8, 0, -4, 0);
 }
 
 .bottom-right {
@@ -34,9 +34,13 @@
 	-fx-padding: 0;
 	-fx-background-radius: 0;
 	
-	-fx-background-color: #534e4e, #726b6b, #696666;
+	-fx-background-color: #494545, #807878, #696666;
 	-fx-background-insets: 0 0 0 0, 1 1 1 1, 2 1 0 1;
 	-fx-effect: innershadow(gaussian, #1f1f1f, 1, 0, 0, 0);
+}
+
+.left-menu-button:pressed, .menu-item-selected {
+	-fx-background-color: #343c48, #81b0ff, linear-gradient(#5e87cb 0%, #3f5c8c 100%);
 }
 
 .left-menu-button .left-menu-item-label {
@@ -57,6 +61,11 @@
 
 .left-menu-bottom {
 	-fx-background-radius: 0 0 5 5;
+	-fx-background-insets: 0 0 0 0, 1 1 1 1, 2 1 1 1;
+}
+
+.left-menu-both {
+	-fx-background-radius: 5;
 }
 
 .green {

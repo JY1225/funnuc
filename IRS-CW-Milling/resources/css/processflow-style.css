@@ -14,6 +14,7 @@
 	-fx-fill:  linear-gradient(#76b9ff 0%, #397ef5 100%);
 	-fx-stroke: #0088cd;
 	-fx-stroke-width: 1px;
+	-fx-effect: null;
 }
 
 .arrow-disabled {
@@ -42,13 +43,14 @@
 }
 
 .device-button:pressed Pane.effect {
-	-fx-background-color: rgba(113, 113, 113, 0.3);
+	-fx-background-color: rgba(0, 0, 0, 0.3);
 	-fx-background-insets: 1 1 2 1;
 	-fx-background-radius: 4;
 }
 
 .clicked {
-	-fx-fill: rgba(0, 0, 0, 0.3);
+	-fx-fill: rgba(0, 0, 0, 0.4);
+	-fx-stroke: rgba(0, 0, 0, 0.4);
 }
 
 .pre-process {

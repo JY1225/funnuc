@@ -77,6 +77,10 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 		button.getStyleClass().add("left-menu-button");
 		if (index == 0) {
 			button.getStyleClass().add("left-menu-top");
+			button.getStyleClass().add("left-menu-both");
+		}
+		if (index == 1) {
+			getChildren().get(0).getStyleClass().remove("left-menu-both");
 		}
 		if (index == getChildren().size()) {
 			if (index > 0) {
@@ -88,9 +92,13 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 	}
 	
 	protected void setMenuItemSelected(int index) {
+		if ((index < 0) || (index > getChildren().size())) {
+			throw new IllegalArgumentException("Index out of bounds!");
+		}
 		for (Node node : getChildren()){
 			node.getStyleClass().remove("menu-item-selected");
 		}
 		getChildren().get(index).getStyleClass().add("menu-item-selected");
 	}
+	
 }

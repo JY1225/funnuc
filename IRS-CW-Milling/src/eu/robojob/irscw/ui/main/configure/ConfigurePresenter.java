@@ -14,6 +14,8 @@ import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.main.configure.device.DeviceMenuPresenter;
 import eu.robojob.irscw.ui.main.configure.device.DeviceMenuView;
 import eu.robojob.irscw.ui.main.configure.process.ProcessMenuPresenter;
+import eu.robojob.irscw.ui.main.configure.transport.TransportMenuPresenter;
+import eu.robojob.irscw.ui.main.configure.transport.TransportMenuView;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowPresenter;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
 
@@ -130,11 +132,19 @@ public class ConfigurePresenter implements TextFieldListener {
 	}
 	
 	public void configureDevice(int index) {
-		DeviceMenuView deviceMenuView = new DeviceMenuView(processFlowAdapter.getDeviceInformation(index));
-		DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(deviceMenuView);
+		DeviceMenuView deviceMenuView = new DeviceMenuView();
+		DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(deviceMenuView, processFlowAdapter.getDeviceInformation(index));
 		deviceMenuPresenter.setParent(this);
 		view.setBottomLeft(deviceMenuPresenter.getView());
-		
+		deviceMenuPresenter.openFirst();
+	}
+	
+	public void configureTransport(int index) {
+		TransportMenuView transportMenuView = new TransportMenuView(processFlowAdapter.getTransportInformation(index));
+		TransportMenuPresenter transportMenuPresenter = new TransportMenuPresenter(transportMenuView);
+		transportMenuPresenter.setParent(this);
+		view.setBottomLeft(transportMenuPresenter.getView());
+		transportMenuPresenter.openFirst();
 	}
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {
@@ -145,7 +155,13 @@ public class ConfigurePresenter implements TextFieldListener {
 	
 	public void configureProcess() {
 		view.setBottomLeft(processConfigurationMenuPresenter.getView());
-		processConfigurationMenuPresenter.configureProcess();
+		if (keyboardActive) {
+			view.addNodeToTop(keyboardPresenter.getView()); 
+		}
+		if (numericKeyboardActive) {
+			view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
+		}
+		processConfigurationMenuPresenter.openFirst();
 	}
 
 }

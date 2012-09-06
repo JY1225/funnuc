@@ -34,6 +34,7 @@ public class ProcessFlowPresenter {
 	public void transportClicked(int index) {
 		logger.debug("Clicked transport with index: " + index);
 		view.focusTransport(index);
+		parent.configureTransport(index);
 	}
 	
 	public void backgroundClicked() {
