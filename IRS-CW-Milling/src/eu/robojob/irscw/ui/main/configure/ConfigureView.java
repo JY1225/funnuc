@@ -90,4 +90,8 @@ public class ConfigureView extends VBox {
 		this.bottomRight.getChildren().clear();
 		this.bottomRight.getChildren().add(node);
 	}
+	
+	public void setBottomLeftEnabled(boolean enabled) {
+		this.bottomLeft.setDisable(!enabled);
+	}
 }

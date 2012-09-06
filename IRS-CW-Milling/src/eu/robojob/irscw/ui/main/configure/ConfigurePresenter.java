@@ -11,6 +11,7 @@ import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
+import eu.robojob.irscw.ui.main.MenuBarPresenter;
 import eu.robojob.irscw.ui.main.configure.device.DeviceMenuPresenter;
 import eu.robojob.irscw.ui.main.configure.device.DeviceMenuView;
 import eu.robojob.irscw.ui.main.configure.process.ProcessMenuPresenter;
@@ -37,6 +38,8 @@ public class ConfigurePresenter implements TextFieldListener {
 	private ProcessFlow processFlow;
 	private ProcessFlowAdapter processFlowAdapter;
 	
+	private MenuBarPresenter parent;
+	
 	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
 			ProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processConfigurationMenuPresenter) {
 		this.view = view;
@@ -53,6 +56,10 @@ public class ConfigurePresenter implements TextFieldListener {
 		keyboardActive = false;
 		numericKeyboardActive = false;
 		processFlow = null;
+	}
+	
+	public void setParent(MenuBarPresenter parent) {
+		this.parent = parent;
 	}
 	
 	public ConfigureView getView() {
@@ -162,6 +169,24 @@ public class ConfigurePresenter implements TextFieldListener {
 			view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
 		}
 		processConfigurationMenuPresenter.openFirst();
+	}
+	
+	public void setAddDeviceMode() {
+		view.setBottomLeftEnabled(false);
+		parent.setMenuBarEnabled(false);
+		processFlowPresenter.setAddDeviceMode();
+	}
+	
+	public void setRemoveDeviceMode() {
+		view.setBottomLeftEnabled(false);
+		parent.setMenuBarEnabled(false);
+		processFlowPresenter.setRemoveDeviceMode();
+	}
+	
+	public void setNormalMode() {
+		view.setBottomLeftEnabled(true);
+		parent.setMenuBarEnabled(true);
+		processFlowPresenter.setNormalMode();
 	}
 
 }

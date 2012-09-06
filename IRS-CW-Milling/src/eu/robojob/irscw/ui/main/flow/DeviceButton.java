@@ -48,6 +48,10 @@ public class DeviceButton extends VBox {
 		setImage();
 	}
 	
+	public DeviceInformation getDeviceInformation() {
+		return deviceInfo;
+	}
+	
 	private void build() {
 		imagePath = new SVGPath();
 		mainButton = new Button();
@@ -126,11 +130,11 @@ public class DeviceButton extends VBox {
 		mainButton.setOnAction(handler);
 	}
 	
-	public void setEnabled(boolean enabled) {
+	public void setFocussed(boolean focussed) {
 		imagePath.getStyleClass().remove("button-shape-inactive");
 		deviceName.getStyleClass().remove("button-label-inactive");
 		mainButton.getStyleClass().remove("device-button-inactive");
-		if (!enabled) {
+		if (!focussed) {
 			imagePath.getStyleClass().add("button-shape-inactive");
 			deviceName.getStyleClass().add("button-label-inactive");
 			mainButton.getStyleClass().add("device-button-inactive");

@@ -34,7 +34,7 @@ public class TransportButton extends Pane {
 		build();
 		
 		setTransportInformation(transportInfo);
-		setEnabled(true);
+		setFocused(true);
 	}
 	
 	private void build() {
@@ -123,7 +123,7 @@ public class TransportButton extends Pane {
 		}
 	}
 	
-	public void setEnabled(boolean active) {
+	public void setFocussed(boolean active) {
 		effect.getStyleClass().remove("arrow-disabled");
 		arrowShape.getStyleClass().remove("arrow-background-disabled");
 		if (active) {

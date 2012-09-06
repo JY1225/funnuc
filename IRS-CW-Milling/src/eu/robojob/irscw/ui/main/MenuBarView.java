@@ -164,6 +164,10 @@ public class MenuBarView extends ToolBar {
 		selectedBtn.getStyleClass().add(BTN_SELECTED);
 	}
 	
+	public void setEnabled(boolean enabled) {
+		this.setDisable(!enabled);
+	}
+	
 }
 
 

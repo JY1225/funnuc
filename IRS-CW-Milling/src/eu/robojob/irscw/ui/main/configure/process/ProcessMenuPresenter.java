@@ -24,6 +24,8 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	public void setParent(ConfigurePresenter parent) {
 		this.parent = parent;
 		configurePresenter.setTextFieldListener(parent);
+		configurePresenter.setParent(parent);
+		openPresenter.setParent(parent);
 	}
 
 	public ProcessMenuView getView() {

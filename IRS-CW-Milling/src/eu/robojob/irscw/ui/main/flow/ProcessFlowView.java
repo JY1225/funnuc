@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.main.configure.ConfigureView;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
@@ -80,13 +81,13 @@ public class ProcessFlowView extends GridPane  {
 			throw new IllegalArgumentException("Index is out of bounds or incorrect.");
 		} else {
 			for (TransportButton transport : transportButtons.values()) {
-				transport.setEnabled(false);
+				transport.setFocussed(false);
 			}
 			for (int i : deviceButtons.keySet()) {
 				if (i == index) {
-					deviceButtons.get(i).setEnabled(true);
+					deviceButtons.get(i).setFocussed(true);
 				} else {
-					deviceButtons.get(i).setEnabled(false);
+					deviceButtons.get(i).setFocussed(false);
 				}
 			}
 		}
@@ -97,13 +98,13 @@ public class ProcessFlowView extends GridPane  {
 			throw new IllegalArgumentException("Index is out of bounds or incorrect.");
 		} else {
 			for (DeviceButton device : deviceButtons.values()) {
-				device.setEnabled(false);
+				device.setFocussed(false);
 			}
 			for (int i : transportButtons.keySet()) {
 				if (i == index) {
-					transportButtons.get(i).setEnabled(true);
+					transportButtons.get(i).setFocussed(true);
 				} else {
-					transportButtons.get(i).setEnabled(false);
+					transportButtons.get(i).setFocussed(false);
 				}
 			}
 		}
@@ -111,10 +112,10 @@ public class ProcessFlowView extends GridPane  {
 	
 	public void focusAll() {
 		for (DeviceButton device : deviceButtons.values()) {
-			device.setEnabled(true);
+			device.setFocussed(true);
 		}
 		for (TransportButton transport : transportButtons.values()) {
-			transport.setEnabled(true);
+			transport.setFocussed(true);
 		}
 	}
 
@@ -145,6 +146,44 @@ public class ProcessFlowView extends GridPane  {
 			throw new IllegalArgumentException("Index is out of bounds or incorrect.");
 		} else {
 			deviceButtons.get(index).animate();
+		}
+	}
+	
+	public void setRemoveDeviceMode() {
+		for (DeviceButton deviceButton : deviceButtons.values()) {
+			if ((deviceButton.getDeviceInformation().getDevice().getType() == DeviceType.POST_PROCESSING) || (deviceButton.getDeviceInformation().getDevice().getType() == DeviceType.PRE_PROCESSING)) {
+				deviceButton.setFocussed(true);
+				deviceButton.setDisable(false);
+			} else {
+				deviceButton.setFocussed(false);
+				deviceButton.setDisable(true);
+			}
+		}
+		for (TransportButton transportButton : transportButtons.values()) {
+			transportButton.setFocussed(false);
+			transportButton.setDisable(true);
+		}
+	}
+	
+	public void setAddDeviceMode() {
+		for (DeviceButton deviceButton : deviceButtons.values()) {
+			deviceButton.setFocussed(false);
+			deviceButton.setDisable(true);
+		}
+		for (TransportButton transportButton : transportButtons.values()) {
+			transportButton.setFocussed(true);
+			transportButton.setDisable(false);
+		}
+	}
+	
+	public void setNormalMode() {
+		for (DeviceButton deviceButton : deviceButtons.values()) {
+			deviceButton.setFocussed(true);
+			deviceButton.setDisable(false);
+		}
+		for (TransportButton transportButton : transportButtons.values()) {
+			transportButton.setFocussed(true);
+			transportButton.setDisable(false);
 		}
 	}
 }

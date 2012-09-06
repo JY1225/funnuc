@@ -46,4 +46,16 @@ public class ProcessFlowPresenter {
 	public void loadProcessFlow(ProcessFlow processFlow) {
 		view.setProcessFlow(processFlow);
 	}
+	
+	public void setAddDeviceMode() {
+		view.setAddDeviceMode();
+	}
+	
+	public void setRemoveDeviceMode() {
+		view.setRemoveDeviceMode();
+	}
+	
+	public void setNormalMode() {
+		view.setNormalMode();
+	}
 }

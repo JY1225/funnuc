@@ -13,6 +13,16 @@
 	-fx-border-radius: 5, 4 4 3 3;
 }
 
+
+.form-button:pressed {
+	-fx-background-color: 
+		linear-gradient(#c6c6c6 0%, #9a9a9a 100%),
+		linear-gradient(#eaeaea 0%, #eeeeee 100%);
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0.5), 7, 0, 0, 2);
+	-fx-background-insets: 0, 1;
+	
+}
+
 .form-full-textfield {
 	-fx-font-size: 16px;
 	-fx-font-weight: bold;
@@ -34,12 +44,18 @@
 	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.5), 2, 0, 0, 1);
 }
 
+.form-full-textfield:focused {
+	-fx-background-color: #faffc2;
+	-fx-border-color: #0080e2;
+}
+
 .form-button-icon {
 	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.8), 2, 0, 0, 1);
 }
 
 .form-button-label {
 	-fx-text-fill: #323232;
+	-fx-effect: null;
 }
 
 .add-icon {
@@ -60,4 +76,14 @@
 	-fx-text-fill: #737373;
 	
 	-fx-padding: 0 10 0 0;
+}
+
+
+.form-button-active {
+	-fx-background-color: 
+		linear-gradient(#c6c6c6 0%, #9a9a9a 100%),
+		linear-gradient(#eaeaea 0%, #eeeeee 100%);
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0.5), 7, 0, 0, 2);
+	-fx-background-insets: 0, 1;
+	
 }

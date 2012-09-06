@@ -10,13 +10,14 @@ public class MenuBarPresenter {
 	private static Logger logger = Logger.getLogger(MenuBarPresenter.class);
 	
 	private MenuBarView view;
-	private ConfigurePresenter processMainContentPresenter; 
+	private ConfigurePresenter configurePresenter; 
 	private MainPresenter mainPresenter;
 	
-	public MenuBarPresenter(MenuBarView processMenuBarView, ConfigurePresenter processMainContentPresenter, 
+	public MenuBarPresenter(MenuBarView processMenuBarView, ConfigurePresenter configurePresenter, 
 			MainPresenter mainPresenter) {
 		this.view = processMenuBarView;
-		this.processMainContentPresenter = processMainContentPresenter;
+		this.configurePresenter = configurePresenter;
+		configurePresenter.setParent(this);
 		this.mainPresenter = mainPresenter;
 		processMenuBarView.setPresenter(this);
 	}
@@ -27,26 +28,30 @@ public class MenuBarPresenter {
 	
 	public void showAlarmsView() {
 		logger.debug("show alarms clicked");
-		processMainContentPresenter.showAlarmsView();
+		configurePresenter.showAlarmsView();
 	}
 	
 	public void showConfigureView() {
 		view.setConfigureActive();
-		processMainContentPresenter.showConfigureView();
+		configurePresenter.showConfigureView();
 	}
 	
 	public void showTeachView() {
 		view.setTeachActive();
-		processMainContentPresenter.showTeachView();
+		configurePresenter.showTeachView();
 	}
 	
 	public void showAutomateView() {
 		view.setAutomateActive();
-		processMainContentPresenter.showAutomateView();
+		configurePresenter.showAutomateView();
 	}
 	
 	public void showAdminView() {
 		mainPresenter.showAdminView();
+	}
+	
+	public void setMenuBarEnabled(boolean enabled) {
+		view.setEnabled(enabled);
 	}
 	
 }
