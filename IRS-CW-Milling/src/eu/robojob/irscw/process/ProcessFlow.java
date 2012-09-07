@@ -138,4 +138,27 @@ public class ProcessFlow {
 		}
 	}
 	
+	public void removeStep (AbstractProcessStep step) {
+		processSteps.remove(step);
+	}
+	
+	public void removeSteps(List<AbstractProcessStep> steps) {
+		processSteps.removeAll(steps);
+	}
+	
+	public void addStepAfter(AbstractProcessStep step, AbstractProcessStep newStep) {
+		if (processSteps.indexOf(step) == -1) {
+			throw new IllegalArgumentException("Could not find this step");
+		} else {
+			processSteps.add(processSteps.indexOf(step) + 1, newStep);
+		}
+	}
+	
+	public void addStepBefore(AbstractProcessStep step, AbstractProcessStep newStep) {
+		if (processSteps.indexOf(step) == -1) {
+			throw new IllegalArgumentException("Could not find this step");
+		} else {
+			processSteps.add(processSteps.indexOf(step), newStep);
+		}
+	}
 }

@@ -96,19 +96,33 @@ public class FanucRobot extends AbstractRobot {
 	
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
 
-		public FanucRobotPickSettings(WorkArea workArea, Gripper gripper,
-				GripperBody gripperBody, GripperHead gripperHead) {
-			super(workArea, gripper, gripperBody, gripperHead);
+		public FanucRobotPickSettings(WorkArea workArea, Gripper gripper) {
+			super(workArea, gripper);
+		}
+		
+		public FanucRobotPickSettings() {
+			super(null, null);
 		}
 		
 	}
 	public static class FanucRobotPutSettings extends AbstractRobotPutSettings {
 
-		public FanucRobotPutSettings(WorkArea workArea, Gripper gripper,
-				GripperBody gripperBody, GripperHead gripperHead) {
-			super(workArea, gripper, gripperBody, gripperHead);
+		public FanucRobotPutSettings(WorkArea workArea, Gripper gripper) {
+			super(workArea, gripper);
 		}
 		
+		public FanucRobotPutSettings() {
+			super(null, null);
+		}
+	}
+	@Override
+	public AbstractRobotPickSettings getDefaultPickSettings() {
+		return new FanucRobotPickSettings();
+	}
+
+	@Override
+	public AbstractRobotPutSettings getDefaultPutSettings() {
+		return new FanucRobotPutSettings();
 	}
 
 }

@@ -1,5 +1,6 @@
 package eu.robojob.irscw.ui.main.model;
 
+import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
@@ -41,9 +42,8 @@ public class ProcessFlowAdapter {
 			throw new IllegalArgumentException("Incorrect index");
 		}
 		
-		DeviceInformation deviceInformation = new DeviceInformation();
+		DeviceInformation deviceInformation = new DeviceInformation(index, this);
 				
-		// if not the first, include pick step and possible intervention and processing steps
 		int curDevIndex = 0;
 		for (int i = 0; i < processFlow.getProcessSteps().size(); i++) {
 			AbstractProcessStep step = processFlow.getStep(i);
@@ -106,6 +106,31 @@ public class ProcessFlowAdapter {
 		}
 		
 		return transportInformation;
+	}
+	
+	public void addDeviceSteps(int transportIndex) {
+		DeviceInformation deviceInfo = getDeviceInformation(transportIndex);
+		PutStep putStep = new PutStep(processFlow, deviceInfo.getPickStep().getRobot(), deviceInfo.getPickStep().getGripper(), null, null, deviceInfo.getPickStep().getRobot().getDefaultPutSettings());
+		ProcessingStep processingStep = new ProcessingStep(null, null);
+		PickStep pickStep = new PickStep(processFlow, deviceInfo.getPickStep().getRobot(), deviceInfo.getPickStep().getGripper(), null, null, deviceInfo.getPickStep().getRobot().getDefaultPickSettings());
+		processFlow.addStepAfter(deviceInfo.getPickStep(), putStep);
+		processFlow.addStepAfter(putStep, processingStep);
+		processFlow.addStepAfter(processingStep, pickStep);
+	}
+	
+	public void removeDeviceSteps(int deviceIndex) {
+		DeviceInformation deviceInfo = getDeviceInformation(deviceIndex);
+		processFlow.removeSteps(deviceInfo.getSteps());
+	}
+	
+	public int getCNCMachineIndex() {
+		for (int i = 0; i < getDeviceStepCount(); i++) {
+			//TODO refactor this, kind of a hack...
+			if ((getDeviceInformation(i).getDevice() != null) && (getDeviceInformation(i).getDevice().getType() == DeviceType.CNC_MACHINE)) {
+				return i;
+			}
+		}
+		return 0;
 	}
 	
 }

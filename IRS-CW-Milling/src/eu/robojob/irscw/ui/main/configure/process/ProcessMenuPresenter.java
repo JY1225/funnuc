@@ -13,7 +13,9 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	public ProcessMenuPresenter(ProcessMenuView view, ProcessConfigurePresenter configurePresenter, ProcessOpenPresenter openPresenter) {
 		super(view);
 		this.configurePresenter = configurePresenter;
+		configurePresenter.setMenuPresenter(this);
 		this.openPresenter = openPresenter;
+		openPresenter.setMenuPresenter(this);
 	}
 
 	@Override
@@ -24,8 +26,6 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	public void setParent(ConfigurePresenter parent) {
 		this.parent = parent;
 		configurePresenter.setTextFieldListener(parent);
-		configurePresenter.setParent(parent);
-		openPresenter.setParent(parent);
 	}
 
 	public ProcessMenuView getView() {
@@ -54,5 +54,17 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 		configureProcess();
 	}
 
+	public void setAddDeviceMode() {
+		parent.setAddDeviceMode();
+	}
+	
+	public void setRemoveDeviceMode() {
+		parent.setRemoveDeviceMode();
+	}
+	
+	public void setNormalMode() {
+		parent.setNormalMode();
+		configurePresenter.setNormalMode();
+	}
 
 }

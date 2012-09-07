@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.main.configure.ConfigurePresenter.Mode;
 
 public class ProcessFlowPresenter {
 
@@ -26,21 +27,39 @@ public class ProcessFlowPresenter {
 	}
 	
 	public void deviceClicked(int index) {
-		logger.debug("Clicked device with index: " + index);
-		view.focusDevice(index);
-		parent.configureDevice(index);
+		if (parent.getMode() == Mode.NORMAL) {
+			logger.debug("Clicked device with index: " + index);
+			view.focusDevice(index);
+			parent.configureDevice(index);
+		} else {
+			if (parent.getMode() == Mode.REMOVE_DEVICE) {
+				parent.removeDevice(index);
+			} else {
+				throw new IllegalStateException("Device clicked, but state does not allow it");
+			}
+		}
 	}
 	
 	public void transportClicked(int index) {
-		logger.debug("Clicked transport with index: " + index);
-		view.focusTransport(index);
-		parent.configureTransport(index);
+		if (parent.getMode() == Mode.NORMAL) {
+			logger.debug("Clicked transport with index: " + index);
+			view.focusTransport(index);
+			parent.configureTransport(index);
+		} else {
+			if (parent.getMode() == Mode.ADD_DEVICE) {
+				parent.addDevice(index);
+			} else {
+				throw new IllegalStateException("Transport clicked, but state does not allow it.");
+			}
+		}
 	}
 	
 	public void backgroundClicked() {
-		logger.debug("Clicked process-flow background");
-		view.focusAll();
-		parent.configureProcess();
+		if (parent.getMode() == Mode.NORMAL) {
+			logger.debug("Clicked process-flow background");
+			view.focusAll();
+			parent.configureProcess();
+		}
 	}
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {
@@ -57,5 +76,9 @@ public class ProcessFlowPresenter {
 	
 	public void setNormalMode() {
 		view.setNormalMode();
+	}
+	
+	public void refresh() {
+		view.buildView();
 	}
 }

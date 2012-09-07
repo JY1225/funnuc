@@ -17,6 +17,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
+import eu.robojob.irscw.util.Translator;
 
 public class DeviceButton extends VBox {
 	
@@ -44,7 +45,11 @@ public class DeviceButton extends VBox {
 	
 	public void setDeviceInformation(DeviceInformation deviceInfo) {
 		this.deviceInfo = deviceInfo;
-		deviceName.setText(deviceInfo.getDevice().getId());
+		if (deviceInfo.getDevice() != null) {
+			deviceName.setText(deviceInfo.getDevice().getId());
+		} else {
+			deviceName.setText(Translator.getInstance().getTranslation("UnknownDevice"));
+		}
 		setImage();
 	}
 	
@@ -84,7 +89,7 @@ public class DeviceButton extends VBox {
 	}
 	
 	private void setImage() {
-		switch(deviceInfo.getDevice().getType()) {
+		switch(deviceInfo.getType()) {
 			case STACKING:	
 				if (deviceInfo.getPutStep() == null) {
 					imagePath.setContent(preStackingPath);

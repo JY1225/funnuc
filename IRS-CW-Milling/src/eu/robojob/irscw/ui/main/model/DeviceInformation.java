@@ -1,6 +1,11 @@
 package eu.robojob.irscw.ui.main.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.DeviceType;
+import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessingStep;
@@ -8,15 +13,19 @@ import eu.robojob.irscw.process.PutStep;
 
 public class DeviceInformation {
 
+	private int index;
 	private AbstractDevice device;
 	private PutStep putStep;
 	private InterventionStep interventionStepBeforePick;
 	private ProcessingStep processingStep;
 	private InterventionStep interventionStepAfterPut;
 	private PickStep pickStep;
+	private ProcessFlowAdapter flowAdapter;
 
-	public DeviceInformation(AbstractDevice device, PutStep putStep, InterventionStep interventionStepBeforePick, ProcessingStep processingStep,
+	public DeviceInformation(int index, ProcessFlowAdapter flowAdapter, AbstractDevice device, PutStep putStep, InterventionStep interventionStepBeforePick, ProcessingStep processingStep,
 			InterventionStep interventionStepAfterPut, PickStep pickStep) {
+		this.index = index;
+		this.flowAdapter = flowAdapter;
 		this.device = device;
 		this.putStep = putStep;
 		this.interventionStepBeforePick = interventionStepBeforePick;
@@ -25,8 +34,34 @@ public class DeviceInformation {
 		this.pickStep = pickStep;
 	}
 	
-	public DeviceInformation() {
-		this(null, null, null, null, null, null);
+	public DeviceInformation(int index, ProcessFlowAdapter flowAdapter) {
+		this(index, flowAdapter, null, null, null, null, null, null);
+	}
+	
+	public DeviceType getType() {
+		if (device != null) {
+			return device.getType();
+		} else {
+			if ((index == 0)||(index == (flowAdapter.getDeviceStepCount()-1))) {
+				return DeviceType.STACKING;
+			} else {
+				if (index < flowAdapter.getCNCMachineIndex()) {
+					return DeviceType.PRE_PROCESSING;
+				} else if (index == flowAdapter.getCNCMachineIndex()) {
+					return DeviceType.CNC_MACHINE;
+				} else {
+					return DeviceType.POST_PROCESSING;
+				}
+			}
+		}
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	public AbstractDevice getDevice() {
@@ -123,6 +158,21 @@ public class DeviceInformation {
 		} else {
 			return false;
 		}
+	}
+	
+	public List<AbstractProcessStep> getSteps() {
+		List<AbstractProcessStep> steps = new ArrayList<AbstractProcessStep>();
+		if (hasPickStep())
+			steps.add(pickStep);
+		if (hasPutStep())
+			steps.add(putStep);
+		if (hasProcessingStep())
+			steps.add(processingStep);
+		if (hasInterventionStepAfterPut())
+			steps.add(interventionStepAfterPut);
+		if (hasInterventionStepBeforePick())
+			steps.add(interventionStepBeforePick);
+		return steps;
 	}
 	
 }

@@ -14,7 +14,7 @@ import javafx.scene.shape.SVGPath;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.util.Translator;
 
-public abstract class AbstractFormView<T extends AbstractFormPresenter<?>> extends GridPane {
+public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> extends GridPane {
 
 	protected T presenter;
 	protected Translator translator = Translator.getInstance();

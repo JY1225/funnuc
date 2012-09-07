@@ -43,7 +43,8 @@ public class ProcessFlowView extends GridPane  {
 		this.presenter = presenter;
 	}
 
-	private void buildView() {
+	protected void buildView() {
+		this.getChildren().clear();
 		setPadding(new Insets(20, 0, 20, 0));
 		int column = 0;
 		int row = 0;
@@ -151,7 +152,7 @@ public class ProcessFlowView extends GridPane  {
 	
 	public void setRemoveDeviceMode() {
 		for (DeviceButton deviceButton : deviceButtons.values()) {
-			if ((deviceButton.getDeviceInformation().getDevice().getType() == DeviceType.POST_PROCESSING) || (deviceButton.getDeviceInformation().getDevice().getType() == DeviceType.PRE_PROCESSING)) {
+			if ((deviceButton.getDeviceInformation().getType() == DeviceType.POST_PROCESSING) || (deviceButton.getDeviceInformation().getType() == DeviceType.PRE_PROCESSING)) {
 				deviceButton.setFocussed(true);
 				deviceButton.setDisable(false);
 			} else {

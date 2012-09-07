@@ -22,6 +22,10 @@ import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
 
 public class ConfigurePresenter implements TextFieldListener {
 
+	public enum Mode {
+		NORMAL, ADD_DEVICE, REMOVE_DEVICE
+	}
+
 	private static Logger logger = Logger.getLogger(ConfigurePresenter.class);
 		
 	private ConfigureView view;
@@ -40,6 +44,8 @@ public class ConfigurePresenter implements TextFieldListener {
 	
 	private MenuBarPresenter parent;
 	
+	private Mode mode;
+	
 	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
 			ProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processConfigurationMenuPresenter) {
 		this.view = view;
@@ -56,6 +62,7 @@ public class ConfigurePresenter implements TextFieldListener {
 		keyboardActive = false;
 		numericKeyboardActive = false;
 		processFlow = null;
+		mode = Mode.NORMAL;
 	}
 	
 	public void setParent(MenuBarPresenter parent) {
@@ -64,6 +71,10 @@ public class ConfigurePresenter implements TextFieldListener {
 	
 	public ConfigureView getView() {
 		return view;
+	}
+	
+	public Mode getMode() {
+		return mode;
 	}
 	
 	public void showAlarmsView() {
@@ -175,18 +186,35 @@ public class ConfigurePresenter implements TextFieldListener {
 		view.setBottomLeftEnabled(false);
 		parent.setMenuBarEnabled(false);
 		processFlowPresenter.setAddDeviceMode();
+		mode = Mode.ADD_DEVICE;
 	}
 	
 	public void setRemoveDeviceMode() {
 		view.setBottomLeftEnabled(false);
 		parent.setMenuBarEnabled(false);
 		processFlowPresenter.setRemoveDeviceMode();
+		mode = Mode.REMOVE_DEVICE;
 	}
 	
 	public void setNormalMode() {
 		view.setBottomLeftEnabled(true);
 		parent.setMenuBarEnabled(true);
 		processFlowPresenter.setNormalMode();
+		mode = Mode.NORMAL;
+	}
+	
+	public void addDevice(int index) {
+		processFlowAdapter.addDeviceSteps(index);
+		setNormalMode();
+		processFlowPresenter.refresh();
+		processConfigurationMenuPresenter.setNormalMode();
+	}
+	
+	public void removeDevice(int index) {
+		processFlowAdapter.removeDeviceSteps(index);
+		setNormalMode();
+		processFlowPresenter.refresh();
+		processConfigurationMenuPresenter.setNormalMode();
 	}
 
 }

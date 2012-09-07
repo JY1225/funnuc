@@ -36,13 +36,9 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public static abstract class AbstractRobotActionSettings{
 		final private WorkArea workArea;
 		final private Gripper gripper;
-		final private GripperBody gripperBody;
-		final private GripperHead gripperHead;
-		public AbstractRobotActionSettings(WorkArea workArea, Gripper gripper, GripperBody gripperBody, GripperHead gripperHead) {
+		public AbstractRobotActionSettings(WorkArea workArea, Gripper gripper) {
 			this.workArea = workArea;
 			this.gripper = gripper;
-			this.gripperBody = gripperBody;
-			this.gripperHead = gripperHead;
 		}
 		public WorkArea getWorkArea() {
 			return workArea;
@@ -50,22 +46,16 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		public Gripper getGripper() {
 			return gripper;
 		}
-		public GripperBody getGripperBody() {
-			return gripperBody;
-		}
-		public GripperHead getGripperHead() {
-			return gripperHead;
-		}
 	}
 	
 	public static abstract class AbstractRobotPickSettings extends AbstractRobotActionSettings {
-		public AbstractRobotPickSettings(WorkArea workArea, Gripper gripper, GripperBody gripperBody, GripperHead gripperHead) {
-			super(workArea, gripper, gripperBody, gripperHead);
+		public AbstractRobotPickSettings(WorkArea workArea, Gripper gripper) {
+			super(workArea, gripper);
 		}
 	}
 	public static abstract class AbstractRobotPutSettings extends AbstractRobotActionSettings {
-		public AbstractRobotPutSettings(WorkArea workArea, Gripper gripper, GripperBody gripperBody, GripperHead gripperHead) {
-			super(workArea, gripper, gripperBody, gripperHead);
+		public AbstractRobotPutSettings(WorkArea workArea, Gripper gripper) {
+			super(workArea, gripper);
 		}
 	}
 	
@@ -77,4 +67,6 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.gripperBody = gripperBody;
 	}
 	
+	public abstract AbstractRobotPickSettings getDefaultPickSettings();
+	public abstract AbstractRobotPutSettings getDefaultPutSettings();
 }
