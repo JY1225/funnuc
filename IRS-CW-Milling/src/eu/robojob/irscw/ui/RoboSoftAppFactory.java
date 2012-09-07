@@ -117,7 +117,7 @@ public class RoboSoftAppFactory {
 	
 	public ProcessFlow getProcessFlow() {
 		if (processFlow == null) {
-			processFlow = new ProcessFlow();
+			processFlow = new ProcessFlow("Mazak demo");
 			Conveyor conveyor = new Conveyor("conveyor", null);
 			EmbossingDevice embossing = new EmbossingDevice("embossing tes tes test", null);
 			CNCMillingMachine cncMilling = new CNCMillingMachine("cnc", null);

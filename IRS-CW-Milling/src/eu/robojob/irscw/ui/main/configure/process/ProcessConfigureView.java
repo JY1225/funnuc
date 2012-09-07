@@ -63,6 +63,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		fulltxtName = new FullTextField(MAX_NAME_LENGTH);
 		fulltxtName.setPrefHeight(TEXTFIELD_HEIGHT);
 		fulltxtName.setAlignment(Pos.CENTER_LEFT);
+		fulltxtName.setText(processFlowAdapter.getProcessFlow().getName());
 		HBox.setHgrow(fulltxtName, Priority.ALWAYS);
 		fulltxtName.getStyleClass().addAll("form-full-textfield", "form-full-textfield-name");
 		hbox.getChildren().add(fulltxtName);

@@ -157,4 +157,8 @@ public class ProcessFlowAdapter {
 		}
 		return false;
 	}
+	
+	public ProcessFlow getProcessFlow() {
+		return processFlow;
+	}
 }

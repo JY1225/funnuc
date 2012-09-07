@@ -18,6 +18,7 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 		this.processFlow = processFlow;
 		this.configurePresenter = configurePresenter;
 		configurePresenter.setMenuPresenter(this);
+		configurePresenter.setTextFieldListener(parent);
 		this.openPresenter = openPresenter;
 		openPresenter.setMenuPresenter(this);
 	}

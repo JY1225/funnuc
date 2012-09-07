@@ -17,15 +17,19 @@ public class ProcessFlow {
 	private boolean finished;
 	private boolean needsTeaching;
 	
+	private String name;
+	
 	
 	//TODO refactor constructors so there is one constructor, called by the others
-	public ProcessFlow() {
+	public ProcessFlow(String name) {
+		this.name = name;
 		this.processSteps = new ArrayList<AbstractProcessStep>();
 		this.finished = false;
 		needsTeaching = true;
 	}
 			
-	public ProcessFlow(List<AbstractProcessStep>processSteps) {
+	public ProcessFlow(String name, List<AbstractProcessStep>processSteps) {
+		this.name = name;
 		this.finished = false;
 		needsTeaching = true;
 		this.currentStepNumber = 0;
@@ -33,6 +37,7 @@ public class ProcessFlow {
 	}
 	
 	public ProcessFlow(ProcessFlow aProcess) {
+		this.name = aProcess.getName();
 		this.finished = false;
 		needsTeaching = true;
 		this.currentStepNumber = 0;
@@ -44,6 +49,14 @@ public class ProcessFlow {
 		setUpProcess(processStepsCopy);
 	}
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public List<AbstractProcessStep> getProcessSteps() {
 		return processSteps;
 	}

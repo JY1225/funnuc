@@ -33,7 +33,7 @@ public class ProcessFlowAdapterTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		processFlow = new ProcessFlow();
+		processFlow = new ProcessFlow("Test");
 		Conveyor conveyor = new Conveyor("conveyor", null);
 		EmbossingDevice embossing = new EmbossingDevice("embossing", null);
 		CNCMillingMachine cncMilling = new CNCMillingMachine("cnc milling", null);
