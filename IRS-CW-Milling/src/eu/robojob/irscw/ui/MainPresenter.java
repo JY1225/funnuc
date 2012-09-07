@@ -45,4 +45,8 @@ public class MainPresenter {
 		this.process = process;
 		configurePresenter.loadProcessFlow(process);
 	}
+	
+	public void showMessage(String message) {
+		
+	}
 }

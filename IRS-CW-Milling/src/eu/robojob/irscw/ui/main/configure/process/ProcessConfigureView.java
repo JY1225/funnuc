@@ -7,9 +7,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.main.configure.AbstractFormView;
+import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
 
 public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePresenter> {
 		
@@ -32,8 +34,14 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
 	
+	private ProcessFlowAdapter processFlowAdapter;
+	
 	public ProcessConfigureView() {
 		super();	
+	}
+	
+	public void setProcessFlow(ProcessFlow processFlow) {
+		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
 	}
 	
 	public ProcessConfigurePresenter getPresenter() {
@@ -45,6 +53,8 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 	protected void build() {
 		setHgap(HGAP);
 		setVgap(VGAP);
+		
+		getChildren().clear();
 		
 		HBox hbox = new HBox();
 		lblName = new Label(translator.getTranslation("Name"));
@@ -65,6 +75,9 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 				presenter.addDeviceStep();
 			}
 		});
+		if (!processFlowAdapter.canAddDevice()) {
+			btnAddDeviceStep.setDisable(true);
+		}
 		add(btnAddDeviceStep, 0, 1);
 		btnRemoveDeviceStep = createButton(deleteIconPath, "remove-icon", translator.getTranslation("Remove"), BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
@@ -72,7 +85,9 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 				presenter.removeDeviceStep();
 			}
 		});
-
+		if (!processFlowAdapter.canRemoveDevice()) {
+			btnRemoveDeviceStep.setDisable(true);
+		}
 		add(btnRemoveDeviceStep, 1, 1);
 	}
 	

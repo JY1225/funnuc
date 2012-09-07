@@ -17,9 +17,6 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.main.configure.ConfigureView;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
 
-//for now, we only allow one row, in the future, multiple rows could be possible
-// to accomplish this, more HBox's are to be added and the components should be
-// distributed amongst them	
 public class ProcessFlowView extends GridPane  {
 	
 	private static Logger logger = Logger.getLogger(ProcessFlowView.class);
@@ -29,6 +26,9 @@ public class ProcessFlowView extends GridPane  {
 	private Map<Integer, DeviceButton> deviceButtons;
 	private Map<Integer, TransportButton> transportButtons;
 		
+	private static final int maxDevicesFirstRow = 4;
+	private static final int maxRows = 2;
+	
 	public ProcessFlowView() {
 		deviceButtons = new HashMap<Integer, DeviceButton>();
 		transportButtons = new HashMap<Integer, TransportButton>();
@@ -45,6 +45,7 @@ public class ProcessFlowView extends GridPane  {
 
 	protected void buildView() {
 		this.getChildren().clear();
+		this.setVgap(20);
 		setPadding(new Insets(20, 0, 20, 0));
 		int column = 0;
 		int row = 0;
@@ -54,6 +55,10 @@ public class ProcessFlowView extends GridPane  {
 			deviceButtons.put(i, device);
 			device.setOnAction(new DeviceEventHandler(i));
 			column++;
+			if ((i+1)%maxDevicesFirstRow == 0) {
+				column = 1;
+				row++;
+			}
 			if (i < processFlowAdapter.getTransportStepCount()) {
 				TransportButton transport = new TransportButton(processFlowAdapter.getTransportInformation(i));
 				this.add(transport, column, row);

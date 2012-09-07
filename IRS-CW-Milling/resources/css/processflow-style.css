@@ -74,7 +74,7 @@
 }
 
 .device-label {
-	-fx-font-size: 14px;
+	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
 	-fx-text-alignment: center;
 	
@@ -82,6 +82,10 @@
 	-fx-font-weight: bold;
 	
 	/*-fx-effect: dropshadow(gaussian,rgb(0, 0, 0, 0.1), 5, 0, 0, 5);*/
+}
+
+.unknown-device {
+	-fx-text-fill: red;	
 }
 
 .button-label-inactive {

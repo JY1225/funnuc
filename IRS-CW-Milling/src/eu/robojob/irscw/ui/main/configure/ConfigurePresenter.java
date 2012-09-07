@@ -212,8 +212,8 @@ public class ConfigurePresenter implements TextFieldListener {
 	
 	public void removeDevice(int index) {
 		processFlowAdapter.removeDeviceSteps(index);
-		setNormalMode();
 		processFlowPresenter.refresh();
+		setNormalMode();
 		processConfigurationMenuPresenter.setNormalMode();
 	}
 

@@ -12,6 +12,7 @@ import eu.robojob.irscw.process.PutStep;
 public class ProcessFlowAdapter {
 
 	private ProcessFlow processFlow;
+	private static final int maxDeviceCount = 4;
 	
 	public ProcessFlowAdapter(ProcessFlow processFlow) {
 		this.processFlow = processFlow;
@@ -31,6 +32,10 @@ public class ProcessFlowAdapter {
 		deviceSteps++;
 		
 		return deviceSteps;
+	}
+
+	public int getMaxDevices() {
+		return maxDeviceCount;
 	}
 	
 	public int getTransportStepCount() {
@@ -72,9 +77,7 @@ public class ProcessFlowAdapter {
 				}
 			}
 		}
-		
 		return deviceInformation;
-		
 	}
 	
 	public TransportInformation getTransportInformation(int index) {
@@ -109,13 +112,17 @@ public class ProcessFlowAdapter {
 	}
 	
 	public void addDeviceSteps(int transportIndex) {
-		DeviceInformation deviceInfo = getDeviceInformation(transportIndex);
-		PutStep putStep = new PutStep(processFlow, deviceInfo.getPickStep().getRobot(), deviceInfo.getPickStep().getGripper(), null, null, deviceInfo.getPickStep().getRobot().getDefaultPutSettings());
-		ProcessingStep processingStep = new ProcessingStep(null, null);
-		PickStep pickStep = new PickStep(processFlow, deviceInfo.getPickStep().getRobot(), deviceInfo.getPickStep().getGripper(), null, null, deviceInfo.getPickStep().getRobot().getDefaultPickSettings());
-		processFlow.addStepAfter(deviceInfo.getPickStep(), putStep);
-		processFlow.addStepAfter(putStep, processingStep);
-		processFlow.addStepAfter(processingStep, pickStep);
+		if (getDeviceStepCount() < maxDeviceCount) {
+			DeviceInformation deviceInfo = getDeviceInformation(transportIndex);
+			PutStep putStep = new PutStep(processFlow, deviceInfo.getPickStep().getRobot(), deviceInfo.getPickStep().getGripper(), null, null, deviceInfo.getPickStep().getRobot().getDefaultPutSettings());
+			ProcessingStep processingStep = new ProcessingStep(null, null);
+			PickStep pickStep = new PickStep(processFlow, deviceInfo.getPickStep().getRobot(), deviceInfo.getPickStep().getGripper(), null, null, deviceInfo.getPickStep().getRobot().getDefaultPickSettings());
+			processFlow.addStepAfter(deviceInfo.getPickStep(), putStep);
+			processFlow.addStepAfter(putStep, processingStep);
+			processFlow.addStepAfter(processingStep, pickStep);
+		} else {
+			throw new IllegalStateException("Amount of device-steps would be greater than maximum.");
+		}
 	}
 	
 	public void removeDeviceSteps(int deviceIndex) {
@@ -133,4 +140,21 @@ public class ProcessFlowAdapter {
 		return 0;
 	}
 	
+	public boolean canAddDevice() {
+		if (getDeviceStepCount() < maxDeviceCount) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean canRemoveDevice() {
+		for (int i = 0; i < getDeviceStepCount(); i++) {
+			DeviceInformation info = getDeviceInformation(i);
+			if ((info.getType() == DeviceType.POST_PROCESSING) || (info.getType() == DeviceType.PRE_PROCESSING)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

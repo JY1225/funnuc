@@ -24,7 +24,6 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	public AbstractFormView() {
 		super();
-		build();
 		setAlignment(Pos.CENTER);
 		this.setPrefWidth(ConfigureView.WIDTH - ConfigureView.WIDTH_BOTTOM_LEFT);
 		this.setPrefHeight(ConfigureView.HEIGHT_BOTTOM);

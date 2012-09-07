@@ -1,5 +1,6 @@
 package eu.robojob.irscw.ui.main.configure.process;
 
+import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.main.configure.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
 
@@ -9,9 +10,12 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	
 	private ProcessConfigurePresenter configurePresenter;
 	private ProcessOpenPresenter openPresenter;
+	
+	private ProcessFlow processFlow;
 		
-	public ProcessMenuPresenter(ProcessMenuView view, ProcessConfigurePresenter configurePresenter, ProcessOpenPresenter openPresenter) {
+	public ProcessMenuPresenter(ProcessMenuView view, ProcessFlow processFlow, ProcessConfigurePresenter configurePresenter, ProcessOpenPresenter openPresenter) {
 		super(view);
+		this.processFlow = processFlow;
 		this.configurePresenter = configurePresenter;
 		configurePresenter.setMenuPresenter(this);
 		this.openPresenter = openPresenter;

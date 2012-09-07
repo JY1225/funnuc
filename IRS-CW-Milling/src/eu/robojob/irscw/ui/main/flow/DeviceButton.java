@@ -49,6 +49,7 @@ public class DeviceButton extends VBox {
 			deviceName.setText(deviceInfo.getDevice().getId());
 		} else {
 			deviceName.setText(Translator.getInstance().getTranslation("UnknownDevice"));
+			deviceName.getStyleClass().add("unknown-device");
 		}
 		setImage();
 	}
