@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
+import eu.robojob.irscw.positioning.Coordinates;
 
 public class CNCMillingMachine extends AbstractProcessingDevice {
 
@@ -47,13 +48,13 @@ public class CNCMillingMachine extends AbstractProcessingDevice {
 	}
 	
 	public static class CNCMillingMachinePutSettings extends AbstractProcessingDevicePutSettings{
-		public CNCMillingMachinePutSettings(WorkArea workArea) {
-			super(workArea);
+		public CNCMillingMachinePutSettings(WorkArea workArea, Clamping clamping, Coordinates smoothToPoint) {
+			super(workArea, clamping, smoothToPoint);
 		}
 	}
 	public static class CNCMillingMachinePickSettings extends AbstractProcessingDevicePickSettings{
-		public CNCMillingMachinePickSettings(WorkArea workArea) {
-			super(workArea);
+		public CNCMillingMachinePickSettings(WorkArea workArea, Clamping clamping, Coordinates smoothFromPoint) {
+			super(workArea, clamping, smoothFromPoint);
 		}
 	}
 	public static class CNCMillingMachineInterventionSettings extends AbstractProcessingDeviceInterventionSettings{

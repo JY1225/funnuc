@@ -16,5 +16,5 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	public void setPresenter() {
 		view.setPresenter(this);
 	}
-
+	
 }

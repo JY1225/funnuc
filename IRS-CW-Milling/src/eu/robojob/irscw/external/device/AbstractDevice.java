@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
+import eu.robojob.irscw.positioning.Coordinates;
 
 public abstract class AbstractDevice extends AbstractServiceProvider {
 	
@@ -63,7 +64,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	}
 	
 	public static abstract class AbstractDeviceActionSettings {
-		final private WorkArea workArea;
+		protected WorkArea workArea;
 		
 		public AbstractDeviceActionSettings(WorkArea workArea) {
 			this.workArea = workArea;
@@ -75,18 +76,63 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	}
 	
 	public static abstract class AbstractDevicePickSettings extends AbstractDeviceActionSettings {
-		public AbstractDevicePickSettings(WorkArea workArea) {
+		
+		protected Clamping clamping; 
+		protected Coordinates smoothFromPoint;
+		
+		public AbstractDevicePickSettings(WorkArea workArea, Clamping clamping, Coordinates smoothFromPoint) {
 			super(workArea);
+			this.clamping = clamping;
+			this.smoothFromPoint = smoothFromPoint;
+		}
+
+		public Clamping getClamping() {
+			return clamping;
+		}
+
+		public void setClamping(Clamping clamping) {
+			this.clamping = clamping;
+		}
+
+		public Coordinates getSmoothFromPoint() {
+			return smoothFromPoint;
+		}
+
+		public void setSmoothFromPoint(Coordinates smoothFromPoint) {
+			this.smoothFromPoint = smoothFromPoint;
 		}
 	}
 	
 	public static abstract class AbstractDevicePutSettings extends AbstractDeviceActionSettings {
-		public AbstractDevicePutSettings(WorkArea workArea) {
+		
+		protected Clamping clamping; 
+		protected Coordinates smoothToPoint;
+		
+		public AbstractDevicePutSettings(WorkArea workArea, Clamping clamping, Coordinates smoothToPoint) {
 			super(workArea);
+			this.clamping = clamping;
+			this.smoothToPoint = smoothToPoint;
+		}
+
+		public Clamping getClamping() {
+			return clamping;
+		}
+
+		public void setClamping(Clamping clamping) {
+			this.clamping = clamping;
+		}
+
+		public Coordinates getSmoothToPoint() {
+			return smoothToPoint;
+		}
+
+		public void setSmoothToPoint(Coordinates smoothToPoint) {
+			this.smoothToPoint = smoothToPoint;
 		}
 	}
 	
 	public static abstract class AbstractDeviceInterventionSettings extends AbstractDeviceActionSettings {
+				
 		public AbstractDeviceInterventionSettings(WorkArea workArea) {
 			super(workArea);
 		}

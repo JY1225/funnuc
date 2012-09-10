@@ -51,4 +51,9 @@ public abstract class AbstractProcessStep {
 	}
 	
 	public abstract ProcessStepType getType();
+
+	public void setDevice(AbstractDevice device) {
+		this.device = device;
+	}
+	
 }
