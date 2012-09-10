@@ -12,8 +12,7 @@ import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.main.MenuBarPresenter;
-import eu.robojob.irscw.ui.main.configure.device.DeviceMenuPresenter;
-import eu.robojob.irscw.ui.main.configure.device.DeviceMenuView;
+import eu.robojob.irscw.ui.main.configure.device.DeviceMenuFactory;
 import eu.robojob.irscw.ui.main.configure.process.ProcessMenuPresenter;
 import eu.robojob.irscw.ui.main.configure.transport.TransportMenuPresenter;
 import eu.robojob.irscw.ui.main.configure.transport.TransportMenuView;
@@ -34,7 +33,9 @@ public class ConfigurePresenter implements TextFieldListener {
 	private NumericKeyboardPresenter numericKeyboardPresenter;
 	
 	private ProcessFlowPresenter processFlowPresenter;
-	private ProcessMenuPresenter processConfigurationMenuPresenter;
+
+	private AbstractMenuPresenter activeMenu;
+	private DeviceMenuFactory deviceMenuFactory;
 	
 	private boolean keyboardActive;
 	private boolean numericKeyboardActive;
@@ -44,10 +45,12 @@ public class ConfigurePresenter implements TextFieldListener {
 	
 	private MenuBarPresenter parent;
 	
+	private ProcessMenuPresenter processMenuPresenter;
+	
 	private Mode mode;
 	
 	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
-			ProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processConfigurationMenuPresenter) {
+			ProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processMenuPresenter) {
 		this.view = view;
 		this.keyboardPresenter = keyboardPresenter;
 		keyboardPresenter.setParent(this);
@@ -55,8 +58,9 @@ public class ConfigurePresenter implements TextFieldListener {
 		numericKeyboardPresenter.setParent(this);
 		this.processFlowPresenter = processFlowPresenter;
 		processFlowPresenter.setParent(this);
-		this.processConfigurationMenuPresenter = processConfigurationMenuPresenter;
-		processConfigurationMenuPresenter.setParent(this);
+		deviceMenuFactory = new DeviceMenuFactory();
+		this.processMenuPresenter = processMenuPresenter;
+		processMenuPresenter.setParent(this);
 		view.setPresenter(this);
 		showConfigureView();
 		keyboardActive = false;
@@ -150,11 +154,9 @@ public class ConfigurePresenter implements TextFieldListener {
 	}
 	
 	public void configureDevice(int index) {
-		DeviceMenuView deviceMenuView = new DeviceMenuView();
-		DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(deviceMenuView, processFlowAdapter.getDeviceInformation(index));
-		deviceMenuPresenter.setParent(this);
-		view.setBottomLeft(deviceMenuPresenter.getView());
-		deviceMenuPresenter.openFirst();
+		activeMenu = deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(index));
+		view.setBottomLeft(activeMenu.getView());
+		activeMenu.openFirst();
 	}
 	
 	public void configureTransport(int index) {
@@ -172,14 +174,14 @@ public class ConfigurePresenter implements TextFieldListener {
 	}
 	
 	public void configureProcess() {
-		view.setBottomLeft(processConfigurationMenuPresenter.getView());
+		view.setBottomLeft(processMenuPresenter.getView());
 		if (keyboardActive) {
 			view.addNodeToTop(keyboardPresenter.getView()); 
 		}
 		if (numericKeyboardActive) {
 			view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
 		}
-		processConfigurationMenuPresenter.openFirst();
+		processMenuPresenter.openFirst();
 	}
 	
 	public void setAddDeviceMode() {
@@ -207,14 +209,14 @@ public class ConfigurePresenter implements TextFieldListener {
 		processFlowAdapter.addDeviceSteps(index);
 		setNormalMode();
 		processFlowPresenter.refresh();
-		processConfigurationMenuPresenter.setNormalMode();
+		processMenuPresenter.setNormalMode();
 	}
 	
 	public void removeDevice(int index) {
 		processFlowAdapter.removeDeviceSteps(index);
 		processFlowPresenter.refresh();
 		setNormalMode();
-		processConfigurationMenuPresenter.setNormalMode();
+		processMenuPresenter.setNormalMode();
 	}
 
 }

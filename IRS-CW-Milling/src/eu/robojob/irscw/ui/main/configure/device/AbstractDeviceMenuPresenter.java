@@ -3,11 +3,11 @@ package eu.robojob.irscw.ui.main.configure.device;
 import eu.robojob.irscw.ui.main.configure.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
-public class DeviceMenuPresenter extends AbstractMenuPresenter<DeviceMenuView> {
+public abstract class AbstractDeviceMenuPresenter extends AbstractMenuPresenter<DeviceMenuView> {
 
 	private DeviceInformation deviceInfo;
 	
-	public DeviceMenuPresenter(DeviceMenuView view, DeviceInformation deviceInfo) {
+	public AbstractDeviceMenuPresenter(DeviceMenuView view, DeviceInformation deviceInfo) {
 		super(view);
 		this.deviceInfo = deviceInfo;
 		view.setDeviceInfo(deviceInfo);
@@ -18,17 +18,11 @@ public class DeviceMenuPresenter extends AbstractMenuPresenter<DeviceMenuView> {
 		view.setPresenter(this);
 	}
 
-	public void configurePick() {
-		view.setConfigurePickActive();
-	}
+	public abstract void configurePick();
+		
+	public abstract void configurePut();
 	
-	public void configurePut() {
-		view.setConfigurePutActive();
-	}
-	
-	public void configureDevice() {
-		view.setProcessingActive();
-	}
+	public abstract void configureDevice();
 	
 	@Override
 	public void openFirst() {
@@ -40,4 +34,9 @@ public class DeviceMenuPresenter extends AbstractMenuPresenter<DeviceMenuView> {
 			configurePut();
 		}
 	}
+	
+	public DeviceInformation getDeviceInformation() {
+		return deviceInfo;
+	}
+
 }

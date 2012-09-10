@@ -25,4 +25,10 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 	public void configureInterventions() {
 		view.setConfigureInterventionsActive();
 	}
+
+	@Override
+	public void setBlocked(boolean blocked) {
+		// TODO Auto-generated method stub
+		
+	}
 }

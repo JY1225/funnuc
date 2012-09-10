@@ -72,4 +72,10 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 		configurePresenter.setNormalMode();
 	}
 
+	@Override
+	public void setBlocked(boolean blocked) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

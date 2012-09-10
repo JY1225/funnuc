@@ -5,7 +5,7 @@ import javafx.event.EventHandler;
 import eu.robojob.irscw.ui.main.configure.AbstractMenuView;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
-public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter>{
+public class DeviceMenuView extends AbstractMenuView<AbstractDeviceMenuPresenter>{
 
 	protected DeviceInformation deviceInfo;
 	
