@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
-import eu.robojob.irscw.positioning.Coordinates;
 
 public abstract class AbstractDevice extends AbstractServiceProvider {
 	
@@ -21,18 +20,22 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public abstract void releasePiece(AbstractDevicePickSettings pickSettings) throws IOException;
 	public abstract void grabPiece(AbstractDevicePutSettings putSettings) throws IOException;
-	
-	public AbstractDevice (String id, List<Zone> zones) {
+
+	public AbstractDevice(String id) {
 		super(id);
-		this.zones = zones;
+		zones = new ArrayList<Zone>();
 	}
 	
-	public AbstractDevice(String id) {
-		this(id, new ArrayList<Zone>());
+	public AbstractDevice (String id, List<Zone> zones) {
+		this(id);
+		for (Zone zone : zones) {
+			addZone(zone);
+		}
 	}
 
 	public void addZone(Zone zone) {
 		this.zones.add(zone);
+		zone.setDevice(this);
 	}
 	
 	public Zone getZoneById(String id) {
@@ -59,6 +62,22 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return null;
 	}
 	
+	public List<WorkArea> getWorkAreas() {
+		List<WorkArea> workAreas = new ArrayList<WorkArea>();
+		for (Zone zone : zones) {
+			workAreas.addAll(zone.getWorkAreas());
+		}
+		return workAreas;
+	}
+	
+	public List<String> getWorkAreaIds() {
+		List<String> workAreaIds = new ArrayList<String>();
+		for (Zone zone : zones) {
+			workAreaIds.addAll(zone.getWorkAreaIds());
+		}
+		return workAreaIds;
+	}
+	
 	public String toString() {
 		return "Device: " + id;
 	}
@@ -78,12 +97,10 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	public static abstract class AbstractDevicePickSettings extends AbstractDeviceActionSettings {
 		
 		protected Clamping clamping; 
-		protected Coordinates smoothFromPoint;
 		
-		public AbstractDevicePickSettings(WorkArea workArea, Clamping clamping, Coordinates smoothFromPoint) {
+		public AbstractDevicePickSettings(WorkArea workArea, Clamping clamping) {
 			super(workArea);
 			this.clamping = clamping;
-			this.smoothFromPoint = smoothFromPoint;
 		}
 
 		public Clamping getClamping() {
@@ -94,24 +111,15 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 			this.clamping = clamping;
 		}
 
-		public Coordinates getSmoothFromPoint() {
-			return smoothFromPoint;
-		}
-
-		public void setSmoothFromPoint(Coordinates smoothFromPoint) {
-			this.smoothFromPoint = smoothFromPoint;
-		}
 	}
 	
 	public static abstract class AbstractDevicePutSettings extends AbstractDeviceActionSettings {
 		
 		protected Clamping clamping; 
-		protected Coordinates smoothToPoint;
 		
-		public AbstractDevicePutSettings(WorkArea workArea, Clamping clamping, Coordinates smoothToPoint) {
+		public AbstractDevicePutSettings(WorkArea workArea, Clamping clamping) {
 			super(workArea);
 			this.clamping = clamping;
-			this.smoothToPoint = smoothToPoint;
 		}
 
 		public Clamping getClamping() {
@@ -121,14 +129,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		public void setClamping(Clamping clamping) {
 			this.clamping = clamping;
 		}
-
-		public Coordinates getSmoothToPoint() {
-			return smoothToPoint;
-		}
-
-		public void setSmoothToPoint(Coordinates smoothToPoint) {
-			this.smoothToPoint = smoothToPoint;
-		}
+		
 	}
 	
 	public static abstract class AbstractDeviceInterventionSettings extends AbstractDeviceActionSettings {

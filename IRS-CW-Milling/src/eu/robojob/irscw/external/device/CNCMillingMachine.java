@@ -1,13 +1,13 @@
 package eu.robojob.irscw.external.device;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
-import eu.robojob.irscw.positioning.Coordinates;
 
-public class CNCMillingMachine extends AbstractProcessingDevice {
+public class CNCMillingMachine extends AbstractCNCMachine {
 
 	private SocketConnection socketConnection;
 	
@@ -26,7 +26,12 @@ public class CNCMillingMachine extends AbstractProcessingDevice {
 	private static final String INTERVENTION_FINISHED = "INTERVENTION_FINISHED";
 		
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
-		super(id, true);
+		super(id);
+		this.socketConnection = socketConnection;
+	}
+	
+	public CNCMillingMachine(String id, List<Zone> zones, SocketConnection socketConnection) {
+		super(id, zones);
 		this.socketConnection = socketConnection;
 	}
 	
@@ -47,22 +52,22 @@ public class CNCMillingMachine extends AbstractProcessingDevice {
 		}
 	}
 	
-	public static class CNCMillingMachinePutSettings extends AbstractProcessingDevicePutSettings{
-		public CNCMillingMachinePutSettings(WorkArea workArea, Clamping clamping, Coordinates smoothToPoint) {
-			super(workArea, clamping, smoothToPoint);
+	public static class CNCMillingMachinePutSettings extends AbstractCNCMachinePutSettings{
+		public CNCMillingMachinePutSettings(WorkArea workArea, Clamping clamping) {
+			super(workArea, clamping);
 		}
 	}
-	public static class CNCMillingMachinePickSettings extends AbstractProcessingDevicePickSettings{
-		public CNCMillingMachinePickSettings(WorkArea workArea, Clamping clamping, Coordinates smoothFromPoint) {
-			super(workArea, clamping, smoothFromPoint);
+	public static class CNCMillingMachinePickSettings extends AbstractCNCMachinePickSettings{
+		public CNCMillingMachinePickSettings(WorkArea workArea, Clamping clamping) {
+			super(workArea, clamping);
 		}
 	}
-	public static class CNCMillingMachineInterventionSettings extends AbstractProcessingDeviceInterventionSettings{
+	public static class CNCMillingMachineInterventionSettings extends AbstractCNCMachineInterventionSettings{
 		public CNCMillingMachineInterventionSettings(WorkArea workArea) {
 			super(workArea);
 		}
 	}
-	public static class CNCMillingMachineStartCylusSettings extends AbstractProcessingDeviceStartCyclusSettings {
+	public static class CNCMillingMachineStartCylusSettings extends AbstractCNCMachineStartCyclusSettings {
 		public CNCMillingMachineStartCylusSettings(WorkArea workArea) {
 			super(workArea);
 		}
@@ -168,8 +173,4 @@ public class CNCMillingMachine extends AbstractProcessingDevice {
 		}
 	}
 
-	@Override
-	public DeviceType getType() {
-		return DeviceType.CNC_MACHINE;
-	}
 }

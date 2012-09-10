@@ -1,6 +1,7 @@
 package eu.robojob.irscw.external.device;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import eu.robojob.irscw.positioning.Coordinates;
@@ -9,6 +10,10 @@ public class Conveyor extends AbstractStackingDevice {
 
 	public Conveyor(String id, List<Zone> zones) {
 		super(id, zones);
+	}
+	
+	public Conveyor(String id) {
+		this(id, new ArrayList<Zone>());
 	}
 
 	@Override

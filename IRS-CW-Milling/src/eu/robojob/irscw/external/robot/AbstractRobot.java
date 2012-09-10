@@ -34,11 +34,16 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 	
 	public static abstract class AbstractRobotActionSettings{
-		final private WorkArea workArea;
-		final private Gripper gripper;
-		public AbstractRobotActionSettings(WorkArea workArea, Gripper gripper) {
+		protected WorkArea workArea;
+		protected Gripper gripper;
+		protected Coordinates smoothPoint;
+		protected Coordinates location;
+		
+		public AbstractRobotActionSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location) {
 			this.workArea = workArea;
 			this.gripper = gripper;
+			this.smoothPoint = smoothPoint;
+			this.location = location;
 		}
 		public WorkArea getWorkArea() {
 			return workArea;
@@ -46,16 +51,34 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		public Gripper getGripper() {
 			return gripper;
 		}
+		public Coordinates getSmoothPoint() {
+			return smoothPoint;
+		}
+		public void setSmoothPoint(Coordinates smoothPoint) {
+			this.smoothPoint = smoothPoint;
+		}
+		public Coordinates getLocation() {
+			return location;
+		}
+		public void setLocation(Coordinates location) {
+			this.location = location;
+		}
+		public void setWorkArea(WorkArea workArea) {
+			this.workArea = workArea;
+		}
+		public void setGripper(Gripper gripper) {
+			this.gripper = gripper;
+		}
 	}
 	
 	public static abstract class AbstractRobotPickSettings extends AbstractRobotActionSettings {
-		public AbstractRobotPickSettings(WorkArea workArea, Gripper gripper) {
-			super(workArea, gripper);
+		public AbstractRobotPickSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location) {
+			super(workArea, gripper, smoothPoint, location);
 		}
 	}
 	public static abstract class AbstractRobotPutSettings extends AbstractRobotActionSettings {
-		public AbstractRobotPutSettings(WorkArea workArea, Gripper gripper) {
-			super(workArea, gripper);
+		public AbstractRobotPutSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location) {
+			super(workArea, gripper, smoothPoint, location);
 		}
 	}
 	

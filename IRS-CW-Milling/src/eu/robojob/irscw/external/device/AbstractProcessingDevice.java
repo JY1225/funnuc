@@ -3,8 +3,6 @@ package eu.robojob.irscw.external.device;
 import java.io.IOException;
 import java.util.List;
 
-import eu.robojob.irscw.positioning.Coordinates;
-
 public abstract class AbstractProcessingDevice extends AbstractDevice {
 	
 	private boolean isInvasive;
@@ -30,14 +28,14 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 		return "ProcessingDevice: " + id;
 	}
 	
-	public static class AbstractProcessingDevicePutSettings extends AbstractDevicePutSettings {
-		public AbstractProcessingDevicePutSettings(WorkArea workArea, Clamping clamping, Coordinates smoothToPoint) {
-			super(workArea, clamping, smoothToPoint);
+	public abstract static class AbstractProcessingDevicePutSettings extends AbstractDevicePutSettings {
+		public AbstractProcessingDevicePutSettings(WorkArea workArea, Clamping clamping) {
+			super(workArea, clamping);
 		}
 	}
-	public static class AbstractProcessingDevicePickSettings extends AbstractDevicePickSettings {
-		public AbstractProcessingDevicePickSettings(WorkArea workArea, Clamping clamping, Coordinates smoothFromPoint) {
-			super(workArea, clamping, smoothFromPoint);
+	public abstract static class AbstractProcessingDevicePickSettings extends AbstractDevicePickSettings {
+		public AbstractProcessingDevicePickSettings(WorkArea workArea, Clamping clamping) {
+			super(workArea, clamping);
 		}
 	}
 	public static class AbstractProcessingDeviceInterventionSettings extends AbstractDeviceInterventionSettings {

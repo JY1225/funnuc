@@ -4,8 +4,11 @@ import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
 public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter {
 
-	public CNCMillingMachineMenuPresenter(DeviceMenuView view, DeviceInformation deviceInfo) {
+	private CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter;
+	
+	public CNCMillingMachineMenuPresenter(DeviceMenuView view, DeviceInformation deviceInfo, CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter) {
 		super(view, deviceInfo);
+		this.cncMillingMachineConfigurePresenter = cncMillingMachineConfigurePresenter;
 	}
 
 	@Override
@@ -21,6 +24,7 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 	@Override
 	public void configureDevice() {
 		view.setProcessingActive();
+		parent.setBottomRightView(cncMillingMachineConfigurePresenter.getView());
 	}
 
 	@Override

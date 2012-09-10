@@ -155,6 +155,7 @@ public class ConfigurePresenter implements TextFieldListener {
 	
 	public void configureDevice(int index) {
 		activeMenu = deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(index));
+		activeMenu.setParent(this);
 		view.setBottomLeft(activeMenu.getView());
 		activeMenu.openFirst();
 	}
