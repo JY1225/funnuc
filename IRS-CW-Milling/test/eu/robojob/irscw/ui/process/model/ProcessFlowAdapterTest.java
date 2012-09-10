@@ -1,6 +1,5 @@
 package eu.robojob.irscw.ui.process.model;
 
-import static org.junit.Assert.fail;
 import junit.framework.Assert;
 
 import org.junit.Before;

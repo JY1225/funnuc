@@ -4,22 +4,24 @@ import eu.robojob.irscw.positioning.Coordinates;
 
 public class Clamping {
 	
+	private WorkArea correspondingWorkArea;
 	private Coordinates relativePosition;
 	private Coordinates smoothToPoint;
 	private Coordinates smoothFromPoint;
 	private String imageURL;
 	
-	public Clamping(Coordinates relativePosition, Coordinates smoothToPoint,
+	public Clamping(WorkArea correspondingWorkArea, Coordinates relativePosition, Coordinates smoothToPoint,
 				Coordinates smoothFromPoint, String imageURL) {
+		this.correspondingWorkArea = correspondingWorkArea;
 		this.relativePosition = relativePosition;
 		this.smoothToPoint = smoothToPoint;
 		this.smoothFromPoint = smoothFromPoint;
 		this.imageURL = imageURL;
 	}
 	
-	public Clamping(Coordinates relativePosition, Coordinates smoothPoint,
+	public Clamping(WorkArea correspondingWorkArea, Coordinates relativePosition, Coordinates smoothPoint,
 			String imageURL) {
-		this(relativePosition, smoothPoint, smoothPoint, imageURL);
+		this(correspondingWorkArea, relativePosition, smoothPoint, smoothPoint, imageURL);
 	}
 
 	public Coordinates getRelativePosition() {
@@ -52,6 +54,14 @@ public class Clamping {
 
 	public void setSmoothFromPoint(Coordinates smoothFromPoint) {
 		this.smoothFromPoint = smoothFromPoint;
+	}
+
+	public WorkArea getCorrespondingWorkArea() {
+		return correspondingWorkArea;
+	}
+
+	public void setCorrespondingWorkArea(WorkArea correspondingWorkArea) {
+		this.correspondingWorkArea = correspondingWorkArea;
 	}
 
 }
