@@ -50,7 +50,7 @@ public class ConfigurePresenter implements TextFieldListener {
 	private Mode mode;
 	
 	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
-			ProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processMenuPresenter) {
+			ProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processMenuPresenter, DeviceMenuFactory deviceMenuFactory) {
 		this.view = view;
 		this.keyboardPresenter = keyboardPresenter;
 		keyboardPresenter.setParent(this);
@@ -58,7 +58,7 @@ public class ConfigurePresenter implements TextFieldListener {
 		numericKeyboardPresenter.setParent(this);
 		this.processFlowPresenter = processFlowPresenter;
 		processFlowPresenter.setParent(this);
-		deviceMenuFactory = new DeviceMenuFactory();
+		this.deviceMenuFactory = deviceMenuFactory;
 		this.processMenuPresenter = processMenuPresenter;
 		processMenuPresenter.setParent(this);
 		view.setPresenter(this);

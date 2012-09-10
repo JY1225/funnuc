@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui;
 
 import eu.robojob.irscw.external.device.CNCMillingMachine;
 import eu.robojob.irscw.external.device.Conveyor;
+import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.EmbossingDevice;
 import eu.robojob.irscw.external.robot.FanucRobot;
 import eu.robojob.irscw.process.InterventionStep;
@@ -18,6 +19,7 @@ import eu.robojob.irscw.ui.main.MenuBarPresenter;
 import eu.robojob.irscw.ui.main.MenuBarView;
 import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.main.configure.ConfigureView;
+import eu.robojob.irscw.ui.main.configure.device.DeviceMenuFactory;
 import eu.robojob.irscw.ui.main.configure.process.ProcessConfigurePresenter;
 import eu.robojob.irscw.ui.main.configure.process.ProcessConfigureView;
 import eu.robojob.irscw.ui.main.configure.process.ProcessMenuPresenter;
@@ -39,6 +41,9 @@ public class RoboSoftAppFactory {
 	private ProcessMenuPresenter processConfigurationMenuPresenter;
 	private ProcessOpenPresenter processOpenPresenter;
 	private ProcessFlow processFlow;
+	
+	private DeviceManager deviceManager;
+	private DeviceMenuFactory deviceMenuFactory;
 	
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
@@ -63,7 +68,7 @@ public class RoboSoftAppFactory {
 		if (configurePresenter == null) {
 			ConfigureView processConfigureView = new ConfigureView();
 			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNumericKeyboardPresenter(), getProcessFlowPresenter(), 
-					getProcessConfigurationMenuPresenter());
+					getProcessConfigurationMenuPresenter(), getDeviceMenuFactory());
 		}
 		return configurePresenter;
 	}
@@ -143,5 +148,19 @@ public class RoboSoftAppFactory {
 			processFlow.addStep(put3);
 		}
 		return processFlow;
+	}
+	
+	private DeviceMenuFactory getDeviceMenuFactory() {
+		if (deviceMenuFactory == null) {
+			deviceMenuFactory = new DeviceMenuFactory(getDeviceManager());
+		}
+		return deviceMenuFactory;
+	}
+	
+	private DeviceManager getDeviceManager() {
+		if (deviceManager == null) {
+			deviceManager = new DeviceManager();
+		}
+		return deviceManager;
 	}
 }

@@ -10,6 +10,10 @@ public class DeviceMenuFactory {
 	private DeviceManager deviceManager;
 	private CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter;
 	
+	public DeviceMenuFactory(DeviceManager deviceManager) {
+		this.deviceManager = deviceManager;
+	}
+	
 	public AbstractDeviceMenuPresenter getDeviceMenu(DeviceInformation deviceInfo) {
 		if (deviceInfo.getType() == DeviceType.CNC_MACHINE) {
 			return getCncMillingMachineMenuPresenter(deviceInfo);

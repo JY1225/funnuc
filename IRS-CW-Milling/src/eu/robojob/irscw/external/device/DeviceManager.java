@@ -59,6 +59,7 @@ public class DeviceManager {
 		conveyor1.addZone(zone2);
 		stackingFromDevices.put(conveyor1.getId(), conveyor1);
 		stackingToDevices.put(conveyor1.getId(), conveyor1);		
+		
 	}
 	
 	public Collection<AbstractCNCMachine> getCNCMachines() {
