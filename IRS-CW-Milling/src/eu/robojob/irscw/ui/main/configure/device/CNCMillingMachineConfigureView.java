@@ -25,6 +25,12 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	
 	private DeviceInformation deviceInfo;
 	private Set<String> cncMillingMachineIds;
+	
+	private static final int HGAP = 15;
+	private static final int VGAP = 15;
+	
+	private static final int COMBO_WIDTH = 200;
+	private static final int COMBO_HEIGHT = 30;
 
 	public void setDeviceInfo(DeviceInformation deviceInfo) {
 		this.deviceInfo = deviceInfo;
@@ -36,11 +42,16 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	
 	@Override
 	protected void build() {
+		setVgap(VGAP);
+		setHgap(HGAP);
+		getChildren().clear();
+		
 		lblMachine = new Label(translator.getTranslation("CNCMillingMachineConfigureView.machine"));
 		int column = 0;
 		int row = 0;
 		add(lblMachine, column++, row);
 		cbbMachine = new ComboBox<String>();
+		cbbMachine.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		cbbMachine.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> arg0,
@@ -56,6 +67,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		lblWorkArea = new Label(translator.getTranslation("CNCMillingMachineConfigureView.workArea"));
 		add(lblWorkArea, column++, row);
 		cbbWorkArea = new ComboBox<String>();
+		cbbWorkArea.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		cbbWorkArea.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -72,7 +84,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		lblClampingName = new Label(translator.getTranslation("CNCMillingMachineConfigureView.clampingName"));
 		add(lblClampingName, column++, row);
 		cbbClamping = new ComboBox<String>();
-		
+		cbbClamping.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		add(cbbClamping, column++, row);
 		cbbClamping.valueProperty().addListener(new ChangeListener<String>() {
 			@Override

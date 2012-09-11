@@ -66,7 +66,7 @@
 	-fx-fill: red;
 }
 
-.form-label {
+.form-label, .label {
 	-fx-font-size: 15px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
@@ -87,3 +87,51 @@
 	-fx-background-insets: 0, 1;
 	
 }
+
+.combo-box-base, .arrow-button {
+	-fx-background-color: linear-gradient(#c6c6c6 0%, #9a9a9a 100%), linear-gradient(#fbfbfb 0%, #eeeeee 100%);
+	-fx-background-insets: 0, 1 1 2 1;
+	-fx-background-radius: 5, 4 4 3 3;
+}
+
+.arrow-button {
+	-fx-background-radius: 0 5 5 0,  0 4 3 0;
+}
+
+.combo-box-base .list-cell {
+	-fx-font-size: 16px;
+	-fx-font-weight: bold;
+	-fx-text-alignment: center;
+	-fx-alignment: top-left;
+	-fx-font-family: "Helvetica";
+	-fx-text-fill: #323232;
+}
+
+.combo-box-popup {
+	-fx-alignment: center;
+}
+
+.combo-box-popup .list-view {
+	-fx-background-color: #9a9a9a, white;
+	-fx-background-insets: 0, 1;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 7, 0, 0, 3);
+	-fx-alignment: center;
+	-fx-background-radius: 0 0 3 3, 0 0 4 4;
+	-fx-border-width: 0;
+}
+
+.combo-box-popup .list-view .list-cell {
+	-fx-background-color: rgba(0, 0, 0, 0);
+	-fx-font-size: 14px;
+	-fx-font-weight: bold;
+	-fx-text-alignment: center;
+	
+	-fx-font-family: "Helvetica";
+	-fx-text-fill: #323232;
+	
+	-fx-effect: null;
+	
+	-fx-padding: 10 5 10 5;
+	
+}
+
