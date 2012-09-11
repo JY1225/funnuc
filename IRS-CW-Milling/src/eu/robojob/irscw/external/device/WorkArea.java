@@ -25,7 +25,7 @@ public class WorkArea {
 	}
 	
 	public WorkArea(String id, UserFrame userFrame) {
-		this(id, userFrame, null, null);
+		this(id, userFrame, null, new ArrayList<Clamping>());
 	}
 
 	public String getId() {

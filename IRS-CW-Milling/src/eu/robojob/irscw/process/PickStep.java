@@ -6,7 +6,7 @@ import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceActionSettings;
+import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.Gripper;
 
@@ -84,7 +84,7 @@ public class PickStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public AbstractDeviceActionSettings getDeviceSettings() {
+	public AbstractDevicePickSettings getDeviceSettings() {
 		return pickSettings;
 	}
 

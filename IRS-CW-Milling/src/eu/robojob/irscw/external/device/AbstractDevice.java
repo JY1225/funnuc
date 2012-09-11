@@ -86,11 +86,15 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		protected WorkArea workArea;
 		
 		public AbstractDeviceActionSettings(WorkArea workArea) {
-			this.workArea = workArea;
+			setWorkArea(workArea);
 		}
 
 		public WorkArea getWorkArea() {
 			return workArea;
+		}
+		
+		public void setWorkArea(WorkArea workArea) {
+			this.workArea = workArea;
 		}
 	}
 	

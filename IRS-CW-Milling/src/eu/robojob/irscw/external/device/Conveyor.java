@@ -108,5 +108,23 @@ public class Conveyor extends AbstractStackingDevice {
 	public DeviceType getType() {
 		return DeviceType.STACKING;
 	}
+	
+	public static class ConveyorPickSettings extends AbstractStackingDevicePickSettings {
+		public ConveyorPickSettings(WorkArea workArea, Clamping clamping) {
+			super(workArea, clamping);
+		}
+	}
+	
+	public static class ConveyorPutSettings extends AbstractStackingDevicePutSettings {
+		public ConveyorPutSettings(WorkArea workArea, Clamping clamping) {
+			super(workArea, clamping);
+		}
+	}
+	
+	public static class ConveyorInterventionSettings extends AbstractStackingDeviceInterventionSettings {
+		public ConveyorInterventionSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
 
 }

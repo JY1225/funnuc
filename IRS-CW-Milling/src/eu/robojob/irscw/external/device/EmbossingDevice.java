@@ -3,8 +3,6 @@ package eu.robojob.irscw.external.device;
 import java.io.IOException;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
 
 public class EmbossingDevice extends AbstractProcessingDevice {
 
@@ -98,6 +96,30 @@ public class EmbossingDevice extends AbstractProcessingDevice {
 	@Override
 	public DeviceType getType() {
 		return DeviceType.PRE_PROCESSING;
+	}
+	
+	public static class EmbossingDevicePickSettings extends AbstractProcessingDevicePickSettings {
+		public EmbossingDevicePickSettings(WorkArea workArea, Clamping clamping) {
+			super(workArea, clamping);
+		}
+	}
+	
+	public static class EmbossingDevicePutSettings extends AbstractProcessingDevicePutSettings {
+		public EmbossingDevicePutSettings(WorkArea workArea, Clamping clamping) {
+			super(workArea, clamping);
+		}
+	}
+	
+	public static class EmbossingDeviceInterventionSettings extends AbstractProcessingDeviceInterventionSettings {
+		public EmbossingDeviceInterventionSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
+	
+	public static class EmbossingDeviceStartCyclusSettings extends AbstractProcessingDeviceStartCyclusSettings {
+		public EmbossingDeviceStartCyclusSettings(WorkArea workArea) {
+			super(workArea);
+		}
 	}
 
 }

@@ -122,21 +122,19 @@ public class RoboSoftAppFactory {
 	}
 	
 	public ProcessFlow getProcessFlow() {
+		DeviceManager deviceMgr = getDeviceManager();
 		if (processFlow == null) {
 			processFlow = new ProcessFlow("Mazak demo");
-			Conveyor conveyor = new Conveyor("conveyor", null);
-			EmbossingDevice embossing = new EmbossingDevice("embossing tes tes test", null);
-			CNCMillingMachine cncMilling = new CNCMillingMachine("cnc", null);
 			FanucRobot robot = new FanucRobot("robot", null);
-			PickStep pick1 = new PickStep(robot, null, conveyor, null, null);
-			PutStep put1 = new PutStep(robot, null, embossing, null, null);
-			ProcessingStep processing1 = new ProcessingStep(embossing, null);
-			PickStep pick2 = new PickStep(robot, null, embossing, null, null);
-			PutStep put2 = new PutStep(robot, null, cncMilling, null, null);
-			ProcessingStep processing2 = new ProcessingStep(cncMilling, null);
-			InterventionStep intervention = new InterventionStep(cncMilling, null, 10);
-			PickStep pick3 = new PickStep(robot, null, cncMilling, null, null);
-			PutStep put3 = new PutStep(robot, null, conveyor, null, null);
+			PickStep pick1 = new PickStep(robot, null, deviceMgr.getStackingFromDeviceById("conveyor 1"), new Conveyor.ConveyorPickSettings(null, null), null);
+			PutStep put1 = new PutStep(robot, null, deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDevicePutSettings(null, null), null);
+			ProcessingStep processing1 = new ProcessingStep(deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDeviceStartCyclusSettings(null));
+			PickStep pick2 = new PickStep(robot, null, deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDevicePickSettings(null, null), null);
+			PutStep put2 = new PutStep(robot, null, deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachinePutSettings(null, null), null);
+			ProcessingStep processing2 = new ProcessingStep( deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachineStartCylusSettings(null));
+			InterventionStep intervention = new InterventionStep( deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachineInterventionSettings(null), 10);
+			PickStep pick3 = new PickStep(robot, null,  deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachinePickSettings(null, null), null);
+			PutStep put3 = new PutStep(robot, null, deviceMgr.getStackingToDeviceById("conveyor 1"), new Conveyor.ConveyorPutSettings(null, null), null);
 			processFlow.addStep(pick1);
 			processFlow.addStep(put1);
 			processFlow.addStep(processing1);

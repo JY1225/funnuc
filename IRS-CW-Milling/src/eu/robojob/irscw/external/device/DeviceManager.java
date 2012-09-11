@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
 
@@ -17,6 +19,8 @@ public class DeviceManager {
 	private Map<String, AbstractProcessingDevice> postProcessingDevices;
 	private Map<String, AbstractStackingDevice> stackingFromDevices;
 	private Map<String, AbstractStackingDevice> stackingToDevices;
+	
+	private static Logger logger = Logger.getLogger(DeviceManager.class);
 	
 	//TODO enforce unique ids
 	public DeviceManager() {
@@ -58,7 +62,17 @@ public class DeviceManager {
 		Conveyor conveyor1 = new Conveyor("conveyor 1");
 		conveyor1.addZone(zone2);
 		stackingFromDevices.put(conveyor1.getId(), conveyor1);
-		stackingToDevices.put(conveyor1.getId(), conveyor1);		
+		stackingToDevices.put(conveyor1.getId(), conveyor1);	
+		
+		// add Embossing Machine
+		UserFrame uf4 = new UserFrame(4, 10);
+		List<WorkArea> workAreas3 = new ArrayList<WorkArea>();
+		WorkArea workArea4 = new WorkArea("main", uf4);
+		workAreas3.add(workArea4);
+		Zone zone3 = new Zone("Zone 3", workAreas3);
+		EmbossingDevice embossing1 = new EmbossingDevice("embossing 1", null);
+		embossing1.addZone(zone3);
+		preProcessingDevices.put(embossing1.getId(), embossing1);
 		
 	}
 	
@@ -103,26 +117,66 @@ public class DeviceManager {
 	}
 	
 	public AbstractDevice getDeviceById(String id) {
+		AbstractStackingDevice stackingFrom = getStackingFromDeviceById(id);
+		AbstractStackingDevice stackingTo = getStackingToDeviceById(id);
+		AbstractCNCMachine cncMachine = getCNCMachineById(id);
+		AbstractProcessingDevice prePocessing = getPreProcessingDeviceById(id);
+		AbstractProcessingDevice postProcessing = getPostProcessingDeviceById(id);
+		if ((stackingFrom == null) && (stackingTo == null) && (cncMachine == null) && (prePocessing == null) && (postProcessing == null)) {
+			logger.info("no device found with id: " + id);
+			return null; 
+		} 
+		else if (stackingFrom != null) {
+			return stackingFrom;
+		} else if (stackingTo != null) {
+			return stackingTo;
+		} else if (cncMachine != null) {
+			return cncMachine;
+		} else if (prePocessing != null) {
+			return prePocessing;
+		} else {
+			return postProcessing;
+		}
+		
+	}
+	
+	public AbstractStackingDevice getStackingFromDeviceById(String id) {
 		for (AbstractStackingDevice device : stackingFromDevices.values()) {
 			if (device.getId().equals(id)) {
 				return device;
 			}
 		}
-		for (AbstractProcessingDevice device : preProcessingDevices.values()) {
-			if (device.getId().equals(id)) {
-				return device;
-			}
-		}
+		return null;
+	}
+	
+	public AbstractCNCMachine getCNCMachineById(String id) {
 		for (AbstractCNCMachine device : cncMachines.values()) {
 			if (device.getId().equals(id)) {
 				return device;
 			}
 		}
+		return null;
+	}
+	
+	public AbstractProcessingDevice getPreProcessingDeviceById(String id) {
+		for (AbstractProcessingDevice device : preProcessingDevices.values()) {
+			if (device.getId().equals(id)) {
+				return device;
+			}
+		}
+		return null;
+	}
+	
+	public AbstractProcessingDevice getPostProcessingDeviceById(String id) {
 		for(AbstractProcessingDevice device : postProcessingDevices.values()) {
 			if (device.getId().equals(id)) {
 				return device;
 			}
 		}
+		return null;
+	}
+	
+	public AbstractStackingDevice getStackingToDeviceById(String id) {
 		for (AbstractStackingDevice device : stackingToDevices.values()) {
 			if (device.getId().equals(id)) {
 				return device;
