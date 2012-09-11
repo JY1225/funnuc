@@ -12,6 +12,7 @@ import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.main.configure.AbstractFormView;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
+import eu.robojob.irscw.util.UIConstants;
 
 public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePresenter> {
 		
@@ -22,10 +23,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 	private Button btnRemoveDeviceStep;
 	
 	private static final int BUTTON_WIDTH = 150;
-	private static final int BUTTON_HEIGHT = 40;
-	
-	private static final int TEXTFIELD_HEIGHT= 30;
-	
+		
 	private static final int MAX_NAME_LENGTH = 20;
 	
 	private static final String addIconPath = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 8.75 5 L 11.25 5 L 11.25 8.75 L 15 8.75 L 15 11.25 L 11.25 11.25 L 11.25 15 L 8.75 15 L 8.75 11.25 L 5 11.25 L 5 8.75 L 8.75 8.75 L 8.75 5 z";
@@ -61,7 +59,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		lblName.getStyleClass().addAll("form-label", "form-label-name");
 		hbox.getChildren().add(lblName);
 		fulltxtName = new FullTextField(MAX_NAME_LENGTH);
-		fulltxtName.setPrefHeight(TEXTFIELD_HEIGHT);
+		fulltxtName.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
 		fulltxtName.setAlignment(Pos.CENTER_LEFT);
 		fulltxtName.setText(processFlowAdapter.getProcessFlow().getName());
 		HBox.setHgrow(fulltxtName, Priority.ALWAYS);
@@ -70,7 +68,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		hbox.setAlignment(Pos.CENTER_LEFT);
 		add(hbox, 0, 0, 2, 1);
 		
-		btnAddDeviceStep = createButton(addIconPath, "add-icon", translator.getTranslation("Add"), BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+		btnAddDeviceStep = createButton(addIconPath, "add-icon", translator.getTranslation("Add"), BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
 				presenter.addDeviceStep();
@@ -80,7 +78,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 			btnAddDeviceStep.setDisable(true);
 		}
 		add(btnAddDeviceStep, 0, 1);
-		btnRemoveDeviceStep = createButton(deleteIconPath, "remove-icon", translator.getTranslation("Remove"), BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+		btnRemoveDeviceStep = createButton(deleteIconPath, "remove-icon", translator.getTranslation("Remove"), BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				presenter.removeDeviceStep();
@@ -114,6 +112,11 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 	public void setNameEnabled(boolean enabled) {
 		lblName.setDisable(!enabled);
 		fulltxtName.setDisable(!enabled);
+	}
+
+	@Override
+	public void refresh() {
+		
 	}
 
 }

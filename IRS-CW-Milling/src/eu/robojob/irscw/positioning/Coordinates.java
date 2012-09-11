@@ -17,6 +17,10 @@ public class Coordinates {
 		this.p = p;
 		this.r = r;
 	}
+	
+	public Coordinates() {
+		this(0f, 0f, 0f, 0f, 0f, 0f);
+	}
 
 	public float getX() {
 		return x;

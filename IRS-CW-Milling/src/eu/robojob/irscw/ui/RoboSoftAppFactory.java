@@ -5,6 +5,7 @@ import eu.robojob.irscw.external.device.Conveyor;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.EmbossingDevice;
 import eu.robojob.irscw.external.robot.FanucRobot;
+import eu.robojob.irscw.external.robot.RobotManager;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
@@ -43,6 +44,7 @@ public class RoboSoftAppFactory {
 	private ProcessFlow processFlow;
 	
 	private DeviceManager deviceManager;
+	private RobotManager robotManager;
 	private DeviceMenuFactory deviceMenuFactory;
 	
 	public MainPresenter getMainPresenter() {
@@ -123,18 +125,19 @@ public class RoboSoftAppFactory {
 	
 	public ProcessFlow getProcessFlow() {
 		DeviceManager deviceMgr = getDeviceManager();
+		RobotManager robotMgr = getRobotManager();
 		if (processFlow == null) {
 			processFlow = new ProcessFlow("Mazak demo");
-			FanucRobot robot = new FanucRobot("robot", null);
-			PickStep pick1 = new PickStep(robot, null, deviceMgr.getStackingFromDeviceById("conveyor 1"), new Conveyor.ConveyorPickSettings(null, null), null);
-			PutStep put1 = new PutStep(robot, null, deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDevicePutSettings(null, null), null);
+			FanucRobot robot = (FanucRobot) robotMgr.getRobotById("fanuc M110");
+			PickStep pick1 = new PickStep(robot, deviceMgr.getStackingFromDeviceById("conveyor 1"), new Conveyor.ConveyorPickSettings(null, null), new FanucRobot.FanucRobotPickSettings());
+			PutStep put1 = new PutStep(robot, deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDevicePutSettings(null, null),  new FanucRobot.FanucRobotPutSettings());
 			ProcessingStep processing1 = new ProcessingStep(deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDeviceStartCyclusSettings(null));
-			PickStep pick2 = new PickStep(robot, null, deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDevicePickSettings(null, null), null);
-			PutStep put2 = new PutStep(robot, null, deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachinePutSettings(null, null), null);
+			PickStep pick2 = new PickStep(robot, deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDevicePickSettings(null, null),  new FanucRobot.FanucRobotPickSettings());
+			PutStep put2 = new PutStep(robot, deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachinePutSettings(null, null), new FanucRobot.FanucRobotPutSettings());
 			ProcessingStep processing2 = new ProcessingStep( deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachineStartCylusSettings(null));
 			InterventionStep intervention = new InterventionStep( deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachineInterventionSettings(null), 10);
-			PickStep pick3 = new PickStep(robot, null,  deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachinePickSettings(null, null), null);
-			PutStep put3 = new PutStep(robot, null, deviceMgr.getStackingToDeviceById("conveyor 1"), new Conveyor.ConveyorPutSettings(null, null), null);
+			PickStep pick3 = new PickStep(robot, deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachinePickSettings(null, null),  new FanucRobot.FanucRobotPickSettings());
+			PutStep put3 = new PutStep(robot, deviceMgr.getStackingToDeviceById("conveyor 1"), new Conveyor.ConveyorPutSettings(null, null), new FanucRobot.FanucRobotPutSettings());
 			processFlow.addStep(pick1);
 			processFlow.addStep(put1);
 			processFlow.addStep(processing1);
@@ -160,5 +163,12 @@ public class RoboSoftAppFactory {
 			deviceManager = new DeviceManager();
 		}
 		return deviceManager;
+	}
+	
+	private RobotManager getRobotManager() {
+		if (robotManager == null) {
+			robotManager = new RobotManager();
+		}
+		return robotManager;
 	}
 }

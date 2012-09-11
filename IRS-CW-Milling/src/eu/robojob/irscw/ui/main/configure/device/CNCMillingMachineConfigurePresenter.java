@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui.main.configure.device;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
@@ -31,7 +32,14 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	
 	public void changedDevice(String deviceId) {
 		logger.debug("changed device to: " + deviceId);
-		
+		if (deviceId != null) {
+			AbstractDevice device = deviceManager.getDeviceById(deviceId);
+			if (deviceInfo.getDevice() != device) {
+				setWorkArea(null);
+				setClamping(null);
+				view.refreshWorkAreas();
+			}
+		}
 	}
 	
 	public void changedWorkArea(String workAreaId) {
@@ -41,12 +49,14 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			workArea = deviceInfo.getDevice().getWorkAreaById(workAreaId);
 			if (workArea == null) {
 				throw new IllegalArgumentException("Unknown workarea id");
+			} else {
+				if (workArea != deviceInfo.getPutStep().getDeviceSettings().getWorkArea()) {
+					setWorkArea(workArea);
+					setClamping(null);
+					view.refreshClampings();
+				}
 			}
 		}
-		deviceInfo.getPickStep().getDeviceSettings().setWorkArea(workArea);
-		deviceInfo.getPutStep().getDeviceSettings().setWorkArea(workArea);
-		deviceInfo.getProcessingStep().getStartCyclusSettings().setWorkArea(workArea);
-		view.updateClampings();
 	}
 	
 	public void changedClamping(String clampingId) {
@@ -56,10 +66,28 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			clamping = deviceInfo.getPickStep().getDeviceSettings().getWorkArea().getClampingById(clampingId);
 			if (clamping == null) {
 				throw new IllegalArgumentException("Unknown clamping");
+			} else {
+				if (clamping != deviceInfo.getPutStep().getDeviceSettings().getClamping()) {
+					setClamping(clamping);
+				}
 			}
 		}
+	}
+
+	// these methods should only be called when a combo-box value is changed, into a real value
+	private void setWorkArea(WorkArea workArea) {
+		logger.debug("Changed workarea-settings to: " + workArea);
+		deviceInfo.getPickStep().getDeviceSettings().setWorkArea(workArea);
+		deviceInfo.getPutStep().getDeviceSettings().setWorkArea(workArea);
+		deviceInfo.getProcessingStep().getStartCyclusSettings().setWorkArea(workArea);
+	}
+	
+	// these methods should only be called when a combo-box value is changed, into a real value
+	private void setClamping(Clamping clamping) {
+		logger.debug("Changed clamping-settings to: " + clamping);
 		deviceInfo.getPickStep().getDeviceSettings().setClamping(clamping);
 		deviceInfo.getPutStep().getDeviceSettings().setClamping(clamping);
 	}
+	
 	
 }

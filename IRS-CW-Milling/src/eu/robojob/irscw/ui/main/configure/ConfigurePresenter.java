@@ -117,7 +117,8 @@ public class ConfigurePresenter implements TextFieldListener {
 		}
 	}
 	
-	public void setBottomRightView(Node bottomRight) {
+	public void setBottomRightView(AbstractFormView bottomRight) {
+		bottomRight.refresh();
 		view.setBottomRight(bottomRight);
 	}
 
@@ -156,6 +157,7 @@ public class ConfigurePresenter implements TextFieldListener {
 	public void configureDevice(int index) {
 		activeMenu = deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(index));
 		activeMenu.setParent(this);
+		activeMenu.setTextFieldListener(this);
 		view.setBottomLeft(activeMenu.getView());
 		activeMenu.openFirst();
 	}

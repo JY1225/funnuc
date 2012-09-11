@@ -62,4 +62,6 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 		button.getStyleClass().add("form-button");
 		return button;
 	}
+	
+	public abstract void refresh();
 }

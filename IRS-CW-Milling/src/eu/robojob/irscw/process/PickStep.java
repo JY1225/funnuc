@@ -8,30 +8,29 @@ import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
 import eu.robojob.irscw.external.robot.Gripper;
 
 public class PickStep extends AbstractTransportStep {
 
-	private Gripper gripper;
 	private AbstractDevice.AbstractDevicePickSettings pickSettings;
 	private AbstractRobot.AbstractRobotPickSettings robotPickSettings;
 	
-	public PickStep(ProcessFlow processFlow, AbstractRobot robot, Gripper gripper, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
+	public PickStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
 			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
 		super(processFlow, deviceFrom, robot);
-		this.gripper = gripper;
 		this.pickSettings = pickSettings;
 		this.robotPickSettings = robotPickSettings;
 	}
 	
-	public PickStep(AbstractRobot robot, Gripper gripper, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
+	public PickStep(AbstractRobot robot, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
 			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
-		this(null, robot, gripper, deviceFrom, pickSettings, robotPickSettings);
+		this(null, robot, deviceFrom, pickSettings, robotPickSettings);
 	}
 	
 	@Override
 	public PickStep clone(ProcessFlow parentProcess) {
-		return new PickStep(parentProcess, robot, gripper, device, pickSettings, robotPickSettings);
+		return new PickStep(parentProcess, robot, device, pickSettings, robotPickSettings);
 	}
 
 	@Override
@@ -71,10 +70,6 @@ public class PickStep extends AbstractTransportStep {
 		return "PickStep from " + device + " with: " + robot;
 	}
 
-	public Gripper getGripper() {
-		return gripper;
-	}
-
 	@Override
 	public Set<AbstractServiceProvider> getServiceProviders() {
 		Set<AbstractServiceProvider> providers = new HashSet<AbstractServiceProvider>();
@@ -91,6 +86,11 @@ public class PickStep extends AbstractTransportStep {
 	@Override
 	public ProcessStepType getType() {
 		return ProcessStepType.PICK_STEP;
+	}
+
+	@Override
+	public AbstractRobotPickSettings getRobotSettings() {
+		return robotPickSettings;
 	}
 
 }

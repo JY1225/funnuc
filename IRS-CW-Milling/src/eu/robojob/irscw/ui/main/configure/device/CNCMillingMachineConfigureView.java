@@ -101,16 +101,11 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		lblDeltaZ = new Label(translator.getTranslation("CNCMillingMachineConfigureView.deltaZ"));
 		lblDeltaR = new Label(translator.getTranslation("CNCMillingMachineConfigureView.deltaR"));
 		
-		update();
+		refresh();
 	}
 	
-	public void update() {
-		updateMachines();
-		updateWorkAreas();
-		updateClampings();
-	}
-	
-	public void updateMachines() {
+	public void refreshMachines() {
+		cbbMachine.getItems().clear();
 		cbbMachine.getItems().addAll(cncMillingMachineIds);
 		cbbMachine.setDisable(false);
 		if (cbbMachine.getItems().size() == 1) {
@@ -121,7 +116,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		}
 	}
 	
-	public void updateWorkAreas() {
+	public void refreshWorkAreas() {
 		if ((deviceInfo.getDevice() != null)&&(deviceInfo.getDevice().getWorkAreas() != null)) {
 			cbbWorkArea.getItems().clear();
 			cbbWorkArea.getItems().addAll(deviceInfo.getDevice().getWorkAreaIds());
@@ -131,13 +126,13 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 				cbbWorkArea.setValue(cbbWorkArea.getItems().get(0));
 				cbbWorkArea.setDisable(true);
 			} else if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null) && 
-					((deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null))) {
+					(deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 				cbbWorkArea.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getId());
 			}
 		}
 	}
 
-	public void updateClampings() {
+	public void refreshClampings() {
 		if ((deviceInfo.getPutStep().getDeviceSettings() != null) && (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 			cbbClamping.getItems().clear();
 			cbbClamping.getItems().addAll(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getClampingIds());
@@ -156,6 +151,13 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	@Override
 	public void setTextFieldListener(TextFieldListener listener) {
 		
+	}
+
+	@Override
+	public void refresh() {
+		refreshMachines();
+		refreshWorkAreas();
+		refreshClampings();
 	}
 
 }

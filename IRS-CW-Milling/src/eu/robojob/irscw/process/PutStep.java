@@ -9,25 +9,25 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceActionSettings;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotActionSettings;
+import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
 import eu.robojob.irscw.external.robot.Gripper;
 
 public class PutStep extends AbstractTransportStep {
 
-	private Gripper gripper;
 	private AbstractDevice.AbstractDevicePutSettings putSettings;
 	private AbstractRobot.AbstractRobotPutSettings robotPutSettings;
 	
-	public PutStep(ProcessFlow processFlow, AbstractRobot robot, Gripper gripper, AbstractDevice deviceTo,
+	public PutStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceTo,
 			AbstractDevice.AbstractDevicePutSettings putSettings, AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
 		super(processFlow, deviceTo, robot);
-		this.gripper = gripper;
 		this.putSettings = putSettings;
 		this.robotPutSettings = robotPutSettings;
 	}
 	
-	public PutStep(AbstractRobot robot, Gripper gripper, AbstractDevice deviceTo, AbstractDevice.AbstractDevicePutSettings putSettings,
+	public PutStep(AbstractRobot robot, AbstractDevice deviceTo, AbstractDevice.AbstractDevicePutSettings putSettings,
 			AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
-		this(null, robot, gripper, deviceTo, putSettings, robotPutSettings);
+		this(null, robot, deviceTo, putSettings, robotPutSettings);
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class PutStep extends AbstractTransportStep {
 
 	@Override
 	public AbstractProcessStep clone(ProcessFlow parentProcess) {
-		return new PutStep(parentProcess, robot, gripper, device, putSettings, robotPutSettings);
+		return new PutStep(parentProcess, robot, device, putSettings, robotPutSettings);
 	}
 
 	@Override
@@ -62,10 +62,6 @@ public class PutStep extends AbstractTransportStep {
 			}
 		}
 	}
-
-	public Gripper getGripper() {
-		return gripper;
-	}
 	
 	@Override
 	public Set<AbstractServiceProvider> getServiceProviders() {
@@ -83,6 +79,11 @@ public class PutStep extends AbstractTransportStep {
 	@Override
 	public ProcessStepType getType() {
 		return ProcessStepType.PUT_STEP;
+	}
+
+	@Override
+	public AbstractRobotPutSettings getRobotSettings() {
+		return robotPutSettings;
 	}
 
 }

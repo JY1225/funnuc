@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui.main.configure.device;
 
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.DeviceType;
+import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
 public class DeviceMenuFactory {
@@ -9,6 +10,7 @@ public class DeviceMenuFactory {
 	private CNCMillingMachineMenuPresenter cncMillingMachineMenuPresenter;	
 	private DeviceManager deviceManager;
 	private CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter;
+	private CNCMillingMachinePickPresenter cncMillingMachinePickPresenter;
 	
 	public DeviceMenuFactory(DeviceManager deviceManager) {
 		this.deviceManager = deviceManager;
@@ -25,7 +27,7 @@ public class DeviceMenuFactory {
 	private CNCMillingMachineMenuPresenter getCncMillingMachineMenuPresenter(DeviceInformation deviceInfo) {
 		if ((cncMillingMachineMenuPresenter == null)||(!cncMillingMachineMenuPresenter.getDeviceInformation().equals(deviceInfo))) {
 			DeviceMenuView view = new DeviceMenuView();
-			cncMillingMachineMenuPresenter = new CNCMillingMachineMenuPresenter(view, deviceInfo, getCncMillingMachineConfigurePresenter(deviceInfo));
+			cncMillingMachineMenuPresenter = new CNCMillingMachineMenuPresenter(view, deviceInfo, getCncMillingMachineConfigurePresenter(deviceInfo), getCNCMillingMachinePickPresenter(deviceInfo.getPickStep()));
 		}
 		return cncMillingMachineMenuPresenter;
 	}
@@ -43,5 +45,13 @@ public class DeviceMenuFactory {
 			deviceManager = new DeviceManager();
 		}
 		return deviceManager;
+	}
+	
+	private CNCMillingMachinePickPresenter getCNCMillingMachinePickPresenter(PickStep pickStep) {
+		if (cncMillingMachinePickPresenter == null) {
+			CNCMillingMachinePickView view = new CNCMillingMachinePickView();
+			cncMillingMachinePickPresenter = new CNCMillingMachinePickPresenter(view, pickStep);
+		}
+		return cncMillingMachinePickPresenter;
 	}
 }

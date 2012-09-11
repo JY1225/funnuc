@@ -3,12 +3,14 @@ package eu.robojob.irscw.ui.controls;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
-public abstract class AbstractTextField extends javafx.scene.control.TextField {
+public abstract class AbstractTextField<T> extends javafx.scene.control.TextField {
 
 	protected TextFieldListener listener;
+	protected ChangeListener<T> changeListener;
 	private String originalText;
 	
 	private int maxLength;
@@ -41,12 +43,16 @@ public abstract class AbstractTextField extends javafx.scene.control.TextField {
 		this.listener = listener;
 	}
 	
+	public void setOnChange(ChangeListener<T> changeListener) {
+		this.changeListener = changeListener;
+	}
+	
 	@Override
 	public void replaceText(int start, int end, String text) {
 		String currentText = getText();
 		String newString = currentText.substring(0, start) + text + currentText.substring(end);
 		
-		if (newString.matches(getMatchingExpression()) && newString.length() <= maxLength) {
+		if (newString.matches(getMatchingExpression()) && calculateLength(newString) <= maxLength) {
 			super.replaceText(start, end, text);
 		}
 	}
@@ -56,19 +62,20 @@ public abstract class AbstractTextField extends javafx.scene.control.TextField {
 		String currentText = getText();
 		String newString = currentText.substring(0, getSelection().getStart()) + text + currentText.substring(getSelection().getEnd());
 		
-		if (newString.matches(getMatchingExpression()) && newString.length() <= maxLength) {
+		if (newString.matches(getMatchingExpression()) && calculateLength(newString) <= maxLength) {
 			super.replaceSelection(text);
 		}
 	}
 	
 	public abstract String getMatchingExpression();
+	public abstract int calculateLength(String string);
 	
 
 	private class TextFieldFocusListener implements ChangeListener<Boolean> {
 
-		private AbstractTextField textField;
+		private AbstractTextField<?> textField;
 		
-		public TextFieldFocusListener(AbstractTextField textField) {
+		public TextFieldFocusListener(AbstractTextField<?> textField) {
 			this.textField = textField;
 		}
 		
@@ -80,10 +87,15 @@ public abstract class AbstractTextField extends javafx.scene.control.TextField {
 			} else {
 				cleanText();
 				listener.textFieldLostFocus(textField);
+				if (changeListener!= null) {
+					changeListener.changed(null, convertString(originalText), convertString(textField.getText()));
+				}
 			}
 		}
 	}
 	
 	public abstract void cleanText();
-
+	
+	public abstract T convertString(String text);
+	
 }

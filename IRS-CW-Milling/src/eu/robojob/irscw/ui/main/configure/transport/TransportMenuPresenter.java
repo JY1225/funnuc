@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.main.configure.transport;
 
 import eu.robojob.irscw.ui.main.configure.AbstractMenuPresenter;
+import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
 
 public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuView> {
 
@@ -28,6 +29,12 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 
 	@Override
 	public void setBlocked(boolean blocked) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setTextFieldListener(ConfigurePresenter parent) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -14,6 +14,8 @@ public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> {
 		this.parent = parent;
 	}
 	
+	public abstract void setTextFieldListener(ConfigurePresenter parent);
+	
 	protected abstract void setPresenter();
 	
 	public T getView() {

@@ -141,47 +141,22 @@ public class DeviceManager {
 	}
 	
 	public AbstractStackingDevice getStackingFromDeviceById(String id) {
-		for (AbstractStackingDevice device : stackingFromDevices.values()) {
-			if (device.getId().equals(id)) {
-				return device;
-			}
-		}
-		return null;
+		return stackingFromDevices.get(id);
 	}
 	
 	public AbstractCNCMachine getCNCMachineById(String id) {
-		for (AbstractCNCMachine device : cncMachines.values()) {
-			if (device.getId().equals(id)) {
-				return device;
-			}
-		}
-		return null;
+		return cncMachines.get(id);
 	}
 	
 	public AbstractProcessingDevice getPreProcessingDeviceById(String id) {
-		for (AbstractProcessingDevice device : preProcessingDevices.values()) {
-			if (device.getId().equals(id)) {
-				return device;
-			}
-		}
-		return null;
+		return preProcessingDevices.get(id);
 	}
 	
 	public AbstractProcessingDevice getPostProcessingDeviceById(String id) {
-		for(AbstractProcessingDevice device : postProcessingDevices.values()) {
-			if (device.getId().equals(id)) {
-				return device;
-			}
-		}
-		return null;
+		return postProcessingDevices.get(id);
 	}
 	
 	public AbstractStackingDevice getStackingToDeviceById(String id) {
-		for (AbstractStackingDevice device : stackingToDevices.values()) {
-			if (device.getId().equals(id)) {
-				return device;
-			}
-		}
-		return null;
+		return stackingToDevices.get(id);
 	}
 }

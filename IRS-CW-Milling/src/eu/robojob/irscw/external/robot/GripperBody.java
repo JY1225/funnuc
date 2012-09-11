@@ -10,10 +10,10 @@ public class GripperBody {
 	
 	private List<GripperHead> gripperHeads;
 	
-	public GripperBody (int id, String description) {
+	public GripperBody (int id, String description, List<GripperHead> gripperHeads) {
 		this.id = id;
 		this.description = description;
-		gripperHeads = new ArrayList<GripperHead>();
+		gripperHeads = gripperHeads;
 	}
 
 	public int getId() {

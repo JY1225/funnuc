@@ -30,7 +30,6 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	
 	public void setParent(ConfigurePresenter parent) {
 		this.parent = parent;
-		configurePresenter.setTextFieldListener(parent);
 	}
 
 	public ProcessMenuView getView() {
@@ -76,6 +75,11 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	public void setBlocked(boolean blocked) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void setTextFieldListener(ConfigurePresenter parent) {
+		configurePresenter.setTextFieldListener(parent);
 	}
 
 }
