@@ -1,6 +1,5 @@
 package eu.robojob.irscw.external.robot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GripperBody {
@@ -13,7 +12,7 @@ public class GripperBody {
 	public GripperBody (int id, String description, List<GripperHead> gripperHeads) {
 		this.id = id;
 		this.description = description;
-		gripperHeads = gripperHeads;
+		this.gripperHeads = gripperHeads;
 	}
 
 	public int getId() {
