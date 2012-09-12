@@ -3,6 +3,7 @@ package eu.robojob.irscw.ui.main.configure.device;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.PickStep;
+import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
 public class DeviceMenuFactory {
@@ -11,6 +12,7 @@ public class DeviceMenuFactory {
 	private DeviceManager deviceManager;
 	private CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter;
 	private CNCMillingMachinePickPresenter cncMillingMachinePickPresenter;
+	private CNCMillingMachinePutPresenter cncMillingMachinePutPresenter;
 	
 	public DeviceMenuFactory(DeviceManager deviceManager) {
 		this.deviceManager = deviceManager;
@@ -27,7 +29,8 @@ public class DeviceMenuFactory {
 	private CNCMillingMachineMenuPresenter getCncMillingMachineMenuPresenter(DeviceInformation deviceInfo) {
 		if ((cncMillingMachineMenuPresenter == null)||(!cncMillingMachineMenuPresenter.getDeviceInformation().equals(deviceInfo))) {
 			DeviceMenuView view = new DeviceMenuView();
-			cncMillingMachineMenuPresenter = new CNCMillingMachineMenuPresenter(view, deviceInfo, getCncMillingMachineConfigurePresenter(deviceInfo), getCNCMillingMachinePickPresenter(deviceInfo.getPickStep()));
+			cncMillingMachineMenuPresenter = new CNCMillingMachineMenuPresenter(view, deviceInfo, getCncMillingMachineConfigurePresenter(deviceInfo), getCNCMillingMachinePickPresenter(deviceInfo.getPickStep()),
+					getCNCMillingMachinePutPresenter(deviceInfo.getPutStep()));
 		}
 		return cncMillingMachineMenuPresenter;
 	}
@@ -53,5 +56,13 @@ public class DeviceMenuFactory {
 			cncMillingMachinePickPresenter = new CNCMillingMachinePickPresenter(view, pickStep);
 		}
 		return cncMillingMachinePickPresenter;
+	}
+	
+	private CNCMillingMachinePutPresenter getCNCMillingMachinePutPresenter(PutStep putStep) {
+		if (cncMillingMachinePutPresenter == null) {
+			CNCMillingMachinePutView view = new CNCMillingMachinePutView();
+			cncMillingMachinePutPresenter = new CNCMillingMachinePutPresenter(view, putStep);
+		}
+		return cncMillingMachinePutPresenter;
 	}
 }

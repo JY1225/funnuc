@@ -184,6 +184,7 @@ public class ConfigurePresenter implements TextFieldListener {
 		if (numericKeyboardActive) {
 			view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
 		}
+		processMenuPresenter.setTextFieldListener(this);
 		processMenuPresenter.openFirst();
 	}
 	

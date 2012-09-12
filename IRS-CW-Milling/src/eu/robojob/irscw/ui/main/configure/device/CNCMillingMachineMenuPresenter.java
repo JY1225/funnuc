@@ -9,14 +9,16 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 
 	private CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter;
 	private CNCMillingMachinePickPresenter cncMillingMachinePickPresenter;
+	private CNCMillingMachinePutPresenter cncMillingMachinePutPresenter;
 	
 	private Logger logger = Logger.getLogger(CNCMillingMachineMenuPresenter.class);
 	
 	public CNCMillingMachineMenuPresenter(DeviceMenuView view, DeviceInformation deviceInfo, CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter, 
-			CNCMillingMachinePickPresenter cncMillingMachinePickPresenter) {
+			CNCMillingMachinePickPresenter cncMillingMachinePickPresenter, CNCMillingMachinePutPresenter cncMillingMachinePutPresenter) {
 		super(view, deviceInfo);
 		this.cncMillingMachineConfigurePresenter = cncMillingMachineConfigurePresenter;
 		this.cncMillingMachinePickPresenter = cncMillingMachinePickPresenter;
+		this.cncMillingMachinePutPresenter = cncMillingMachinePutPresenter;
 	}
 
 	@Override
@@ -29,6 +31,8 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 	@Override
 	public void configurePut() {
 		view.setConfigurePutActive();
+		logger.debug("clicked configure put");
+		parent.setBottomRightView(cncMillingMachinePutPresenter.getView());
 	}
 
 	@Override
@@ -45,6 +49,7 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 	@Override
 	public void setTextFieldListener(ConfigurePresenter parent) {
 		cncMillingMachinePickPresenter.setTextFieldListener(parent);
+		cncMillingMachinePutPresenter.setTextFieldListener(parent);
 	}
 
 }
