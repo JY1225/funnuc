@@ -18,10 +18,6 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	private ComboBox<String> cbbWorkArea;
 	private Label lblClampingName;
 	private ComboBox<String> cbbClamping;
-	private Label lblDeltaX;
-	private Label lblDeltaY;
-	private Label lblDeltaZ;
-	private Label lblDeltaR;
 	
 	private DeviceInformation deviceInfo;
 	private Set<String> cncMillingMachineIds;
@@ -96,11 +92,6 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 				}
 			}
 		});
-		lblDeltaX = new Label(translator.getTranslation("CNCMillingMachineConfigureView.deltaX"));
-		lblDeltaY = new Label(translator.getTranslation("CNCMillingMachineConfigureView.deltaY"));
-		lblDeltaZ = new Label(translator.getTranslation("CNCMillingMachineConfigureView.deltaZ"));
-		lblDeltaR = new Label(translator.getTranslation("CNCMillingMachineConfigureView.deltaR"));
-		
 		refresh();
 	}
 	
