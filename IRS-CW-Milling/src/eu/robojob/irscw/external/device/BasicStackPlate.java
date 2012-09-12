@@ -1,7 +1,10 @@
 package eu.robojob.irscw.external.device;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
@@ -39,6 +42,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	private WorkPieceDimensions finishedWorkpieceDimensions;
 	private int finishedWorkPiecePresentAmount;
 	
+	private static Logger logger = Logger.getLogger(BasicStackPlate.class);
+	
 	public BasicStackPlate(String id, List<Zone> zones, int horizontalHoleAmount, int verticalHoleAmount, float holeDiameter, float studDiameter,
 			float horizontalPadding, float verticalPadding, float horizontalHoleDistance, float verticalHoleDistance, float interferenceDistance) {
 		super(id, zones);
@@ -51,6 +56,12 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		this.horizontalHoleDistance = horizontalHoleDistance;
 		this.verticalHoleDistance = verticalHoleDistance;
 		this.interferenceDistance = interferenceDistance;
+	}
+	
+	public BasicStackPlate(String id, int horizontalHoleAmount, int verticalHoleAmount, float holeDiameter, float studDiameter,
+			float horizontalPadding, float verticalPadding, float horizontalHoleDistance, float verticalHoleDistance, float interferenceDistance) {
+		this(id, new ArrayList<Zone>(), horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, horizontalPadding, verticalPadding, 
+				horizontalHoleDistance, verticalHoleDistance, interferenceDistance);
 	}
 
 	public void configureRawWorkpieces(WorkPieceOrientation rawWorkPieceOrientation, WorkPieceDimensions rawWorkPieceDimensions, int rawWorkPiecePresentAmount) {
@@ -71,32 +82,41 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	private int calculateMaxWorkPieceAmountHorizontal(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions) {
-		int amount = 0;
+		
+		if (workPieceDimensions.getWidth() <= (verticalHoleDistance - studDiameter/2)) {
+			throw new IllegalArgumentException("Can't stack horizontally, workpiece-width is too small");
+		}
 		
 		// calculate amount of holes one piece takes (horizontally):
-		int amountOfHorizontalHolesOnePiece = (int) Math.floor(workPieceDimensions.getLength()/horizontalHoleDistance);
+		int amountOfHorizontalHolesOnePiece = (int) Math.floor(workPieceDimensions.getLength()/horizontalHoleDistance) + 1;
 		float horizontalRemainder = workPieceDimensions.getLength() % horizontalHoleDistance;
 		if (horizontalRemainder < interferenceDistance) {
 			amountOfHorizontalHolesOnePiece++;
 			horizontalRemainder = horizontalHoleDistance;
 		}
 		int amountHorizontal = (int) Math.floor(horizontalHoleAmount / amountOfHorizontalHolesOnePiece);
-		if ((horizontalHoleDistance - horizontalRemainder) > horizontalPadding) {
-			amountHorizontal--;
+		
+		if (horizontalHoleAmount % amountOfHorizontalHolesOnePiece == 0) {
+			if ((horizontalHoleDistance - horizontalRemainder) > (horizontalPadding-studDiameter/2)) {
+				amountHorizontal--;
+			}
 		}
 		
 		// calculate amount of holes one piece takes (vertically);
-		int amountOfVerticalHolesOnePiece = (int) Math.floor(workPieceDimensions.getWidth()/verticalHoleDistance);
+		int amountOfVerticalHolesOnePiece = (int) Math.floor(workPieceDimensions.getWidth()/verticalHoleDistance) + 1;
 		float verticalRemainder = workPieceDimensions.getWidth() % verticalHoleDistance;
 		if (verticalRemainder < interferenceDistance) {
 			amountOfVerticalHolesOnePiece++;
 			verticalRemainder = verticalHoleDistance;
 		}
 		int amountVertical = (int) Math.floor(verticalHoleAmount / amountOfVerticalHolesOnePiece);
-		if ((verticalHoleDistance - verticalRemainder) > verticalPadding) {
-			amountVertical--;
-		}
 		
+		if (verticalHoleAmount % amountOfVerticalHolesOnePiece == 0) {
+			if ((verticalHoleDistance - verticalRemainder) > (verticalPadding-studDiameter/2)) {
+				amountVertical--;
+			}
+		}
+				
 		return amountHorizontal*amountVertical;
 	}
 	
