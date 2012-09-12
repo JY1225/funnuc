@@ -21,5 +21,11 @@ public class BasicStackPlateTest {
 	public void testCalculateAmountHorizontal() {
 		int amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(450, 75, 1));
 		Assert.assertEquals(6, amount);
+		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(450, 70, 1));
+		Assert.assertEquals(6, amount);
+		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(450, 141, 1));
+		Assert.assertEquals(4, amount);
+		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(35, 141, 1));
+		Assert.assertEquals(26, amount);
 	}
 }
