@@ -6,12 +6,9 @@ import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceActionSettings;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotActionSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
-import eu.robojob.irscw.external.robot.Gripper;
 
 public class PutStep extends AbstractTransportStep {
 

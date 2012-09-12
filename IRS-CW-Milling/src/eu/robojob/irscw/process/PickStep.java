@@ -9,7 +9,6 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
-import eu.robojob.irscw.external.robot.Gripper;
 
 public class PickStep extends AbstractTransportStep {
 
