@@ -5,6 +5,7 @@ import java.io.IOException;
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {
 	
@@ -38,12 +39,14 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		protected Gripper gripper;
 		protected Coordinates smoothPoint;
 		protected Coordinates location;
+		protected WorkPieceDimensions workPieceDimensions;
 		
-		public AbstractRobotActionSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location) {
+		public AbstractRobotActionSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
 			this.workArea = workArea;
 			this.gripper = gripper;
 			this.smoothPoint = smoothPoint;
 			this.location = location;
+			this.workPieceDimensions = workPieceDimensions;
 		}
 		public WorkArea getWorkArea() {
 			return workArea;
@@ -69,16 +72,22 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		public void setGripper(Gripper gripper) {
 			this.gripper = gripper;
 		}
+		public WorkPieceDimensions getWorkPieceDimensions() {
+			return workPieceDimensions;
+		}
+		public void setWorkPieceDimensions(WorkPieceDimensions workPieceDimensions) {
+			this.workPieceDimensions = workPieceDimensions;
+		}
 	}
 	
 	public static abstract class AbstractRobotPickSettings extends AbstractRobotActionSettings {
-		public AbstractRobotPickSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location) {
-			super(workArea, gripper, smoothPoint, location);
+		public AbstractRobotPickSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
+			super(workArea, gripper, smoothPoint, location, workPieceDimensions);
 		}
 	}
 	public static abstract class AbstractRobotPutSettings extends AbstractRobotActionSettings {
-		public AbstractRobotPutSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location) {
-			super(workArea, gripper, smoothPoint, location);
+		public AbstractRobotPutSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
+			super(workArea, gripper, smoothPoint, location, workPieceDimensions);
 		}
 	}
 	

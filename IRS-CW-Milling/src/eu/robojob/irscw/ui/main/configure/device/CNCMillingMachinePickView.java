@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
@@ -81,7 +82,11 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 			}
 		});
 		
-		btnResetSmooth = new Button(translator.getTranslation("resetSmooth"));
+		btnResetSmooth = new Button();
+		Text txtBtnResetSmooth = new Text(translator.getTranslation("resetSmooth"));
+		txtBtnResetSmooth.getStyleClass().addAll("form-button-label", "center-text");
+		btnResetSmooth.setGraphic(txtBtnResetSmooth);
+		btnResetSmooth.setAlignment(Pos.CENTER);
 		btnResetSmooth.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -95,6 +100,12 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		
 		ntxtHeight = new NumericTextField(6);
 		ntxtHeight.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtHeight.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(ObservableValue<? extends Float> overvable, Float oldValue, Float newValue) {
+				presenter.changedHeight(newValue);
+			}
+		});
 		
 		hBoxSmoothPoint = new HBox();
 		hBoxSmoothPoint.getChildren().addAll(lblSmoothX, ntxtSmoothX, lblSmoothY, ntxtSmoothY, lblSmoothZ, ntxtSmoothZ, btnResetSmooth);
@@ -148,6 +159,10 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 			btnResetSmooth.setDisable(true);
 		} else {
 			btnResetSmooth.setDisable(false);
+		}if (pickStep.getRobotSettings().getWorkPieceDimensions() != null) {
+			if (pickStep.getRobotSettings().getWorkPieceDimensions().getHeight() != -1) {
+				ntxtHeight.setText("" + pickStep.getRobotSettings().getWorkPieceDimensions().getHeight());
+			}
 		}
 	}
 

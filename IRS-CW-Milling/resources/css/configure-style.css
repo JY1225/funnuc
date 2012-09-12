@@ -55,6 +55,17 @@
 .form-button-label {
 	-fx-text-fill: #323232;
 	-fx-effect: null;
+	-fx-font-size: 15px;
+	-fx-font-weight: bold;
+	-fx-text-alignment: center;
+	
+	-fx-font-family: "Helvetica";
+	
+	-fx-text-fill: #737373;
+}
+
+.center-text {
+	-fx-text-alignment: center;
 }
 
 .add-icon {

@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.ui.main.configure.AbstractFormPresenter;
+import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMillingMachinePickView, CNCMillingMachineMenuPresenter> {
 
@@ -53,6 +54,17 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 	public void resetSmooth() {
 		if (pickStep.getDeviceSettings().getClamping() != null) {
 			pickStep.getRobotSettings().setSmoothPoint(pickStep.getDeviceSettings().getClamping().getSmoothFromPoint());
+			view.refresh();
+		}
+	}
+	
+	public void changedHeight(float height) {
+		if (pickStep.getRobotSettings().getWorkPieceDimensions() != null) {
+			pickStep.getRobotSettings().getWorkPieceDimensions().setHeight(height);
+		} else {
+			WorkPieceDimensions dimensions = new WorkPieceDimensions();
+			dimensions.setHeight(height);
+			pickStep.getRobotSettings().setWorkPieceDimensions(dimensions);
 		}
 	}
 }

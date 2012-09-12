@@ -5,6 +5,7 @@ import java.io.IOException;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class FanucRobot extends AbstractRobot {
 
@@ -96,23 +97,23 @@ public class FanucRobot extends AbstractRobot {
 	
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
 
-		public FanucRobotPickSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location) {
-			super(workArea, gripper, smoothPoint, location);
+		public FanucRobotPickSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
+			super(workArea, gripper, smoothPoint, location, workPieceDimensions);
 		}
 		
 		public FanucRobotPickSettings() {
-			super(null, null, null, null);
+			super(null, null, null, null, null);
 		}
 		
 	}
 	public static class FanucRobotPutSettings extends AbstractRobotPutSettings {
 
-		public FanucRobotPutSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location) {
-			super(workArea, gripper, smoothPoint, location);
+		public FanucRobotPutSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
+			super(workArea, gripper, smoothPoint, location, workPieceDimensions);
 		}
 		
 		public FanucRobotPutSettings() {
-			super(null, null, null, null);
+			super(null, null, null, null, null);
 		}
 	}
 	@Override
