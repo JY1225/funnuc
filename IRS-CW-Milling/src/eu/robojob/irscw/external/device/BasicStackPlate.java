@@ -32,6 +32,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	private float horizontalHoleDistance;
 	private float verticalHoleDistance;
 	private float interferenceDistance;
+	private float topPercentage;
 	
 	// specific configuration settings
 	private WorkPieceOrientation workPieceOrientation;
@@ -161,7 +162,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		}
 		
 		// amount of extra studs to the left of first (most-left) workPiece:
-		int studsMostLeft = 0;
+		int studsMostLeft = 1;
 		if (c > horizontalPadding) {
 			 studsMostLeft += Math.ceil((c - horizontalPadding) / horizontalHoleDistance);
 		}
@@ -171,6 +172,23 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		
 		// amount of studs needed
 		int studsMostRight = topRightOnePiece*3;
+		
+		// check how many vertical studs a row of workpieces needs
+		int verticalStuds = 1 + (int) Math.floor(g/verticalHoleDistance);
+		if (verticalHoleDistance - (g % verticalHoleDistance) <= b) {
+			verticalStuds++;
+		}
+		
+		int verticalAmount = (int) Math.floor(verticalHoleAmount / verticalStuds);
+		if (verticalHoleAmount % verticalStuds > 2) {
+			double remaining = (workPieceDimensions.getWidth() + workPieceDimensions.getLength())*Math.sin(Math.PI/4) - (verticalHoleAmount % verticalAmount - 1) * verticalHoleDistance - verticalPadding;
+			double percentage = remaining / (workPieceDimensions.getWidth() + workPieceDimensions.getLength())*Math.sin(Math.PI/4);
+			if (percentage > topPercentage) {
+				verticalAmount++;
+			}
+		}
+		
+		// for the top row, minimum two studs should remain, and the distance above the padding-zone should be maximum toppercentage of the piece
 		
 		logger.debug("a: " + a);
 		logger.debug("b: " + b);
@@ -187,7 +205,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		logger.debug("studs most left: " + studsMostLeft);
 		logger.debug("top right: " + topRightOnePiece);
 		logger.debug("studs most right: " + studsMostRight);
-		
+		logger.debug("vertical studs: " + verticalStuds);
+		logger.debug("top amount: " + verticalAmount);
 		return amount;
 	}
 	
