@@ -32,7 +32,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	private float horizontalHoleDistance;
 	private float verticalHoleDistance;
 	private float interferenceDistance;
-	private float topPercentage;
+	private float overFlowPercentage;
 	
 	// specific configuration settings
 	private WorkPieceOrientation workPieceOrientation;
@@ -46,7 +46,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	private static Logger logger = Logger.getLogger(BasicStackPlate.class);
 	
 	public BasicStackPlate(String id, List<Zone> zones, int horizontalHoleAmount, int verticalHoleAmount, float holeDiameter, float studDiameter,
-			float horizontalPadding, float verticalPadding, float horizontalHoleDistance, float interferenceDistance) {
+			float horizontalPadding, float verticalPadding, float horizontalHoleDistance, float interferenceDistance, float overflowPercentage) {
 		super(id, zones);
 		this.horizontalHoleAmount = horizontalHoleAmount;
 		this.verticalHoleAmount = verticalHoleAmount;
@@ -58,12 +58,16 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		// the calculations in this class expect the vertical distance to be twice the horizontal distance
 		this.verticalHoleDistance = 2*horizontalHoleDistance;
 		this.interferenceDistance = interferenceDistance;
+		this.overFlowPercentage = overflowPercentage;
+		if (overflowPercentage < 0 || overflowPercentage > 1) {
+			throw new IllegalArgumentException("Wrong percentage value");
+		}
 	}
 	
 	public BasicStackPlate(String id, int horizontalHoleAmount, int verticalHoleAmount, float holeDiameter, float studDiameter,
-			float horizontalPadding, float verticalPadding, float horizontalHoleDistance, float interferenceDistance) {
+			float horizontalPadding, float verticalPadding, float horizontalHoleDistance, float interferenceDistance, float overflowPercentage) {
 		this(id, new ArrayList<Zone>(), horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, horizontalPadding, verticalPadding, 
-				horizontalHoleDistance, interferenceDistance);
+				horizontalHoleDistance, interferenceDistance, overflowPercentage);
 	}
 
 	public void configureRawWorkpieces(WorkPieceOrientation rawWorkPieceOrientation, WorkPieceDimensions rawWorkPieceDimensions, int rawWorkPiecePresentAmount) {
@@ -86,41 +90,53 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	
 	private int calculateMaxWorkPieceAmountHorizontal(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions) {
 		
-		//TODO: maybe this can be possible in the future, with special studs! calculations should take into account these studs by then
-		if (workPieceDimensions.getWidth() <= (verticalHoleDistance - studDiameter/2)) {
-			throw new IllegalArgumentException("Can't stack horizontally, workpiece-width is too small");
+		if (workPieceDimensions.getLength() < (horizontalHoleDistance - studDiameter/2)) {
+			throw new IllegalStateException("Workpiece-length is too small!");
 		}
 		
 		// calculate amount of holes one piece takes (horizontally):
-		// add one because we align the workpiece-width against a stud
-		int amountOfHorizontalHolesOnePiece = (int) Math.floor(workPieceDimensions.getLength()/horizontalHoleDistance) + 1;
-		float horizontalRemainder = workPieceDimensions.getLength() % horizontalHoleDistance;
-		if (horizontalRemainder < interferenceDistance) {
-			// the next piece should be places an extra stud further
-			// and because of that the horizontal remainder is increased with the horizontal distance
-			amountOfHorizontalHolesOnePiece++;
-			horizontalRemainder += horizontalHoleDistance;
+		float remainingLength = workPieceDimensions.getLength();
+		// initially two studs are used
+		int amountOfHorizontalStudsOnePiece = 2;
+		// the piece is moved studDiameter/2 from the center of its left-most stud
+		// the distance between the left-most side and the center of the second stud is removed from the remaining length
+		remainingLength -= (horizontalHoleDistance + studDiameter/2);
+		// for each time the horizontal hole distance fits in the remaining length the amount of horizontal studs is incremented
+		while (remainingLength > horizontalHoleDistance) {
+			remainingLength -= horizontalHoleDistance;
+			amountOfHorizontalStudsOnePiece++;
 		}
+		// the remaining distance is the space between the next stud and the end of the piece
+		float remainingDistance = horizontalHoleDistance - remainingLength;
+		if (remainingDistance - studDiameter/2 < interferenceDistance) {
+			amountOfHorizontalStudsOnePiece++;
+		}
+		
 		// how many times will this fit
-		int amountHorizontal = (int) Math.floor(horizontalHoleAmount / amountOfHorizontalHolesOnePiece);
+		int amountHorizontal = (int) Math.floor(horizontalHoleAmount / amountOfHorizontalStudsOnePiece);
 		// special condition for the last piece
-		if (horizontalHoleAmount % amountOfHorizontalHolesOnePiece == 0) {
-			if ((horizontalHoleDistance - horizontalRemainder) > (horizontalPadding+studDiameter/2)) {
+		if (horizontalHoleAmount % amountOfHorizontalStudsOnePiece == 0) {
+			if ((remainingDistance < horizontalHoleDistance) && ((remainingLength - horizontalPadding)/workPieceDimensions.getLength() > overFlowPercentage)) {
 				amountHorizontal--;
 			}
 		}
 		
-		// calculate amount of holes one piece takes (vertically);
-		int amountOfVerticalHolesOnePiece = (int) Math.floor(workPieceDimensions.getWidth()/verticalHoleDistance) + 1;
-		float verticalRemainder = workPieceDimensions.getWidth() % verticalHoleDistance;
-		if (verticalRemainder < interferenceDistance) {
-			amountOfVerticalHolesOnePiece++;
-			verticalRemainder += verticalHoleDistance;
+		int amountOfVerticalStudsOnePiece = 1;
+		float remainingWidth = workPieceDimensions.getWidth();
+		while (remainingWidth > verticalHoleDistance) {
+			remainingWidth -= verticalHoleDistance;
+			amountOfVerticalStudsOnePiece ++;
 		}
-		int amountVertical = (int) Math.floor(verticalHoleAmount / amountOfVerticalHolesOnePiece);
+		remainingDistance = verticalHoleDistance - remainingWidth;
+		if (remainingDistance - studDiameter < interferenceDistance) {
+			amountOfVerticalStudsOnePiece++;
+		}
 		
-		if (verticalHoleAmount % amountOfVerticalHolesOnePiece == 0) {
-			if ((verticalHoleDistance - verticalRemainder) > (verticalPadding+studDiameter/2)) {
+		// how many times will this fit
+		int amountVertical = (int) Math.floor(verticalHoleAmount / amountOfVerticalStudsOnePiece);
+		// special condition for the last piece
+		if (verticalHoleAmount % amountOfVerticalStudsOnePiece == 0) {
+			if ((remainingDistance < verticalHoleDistance) && ((remainingWidth - verticalPadding)/workPieceDimensions.getWidth() > overFlowPercentage)) {
 				amountVertical--;
 			}
 		}
@@ -144,7 +160,10 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		double j = b + studDiameter/2*Math.sin(Math.PI/4);
 		double k = workPieceDimensions.getLength() * Math.sin(Math.PI/4) - b;
 		
-		// TODO this should not be a problem (if not too small), but calculations change!
+		// TODO this should not be a problem, but calculations change!
+		// condition 1
+		// note: otherwhise, the connection between the workpiece and the left-bottom-stud is not really a 
+		// 'tangent line'
 		if (workPieceDimensions.getWidth() < (studDiameter/2 + Math.sqrt(2)*b)) {
 			if (workPieceDimensions.getWidth() > Math.sqrt(2)*b) {
 				throw new IllegalArgumentException("width is too small! ... for now");
@@ -155,9 +174,10 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		
 		// note: we want to store the centerpoints in the future
 		
-		// amount of studs a piece should leave to its left of the (left-)neighbouring piece
-		int studsLeft = 1 + (2* (int) Math.floor(c/horizontalHoleDistance));
-		if ((c % horizontalHoleDistance) < (horizontalHoleDistance/2 - interferenceDistance * Math.cos(Math.PI/4))) {
+		// amount of studs to the left of a workpiece
+		int studsLeft = 1 + ((int) Math.floor((2*c+d)/horizontalHoleDistance));
+		double q = horizontalHoleDistance - ((2*c + d) % horizontalHoleDistance);
+		if (Math.sqrt(2) * ((q/2 + d)/2) < interferenceDistance) {
 			studsLeft++;
 		}
 		
@@ -167,10 +187,10 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			 studsMostLeft += Math.ceil((c - horizontalPadding) / horizontalHoleDistance);
 		}
 		
-		// location of top-right stud for one piece
+		// vertical location of top-right stud for one piece
 		int topRightOnePiece = (int) Math.floor(k / verticalHoleDistance);
 		
-		// amount of studs needed
+		// amount of studs needed horizontally
 		int studsMostRight = topRightOnePiece*3;
 		
 		// check how many vertical studs a row of workpieces needs
@@ -183,7 +203,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		if (verticalHoleAmount % verticalStuds > 2) {
 			double remaining = (workPieceDimensions.getWidth() + workPieceDimensions.getLength())*Math.sin(Math.PI/4) - (verticalHoleAmount % verticalAmount - 1) * verticalHoleDistance - verticalPadding;
 			double percentage = remaining / (workPieceDimensions.getWidth() + workPieceDimensions.getLength())*Math.sin(Math.PI/4);
-			if (percentage > topPercentage) {
+			if (percentage > overFlowPercentage) {
 				verticalAmount++;
 			}
 		}

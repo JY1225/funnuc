@@ -14,7 +14,7 @@ public class BasicStackPlateTest {
 	
 	@Before
 	public void setup() {
-		basicStackPlate = new BasicStackPlate("basic stack plate", 27, 7, 10, 15, 45, 89, 35, 0);
+		basicStackPlate = new BasicStackPlate("basic stack plate", 27, 7, 10, 15, 45, 89, 35, 0, 0.25f);
 	}
 	
 	@Test
@@ -28,6 +28,6 @@ public class BasicStackPlateTest {
 		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(35, 141, 1));
 		Assert.assertEquals(26, amount);
 		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.TILTED, new WorkPieceDimensions(130, 45, 1));
-		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.TILTED, new WorkPieceDimensions(130, 80, 1));
+		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.TILTED, new WorkPieceDimensions(80, 40, 1));
 	}
 }
