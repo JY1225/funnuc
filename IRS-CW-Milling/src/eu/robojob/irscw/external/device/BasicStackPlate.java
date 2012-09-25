@@ -36,12 +36,11 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	
 	// specific configuration settings
 	private WorkPieceOrientation workPieceOrientation;
-	
 	private WorkPieceDimensions rawWorkPieceDimensions;
-	private int rawWorkPiecePresentAmount;
-	
 	private WorkPieceDimensions finishedWorkpieceDimensions;
-	private int finishedWorkPiecePresentAmount;
+
+	private List<StackingPosition> rawStackingPositions;
+	private List<StackingPosition> finishedStackingPositions;
 	
 	private static Logger logger = Logger.getLogger(BasicStackPlate.class);
 	
@@ -62,6 +61,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		if (overflowPercentage < 0 || overflowPercentage > 1) {
 			throw new IllegalArgumentException("Wrong percentage value");
 		}
+		this.rawStackingPositions = new ArrayList<StackingPosition>();
+		this.finishedStackingPositions = new ArrayList<StackingPosition>();
 	}
 	
 	public BasicStackPlate(String id, int horizontalHoleAmount, int verticalHoleAmount, float holeDiameter, float studDiameter,
@@ -72,23 +73,19 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	public void configureRawWorkpieces(WorkPieceOrientation rawWorkPieceOrientation, WorkPieceDimensions rawWorkPieceDimensions, int rawWorkPiecePresentAmount) {
 		//TODO check length is always larger than width
-		if (calculateMaxWorkPieceAmount(rawWorkPieceOrientation, rawWorkPieceDimensions) > rawWorkPiecePresentAmount) {
-			throw new IllegalArgumentException("Amount of workpieces exceeds maximum!");
-		}
-	}
-	
-	public int calculateMaxWorkPieceAmount(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions) {
-		switch (workPieceOrientation) {
+		switch(rawWorkPieceOrientation) {
 			case HORIZONTAL:
-				return calculateMaxWorkPieceAmountHorizontal(workPieceOrientation, workPieceDimensions);
+				configureRawWorkPieceLocationsHorizontal(rawWorkPieceOrientation, rawWorkPieceDimensions, rawWorkPiecePresentAmount);
+				break;
 			case TILTED:
-				return calculateMaxWorkPieceAmountTilted(workPieceOrientation, workPieceDimensions);
+				configureRawWorkPieceLocationsTilted(rawWorkPieceOrientation, rawWorkPieceDimensions, rawWorkPiecePresentAmount);
+				break;
 			default:
-				throw new IllegalArgumentException("Unknown orientation");
+				throw new IllegalArgumentException("Unknown work piece orientation");
 		}
 	}
 	
-	private int calculateMaxWorkPieceAmountHorizontal(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions) {
+	private void configureRawWorkPieceLocationsHorizontal(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions, int rawWorkPiecePresentAmount) {
 		
 		if (workPieceDimensions.getLength() < (horizontalHoleDistance - studDiameter/2)) {
 			throw new IllegalStateException("Workpiece-length is too small!");
@@ -140,10 +137,14 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			amountVertical--;
 		}
 				
-		return amountHorizontal*amountVertical;
+		if (rawWorkPiecePresentAmount > amountHorizontal*amountVertical) {
+			throw new IllegalArgumentException("Amount of workpieces exceeds maximum");
+		} else {
+			initializeRawWorkPiecePositionsHorizontal(amountOfHorizontalStudsOnePiece, amountOfVerticalStudsOnePiece, amountHorizontal, amountVertical, workPieceDimensions, rawWorkPiecePresentAmount);
+		}
 	}
 	
-	private int calculateMaxWorkPieceAmountTilted(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions) {
+	private void configureRawWorkPieceLocationsTilted(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions, int rawWorkPiecePresentAmount) {
 		
 		float hvdr = 0.5f;
 		float a = (float) (horizontalHoleDistance/2 - Math.sqrt(2)*(studDiameter/2));
@@ -212,7 +213,34 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		if (remainingG  - (verticalHoleAmount % amountOfVerticalStudsOnePiece)* verticalHoleDistance > verticalPadding) {
 			amountVertical--;
 		}
-		return amountVertical * amountHorizontal;
+		
+		if (rawWorkPiecePresentAmount > amountHorizontal*amountVertical) {
+			throw new IllegalArgumentException("Amount of workpieces exceeds maximum");
+		}
+		
+	}
+	
+	private void initializeRawWorkPiecePositionsHorizontal(int amountOfHorizontalStudsOnePiece, int amountOfVerticalStudsOnePiece, 
+			int amountHorizontal, int amountVertical, WorkPieceDimensions workPieceDimensions, int amountOfRawWorkPieces) {
+		rawStackingPositions.clear();
+		int verticalStudIndex = 0;
+		for (int i = 0; i < amountVertical; i++) {
+			// calculate vertical position
+			float verticalPos = verticalStudIndex * verticalHoleDistance + studDiameter + workPieceDimensions.getWidth()/2 + verticalPadding;
+			int horizontalStudIndex = 0;
+			for (int j = 0; j < amountHorizontal; j++) {
+				float horizontalPos = horizontalStudIndex * horizontalHoleDistance + studDiameter + workPieceDimensions.getLength()/2 + horizontalPadding;
+				StackingPosition position = new StackingPosition(new Coordinates(horizontalPos, verticalPos, 0, 0, 0, 0), true, WorkPieceOrientation.HORIZONTAL, workPieceDimensions);
+				rawStackingPositions.add(position);
+				horizontalStudIndex += amountOfHorizontalStudsOnePiece;
+			}
+			verticalStudIndex += amountOfVerticalStudsOnePiece;
+		}
+	}
+		
+	private void initializeRawWorkPiecePostionsTilted(int amountOfHorizontalStudsOnePiece, int amountOfVerticalStudsOnePiece, 
+			int amountHorizontal, int amountVertical, WorkPieceDimensions workPieceDimensions, int amountOfRawWorkPieces) {
+		//TODO implement here
 	}
 	
 
@@ -302,53 +330,6 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public String getStatus() throws IOException {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	public class StackingPosition {
-		private Coordinates position;
-		private boolean containsWorkPiece;
-		private WorkPieceOrientation orientation;
-		private WorkPieceDimensions dimensions;
-		
-		public StackingPosition(Coordinates position, boolean containsWorkPiece, WorkPieceOrientation orientation, WorkPieceDimensions dimensions) {
-			this.position = position;
-			this.containsWorkPiece = containsWorkPiece;
-			this.orientation = orientation;
-			this.dimensions = dimensions;
-		}
-
-		public Coordinates getPosition() {
-			return position;
-		}
-
-		public void setPosition(Coordinates position) {
-			this.position = position;
-		}
-
-		public boolean isContainsWorkPiece() {
-			return containsWorkPiece;
-		}
-
-		public void setContainsWorkPiece(boolean containsWorkPiece) {
-			this.containsWorkPiece = containsWorkPiece;
-		}
-
-		public WorkPieceOrientation getOrientation() {
-			return orientation;
-		}
-
-		public void setOrientation(WorkPieceOrientation orientation) {
-			this.orientation = orientation;
-		}
-
-		public WorkPieceDimensions getDimensions() {
-			return dimensions;
-		}
-
-		public void setDimensions(WorkPieceDimensions dimensions) {
-			this.dimensions = dimensions;
-		}
-	
 	}
 
 }

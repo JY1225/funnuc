@@ -19,19 +19,7 @@ public class BasicStackPlateTest {
 	
 	@Test
 	public void testCalculateAmountHorizontal() {
-		int amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(300, 150, 1));
-		Assert.assertEquals(6, amount);
-		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(750, 300, 1));
-		Assert.assertEquals(1, amount);
-		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(400, 300, 1));
-		Assert.assertEquals(2, amount);
-		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(300, 300, 1));
-		Assert.assertEquals(3, amount);
-		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(310, 300, 1));
-		Assert.assertEquals(2, amount);
-		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.TILTED, new WorkPieceDimensions(310, 200, 1));
-		Assert.assertEquals(2, amount);
-		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.TILTED, new WorkPieceDimensions(250, 150, 1));
-		Assert.assertEquals(3, amount);
+		basicStackPlate.configureRawWorkpieces(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(300, 150, 1), 5);
+		System.out.println("ok");
 	}
 }
