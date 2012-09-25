@@ -332,4 +332,93 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		return null;
 	}
 
+	public int getHorizontalHoleAmount() {
+		return horizontalHoleAmount;
+	}
+
+	public void setHorizontalHoleAmount(int horizontalHoleAmount) {
+		this.horizontalHoleAmount = horizontalHoleAmount;
+	}
+
+	public int getVerticalHoleAmount() {
+		return verticalHoleAmount;
+	}
+
+	public void setVerticalHoleAmount(int verticalHoleAmount) {
+		this.verticalHoleAmount = verticalHoleAmount;
+	}
+
+	public float getHoleDiameter() {
+		return holeDiameter;
+	}
+
+	public void setHoleDiameter(float holeDiameter) {
+		this.holeDiameter = holeDiameter;
+	}
+
+	public float getStudDiameter() {
+		return studDiameter;
+	}
+
+	public void setStudDiameter(float studDiameter) {
+		this.studDiameter = studDiameter;
+	}
+
+	public float getHorizontalPadding() {
+		return horizontalPadding;
+	}
+
+	public void setHorizontalPadding(float horizontalPadding) {
+		this.horizontalPadding = horizontalPadding;
+	}
+
+	public float getVerticalPadding() {
+		return verticalPadding;
+	}
+
+	public void setVerticalPadding(float verticalPadding) {
+		this.verticalPadding = verticalPadding;
+	}
+
+	public float getHorizontalHoleDistance() {
+		return horizontalHoleDistance;
+	}
+
+	public void setHorizontalHoleDistance(float horizontalHoleDistance) {
+		this.horizontalHoleDistance = horizontalHoleDistance;
+	}
+
+	public float getVerticalHoleDistance() {
+		return verticalHoleDistance;
+	}
+
+	public void setVerticalHoleDistance(float verticalHoleDistance) {
+		this.verticalHoleDistance = verticalHoleDistance;
+	}
+
+	public List<StackingPosition> getRawStackingPositions() {
+		return rawStackingPositions;
+	}
+
+	public void setRawStackingPositions(List<StackingPosition> rawStackingPositions) {
+		this.rawStackingPositions = rawStackingPositions;
+	}
+
+	public List<StackingPosition> getFinishedStackingPositions() {
+		return finishedStackingPositions;
+	}
+
+	public void setFinishedStackingPositions(
+			List<StackingPosition> finishedStackingPositions) {
+		this.finishedStackingPositions = finishedStackingPositions;
+	}
+	
+	public float getWidth() {
+		return verticalPadding*2 + (verticalHoleAmount - 1) * verticalHoleDistance;
+	}
+	
+	public float getLength() {
+		return horizontalPadding*2 + (horizontalHoleAmount - 1) * horizontalHoleDistance;
+	}
+
 }
