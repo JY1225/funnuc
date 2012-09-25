@@ -14,20 +14,24 @@ public class BasicStackPlateTest {
 	
 	@Before
 	public void setup() {
-		basicStackPlate = new BasicStackPlate("basic stack plate", 27, 7, 10, 15, 45, 89, 35, 0, 0.25f);
+		basicStackPlate = new BasicStackPlate("basic stack plate", 27, 7, 10, 15, 45, 40, 35, 0, 0.25f);
 	}
 	
 	@Test
 	public void testCalculateAmountHorizontal() {
-		int amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(450, 75, 1));
+		int amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(300, 150, 1));
 		Assert.assertEquals(6, amount);
-		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(450, 70, 1));
-		Assert.assertEquals(6, amount);
-		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(450, 141, 1));
-		Assert.assertEquals(4, amount);
-		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(35, 141, 1));
-		Assert.assertEquals(26, amount);
-		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.TILTED, new WorkPieceDimensions(130, 45, 1));
-		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.TILTED, new WorkPieceDimensions(80, 40, 1));
+		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(750, 300, 1));
+		Assert.assertEquals(1, amount);
+		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(400, 300, 1));
+		Assert.assertEquals(2, amount);
+		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(300, 300, 1));
+		Assert.assertEquals(3, amount);
+		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(310, 300, 1));
+		Assert.assertEquals(2, amount);
+		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.TILTED, new WorkPieceDimensions(310, 200, 1));
+		Assert.assertEquals(2, amount);
+		amount = basicStackPlate.calculateMaxWorkPieceAmount(WorkPieceOrientation.TILTED, new WorkPieceDimensions(250, 150, 1));
+		Assert.assertEquals(3, amount);
 	}
 }

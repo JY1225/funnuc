@@ -100,7 +100,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		int amountOfHorizontalStudsOnePiece = 2;
 		// the piece is moved studDiameter/2 from the center of its left-most stud
 		// the distance between the left-most side and the center of the second stud is removed from the remaining length
-		remainingLength -= (horizontalHoleDistance + studDiameter/2);
+		remainingLength -= (horizontalHoleDistance - studDiameter/2);
 		// for each time the horizontal hole distance fits in the remaining length the amount of horizontal studs is incremented
 		while (remainingLength > horizontalHoleDistance) {
 			remainingLength -= horizontalHoleDistance;
@@ -109,16 +109,15 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		// the remaining distance is the space between the next stud and the end of the piece
 		float remainingDistance = horizontalHoleDistance - remainingLength;
 		if (remainingDistance - studDiameter/2 < interferenceDistance) {
+			remainingLength = 0;
 			amountOfHorizontalStudsOnePiece++;
 		}
 		
 		// how many times will this fit
 		int amountHorizontal = (int) Math.floor(horizontalHoleAmount / amountOfHorizontalStudsOnePiece);
 		// special condition for the last piece
-		if (horizontalHoleAmount % amountOfHorizontalStudsOnePiece == 0) {
-			if ((remainingDistance < horizontalHoleDistance) && ((remainingLength - horizontalPadding)/workPieceDimensions.getLength() > overFlowPercentage)) {
-				amountHorizontal--;
-			}
+		if (remainingLength - horizontalPadding - (horizontalHoleAmount / amountOfHorizontalStudsOnePiece - 1)*horizontalHoleDistance > 0) {
+			amountHorizontal--;
 		}
 		
 		int amountOfVerticalStudsOnePiece = 1;
@@ -128,106 +127,92 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			amountOfVerticalStudsOnePiece ++;
 		}
 		remainingDistance = verticalHoleDistance - remainingWidth;
+		// note: whole studDiameter here, because we measure from top of studs (see documentation)
 		if (remainingDistance - studDiameter < interferenceDistance) {
 			amountOfVerticalStudsOnePiece++;
+			remainingWidth = 0;
 		}
 		
 		// how many times will this fit
 		int amountVertical = (int) Math.floor(verticalHoleAmount / amountOfVerticalStudsOnePiece);
 		// special condition for the last piece
-		if (verticalHoleAmount % amountOfVerticalStudsOnePiece == 0) {
-			if ((remainingDistance < verticalHoleDistance) && ((remainingWidth - verticalPadding)/workPieceDimensions.getWidth() > overFlowPercentage)) {
-				amountVertical--;
-			}
+		if (remainingWidth - verticalPadding  - (verticalHoleAmount / amountOfVerticalStudsOnePiece - 1)*verticalHoleDistance  > 0) {
+			amountVertical--;
 		}
 				
 		return amountHorizontal*amountVertical;
 	}
 	
 	private int calculateMaxWorkPieceAmountTilted(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions) {
-		int amount = 0;
 		
-		// calculate necessary values:
-		double d = horizontalHoleDistance/2;
-		double b = d - Math.sqrt(2)*studDiameter/2;
-		double a = workPieceDimensions.getWidth() * Math.sin(Math.PI/4) - b;
-		double c = workPieceDimensions.getWidth() * Math.cos(Math.PI/4) - d;
-		double e = c + d;
-		double g = workPieceDimensions.getLength() * Math.sin(Math.PI/4) + a;
-		double h = workPieceDimensions.getLength() * Math.cos(Math.PI/4) - c;
-		double i = e;
-		double f = Math.sqrt(0.5) * (horizontalHoleDistance - 2*c);
-		double j = b + studDiameter/2*Math.sin(Math.PI/4);
-		double k = workPieceDimensions.getLength() * Math.sin(Math.PI/4) - b;
+		float hvdr = 0.5f;
+		float a = (float) (horizontalHoleDistance/2 - Math.sqrt(2)*(studDiameter/2));
+		float b = (float) (studDiameter/(2*Math.sqrt(2)));
+		float c = (float) (workPieceDimensions.getLength() / (Math.sqrt(2)));
+		float d = (float) ((workPieceDimensions.getWidth() / (Math.sqrt(2)))  - horizontalHoleDistance/2);
+		float e = (float) (horizontalHoleDistance/2 - studDiameter / (2 * Math.sqrt(2)));
 		
-		// TODO this should not be a problem, but calculations change!
-		// condition 1
-		// note: otherwhise, the connection between the workpiece and the left-bottom-stud is not really a 
-		// 'tangent line'
-		if (workPieceDimensions.getWidth() < (studDiameter/2 + Math.sqrt(2)*b)) {
-			if (workPieceDimensions.getWidth() > Math.sqrt(2)*b) {
-				throw new IllegalArgumentException("width is too small! ... for now");
+		if (workPieceDimensions.getWidth() < Math.sqrt(2) * (a+b)) {
+			throw new IllegalArgumentException("Workpiece-width is too small");
+		}
+		float tempVar = (verticalHoleDistance * verticalHoleDistance) + (((1/hvdr)*(horizontalHoleDistance))*((1/hvdr)*(horizontalHoleDistance)));
+		if (workPieceDimensions.getLength() < Math.sqrt(2) * (a+b) + Math.sqrt(tempVar)) {
+			throw new IllegalArgumentException("Workpiece-height is too small");
+		}
+		
+		int amountOfHorizontalStudsOnePieceLeft = 1;
+		int amountOfHorizontalStudsOnePieceRight = 1;
+		float remainingD = d;
+		while (remainingD > horizontalHoleDistance) {
+			amountOfHorizontalStudsOnePieceLeft++;
+			amountOfHorizontalStudsOnePieceRight++;
+			remainingD -= horizontalHoleDistance;
+		}
+		
+		float f = horizontalHoleDistance - remainingD;
+		float totalHorizontalSize = (float) ((workPieceDimensions.getHeight() + workPieceDimensions.getLength()) + Math.sqrt(2));
+		if ((remainingD - studDiameter/2 - horizontalPadding)/totalHorizontalSize > overFlowPercentage) {
+			amountOfHorizontalStudsOnePieceLeft++;
+		} else {
+			if (remainingD < horizontalHoleDistance/2) {
+				amountOfHorizontalStudsOnePieceRight++;
 			} else {
-				throw new IllegalArgumentException("width is too small!");
+				if (remainingD > horizontalHoleDistance/2) {
+					amountOfHorizontalStudsOnePieceRight++;
+				}
 			}
 		}
-		
-		// note: we want to store the centerpoints in the future
-		
-		// amount of studs to the left of a workpiece
-		int studsLeft = 1 + ((int) Math.floor((2*c+d)/horizontalHoleDistance));
-		double q = horizontalHoleDistance - ((2*c + d) % horizontalHoleDistance);
-		if (Math.sqrt(2) * ((q/2 + d)/2) < interferenceDistance) {
-			studsLeft++;
+		if ((remainingD > horizontalHoleDistance/2) && (2 * Math.sqrt(2)*f < interferenceDistance)) {
+			amountOfHorizontalStudsOnePieceRight++;
 		}
 		
-		// amount of extra studs to the left of first (most-left) workPiece:
-		int studsMostLeft = 1;
-		if (c > horizontalPadding) {
-			 studsMostLeft += Math.ceil((c - horizontalPadding) / horizontalHoleDistance);
+		int amountHorizontal = (int) Math.floor(horizontalHoleAmount/(amountOfHorizontalStudsOnePieceLeft + amountOfHorizontalStudsOnePieceRight));
+		float lengthRight = (float) (workPieceDimensions.getLength() / (Math.sqrt(2)) - horizontalHoleDistance/2);
+		lengthRight -= horizontalHoleDistance * (amountOfHorizontalStudsOnePieceRight - 1);
+		if ((lengthRight - horizontalPadding - (horizontalHoleAmount % (amountOfHorizontalStudsOnePieceLeft + amountOfHorizontalStudsOnePieceRight) - 1)*horizontalHoleDistance) > 0) {
+			amountHorizontal--;
 		}
 		
-		// vertical location of top-right stud for one piece
-		int topRightOnePiece = (int) Math.floor(k / verticalHoleDistance);
-		
-		// amount of studs needed horizontally
-		int studsMostRight = topRightOnePiece*3;
-		
-		// check how many vertical studs a row of workpieces needs
-		int verticalStuds = 1 + (int) Math.floor(g/verticalHoleDistance);
-		if (verticalHoleDistance - (g % verticalHoleDistance) <= b) {
-			verticalStuds++;
+		float g = (float) (workPieceDimensions.getLength()/Math.sqrt(2) + workPieceDimensions.getWidth()/Math.sqrt(2));
+		int amountOfVerticalStudsOnePiece = 1;
+		float remainingG = g;
+		while (remainingG > verticalHoleDistance) {
+			remainingG -= verticalHoleDistance;
+			amountOfVerticalStudsOnePiece++;
+		}
+		float y = (float) (horizontalHoleDistance/(2 * Math.sqrt(2)) - Math.sqrt(2) * studDiameter/2 - studDiameter/2);
+		if (y < 0) {
+			y = 0;
+		}
+		if (remainingG > (verticalHoleDistance - studDiameter - y)) {
+			amountOfVerticalStudsOnePiece++;
 		}
 		
-		int verticalAmount = (int) Math.floor(verticalHoleAmount / verticalStuds);
-		if (verticalHoleAmount % verticalStuds > 2) {
-			double remaining = (workPieceDimensions.getWidth() + workPieceDimensions.getLength())*Math.sin(Math.PI/4) - (verticalHoleAmount % verticalAmount - 1) * verticalHoleDistance - verticalPadding;
-			double percentage = remaining / (workPieceDimensions.getWidth() + workPieceDimensions.getLength())*Math.sin(Math.PI/4);
-			if (percentage > overFlowPercentage) {
-				verticalAmount++;
-			}
+		int amountVertical = (int) Math.floor(verticalHoleAmount / amountOfVerticalStudsOnePiece);
+		if (remainingG  - (verticalHoleAmount % amountOfVerticalStudsOnePiece)* verticalHoleDistance > verticalPadding) {
+			amountVertical--;
 		}
-		
-		// for the top row, minimum two studs should remain, and the distance above the padding-zone should be maximum toppercentage of the piece
-		
-		logger.debug("a: " + a);
-		logger.debug("b: " + b);
-		logger.debug("c: " + c);
-		logger.debug("d: " + d);
-		logger.debug("e: " + e);
-		logger.debug("f: " + f);
-		logger.debug("g: " + g);
-		logger.debug("h: " + h);
-		logger.debug("j: " + j);
-		logger.debug("i: " + i);
-		logger.debug("k: " + k);
-		logger.debug("studs left: " + studsLeft);
-		logger.debug("studs most left: " + studsMostLeft);
-		logger.debug("top right: " + topRightOnePiece);
-		logger.debug("studs most right: " + studsMostRight);
-		logger.debug("vertical studs: " + verticalStuds);
-		logger.debug("top amount: " + verticalAmount);
-		return amount;
+		return amountVertical * amountHorizontal;
 	}
 	
 
