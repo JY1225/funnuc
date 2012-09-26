@@ -39,7 +39,7 @@ public class BasicStackPlateVisualTest extends Application {
 		rectangle.setFill(Color.LIGHTBLUE);
 		group.getChildren().add(rectangle);
 		
-		stacker.configureRawWorkpieces(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(95, 75, 1), 20);
+		stacker.configureRawWorkpieces(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(120, 80, 1), 20);
 		
 		for (StudPosition[] horizontalPositions: stacker.getStudPositions()) {
 			for (StudPosition position : horizontalPositions) {

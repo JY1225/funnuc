@@ -207,7 +207,11 @@ public class BasicStackPlate extends AbstractStackingDevice {
 				}
 				studPositions[verticalStudIndex+leftK][horizontalStudIndex].setStudType(StudType.NORMAL);
 				studPositions[verticalStudIndex][horizontalStudIndex + 1].setStudType(StudType.NORMAL);
-				studPositions[verticalStudIndex][horizontalStudIndex + rightK].setStudType(StudType.NORMAL);
+				int horizontalPos2 = horizontalStudIndex + rightK;
+				while(horizontalPos2 >= studPositions[0].length) {
+					horizontalPos2--;
+				}
+				studPositions[verticalStudIndex][horizontalPos2].setStudType(StudType.NORMAL);
 				
 				StackingPosition position = new StackingPosition(new Coordinates(horizontalPos, verticalPos, 0, 0, 0, 0), true, WorkPieceOrientation.HORIZONTAL, workPieceDimensions);
 				rawStackingPositions.add(position);

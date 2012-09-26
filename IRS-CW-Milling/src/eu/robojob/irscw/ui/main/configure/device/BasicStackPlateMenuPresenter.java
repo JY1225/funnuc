@@ -9,19 +9,28 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 
 	private Logger logger = Logger.getLogger(BasicStackPlateMenuPresenter.class);
 	
-	public BasicStackPlateMenuPresenter(StackingDeviceMenuView view,
-			DeviceInformation deviceInfo) {
+	private BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
+	private BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter;
+	
+	public BasicStackPlateMenuPresenter(StackingDeviceMenuView view, DeviceInformation deviceInfo, BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter,
+			BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter) {
 		super(view, deviceInfo);
+		this.basicStackPlateConfigurePresenter = basicStackPlateConfigurePresenter;
+		this.basicStackPlateWorkPiecePresenter = basicStackPlateWorkPiecePresenter;
 	}
 
 	@Override
 	public void configureDevice() {
 		logger.debug("configure device");
+		view.setConfigureDeviceActive();
+		parent.setBottomRightView(basicStackPlateConfigurePresenter.getView());
 	}
 
 	@Override
 	public void configureWorkPiece() {
 		logger.debug("configure work piece");
+		view.setConfigureWorkPieceActive();
+		parent.setBottomRightView(basicStackPlateWorkPiecePresenter.getView());
 	}
 
 	@Override
@@ -31,8 +40,8 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 
 	@Override
 	public void setTextFieldListener(ConfigurePresenter parent) {
-		// TODO Auto-generated method stub
-		
+		basicStackPlateConfigurePresenter.setTextFieldListener(parent);
+		basicStackPlateWorkPiecePresenter.setTextFieldListener(parent);
 	}
 
 	@Override

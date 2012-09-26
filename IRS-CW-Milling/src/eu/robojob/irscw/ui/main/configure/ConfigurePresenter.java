@@ -1,12 +1,11 @@
 package eu.robojob.irscw.ui.main.configure;
 
-import javafx.scene.Node;
-
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.controls.AbstractTextField;
 import eu.robojob.irscw.ui.controls.FullTextField;
+import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
@@ -127,6 +126,8 @@ public class ConfigurePresenter implements TextFieldListener {
 			this.textFieldFocussed((FullTextField) textField);
 		} else if (textField instanceof NumericTextField) {
 			this.textFieldFocussed((NumericTextField) textField);
+		} else if (textField instanceof IntegerTextField) {
+			this.textFieldFocussed((IntegerTextField) textField);
 		} else {
 			throw new IllegalArgumentException("Unknown keyboard-type");
 		}
@@ -141,6 +142,15 @@ public class ConfigurePresenter implements TextFieldListener {
 	}
 	
 	private void textFieldFocussed(NumericTextField textField) {
+		numericKeyboardPresenter.setTarget(textField);
+		if (!numericKeyboardActive) {
+			logger.debug("Opening numeric keyboard");
+			view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
+			numericKeyboardActive = true;
+		}
+	}
+	
+	private void textFieldFocussed(IntegerTextField textField) {
 		numericKeyboardPresenter.setTarget(textField);
 		if (!numericKeyboardActive) {
 			logger.debug("Opening numeric keyboard");

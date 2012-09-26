@@ -3,6 +3,7 @@ package eu.robojob.irscw.external.device;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +55,7 @@ public class DeviceManager {
 		cncMachines.put(cncMillingMachine.getId(), cncMillingMachine);
 		
 		// add Stacking Machine
-		UserFrame uf3 = new UserFrame(3, 20);
+		/*UserFrame uf3 = new UserFrame(3, 20);
 		List<WorkArea> workAreas2 = new ArrayList<WorkArea>();
 		WorkArea workArea3 = new WorkArea("main", uf3);
 		workAreas2.add(workArea3);
@@ -62,7 +63,7 @@ public class DeviceManager {
 		Conveyor conveyor1 = new Conveyor("conveyor 1");
 		conveyor1.addZone(zone2);
 		stackingFromDevices.put(conveyor1.getId(), conveyor1);
-		stackingToDevices.put(conveyor1.getId(), conveyor1);	
+		stackingToDevices.put(conveyor1.getId(), conveyor1);	*/
 		
 		// add Embossing Machine
 		UserFrame uf4 = new UserFrame(4, 10);
@@ -125,6 +126,13 @@ public class DeviceManager {
 	
 	public Set<String> getStackingToDeviceIds() {
 		return stackingToDevices.keySet();
+	}
+	
+	public Set<String> getStackingDeviceIds() {
+		Set<String> ids =  new HashSet<String>(getStackingFromDeviceIds());
+		Set<String> toIds = new HashSet<String>(getStackingToDeviceIds());
+		ids.addAll(toIds);
+		return ids;
 	}
 	
 	public AbstractDevice getDeviceById(String id) {

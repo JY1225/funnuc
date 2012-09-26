@@ -14,6 +14,8 @@ public class DeviceMenuFactory {
 	private CNCMillingMachinePickPresenter cncMillingMachinePickPresenter;
 	private CNCMillingMachinePutPresenter cncMillingMachinePutPresenter;
 	private BasicStackPlateMenuPresenter basicStackPlateMenuPresenter;
+	private BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
+	private BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter;
 	
 	public DeviceMenuFactory(DeviceManager deviceManager) {
 		this.deviceManager = deviceManager;
@@ -71,10 +73,22 @@ public class DeviceMenuFactory {
 	}
 	
 	public BasicStackPlateMenuPresenter getBasicStackPlateMenuPresenter(DeviceInformation deviceInfo) {
-		if (basicStackPlateMenuPresenter == null) {
-			StackingDeviceMenuView stackingDeviceMenuView = new StackingDeviceMenuView();
-			basicStackPlateMenuPresenter = new BasicStackPlateMenuPresenter(stackingDeviceMenuView,deviceInfo);
-		}
+		StackingDeviceMenuView stackingDeviceMenuView = new StackingDeviceMenuView();
+		basicStackPlateMenuPresenter = new BasicStackPlateMenuPresenter(stackingDeviceMenuView,deviceInfo, getBasicStackPlateConfigurePresenter(deviceInfo), getBasicStackPlateWorkPiecePresenter(deviceInfo));
 		return basicStackPlateMenuPresenter;
+	}
+	
+	// we always create a new, because the stacker can (and probably will) be used more than once (first and last)
+	public BasicStackPlateConfigurePresenter getBasicStackPlateConfigurePresenter(DeviceInformation deviceInfo) {
+		BasicStackPlateConfigureView view = new BasicStackPlateConfigureView();
+		basicStackPlateConfigurePresenter = new BasicStackPlateConfigurePresenter(view, deviceInfo, getDeviceManager());
+		return basicStackPlateConfigurePresenter;
+	}
+	
+	public BasicStackPlateWorkPiecePresenter getBasicStackPlateWorkPiecePresenter(DeviceInformation deviceInfo) {
+		BasicStackPlateWorkPieceView view = new BasicStackPlateWorkPieceView();
+		basicStackPlateWorkPiecePresenter = new BasicStackPlateWorkPiecePresenter(view, deviceInfo.getPickStep());
+		return basicStackPlateWorkPiecePresenter;
+		
 	}
 }

@@ -38,6 +38,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 				setWorkArea(null);
 				setClamping(null);
 				view.refreshWorkAreas();
+				// TODO: changed device!
 			}
 		}
 	}

@@ -44,7 +44,7 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 	
 	protected void addMenuItem(int index, String iconPath, String text, boolean isRightNav, EventHandler<ActionEvent> clickedEventHandler) {
 		if ((index < 0) || (index > getChildren().size()) || ((getChildren().size() > 0) && (index < getChildren().size() -1) && getChildren().get(index) != null)) {
-			throw new IllegalArgumentException("Wrong index value!");
+			throw new IllegalArgumentException("Wrong index value!: "  + index);
 		}
 		Button button = new Button();
 		HBox hbox = new HBox();
