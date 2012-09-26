@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.device.StudPosition.StudType;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
@@ -42,6 +43,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	private List<StackingPosition> rawStackingPositions;
 	private List<StackingPosition> finishedStackingPositions;
 	
+	private StudPosition[][] studPositions;
+	
 	private static Logger logger = Logger.getLogger(BasicStackPlate.class);
 	
 	public BasicStackPlate(String id, List<Zone> zones, int horizontalHoleAmount, int verticalHoleAmount, float holeDiameter, float studDiameter,
@@ -63,6 +66,18 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		}
 		this.rawStackingPositions = new ArrayList<StackingPosition>();
 		this.finishedStackingPositions = new ArrayList<StackingPosition>();
+		initializeStudPositions();
+	}
+	
+	private void initializeStudPositions() {
+		this.studPositions = new StudPosition[verticalHoleAmount][horizontalHoleAmount];
+		for (int i = 0; i < verticalHoleAmount; i++) {
+			for (int j = 0; j < horizontalHoleAmount; j++) {
+				float x = j * horizontalHoleDistance + horizontalPadding;
+				float y = getWidth() - (i * verticalHoleDistance + verticalPadding);
+				studPositions[i][j] = new StudPosition(x, y, StudType.NONE);
+			}
+		}
 	}
 	
 	public BasicStackPlate(String id, int horizontalHoleAmount, int verticalHoleAmount, float holeDiameter, float studDiameter,
@@ -87,9 +102,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	
 	private void configureRawWorkPieceLocationsHorizontal(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions, int rawWorkPiecePresentAmount) {
 		
-		if (workPieceDimensions.getLength() < (horizontalHoleDistance - studDiameter/2)) {
-			throw new IllegalStateException("Workpiece-length is too small!");
-		}
+		// ---HORIZONTALLY---
 		
 		// calculate amount of holes one piece takes (horizontally):
 		float remainingLength = workPieceDimensions.getLength();
@@ -103,6 +116,12 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			remainingLength -= horizontalHoleDistance;
 			amountOfHorizontalStudsOnePiece++;
 		}
+		
+		// for real small work-pieces
+		if (remainingLength < 0) {
+			remainingLength = 0;
+		}
+		
 		// the remaining distance is the space between the next stud and the end of the piece
 		float remainingDistance = horizontalHoleDistance - remainingLength;
 		if (remainingDistance - studDiameter/2 < interferenceDistance) {
@@ -112,10 +131,22 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		
 		// how many times will this fit
 		int amountHorizontal = (int) Math.floor(horizontalHoleAmount / amountOfHorizontalStudsOnePiece);
+		
 		// special condition for the last piece
-		if (remainingLength - horizontalPadding - (horizontalHoleAmount / amountOfHorizontalStudsOnePiece - 1)*horizontalHoleDistance > 0) {
+		// we calculate the amount of space there is left:
+		float remainingDistanceBetweenHoles = (horizontalHoleAmount % amountOfHorizontalStudsOnePiece - 1)*horizontalHoleDistance;
+		if (remainingDistanceBetweenHoles < 0)  {
+			remainingDistanceBetweenHoles = 0;
+		}
+		float spaceLeft = remainingDistanceBetweenHoles + horizontalPadding + overFlowPercentage*workPieceDimensions.getLength() - studDiameter/2;
+		// if enough space if left (taking into account the overflowPercentage), an extra piece can be placed
+		if (spaceLeft >= workPieceDimensions.getLength()) {
+			amountHorizontal++;
+		} else if ((spaceLeft < remainingLength) && (remainingDistanceBetweenHoles == 0)) {
 			amountHorizontal--;
 		}
+		
+		// ---VERTICALLY---
 		
 		int amountOfVerticalStudsOnePiece = 1;
 		float remainingWidth = workPieceDimensions.getWidth();
@@ -133,16 +164,63 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		// how many times will this fit
 		int amountVertical = (int) Math.floor(verticalHoleAmount / amountOfVerticalStudsOnePiece);
 		// special condition for the last piece
-		if (remainingWidth - verticalPadding  - (verticalHoleAmount / amountOfVerticalStudsOnePiece - 1)*verticalHoleDistance  > 0) {
+		// we calculate the amount of space there is left: 
+		remainingDistanceBetweenHoles = (verticalHoleAmount % amountOfVerticalStudsOnePiece - 1)*verticalHoleDistance;
+		if (remainingDistanceBetweenHoles < 0) {
+			remainingDistanceBetweenHoles = 0;
+		}
+		spaceLeft = remainingDistanceBetweenHoles + verticalPadding + overFlowPercentage*workPieceDimensions.getWidth() - studDiameter/2;
+		if (spaceLeft >= workPieceDimensions.getWidth()) {
+			amountVertical++;
+		} else if ((spaceLeft < remainingWidth) && (remainingDistanceBetweenHoles == 0)) {
 			amountVertical--;
 		}
 				
 		if (rawWorkPiecePresentAmount > amountHorizontal*amountVertical) {
 			throw new IllegalArgumentException("Amount of workpieces exceeds maximum");
 		} else {
-			initializeRawWorkPiecePositionsHorizontal(amountOfHorizontalStudsOnePiece, amountOfVerticalStudsOnePiece, amountHorizontal, amountVertical, workPieceDimensions, rawWorkPiecePresentAmount);
+			initializeRawWorkPiecePositionsHorizontal(amountOfHorizontalStudsOnePiece, amountOfVerticalStudsOnePiece, amountHorizontal, amountVertical, workPieceDimensions, rawWorkPiecePresentAmount, remainingLength, remainingWidth);
 		}
 	}
+	
+
+	private void initializeRawWorkPiecePositionsHorizontal(int amountOfHorizontalStudsOnePiece, int amountOfVerticalStudsOnePiece, 
+			int amountHorizontal, int amountVertical, WorkPieceDimensions workPieceDimensions, int amountOfRawWorkPieces, float remainingLength, float remainingWidth) {
+		rawStackingPositions.clear();
+		int verticalStudIndex = 0;
+		int totalPlaced = 0;
+		for (int i = 0; i < amountVertical; i++) {
+			// calculate vertical position
+			// position is calculated using width, because of the orientation of x: right, y: down
+			float verticalPos = getWidth() - (verticalStudIndex * verticalHoleDistance + studDiameter/2 + workPieceDimensions.getWidth()/2 + verticalPadding);
+			int horizontalStudIndex = 0;
+			for (int j = 0; j < amountHorizontal; j++) {
+				float horizontalPos = horizontalStudIndex * horizontalHoleDistance + studDiameter/2 + workPieceDimensions.getLength()/2 + horizontalPadding;
+				
+				int leftK = (int) Math.floor(amountOfVerticalStudsOnePiece / 2);
+				int rightK = amountOfHorizontalStudsOnePiece - 1;
+				if (remainingLength <= 0) {
+					rightK--;
+				}
+				if (rightK < 2) {
+					throw new IllegalStateException("Illegal right k value");
+				}
+				studPositions[verticalStudIndex+leftK][horizontalStudIndex].setStudType(StudType.NORMAL);
+				studPositions[verticalStudIndex][horizontalStudIndex + 1].setStudType(StudType.NORMAL);
+				studPositions[verticalStudIndex][horizontalStudIndex + rightK].setStudType(StudType.NORMAL);
+				
+				StackingPosition position = new StackingPosition(new Coordinates(horizontalPos, verticalPos, 0, 0, 0, 0), true, WorkPieceOrientation.HORIZONTAL, workPieceDimensions);
+				rawStackingPositions.add(position);
+				totalPlaced++;
+				if (totalPlaced >= amountOfRawWorkPieces) {
+					return;
+				}
+				horizontalStudIndex += amountOfHorizontalStudsOnePiece;
+			}
+			verticalStudIndex += amountOfVerticalStudsOnePiece;
+		}
+	}
+		
 	
 	private void configureRawWorkPieceLocationsTilted(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions, int rawWorkPiecePresentAmount) {
 		
@@ -220,29 +298,14 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		
 	}
 	
-	private void initializeRawWorkPiecePositionsHorizontal(int amountOfHorizontalStudsOnePiece, int amountOfVerticalStudsOnePiece, 
-			int amountHorizontal, int amountVertical, WorkPieceDimensions workPieceDimensions, int amountOfRawWorkPieces) {
-		rawStackingPositions.clear();
-		int verticalStudIndex = 0;
-		for (int i = 0; i < amountVertical; i++) {
-			// calculate vertical position
-			float verticalPos = verticalStudIndex * verticalHoleDistance + studDiameter + workPieceDimensions.getWidth()/2 + verticalPadding;
-			int horizontalStudIndex = 0;
-			for (int j = 0; j < amountHorizontal; j++) {
-				float horizontalPos = horizontalStudIndex * horizontalHoleDistance + studDiameter + workPieceDimensions.getLength()/2 + horizontalPadding;
-				StackingPosition position = new StackingPosition(new Coordinates(horizontalPos, verticalPos, 0, 0, 0, 0), true, WorkPieceOrientation.HORIZONTAL, workPieceDimensions);
-				rawStackingPositions.add(position);
-				horizontalStudIndex += amountOfHorizontalStudsOnePiece;
-			}
-			verticalStudIndex += amountOfVerticalStudsOnePiece;
-		}
-	}
-		
 	private void initializeRawWorkPiecePostionsTilted(int amountOfHorizontalStudsOnePiece, int amountOfVerticalStudsOnePiece, 
 			int amountHorizontal, int amountVertical, WorkPieceDimensions workPieceDimensions, int amountOfRawWorkPieces) {
 		//TODO implement here
 	}
-	
+
+	public StudPosition[][] getStudPositions() {
+		return studPositions;
+	}
 
 	@Override
 	public boolean canPickWorkpiece() {
@@ -336,83 +399,42 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		return horizontalHoleAmount;
 	}
 
-	public void setHorizontalHoleAmount(int horizontalHoleAmount) {
-		this.horizontalHoleAmount = horizontalHoleAmount;
-	}
-
 	public int getVerticalHoleAmount() {
 		return verticalHoleAmount;
-	}
-
-	public void setVerticalHoleAmount(int verticalHoleAmount) {
-		this.verticalHoleAmount = verticalHoleAmount;
 	}
 
 	public float getHoleDiameter() {
 		return holeDiameter;
 	}
 
-	public void setHoleDiameter(float holeDiameter) {
-		this.holeDiameter = holeDiameter;
-	}
-
 	public float getStudDiameter() {
 		return studDiameter;
-	}
-
-	public void setStudDiameter(float studDiameter) {
-		this.studDiameter = studDiameter;
 	}
 
 	public float getHorizontalPadding() {
 		return horizontalPadding;
 	}
 
-	public void setHorizontalPadding(float horizontalPadding) {
-		this.horizontalPadding = horizontalPadding;
-	}
-
 	public float getVerticalPadding() {
 		return verticalPadding;
-	}
-
-	public void setVerticalPadding(float verticalPadding) {
-		this.verticalPadding = verticalPadding;
 	}
 
 	public float getHorizontalHoleDistance() {
 		return horizontalHoleDistance;
 	}
 
-	public void setHorizontalHoleDistance(float horizontalHoleDistance) {
-		this.horizontalHoleDistance = horizontalHoleDistance;
-	}
-
 	public float getVerticalHoleDistance() {
 		return verticalHoleDistance;
-	}
-
-	public void setVerticalHoleDistance(float verticalHoleDistance) {
-		this.verticalHoleDistance = verticalHoleDistance;
 	}
 
 	public List<StackingPosition> getRawStackingPositions() {
 		return rawStackingPositions;
 	}
 
-	public void setRawStackingPositions(List<StackingPosition> rawStackingPositions) {
-		this.rawStackingPositions = rawStackingPositions;
-	}
-
 	public List<StackingPosition> getFinishedStackingPositions() {
 		return finishedStackingPositions;
 	}
 
-	public void setFinishedStackingPositions(
-			List<StackingPosition> finishedStackingPositions) {
-		this.finishedStackingPositions = finishedStackingPositions;
-	}
-	
 	public float getWidth() {
 		return verticalPadding*2 + (verticalHoleAmount - 1) * verticalHoleDistance;
 	}
@@ -421,4 +443,20 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		return horizontalPadding*2 + (horizontalHoleAmount - 1) * horizontalHoleDistance;
 	}
 
+	public static class BasicStackPlatePickSettings extends AbstractStackingDevicePickSettings {
+		public BasicStackPlatePickSettings(WorkArea workArea, Clamping clamping) {
+			super(workArea, clamping);
+		}
+	}
+	
+	public static class BasicStackPlatePutSettings extends AbstractStackingDevicePutSettings {
+		public BasicStackPlatePutSettings(WorkArea workArea, Clamping clamping) {
+			super(workArea, clamping);
+		}
+	}
+	
+	@Override
+	public DeviceType getType() {
+		return DeviceType.BASIC_STACK_PLATE;
+	}
 }

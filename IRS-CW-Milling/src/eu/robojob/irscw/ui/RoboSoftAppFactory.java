@@ -1,5 +1,6 @@
 package eu.robojob.irscw.ui;
 
+import eu.robojob.irscw.external.device.BasicStackPlate;
 import eu.robojob.irscw.external.device.CNCMillingMachine;
 import eu.robojob.irscw.external.device.Conveyor;
 import eu.robojob.irscw.external.device.DeviceManager;
@@ -129,7 +130,7 @@ public class RoboSoftAppFactory {
 		if (processFlow == null) {
 			processFlow = new ProcessFlow("Mazak demo");
 			FanucRobot robot = (FanucRobot) robotMgr.getRobotById("fanuc M110");
-			PickStep pick1 = new PickStep(robot, deviceMgr.getStackingFromDeviceById("conveyor 1"), new Conveyor.ConveyorPickSettings(null, null), new FanucRobot.FanucRobotPickSettings());
+			PickStep pick1 = new PickStep(robot, deviceMgr.getStackingFromDeviceById("basic stack plate"), new BasicStackPlate.BasicStackPlatePickSettings(null, null), new FanucRobot.FanucRobotPickSettings());
 			PutStep put1 = new PutStep(robot, deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDevicePutSettings(null, null),  new FanucRobot.FanucRobotPutSettings());
 			ProcessingStep processing1 = new ProcessingStep(deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDeviceStartCyclusSettings(null));
 			PickStep pick2 = new PickStep(robot, deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDevicePickSettings(null, null),  new FanucRobot.FanucRobotPickSettings());
@@ -137,7 +138,7 @@ public class RoboSoftAppFactory {
 			ProcessingStep processing2 = new ProcessingStep( deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachineStartCylusSettings(null));
 			InterventionStep intervention = new InterventionStep( deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachineInterventionSettings(null), 10);
 			PickStep pick3 = new PickStep(robot, deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachinePickSettings(null, null),  new FanucRobot.FanucRobotPickSettings());
-			PutStep put3 = new PutStep(robot, deviceMgr.getStackingToDeviceById("conveyor 1"), new Conveyor.ConveyorPutSettings(null, null), new FanucRobot.FanucRobotPutSettings());
+			PutStep put3 = new PutStep(robot, deviceMgr.getStackingToDeviceById("basic stack plate"), new BasicStackPlate.BasicStackPlatePutSettings(null, null), new FanucRobot.FanucRobotPutSettings());
 			processFlow.addStep(pick1);
 			processFlow.addStep(put1);
 			processFlow.addStep(processing1);

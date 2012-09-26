@@ -153,7 +153,7 @@ public class DeviceInformation {
 	}
 	
 	public boolean hasPickStep() {
-		if (putStep != null) {
+		if (pickStep != null) {
 			return true;
 		} else {
 			return false;

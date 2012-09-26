@@ -1,9 +1,9 @@
 package eu.robojob.irscw.ui.main.configure.device;
 
 import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.ui.main.configure.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
 public class DeviceMenuFactory {
@@ -13,16 +13,20 @@ public class DeviceMenuFactory {
 	private CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter;
 	private CNCMillingMachinePickPresenter cncMillingMachinePickPresenter;
 	private CNCMillingMachinePutPresenter cncMillingMachinePutPresenter;
+	private BasicStackPlateMenuPresenter basicStackPlateMenuPresenter;
 	
 	public DeviceMenuFactory(DeviceManager deviceManager) {
 		this.deviceManager = deviceManager;
 	}
 	
-	public AbstractDeviceMenuPresenter getDeviceMenu(DeviceInformation deviceInfo) {
-		if (deviceInfo.getType() == DeviceType.CNC_MACHINE) {
-			return getCncMillingMachineMenuPresenter(deviceInfo);
-		} else {
-			return null;
+	public AbstractMenuPresenter<?> getDeviceMenu(DeviceInformation deviceInfo) {
+		switch(deviceInfo.getType()) {
+			case CNC_MACHINE:
+				return getCncMillingMachineMenuPresenter(deviceInfo);
+			case BASIC_STACK_PLATE:
+				return getBasicStackPlateMenuPresenter(deviceInfo);
+			default:
+				return null;
 		}
 	}
 	
@@ -64,5 +68,13 @@ public class DeviceMenuFactory {
 			cncMillingMachinePutPresenter = new CNCMillingMachinePutPresenter(view, putStep);
 		}
 		return cncMillingMachinePutPresenter;
+	}
+	
+	public BasicStackPlateMenuPresenter getBasicStackPlateMenuPresenter(DeviceInformation deviceInfo) {
+		if (basicStackPlateMenuPresenter == null) {
+			StackingDeviceMenuView stackingDeviceMenuView = new StackingDeviceMenuView();
+			basicStackPlateMenuPresenter = new BasicStackPlateMenuPresenter(stackingDeviceMenuView,deviceInfo);
+		}
+		return basicStackPlateMenuPresenter;
 	}
 }

@@ -74,6 +74,17 @@ public class DeviceManager {
 		embossing1.addZone(zone3);
 		preProcessingDevices.put(embossing1.getId(), embossing1);
 		
+		// add Basic Stacker
+		UserFrame uf5 = new UserFrame(5, 20);
+		List<WorkArea> workAreas4 = new ArrayList<WorkArea>();
+		WorkArea workArea5 = new WorkArea("basic stacker", uf5);
+		workAreas4.add(workArea5);
+		Zone zone4 = new Zone("Zone 4", workAreas4);
+		BasicStackPlate basicStackPlate = new BasicStackPlate("basic stack plate",  27, 7, 10, 15, 45, 40, 35, 0, 0.25f);
+		basicStackPlate.addZone(zone4);
+		stackingFromDevices.put(basicStackPlate.getId(), basicStackPlate);
+		stackingToDevices.put(basicStackPlate.getId(), basicStackPlate);
+		
 	}
 	
 	public Collection<AbstractCNCMachine> getCNCMachines() {
