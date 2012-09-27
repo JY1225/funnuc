@@ -38,8 +38,12 @@ public class BasicStackPlateVisualTest extends Application {
 		Rectangle rectangle = new Rectangle(0, 0, (double) stacker.getLength(), (double) stacker.getWidth());
 		rectangle.setFill(Color.LIGHTBLUE);
 		group.getChildren().add(rectangle);
+				
+		stacker.setWorkPieceOrientation(WorkPieceOrientation.HORIZONTAL);
+		stacker.setRawWorkPieceDimensions(new WorkPieceDimensions(120, 80, 1));
+		stacker.setRawWorkPieceAmount(20);
 		
-		stacker.configureRawWorkpieces(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(120, 80, 1), 20);
+		stacker.configureRawWorkpieces();
 		
 		for (StudPosition[] horizontalPositions: stacker.getStudPositions()) {
 			for (StudPosition position : horizontalPositions) {

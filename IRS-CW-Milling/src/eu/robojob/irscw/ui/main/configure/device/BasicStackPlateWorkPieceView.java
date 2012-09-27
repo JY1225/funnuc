@@ -1,13 +1,17 @@
 package eu.robojob.irscw.ui.main.configure.device;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.shape.SVGPath;
+import eu.robojob.irscw.external.device.BasicStackPlate;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.main.configure.AbstractFormView;
 import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPlateWorkPiecePresenter> {
 
@@ -50,12 +54,20 @@ public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPla
 		
 		workPieceWidthPath = new SVGPath();
 		workPieceWidthPath.setContent(widthPath);
+		workPieceWidthPath.getStyleClass().add("form-icon");
 		add(workPieceWidthPath, column++, row);
 		lblWorkPieceWidth = new Label(translator.getTranslation("width"));
 		add(lblWorkPieceWidth, column++, row);
 		ntxtWorkPieceWidth = new NumericTextField(nMaxLength);
 		ntxtWorkPieceWidth.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		ntxtWorkPieceWidth.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtWorkPieceWidth.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(ObservableValue<? extends Float> observable,
+					Float oldValue, Float newValue) {
+				presenter.changedWidth(newValue);
+			}
+		});
 		add(ntxtWorkPieceWidth, column++, row);
 		
 		column = 0;
@@ -63,12 +75,20 @@ public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPla
 		
 		workPieceLengthPath = new SVGPath();
 		workPieceLengthPath.setContent(lengthPath);
+		workPieceLengthPath.getStyleClass().add("form-icon");
 		add(workPieceLengthPath, column++, row);
 		lblWorkPieceLength = new Label(translator.getTranslation("length"));
 		add(lblWorkPieceLength, column++, row);
 		ntxtWorkPieceLength = new NumericTextField(nMaxLength);
 		ntxtWorkPieceLength.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		ntxtWorkPieceLength.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtWorkPieceLength.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(ObservableValue<? extends Float> observable,
+					Float oldValue, Float newValue) {
+				presenter.changedLength(newValue);
+			}
+		});
 		add(ntxtWorkPieceLength, column++, row);
 		
 		column = 0;
@@ -76,12 +96,20 @@ public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPla
 		
 		workPieceHeightPath = new SVGPath();
 		workPieceHeightPath.setContent(heightPath);
+		workPieceHeightPath.getStyleClass().add("form-icon");
 		add(workPieceHeightPath, column++, row);
 		lblWorkPieceHeight = new Label(translator.getTranslation("height"));
 		add(lblWorkPieceHeight, column++, row);
 		ntxtWorkPieceHeight = new NumericTextField(nMaxLength);
 		ntxtWorkPieceHeight.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		ntxtWorkPieceHeight.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtWorkPieceHeight.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(ObservableValue<? extends Float> observable,
+					Float oldValue, Float newValue) {
+				presenter.changedHeight(newValue);
+			}
+		});
 		add(ntxtWorkPieceHeight, column++, row);
 		
 		column = 0;
@@ -92,8 +120,17 @@ public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPla
 		itxtWorkPieceAmount = new IntegerTextField(nMaxLength);
 		itxtWorkPieceAmount.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		itxtWorkPieceAmount.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		itxtWorkPieceAmount.setOnChange(new ChangeListener<Integer>() {
+			@Override
+			public void changed(ObservableValue<? extends Integer> observable,
+					Integer oldValue, Integer newValue) {
+				presenter.changedAmount(newValue);
+			}
+		});
 		column++;
 		add(itxtWorkPieceAmount, column++, row);
+		
+		refresh();
 		
 	}
 
@@ -107,7 +144,29 @@ public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPla
 
 	@Override
 	public void refresh() {
-		
+		setDimensions(((BasicStackPlate) pickStep.getDevice()).getRawWorkPieceDimensions());
+		itxtWorkPieceAmount.setText("" + ((BasicStackPlate) pickStep.getDevice()).getRawWorkPieceAmount());
+	}
+	
+	private void setDimensions(WorkPieceDimensions workPieceDimensions) {
+		float width = workPieceDimensions.getWidth();
+		if (width > 0) {
+			ntxtWorkPieceWidth.setText("" + width);
+		} else {
+			ntxtWorkPieceWidth.setText("");
+		}
+		float length = workPieceDimensions.getLength();
+		if (length > 0) {
+			ntxtWorkPieceLength.setText("" + length);
+		} else {
+			ntxtWorkPieceLength.setText("");
+		}
+		float height = workPieceDimensions.getHeight();
+		if (height > 0) {
+			ntxtWorkPieceHeight.setText("" + height);
+		} else {
+			ntxtWorkPieceHeight.setText("");
+		}
 	}
 
 }

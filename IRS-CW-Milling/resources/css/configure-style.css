@@ -148,3 +148,6 @@
 	-fx-text-alignment: right;
 }
 
+.form-icon {
+	-fx-fill: #737373;
+}

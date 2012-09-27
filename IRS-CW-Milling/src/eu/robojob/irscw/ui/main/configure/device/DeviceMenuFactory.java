@@ -86,9 +86,13 @@ public class DeviceMenuFactory {
 	}
 	
 	public BasicStackPlateWorkPiecePresenter getBasicStackPlateWorkPiecePresenter(DeviceInformation deviceInfo) {
-		BasicStackPlateWorkPieceView view = new BasicStackPlateWorkPieceView();
-		basicStackPlateWorkPiecePresenter = new BasicStackPlateWorkPiecePresenter(view, deviceInfo.getPickStep());
-		return basicStackPlateWorkPiecePresenter;
+		if (deviceInfo.getPickStep() != null) {
+			BasicStackPlateWorkPieceView view = new BasicStackPlateWorkPieceView();
+			basicStackPlateWorkPiecePresenter = new BasicStackPlateWorkPiecePresenter(view, deviceInfo.getPickStep());
+			return basicStackPlateWorkPiecePresenter;
+		} else {
+			return null;
+		}
 		
 	}
 }

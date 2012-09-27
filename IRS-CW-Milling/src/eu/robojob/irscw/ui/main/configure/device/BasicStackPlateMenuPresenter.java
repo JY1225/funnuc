@@ -41,7 +41,9 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 	@Override
 	public void setTextFieldListener(ConfigurePresenter parent) {
 		basicStackPlateConfigurePresenter.setTextFieldListener(parent);
-		basicStackPlateWorkPiecePresenter.setTextFieldListener(parent);
+		if (basicStackPlateWorkPiecePresenter != null) {
+			basicStackPlateWorkPiecePresenter.setTextFieldListener(parent);
+		}
 	}
 
 	@Override

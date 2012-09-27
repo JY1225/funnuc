@@ -19,7 +19,7 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 // also, the orientation of raw and finished workpieces is the same, and as mentioned earlier pick-locations equal put-locations
 public class BasicStackPlate extends AbstractStackingDevice {
 
-	enum WorkPieceOrientation {
+	public enum WorkPieceOrientation {
 		HORIZONTAL, TILTED
 	}
 	
@@ -34,6 +34,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	private float verticalHoleDistance;
 	private float interferenceDistance;
 	private float overFlowPercentage;
+	
+	private int rawWorkPieceAmount;
 	
 	// specific configuration settings
 	private WorkPieceOrientation workPieceOrientation;
@@ -64,8 +66,14 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		if (overflowPercentage < 0 || overflowPercentage > 1) {
 			throw new IllegalArgumentException("Wrong percentage value");
 		}
+		this.rawWorkPieceAmount = 0;
+		this.rawWorkPieceDimensions = new WorkPieceDimensions();
+		this.finishedWorkpieceDimensions = new WorkPieceDimensions();
+		
 		this.rawStackingPositions = new ArrayList<StackingPosition>();
 		this.finishedStackingPositions = new ArrayList<StackingPosition>();
+		
+		setWorkPieceOrientation(WorkPieceOrientation.HORIZONTAL);
 		initializeStudPositions();
 	}
 	
@@ -86,14 +94,14 @@ public class BasicStackPlate extends AbstractStackingDevice {
 				horizontalHoleDistance, interferenceDistance, overflowPercentage);
 	}
 
-	public void configureRawWorkpieces(WorkPieceOrientation rawWorkPieceOrientation, WorkPieceDimensions rawWorkPieceDimensions, int rawWorkPiecePresentAmount) {
+	public void configureRawWorkpieces() {
 		//TODO check length is always larger than width
-		switch(rawWorkPieceOrientation) {
+		switch(workPieceOrientation) {
 			case HORIZONTAL:
-				configureRawWorkPieceLocationsHorizontal(rawWorkPieceOrientation, rawWorkPieceDimensions, rawWorkPiecePresentAmount);
+				configureRawWorkPieceLocationsHorizontal(workPieceOrientation, rawWorkPieceDimensions, rawWorkPieceAmount);
 				break;
 			case TILTED:
-				configureRawWorkPieceLocationsTilted(rawWorkPieceOrientation, rawWorkPieceDimensions, rawWorkPiecePresentAmount);
+				configureRawWorkPieceLocationsTilted(workPieceOrientation, rawWorkPieceDimensions, rawWorkPieceAmount);
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown work piece orientation");
@@ -180,6 +188,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			throw new IllegalArgumentException("Amount of workpieces exceeds maximum");
 		} else {
 			initializeRawWorkPiecePositionsHorizontal(amountOfHorizontalStudsOnePiece, amountOfVerticalStudsOnePiece, amountHorizontal, amountVertical, workPieceDimensions, rawWorkPiecePresentAmount, remainingLength, remainingWidth);
+			rawWorkPieceAmount = rawWorkPiecePresentAmount;
 		}
 	}
 	
@@ -222,6 +231,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 				horizontalStudIndex += amountOfHorizontalStudsOnePiece;
 			}
 			verticalStudIndex += amountOfVerticalStudsOnePiece;
+			//TODO initialize amount of raw work pieces
 		}
 	}
 		
@@ -431,6 +441,23 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		return verticalHoleDistance;
 	}
 
+	public WorkPieceDimensions getRawWorkPieceDimensions() {
+		return rawWorkPieceDimensions;
+	}
+
+	public void setRawWorkPieceDimensions(WorkPieceDimensions rawWorkPieceDimensions) {
+		this.rawWorkPieceDimensions = rawWorkPieceDimensions;
+	}
+
+	public WorkPieceDimensions getFinishedWorkpieceDimensions() {
+		return finishedWorkpieceDimensions;
+	}
+
+	public void setFinishedWorkpieceDimensions(
+			WorkPieceDimensions finishedWorkpieceDimensions) {
+		this.finishedWorkpieceDimensions = finishedWorkpieceDimensions;
+	}
+
 	public List<StackingPosition> getRawStackingPositions() {
 		return rawStackingPositions;
 	}
@@ -446,6 +473,24 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public float getLength() {
 		return horizontalPadding*2 + (horizontalHoleAmount - 1) * horizontalHoleDistance;
 	}
+
+	public int getRawWorkPieceAmount() {
+		return rawWorkPieceAmount;
+	}
+
+	public void setRawWorkPieceAmount(int rawWorkPieceAmount) {
+		this.rawWorkPieceAmount = rawWorkPieceAmount;
+	}
+
+	public WorkPieceOrientation getWorkPieceOrientation() {
+		return workPieceOrientation;
+	}
+
+	public void setWorkPieceOrientation(WorkPieceOrientation workPieceOrientation) {
+		this.workPieceOrientation = workPieceOrientation;
+	}
+
+
 
 	public static class BasicStackPlatePickSettings extends AbstractStackingDevicePickSettings {
 		public BasicStackPlatePickSettings(WorkArea workArea, Clamping clamping) {
@@ -463,4 +508,6 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public DeviceType getType() {
 		return DeviceType.BASIC_STACK_PLATE;
 	}
+	
+	
 }

@@ -19,7 +19,9 @@ public class BasicStackPlateTest {
 	
 	@Test
 	public void testCalculateAmountHorizontal() {
-		basicStackPlate.configureRawWorkpieces(WorkPieceOrientation.HORIZONTAL, new WorkPieceDimensions(300, 150, 1), 5);
+		basicStackPlate.setWorkPieceOrientation(WorkPieceOrientation.HORIZONTAL);
+		basicStackPlate.setRawWorkPieceDimensions(new WorkPieceDimensions(300, 150, 1));
+		basicStackPlate.setRawWorkPieceAmount(5);
 		System.out.println("ok");
 	}
 }
