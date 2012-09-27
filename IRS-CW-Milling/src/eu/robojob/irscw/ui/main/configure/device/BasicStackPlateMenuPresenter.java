@@ -17,8 +17,11 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 			BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter, BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter) {
 		super(view, deviceInfo);
 		this.basicStackPlateConfigurePresenter = basicStackPlateConfigurePresenter;
+		basicStackPlateConfigurePresenter.setMenuPresenter(this);
 		this.basicStackPlateWorkPiecePresenter = basicStackPlateWorkPiecePresenter;
+		basicStackPlateWorkPiecePresenter.setMenuPresenter(this);
 		this.basicStackPlateLayoutPresenter = basicStackPlateLayoutPresenter;
+		basicStackPlateLayoutPresenter.setMenuPresenter(this);
 	}
 
 	@Override

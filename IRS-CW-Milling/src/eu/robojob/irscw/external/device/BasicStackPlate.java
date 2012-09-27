@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.device.StudPosition.StudType;
+import eu.robojob.irscw.external.device.exception.IncorrectWorkPieceDataException;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
@@ -77,6 +78,14 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		initializeStudPositions();
 	}
 	
+	public float getHorizontalStudLength() {
+		return (float) (1.3 * horizontalHoleDistance);
+	}
+	
+	public float getHorizontalStudWidth() {
+		return (float) (0.5 * verticalHoleDistance);
+	}
+	
 	private void initializeStudPositions() {
 		this.studPositions = new StudPosition[verticalHoleAmount][horizontalHoleAmount];
 		for (int i = 0; i < verticalHoleAmount; i++) {
@@ -94,12 +103,13 @@ public class BasicStackPlate extends AbstractStackingDevice {
 				horizontalHoleDistance, interferenceDistance, overflowPercentage);
 	}
 
-	public void configureRawWorkpieces() {
+	public void configureRawWorkpieces() throws IncorrectWorkPieceDataException {
 		//TODO check length is always larger than width
 		rawStackingPositions.clear();
+		clearStudPositions();
 		
 		if (!((rawWorkPieceDimensions != null) && (rawWorkPieceDimensions.getWidth() > 0) && (rawWorkPieceDimensions.getLength() > 0))) {
-			return;
+			throw new IncorrectWorkPieceDataException();
 		}
 		
 		switch(workPieceOrientation) {
@@ -114,7 +124,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		}
 	}
 	
-	private void configureRawWorkPieceLocationsHorizontal(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions, int rawWorkPiecePresentAmount) {
+	private void configureRawWorkPieceLocationsHorizontal(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions, int rawWorkPiecePresentAmount) throws IncorrectWorkPieceDataException {
 		
 		// ---HORIZONTALLY---
 		
@@ -191,7 +201,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		}
 				
 		if (rawWorkPiecePresentAmount > amountHorizontal*amountVertical) {
-			throw new IllegalArgumentException("Amount of workpieces exceeds maximum");
+			throw new IncorrectWorkPieceDataException();
 		} else {
 			initializeRawWorkPiecePositionsHorizontal(amountOfHorizontalStudsOnePiece, amountOfVerticalStudsOnePiece, amountHorizontal, amountVertical, workPieceDimensions, rawWorkPiecePresentAmount, remainingLength, remainingWidth);
 			rawWorkPieceAmount = rawWorkPiecePresentAmount;
@@ -202,7 +212,6 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	private void initializeRawWorkPiecePositionsHorizontal(int amountOfHorizontalStudsOnePiece, int amountOfVerticalStudsOnePiece, 
 			int amountHorizontal, int amountVertical, WorkPieceDimensions workPieceDimensions, int amountOfRawWorkPieces, float remainingLength, float remainingWidth) {
 		rawStackingPositions.clear();
-		clearStudPositions();
 		int verticalStudIndex = 0;
 		int totalPlaced = 0;
 		for (int i = 0; i < amountVertical; i++) {
@@ -218,16 +227,36 @@ public class BasicStackPlate extends AbstractStackingDevice {
 				if (remainingLength <= 0) {
 					rightK--;
 				}
-				if (rightK < 2) {
+				if (rightK < 1) {
 					throw new IllegalStateException("Illegal right k value");
 				}
-				studPositions[verticalStudIndex+leftK][horizontalStudIndex].setStudType(StudType.NORMAL);
-				studPositions[verticalStudIndex][horizontalStudIndex + 1].setStudType(StudType.NORMAL);
+				if (rightK > 2) {
+					if (remainingLength < 0.25*workPieceDimensions.getLength()) {
+						rightK--;
+					}
+				}
+				boolean corner = false;
+				//TODO review this!!
+				
+				// condition one: only two vertical studs and not enough remaining width
+				// condition two: only two horizontal studs, or: only three horizontal studs and not enough remaining length
+				
+				if (((leftK > 1)&&(amountOfHorizontalStudsOnePiece > 2)) || ((leftK == 1) && (remainingWidth > 0) && (amountOfHorizontalStudsOnePiece > 2))) {
+					studPositions[verticalStudIndex+leftK][horizontalStudIndex].setStudType(StudType.NORMAL);
+					studPositions[verticalStudIndex][horizontalStudIndex + 1].setStudType(StudType.NORMAL);
+				} else {
+					studPositions[verticalStudIndex][horizontalStudIndex].setStudType(StudType.HORIZONTAL_CORNER);
+					corner = true;
+				}
 				int horizontalPos2 = horizontalStudIndex + rightK;
 				while(horizontalPos2 >= studPositions[0].length) {
 					horizontalPos2--;
 				}
-				studPositions[verticalStudIndex][horizontalPos2].setStudType(StudType.NORMAL);
+				if (horizontalPos2 > horizontalStudIndex) {
+					if ((!corner) || (corner && (horizontalPos2 > horizontalStudIndex + 1))) {
+						studPositions[verticalStudIndex][horizontalPos2].setStudType(StudType.NORMAL);
+					}
+				}
 				
 				StackingPosition position = new StackingPosition(new Coordinates(horizontalPos, verticalPos, 0, 0, 0, 0), true, WorkPieceOrientation.HORIZONTAL, workPieceDimensions);
 				rawStackingPositions.add(position);

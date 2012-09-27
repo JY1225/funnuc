@@ -17,6 +17,7 @@ import eu.robojob.irscw.external.device.BasicStackPlate;
 import eu.robojob.irscw.external.device.StackingPosition;
 import eu.robojob.irscw.external.device.StudPosition;
 import eu.robojob.irscw.external.device.StudPosition.StudType;
+import eu.robojob.irscw.external.device.exception.IncorrectWorkPieceDataException;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.main.configure.AbstractFormView;
 
@@ -54,7 +55,11 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 		
 		group.getChildren().clear();
 		
-		basicStackPlate.configureRawWorkpieces();
+		try {
+			basicStackPlate.configureRawWorkpieces();
+		} catch (IncorrectWorkPieceDataException e) {
+			presenter.notifyIncorrectWorkPieceDate();
+		}
 		
 		// add plate
 		stackPlate = new Rectangle(0, 0, basicStackPlate.getLength(), basicStackPlate.getWidth());
@@ -144,6 +149,26 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 					circle.getStyleClass().add("normal-stud");
 					studs.add(circle);
 					group.getChildren().add(circle);
+				} else if (pos.getStudType() == StudType.HORIZONTAL_CORNER) {
+					// draw line
+					Path path = new Path();
+					MoveTo moveTo = new MoveTo();
+					moveTo.setX(pos.getCenterPosition().getX() + basicStackPlate.getHorizontalStudLength());
+					System.out.println(basicStackPlate.getHorizontalStudLength());
+					moveTo.setY(pos.getCenterPosition().getY());
+					LineTo lineTo = new LineTo();
+					lineTo.setX(pos.getCenterPosition().getX());
+					lineTo.setY(pos.getCenterPosition().getY());
+					LineTo lineTo2 = new LineTo();
+					lineTo2.setY(pos.getCenterPosition().getY() - basicStackPlate.getHorizontalStudWidth());
+					lineTo2.setX(pos.getCenterPosition().getX());
+					path.getElements().add(moveTo);
+					path.getElements().add(lineTo);
+					path.getElements().add(lineTo2);
+					path.getStyleClass().add("corner-stud-lines");
+					path.setStrokeWidth(basicStackPlate.getStudDiameter());
+					group.getChildren().add(path);
+					path.toFront();
 				}
 			}
 		}

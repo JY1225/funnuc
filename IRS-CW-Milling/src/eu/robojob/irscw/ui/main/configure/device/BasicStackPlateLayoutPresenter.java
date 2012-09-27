@@ -19,4 +19,7 @@ public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicS
 		view.setPresenter(this);
 	}
 
+	public void notifyIncorrectWorkPieceDate() {
+		//TODO implement
+	}
 }
