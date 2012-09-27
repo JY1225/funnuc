@@ -4,7 +4,7 @@ import eu.robojob.irscw.positioning.Coordinates;
 
 public class StudPosition {
 	
-	enum StudType {
+	public enum StudType {
 		NONE, NORMAL, HORIZONTAL_CORNER
 	}
 

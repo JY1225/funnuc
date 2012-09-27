@@ -71,6 +71,8 @@ public class BasicStackPlateVisualTest extends Application {
 			group.getChildren().add(wp);
 		}
 	
+		System.out.println(group.getBoundsInLocal());
+		System.out.println(group.getBoundsInParent());
 		Scale s = new Scale(570 / rectangle.getWidth(), 300 / rectangle.getHeight());
 		Scale t = new Scale(0.85, 0.85);
 						

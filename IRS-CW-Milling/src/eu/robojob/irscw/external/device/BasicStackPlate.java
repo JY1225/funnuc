@@ -96,6 +96,12 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	public void configureRawWorkpieces() {
 		//TODO check length is always larger than width
+		rawStackingPositions.clear();
+		
+		if (!((rawWorkPieceDimensions != null) && (rawWorkPieceDimensions.getWidth() > 0) && (rawWorkPieceDimensions.getLength() > 0))) {
+			return;
+		}
+		
 		switch(workPieceOrientation) {
 			case HORIZONTAL:
 				configureRawWorkPieceLocationsHorizontal(workPieceOrientation, rawWorkPieceDimensions, rawWorkPieceAmount);
@@ -196,6 +202,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	private void initializeRawWorkPiecePositionsHorizontal(int amountOfHorizontalStudsOnePiece, int amountOfVerticalStudsOnePiece, 
 			int amountHorizontal, int amountVertical, WorkPieceDimensions workPieceDimensions, int amountOfRawWorkPieces, float remainingLength, float remainingWidth) {
 		rawStackingPositions.clear();
+		clearStudPositions();
 		int verticalStudIndex = 0;
 		int totalPlaced = 0;
 		for (int i = 0; i < amountVertical; i++) {
@@ -235,6 +242,13 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		}
 	}
 		
+	private void clearStudPositions() {
+		for (StudPosition[] vertPos : studPositions) {
+			for (StudPosition pos : vertPos) {
+				pos.setStudType(StudType.NONE);
+			}
+		}
+	}
 	
 	private void configureRawWorkPieceLocationsTilted(WorkPieceOrientation workPieceOrientation, WorkPieceDimensions workPieceDimensions, int rawWorkPiecePresentAmount) {
 		

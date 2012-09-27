@@ -151,3 +151,48 @@
 .form-icon {
 	-fx-fill: #737373;
 }
+
+.stackplate-steel {
+	}
+
+.stackplate {
+	-fx-fill: rgba(0, 0, 0, 0);
+	-fx-fill: linear-gradient( #c2c2c2 0%, #acacac 100%);
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.4), 1, 0, -1, 1);
+}
+
+.stacker-text {
+	-fx-font-family: "Helvetica";
+	-fx-font-size: 24px;
+	-fx-font-weight: bold;
+	-fx-text-alignment: center;
+	-fx-fill: #e9441e;
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.5), 1, 0, 0, 1);
+}
+
+.hole {
+	-fx-fill: #818181;
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 0, 5);
+}
+
+.normal-stud {
+	-fx-fill: yellow;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 0, 2);
+}
+
+.workpiece {
+	-fx-fill: linear-gradient(rgba(236, 236, 236, 0.8) 0%, rgba(221, 225, 221,  0.8) 95%, rgba(190, 190, 190,  0.8) 100%);
+	-fx-stroke-width: 1px;
+	-fx-stroke: rgba(120, 120, 120, 1);
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 5);
+}
+
+.root {
+	-fx-fill: null;
+	-fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.line {
+	-fx-stroke-width: 3px;
+	-fx-stroke: rgba(0, 0, 0, 0.1);
+}

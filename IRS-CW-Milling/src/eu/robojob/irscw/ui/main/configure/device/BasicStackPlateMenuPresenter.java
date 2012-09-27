@@ -11,12 +11,14 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 	
 	private BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
 	private BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter;
+	private BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter;
 	
 	public BasicStackPlateMenuPresenter(StackingDeviceMenuView view, DeviceInformation deviceInfo, BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter,
-			BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter) {
+			BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter, BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter) {
 		super(view, deviceInfo);
 		this.basicStackPlateConfigurePresenter = basicStackPlateConfigurePresenter;
 		this.basicStackPlateWorkPiecePresenter = basicStackPlateWorkPiecePresenter;
+		this.basicStackPlateLayoutPresenter = basicStackPlateLayoutPresenter;
 	}
 
 	@Override
@@ -36,6 +38,8 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 	@Override
 	public void showLayout() {
 		logger.debug("show layout");
+		view.setViewLayoutActive();
+		parent.setBottomRightView(basicStackPlateLayoutPresenter.getView());
 	}
 
 	@Override
@@ -44,6 +48,7 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 		if (basicStackPlateWorkPiecePresenter != null) {
 			basicStackPlateWorkPiecePresenter.setTextFieldListener(parent);
 		}
+		basicStackPlateLayoutPresenter.setTextFieldListener(parent);
 	}
 
 	@Override

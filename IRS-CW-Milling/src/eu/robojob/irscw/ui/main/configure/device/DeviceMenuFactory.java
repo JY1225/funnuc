@@ -1,5 +1,6 @@
 package eu.robojob.irscw.ui.main.configure.device;
 
+import eu.robojob.irscw.external.device.BasicStackPlate;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.PutStep;
@@ -16,6 +17,7 @@ public class DeviceMenuFactory {
 	private BasicStackPlateMenuPresenter basicStackPlateMenuPresenter;
 	private BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
 	private BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter;
+	private BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter;
 	
 	public DeviceMenuFactory(DeviceManager deviceManager) {
 		this.deviceManager = deviceManager;
@@ -74,7 +76,8 @@ public class DeviceMenuFactory {
 	
 	public BasicStackPlateMenuPresenter getBasicStackPlateMenuPresenter(DeviceInformation deviceInfo) {
 		StackingDeviceMenuView stackingDeviceMenuView = new StackingDeviceMenuView();
-		basicStackPlateMenuPresenter = new BasicStackPlateMenuPresenter(stackingDeviceMenuView,deviceInfo, getBasicStackPlateConfigurePresenter(deviceInfo), getBasicStackPlateWorkPiecePresenter(deviceInfo));
+		basicStackPlateMenuPresenter = new BasicStackPlateMenuPresenter(stackingDeviceMenuView,deviceInfo, getBasicStackPlateConfigurePresenter(deviceInfo), 
+				getBasicStackPlateWorkPiecePresenter(deviceInfo), getBasicStackPlateLayoutPresenter(deviceInfo));
 		return basicStackPlateMenuPresenter;
 	}
 	
@@ -93,6 +96,11 @@ public class DeviceMenuFactory {
 		} else {
 			return null;
 		}
-		
+	}
+	
+	public BasicStackPlateLayoutPresenter getBasicStackPlateLayoutPresenter(DeviceInformation deviceInfo) {
+		BasicStackPlateLayoutView view = new BasicStackPlateLayoutView();
+		basicStackPlateLayoutPresenter = new BasicStackPlateLayoutPresenter(view, (BasicStackPlate) deviceInfo.getDevice());
+		return basicStackPlateLayoutPresenter;
 	}
 }
