@@ -140,9 +140,9 @@ public class RoboSoftAppFactory {
 			PickStep pick3 = new PickStep(robot, deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachinePickSettings(null, null),  new FanucRobot.FanucRobotPickSettings());
 			PutStep put3 = new PutStep(robot, deviceMgr.getStackingToDeviceById("basic stack plate"), new BasicStackPlate.BasicStackPlatePutSettings(null, null), new FanucRobot.FanucRobotPutSettings());
 			processFlow.addStep(pick1);
-			processFlow.addStep(put1);
-			processFlow.addStep(processing1);
-			processFlow.addStep(pick2);
+			//processFlow.addStep(put1);
+			//processFlow.addStep(processing1);
+			//processFlow.addStep(pick2);
 			processFlow.addStep(put2);
 			processFlow.addStep(processing2);
 			processFlow.addStep(intervention);

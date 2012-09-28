@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.main.configure.device;
 
 import eu.robojob.irscw.external.device.BasicStackPlate;
+import eu.robojob.irscw.external.device.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.ui.main.configure.AbstractFormPresenter;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
@@ -40,6 +41,11 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 	
 	public void changedAmount(int amount) {
 		((BasicStackPlate) pickStep.getDevice()).setRawWorkPieceAmount(amount);
+	}
+	
+	public void changedOrientation(WorkPieceOrientation orientation) {
+		((BasicStackPlate) pickStep.getDevice()).setWorkPieceOrientation(orientation);
+		view.refresh();
 	}
 
 }

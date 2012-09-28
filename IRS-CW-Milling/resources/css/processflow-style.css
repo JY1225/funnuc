@@ -19,7 +19,7 @@
 
 .arrow-disabled {
 	-fx-fill: linear-gradient(#e7e7e7 0%, #d5d5d5 100%);
-	-fx-stroke: #b1b1b1;
+	-fx-stroke: #c6c6c6;
 	-fx-effect: innershadow(gaussian, #c0c0c0, 1, 0, 0, -1);
 }
 
@@ -66,7 +66,9 @@
 }
 
 .device-button-inactive {
-	
+	-fx-background-color: 
+		linear-gradient(#d1d1d1 0%, #a3a3a3 100%),
+		linear-gradient(white 0%, #d1d1d1 80%, #cccccc 100%);
 }
 
 .button-shape-inactive {

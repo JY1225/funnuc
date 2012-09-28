@@ -10,4 +10,8 @@ public class IncorrectWorkPieceDataException extends Exception {
 	public IncorrectWorkPieceDataException() {
 		super("Incorrect work piece data");
 	}
+	
+	public IncorrectWorkPieceDataException(String message) {
+		super(message);
+	}
 }

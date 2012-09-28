@@ -3,7 +3,7 @@
 		linear-gradient(#c6c6c6 0%, #9a9a9a 100%),
 		linear-gradient(#fbfbfb 0%, #eeeeee 100%);
 	-fx-background-insets: 0, 1 1 2 1;
-	-fx-font-size: 13px;
+	-fx-font-size: 12px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
 	
@@ -52,18 +52,6 @@
 	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.8), 2, 0, 0, 1);
 }
 
-.form-button-label {
-	-fx-text-fill: #323232;
-	-fx-effect: null;
-	-fx-font-size: 15px;
-	-fx-font-weight: bold;
-	-fx-text-alignment: center;
-	
-	-fx-font-family: "Helvetica";
-	
-	-fx-text-fill: #737373;
-}
-
 .center-text {
 	-fx-text-alignment: center;
 }
@@ -89,6 +77,16 @@
 }
 
 
+.form-button-label {
+	-fx-text-fill: #323232;
+	-fx-effect: null;
+	-fx-font-size: 13px;
+	-fx-font-weight: bold;
+	-fx-text-alignment: center;
+	
+	-fx-font-family: "Helvetica";
+}
+
 .form-button-active {
 	-fx-background-color: 
 		linear-gradient(#c6c6c6 0%, #9a9a9a 100%),
@@ -96,6 +94,14 @@
 	-fx-effect: innershadow(gaussian, rgba(0, 0, 0.5), 7, 0, 0, 2);
 	-fx-background-insets: 0, 1;
 	
+}
+
+.form-button-bar-left {
+	-fx-background-radius: 5 0 0 5, 4 0 0 3;
+}
+
+.form-button-bar-right {
+	-fx-background-radius: 0 5 5 0, 0 4 3 0;
 }
 
 .combo-box-base, .arrow-button {
@@ -109,10 +115,10 @@
 }
 
 .combo-box-base .list-cell {
-	-fx-font-size: 16px;
+	-fx-font-size: 14px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	-fx-alignment: top-left;
+	-fx-alignment: center-left;
 	-fx-font-family: "Helvetica";
 	-fx-text-fill: #323232;
 }
@@ -132,7 +138,7 @@
 
 .combo-box-popup .list-view .list-cell {
 	-fx-background-color: rgba(0, 0, 0, 0);
-	-fx-font-size: 14px;
+	-fx-font-size: 13px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
 	
