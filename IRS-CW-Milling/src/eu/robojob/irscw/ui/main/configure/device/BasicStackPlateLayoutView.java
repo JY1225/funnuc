@@ -3,8 +3,10 @@ package eu.robojob.irscw.ui.main.configure.device;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.LineTo;
@@ -27,6 +29,7 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	
 	private Group group;
 	private Rectangle stackPlate;
+	private StackPane root2;
 	private Pane root;
 	
 	private List<Circle> holes;
@@ -72,7 +75,7 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 		// add holes
 		int index = 1;
 		for (StudPosition[] horizontalPositions : basicStackPlate.getStudPositions()) {
-			Text txt = new Text("" + index);
+			Text txt = new Text(""  + (char)('A' + (index - 1)));
 			txt.setX(0);
 			txt.setY(horizontalPositions[0].getCenterPosition().getY() + TXT_HEIGHT/2);
 			txt.setWrappingWidth(TXT_WIDTH);
@@ -134,8 +137,12 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 		root.getChildren().clear();
 		root.getChildren().add(group);
 		
-		group.getStyleClass().add("yellow");
-				
+		System.out.println(group.getBoundsInParent());
+		
+		
+		group.setLayoutX(0 - group.getBoundsInParent().getMinX());
+		group.setLayoutY(0 - group.getBoundsInParent().getMinY());
+		
 		this.getChildren().clear();
 		
 		this.add(root, 0, 0);

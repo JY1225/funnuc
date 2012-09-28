@@ -50,6 +50,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	
 	private static Logger logger = Logger.getLogger(BasicStackPlate.class);
 	
+	private static final float MIN_OVERLAP_DISTANCE = 10;
+	
 	public BasicStackPlate(String id, List<Zone> zones, int horizontalHoleAmount, int verticalHoleAmount, float holeDiameter, float studDiameter,
 			float horizontalPadding, float verticalPadding, float horizontalHoleDistance, float interferenceDistance, float overflowPercentage) {
 		super(id, zones);
@@ -222,33 +224,30 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			for (int j = 0; j < amountHorizontal; j++) {
 				float horizontalPos = horizontalStudIndex * horizontalHoleDistance + studDiameter/2 + workPieceDimensions.getLength()/2 + horizontalPadding;
 				
-				int leftK = (int) Math.floor(amountOfVerticalStudsOnePiece / 2);
-				int rightK = amountOfHorizontalStudsOnePiece - 1;
-				if (remainingLength <= 0) {
-					rightK--;
+				int leftVerticalExtraIndex = (int) Math.floor(amountOfVerticalStudsOnePiece / 2);
+				int rightHorizontalExtraIndex = amountOfHorizontalStudsOnePiece - 1;
+				
+				if (remainingLength <= MIN_OVERLAP_DISTANCE) {
+					rightHorizontalExtraIndex--;
 				}
-				if (rightK < 1) {
-					throw new IllegalStateException("Illegal right k value");
+				if (remainingWidth <= MIN_OVERLAP_DISTANCE) {
+					leftVerticalExtraIndex--;
 				}
-				if (rightK > 2) {
-					if (remainingLength < 0.25*workPieceDimensions.getLength()) {
-						rightK--;
-					}
-				}
+				
 				boolean corner = false;
-				//TODO review this!!
 				
-				// condition one: only two vertical studs and not enough remaining width
-				// condition two: only two horizontal studs, or: only three horizontal studs and not enough remaining length
+				// condition one: only two vertical studs and not enough remaining width (only one leftVerticalExtraIndex)
+				// condition two: only two horizontal studs, or: only three horizontal studs and not enough remaining length (only two rightHorizontalExtraIndex)
 				
-				if (((leftK > 1)&&(amountOfHorizontalStudsOnePiece > 2)) || ((leftK == 1) && (remainingWidth > 0) && (amountOfHorizontalStudsOnePiece > 2))) {
-					studPositions[verticalStudIndex+leftK][horizontalStudIndex].setStudType(StudType.NORMAL);
-					studPositions[verticalStudIndex][horizontalStudIndex + 1].setStudType(StudType.NORMAL);
-				} else {
+				if ((rightHorizontalExtraIndex <=2) || (leftVerticalExtraIndex == 0)) {
 					studPositions[verticalStudIndex][horizontalStudIndex].setStudType(StudType.HORIZONTAL_CORNER);
 					corner = true;
+				} else {
+					studPositions[verticalStudIndex+leftVerticalExtraIndex][horizontalStudIndex].setStudType(StudType.NORMAL);
+					studPositions[verticalStudIndex][horizontalStudIndex + 1].setStudType(StudType.NORMAL);
 				}
-				int horizontalPos2 = horizontalStudIndex + rightK;
+				
+				int horizontalPos2 = horizontalStudIndex + rightHorizontalExtraIndex;
 				while(horizontalPos2 >= studPositions[0].length) {
 					horizontalPos2--;
 				}
