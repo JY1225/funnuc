@@ -13,6 +13,7 @@ import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.main.MenuBarPresenter;
 import eu.robojob.irscw.ui.main.configure.device.DeviceMenuFactory;
 import eu.robojob.irscw.ui.main.configure.process.ProcessMenuPresenter;
+import eu.robojob.irscw.ui.main.configure.transport.TransportMenuFactory;
 import eu.robojob.irscw.ui.main.configure.transport.TransportMenuPresenter;
 import eu.robojob.irscw.ui.main.configure.transport.TransportMenuView;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowPresenter;
@@ -35,6 +36,7 @@ public class ConfigurePresenter implements TextFieldListener {
 
 	private AbstractMenuPresenter activeMenu;
 	private DeviceMenuFactory deviceMenuFactory;
+	private TransportMenuFactory transportMenuFactory;
 	
 	private boolean keyboardActive;
 	private boolean numericKeyboardActive;
@@ -49,7 +51,7 @@ public class ConfigurePresenter implements TextFieldListener {
 	private Mode mode;
 	
 	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
-			ProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processMenuPresenter, DeviceMenuFactory deviceMenuFactory) {
+			ProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processMenuPresenter, DeviceMenuFactory deviceMenuFactory, TransportMenuFactory transportMenuFactory) {
 		this.view = view;
 		this.keyboardPresenter = keyboardPresenter;
 		keyboardPresenter.setParent(this);
@@ -58,6 +60,7 @@ public class ConfigurePresenter implements TextFieldListener {
 		this.processFlowPresenter = processFlowPresenter;
 		processFlowPresenter.setParent(this);
 		this.deviceMenuFactory = deviceMenuFactory;
+		this.transportMenuFactory = transportMenuFactory;
 		this.processMenuPresenter = processMenuPresenter;
 		processMenuPresenter.setParent(this);
 		view.setPresenter(this);
@@ -173,11 +176,11 @@ public class ConfigurePresenter implements TextFieldListener {
 	}
 	
 	public void configureTransport(int index) {
-		TransportMenuView transportMenuView = new TransportMenuView(processFlowAdapter.getTransportInformation(index));
-		TransportMenuPresenter transportMenuPresenter = new TransportMenuPresenter(transportMenuView);
-		transportMenuPresenter.setParent(this);
-		view.setBottomLeft(transportMenuPresenter.getView());
-		transportMenuPresenter.openFirst();
+		activeMenu = transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(index));
+		activeMenu.setParent(this);
+		activeMenu.setTextFieldListener(this);
+		view.setBottomLeft(activeMenu.getView());
+		activeMenu.openFirst();
 	}
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {

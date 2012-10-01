@@ -5,8 +5,11 @@ import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
 
 public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuView> {
 
-	public TransportMenuPresenter(TransportMenuView view) {
+	private TransportGripperPresenter transportGripperPresenter;
+	
+	public TransportMenuPresenter(TransportMenuView view, TransportGripperPresenter transportGripperPresenter) {
 		super(view);
+		this.transportGripperPresenter = transportGripperPresenter;
 	}
 
 	@Override
@@ -16,6 +19,7 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 
 	public void configureGriper() {
 		view.setConfigureGripperActive();
+		parent.setBottomRightView(transportGripperPresenter.getView());
 	}
 
 	@Override

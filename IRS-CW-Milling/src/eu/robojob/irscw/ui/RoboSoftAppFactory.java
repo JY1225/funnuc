@@ -2,7 +2,6 @@ package eu.robojob.irscw.ui;
 
 import eu.robojob.irscw.external.device.BasicStackPlate;
 import eu.robojob.irscw.external.device.CNCMillingMachine;
-import eu.robojob.irscw.external.device.Conveyor;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.EmbossingDevice;
 import eu.robojob.irscw.external.robot.FanucRobot;
@@ -28,6 +27,7 @@ import eu.robojob.irscw.ui.main.configure.process.ProcessMenuPresenter;
 import eu.robojob.irscw.ui.main.configure.process.ProcessMenuView;
 import eu.robojob.irscw.ui.main.configure.process.ProcessOpenPresenter;
 import eu.robojob.irscw.ui.main.configure.process.ProcessOpenView;
+import eu.robojob.irscw.ui.main.configure.transport.TransportMenuFactory;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowPresenter;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowView;
 
@@ -47,6 +47,7 @@ public class RoboSoftAppFactory {
 	private DeviceManager deviceManager;
 	private RobotManager robotManager;
 	private DeviceMenuFactory deviceMenuFactory;
+	private TransportMenuFactory transportMenuFactory;
 	
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
@@ -71,7 +72,7 @@ public class RoboSoftAppFactory {
 		if (configurePresenter == null) {
 			ConfigureView processConfigureView = new ConfigureView();
 			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNumericKeyboardPresenter(), getProcessFlowPresenter(), 
-					getProcessConfigurationMenuPresenter(), getDeviceMenuFactory());
+					getProcessConfigurationMenuPresenter(), getDeviceMenuFactory(), getTransportMenuFactory());
 		}
 		return configurePresenter;
 	}
@@ -157,6 +158,13 @@ public class RoboSoftAppFactory {
 			deviceMenuFactory = new DeviceMenuFactory(getDeviceManager());
 		}
 		return deviceMenuFactory;
+	}
+	
+	private TransportMenuFactory getTransportMenuFactory() {
+		if (transportMenuFactory == null) {
+			transportMenuFactory = new TransportMenuFactory(getRobotManager());
+		}
+		return transportMenuFactory;
 	}
 	
 	private DeviceManager getDeviceManager() {

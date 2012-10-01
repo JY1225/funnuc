@@ -5,11 +5,13 @@ public class Gripper {
 	private String id;
 	private float height;
 	private String description;
+	private String imageUrl;
 	
-	public Gripper(String id, float height, String description) {
+	public Gripper(String id, float height, String description, String imageUrl) {
 		this.id = id;
 		this.height = height;
 		this.description = description;
+		this.imageUrl = imageUrl;
 	}
 
 	public String getId() {
@@ -34,6 +36,14 @@ public class Gripper {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 }

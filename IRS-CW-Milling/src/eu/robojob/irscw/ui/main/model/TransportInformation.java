@@ -49,6 +49,7 @@ public class TransportInformation {
 
 	public void setPickStep(PickStep pickStep) {
 		this.pickStep = pickStep;
+		setRobot(pickStep.getRobot());
 	}
 
 	public PutStep getPutStep() {
@@ -57,6 +58,7 @@ public class TransportInformation {
 
 	public void setPutStep(PutStep putStep) {
 		this.putStep = putStep;
+		setRobot(putStep.getRobot());
 	}
 
 	public InterventionStep getInterventionAfterPut() {

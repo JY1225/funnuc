@@ -1,6 +1,8 @@
 package eu.robojob.irscw.external.robot;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GripperBody {
 
@@ -8,11 +10,17 @@ public class GripperBody {
 	String description;
 	
 	private List<GripperHead> gripperHeads;
+	private Set<Gripper> possibleGrippers;
 	
-	public GripperBody (int id, String description, List<GripperHead> gripperHeads) {
+	public GripperBody (int id, String description, List<GripperHead> gripperHeads, Set<Gripper> possibleGrippers) {
 		this.id = id;
 		this.description = description;
 		this.gripperHeads = gripperHeads;
+		if (possibleGrippers != null) {
+			this.possibleGrippers = possibleGrippers;
+		} else {
+			this.possibleGrippers = new HashSet<Gripper>();
+		}
 	}
 
 	public int getId() {
@@ -39,7 +47,7 @@ public class GripperBody {
 		}
 	}
 	
-	public GripperHead getGripperHead(int id) {
+	public GripperHead getGripperHead(String id) {
 		for (GripperHead gripperHead : gripperHeads) {
 			if (gripperHead.getId() == id) {
 				return gripperHead;
@@ -48,4 +56,41 @@ public class GripperBody {
 		return null;
 	}
 	
+	public List<GripperHead> getGripperHeads() {
+		return gripperHeads;
+	}
+
+	public Set<Gripper> getPossibleGrippers() {
+		return possibleGrippers;
+	}
+
+	public void setPossibleGrippers(Set<Gripper> possibleGrippers) {
+		this.possibleGrippers = possibleGrippers;
+	}
+	
+	public void addPossibleGripper(Gripper gripper) {
+		possibleGrippers.add(gripper);
+	}
+	
+	public void setActiveGripper(GripperHead head, Gripper gripper) {
+		if (!gripperHeads.contains(head)) {
+			throw new IllegalArgumentException("Wrong GripperHead value");
+		}
+		if (!possibleGrippers.contains(gripper)) {
+			throw new IllegalArgumentException("Wrong gripper value");
+		}
+		for (GripperHead head2 : gripperHeads) {
+			if ((head2.getGripper() == gripper) && (head2 == head)) {
+				throw new IllegalArgumentException("The provided gripper was already activated on another head");
+			}
+		}
+		head.setGripper(gripper);
+	}
+	
+	public Gripper getActiveGripper(GripperHead head) {
+		if (!gripperHeads.contains(head)) {
+			throw new IllegalArgumentException("Wrong GripperHead value");
+		}
+		return head.getGripper();
+	}
 }

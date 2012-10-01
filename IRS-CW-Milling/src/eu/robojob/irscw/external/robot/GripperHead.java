@@ -2,19 +2,19 @@ package eu.robojob.irscw.external.robot;
 
 public class GripperHead {
 	
-	private int id;
+	private String id;
 	private Gripper gripper;
 	
-	public GripperHead(int id, Gripper gripper) {
+	public GripperHead(String id, Gripper gripper) {
 		this.id = id;
-		this.gripper = gripper;
+		setGripper(gripper);
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

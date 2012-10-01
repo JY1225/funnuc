@@ -1,6 +1,8 @@
 package eu.robojob.irscw.external.robot;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.WorkArea;
@@ -9,17 +11,42 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {
 	
-	private GripperBody gripperBody;
+	private GripperBody activeGripperBody;
 	
-	public AbstractRobot(String id, GripperBody gripperBody) {
+	private Set<GripperBody> possibleGripperBodies;
+	
+	public AbstractRobot(String id, Set<GripperBody> possibleGripperBodies, GripperBody activeGripperBody) {
 		super(id);
-		this.gripperBody = gripperBody;
+		if (possibleGripperBodies != null) {
+			this.possibleGripperBodies = possibleGripperBodies;
+		} else {
+			this.possibleGripperBodies = new HashSet<GripperBody>();
+		}
+		if (activeGripperBody != null) {
+			setActiveGripperBody(activeGripperBody);
+		}
 	}
 	
 	public AbstractRobot(String id) {
-		this(id, null);
+		this(id, null, null);
 	}
 	
+	public void setActiveGripperBody(GripperBody body) {
+		if (!possibleGripperBodies.contains(body)) {
+			throw new IllegalArgumentException("Unknown GripperBody value");
+		}
+		
+		activeGripperBody = body;
+	}
+	
+	public Set<GripperBody> getPossibleGripperBodies() {
+		return possibleGripperBodies;
+	}
+
+	public void setPossibleGripperBodies(Set<GripperBody> possibleGripperBodies) {
+		this.possibleGripperBodies = possibleGripperBodies;
+	}
+
 	public abstract Coordinates getPosition() throws IOException;
 	
 	public abstract void pick(AbstractRobotPickSettings pickSettings) throws IOException;
@@ -34,16 +61,18 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		return "Robot: " + id;
 	}
 	
-	public static abstract class AbstractRobotActionSettings{
+	public static abstract class AbstractRobotActionSettings {
 		protected WorkArea workArea;
+		protected GripperHead gripperHead;
 		protected Gripper gripper;
 		protected Coordinates smoothPoint;
 		protected Coordinates location;
 		protected WorkPieceDimensions workPieceDimensions;
 		
-		public AbstractRobotActionSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
+		public AbstractRobotActionSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
 			this.workArea = workArea;
 			this.gripper = gripper;
+			this.gripperHead = gripperHead;
 			this.smoothPoint = smoothPoint;
 			this.location = location;
 			this.workPieceDimensions = workPieceDimensions;
@@ -53,6 +82,12 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		}
 		public Gripper getGripper() {
 			return gripper;
+		}
+		public GripperHead getGripperHead() {
+			return gripperHead;
+		}
+		public void setGripperHead(GripperHead gripperHead) {
+			this.gripperHead = gripperHead;
 		}
 		public Coordinates getSmoothPoint() {
 			return smoothPoint;
@@ -81,22 +116,22 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 	
 	public static abstract class AbstractRobotPickSettings extends AbstractRobotActionSettings {
-		public AbstractRobotPickSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
-			super(workArea, gripper, smoothPoint, location, workPieceDimensions);
+		public AbstractRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
+			super(workArea, gripperHead, gripper, smoothPoint, location, workPieceDimensions);
 		}
 	}
 	public static abstract class AbstractRobotPutSettings extends AbstractRobotActionSettings {
-		public AbstractRobotPutSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
-			super(workArea, gripper, smoothPoint, location, workPieceDimensions);
+		public AbstractRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
+			super(workArea, gripperHead, gripper, smoothPoint, location, workPieceDimensions);
 		}
 	}
 	
 	public GripperBody getGripperBody() {
-		return gripperBody;
+		return activeGripperBody;
 	}
 
 	public void setGripperBody(GripperBody gripperBody) {
-		this.gripperBody = gripperBody;
+		this.activeGripperBody = gripperBody;
 	}
 	
 	public abstract AbstractRobotPickSettings getDefaultPickSettings();

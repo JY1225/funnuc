@@ -1,6 +1,7 @@
 package eu.robojob.irscw.external.robot;
 
 import java.io.IOException;
+import java.util.Set;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.WorkArea;
@@ -19,13 +20,13 @@ public class FanucRobot extends AbstractRobot {
 	private static final String GRAB_PIECE = "GRAB_PIECE";
 	private static final String MOVE_TO_SAFE_POINT = "MOVE_TO_SAFE_POINT";
 
-	public FanucRobot(String id, GripperBody gripperBody, SocketConnection socketConnection) {
-		super(id, gripperBody);
+	public FanucRobot(String id, Set<GripperBody> gripperBodies, GripperBody gripperBody, SocketConnection socketConnection) {
+		super(id, gripperBodies, gripperBody);
 		this.socketConnection = socketConnection;
 	}
 	
 	public FanucRobot(String id, SocketConnection socketConnection) {
-		this(id, null, socketConnection);
+		this(id, null, null, socketConnection);
 	}
 	
 	@Override
@@ -97,23 +98,23 @@ public class FanucRobot extends AbstractRobot {
 	
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
 
-		public FanucRobotPickSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
-			super(workArea, gripper, smoothPoint, location, workPieceDimensions);
+		public FanucRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
+			super(workArea, gripperHead, gripper, smoothPoint, location, workPieceDimensions);
 		}
 		
 		public FanucRobotPickSettings() {
-			super(null, null, null, null, null);
+			super(null, null, null, null, null, null);
 		}
 		
 	}
 	public static class FanucRobotPutSettings extends AbstractRobotPutSettings {
 
-		public FanucRobotPutSettings(WorkArea workArea, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
-			super(workArea, gripper, smoothPoint, location, workPieceDimensions);
+		public FanucRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
+			super(workArea, gripperHead, gripper, smoothPoint, location, workPieceDimensions);
 		}
 		
 		public FanucRobotPutSettings() {
-			super(null, null, null, null, null);
+			super(null, null, null, null, null, null);
 		}
 	}
 	@Override
