@@ -77,7 +77,4 @@
 
 .yellow {
 	-fx-background-color: rgba(255, 255, 0, 0.5);
-	-fx-fill: rgba(255, 255, 0, 0.5);
-	-fx-border-color: black;
-	-fx-border-width: 5px;
 }

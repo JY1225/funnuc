@@ -18,8 +18,12 @@ public class RobotManager {
 	}
 	
 	private void initialize() {
-		Gripper gripper = new Gripper("vacuum grip", 200, "vacuum grip, type 1", "img/grippers/vacuum.png");
-		Gripper gripper2 = new Gripper("clamp grip", 250, "clamp grip, type 2", "img/grippers/clamp.png");
+		Gripper gripper = new Gripper("vacuum grip", 200, "vacuum grip, type 1", "img/grippers/gripper1.png");
+		Gripper gripper2 = new Gripper("clamp grip", 250, "clamp grip, type 2", "img/grippers/gripper2.png");
+		Gripper gripper3 = new Gripper("vacuum grip 2", 200, "vacuum grip, type 1", "img/grippers/gripper1.png");
+		Gripper gripper4 = new Gripper("clamp grip 2", 250, "clamp grip, type 2", "img/grippers/gripper2.png");
+		Gripper gripper5 = new Gripper("vacuum grip 3", 200, "vacuum grip, type 1", "img/grippers/gripper1.png");
+		Gripper gripper6 = new Gripper("clamp grip 3", 250, "clamp grip, type 2", "img/grippers/gripper2.png");
 		GripperHead head1 = new GripperHead("A", gripper);
 		GripperHead head2 = new GripperHead("B", gripper2);
 		List<GripperHead> gripperHeads = new ArrayList<GripperHead>();
@@ -28,6 +32,10 @@ public class RobotManager {
 		Set<Gripper> grippers = new HashSet<Gripper>();
 		grippers.add(gripper);
 		grippers.add(gripper2);
+		grippers.add(gripper3);
+		grippers.add(gripper4);
+		grippers.add(gripper5);
+		grippers.add(gripper6);
 		GripperBody gripperBody = new GripperBody(2, "body 1", gripperHeads, grippers);
 		Set<GripperBody> gripperBodies = new HashSet<GripperBody>();
 		gripperBodies.add(gripperBody);

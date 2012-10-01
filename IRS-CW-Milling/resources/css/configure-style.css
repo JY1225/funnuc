@@ -215,3 +215,34 @@
 	-fx-stroke-line-cap: butt;
 	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 0, 2);
 }
+
+.iconflow-selector {
+	-fx-background-color: green;
+}
+
+.iconflow-item {
+	
+	-fx-background-color: yellow;
+	
+	-fx-border-width: 3px;
+	-fx-border-style: dashed;
+	-fx-background-color: black;
+	-fx-border-radius: 3px;
+}
+
+.iconflow-item-lbl {
+	-fx-font-size: 13px;
+	-fx-font-weight: bold;
+	-fx-text-alignment: center;
+	
+	-fx-font-family: "Helvetica";
+	-fx-text-fill: #323232;
+	
+	-fx-background-color: red;
+	
+	-fx-border-width: 0px;
+}
+
+.iconflow-item-icon {
+	-fx-border-width: 0px;
+}

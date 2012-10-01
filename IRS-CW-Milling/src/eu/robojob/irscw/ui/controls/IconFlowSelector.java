@@ -3,24 +3,36 @@ package eu.robojob.irscw.ui.controls;
 import java.util.HashMap;
 import java.util.Map;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 
-public class IconFlowSelector extends FlowPane {
+public class IconFlowSelector extends ScrollPane {
 
 	private Map<Integer, IconFlowSelectorItem> items;
 	
+	private HBox box;
+	
 	public IconFlowSelector() {
+		super();
+		box = new HBox();
+		box.setPadding(new Insets(10, 0, 10, 0));
 		items = new HashMap<Integer, IconFlowSelectorItem>();
+		setPrefHeight(160);
+		box.setSpacing(20);
+		setContent(box);
+		clearItems();
 	}
 	
 	public void addItem(int index, String name, String iconUrl, IconFlowSelectorItemChangedHandler handler) {
+		this.getStyleClass().add("iconflow-selector");
 		IconFlowSelectorItem item = new IconFlowSelectorItem(index, name, iconUrl);
 		handler.setIndex(index);
 		handler.setName(name);
 		item.addEventHandler(MouseEvent.MOUSE_CLICKED, handler);
+		items.put(index, item);
+		box.getChildren().add(item);
 	}
 	
 	public void iconClicked(int index) {

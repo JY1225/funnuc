@@ -30,6 +30,6 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 	
 	public void changedGripper(String id) {
 		// TODO: make sure that a gripper is used with one head, and automatic gripper changed aren't possible!
-		
+		logger.debug("changed gripper to: " + id);
 	}
 }

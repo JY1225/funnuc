@@ -2,11 +2,12 @@ package eu.robojob.irscw.ui.main.configure.transport;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Priority;
 import eu.robojob.irscw.external.robot.Gripper;
 import eu.robojob.irscw.external.robot.GripperBody;
 import eu.robojob.irscw.external.robot.GripperHead;
@@ -28,10 +29,12 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 	private IconFlowSelector ifsGrippers;
 	
 	private static final int HGAP = 15;
-	private static final int VGAP = 15;
+	private static final int VGAP = 10;
 	
 	public TransportGripperView() {
 		super();
+		setVgap(VGAP);
+		setHgap(HGAP);
 	}
 	
 	public void setTransportInfo(TransportInformation transportInfo) {
@@ -43,8 +46,6 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		int column = 0;
 		int row = 0;
 		
-		setVgap(VGAP);
-		setHgap(HGAP);
 		getChildren().clear();
 		
 		lblGripperHead = new Label(translator.getTranslation("gripperHeads"));
@@ -52,7 +53,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		
 		// for now we assume the gripper head also can't be changed, because a fixed convention is used!
 		cbbGripperHeads = new ComboBox<String>();
-		cbbGripperHeads.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
+		cbbGripperHeads.setPrefSize(UIConstants.COMBO_WIDTH/2, UIConstants.COMBO_HEIGHT);
 		add(cbbGripperHeads, column++, row);
 		cbbGripperHeads.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
@@ -71,7 +72,14 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		add(lblGripper, column++, row);
 		
 		ifsGrippers = new IconFlowSelector();
-		add(ifsGrippers, column++, row);
+		ifsGrippers.setPrefWidth(530);
+		column = 0;
+		row++;
+		add(ifsGrippers, column++, row, 3, 1);
+		
+		row++;
+		
+		this.getStyleClass().add("yellow");
 	}
 
 	private void refreshGripperHeads() {
@@ -93,13 +101,15 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		GripperBody body = transportInfo.getRobot().getGripperBody();
 		int itemIndex = 0;
 		for (Gripper gripper : body.getPossibleGrippers()) {
-			ifsGrippers.addItem(0, gripper.getId(), gripper.getImageUrl(), new IconFlowSelectorItemChangedHandler() {
+			ifsGrippers.addItem(itemIndex, gripper.getId(), gripper.getImageUrl(), new IconFlowSelectorItemChangedHandler() {
 				@Override
 				public void handle(MouseEvent event, int index, String name) {
 					presenter.changedGripper(name);
 				}
 			});
+			itemIndex++;
 		}
+		System.out.println(ifsGrippers.getPrefHeight() + ": " + ifsGrippers.getPrefWidth() + ":" + ifsGrippers.getMinHeight() + ": " + ifsGrippers.getMaxHeight());
 	}
 	
 	@Override
@@ -111,6 +121,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 	@Override
 	public void refresh() {
 		refreshGripperHeads();
+		refreshGrippers();
 	}
 
 	public abstract class ChangedGripperHandler implements EventHandler<MouseEvent> {
