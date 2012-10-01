@@ -14,8 +14,10 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import eu.robojob.irscw.external.device.BasicStackPlate;
+import eu.robojob.irscw.external.device.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.external.device.StackingPosition;
 import eu.robojob.irscw.external.device.StudPosition;
 import eu.robojob.irscw.external.device.StudPosition.StudType;
@@ -183,13 +185,28 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	
 	private void configureWorkPieces() {
 		for (StackingPosition stackingPosition : basicStackPlate.getRawStackingPositions()) {
-			Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getDimensions().getLength()/2, 
-					stackingPosition.getPosition().getY()- stackingPosition.getDimensions().getWidth()/2, 
-					stackingPosition.getDimensions().getLength(), stackingPosition.getDimensions().getWidth());
-			rp.getStyleClass().add("workpiece");
-			rp.setArcHeight(10);
-			rp.setArcWidth(10);
-			group.getChildren().add(rp);
+			if (stackingPosition.getOrientation() == WorkPieceOrientation.HORIZONTAL) {
+				Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getDimensions().getLength()/2, 
+						stackingPosition.getPosition().getY()- stackingPosition.getDimensions().getWidth()/2, 
+						stackingPosition.getDimensions().getLength(), stackingPosition.getDimensions().getWidth());
+				rp.getStyleClass().add("workpiece");
+				rp.setArcHeight(10);
+				rp.setArcWidth(10);
+				group.getChildren().add(rp);
+			} else if (stackingPosition.getOrientation() == WorkPieceOrientation.TILTED){
+				// TILTED
+				Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getDimensions().getLength()/2, 
+						stackingPosition.getPosition().getY()- stackingPosition.getDimensions().getWidth()/2, 
+						stackingPosition.getDimensions().getLength(), stackingPosition.getDimensions().getWidth());
+				Rotate rotate = new Rotate(-45, stackingPosition.getPosition().getX(), stackingPosition.getPosition().getY());
+				rp.getTransforms().add(rotate);
+				rp.getStyleClass().add("workpiece");
+				rp.setArcHeight(10);
+				rp.setArcWidth(10);
+				group.getChildren().add(rp);
+			} else {
+				throw new IllegalArgumentException("Unknown orientation");
+			}
 		}
 	}
 

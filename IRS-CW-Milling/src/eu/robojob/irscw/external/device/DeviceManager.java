@@ -81,7 +81,7 @@ public class DeviceManager {
 		WorkArea workArea5 = new WorkArea("basic stacker", uf5);
 		workAreas4.add(workArea5);
 		Zone zone4 = new Zone("Zone 4", workAreas4);
-		BasicStackPlate basicStackPlate = new BasicStackPlate("basic stack plate",  27, 7, 10, 15, 45, 40, 35, 10, 0.25f);
+		BasicStackPlate basicStackPlate = new BasicStackPlate("basic stack plate",  27, 7, 10, 15, 45, 40, 35, 0, 0.25f);
 		basicStackPlate.addZone(zone4);
 		stackingFromDevices.put(basicStackPlate.getId(), basicStackPlate);
 		stackingToDevices.put(basicStackPlate.getId(), basicStackPlate);
