@@ -61,6 +61,7 @@ public class ProcessFlowView extends GridPane  {
 			}
 			if (i < processFlowAdapter.getTransportStepCount()) {
 				TransportButton transport = new TransportButton(processFlowAdapter.getTransportInformation(i));
+				transport.showPause();
 				this.add(transport, column, row);
 				transportButtons.put(i, transport);
 				transport.setOnAction(new TransportEventHandler(i));

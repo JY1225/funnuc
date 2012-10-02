@@ -28,6 +28,22 @@
 	-fx-effect: dropshadow(gaussian, #848484, 8, 0, 0, 0);
 }
 
+.pause-shape {
+	-fx-fill: linear-gradient(white 0%, #e6e6e6 100%);
+	-fx-effect: dropshadow(gaussian, #848484, 8, 0, 0, 0);
+}
+
+.transport-label {
+	-fx-font-size: 14px;
+	-fx-font-weight: bold;
+	-fx-text-alignment: center;
+	
+	-fx-font-family: "Helvetica";
+	-fx-alignment: center;
+	-fx-text-fill: rgba(0, 0, 0, 0.8);
+	-fx-padding: 0;
+}
+
 .device-button {
 	-fx-background-color: 
 		linear-gradient(#c0c0c0 0%, #8d8d8d 100%),

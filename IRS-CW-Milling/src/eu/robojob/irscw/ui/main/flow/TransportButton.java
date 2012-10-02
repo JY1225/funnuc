@@ -6,9 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
-import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.AbstractProcessingDevice;
-import eu.robojob.irscw.external.device.BasicStackPlate;
+import javafx.scene.transform.Translate;
 import eu.robojob.irscw.ui.main.model.TransportInformation;
 
 public class TransportButton extends Pane {
@@ -27,6 +25,7 @@ public class TransportButton extends Pane {
 	
 	private String pauzeLeftPath = "M 19.53125 5.09375 C 11.697031 5.09375 5.34375 11.445258 5.34375 19.28125 C 5.34375 27.113696 11.697031 33.46875 19.53125 33.46875 C 27.365469 33.46875 33.71875 27.113696 33.71875 19.28125 C 33.71875 11.445258 27.365469 5.09375 19.53125 5.09375 z M 14.75 12.90625 L 17.9375 12.90625 L 17.9375 25.6875 L 14.75 25.6875 L 14.75 12.90625 z M 21.125 12.90625 L 24.34375 12.90625 L 24.34375 25.6875 L 21.125 25.6875 L 21.125 12.90625 z";
 	private String pauzeRightPath = "M 122.71875 5.09375 C 114.88453 5.09375 108.53125 11.445258 108.53125 19.28125 C 108.53125 27.113696 114.88453 33.46875 122.71875 33.46875 C 130.55297 33.46875 136.90625 27.113696 136.90625 19.28125 C 136.90625 11.445258 130.55297 5.09375 122.71875 5.09375 z M 117.9375 12.90625 L 121.125 12.90625 L 121.125 25.6875 L 117.9375 25.6875 L 117.9375 12.90625 z M 124.3125 12.90625 L 127.5 12.90625 L 127.5 25.6875 L 124.3125 25.6875 L 124.3125 12.90625 z";	
+	
 	private String firstCirclePath = "M38.82,19.318c0,10.645-8.629,19.275-19.275,19.275c-10.646,0-19.275-8.63-19.275-19.275 S8.899,0.042,19.545,0.042C30.191,0.042,38.82,8.673,38.82,19.318z";
 	private String secondCirclePath = "M141.989,19.294c0,10.645-8.629,19.275-19.275,19.275c-10.646,0-19.275-8.63-19.275-19.275 s8.63-19.275,19.275-19.275C133.36,0.019,141.989,8.649,141.989,19.294z";
 	
@@ -67,6 +66,17 @@ public class TransportButton extends Pane {
 		pauseLeft.setContent(pauzeLeftPath);
 		pauseLeft.getStyleClass().add("pause-shape");
 		
+		lblLeft = new Label();
+		lblLeft.getStyleClass().add("transport-label");
+		lblLeft.setPrefWidth(28.373);
+		Translate translate = new Translate(5.358, -25);
+		lblLeft.getTransforms().add(translate);
+		lblRight = new Label();
+		lblRight.getStyleClass().add("transport-label");
+		Translate translate2 = new Translate(108.527, -25);
+		lblRight.getTransforms().add(translate2);
+		lblRight.setPrefWidth(28.373);
+		
 		pauseRight = new SVGPath();
 		pauseRight.setContent(pauzeRightPath);
 		pauseRight.getStyleClass().add("pause-shape");
@@ -105,6 +115,7 @@ public class TransportButton extends Pane {
 	public void setTransportInformation(TransportInformation transportInfo) {
 		// TODO this logic should be contained in the steps
 		this.transportInfo = transportInfo;
+		
 		if (transportInfo.getPickStep().getDeviceSettings() != null) {
 			if (transportInfo.getPickStep().getDeviceSettings().isTeachingNeeded()) {
 				setLeftQuestionMarkActive(true);
@@ -118,6 +129,14 @@ public class TransportButton extends Pane {
 			} else {
 				setRightQuestionMarkActive(false);
 			}
+		}
+		if (transportInfo.getInterventionBeforePick() != null) {
+			setLeftPauseActive(true);
+			setLeftLabel("" + transportInfo.getInterventionBeforePick().getFrequency());
+		}
+		if (transportInfo.getInterventionAfterPut() != null) {
+			setRightPauseActive(true);
+			setRightLabel("" + transportInfo.getInterventionAfterPut().getFrequency());
 		}
 	}
 	
@@ -135,6 +154,7 @@ public class TransportButton extends Pane {
 		this.getChildren().remove(questionMarkLeft);
 		if (active) {
 			this.getChildren().add(questionMarkLeft);
+			questionMarkLeft.toBack();
 		}
 	}
 	
@@ -142,7 +162,77 @@ public class TransportButton extends Pane {
 		this.getChildren().remove(questionMarkRight);
 		if (active) {
 			this.getChildren().add(questionMarkRight);
+			questionMarkRight.toBack();
 		}
+	}
+	
+	public void setLeftPauseActive(boolean active) {
+		this.getChildren().remove(pauseLeft);
+		if (active) {
+			this.getChildren().add(pauseLeft);
+			pauseLeft.toBack();
+		}
+	}
+	
+	public void setLeftLabel(String text) {
+		this.getChildren().remove(lblLeft);
+		if (text != null) {
+			lblLeft.setText(text + " x");
+			this.getChildren().add(lblLeft);
+		}
+		
+	}
+	
+	public void setRightPauseActive(boolean active) {
+		this.getChildren().remove(pauseRight);
+		if (active) {
+			this.getChildren().add(pauseRight);
+			pauseRight.toBack();
+		}
+	}
+	
+	public void setRightLabel(String text)  {
+		this.getChildren().remove(lblRight);
+		if (text != null) {
+			lblRight.setText(text + " x");
+			this.getChildren().add(lblRight);
+		}
+	}
+	
+	public void showPause() {
+		showPauseLeft();
+		showPauseRight();
+	}
+	
+	public void showTeach() {
+		showQuestionMarkLeft();
+		showQuestionMarkRight();
+	}
+	
+	public void showPauseLeft() {
+		questionMarkLeft.toBack();
+		pauseLeft.toFront();
+		lblLeft.getStyleClass().remove("hidden");
+	}
+	
+	public void showPauseRight() {
+		questionMarkRight.toBack();
+		pauseRight.toFront();
+		lblRight.getStyleClass().remove("hidden");
+	}
+	
+	public void showQuestionMarkLeft() {
+		pauseLeft.toBack();
+		questionMarkLeft.toFront();
+		lblLeft.getStyleClass().remove("hidden");
+		lblLeft.getStyleClass().add("hidden");
+	}
+	
+	public void showQuestionMarkRight() {
+		pauseRight.toBack();
+		questionMarkRight.toFront();
+		lblRight.getStyleClass().remove("hidden");
+		lblRight.getStyleClass().add("hidden");
 	}
 	
 	public void setFocussed(boolean active) {
