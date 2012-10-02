@@ -3,6 +3,8 @@ package eu.robojob.irscw.ui.controls;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
@@ -11,6 +13,8 @@ import javafx.scene.layout.HBox;
 public class IconFlowSelector extends ScrollPane {
 
 	private Map<Integer, IconFlowSelectorItem> items;
+	
+	private static Logger logger = Logger.getLogger(IconFlowSelector.class);
 	
 	private HBox box;
 	
@@ -53,8 +57,9 @@ public class IconFlowSelector extends ScrollPane {
 	}
 	
 	public void clearItems() {
+		box.getChildren().clear();
 		items.clear();
-		this.getChildren().clear();
+		logger.debug("Cleared items!");
 	}
 	
 }

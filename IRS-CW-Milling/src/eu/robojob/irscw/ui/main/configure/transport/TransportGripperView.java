@@ -134,6 +134,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 	public void refresh() {
 		refreshGripperHeads();
 		refreshGrippers();
+		setSelectedGripper();
 	}
 
 	public abstract class ChangedGripperHandler implements EventHandler<MouseEvent> {

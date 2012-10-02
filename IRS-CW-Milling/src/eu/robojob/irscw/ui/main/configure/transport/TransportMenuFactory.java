@@ -9,6 +9,7 @@ public class TransportMenuFactory {
 	private RobotManager robotManager;
 	private TransportMenuPresenter transportMenuPresenter;
 	private TransportGripperPresenter transportGripperPresenter;
+	private TransportInterventionPresenter transportInterventionPresenter;
 	
 	public TransportMenuFactory(RobotManager robotManager) {
 		this.robotManager = robotManager;
@@ -20,7 +21,7 @@ public class TransportMenuFactory {
 	
 	public TransportMenuPresenter getTransportMenuPresenter(TransportInformation transportInfo) {
 		TransportMenuView view = new TransportMenuView(transportInfo);
-		transportMenuPresenter = new TransportMenuPresenter(view, getTransportGripperPresenter(transportInfo));
+		transportMenuPresenter = new TransportMenuPresenter(view, getTransportGripperPresenter(transportInfo), getTransportInterventionPresenter(transportInfo));
 		return transportMenuPresenter;
 	}
 	
@@ -28,5 +29,11 @@ public class TransportMenuFactory {
 		TransportGripperView view = new TransportGripperView();
 		transportGripperPresenter = new TransportGripperPresenter(view, transportInfo);
 		return transportGripperPresenter;
+	}
+	
+	public TransportInterventionPresenter getTransportInterventionPresenter(TransportInformation transportInfo) {
+		TransportInterventionView view = new TransportInterventionView();
+		transportInterventionPresenter = new TransportInterventionPresenter(view, transportInfo);
+		return transportInterventionPresenter;
 	}
 }
