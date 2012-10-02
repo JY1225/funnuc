@@ -3,11 +3,12 @@ package eu.robojob.irscw.ui.main.configure.transport;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Priority;
+
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.robot.Gripper;
 import eu.robojob.irscw.external.robot.GripperBody;
 import eu.robojob.irscw.external.robot.GripperHead;
@@ -30,6 +31,8 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 	
 	private static final int HGAP = 15;
 	private static final int VGAP = 10;
+	
+	private static Logger logger = Logger.getLogger(TransportGripperView.class); 
 	
 	public TransportGripperView() {
 		super();
@@ -79,7 +82,6 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		
 		row++;
 		
-		this.getStyleClass().add("yellow");
 	}
 
 	private void refreshGripperHeads() {
@@ -109,7 +111,17 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 			});
 			itemIndex++;
 		}
-		System.out.println(ifsGrippers.getPrefHeight() + ": " + ifsGrippers.getPrefWidth() + ":" + ifsGrippers.getMinHeight() + ": " + ifsGrippers.getMaxHeight());
+		setSelectedGripper();
+	}
+	
+	public void setSelectedGripper() {
+		if (transportInfo.getPickStep().getRobotSettings() != null) {
+			if (transportInfo.getPickStep().getRobotSettings().getGripper() != null) {
+				ifsGrippers.setSelected(transportInfo.getPickStep().getRobotSettings().getGripper().getId());
+			} else {
+				logger.debug("no gripper found in settings");
+			}
+		}
 	}
 	
 	@Override

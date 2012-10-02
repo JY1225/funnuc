@@ -17,16 +17,17 @@ public class IconFlowSelector extends ScrollPane {
 	public IconFlowSelector() {
 		super();
 		box = new HBox();
-		box.setPadding(new Insets(10, 0, 10, 0));
+		box.setPadding(new Insets(10, 10, 10, 10));
 		items = new HashMap<Integer, IconFlowSelectorItem>();
 		setPrefHeight(160);
-		box.setSpacing(20);
+		box.setSpacing(10);
 		setContent(box);
 		clearItems();
 	}
 	
 	public void addItem(int index, String name, String iconUrl, IconFlowSelectorItemChangedHandler handler) {
 		this.getStyleClass().add("iconflow-selector");
+		box.getStyleClass().add("iconflow-selector-hbox");
 		IconFlowSelectorItem item = new IconFlowSelectorItem(index, name, iconUrl);
 		handler.setIndex(index);
 		handler.setName(name);
@@ -35,11 +36,20 @@ public class IconFlowSelector extends ScrollPane {
 		box.getChildren().add(item);
 	}
 	
-	public void iconClicked(int index) {
+	public void setSelected(int index) {
 		for (IconFlowSelectorItem item : items.values()) {
 			item.setSelected(false);
 		}
 		items.get(index).setSelected(true);
+	}
+	
+	public void setSelected(String id) {
+		for (IconFlowSelectorItem item : items.values()) {
+			item.setSelected(false);
+			if (item.getName().equals(id)) {
+				item.setSelected(true);
+			}
+		}
 	}
 	
 	public void clearItems() {

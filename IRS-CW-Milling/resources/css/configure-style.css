@@ -217,32 +217,110 @@
 }
 
 .iconflow-selector {
-	-fx-background-color: green;
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.3), 2, 0, 0, 1);
+	-fx-border-width: 1px;
+	-fx-border-color: rgba(0, 0, 0, 0.15);
+	-fx-border-radius: 5px;
+	-fx-background-color: #eeeeee;
+	-fx-background-radius: 5px;
+	-fx-padding: 0;
 }
 
-.iconflow-item {
-	
-	-fx-background-color: yellow;
-	
-	-fx-border-width: 3px;
-	-fx-border-style: dashed;
-	-fx-background-color: black;
-	-fx-border-radius: 3px;
+.iconflow-selector:focused {
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.3), 2, 0, 0, 1);
+	-fx-border-width: 1px;
+	-fx-border-color: rgba(0, 0, 0, 0.15);
+	-fx-border-radius: 5px;
+	-fx-background-radius: 5px;
+	-fx-padding: 0;
+	-fx-background-insets: 0;
+}
+
+.iconflow-item {	
+	-fx-background-color: transparent;
+	-fx-background-radius: 3px;
+	-fx-border-color: transparent;
+	-fx-border-width: 2px;
+	-fx-border-radius: 5px;
+}
+
+.iconflow-item-selected {
+	-fx-border-color: #1770da;
 }
 
 .iconflow-item-lbl {
+	-fx-text-fill: rgba(0, 0, 0, 0.8);
+	-fx-border-width: 0px;
 	-fx-font-size: 13px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
 	
 	-fx-font-family: "Helvetica";
-	-fx-text-fill: #323232;
+	-fx-alignment: center;
 	
-	-fx-background-color: red;
+	-fx-padding: 5 0 0 0;
 	
-	-fx-border-width: 0px;
 }
 
 .iconflow-item-icon {
 	-fx-border-width: 0px;
+	-fx-opacity: 0.75;
 }
+
+.iconflow-item-icon-selected {
+	-fx-opacity: 1;
+}
+
+.iconflow-selector .scroll-bar {
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+	-fx-effect: null;
+}
+
+.iconflow-selector .scroll-bar .decrement-button {
+	-fx-padding: 10 0 10 0;
+	-fx-background-color: transparent;
+	-fx-border-width: 0px;
+	-fx-border-color: transparent;
+	-fx-effect: null;
+}
+
+.iconflow-selector .scroll-bar .decrement-arrow {
+	-fx-shape: " ";
+	-fx-padding: 0;
+}
+
+.iconflow-selector .scroll-bar .increment-button {
+	-fx-padding: 10 0 10 0;
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+	-fx-border-width: 0px;
+	-fx-effect: null;
+}
+
+.iconflow-selector .scroll-bar .increment-arrow {
+	-fx-shape: " ";
+	-fx-padding: 0;
+}
+
+.iconflow-selector .scroll-bar .track {
+	-fx-background-color: #eeeeee;
+	-fx-border-color:transparent;
+	-fx-background-radius: 0em;
+	-fx-border-radius:2em;
+	-fx-effect: null;
+}
+
+.iconflow-selector .scroll-bar .thumb {
+	-fx-background-color: rgba(0, 0, 0, 0.5);
+	-fx-border-color: transparent;
+	-fx-background-insets: 2, 0;
+}
+
+.iconflow-selector .scroll-bar .thumb:pressed {
+	-fx-background-color: rgba(0, 0, 0, 0.6);
+	-fx-border-color: transparent;
+	-fx-background-insets: 2, 0;
+}
+
+

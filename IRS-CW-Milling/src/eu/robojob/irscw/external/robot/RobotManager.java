@@ -55,6 +55,19 @@ public class RobotManager {
 		return robot.getPossibleGripperBodies();
 	}
 	
+	public Gripper getGripper(String id) {
+		for (AbstractRobot robot : robots.values()) {
+			for (GripperBody body : robot.getPossibleGripperBodies()) {
+				for (Gripper gripper : body.getPossibleGrippers()) {
+					if (gripper.getId().equals(id)) {
+						return gripper;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	public void addRobot(AbstractRobot robot) {
 		robots.put(robot.getId(), robot);
 	}

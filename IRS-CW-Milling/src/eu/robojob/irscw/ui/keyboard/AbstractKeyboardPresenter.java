@@ -28,6 +28,7 @@ public abstract class AbstractKeyboardPresenter {
 	public void setTarget(AbstractTextField target) {
 		this.target = target;
 		originalText = target.getText();
+		target.requestFocus();
 	}
 	
 	public AbstractKeyboardView getView() {

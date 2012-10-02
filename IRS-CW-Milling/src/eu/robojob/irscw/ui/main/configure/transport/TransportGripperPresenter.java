@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui.main.configure.transport;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.robot.Gripper;
 import eu.robojob.irscw.ui.main.configure.AbstractFormPresenter;
 import eu.robojob.irscw.ui.main.model.TransportInformation;
 
@@ -31,5 +32,12 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 	public void changedGripper(String id) {
 		// TODO: make sure that a gripper is used with one head, and automatic gripper changed aren't possible!
 		logger.debug("changed gripper to: " + id);
+		for (Gripper gripper : transportInfo.getRobot().getGripperBody().getPossibleGrippers()) {
+			if (gripper.getId().equals(id)) {
+				transportInfo.getPickStep().getRobotSettings().setGripper(gripper);
+				transportInfo.getPutStep().getRobotSettings().setGripper(gripper);
+				view.setSelectedGripper();
+			}
+		}
 	}
 }

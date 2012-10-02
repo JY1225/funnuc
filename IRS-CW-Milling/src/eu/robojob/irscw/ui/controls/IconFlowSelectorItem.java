@@ -6,6 +6,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
+import org.apache.log4j.Logger;
+
 public class IconFlowSelectorItem extends VBox {
 	
 	private String iconUrl;
@@ -16,9 +18,11 @@ public class IconFlowSelectorItem extends VBox {
 	
 	private Label lblName;
 	
+	private static final Logger logger = Logger.getLogger(IconFlowSelectorItem.class);
+	
 	private static final double IMG_WIDTH = 100;
-	private static final double WIDTH = 130;
-	private static final double HEIGHT = 130;
+	private static final double WIDTH = 120;
+	private static final double HEIGHT = 120;
 	
 	public IconFlowSelectorItem(int index, String name, String iconUrl) {
 		this.iconUrl = iconUrl;
@@ -39,7 +43,6 @@ public class IconFlowSelectorItem extends VBox {
 		}
 		if (name != null) {
 			lblName = new Label(name);
-			lblName.setPrefWidth(WIDTH);
 			lblName.getStyleClass().add("iconflow-item-lbl");
 			this.getChildren().add(lblName);
 		}
@@ -47,8 +50,31 @@ public class IconFlowSelectorItem extends VBox {
 	}
 
 	public void setSelected(boolean selected) {
-		this.getStyleClass().add("iconflow-item-selected");
+		this.getStyleClass().remove("iconflow-item-selected");
+		imgvwIconVw.getStyleClass().remove("iconflow-item-icon-selected");
+		lblName.getStyleClass().remove("iconflow-item-lbl-selected");
+		if (selected) {
+			this.getStyleClass().add("iconflow-item-selected");
+			imgvwIconVw.getStyleClass().add("iconflow-item-icon-selected");
+			lblName.getStyleClass().add("iconflow-item-lbl-selected");
+			logger.debug("set selected item: " + name);
+		}
 	}
-	
-	
+
+	public String getIconUrl() {
+		return iconUrl;
+	}
+
+	public void setIconUrl(String iconUrl) {
+		this.iconUrl = iconUrl;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 }
