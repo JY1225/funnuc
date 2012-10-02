@@ -86,6 +86,7 @@ public class ProcessFlowAdapter {
 		}
 		
 		TransportInformation transportInformation = new TransportInformation();
+		transportInformation.setIndex(index);
 		
 		int curTranspIndex = 0;
 		for (int i = 0; i < processFlow.getProcessSteps().size(); i++) {
@@ -109,6 +110,16 @@ public class ProcessFlowAdapter {
 		}
 		
 		return transportInformation;
+	}
+	
+	public void addInterventionStepAfterPut(int transportIndex) {
+		InterventionStep intervention = new InterventionStep(getTransportInformation(transportIndex).getPutStep().getDevice(), null, 0);
+		processFlow.addStepAfter(getTransportInformation(transportIndex).getPutStep(), intervention);
+	}
+	
+	public void addInterventionStepBeforePick(int transportIndex) {
+		InterventionStep intervention = new InterventionStep(getTransportInformation(transportIndex).getPickStep().getDevice(), null, 0);
+		processFlow.addStepBefore(getTransportInformation(transportIndex).getPickStep(), intervention);
 	}
 	
 	public void addDeviceSteps(int transportIndex) {

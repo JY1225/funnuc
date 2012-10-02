@@ -102,11 +102,21 @@ public class EmbossingDevice extends AbstractProcessingDevice {
 		public EmbossingDevicePickSettings(WorkArea workArea, Clamping clamping) {
 			super(workArea, clamping);
 		}
+
+		@Override
+		public boolean isTeachingNeeded() {
+			return step.getProcessFlow().needsTeaching();
+		}
 	}
 	
 	public static class EmbossingDevicePutSettings extends AbstractProcessingDevicePutSettings {
 		public EmbossingDevicePutSettings(WorkArea workArea, Clamping clamping) {
 			super(workArea, clamping);
+		}
+
+		@Override
+		public boolean isTeachingNeeded() {
+			return false;
 		}
 	}
 	

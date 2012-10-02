@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
+import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.irscw.process.InterventionStep;
+import eu.robojob.irscw.process.PickStep;
+import eu.robojob.irscw.process.PutStep;
 
 public abstract class AbstractDevice extends AbstractServiceProvider {
 	
@@ -82,11 +86,16 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return "Device: " + id;
 	}
 	
-	public static abstract class AbstractDeviceActionSettings {
+	public static abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep> {
 		protected WorkArea workArea;
+		protected T step;
 		
 		public AbstractDeviceActionSettings(WorkArea workArea) {
 			setWorkArea(workArea);
+		}
+		
+		public void setStep(T step) {
+			this.step = step;
 		}
 
 		public WorkArea getWorkArea() {
@@ -98,7 +107,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		}
 	}
 	
-	public static abstract class AbstractDevicePickSettings extends AbstractDeviceActionSettings {
+	public static abstract class AbstractDevicePickSettings extends AbstractDeviceActionSettings<PickStep> {
 		
 		protected Clamping clamping; 
 		
@@ -114,10 +123,12 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		public void setClamping(Clamping clamping) {
 			this.clamping = clamping;
 		}
+		
+		public abstract boolean isTeachingNeeded();
 
 	}
 	
-	public static abstract class AbstractDevicePutSettings extends AbstractDeviceActionSettings {
+	public static abstract class AbstractDevicePutSettings extends AbstractDeviceActionSettings<PutStep> {
 		
 		protected Clamping clamping; 
 		
@@ -134,9 +145,11 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 			this.clamping = clamping;
 		}
 		
+		public abstract boolean isTeachingNeeded();
+		
 	}
 	
-	public static abstract class AbstractDeviceInterventionSettings extends AbstractDeviceActionSettings {
+	public static abstract class AbstractDeviceInterventionSettings extends AbstractDeviceActionSettings<InterventionStep> {
 				
 		public AbstractDeviceInterventionSettings(WorkArea workArea) {
 			super(workArea);

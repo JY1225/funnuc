@@ -619,11 +619,21 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		public BasicStackPlatePickSettings(WorkArea workArea, Clamping clamping) {
 			super(workArea, clamping);
 		}
+
+		@Override
+		public boolean isTeachingNeeded() {
+			return step.getProcessFlow().needsTeaching();
+		}
 	}
 	
 	public static class BasicStackPlatePutSettings extends AbstractStackingDevicePutSettings {
 		public BasicStackPlatePutSettings(WorkArea workArea, Clamping clamping) {
 			super(workArea, clamping);
+		}
+
+		@Override
+		public boolean isTeachingNeeded() {
+			return step.getProcessFlow().needsTeaching();
 		}
 	}
 	

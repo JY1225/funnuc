@@ -19,6 +19,9 @@ public class PickStep extends AbstractTransportStep {
 			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
 		super(processFlow, deviceFrom, robot);
 		this.pickSettings = pickSettings;
+		if (pickSettings != null) {
+			pickSettings.setStep(this);
+		}
 		this.robotPickSettings = robotPickSettings;
 	}
 	

@@ -9,6 +9,10 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 
 public class ProcessFlow {
 	
+	enum ProcessFlowType  {
+		CNC_MILLING, CNC_TURNING;
+	}
+	
 	private static Logger logger = Logger.getLogger(ProcessFlow.class);
 	
 	private List<AbstractProcessStep> processSteps;

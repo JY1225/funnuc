@@ -54,6 +54,7 @@ public class IconFlowSelector extends ScrollPane {
 	
 	public void clearItems() {
 		items.clear();
+		this.getChildren().clear();
 	}
 	
 }

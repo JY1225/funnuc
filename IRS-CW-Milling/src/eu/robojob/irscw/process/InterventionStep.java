@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.derby.impl.sql.compile.SetSchemaNode;
+
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.AbstractDevice;
 
@@ -20,7 +22,7 @@ public class InterventionStep extends AbstractProcessStep {
 	public InterventionStep(ProcessFlow processFlow, AbstractDevice device, AbstractDevice.AbstractDeviceInterventionSettings interventionSettings, int frequency) {
 		super(processFlow, device);
 		this.frequency = frequency;
-		this.interventionSettings = interventionSettings;
+		setInterventionSettings(interventionSettings);
 		this.canContinue = false;
 		interventionOver = new Object();
 	}
@@ -63,6 +65,8 @@ public class InterventionStep extends AbstractProcessStep {
 	public void setInterventionSettings(
 			AbstractDevice.AbstractDeviceInterventionSettings interventionSettings) {
 		this.interventionSettings = interventionSettings;
+		if (interventionSettings != null)
+			interventionSettings.setStep(this);
 	}
 
 	public int getFrequency() {

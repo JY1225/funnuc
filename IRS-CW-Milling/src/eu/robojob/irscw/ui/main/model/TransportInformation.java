@@ -14,8 +14,11 @@ public class TransportInformation {
 	private PutStep putStep;
 	private InterventionStep interventionAfterPut;
 	
-	public TransportInformation(AbstractRobot robot, InterventionStep interventionBeforePick, PickStep pickStep, PutStep putStep, 
+	private int index; 
+	
+	public TransportInformation(int index, AbstractRobot robot, InterventionStep interventionBeforePick, PickStep pickStep, PutStep putStep, 
 			InterventionStep interventionAfterPut) {
+		this.index = index;
 		this.robot = robot;
 		this.interventionBeforePick = interventionBeforePick;
 		this.pickStep = pickStep;
@@ -24,7 +27,15 @@ public class TransportInformation {
 	}
 	
 	public TransportInformation() {
-		this(null, null, null, null, null);
+		this(-1, null, null, null, null, null);
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	public AbstractRobot getRobot() {

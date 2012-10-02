@@ -14,7 +14,7 @@ public class ProcessingStep extends AbstractProcessStep {
 	public ProcessingStep(ProcessFlow processFlow, AbstractProcessingDevice processingDevice,
 			AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings startCyclusSettings) {
 		super(processFlow, processingDevice);
-		this.startCyclusSettings = startCyclusSettings;
+		setStartCyclusSettings(startCyclusSettings);
 	}
 	
 	public ProcessingStep(AbstractProcessingDevice processingDevice, AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings startCyclusSettings) {
@@ -44,6 +44,8 @@ public class ProcessingStep extends AbstractProcessStep {
 	public void setStartCyclusSettings(
 			AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings startCyclusSettings) {
 		this.startCyclusSettings = startCyclusSettings;
+		if (startCyclusSettings!= null)
+			startCyclusSettings.setStep(this);
 	}
 
 	@Override

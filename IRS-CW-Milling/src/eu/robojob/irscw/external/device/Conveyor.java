@@ -113,11 +113,21 @@ public class Conveyor extends AbstractStackingDevice {
 		public ConveyorPickSettings(WorkArea workArea, Clamping clamping) {
 			super(workArea, clamping);
 		}
+
+		@Override
+		public boolean isTeachingNeeded() {
+			return step.getProcessFlow().needsTeaching();
+		}
 	}
 	
 	public static class ConveyorPutSettings extends AbstractStackingDevicePutSettings {
 		public ConveyorPutSettings(WorkArea workArea, Clamping clamping) {
 			super(workArea, clamping);
+		}
+
+		@Override
+		public boolean isTeachingNeeded() {
+			return step.getProcessFlow().needsTeaching();
 		}
 	}
 	

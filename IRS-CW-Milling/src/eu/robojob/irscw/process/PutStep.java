@@ -19,6 +19,9 @@ public class PutStep extends AbstractTransportStep {
 			AbstractDevice.AbstractDevicePutSettings putSettings, AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
 		super(processFlow, deviceTo, robot);
 		this.putSettings = putSettings;
+		if (putSettings != null) {
+			putSettings.setStep(this);
+		}
 		this.robotPutSettings = robotPutSettings;
 	}
 	

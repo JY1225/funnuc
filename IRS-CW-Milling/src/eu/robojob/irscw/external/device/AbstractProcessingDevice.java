@@ -3,6 +3,8 @@ package eu.robojob.irscw.external.device;
 import java.io.IOException;
 import java.util.List;
 
+import eu.robojob.irscw.process.ProcessingStep;
+
 public abstract class AbstractProcessingDevice extends AbstractDevice {
 	
 	private boolean isInvasive;
@@ -43,7 +45,7 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 			super(workArea);
 		}
 	}
-	public static class AbstractProcessingDeviceStartCyclusSettings extends AbstractDeviceActionSettings {
+	public static class AbstractProcessingDeviceStartCyclusSettings extends AbstractDeviceActionSettings<ProcessingStep> {
 		public AbstractProcessingDeviceStartCyclusSettings(WorkArea workArea) {
 			super(workArea);
 		}
