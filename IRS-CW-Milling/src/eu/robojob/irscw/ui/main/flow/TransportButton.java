@@ -178,7 +178,7 @@ public class TransportButton extends Pane {
 	public void setLeftLabel(String text) {
 		this.getChildren().remove(lblLeft);
 		if (text != null) {
-			lblLeft.setText(text + " x");
+			lblLeft.setText(text);
 			this.getChildren().add(lblLeft);
 		}
 		
@@ -195,7 +195,7 @@ public class TransportButton extends Pane {
 	public void setRightLabel(String text)  {
 		this.getChildren().remove(lblRight);
 		if (text != null) {
-			lblRight.setText(text + " x");
+			lblRight.setText(text);
 			this.getChildren().add(lblRight);
 		}
 	}
