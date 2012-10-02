@@ -44,6 +44,13 @@
 	-fx-padding: 0;
 }
 
+.transport-label-disabled {
+	-fx-text-fill: rgba(0, 0, 0, 0.5);
+}
+
+.transport-button {
+}
+
 .device-button {
 	-fx-background-color: 
 		linear-gradient(#c0c0c0 0%, #8d8d8d 100%),
@@ -52,6 +59,9 @@
 	-fx-background-radius: 5, 4, 4;
 	-fx-padding: 0 0 0 0;
 	-fx-effect: dropshadow(gaussian, #b6b6b6, 15, 0, 0, 5);
+}
+
+.device-button-wrapper {
 }
 
 .device-button Pane.effect {

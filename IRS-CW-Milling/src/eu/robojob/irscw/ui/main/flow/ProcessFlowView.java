@@ -66,7 +66,7 @@ public class ProcessFlowView extends GridPane  {
 				transportButtons.put(i, transport);
 				transport.setOnAction(new TransportEventHandler(i));
 				transport.toBack();
-				setMargin(transport, new Insets(10, 0, 0, 0));
+				//setMargin(transport, new Insets(10, 0, 0, 0));
 				column++;
 			}
 		}

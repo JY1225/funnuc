@@ -92,6 +92,7 @@ public class TransportButton extends Pane {
 		this.getStyleClass().add("transport-button");
 		
 		this.setPrefWidth(WIDTH);
+		this.setMaxHeight(38.838);
 				
 		this.setEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 			@Override
@@ -238,10 +239,14 @@ public class TransportButton extends Pane {
 	public void setFocussed(boolean active) {
 		effect.getStyleClass().remove("arrow-disabled");
 		arrowShape.getStyleClass().remove("arrow-background-disabled");
+		lblLeft.getStyleClass().remove("transport-label-disabled");
+		lblRight.getStyleClass().remove("transport-label-disabled");
 		if (active) {
 		} else {
 			effect.getStyleClass().add("arrow-disabled");
 			arrowShape.getStyleClass().add("arrow-background-disabled");
+			lblLeft.getStyleClass().add("transport-label-disabled");
+			lblRight.getStyleClass().add("transport-label-disabled");
 		}
 	}
 	

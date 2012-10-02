@@ -75,7 +75,6 @@ public class DeviceButton extends VBox {
 
 		deviceName = new Label();
 		deviceName.setPrefWidth(LABEL_WIDTH);
-		deviceName.setPrefHeight(LABEL_HEIGHT);
 		deviceName.setWrapText(true);
 		deviceName.setAlignment(Pos.TOP_CENTER);
 		deviceName.setTextAlignment(TextAlignment.CENTER);
@@ -84,9 +83,11 @@ public class DeviceButton extends VBox {
 		
 		this.getChildren().add(mainButton);
 		this.getChildren().add(deviceName);
-		this.setPadding(new Insets(0, -(LABEL_WIDTH-BUTTON_WIDTH)/2, 0, -(LABEL_WIDTH-BUTTON_WIDTH)/2));
+		this.setPadding(new Insets(20, -(LABEL_WIDTH-BUTTON_WIDTH)/2, 0, -(LABEL_WIDTH-BUTTON_WIDTH)/2));
 		this.setPrefWidth(BUTTON_WIDTH);
 		this.setAlignment(Pos.CENTER);
+		
+		this.getStyleClass().add("device-button-wrapper");
 	}
 	
 	private void setImage() {
