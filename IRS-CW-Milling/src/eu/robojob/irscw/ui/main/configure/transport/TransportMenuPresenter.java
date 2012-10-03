@@ -12,6 +12,8 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 		super(view);
 		this.transportGripperPresenter = transportGripperPresenter;
 		this.transportInterventionPresenter = transportInterventionPresenter;
+		transportGripperPresenter.setMenuPresenter(this);
+		transportInterventionPresenter.setMenuPresenter(this);
 	}
 
 	@Override
@@ -42,7 +44,10 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 
 	@Override
 	public void setTextFieldListener(ConfigurePresenter parent) {
-		// TODO Auto-generated method stub
-		
+		transportInterventionPresenter.setTextFieldListener(parent);
+	}
+	
+	public void processFlowUpdated() {
+		parent.updateProcessFlow();
 	}
 }

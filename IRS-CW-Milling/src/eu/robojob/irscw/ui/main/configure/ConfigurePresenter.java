@@ -189,6 +189,10 @@ public class ConfigurePresenter implements TextFieldListener {
 		processFlowPresenter.loadProcessFlow(processFlow);
 	}
 	
+	public void updateProcessFlow() {
+		processFlowPresenter.refresh();
+	}
+	
 	public void configureProcess() {
 		view.setBottomLeft(processMenuPresenter.getView());
 		if (keyboardActive) {

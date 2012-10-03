@@ -311,6 +311,11 @@
 	-fx-effect: null;
 }
 
+.lbl-intervention {
+	-fx-text-alignment: right;
+	-fx-alignment: center-right;
+}
+
 .iconflow-selector .scroll-bar .thumb {
 	-fx-background-color: rgba(0, 0, 0, 0.5);
 	-fx-border-color: transparent;
@@ -318,9 +323,12 @@
 }
 
 .iconflow-selector .scroll-bar .thumb:pressed {
-	-fx-background-color: rgba(0, 0, 0, 0.6);
+	-fx-background-color: rgba(0, 0, 0, 0.3);
 	-fx-border-color: transparent;
 	-fx-background-insets: 2, 0;
 }
 
-
+.btn-intervention {
+	-fx-fill: rgba(0, 0, 0, 0.5);
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.8), 2, 0, 0, 1);
+}

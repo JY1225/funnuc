@@ -63,7 +63,7 @@ public abstract class AbstractKeyboardPresenter {
 		if (originalText.equals(null)) {
 			throw new IllegalStateException("No original text value was set.");
 		}
-		target.replaceSelection(originalText);
+		target.setText(originalText);
 		parent.closeKeyboard();
 	}
 	

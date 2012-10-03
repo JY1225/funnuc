@@ -37,7 +37,7 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 		this.presenter = presenter;
 	}
 	
-	public Button createButton(String iconPath, String iconClass, String text, double width, double height, EventHandler<ActionEvent> handler) {
+	public Button createButton(String iconPath, String iconClass, String text, double width, double height, EventHandler<ActionEvent> handler, double iconWidth) {
 		Button button = new Button();
 		HBox hbox = new HBox();
 		StackPane iconPane = new StackPane();
@@ -46,11 +46,11 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 		icon.getStyleClass().addAll("form-button-icon", iconClass);
 		hbox.setAlignment(Pos.CENTER_LEFT);
 		iconPane.getChildren().add(icon);
-		iconPane.setPrefSize(ICON_WIDTH + 2* ICON_MARGIN, height);
+		iconPane.setPrefSize(iconWidth + 2* ICON_MARGIN, height);
 		hbox.getChildren().add(iconPane);
 		Label label = new Label(text);
 		label.getStyleClass().add("form-button-label");
-		label.setPrefSize(width - ICON_WIDTH - 3*ICON_MARGIN, height);
+		label.setPrefSize(width - iconWidth - 3*ICON_MARGIN, height);
 		label.setAlignment(Pos.CENTER);
 		HBox.setMargin(label, new Insets(0, ICON_MARGIN, 0, 0));
 		hbox.getChildren().add(label);
@@ -61,6 +61,10 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 		button.setGraphic(hbox);
 		button.getStyleClass().add("form-button");
 		return button;
+	}
+	
+	public Button createButton(String iconPath, String iconClass, String text, double width, double height, EventHandler<ActionEvent> handler) {
+		return createButton(iconPath, iconClass, text, width, height, handler, ICON_WIDTH);
 	}
 	
 	public abstract void refresh();

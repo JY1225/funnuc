@@ -13,8 +13,13 @@ public class ProcessFlowPresenter {
 	
 	private static Logger logger = Logger.getLogger(ProcessFlowPresenter.class);
 	
+	private int focussedDevice;
+	private int focussedTransport;
+	
 	public ProcessFlowPresenter(ProcessFlowView view) {
 		this.view = view;
+		focussedDevice = -1;
+		focussedTransport = -1;
 		view.setPresenter(this);
 	}
 	
@@ -30,6 +35,8 @@ public class ProcessFlowPresenter {
 		if (parent.getMode() == Mode.NORMAL) {
 			logger.debug("Clicked device with index: " + index);
 			view.focusDevice(index);
+			focussedDevice = index;
+			focussedTransport = -1;
 			parent.configureDevice(index);
 		} else {
 			if (parent.getMode() == Mode.REMOVE_DEVICE) {
@@ -44,6 +51,8 @@ public class ProcessFlowPresenter {
 		if (parent.getMode() == Mode.NORMAL) {
 			logger.debug("Clicked transport with index: " + index);
 			view.focusTransport(index);
+			focussedDevice = -1;
+			focussedTransport = index;
 			parent.configureTransport(index);
 		} else {
 			if (parent.getMode() == Mode.ADD_DEVICE) {
@@ -80,5 +89,11 @@ public class ProcessFlowPresenter {
 	
 	public void refresh() {
 		view.buildView();
+		if (focussedDevice != -1) {
+			view.focusDevice(focussedDevice);
+		} else if (focussedTransport != -1) {
+			view.focusTransport(focussedTransport);
+		}
 	}
+	
 }

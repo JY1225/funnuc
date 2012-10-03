@@ -65,7 +65,7 @@ public class ProcessFlowAdapter {
 						break;
 					case INTERVENTION_STEP:
 						// as the index is greater than zero, there always is a previous step!
-						if (processFlow.getStep(i-1).getType() == ProcessStepType.PUT_STEP) {
+						if ((i > 0) && (processFlow.getStep(i-1).getType() == ProcessStepType.PUT_STEP)) {
 							deviceInformation.setInterventionStepAfterPut((InterventionStep) step);
 						} else {
 							deviceInformation.setInterventionStepBeforePick((InterventionStep) step);
@@ -94,7 +94,7 @@ public class ProcessFlowAdapter {
 			if (curTranspIndex == index) {
 				if (step.getType() == ProcessStepType.PICK_STEP) {
 					transportInformation.setPickStep((PickStep) step);
-					if ((i>1)&&(processFlow.getProcessSteps().get(i-1).getType() == ProcessStepType.INTERVENTION_STEP)) {
+					if ((i>=1)&&(processFlow.getProcessSteps().get(i-1).getType() == ProcessStepType.INTERVENTION_STEP)) {
 						transportInformation.setInterventionBeforePick((InterventionStep) processFlow.getProcessSteps().get(i-1));
 					}
 				} else if (step.getType() == ProcessStepType.PUT_STEP) {
@@ -113,13 +113,37 @@ public class ProcessFlowAdapter {
 	}
 	
 	public void addInterventionStepAfterPut(int transportIndex) {
-		InterventionStep intervention = new InterventionStep(getTransportInformation(transportIndex).getPutStep().getDevice(), null, 0);
-		processFlow.addStepAfter(getTransportInformation(transportIndex).getPutStep(), intervention);
+		addInterventionStepAfterPut(getTransportInformation(transportIndex));
+	}
+	
+	public void addInterventionStepAfterPut(TransportInformation transportInfo) {
+		InterventionStep intervention = new InterventionStep(transportInfo.getPutStep().getDevice(), null, 0);
+		processFlow.addStepAfter(transportInfo.getPutStep(), intervention);
 	}
 	
 	public void addInterventionStepBeforePick(int transportIndex) {
-		InterventionStep intervention = new InterventionStep(getTransportInformation(transportIndex).getPickStep().getDevice(), null, 0);
-		processFlow.addStepBefore(getTransportInformation(transportIndex).getPickStep(), intervention);
+		addInterventionStepBeforePick(getTransportInformation(transportIndex));
+	}
+	
+	public void addInterventionStepBeforePick(TransportInformation transportInfo) {
+		InterventionStep intervention = new InterventionStep(transportInfo.getPickStep().getDevice(), null, 0);
+		processFlow.addStepBefore(transportInfo.getPickStep(), intervention);
+	}
+	
+	public void removeInterventionStepBeforePick(int transportIndex) {
+		removeInterventionStepBeforePick(getTransportInformation(transportIndex));
+	}
+	
+	public void removeInterventionStepAfterPut(int transportIndex) {
+		removeInterventionStepBeforePick(getTransportInformation(transportIndex));
+	}
+	
+	public void removeInterventionStepBeforePick(TransportInformation transportInfo) {
+		processFlow.removeStep(transportInfo.getInterventionBeforePick());
+	}
+	
+	public void removeInterventionStepAfterPut(TransportInformation transportInfo) {
+		processFlow.removeStep(transportInfo.getInterventionAfterPut());
 	}
 	
 	public void addDeviceSteps(int transportIndex) {
