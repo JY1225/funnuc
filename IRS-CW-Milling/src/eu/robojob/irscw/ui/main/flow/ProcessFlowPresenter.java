@@ -96,4 +96,19 @@ public class ProcessFlowPresenter {
 		}
 	}
 	
+	public void setDeviceProgressGreen(int deviceIndex) {
+		view.setDeviceProgressGreen(deviceIndex);
+	}
+	
+	public void setDeviceProgressNone(int deviceIndex) {
+		view.setDeviceProgressNone(deviceIndex);
+	}
+	
+	public void setTransportProgressGreen(int deviceIndex) {
+		view.setTransportProgressGreen(deviceIndex);
+	}
+	
+	public void setTransportProgressNone(int deviceIndex) {
+		view.setTransportProgressNone(deviceIndex);
+	}
 }

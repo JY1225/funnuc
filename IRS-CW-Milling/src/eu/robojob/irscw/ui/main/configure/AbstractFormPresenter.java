@@ -25,4 +25,6 @@ public abstract class AbstractFormPresenter<T extends AbstractFormView<?>, S ext
 	}
 	
 	public abstract void setPresenter();
+	
+	public abstract boolean isConfigured();
 }

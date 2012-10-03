@@ -22,4 +22,9 @@ public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicS
 	public void notifyIncorrectWorkPieceDate() {
 		//TODO implement
 	}
+
+	@Override
+	public boolean isConfigured() {
+		return (basicStackPlate.getRawStackingPositions().size() > 0);
+	}
 }

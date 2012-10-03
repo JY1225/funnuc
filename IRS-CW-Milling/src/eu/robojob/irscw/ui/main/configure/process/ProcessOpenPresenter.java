@@ -12,4 +12,9 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 	public void setPresenter() {
 		view.setPresenter(this);
 	}
+
+	@Override
+	public boolean isConfigured() {
+		return false;
+	}
 }

@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.main.configure;
+	package eu.robojob.irscw.ui.main.configure;
 
 import org.apache.log4j.Logger;
 
@@ -187,6 +187,7 @@ public class ConfigurePresenter implements TextFieldListener {
 		this.processFlow = processFlow;
 		processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		processFlowPresenter.loadProcessFlow(processFlow);
+		refreshProgressBar();
 	}
 	
 	public void updateProcessFlow() {
@@ -203,6 +204,7 @@ public class ConfigurePresenter implements TextFieldListener {
 		}
 		processMenuPresenter.setTextFieldListener(this);
 		processMenuPresenter.openFirst();
+		refreshProgressBar();
 	}
 	
 	public void setAddDeviceMode() {
@@ -238,6 +240,21 @@ public class ConfigurePresenter implements TextFieldListener {
 		processFlowPresenter.refresh();
 		setNormalMode();
 		processMenuPresenter.setNormalMode();
+	}
+	
+	public void refreshProgressBar() {
+		if (processFlowAdapter != null) {
+			for (int i = 0; i < processFlowAdapter.getDeviceStepCount(); i++) {
+				if (deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)).isConfigured()) {
+					processFlowPresenter.setDeviceProgressGreen(i);
+				}
+			}
+			for (int j = 0; j < processFlowAdapter.getTransportStepCount(); j++) {
+				if (transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(j)).isConfigured()) {
+					processFlowPresenter.setTransportProgressGreen(j);
+				}
+			}
+		}
 	}
 
 }

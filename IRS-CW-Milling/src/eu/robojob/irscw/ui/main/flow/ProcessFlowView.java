@@ -27,6 +27,9 @@ public class ProcessFlowView extends GridPane  {
 	private ProcessFlowPresenter presenter;
 	private Map<Integer, DeviceButton> deviceButtons;
 	private Map<Integer, TransportButton> transportButtons;
+	
+	private Map<Integer, Region> progressDeviceRegions;
+	private Map<Integer, Region> progressTransportRegions;
 		
 	private static final int maxDevicesFirstRow = 4;
 	private static final int maxRows = 2;
@@ -34,6 +37,8 @@ public class ProcessFlowView extends GridPane  {
 	public ProcessFlowView() {
 		deviceButtons = new HashMap<Integer, DeviceButton>();
 		transportButtons = new HashMap<Integer, TransportButton>();
+		progressDeviceRegions = new HashMap<Integer, Region>();
+		progressTransportRegions = new HashMap<Integer, Region>();
 	}
 	
 	public void setProcessFlow(ProcessFlow process) {
@@ -65,6 +70,7 @@ public class ProcessFlowView extends GridPane  {
 			}
 			progressDeviceRegion.setPrefHeight(20);
 			this.add(progressDeviceRegion, column, row + 1);
+			progressDeviceRegions.put(i, progressDeviceRegion);
 			device.setOnAction(new DeviceEventHandler(i));
 			column++;
 			if ((i+1)%maxDevicesFirstRow == 0) {
@@ -78,6 +84,7 @@ public class ProcessFlowView extends GridPane  {
 				Region progressTransportRegion = new Region();
 				progressTransportRegion.getStyleClass().add("progressbar-piece");
 				this.add(progressTransportRegion, column, row + 1);
+				progressTransportRegions.put(i, progressTransportRegion);
 				transportButtons.put(i, transport);
 				transport.setOnAction(new TransportEventHandler(i));
 				transport.toBack();
@@ -139,6 +146,56 @@ public class ProcessFlowView extends GridPane  {
 		for (TransportButton transport : transportButtons.values()) {
 			transport.setFocussed(true);
 		}
+	}
+	
+	public void setDeviceProgressGreen(int deviceIndex) {
+		setDeviceProgressNone(deviceIndex);
+		if (deviceIndex == 0) {
+			progressDeviceRegions.get(deviceIndex).getStyleClass().add("progressbar-first-green");
+		} else if (deviceIndex == processFlowAdapter.getDeviceStepCount() -1) {
+			progressDeviceRegions.get(deviceIndex).getStyleClass().add("progressbar-last-green");
+		} else {
+			progressDeviceRegions.get(deviceIndex).getStyleClass().add("progressbar-piece-green");
+		}
+	}
+	
+	public void setDeviceProgressYellow(int deviceIndex) {
+		setDeviceProgressNone(deviceIndex);
+		if (deviceIndex == 0) {
+			progressDeviceRegions.get(deviceIndex).getStyleClass().add("progressbar-first-yellow");
+		} else if (deviceIndex == processFlowAdapter.getDeviceStepCount() -1) {
+			progressDeviceRegions.get(deviceIndex).getStyleClass().add("progressbar-last-yellow");
+		} else {
+			progressDeviceRegions.get(deviceIndex).getStyleClass().add("progressbar-piece-yellow");
+		}
+	}
+	
+	public void setDeviceProgressNone(int deviceIndex) {
+		if (deviceIndex == 0) {
+			progressDeviceRegions.get(deviceIndex).getStyleClass().remove("progressbar-first-green");
+			progressDeviceRegions.get(deviceIndex).getStyleClass().remove("progressbar-first-yellow");
+		} else if (deviceIndex == processFlowAdapter.getDeviceStepCount() -1) {
+			progressDeviceRegions.get(deviceIndex).getStyleClass().remove("progressbar-last-green");
+			progressDeviceRegions.get(deviceIndex).getStyleClass().remove("progressbar-last-yellow");
+		} else {
+			progressDeviceRegions.get(deviceIndex).getStyleClass().remove("progressbar-piece-green");
+			progressDeviceRegions.get(deviceIndex).getStyleClass().remove("progressbar-piece-yellow");
+		}
+	}
+	
+	public void setTransportProgressGreen(int transportIndex) {
+		setTransportProgressNone(transportIndex);
+		progressTransportRegions.get(transportIndex).getStyleClass().add("progressbar-piece-green");
+	}
+	
+	public void setTransportProgressYellow(int transportIndex) {
+		setTransportProgressNone(transportIndex);
+		progressTransportRegions.get(transportIndex).getStyleClass().add("progressbar-piece-yellow");
+	}
+	
+	public void setTransportProgressNone(int transportIndex) {
+		progressTransportRegions.get(transportIndex).getStyleClass().remove("progressbar-piece-green");
+		progressTransportRegions.get(transportIndex).getStyleClass().remove("progressbar-piece-yellow");
 	}
 
 	private class DeviceEventHandler implements EventHandler<ActionEvent> {

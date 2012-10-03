@@ -50,4 +50,9 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 	public void processFlowUpdated() {
 		parent.updateProcessFlow();
 	}
+
+	@Override
+	public boolean isConfigured() {
+		return transportGripperPresenter.isConfigured() && transportInterventionPresenter.isConfigured();
+	}
 }

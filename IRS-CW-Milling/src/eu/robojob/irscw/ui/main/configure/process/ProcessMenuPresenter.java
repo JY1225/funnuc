@@ -82,4 +82,10 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 		configurePresenter.setTextFieldListener(parent);
 	}
 
+	@Override
+	public boolean isConfigured() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

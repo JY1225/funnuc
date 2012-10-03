@@ -53,4 +53,13 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 			view.refresh();
 		}
 	}
+
+	@Override
+	public boolean isConfigured() {
+		if (putStep.getRobotSettings().getSmoothPoint() != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

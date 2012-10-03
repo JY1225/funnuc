@@ -52,4 +52,9 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 		cncMillingMachinePutPresenter.setTextFieldListener(parent);
 	}
 
+	@Override
+	public boolean isConfigured() {
+		return cncMillingMachineConfigurePresenter.isConfigured() && cncMillingMachinePickPresenter.isConfigured() && cncMillingMachinePutPresenter.isConfigured();
+	}
+
 }

@@ -25,4 +25,6 @@ public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> {
 	public abstract void openFirst();
 	
 	public abstract void setBlocked(boolean blocked);
+	
+	public abstract boolean isConfigured();
 }

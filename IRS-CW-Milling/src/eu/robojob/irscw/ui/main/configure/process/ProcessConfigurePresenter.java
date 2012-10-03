@@ -61,4 +61,9 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 		view.setPresenter(this);
 	}
 
+	@Override
+	public boolean isConfigured() {
+		return false;
+	}
+
 }

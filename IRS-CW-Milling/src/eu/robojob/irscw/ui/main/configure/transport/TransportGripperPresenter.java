@@ -40,4 +40,13 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 			}
 		}
 	}
+
+	@Override
+	public boolean isConfigured() {
+		if ((transportInfo.getPickStep().getRobotSettings().getGripper() != null) && (transportInfo.getPutStep().getRobotSettings().getGripper() != null)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

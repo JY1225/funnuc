@@ -3,9 +3,12 @@ package eu.robojob.irscw.ui.main.configure.device;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePutSettings;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineStartCylusSettings;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePickSettings;
 import eu.robojob.irscw.ui.main.configure.AbstractFormPresenter;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
@@ -88,6 +91,20 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		logger.debug("Changed clamping-settings to: " + clamping);
 		deviceInfo.getPickStep().getDeviceSettings().setClamping(clamping);
 		deviceInfo.getPutStep().getDeviceSettings().setClamping(clamping);
+	}
+
+	@Override
+	public boolean isConfigured() {
+		CNCMillingMachinePickSettings pickSettings = (CNCMillingMachinePickSettings) deviceInfo.getPickStep().getDeviceSettings();
+		CNCMillingMachinePutSettings putSettings = (CNCMillingMachinePutSettings) deviceInfo.getPutStep().getDeviceSettings();
+		CNCMillingMachineStartCylusSettings startCyclusSettings = (CNCMillingMachineStartCylusSettings) deviceInfo.getProcessingStep().getStartCyclusSettings();
+		// TODO take into account device
+		if ((pickSettings.getClamping() != null) && (pickSettings.getWorkArea() != null) && (putSettings.getClamping() != null) && (putSettings.getWorkArea() != null) &&
+				(startCyclusSettings.getWorkArea() != null)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	

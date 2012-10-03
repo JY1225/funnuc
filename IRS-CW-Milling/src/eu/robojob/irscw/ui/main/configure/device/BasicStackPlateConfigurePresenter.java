@@ -38,4 +38,13 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 		}
 	}
 
+	@Override
+	public boolean isConfigured() {
+		if (deviceInfo.getDevice() != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 }

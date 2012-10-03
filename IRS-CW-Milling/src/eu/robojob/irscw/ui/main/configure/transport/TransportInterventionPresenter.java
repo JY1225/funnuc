@@ -73,4 +73,9 @@ public class TransportInterventionPresenter extends AbstractFormPresenter<Transp
 			throw new IllegalStateException("No intervention step found, so this value can't be set");
 		}
 	}
+
+	@Override
+	public boolean isConfigured() {
+		return true;
+	}
 }

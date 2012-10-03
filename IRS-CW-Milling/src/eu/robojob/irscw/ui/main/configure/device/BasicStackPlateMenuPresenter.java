@@ -59,7 +59,15 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 	@Override
 	public void setBlocked(boolean blocked) {
 		// TODO Auto-generated method stub
-		
+	}
+
+	@Override
+	public boolean isConfigured() {
+		if (basicStackPlateWorkPiecePresenter != null) {
+			return basicStackPlateConfigurePresenter.isConfigured() && basicStackPlateLayoutPresenter.isConfigured() && basicStackPlateWorkPiecePresenter.isConfigured();
+		} else {
+			return basicStackPlateConfigurePresenter.isConfigured() && basicStackPlateLayoutPresenter.isConfigured();
+		}
 	}
 
 }
