@@ -7,8 +7,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 
 import org.apache.log4j.Logger;
 
@@ -53,6 +55,16 @@ public class ProcessFlowView extends GridPane  {
 			DeviceButton device = new DeviceButton(processFlowAdapter.getDeviceInformation(i));
 			this.add(device, column, row);
 			deviceButtons.put(i, device);
+			Region progressDeviceRegion = new Region();
+			progressDeviceRegion.getStyleClass().add("progressbar-piece");
+			if (i == 0) {
+				progressDeviceRegion.getStyleClass().add("progressbar-first");
+			}
+			if (i == processFlowAdapter.getDeviceStepCount() - 1) {
+				progressDeviceRegion.getStyleClass().add("progressbar-last");
+			}
+			progressDeviceRegion.setPrefHeight(20);
+			this.add(progressDeviceRegion, column, row + 1);
 			device.setOnAction(new DeviceEventHandler(i));
 			column++;
 			if ((i+1)%maxDevicesFirstRow == 0) {
@@ -63,6 +75,9 @@ public class ProcessFlowView extends GridPane  {
 				TransportButton transport = new TransportButton(processFlowAdapter.getTransportInformation(i));
 				transport.showPause();
 				this.add(transport, column, row);
+				Region progressTransportRegion = new Region();
+				progressTransportRegion.getStyleClass().add("progressbar-piece");
+				this.add(progressTransportRegion, column, row + 1);
 				transportButtons.put(i, transport);
 				transport.setOnAction(new TransportEventHandler(i));
 				transport.toBack();

@@ -125,3 +125,20 @@
 .process-flow-view {
 	-fx-background-color: #ededed;
 }
+
+.progressbar-piece {
+	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf;
+	-fx-background-insets: 0, 1 1 1 0, 1 2 1 1;
+	-fx-effect: null;
+	-fx-effect: innershadow(two-pass-box, rgba(0, 0, 0, 0.18), 3, 0, 0, 3);
+}
+
+.progressbar-first {
+	-fx-background-insets: 0, 1 1 1 1, 1 2 1 1;
+	-fx-background-radius: 8 0 0 8, 7 0 0 7, 7 0 0 7;
+}
+
+.progressbar-last {
+	-fx-background-radius: 0 8 8 0, 0 7 7 0, 0 7 7 0;
+	-fx-background-insets: 0, 1 1 1 0, 1 1 1 1;
+}
