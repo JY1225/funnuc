@@ -39,6 +39,8 @@ public class ProcessFlowPresenter {
 			focussedTransport = -1;
 			parent.configureDevice(index);
 		} else {
+			focussedDevice = -1;
+			focussedTransport = -1;
 			if (parent.getMode() == Mode.REMOVE_DEVICE) {
 				parent.removeDevice(index);
 			} else {
@@ -55,6 +57,8 @@ public class ProcessFlowPresenter {
 			focussedTransport = index;
 			parent.configureTransport(index);
 		} else {
+			focussedDevice = -1;
+			focussedTransport = -1;
 			if (parent.getMode() == Mode.ADD_DEVICE) {
 				parent.addDevice(index);
 			} else {
@@ -68,23 +72,33 @@ public class ProcessFlowPresenter {
 			logger.debug("Clicked process-flow background");
 			view.focusAll();
 			parent.configureProcess();
+			focussedDevice = -1;
+			focussedTransport = -1;
 		}
 	}
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {
 		view.setProcessFlow(processFlow);
+		focussedDevice = -1;
+		focussedTransport = -1;
 	}
 	
 	public void setAddDeviceMode() {
 		view.setAddDeviceMode();
+		focussedDevice = -1;
+		focussedTransport = -1;
 	}
 	
 	public void setRemoveDeviceMode() {
 		view.setRemoveDeviceMode();
+		focussedDevice = -1;
+		focussedTransport = -1;
 	}
 	
 	public void setNormalMode() {
 		view.setNormalMode();
+		focussedDevice = -1;
+		focussedTransport = -1;
 	}
 	
 	public void refresh() {
