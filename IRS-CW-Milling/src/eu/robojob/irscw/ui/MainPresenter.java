@@ -1,7 +1,7 @@
 package eu.robojob.irscw.ui;
 
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 
 public class MainPresenter {
 

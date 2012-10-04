@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.main.configure.ConfigureView;
+import eu.robojob.irscw.ui.configure.ConfigureView;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
 
 public class ProcessFlowView extends GridPane  {
