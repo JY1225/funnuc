@@ -21,7 +21,7 @@ public class RoboSoft extends Application {
 	public void start(Stage stage) throws Exception {
 		RoboSoftAppFactory factory = new RoboSoftAppFactory();
 		MainPresenter mainPresenter = factory.getMainPresenter();
-		mainPresenter.showProcessConfigureView();
+		mainPresenter.showConfigure();
 		Scene scene = new Scene(mainPresenter.getView(), 800, 600);
 		scene.getStylesheets().addAll("css/general-style.css", "css/header-style.css", "css/keyboard-style.css", "css/configure-style.css", "css/processflow-style.css");
 		stage.setScene(scene);

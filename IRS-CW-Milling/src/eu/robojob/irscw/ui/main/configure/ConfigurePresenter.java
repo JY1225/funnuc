@@ -3,6 +3,8 @@
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.ui.MainPresenter;
+import eu.robojob.irscw.ui.MenuBarPresenter;
 import eu.robojob.irscw.ui.controls.AbstractTextField;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
@@ -10,12 +12,9 @@ import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
-import eu.robojob.irscw.ui.main.MenuBarPresenter;
 import eu.robojob.irscw.ui.main.configure.device.DeviceMenuFactory;
 import eu.robojob.irscw.ui.main.configure.process.ProcessMenuPresenter;
 import eu.robojob.irscw.ui.main.configure.transport.TransportMenuFactory;
-import eu.robojob.irscw.ui.main.configure.transport.TransportMenuPresenter;
-import eu.robojob.irscw.ui.main.configure.transport.TransportMenuView;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowPresenter;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
 
@@ -44,7 +43,7 @@ public class ConfigurePresenter implements TextFieldListener {
 	private ProcessFlow processFlow;
 	private ProcessFlowAdapter processFlowAdapter;
 	
-	private MenuBarPresenter parent;
+	private MainPresenter parent;
 	
 	private ProcessMenuPresenter processMenuPresenter;
 	
@@ -64,14 +63,15 @@ public class ConfigurePresenter implements TextFieldListener {
 		this.processMenuPresenter = processMenuPresenter;
 		processMenuPresenter.setParent(this);
 		view.setPresenter(this);
-		showConfigureView();
 		keyboardActive = false;
 		numericKeyboardActive = false;
 		processFlow = null;
 		mode = Mode.NORMAL;
+		view.setTop(processFlowPresenter.getView());
+		configureProcess();
 	}
 	
-	public void setParent(MenuBarPresenter parent) {
+	public void setParent(MainPresenter parent) {
 		this.parent = parent;
 	}
 	
@@ -81,23 +81,6 @@ public class ConfigurePresenter implements TextFieldListener {
 	
 	public Mode getMode() {
 		return mode;
-	}
-	
-	public void showAlarmsView() {
-		
-	}
-	
-	public void showConfigureView() {
-		view.setTop(processFlowPresenter.getView());
-		configureProcess();
-	}
-	
-	public void showTeachView() {
-		
-	}
-	
-	public void showAutomateView() {
-		
 	}
 	
 	@Override
@@ -245,15 +228,27 @@ public class ConfigurePresenter implements TextFieldListener {
 	public void refreshProgressBar() {
 		if (processFlowAdapter != null) {
 			for (int i = 0; i < processFlowAdapter.getDeviceStepCount(); i++) {
-				if (deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)).isConfigured()) {
-					processFlowPresenter.setDeviceProgressGreen(i);
-				}
+				refreshProgressBarDevice(i);
 			}
 			for (int j = 0; j < processFlowAdapter.getTransportStepCount(); j++) {
-				if (transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(j)).isConfigured()) {
-					processFlowPresenter.setTransportProgressGreen(j);
-				}
+				refreshProgressBarTransport(j);
 			}
+		}
+	}
+	
+	public void refreshProgressBarDevice(int deviceIndex) {
+		if ((deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(deviceIndex)) != null) && (deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(deviceIndex)).isConfigured())) {
+			processFlowPresenter.setDeviceProgressGreen(deviceIndex);
+		} else {
+			processFlowPresenter.setDeviceProgressNone(deviceIndex);
+		}
+	}
+	
+	public void refreshProgressBarTransport(int transportIndex) {
+		if ((transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(transportIndex)) != null) && (transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(transportIndex)).isConfigured())) {
+			processFlowPresenter.setTransportProgressGreen(transportIndex);
+		} else {
+			processFlowPresenter.setTransportProgressNone(transportIndex);
 		}
 	}
 

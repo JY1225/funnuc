@@ -1,10 +1,9 @@
-package eu.robojob.irscw.ui.main;
+package eu.robojob.irscw.ui;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -63,7 +62,7 @@ public class MenuBarView extends ToolBar {
 		btnAlarms.setPrefSize(BTN_WIDTH_SMALL, BTN_HEIGHT);
 		btnAlarms.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
-				presenter.showAlarmsView();
+				presenter.clickedAlarms();
 			}
 		});
 		btnAlarms.getStyleClass().add("header-button");
@@ -78,7 +77,7 @@ public class MenuBarView extends ToolBar {
 		btnAdmin.setPrefSize(BTN_WIDTH_SMALL, BTN_HEIGHT);
 		btnAdmin.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
-				presenter.showAdminView();
+				presenter.clickedAdmin();
 			}
 		});
 		btnAdmin.getStyleClass().add("header-button");
@@ -94,7 +93,7 @@ public class MenuBarView extends ToolBar {
 		btnConfigure.setPrefSize(BTN_WIDTH_LARGE, BTN_HEIGHT);
 		btnConfigure.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
-				presenter.showConfigureView();
+				presenter.clickedConfigure();
 			}
 		});
 		btnTeach = new Button();
@@ -104,7 +103,7 @@ public class MenuBarView extends ToolBar {
 		btnTeach.setPrefSize(BTN_WIDTH_LARGE, BTN_HEIGHT);
 		btnTeach.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
-				presenter.showTeachView();
+				presenter.clickedTeach();
 			}
 		});
 		btnAutomate = new Button();
@@ -114,7 +113,7 @@ public class MenuBarView extends ToolBar {
 		btnAutomate.getStyleClass().addAll("last", "header-button");
 		btnAutomate.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
-				presenter.showAutomateView();
+				presenter.clickedAutomate();
 			}
 		});
 				
@@ -151,6 +150,16 @@ public class MenuBarView extends ToolBar {
 	public void setAutomateActive() {
 		setNoneActive();
 		setActive(btnAutomate);
+	}
+
+	public void setAlarmsActive() {
+		setNoneActive();
+		setActive(btnAlarms);
+	}
+	
+	public void setAdminActive() {
+		setNoneActive();
+		setActive(btnAdmin);
 	}
 	
 	public void setNoneActive() {

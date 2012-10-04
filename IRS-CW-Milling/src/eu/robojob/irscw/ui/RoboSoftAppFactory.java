@@ -17,8 +17,6 @@ import eu.robojob.irscw.ui.keyboard.KeyboardView;
 import eu.robojob.irscw.ui.keyboard.KeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardView;
-import eu.robojob.irscw.ui.main.MenuBarPresenter;
-import eu.robojob.irscw.ui.main.MenuBarView;
 import eu.robojob.irscw.ui.main.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.main.configure.ConfigureView;
 import eu.robojob.irscw.ui.main.configure.device.DeviceMenuFactory;
@@ -53,9 +51,7 @@ public class RoboSoftAppFactory {
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
 			MainView mainView = new MainView();
-			mainPresenter = new MainPresenter(mainView);
-			mainPresenter.setProcessMainContentPresenter(getConfigurePresenter());
-			mainPresenter.setProcessMenuBarPresenter(getMenuBarPresenter());
+			mainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter());
 			mainPresenter.loadProcessFlow(getProcessFlow());
 		}
 		return mainPresenter;
@@ -64,7 +60,7 @@ public class RoboSoftAppFactory {
 	public MenuBarPresenter getMenuBarPresenter() {
 		if (menuBarPresenter == null) {
 			MenuBarView processMenuBarView = new MenuBarView();
-			menuBarPresenter = new MenuBarPresenter(processMenuBarView, getConfigurePresenter(), getMainPresenter());
+			menuBarPresenter = new MenuBarPresenter(processMenuBarView);
 		}
 		return menuBarPresenter;
 	}
