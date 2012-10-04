@@ -16,6 +16,7 @@ import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.ConfigureView;
 import eu.robojob.irscw.ui.configure.device.DeviceMenuFactory;
+import eu.robojob.irscw.ui.configure.flow.ConfigureProcessFlowPresenter;
 import eu.robojob.irscw.ui.configure.process.ProcessConfigurePresenter;
 import eu.robojob.irscw.ui.configure.process.ProcessConfigureView;
 import eu.robojob.irscw.ui.configure.process.ProcessMenuPresenter;
@@ -28,8 +29,10 @@ import eu.robojob.irscw.ui.keyboard.KeyboardView;
 import eu.robojob.irscw.ui.keyboard.KeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardView;
-import eu.robojob.irscw.ui.main.flow.ProcessFlowPresenter;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowView;
+import eu.robojob.irscw.ui.teach.TeachPresenter;
+import eu.robojob.irscw.ui.teach.TeachView;
+import eu.robojob.irscw.ui.teach.flow.TeachProcessFlowPresenter;
 
 public class RoboSoftAppFactory {
 
@@ -38,8 +41,10 @@ public class RoboSoftAppFactory {
 	private ConfigurePresenter configurePresenter;
 	private KeyboardPresenter keyboardPresenter;
 	private ProcessConfigurePresenter processConfigurationPresenter;
+	private TeachPresenter teachPresenter;
 	private NumericKeyboardPresenter numericKeyboardPresenter;
-	private ProcessFlowPresenter processFlowPresenter;
+	private ConfigureProcessFlowPresenter configureProcessFlowPresenter;
+	private TeachProcessFlowPresenter teachProcessFlowPresenter;
 	private ProcessMenuPresenter processConfigurationMenuPresenter;
 	private ProcessOpenPresenter processOpenPresenter;
 	private ProcessFlow processFlow;
@@ -52,7 +57,7 @@ public class RoboSoftAppFactory {
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
 			MainView mainView = new MainView();
-			mainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter());
+			mainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter());
 			mainPresenter.loadProcessFlow(getProcessFlow());
 		}
 		return mainPresenter;
@@ -69,10 +74,18 @@ public class RoboSoftAppFactory {
 	public ConfigurePresenter getConfigurePresenter() {
 		if (configurePresenter == null) {
 			ConfigureView processConfigureView = new ConfigureView();
-			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNumericKeyboardPresenter(), getProcessFlowPresenter(), 
+			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNumericKeyboardPresenter(), getConfigureProcessFlowPresenter(), 
 					getProcessConfigurationMenuPresenter(), getDeviceMenuFactory(), getTransportMenuFactory());
 		}
 		return configurePresenter;
+	}
+	
+	public TeachPresenter getTeachPresenter() {
+		if (teachPresenter == null) {
+			TeachView view = new TeachView();
+			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter());
+		}
+		return teachPresenter;
 	}
 	
 	public KeyboardPresenter getKeyboardPresenter() {
@@ -99,12 +112,20 @@ public class RoboSoftAppFactory {
 		return processConfigurationPresenter;
 	}
 	
-	public ProcessFlowPresenter getProcessFlowPresenter() {
-		if (processFlowPresenter == null) {
+	public ConfigureProcessFlowPresenter getConfigureProcessFlowPresenter() {
+		if (configureProcessFlowPresenter == null) {
 			ProcessFlowView processFlowView = new ProcessFlowView();
-			processFlowPresenter = new ProcessFlowPresenter(processFlowView);
+			configureProcessFlowPresenter = new ConfigureProcessFlowPresenter(processFlowView);
 		}
-		return processFlowPresenter;
+		return configureProcessFlowPresenter;
+	}
+	
+	public TeachProcessFlowPresenter getTeachProcessFlowPresenter() {
+		if (teachProcessFlowPresenter == null) {
+			ProcessFlowView processFlowView = new ProcessFlowView();
+			teachProcessFlowPresenter = new TeachProcessFlowPresenter(processFlowView);
+		}
+		return teachProcessFlowPresenter;
 	}
 	
 	public ProcessMenuPresenter getProcessConfigurationMenuPresenter() {

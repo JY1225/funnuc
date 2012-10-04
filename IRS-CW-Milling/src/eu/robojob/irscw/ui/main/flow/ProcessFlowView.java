@@ -19,7 +19,7 @@ public class ProcessFlowView extends GridPane  {
 	
 	private ProcessFlowAdapter processFlowAdapter;
 	
-	private ProcessFlowPresenter presenter;
+	private AbstractProcessFlowPresenter presenter;
 	private Map<Integer, DeviceButton> deviceButtons;
 	private Map<Integer, TransportButton> transportButtons;
 	
@@ -40,11 +40,11 @@ public class ProcessFlowView extends GridPane  {
 		buildView();
 	}
 	
-	public void setPresenter(ProcessFlowPresenter presenter) {
+	public void setPresenter(AbstractProcessFlowPresenter presenter) {
 		this.presenter = presenter;
 	}
 
-	protected void buildView() {
+	public void buildView() {
 		this.getChildren().clear();
 		this.setVgap(20);
 		setPadding(new Insets(20, 0, 20, 0));
@@ -97,6 +97,12 @@ public class ProcessFlowView extends GridPane  {
 				arg0.consume();
 			}
 		});
+	}
+	
+	public void showQuestionMarks() {
+		for (TransportButton transportButton : transportButtons.values()) {
+			transportButton.showTeach();
+		}
 	}
 	
 	public void focusDevice(int index) {

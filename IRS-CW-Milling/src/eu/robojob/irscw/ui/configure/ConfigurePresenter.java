@@ -4,8 +4,8 @@ import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.MainPresenter;
-import eu.robojob.irscw.ui.MenuBarPresenter;
 import eu.robojob.irscw.ui.configure.device.DeviceMenuFactory;
+import eu.robojob.irscw.ui.configure.flow.ConfigureProcessFlowPresenter;
 import eu.robojob.irscw.ui.configure.process.ProcessMenuPresenter;
 import eu.robojob.irscw.ui.configure.transport.TransportMenuFactory;
 import eu.robojob.irscw.ui.controls.AbstractTextField;
@@ -15,7 +15,6 @@ import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
-import eu.robojob.irscw.ui.main.flow.ProcessFlowPresenter;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
 
 public class ConfigurePresenter implements TextFieldListener {
@@ -31,9 +30,9 @@ public class ConfigurePresenter implements TextFieldListener {
 	private KeyboardPresenter keyboardPresenter;
 	private NumericKeyboardPresenter numericKeyboardPresenter;
 	
-	private ProcessFlowPresenter processFlowPresenter;
+	private ConfigureProcessFlowPresenter processFlowPresenter;
 
-	private AbstractMenuPresenter activeMenu;
+	private AbstractMenuPresenter<?> activeMenu;
 	private DeviceMenuFactory deviceMenuFactory;
 	private TransportMenuFactory transportMenuFactory;
 	
@@ -50,7 +49,7 @@ public class ConfigurePresenter implements TextFieldListener {
 	private Mode mode;
 	
 	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
-			ProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processMenuPresenter, DeviceMenuFactory deviceMenuFactory, TransportMenuFactory transportMenuFactory) {
+			ConfigureProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processMenuPresenter, DeviceMenuFactory deviceMenuFactory, TransportMenuFactory transportMenuFactory) {
 		this.view = view;
 		this.keyboardPresenter = keyboardPresenter;
 		keyboardPresenter.setParent(this);

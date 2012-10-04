@@ -1,23 +1,24 @@
-package eu.robojob.irscw.ui.main.flow;
+package eu.robojob.irscw.ui.configure.flow;
 
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter.Mode;
+import eu.robojob.irscw.ui.main.flow.AbstractProcessFlowPresenter;
+import eu.robojob.irscw.ui.main.flow.ProcessFlowView;
 
-public class ProcessFlowPresenter {
-
-	private ProcessFlowView view;
+public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter {
+	
 	private ConfigurePresenter parent;
 	
-	private static Logger logger = Logger.getLogger(ProcessFlowPresenter.class);
+	private static Logger logger = Logger.getLogger(AbstractProcessFlowPresenter.class);
 	
 	private int focussedDevice;
 	private int focussedTransport;
 	
-	public ProcessFlowPresenter(ProcessFlowView view) {
-		this.view = view;
+	public ConfigureProcessFlowPresenter(ProcessFlowView view) {
+		super(view);
 		focussedDevice = -1;
 		focussedTransport = -1;
 		view.setPresenter(this);
@@ -25,10 +26,6 @@ public class ProcessFlowPresenter {
 	
 	public void setParent(ConfigurePresenter parent) {
 		this.parent = parent;
-	}
-	
-	public ProcessFlowView getView() {
-		return view;
 	}
 	
 	public void deviceClicked(int index) {
@@ -78,7 +75,7 @@ public class ProcessFlowPresenter {
 	}
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {
-		view.setProcessFlow(processFlow);
+		super.loadProcessFlow(processFlow);
 		focussedDevice = -1;
 		focussedTransport = -1;
 	}
@@ -102,7 +99,7 @@ public class ProcessFlowPresenter {
 	}
 	
 	public void refresh() {
-		view.buildView();
+		super.refresh();
 		if (focussedDevice != -1) {
 			view.focusDevice(focussedDevice);
 		} else if (focussedTransport != -1) {
@@ -126,19 +123,4 @@ public class ProcessFlowPresenter {
 		}
 	}
 	
-	public void setDeviceProgressGreen(int deviceIndex) {
-		view.setDeviceProgressGreen(deviceIndex);
-	}
-	
-	public void setDeviceProgressNone(int deviceIndex) {
-		view.setDeviceProgressNone(deviceIndex);
-	}
-	
-	public void setTransportProgressGreen(int deviceIndex) {
-		view.setTransportProgressGreen(deviceIndex);
-	}
-	
-	public void setTransportProgressNone(int deviceIndex) {
-		view.setTransportProgressNone(deviceIndex);
-	}
 }
