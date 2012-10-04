@@ -1,5 +1,6 @@
 package eu.robojob.irscw.ui;
 
+import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.BasicStackPlate;
 import eu.robojob.irscw.external.device.CNCMillingMachine;
 import eu.robojob.irscw.external.device.DeviceManager;
@@ -129,19 +130,21 @@ public class RoboSoftAppFactory {
 			processFlow = new ProcessFlow("Mazak demo");
 			
 			FanucRobot robot = (FanucRobot) robotMgr.getRobotById("fanuc M110");
-
+			processFlow.setRobotSettings(robot, robot.getRobotSettings());
+			
 			FanucRobotPickSettings pickSettings1 = new FanucRobot.FanucRobotPickSettings();
 			pickSettings1.setGripperHead(robot.getGripperBody().getGripperHead("A"));
 			
-			PickStep pick1 = new PickStep(robot, deviceMgr.getStackingFromDeviceById("basic stack plate"), new BasicStackPlate.BasicStackPlatePickSettings(null, null), pickSettings1);
-			/*PutStep put1 = new PutStep(robot, deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDevicePutSettings(null, null),  new FanucRobot.FanucRobotPutSettings());
-			ProcessingStep processing1 = new ProcessingStep(deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDeviceStartCyclusSettings(null));
-			PickStep pick2 = new PickStep(robot, deviceMgr.getPreProcessingDeviceById("embossing 1"), new EmbossingDevice.EmbossingDevicePickSettings(null, null),  new FanucRobot.FanucRobotPickSettings());*/
+			AbstractDevice device = deviceMgr.getStackingFromDeviceById("basic stack plate");
+			PickStep pick1 = new PickStep(robot, device, new BasicStackPlate.BasicStackPlatePickSettings(null, null), pickSettings1);
+			processFlow.setDeviceSettings(device, device.getDeviceSettings());
 			
 			FanucRobotPutSettings putSettings1 = new FanucRobot.FanucRobotPutSettings();
 			putSettings1.setGripperHead(robot.getGripperBody().getGripperHead("A"));
 			
-			PutStep put2 = new PutStep(robot, deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachinePutSettings(null, null), putSettings1);
+			AbstractDevice device2 = deviceMgr.getCNCMachineById("Mazak integrex");
+			PutStep put2 = new PutStep(robot, device2, new CNCMillingMachine.CNCMillingMachinePutSettings(null, null), putSettings1);
+			processFlow.setDeviceSettings(device2, device2.getDeviceSettings());
 			ProcessingStep processing2 = new ProcessingStep( deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachineStartCylusSettings(null));
 			InterventionStep intervention = new InterventionStep( deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachineInterventionSettings(null), 10);
 			

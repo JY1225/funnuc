@@ -1,7 +1,10 @@
 package eu.robojob.irscw.external.device;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -84,22 +87,35 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	public class CNCMillingMachineSettings extends AbstractDeviceSettings {
 
-		private WorkArea workArea;
-		private Clamping clamping;
+		private Map<WorkArea, Clamping> clampings;
 		
-		public CNCMillingMachineSettings(WorkArea workArea, Clamping clamping) {
-			this.workArea = workArea;
-			this.clamping = clamping;
-		}
-
-		public WorkArea getWorkArea() {
-			return workArea;
-		}
-
-		public Clamping getClamping() {
-			return clamping;
+		public CNCMillingMachineSettings() {
+			clampings = new HashMap<WorkArea, Clamping>();
 		}
 		
+		public CNCMillingMachineSettings(List<WorkArea> workAreas) {
+			this();
+			for (WorkArea workArea : workAreas) {
+				clampings.put(workArea, workArea.getActiveClamping());
+			}
+		}
+		
+		public void setClamping(WorkArea workArea, Clamping clamping) {
+			clampings.put(workArea, clamping);
+		}
+
+		public Map<WorkArea, Clamping> getClampings() {
+			return clampings;
+		}
+
+		public void setClampings(Map<WorkArea, Clamping> clampings) {
+			this.clampings = clampings;
+		}
+		
+		public Clamping getClamping(WorkArea workArea) {
+			return clampings.get(workArea);
+		}
+	
 	}
 
 	@Override
@@ -203,14 +219,20 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	protected void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {
+	public void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {
 		if (deviceSettings instanceof CNCMillingMachineSettings) {
-			// TODO: revise: references or ids?
 			CNCMillingMachineSettings settings = (CNCMillingMachineSettings) deviceSettings;
-			settings.getWorkArea().setActiveClamping(settings.getClamping());
+			for (Entry<WorkArea, Clamping> entry : settings.getClampings().entrySet()) {
+				entry.getKey().setActiveClamping(entry.getValue());
+			}
 		} else {
 			throw new IllegalArgumentException("Unknown device settings");
 		}
+	}
+
+	@Override
+	public AbstractDeviceSettings getDeviceSettings() {
+		return new CNCMillingMachineSettings(getWorkAreas());
 	}
 
 }

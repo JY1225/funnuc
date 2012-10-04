@@ -1,5 +1,6 @@
 package eu.robojob.irscw.ui.configure.device;
 
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
@@ -7,11 +8,14 @@ import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMillingMachinePutView, CNCMillingMachineMenuPresenter> {
 
 	private PutStep putStep;
+	private CNCMillingMachineSettings deviceSettings;
 	
-	public CNCMillingMachinePutPresenter(CNCMillingMachinePutView view, PutStep putStep) {
+	public CNCMillingMachinePutPresenter(CNCMillingMachinePutView view, PutStep putStep, CNCMillingMachineSettings deviceSettings) {
 		super(view);
 		this.putStep = putStep;
+		this.deviceSettings = deviceSettings;
 		view.setPutStep(putStep);
+		view.setDeviceSettings(deviceSettings);
 		view.build();
 	}
 
@@ -48,8 +52,8 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 	}
 	
 	public void resetSmooth() {
-		if (putStep.getDeviceSettings().getClamping() != null) {
-			putStep.getRobotSettings().setSmoothPoint(putStep.getDeviceSettings().getClamping().getSmoothFromPoint());
+		if (deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()) != null) {
+			putStep.getRobotSettings().setSmoothPoint(deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()).getSmoothFromPoint());
 			view.refresh();
 		}
 	}

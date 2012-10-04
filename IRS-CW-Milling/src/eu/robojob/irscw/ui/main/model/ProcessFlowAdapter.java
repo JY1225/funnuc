@@ -77,6 +77,9 @@ public class ProcessFlowAdapter {
 				}
 			}
 		}
+		
+		deviceInformation.setDeviceSettings(processFlow.getDeviceSettings(deviceInformation.getDevice()));
+		
 		return deviceInformation;
 	}
 	
@@ -108,6 +111,8 @@ public class ProcessFlowAdapter {
 				curTranspIndex++;
 			}
 		}
+		
+		transportInformation.setRobotSettings(processFlow.getRobotSettings(transportInformation.getRobot()));
 		
 		return transportInformation;
 	}

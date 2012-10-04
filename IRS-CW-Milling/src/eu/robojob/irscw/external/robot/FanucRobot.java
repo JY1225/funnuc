@@ -1,6 +1,9 @@
 package eu.robojob.irscw.external.robot;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
@@ -119,21 +122,31 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	public class FanucRobotSettings extends AbstractRobotSettings {
-		protected GripperHead head;
-		protected Gripper gripper;
 		
-		public FanucRobotSettings(GripperHead head, Gripper gripper) {
-			this.head = head;
-			this.gripper = gripper;
+		protected GripperBody gripperBody;
+		protected Map<GripperHead, Gripper> grippers;
+		
+		public FanucRobotSettings(GripperBody gripperBody, Map<GripperHead, Gripper> grippers) {
+			this.gripperBody = gripperBody;
+			this.grippers = grippers;
 		}
 
-		public GripperHead getHead() {
-			return head;
+		public void setGripper(GripperHead head, Gripper gripper) {
+			grippers.put(head, gripper);
+		}
+		
+		public Gripper getGripper(GripperHead head) {
+			return grippers.get(head);
 		}
 
-		public Gripper getGripper() {
-			return gripper;
+		public GripperBody getGripperBody() {
+			return gripperBody;
 		}
+
+		public Map<GripperHead, Gripper> getGrippers() {
+			return grippers;
+		}
+		
 	}
 	
 	@Override
@@ -150,10 +163,22 @@ public class FanucRobot extends AbstractRobot {
 	public void loadRobotSettings(AbstractRobotSettings robotSettings) {
 		if (robotSettings instanceof FanucRobotSettings) {
 			FanucRobotSettings settings = (FanucRobotSettings) robotSettings;
-			settings.getHead().setGripper(settings.getGripper());
+			setGripperBody(settings.gripperBody);
+			for (Entry<GripperHead, Gripper> entry : settings.getGrippers().entrySet()) {
+				entry.getKey().setGripper(entry.getValue());
+			}
 		} else {
 			throw new IllegalArgumentException("Unknown robot settings");
 		}
+	}
+
+	@Override
+	public AbstractRobotSettings getRobotSettings() {
+		Map<GripperHead, Gripper> grippers = new HashMap<GripperHead, Gripper>();
+		for(GripperHead head : getGripperBody().getGripperHeads()) {
+			grippers.put(head, head.getGripper());
+		}
+		return new FanucRobotSettings(getGripperBody(), grippers);
 	}
 
 }

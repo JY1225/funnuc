@@ -25,7 +25,8 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	public abstract void releasePiece(AbstractDevicePickSettings pickSettings) throws IOException;
 	public abstract void grabPiece(AbstractDevicePutSettings putSettings) throws IOException;
 	
-	protected abstract void loadDeviceSettings(AbstractDeviceSettings deviceSettings);
+	public abstract void loadDeviceSettings(AbstractDeviceSettings deviceSettings);
+	public abstract AbstractDeviceSettings getDeviceSettings();
 
 	public AbstractDevice(String id) {
 		super(id);

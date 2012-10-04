@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
@@ -21,9 +22,10 @@ public class DeviceInformation {
 	private InterventionStep interventionStepAfterPut;
 	private PickStep pickStep;
 	private ProcessFlowAdapter flowAdapter;
+	private AbstractDevice.AbstractDeviceSettings deviceSettings;
 
 	public DeviceInformation(int index, ProcessFlowAdapter flowAdapter, AbstractDevice device, PutStep putStep, InterventionStep interventionStepBeforePick, ProcessingStep processingStep,
-			InterventionStep interventionStepAfterPut, PickStep pickStep) {
+			InterventionStep interventionStepAfterPut, PickStep pickStep, AbstractDeviceSettings deviceSettings) {
 		this.index = index;
 		this.flowAdapter = flowAdapter;
 		this.device = device;
@@ -32,10 +34,11 @@ public class DeviceInformation {
 		this.processingStep = processingStep;
 		this.interventionStepAfterPut = interventionStepAfterPut;
 		this.pickStep = pickStep;
+		this.deviceSettings = deviceSettings;
 	}
 	
 	public DeviceInformation(int index, ProcessFlowAdapter flowAdapter) {
-		this(index, flowAdapter, null, null, null, null, null, null);
+		this(index, flowAdapter, null, null, null, null, null, null, null);
 	}
 	
 	public DeviceType getType() {
@@ -159,7 +162,16 @@ public class DeviceInformation {
 			return false;
 		}
 	}
-	
+
+	public AbstractDevice.AbstractDeviceSettings getDeviceSettings() {
+		return deviceSettings;
+	}
+
+	public void setDeviceSettings(
+			AbstractDevice.AbstractDeviceSettings deviceSettings) {
+		this.deviceSettings = deviceSettings;
+	}
+
 	public List<AbstractProcessStep> getSteps() {
 		List<AbstractProcessStep> steps = new ArrayList<AbstractProcessStep>();
 		if (hasPickStep())

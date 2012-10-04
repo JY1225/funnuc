@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.NumericTextField;
@@ -19,6 +20,7 @@ import eu.robojob.irscw.util.UIConstants;
 public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachinePutPresenter> {
 
 	private PutStep putStep;
+	private CNCMillingMachineSettings deviceSettings;
 	
 	private Label lblSmoothInfo;
 	
@@ -45,6 +47,10 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	
 	public void setPutStep(PutStep putStep) {
 		this.putStep = putStep;
+	}
+	
+	public void setDeviceSettings(CNCMillingMachineSettings deviceSettings) {
+		this.deviceSettings = deviceSettings;
 	}
 	
 	@Override
@@ -130,7 +136,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 			ntxtSmoothY.setText(""+putStep.getRobotSettings().getSmoothPoint().getY());
 			ntxtSmoothZ.setText(""+putStep.getRobotSettings().getSmoothPoint().getZ());
 		}
-		if(putStep.getDeviceSettings().getClamping() == null) {
+		if(deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()) == null) {
 			btnResetSmooth.setDisable(true);
 		} else {
 			btnResetSmooth.setDisable(false);

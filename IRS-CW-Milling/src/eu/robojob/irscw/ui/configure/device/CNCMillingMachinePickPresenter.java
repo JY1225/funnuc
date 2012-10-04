@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui.configure.device;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
@@ -10,12 +11,15 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMillingMachinePickView, CNCMillingMachineMenuPresenter> {
 
 	private PickStep pickStep;
+	private CNCMillingMachineSettings deviceSettings;
 	private Logger logger = Logger.getLogger(CNCMillingMachinePickPresenter.class);
 	
-	public CNCMillingMachinePickPresenter(CNCMillingMachinePickView view, PickStep pickStep) {
+	public CNCMillingMachinePickPresenter(CNCMillingMachinePickView view, PickStep pickStep, CNCMillingMachineSettings deviceSettings) {
 		super(view);
 		this.pickStep = pickStep;
+		this.deviceSettings = deviceSettings;
 		view.setPickStep(pickStep);
+		view.setDeviceSettings(deviceSettings);
 		view.build();
 	}
 
@@ -52,8 +56,8 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 	}
 	
 	public void resetSmooth() {
-		if (pickStep.getDeviceSettings().getClamping() != null) {
-			pickStep.getRobotSettings().setSmoothPoint(pickStep.getDeviceSettings().getClamping().getSmoothFromPoint());
+		if (deviceSettings.getClamping(pickStep.getDeviceSettings().getWorkArea()) != null) {
+			pickStep.getRobotSettings().setSmoothPoint(deviceSettings.getClamping(pickStep.getDeviceSettings().getWorkArea()).getSmoothFromPoint());
 			view.refresh();
 		}
 	}

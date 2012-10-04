@@ -660,7 +660,19 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		public int getAmount() {
 			return amount;
 		}
-		
+
+		public void setDimensions(WorkPieceDimensions dimensions) {
+			this.dimensions = dimensions;
+		}
+
+		public void setOrientation(WorkPieceOrientation orientation) {
+			this.orientation = orientation;
+		}
+
+		public void setAmount(int amount) {
+			this.amount = amount;
+		}
+
 	}
 	
 	@Override
@@ -669,7 +681,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	protected void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {
+	public void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {
 		if (deviceSettings instanceof BasicStackPlateSettings) {
 			BasicStackPlateSettings settings = (BasicStackPlateSettings) deviceSettings;
 			this.rawWorkPieceDimensions = settings.getDimensions();
@@ -678,11 +690,15 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			try {
 				configureRawWorkpieces();
 			} catch (IncorrectWorkPieceDataException e) {
-				e.printStackTrace();
 			}
 		} else {
 			throw new IllegalArgumentException("Unknown device settings");
 		}
+	}
+
+	@Override
+	public AbstractDeviceSettings getDeviceSettings() {
+		return new BasicStackPlateSettings(rawWorkPieceDimensions, workPieceOrientation, rawWorkPieceAmount);
 	}
 	
 }

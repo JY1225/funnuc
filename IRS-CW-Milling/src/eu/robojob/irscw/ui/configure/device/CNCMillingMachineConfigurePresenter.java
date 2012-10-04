@@ -3,12 +3,13 @@ package eu.robojob.irscw.ui.configure.device;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePickSettings;
 import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePutSettings;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineStartCylusSettings;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePickSettings;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
@@ -89,8 +90,9 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	// these methods should only be called when a combo-box value is changed, into a real value
 	private void setClamping(Clamping clamping) {
 		logger.debug("Changed clamping-settings to: " + clamping);
-		deviceInfo.getPickStep().getDeviceSettings().setClamping(clamping);
-		deviceInfo.getPutStep().getDeviceSettings().setClamping(clamping);
+		CNCMillingMachineSettings settings = (CNCMillingMachineSettings) deviceInfo.getDeviceSettings();
+		settings.setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
+		deviceInfo.getDevice().loadDeviceSettings(settings);
 	}
 
 	@Override

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import eu.robojob.irscw.external.device.BasicStackPlate;
+import eu.robojob.irscw.external.device.BasicStackPlate.BasicStackPlateSettings;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.PutStep;
@@ -41,8 +43,8 @@ public class DeviceMenuFactory {
 	
 	private CNCMillingMachineMenuPresenter getCncMillingMachineMenuPresenter(DeviceInformation deviceInfo) {
 		DeviceMenuView view = new DeviceMenuView();
-		CNCMillingMachineMenuPresenter cncMillingMachineMenuPresenter = new CNCMillingMachineMenuPresenter(view, deviceInfo, getCncMillingMachineConfigurePresenter(deviceInfo), getCNCMillingMachinePickPresenter(deviceInfo.getPickStep()),
-				getCNCMillingMachinePutPresenter(deviceInfo.getPutStep()));
+		CNCMillingMachineMenuPresenter cncMillingMachineMenuPresenter = new CNCMillingMachineMenuPresenter(view, deviceInfo, getCncMillingMachineConfigurePresenter(deviceInfo), getCNCMillingMachinePickPresenter(deviceInfo.getPickStep(), (CNCMillingMachineSettings) deviceInfo.getDeviceSettings()),
+				getCNCMillingMachinePutPresenter(deviceInfo.getPutStep(), (CNCMillingMachineSettings) deviceInfo.getDeviceSettings()));
 		return cncMillingMachineMenuPresenter;
 	}
 	
@@ -52,15 +54,15 @@ public class DeviceMenuFactory {
 		return cncMillingMachineConfigurePresenter;
 	}
 	
-	private CNCMillingMachinePickPresenter getCNCMillingMachinePickPresenter(PickStep pickStep) {
+	private CNCMillingMachinePickPresenter getCNCMillingMachinePickPresenter(PickStep pickStep, CNCMillingMachineSettings deviceSettings) {
 		CNCMillingMachinePickView view = new CNCMillingMachinePickView();
-		CNCMillingMachinePickPresenter cncMillingMachinePickPresenter = new CNCMillingMachinePickPresenter(view, pickStep);
+		CNCMillingMachinePickPresenter cncMillingMachinePickPresenter = new CNCMillingMachinePickPresenter(view, pickStep, deviceSettings);
 		return cncMillingMachinePickPresenter;
 	}
 	
-	private CNCMillingMachinePutPresenter getCNCMillingMachinePutPresenter(PutStep putStep) {
+	private CNCMillingMachinePutPresenter getCNCMillingMachinePutPresenter(PutStep putStep, CNCMillingMachineSettings deviceSettings) {
 		CNCMillingMachinePutView view = new CNCMillingMachinePutView();
-		CNCMillingMachinePutPresenter cncMillingMachinePutPresenter = new CNCMillingMachinePutPresenter(view, putStep);
+		CNCMillingMachinePutPresenter cncMillingMachinePutPresenter = new CNCMillingMachinePutPresenter(view, putStep, deviceSettings);
 		return cncMillingMachinePutPresenter;
 	}
 	
@@ -81,7 +83,7 @@ public class DeviceMenuFactory {
 	public BasicStackPlateWorkPiecePresenter getBasicStackPlateWorkPiecePresenter(DeviceInformation deviceInfo) {
 		if (deviceInfo.getPickStep() != null) {
 			BasicStackPlateWorkPieceView view = new BasicStackPlateWorkPieceView();
-			BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter = new BasicStackPlateWorkPiecePresenter(view, deviceInfo.getPickStep());
+			BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter = new BasicStackPlateWorkPiecePresenter(view, deviceInfo.getPickStep(), (BasicStackPlateSettings) deviceInfo.getDeviceSettings());
 			return basicStackPlateWorkPiecePresenter;
 		} else {
 			return null;

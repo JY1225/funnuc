@@ -205,4 +205,16 @@ public class ProcessFlow {
 	public AbstractDeviceSettings getDeviceSettings(AbstractDevice device) {
 		return deviceSettings.get(device);
 	}
+	
+	public AbstractRobotSettings getRobotSettings(AbstractRobot robot) {
+		return robotSettings.get(robot);
+	}
+	
+	public void setDeviceSettings(AbstractDevice device, AbstractDeviceSettings settings) {
+		deviceSettings.put(device, settings);
+	}
+	
+	public void setRobotSettings(AbstractRobot robot, AbstractRobotSettings settings) {
+		robotSettings.put(robot, settings);
+	}
 }

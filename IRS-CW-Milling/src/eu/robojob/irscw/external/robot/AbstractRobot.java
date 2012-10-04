@@ -141,4 +141,5 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract AbstractRobotPutSettings getDefaultPutSettings();
 	
 	public abstract void loadRobotSettings(AbstractRobotSettings robotSettings);
+	public abstract AbstractRobotSettings getRobotSettings();
 }
