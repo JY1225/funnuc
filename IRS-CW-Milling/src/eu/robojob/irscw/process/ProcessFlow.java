@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
-
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
@@ -19,7 +17,7 @@ public class ProcessFlow {
 		CNC_MILLING, CNC_TURNING;
 	}
 	
-	private static Logger logger = Logger.getLogger(ProcessFlow.class);
+	//private static Logger logger = Logger.getLogger(ProcessFlow.class);
 	
 	private List<AbstractProcessStep> processSteps;
 	

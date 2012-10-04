@@ -27,7 +27,7 @@ public class TransportButton extends Pane {
 	private String pauzeRightPath = "M 122.71875 5.09375 C 114.88453 5.09375 108.53125 11.445258 108.53125 19.28125 C 108.53125 27.113696 114.88453 33.46875 122.71875 33.46875 C 130.55297 33.46875 136.90625 27.113696 136.90625 19.28125 C 136.90625 11.445258 130.55297 5.09375 122.71875 5.09375 z M 117.9375 12.90625 L 121.125 12.90625 L 121.125 25.6875 L 117.9375 25.6875 L 117.9375 12.90625 z M 124.3125 12.90625 L 127.5 12.90625 L 127.5 25.6875 L 124.3125 25.6875 L 124.3125 12.90625 z";	
 	
 	private String firstCirclePath = "M38.82,19.318c0,10.645-8.629,19.275-19.275,19.275c-10.646,0-19.275-8.63-19.275-19.275 S8.899,0.042,19.545,0.042C30.191,0.042,38.82,8.673,38.82,19.318z";
-	private String secondCirclePath = "M141.989,19.294c0,10.645-8.629,19.275-19.275,19.275c-10.646,0-19.275-8.63-19.275-19.275 s8.63-19.275,19.275-19.275C133.36,0.019,141.989,8.649,141.989,19.294z";
+	/*private String secondCirclePath = "M141.989,19.294c0,10.645-8.629,19.275-19.275,19.275c-10.646,0-19.275-8.63-19.275-19.275 s8.63-19.275,19.275-19.275C133.36,0.019,141.989,8.649,141.989,19.294z";*/
 	
 	private Label lblLeft;
 	private Label lblRight;
@@ -139,6 +139,10 @@ public class TransportButton extends Pane {
 			setRightPauseActive(true);
 			setRightLabel("" + transportInfo.getInterventionAfterPut().getFrequency());
 		}
+	}
+	
+	public TransportInformation getTransportInformation() {
+		return transportInfo;
 	}
 	
 	public void setOnAction(final EventHandler<ActionEvent> value) {

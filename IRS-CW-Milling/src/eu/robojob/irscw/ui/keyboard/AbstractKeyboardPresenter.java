@@ -10,7 +10,7 @@ public abstract class AbstractKeyboardPresenter {
 
 	private AbstractKeyboardView view;
 	private KeyboardParentPresenter parent;
-	private AbstractTextField target;
+	private AbstractTextField<?> target;
 	
 	private String originalText;
 	
@@ -25,10 +25,14 @@ public abstract class AbstractKeyboardPresenter {
 		this.parent = parent;
 	}
 	
-	public void setTarget(AbstractTextField target) {
+	public void setTarget(AbstractTextField<?> target) {
 		this.target = target;
 		originalText = target.getText();
 		target.requestFocus();
+	}
+	
+	public AbstractTextField<?> getTarget() {
+		return target;
 	}
 	
 	public AbstractKeyboardView getView() {

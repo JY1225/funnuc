@@ -3,11 +3,8 @@ package eu.robojob.irscw.ui.configure.device;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -31,7 +28,6 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	
 	private Group group;
 	private Rectangle stackPlate;
-	private StackPane root2;
 	private Pane root;
 	
 	private List<Circle> holes;

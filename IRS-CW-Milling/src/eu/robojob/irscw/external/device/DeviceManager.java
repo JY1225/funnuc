@@ -70,8 +70,8 @@ public class DeviceManager {
 		List<WorkArea> workAreas3 = new ArrayList<WorkArea>();
 		WorkArea workArea4 = new WorkArea("main", uf4);
 		workAreas3.add(workArea4);
-		Zone zone3 = new Zone("Zone 3", workAreas3);
-		/*EmbossingDevice embossing1 = new EmbossingDevice("embossing 1", null);
+		/*Zone zone3 = new Zone("Zone 3", workAreas3);
+		EmbossingDevice embossing1 = new EmbossingDevice("embossing 1", null);
 		embossing1.addZone(zone3);
 		preProcessingDevices.put(embossing1.getId(), embossing1);*/
 		

@@ -30,7 +30,6 @@ public class DeviceButton extends VBox {
 	private static final int BUTTON_WIDTH = 60;
 	private static final int BUTTON_HEIGHT = 60;
 	private static final int LABEL_WIDTH = 120;
-	private static final int LABEL_HEIGHT= 40;
 	
 	private Button mainButton;
 	private SVGPath imagePath;

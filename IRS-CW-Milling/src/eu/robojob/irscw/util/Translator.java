@@ -34,4 +34,7 @@ public class Translator {
 		return messages.getString(key);
 	}
 	
+	public Locale getLocale() {
+		return locale;
+	}
 }

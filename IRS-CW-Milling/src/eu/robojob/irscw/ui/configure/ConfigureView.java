@@ -30,6 +30,10 @@ public class ConfigureView extends VBox {
 		this.presenter = presenter;
 	}
 	
+	public ConfigurePresenter getPresenter() {
+		return presenter;
+	}
+	
 	protected void buildView() {
 		this.setFillWidth(true);
 		this.setAlignment(Pos.CENTER);

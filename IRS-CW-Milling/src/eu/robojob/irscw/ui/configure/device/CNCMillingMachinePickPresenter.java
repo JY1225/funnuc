@@ -1,7 +1,5 @@
 package eu.robojob.irscw.ui.configure.device;
 
-import org.apache.log4j.Logger;
-
 import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PickStep;
@@ -12,7 +10,7 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 
 	private PickStep pickStep;
 	private CNCMillingMachineSettings deviceSettings;
-	private Logger logger = Logger.getLogger(CNCMillingMachinePickPresenter.class);
+	//private Logger logger = Logger.getLogger(CNCMillingMachinePickPresenter.class);
 	
 	public CNCMillingMachinePickPresenter(CNCMillingMachinePickView view, PickStep pickStep, CNCMillingMachineSettings deviceSettings) {
 		super(view);

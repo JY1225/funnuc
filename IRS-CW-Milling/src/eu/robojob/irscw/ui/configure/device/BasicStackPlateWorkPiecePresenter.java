@@ -3,7 +3,6 @@ package eu.robojob.irscw.ui.configure.device;
 import eu.robojob.irscw.external.device.BasicStackPlate;
 import eu.robojob.irscw.external.device.BasicStackPlate.BasicStackPlateSettings;
 import eu.robojob.irscw.external.device.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.irscw.external.device.exception.IncorrectWorkPieceDataException;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;

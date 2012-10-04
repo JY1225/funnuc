@@ -7,13 +7,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
-
-import org.apache.log4j.Logger;
-
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigureView;
@@ -21,7 +17,6 @@ import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
 
 public class ProcessFlowView extends GridPane  {
 	
-	private static Logger logger = Logger.getLogger(ProcessFlowView.class);
 	private ProcessFlowAdapter processFlowAdapter;
 	
 	private ProcessFlowPresenter presenter;
@@ -32,7 +27,6 @@ public class ProcessFlowView extends GridPane  {
 	private Map<Integer, Region> progressTransportRegions;
 		
 	private static final int maxDevicesFirstRow = 4;
-	private static final int maxRows = 2;
 	
 	public ProcessFlowView() {
 		deviceButtons = new HashMap<Integer, DeviceButton>();
