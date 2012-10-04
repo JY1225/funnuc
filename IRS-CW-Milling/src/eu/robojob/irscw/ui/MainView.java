@@ -28,4 +28,8 @@ public class MainView extends StackPane {
 	public void setPresenter(MainPresenter presenter) {
 		this.presenter = presenter;
 	}
+	
+	public MainPresenter getPresenter() {
+		return presenter;
+	}
 }
