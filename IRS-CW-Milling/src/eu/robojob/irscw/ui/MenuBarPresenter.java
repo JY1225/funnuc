@@ -60,6 +60,17 @@ public class MenuBarPresenter {
 		view.setAlarmsActive();
 	}
 	
+	public void setConfigureButtonEnabled(boolean enabled) {
+		view.setConfigureButtonEnabled(enabled);
+	}
+	
+	public void setTeachButtonEnabled(boolean enabled) {
+		view.setTeachButtonEnabled(enabled);
+	}
+	
+	public void setAutomateButtonEnabled(boolean enabled) {
+		view.setAutomateButtonEnabled(enabled);
+	}
 	
 	public void setMenuBarEnabled(boolean enabled) {
 		view.setEnabled(enabled);

@@ -228,30 +228,38 @@ public class ConfigurePresenter implements TextFieldListener {
 		refreshProgressBar();
 	}
 	
-	public void refreshProgressBar() {
+	public boolean isConfigured() {
+		boolean configured = true;
+		
 		if (processFlowAdapter != null) {
 			for (int i = 0; i < processFlowAdapter.getDeviceStepCount(); i++) {
-				refreshProgressBarDevice(i);
+				if ((deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)) != null) && (deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)).isConfigured())){
+					processFlowPresenter.setDeviceConfigured(i, true);
+				} else {
+					processFlowPresenter.setDeviceConfigured(i, false);
+					configured = false;
+				}
 			}
 			for (int j = 0; j < processFlowAdapter.getTransportStepCount(); j++) {
-				refreshProgressBarTransport(j);
+				if ((transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(j)) != null) && (transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(j)).isConfigured())) {
+					processFlowPresenter.setTransportConfigured(j, true);
+				} else {
+					processFlowPresenter.setTransportConfigured(j, false);
+					configured = false;
+				}
 			}
+		} else {
+			configured = false;
 		}
+		
+		return configured;
 	}
 	
-	public void refreshProgressBarDevice(int deviceIndex) {
-		if ((deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(deviceIndex)) != null) && (deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(deviceIndex)).isConfigured())) {
-			processFlowPresenter.setDeviceProgressGreen(deviceIndex);
+	public void refreshProgressBar() {
+		if (parent != null) {
+			parent.refreshStatus();
 		} else {
-			processFlowPresenter.setDeviceProgressNone(deviceIndex);
-		}
-	}
-	
-	public void refreshProgressBarTransport(int transportIndex) {
-		if ((transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(transportIndex)) != null) && (transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(transportIndex)).isConfigured())) {
-			processFlowPresenter.setTransportProgressGreen(transportIndex);
-		} else {
-			processFlowPresenter.setTransportProgressNone(transportIndex);
+			isConfigured();
 		}
 	}
 

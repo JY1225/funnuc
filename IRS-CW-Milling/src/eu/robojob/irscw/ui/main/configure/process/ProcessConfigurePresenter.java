@@ -7,12 +7,9 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 	
 	private boolean addDeviceActive;
 	private boolean removeDeviceActive;
-	
-	private ProcessFlow processFlow;
-	
+		
 	public ProcessConfigurePresenter(ProcessConfigureView view, ProcessFlow processFlow) {
 		super(view);
-		this.processFlow = processFlow;
 		view.setProcessFlow(processFlow);
 		view.build();
 		addDeviceActive = false;

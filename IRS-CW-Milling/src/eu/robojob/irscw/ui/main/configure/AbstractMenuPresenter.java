@@ -28,11 +28,4 @@ public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> {
 	
 	public abstract boolean isConfigured();
 	
-	public void notifyParentDeviceSettingsChanged(int deviceIndex) {
-		parent.refreshProgressBarDevice(deviceIndex);
-	}
-	
-	public void notifyParentTransportSettingsChanged(int transportIndex) {
-		parent.refreshProgressBarTransport(transportIndex);
-	}
 }

@@ -36,6 +36,16 @@ public class MainPresenter {
 	public void showConfigure() {
 		menuBarPresenter.showConfigureView();
 		view.setContent(configurePresenter.getView());
+		refreshStatus();
+	}
+	
+	public void refreshStatus() {
+		menuBarPresenter.setConfigureButtonEnabled(true);
+		menuBarPresenter.setTeachButtonEnabled(false);
+		menuBarPresenter.setAutomateButtonEnabled(false);
+		if (configurePresenter.isConfigured()) {
+			menuBarPresenter.setTeachButtonEnabled(true);
+		}
 	}
 	
 	public void showTeach() {

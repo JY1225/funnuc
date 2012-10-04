@@ -110,6 +110,22 @@ public class ProcessFlowPresenter {
 		}
 	}
 	
+	public void setDeviceConfigured(int deviceIndex, boolean configured) {
+		if (configured) {
+			setDeviceProgressGreen(deviceIndex);
+		} else {
+			setDeviceProgressNone(deviceIndex);
+		}
+	}
+	
+	public void setTransportConfigured(int transportIndex, boolean configured) {
+		if (configured) {
+			setTransportProgressGreen(transportIndex);
+		} else {
+			setTransportProgressNone(transportIndex);
+		}
+	}
+	
 	public void setDeviceProgressGreen(int deviceIndex) {
 		view.setDeviceProgressGreen(deviceIndex);
 	}

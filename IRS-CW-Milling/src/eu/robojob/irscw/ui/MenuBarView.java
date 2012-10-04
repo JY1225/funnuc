@@ -133,6 +133,9 @@ public class MenuBarView extends ToolBar {
 		HBox.setHgrow(buttonBar, Priority.ALWAYS);
 		HBox.setHgrow(hBoxProcessMenuItems, Priority.ALWAYS);
 		
+		btnAlarms.setDisable(true);
+		btnAdmin.setDisable(true);
+		
 		this.getItems().add(buttonBar);
 		this.setPrefHeight(55);
 	}
@@ -175,6 +178,18 @@ public class MenuBarView extends ToolBar {
 	
 	public void setEnabled(boolean enabled) {
 		this.setDisable(!enabled);
+	}
+	
+	public void setConfigureButtonEnabled(boolean enabled) {
+		btnConfigure.setDisable(!enabled);
+	}
+	
+	public void setTeachButtonEnabled(boolean enabled) {
+		btnTeach.setDisable(!enabled);
+	}
+	
+	public void setAutomateButtonEnabled(boolean enabled) {
+		btnAutomate.setDisable(!enabled);
 	}
 	
 }
