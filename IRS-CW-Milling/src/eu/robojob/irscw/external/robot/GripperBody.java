@@ -64,6 +64,15 @@ public class GripperBody {
 		return possibleGrippers;
 	}
 
+	public Gripper getGripper(String id) {
+		for (Gripper gripper : possibleGrippers) {
+			if (gripper.getId().equals(id)) {
+				return gripper;
+			}
+		}
+		return null;
+	}
+	
 	public void setPossibleGrippers(Set<Gripper> possibleGrippers) {
 		this.possibleGrippers = possibleGrippers;
 	}

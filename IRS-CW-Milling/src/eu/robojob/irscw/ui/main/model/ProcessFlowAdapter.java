@@ -158,7 +158,7 @@ public class ProcessFlowAdapter {
 			PutStep putStep = new PutStep(processFlow, deviceInfo.getPickStep().getRobot(), null, null, transportInfo.getPutStep().getRobotSettings());
 			ProcessingStep processingStep = new ProcessingStep(null, null);
 			PickStep pickStep = new PickStep(processFlow, deviceInfo.getPickStep().getRobot(), null, null, deviceInfo.getPickStep().getRobot().getDefaultPickSettings());
-			transportInfo.getPutStep().setRobotSettings(putStep.getRobot().getDefaultPutSettings());
+			//transportInfo.getPutStep().setRobotSettings(putStep.getRobot().getDefaultPutSettings());
 			processFlow.addStepAfter(deviceInfo.getPickStep(), putStep);
 			processFlow.addStepAfter(putStep, processingStep);
 			processFlow.addStepAfter(processingStep, pickStep);

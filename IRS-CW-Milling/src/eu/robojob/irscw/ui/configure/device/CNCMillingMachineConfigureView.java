@@ -137,9 +137,12 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 				cbbClamping.setValue(cbbClamping.getItems().get(0));
 				cbbClamping.setDisable(true);
 			} else if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null) && 
-				(deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null) && 
-					(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping() != null)) {
-				cbbClamping.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping().getId());
+				(deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
+				if (deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping() != null) {
+					cbbClamping.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping().getId());
+				} else {
+					cbbClamping.setValue(cbbClamping.getItems().get(0));
+				}
 			}
 		}
 	}

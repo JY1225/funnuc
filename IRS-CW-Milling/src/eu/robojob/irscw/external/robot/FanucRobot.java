@@ -1,10 +1,14 @@
 package eu.robojob.irscw.external.robot;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.WorkArea;
@@ -22,6 +26,8 @@ public class FanucRobot extends AbstractRobot {
 	private static final String RELEASE_PIECE = "RELEASE_PIECE";
 	private static final String GRAB_PIECE = "GRAB_PIECE";
 	private static final String MOVE_TO_SAFE_POINT = "MOVE_TO_SAFE_POINT";
+	
+	private static Logger logger = Logger.getLogger(FanucRobot.class);
 
 	public FanucRobot(String id, Set<GripperBody> gripperBodies, GripperBody gripperBody, SocketConnection socketConnection) {
 		super(id, gripperBodies, gripperBody);
@@ -163,9 +169,16 @@ public class FanucRobot extends AbstractRobot {
 	public void loadRobotSettings(AbstractRobotSettings robotSettings) {
 		if (robotSettings instanceof FanucRobotSettings) {
 			FanucRobotSettings settings = (FanucRobotSettings) robotSettings;
+			List<Gripper> usedGrippers = new ArrayList<Gripper>();
 			setGripperBody(settings.gripperBody);
 			for (Entry<GripperHead, Gripper> entry : settings.getGrippers().entrySet()) {
-				entry.getKey().setGripper(entry.getValue());
+				if (usedGrippers.contains(entry.getValue())) {
+					logger.debug("gripper already used on other head");
+				} else {
+					entry.getKey().setGripper(entry.getValue());
+					usedGrippers.add(entry.getValue());
+				}
+				
 			}
 		} else {
 			throw new IllegalArgumentException("Unknown robot settings");
