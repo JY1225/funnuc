@@ -31,13 +31,13 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 	}
 	
 	public abstract static class AbstractProcessingDevicePutSettings extends AbstractDevicePutSettings {
-		public AbstractProcessingDevicePutSettings(WorkArea workArea, Clamping clamping) {
-			super(workArea, clamping);
+		public AbstractProcessingDevicePutSettings(WorkArea workArea) {
+			super(workArea);
 		}
 	}
 	public abstract static class AbstractProcessingDevicePickSettings extends AbstractDevicePickSettings {
-		public AbstractProcessingDevicePickSettings(WorkArea workArea, Clamping clamping) {
-			super(workArea, clamping);
+		public AbstractProcessingDevicePickSettings(WorkArea workArea) {
+			super(workArea);
 		}
 	}
 	public static class AbstractProcessingDeviceInterventionSettings extends AbstractDeviceInterventionSettings {

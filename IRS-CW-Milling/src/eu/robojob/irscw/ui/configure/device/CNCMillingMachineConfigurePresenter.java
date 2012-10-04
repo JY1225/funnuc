@@ -36,15 +36,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	
 	public void changedDevice(String deviceId) {
 		logger.debug("changed device to: " + deviceId);
-		if (deviceId != null) {
-			AbstractDevice device = deviceManager.getDeviceById(deviceId);
-			if (deviceInfo.getDevice() != device) {
-				setWorkArea(null);
-				setClamping(null);
-				view.refreshWorkAreas();
-				// TODO: changed device!
-			}
-		}
+		// TODO: changed device!
 	}
 	
 	public void changedWorkArea(String workAreaId) {
@@ -55,7 +47,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			if (workArea == null) {
 				throw new IllegalArgumentException("Unknown workarea id");
 			} else {
-				if (workArea != deviceInfo.getPutStep().getDeviceSettings().getWorkArea()) {
+				if ((workArea != deviceInfo.getPutStep().getDeviceSettings().getWorkArea()) || (workArea != deviceInfo.getPickStep().getDeviceSettings().getWorkArea()) ) {
 					setWorkArea(workArea);
 					setClamping(null);
 					view.refreshClampings();
@@ -72,7 +64,8 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			if (clamping == null) {
 				throw new IllegalArgumentException("Unknown clamping");
 			} else {
-				if (clamping != deviceInfo.getPutStep().getDeviceSettings().getClamping()) {
+				if ( (clamping != ((CNCMillingMachineSettings) deviceInfo.getDeviceSettings()).getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea())) ||
+						(clamping != ((CNCMillingMachineSettings) deviceInfo.getDeviceSettings()).getClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea())) ){
 					setClamping(clamping);
 				}
 			}
@@ -100,9 +93,12 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		CNCMillingMachinePickSettings pickSettings = (CNCMillingMachinePickSettings) deviceInfo.getPickStep().getDeviceSettings();
 		CNCMillingMachinePutSettings putSettings = (CNCMillingMachinePutSettings) deviceInfo.getPutStep().getDeviceSettings();
 		CNCMillingMachineStartCylusSettings startCyclusSettings = (CNCMillingMachineStartCylusSettings) deviceInfo.getProcessingStep().getStartCyclusSettings();
-		// TODO take into account device
-		if ((pickSettings.getClamping() != null) && (pickSettings.getWorkArea() != null) && (putSettings.getClamping() != null) && (putSettings.getWorkArea() != null) &&
-				(startCyclusSettings.getWorkArea() != null)) {
+		CNCMillingMachineSettings deviceSettings = (CNCMillingMachineSettings) deviceInfo.getDeviceSettings();
+		// TODO take into account start cyclus settings
+		if (    (pickSettings.getWorkArea() != null) && (pickSettings.getWorkArea().getActiveClamping() != null) && 
+				  (deviceSettings.getClamping(pickSettings.getWorkArea()).equals(pickSettings.getWorkArea().getActiveClamping())) && 
+						  (putSettings.getWorkArea() != null) && (putSettings.getWorkArea().getActiveClamping() != null) && 
+						  (deviceSettings.getClamping(putSettings.getWorkArea()).equals(putSettings.getWorkArea().getActiveClamping())) )  {
 			return true;
 		} else {
 			return false;

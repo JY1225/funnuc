@@ -56,8 +56,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	public static class CNCMillingMachinePutSettings extends AbstractCNCMachinePutSettings{
-		public CNCMillingMachinePutSettings(WorkArea workArea, Clamping clamping) {
-			super(workArea, clamping);
+		public CNCMillingMachinePutSettings(WorkArea workArea) {
+			super(workArea);
 		}
 
 		@Override
@@ -66,8 +66,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		}
 	}
 	public static class CNCMillingMachinePickSettings extends AbstractCNCMachinePickSettings{
-		public CNCMillingMachinePickSettings(WorkArea workArea, Clamping clamping) {
-			super(workArea, clamping);
+		public CNCMillingMachinePickSettings(WorkArea workArea) {
+			super(workArea);
 		}
 
 		@Override

@@ -616,8 +616,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 
 	public static class BasicStackPlatePickSettings extends AbstractStackingDevicePickSettings {
-		public BasicStackPlatePickSettings(WorkArea workArea, Clamping clamping) {
-			super(workArea, clamping);
+		public BasicStackPlatePickSettings(WorkArea workArea) {
+			super(workArea);
 		}
 
 		@Override
@@ -627,8 +627,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	public static class BasicStackPlatePutSettings extends AbstractStackingDevicePutSettings {
-		public BasicStackPlatePutSettings(WorkArea workArea, Clamping clamping) {
-			super(workArea, clamping);
+		public BasicStackPlatePutSettings(WorkArea workArea) {
+			super(workArea);
 		}
 
 		@Override

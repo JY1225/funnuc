@@ -111,20 +111,9 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	}
 	
 	public static abstract class AbstractDevicePickSettings extends AbstractDeviceActionSettings<PickStep> {
-		
-		protected Clamping clamping; 
-		
-		public AbstractDevicePickSettings(WorkArea workArea, Clamping clamping) {
+				
+		public AbstractDevicePickSettings(WorkArea workArea) {
 			super(workArea);
-			this.clamping = clamping;
-		}
-
-		public Clamping getClamping() {
-			return clamping;
-		}
-
-		public void setClamping(Clamping clamping) {
-			this.clamping = clamping;
 		}
 		
 		public abstract boolean isTeachingNeeded();
@@ -132,22 +121,11 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	}
 	
 	public static abstract class AbstractDevicePutSettings extends AbstractDeviceActionSettings<PutStep> {
-		
-		protected Clamping clamping; 
-		
-		public AbstractDevicePutSettings(WorkArea workArea, Clamping clamping) {
+				
+		public AbstractDevicePutSettings(WorkArea workArea) {
 			super(workArea);
-			this.clamping = clamping;
 		}
 
-		public Clamping getClamping() {
-			return clamping;
-		}
-
-		public void setClamping(Clamping clamping) {
-			this.clamping = clamping;
-		}
-		
 		public abstract boolean isTeachingNeeded();
 		
 	}

@@ -20,16 +20,14 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 	public abstract Coordinates getPutLocation(WorkArea workArea);
 
 	public static abstract class AbstractStackingDevicePickSettings extends AbstractDevicePickSettings {
-		public AbstractStackingDevicePickSettings(WorkArea workArea,
-				Clamping clamping) {
-			super(workArea, clamping);
+		public AbstractStackingDevicePickSettings(WorkArea workArea) {
+			super(workArea);
 		}
 	}
 	
 	public static abstract class AbstractStackingDevicePutSettings extends AbstractDevicePutSettings {
-		public AbstractStackingDevicePutSettings(WorkArea workArea,
-				Clamping clamping) {
-			super(workArea, clamping);
+		public AbstractStackingDevicePutSettings(WorkArea workArea) {
+			super(workArea);
 		}
 	}
 	

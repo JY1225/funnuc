@@ -136,14 +136,14 @@ public class RoboSoftAppFactory {
 			pickSettings1.setGripperHead(robot.getGripperBody().getGripperHead("A"));
 			
 			AbstractDevice device = deviceMgr.getStackingFromDeviceById("basic stack plate");
-			PickStep pick1 = new PickStep(robot, device, new BasicStackPlate.BasicStackPlatePickSettings(null, null), pickSettings1);
+			PickStep pick1 = new PickStep(robot, device, new BasicStackPlate.BasicStackPlatePickSettings(null), pickSettings1);
 			processFlow.setDeviceSettings(device, device.getDeviceSettings());
 			
 			FanucRobotPutSettings putSettings1 = new FanucRobot.FanucRobotPutSettings();
 			putSettings1.setGripperHead(robot.getGripperBody().getGripperHead("A"));
 			
 			AbstractDevice device2 = deviceMgr.getCNCMachineById("Mazak integrex");
-			PutStep put2 = new PutStep(robot, device2, new CNCMillingMachine.CNCMillingMachinePutSettings(null, null), putSettings1);
+			PutStep put2 = new PutStep(robot, device2, new CNCMillingMachine.CNCMillingMachinePutSettings(null), putSettings1);
 			processFlow.setDeviceSettings(device2, device2.getDeviceSettings());
 			ProcessingStep processing2 = new ProcessingStep( deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachineStartCylusSettings(null));
 			InterventionStep intervention = new InterventionStep( deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachineInterventionSettings(null), 10);
@@ -151,12 +151,12 @@ public class RoboSoftAppFactory {
 			FanucRobotPickSettings pickSettings2 = new FanucRobot.FanucRobotPickSettings();
 			pickSettings2.setGripperHead(robot.getGripperBody().getGripperHead("B"));
 			
-			PickStep pick3 = new PickStep(robot, deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachinePickSettings(null, null), pickSettings2);
+			PickStep pick3 = new PickStep(robot, deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachinePickSettings(null), pickSettings2);
 			
 			FanucRobotPutSettings putSettings2 = new FanucRobot.FanucRobotPutSettings();
 			putSettings2.setGripperHead(robot.getGripperBody().getGripperHead("B"));
 			
-			PutStep put3 = new PutStep(robot, deviceMgr.getStackingToDeviceById("basic stack plate"), new BasicStackPlate.BasicStackPlatePutSettings(null, null), putSettings2);
+			PutStep put3 = new PutStep(robot, deviceMgr.getStackingToDeviceById("basic stack plate"), new BasicStackPlate.BasicStackPlatePutSettings(null), putSettings2);
 			processFlow.addStep(pick1);
 			//processFlow.addStep(put1);
 			//processFlow.addStep(processing1);

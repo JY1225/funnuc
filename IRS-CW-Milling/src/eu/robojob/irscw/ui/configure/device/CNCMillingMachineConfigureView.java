@@ -6,6 +6,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
@@ -86,7 +88,9 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if ((oldValue == null) || (!oldValue.equals(newValue))) {
-					if ((deviceInfo.getPickStep().getDeviceSettings().getClamping() == null) || (newValue != deviceInfo.getPickStep().getDeviceSettings().getClamping().getId())) {
+					CNCMillingMachineSettings deviceSettings = (CNCMillingMachineSettings) deviceInfo.getDeviceSettings();
+					Clamping currentClamping = deviceSettings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
+					if ((currentClamping == null) || (newValue != currentClamping.getId())) {
 						presenter.changedClamping(newValue);
 					}
 				}
@@ -133,8 +137,9 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 				cbbClamping.setValue(cbbClamping.getItems().get(0));
 				cbbClamping.setDisable(true);
 			} else if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null) && 
-				(deviceInfo.getPutStep().getDeviceSettings().getClamping() != null)) {
-				cbbClamping.setValue(deviceInfo.getPutStep().getDeviceSettings().getClamping().getId());
+				(deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null) && 
+					(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping() != null)) {
+				cbbClamping.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping().getId());
 			}
 		}
 	}
