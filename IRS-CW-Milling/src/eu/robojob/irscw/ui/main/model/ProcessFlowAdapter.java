@@ -149,9 +149,11 @@ public class ProcessFlowAdapter {
 	public void addDeviceSteps(int transportIndex) {
 		if (getDeviceStepCount() < maxDeviceCount) {
 			DeviceInformation deviceInfo = getDeviceInformation(transportIndex);
-			PutStep putStep = new PutStep(processFlow, deviceInfo.getPickStep().getRobot(), null, null, deviceInfo.getPickStep().getRobot().getDefaultPutSettings());
+			TransportInformation transportInfo = getTransportInformation(transportIndex);
+			PutStep putStep = new PutStep(processFlow, deviceInfo.getPickStep().getRobot(), null, null, transportInfo.getPutStep().getRobotSettings());
 			ProcessingStep processingStep = new ProcessingStep(null, null);
 			PickStep pickStep = new PickStep(processFlow, deviceInfo.getPickStep().getRobot(), null, null, deviceInfo.getPickStep().getRobot().getDefaultPickSettings());
+			transportInfo.getPutStep().setRobotSettings(putStep.getRobot().getDefaultPutSettings());
 			processFlow.addStepAfter(deviceInfo.getPickStep(), putStep);
 			processFlow.addStepAfter(putStep, processingStep);
 			processFlow.addStepAfter(processingStep, pickStep);
@@ -162,6 +164,9 @@ public class ProcessFlowAdapter {
 	
 	public void removeDeviceSteps(int deviceIndex) {
 		DeviceInformation deviceInfo = getDeviceInformation(deviceIndex);
+		TransportInformation transportBefore = getTransportInformation(deviceIndex-1);
+		TransportInformation transportAfter = getTransportInformation(deviceIndex);
+		transportAfter.getPutStep().setRobotSettings(transportBefore.getPutStep().getRobotSettings());
 		processFlow.removeSteps(deviceInfo.getSteps());
 	}
 	

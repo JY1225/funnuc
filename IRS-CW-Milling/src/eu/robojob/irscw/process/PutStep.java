@@ -85,5 +85,9 @@ public class PutStep extends AbstractTransportStep {
 	public AbstractRobotPutSettings getRobotSettings() {
 		return robotPutSettings;
 	}
+	
+	public void setRobotSettings(AbstractRobotPutSettings settings) {
+		this.robotPutSettings = settings;
+	}
 
 }

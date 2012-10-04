@@ -19,7 +19,8 @@ public abstract class AbstractTransportStep extends AbstractProcessStep {
 	}
 	
 	public abstract void finalize() throws IOException;
-	public abstract AbstractDevice.AbstractDeviceActionSettings getDeviceSettings();
+	
+	public abstract AbstractDevice.AbstractDeviceActionSettings<?> getDeviceSettings();
 	public abstract AbstractRobot.AbstractRobotActionSettings getRobotSettings();
 
 	public AbstractRobot getRobot() {

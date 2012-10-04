@@ -95,4 +95,8 @@ public class PickStep extends AbstractTransportStep {
 		return robotPickSettings;
 	}
 
+	public void setRobotSettings(AbstractRobotPickSettings settings) {
+		this.robotPickSettings = settings;
+	}
+
 }
