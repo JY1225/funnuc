@@ -1,5 +1,8 @@
 package eu.robojob.irscw.ui.main.configure;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -29,11 +32,14 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 	private static int ICON_MARGIN = 6;
 	private static int ICON_ARROW_WIDTH = 10;
 	
+	private Map<Integer, Button> menuItems;
+	
 	public AbstractMenuView() {
 		super();
 		setAlignment(Pos.TOP_CENTER);
 		setPadding(new Insets(15, 0, 0, 0));
 		this.getStyleClass().add("left-menu");
+		this.menuItems = new HashMap<Integer, Button>();
 	}
 	
 	public void setPresenter(T presenter) {
@@ -88,6 +94,7 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 			}
 			button.getStyleClass().add("left-menu-bottom");
 		}
+		menuItems.put(index, button);
 		getChildren().add(button);
 	}
 	
@@ -99,6 +106,10 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 			node.getStyleClass().remove("menu-item-selected");
 		}
 		getChildren().get(index).getStyleClass().add("menu-item-selected");
+	}
+	
+	public Button getMenuItem(int index) {
+		return menuItems.get(index);
 	}
 	
 }

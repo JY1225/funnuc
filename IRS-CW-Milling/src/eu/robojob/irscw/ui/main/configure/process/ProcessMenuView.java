@@ -3,7 +3,6 @@ package eu.robojob.irscw.ui.main.configure.process;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import eu.robojob.irscw.ui.main.configure.AbstractMenuView;
-import eu.robojob.irscw.util.Translator;
 
 public class ProcessMenuView extends AbstractMenuView<ProcessMenuPresenter> {
 
@@ -39,6 +38,8 @@ public class ProcessMenuView extends AbstractMenuView<ProcessMenuPresenter> {
 			}
 		});
 		
+		getMenuItem(1).setDisable(true);
+		
 		addMenuItem(2, openIconPath, translator.getTranslation("OpenProcess"), true, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -46,12 +47,16 @@ public class ProcessMenuView extends AbstractMenuView<ProcessMenuPresenter> {
 			}
 		});
 		
+		getMenuItem(2).setDisable(true);
+		
 		addMenuItem(3, newPath, translator.getTranslation("NewProcess"), false, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				presenter.newProcess();
 			}
 		});
+		
+		getMenuItem(3).setDisable(true);
 	}
 	
 	public void setConfigureActive() {
