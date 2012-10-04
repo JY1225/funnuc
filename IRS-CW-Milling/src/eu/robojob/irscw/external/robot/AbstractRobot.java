@@ -126,6 +126,9 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		}
 	}
 	
+	public static abstract class AbstractRobotSettings {
+	}
+	
 	public GripperBody getGripperBody() {
 		return activeGripperBody;
 	}
@@ -136,4 +139,6 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	public abstract AbstractRobotPickSettings getDefaultPickSettings();
 	public abstract AbstractRobotPutSettings getDefaultPutSettings();
+	
+	public abstract void loadRobotSettings(AbstractRobotSettings robotSettings);
 }

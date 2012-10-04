@@ -82,6 +82,25 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			super(workArea);
 		}
 	}
+	public class CNCMillingMachineSettings extends AbstractDeviceSettings {
+
+		private WorkArea workArea;
+		private Clamping clamping;
+		
+		public CNCMillingMachineSettings(WorkArea workArea, Clamping clamping) {
+			this.workArea = workArea;
+			this.clamping = clamping;
+		}
+
+		public WorkArea getWorkArea() {
+			return workArea;
+		}
+
+		public Clamping getClamping() {
+			return clamping;
+		}
+		
+	}
 
 	@Override
 	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException {
@@ -180,6 +199,17 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			throw new IOException(this + " was not connected");
 		} else {
 			String response = socketConnection.synchronizedSendAndRead(INTERVENTION_FINISHED);
+		}
+	}
+
+	@Override
+	protected void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {
+		if (deviceSettings instanceof CNCMillingMachineSettings) {
+			// TODO: revise: references or ids?
+			CNCMillingMachineSettings settings = (CNCMillingMachineSettings) deviceSettings;
+			settings.getWorkArea().setActiveClamping(settings.getClamping());
+		} else {
+			throw new IllegalArgumentException("Unknown device settings");
 		}
 	}
 

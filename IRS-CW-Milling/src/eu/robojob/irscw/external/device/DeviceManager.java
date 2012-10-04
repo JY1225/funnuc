@@ -71,9 +71,9 @@ public class DeviceManager {
 		WorkArea workArea4 = new WorkArea("main", uf4);
 		workAreas3.add(workArea4);
 		Zone zone3 = new Zone("Zone 3", workAreas3);
-		EmbossingDevice embossing1 = new EmbossingDevice("embossing 1", null);
+		/*EmbossingDevice embossing1 = new EmbossingDevice("embossing 1", null);
 		embossing1.addZone(zone3);
-		preProcessingDevices.put(embossing1.getId(), embossing1);
+		preProcessingDevices.put(embossing1.getId(), embossing1);*/
 		
 		// add Basic Stacker
 		UserFrame uf5 = new UserFrame(5, 20);

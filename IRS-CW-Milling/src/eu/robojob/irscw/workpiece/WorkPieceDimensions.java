@@ -12,6 +12,10 @@ public class WorkPieceDimensions {
 		this.height = height;
 	}
 	
+	public WorkPieceDimensions clone() {
+		return new WorkPieceDimensions(length, width, height);
+	}
+	
 	public WorkPieceDimensions() {
 		this(-1, -1, -1);
 	}

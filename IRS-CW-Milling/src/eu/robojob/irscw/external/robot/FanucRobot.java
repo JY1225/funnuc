@@ -117,6 +117,25 @@ public class FanucRobot extends AbstractRobot {
 			super(null, null, null, null, null, null);
 		}
 	}
+	
+	public class FanucRobotSettings extends AbstractRobotSettings {
+		protected GripperHead head;
+		protected Gripper gripper;
+		
+		public FanucRobotSettings(GripperHead head, Gripper gripper) {
+			this.head = head;
+			this.gripper = gripper;
+		}
+
+		public GripperHead getHead() {
+			return head;
+		}
+
+		public Gripper getGripper() {
+			return gripper;
+		}
+	}
+	
 	@Override
 	public AbstractRobotPickSettings getDefaultPickSettings() {
 		return new FanucRobotPickSettings();
@@ -125,6 +144,16 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public AbstractRobotPutSettings getDefaultPutSettings() {
 		return new FanucRobotPutSettings();
+	}
+
+	@Override
+	public void loadRobotSettings(AbstractRobotSettings robotSettings) {
+		if (robotSettings instanceof FanucRobotSettings) {
+			FanucRobotSettings settings = (FanucRobotSettings) robotSettings;
+			settings.getHead().setGripper(settings.getGripper());
+		} else {
+			throw new IllegalArgumentException("Unknown robot settings");
+		}
 	}
 
 }

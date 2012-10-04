@@ -6,8 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.robojob.irscw.external.device.CNCMillingMachine;
-import eu.robojob.irscw.external.device.Conveyor;
-import eu.robojob.irscw.external.device.EmbossingDevice;
 import eu.robojob.irscw.external.robot.FanucRobot;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
@@ -33,19 +31,14 @@ public class ProcessFlowAdapterTest {
 	@Before
 	public void setUp() throws Exception {
 		processFlow = new ProcessFlow("Test");
-		Conveyor conveyor = new Conveyor("conveyor", null);
-		EmbossingDevice embossing = new EmbossingDevice("embossing", null);
+		/*Conveyor conveyor = new Conveyor("conveyor", null);
+		EmbossingDevice embossing = new EmbossingDevice("embossing", null);*/
 		CNCMillingMachine cncMilling = new CNCMillingMachine("cnc milling", null);
 		FanucRobot robot = new FanucRobot("robot", null);
-		pick1 = new PickStep(robot, conveyor, null, null);
-		put1 = new PutStep(robot, embossing, null, null);
-		processing1 = new ProcessingStep(embossing, null);
-		pick2 = new PickStep(robot, embossing, null, null);
 		put2 = new PutStep(robot, cncMilling, null, null);
 		processing2 = new ProcessingStep(cncMilling, null);
 		intervention = new InterventionStep(cncMilling, null, 10);
 		pick3 = new PickStep(robot, cncMilling, null, null);
-		put3 = new PutStep(robot, conveyor, null, null);
 		processFlow.addStep(pick1);
 		processFlow.addStep(put1);
 		processFlow.addStep(processing1);

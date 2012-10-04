@@ -39,6 +39,9 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 		}
 	}
 	
+	public abstract class AbstractStackingDeviceSettings extends AbstractDeviceSettings {
+	}
+	
 	@Override
 	public DeviceType getType() {
 		return DeviceType.STACKING;

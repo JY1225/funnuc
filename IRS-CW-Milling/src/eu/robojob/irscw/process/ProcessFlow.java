@@ -1,11 +1,17 @@
 package eu.robojob.irscw.process;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
+import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotSettings;
 
 public class ProcessFlow {
 	
@@ -16,6 +22,10 @@ public class ProcessFlow {
 	private static Logger logger = Logger.getLogger(ProcessFlow.class);
 	
 	private List<AbstractProcessStep> processSteps;
+	
+	private Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> deviceSettings;
+	private Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> robotSettings;
+	
 	private int currentStepNumber;
 	
 	private boolean finished;
@@ -28,14 +38,19 @@ public class ProcessFlow {
 	public ProcessFlow(String name) {
 		this.name = name;
 		this.processSteps = new ArrayList<AbstractProcessStep>();
+		this.deviceSettings = new HashMap<AbstractDevice, AbstractDevice.AbstractDeviceSettings>();
+		this.robotSettings = new HashMap<AbstractRobot, AbstractRobot.AbstractRobotSettings>();
 		this.finished = false;
 		needsTeaching = true;
 	}
 			
-	public ProcessFlow(String name, List<AbstractProcessStep>processSteps) {
+	public ProcessFlow(String name, List<AbstractProcessStep>processSteps, Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> deviceSettings,
+			Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> robotSettings) {
 		this.name = name;
 		this.finished = false;
 		needsTeaching = true;
+		this.deviceSettings = deviceSettings;
+		this.robotSettings = robotSettings;
 		this.currentStepNumber = 0;
 		setUpProcess(processSteps);
 	}
@@ -49,6 +64,14 @@ public class ProcessFlow {
 		for (AbstractProcessStep processStep : aProcess.getProcessSteps()) {
 			AbstractProcessStep newStep = processStep.clone(this);
 			processStepsCopy.add(newStep);
+		}
+		this.deviceSettings = new HashMap<AbstractDevice, AbstractDeviceSettings>();
+		for (Entry<AbstractDevice, AbstractDeviceSettings> entry : deviceSettings.entrySet()) {
+			deviceSettings.put(entry.getKey(), entry.getValue());
+		}
+		this.robotSettings = new HashMap<AbstractRobot, AbstractRobotSettings>();
+		for (Entry<AbstractRobot, AbstractRobotSettings> entry : robotSettings.entrySet()) {
+			robotSettings.put(entry.getKey(), entry.getValue());
 		}
 		setUpProcess(processStepsCopy);
 	}
@@ -177,5 +200,9 @@ public class ProcessFlow {
 		} else {
 			processSteps.add(processSteps.indexOf(step), newStep);
 		}
+	}
+	
+	public AbstractDeviceSettings getDeviceSettings(AbstractDevice device) {
+		return deviceSettings.get(device);
 	}
 }
