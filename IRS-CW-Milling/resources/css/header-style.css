@@ -23,7 +23,6 @@
 	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 2 3 2;
 	-fx-border-radius: 6, 5, 4, 3;
 	-fx-font-size: 14px;
-	-fx-font-smoothing-type: lcd;
 	-fx-text-alignment: center;
 	
 	-fx-font-family: "Helvetica";

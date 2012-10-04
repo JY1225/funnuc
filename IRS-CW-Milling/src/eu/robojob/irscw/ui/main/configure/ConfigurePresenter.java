@@ -175,6 +175,7 @@ public class ConfigurePresenter implements TextFieldListener {
 	
 	public void updateProcessFlow() {
 		processFlowPresenter.refresh();
+		refreshProgressBar();
 	}
 	
 	public void configureProcess() {

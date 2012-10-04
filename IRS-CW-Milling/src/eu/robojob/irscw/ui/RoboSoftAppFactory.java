@@ -176,7 +176,7 @@ public class RoboSoftAppFactory {
 	
 	private TransportMenuFactory getTransportMenuFactory() {
 		if (transportMenuFactory == null) {
-			transportMenuFactory = new TransportMenuFactory(getRobotManager(), getProcessFlow());
+			transportMenuFactory = new TransportMenuFactory(getProcessFlow());
 		}
 		return transportMenuFactory;
 	}

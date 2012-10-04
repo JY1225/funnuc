@@ -74,4 +74,8 @@ public class MainPresenter {
 	public ProcessFlow getProcessFlow() {
 		return process;
 	}
+	
+	public void updateProcessConfiguredStatus(boolean configured) {
+		
+	}
 }
