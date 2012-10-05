@@ -24,7 +24,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 	
 	private static final int BUTTON_WIDTH = 150;
 		
-	private static final int MAX_NAME_LENGTH = 20;
+	private static final int MAX_NAME_LENGTH = 25;
 	
 	private static final String addIconPath = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 8.75 5 L 11.25 5 L 11.25 8.75 L 15 8.75 L 15 11.25 L 11.25 11.25 L 11.25 15 L 8.75 15 L 8.75 11.25 L 5 11.25 L 5 8.75 L 8.75 8.75 L 8.75 5 z";
 	private static final String deleteIconPath = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 5 8.75 L 15 8.75 L 15 11.25 L 5 11.25 L 5 8.75 z";

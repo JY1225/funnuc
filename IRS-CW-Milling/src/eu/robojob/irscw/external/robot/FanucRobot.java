@@ -194,4 +194,39 @@ public class FanucRobot extends AbstractRobot {
 		return new FanucRobotSettings(getGripperBody(), grippers);
 	}
 
+	@Override
+	public boolean validatePickSettings(AbstractRobotPickSettings pickSettings) {
+		FanucRobotPickSettings fanucPickSettings = (FanucRobotPickSettings) pickSettings;
+		if ( 
+				(fanucPickSettings.getGripperHead() != null) &&
+				(fanucPickSettings.getGripper() != null) && 
+				(getGripperBody().getActiveGripper(fanucPickSettings.getGripperHead()).equals(fanucPickSettings.getGripper())) &&
+				(fanucPickSettings.getSmoothPoint() != null) &&
+				(fanucPickSettings.getWorkArea() != null) &&
+				(fanucPickSettings.getWorkPieceDimensions() != null)
+			) {
+			return true;
+		} else {
+			return false;
+		}
+				
+	}
+
+	@Override
+	public boolean validatePutSettings(AbstractRobotPutSettings putSettings) {
+		FanucRobotPutSettings fanucPutSettings = (FanucRobotPutSettings) putSettings;
+		if ( 
+				(fanucPutSettings.getGripperHead() != null) &&
+				(fanucPutSettings.getGripper() != null) && 
+				(getGripperBody().getActiveGripper(fanucPutSettings.getGripperHead()).equals(fanucPutSettings.getGripper())) &&
+				(fanucPutSettings.getSmoothPoint() != null) &&
+				(fanucPutSettings.getWorkArea() != null) &&
+				(fanucPutSettings.getWorkPieceDimensions() != null)
+			) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 }

@@ -26,6 +26,8 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 	public abstract void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException;	
 	public abstract void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException;
 	
+	public abstract boolean validateStartCyclusSettings(AbstractProcessingDeviceStartCyclusSettings startCyclusSettings);
+	
 	public String toString() {
 		return "ProcessingDevice: " + id;
 	}

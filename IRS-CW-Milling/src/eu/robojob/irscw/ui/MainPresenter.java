@@ -48,7 +48,11 @@ public class MainPresenter {
 		menuBarPresenter.setTeachButtonEnabled(false);
 		menuBarPresenter.setAutomateButtonEnabled(false);
 		if (configurePresenter.isConfigured()) {
-			menuBarPresenter.setTeachButtonEnabled(true);
+			if (process.isConfigured()) {
+				menuBarPresenter.setTeachButtonEnabled(true);
+			} else {
+				throw new IllegalStateException("Configuration UI says ok, but there is still data missing");
+			}
 		}
 	}
 	

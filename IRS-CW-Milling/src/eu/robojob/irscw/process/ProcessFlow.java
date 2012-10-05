@@ -232,4 +232,34 @@ public class ProcessFlow {
 		loadAllDeviceSettings();
 		loadAllRobotSettings();
 	}
+	
+	public boolean isConfigured() {
+		loadAllDeviceSettings();
+		for (AbstractProcessStep step : processSteps) {
+			if (step instanceof PickStep) {
+				PickStep pickStep = (PickStep) step;
+				if (  (!pickStep.getDevice().validatePickSettings(pickStep.getDeviceSettings())) || 
+						(!pickStep.getRobot().validatePickSettings(pickStep.getRobotSettings()))  ) {
+					return false;
+				}
+			} else if (step instanceof PutStep) {
+				PutStep putStep = (PutStep) step;
+				if (  (!putStep.getDevice().validatePutSettings(putStep.getDeviceSettings())) || 
+						(!putStep.getRobot().validatePutSettings(putStep.getRobotSettings()))  ) {
+					return false;
+				}
+			} else if (step instanceof InterventionStep) {
+				InterventionStep interventionStep = (InterventionStep) step;
+				if (!interventionStep.getDevice().validateInterventionSettings(interventionStep.getInterventionSettings())) {
+					return false;
+				}
+			} else if (step instanceof ProcessingStep) {
+				ProcessingStep processingStep = (ProcessingStep) step;
+				if (!processingStep.getDevice().validateStartCyclusSettings(processingStep.getStartCyclusSettings())) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 }

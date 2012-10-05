@@ -27,6 +27,10 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public abstract void loadDeviceSettings(AbstractDeviceSettings deviceSettings);
 	public abstract AbstractDeviceSettings getDeviceSettings();
+	
+	public abstract boolean validatePickSettings(AbstractDevicePickSettings pickSettings);
+	public abstract boolean validatePutSettings(AbstractDevicePutSettings putSettings);
+	public abstract boolean validateInterventionSettings(AbstractDeviceInterventionSettings interventionSettings);
 
 	public AbstractDevice(String id) {
 		super(id);

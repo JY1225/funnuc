@@ -55,6 +55,9 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void releasePiece(AbstractRobotPutSettings putSettings) throws IOException;
 	public abstract void grabPiece(AbstractRobotPickSettings pickSettings) throws IOException;
 	
+	public abstract boolean validatePickSettings(AbstractRobotPickSettings pickSettings);
+	public abstract boolean validatePutSettings(AbstractRobotPutSettings putSettings);
+	
 	public abstract void moveToSafePoint() throws IOException;
 	
 	public String toString() {

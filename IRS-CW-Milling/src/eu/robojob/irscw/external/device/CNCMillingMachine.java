@@ -235,4 +235,48 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		return new CNCMillingMachineSettings(getWorkAreas());
 	}
 
+	@Override
+	public boolean validateStartCyclusSettings(AbstractProcessingDeviceStartCyclusSettings startCyclusSettings) {
+		CNCMillingMachineStartCylusSettings cncMillingStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCyclusSettings;
+		if ( (cncMillingStartCyclusSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingStartCyclusSettings.getWorkArea())) &&
+				(cncMillingStartCyclusSettings.getWorkArea().getActiveClamping() != null) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean validatePickSettings(AbstractDevicePickSettings pickSettings) {
+		CNCMillingMachinePickSettings cncMillingMachinePickSettings = (CNCMillingMachinePickSettings) pickSettings;
+		if ((cncMillingMachinePickSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingMachinePickSettings.getWorkArea())) &&
+				(cncMillingMachinePickSettings.getWorkArea().getActiveClamping() != null) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean validatePutSettings(AbstractDevicePutSettings putSettings) {
+		CNCMillingMachinePutSettings cncMillingMachinePutSettings = (CNCMillingMachinePutSettings) putSettings;
+		if ((cncMillingMachinePutSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingMachinePutSettings.getWorkArea())) &&
+				(cncMillingMachinePutSettings.getWorkArea().getActiveClamping() != null) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean validateInterventionSettings(AbstractDeviceInterventionSettings interventionSettings) {
+		CNCMillingMachineInterventionSettings cncMillingMachineInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
+		if ((cncMillingMachineInterventionSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingMachineInterventionSettings.getWorkArea())) &&
+				(cncMillingMachineInterventionSettings.getWorkArea().getActiveClamping() != null) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 }

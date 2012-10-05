@@ -65,4 +65,9 @@ public class ProcessingStep extends AbstractProcessStep {
 		return ProcessStepType.PROCESSING_STEP;
 	}
 	
+	@Override 
+	public AbstractProcessingDevice getDevice() {
+		return (AbstractProcessingDevice) super.getDevice();
+	}
+	
 }
