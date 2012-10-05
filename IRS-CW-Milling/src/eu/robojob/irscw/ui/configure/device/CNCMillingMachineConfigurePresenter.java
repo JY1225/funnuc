@@ -2,7 +2,6 @@ package eu.robojob.irscw.ui.configure.device;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePickSettings;
 import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePutSettings;
 import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
@@ -10,6 +9,8 @@ import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineStart
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
+import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
@@ -76,8 +77,16 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	private void setWorkArea(WorkArea workArea) {
 		logger.debug("Changed workarea-settings to: " + workArea);
 		deviceInfo.getPickStep().getDeviceSettings().setWorkArea(workArea);
+		deviceInfo.getPickStep().getRobotSettings().setWorkArea(workArea);
 		deviceInfo.getPutStep().getDeviceSettings().setWorkArea(workArea);
+		deviceInfo.getPutStep().getRobotSettings().setWorkArea(workArea);
 		deviceInfo.getProcessingStep().getStartCyclusSettings().setWorkArea(workArea);
+		if (deviceInfo.hasInterventionStepAfterPut()) {
+			deviceInfo.getInterventionStepAfterPut().getInterventionSettings().setWorkArea(workArea);
+		}
+		if (deviceInfo.hasInterventionStepBeforePick()) {
+			deviceInfo.getInterventionStepBeforePick().getInterventionSettings().setWorkArea(workArea);
+		}
 	}
 	
 	// these methods should only be called when a combo-box value is changed, into a real value
@@ -91,14 +100,24 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	@Override
 	public boolean isConfigured() {
 		CNCMillingMachinePickSettings pickSettings = (CNCMillingMachinePickSettings) deviceInfo.getPickStep().getDeviceSettings();
+		AbstractRobotPickSettings robotPickSettings = deviceInfo.getPickStep().getRobotSettings();
 		CNCMillingMachinePutSettings putSettings = (CNCMillingMachinePutSettings) deviceInfo.getPutStep().getDeviceSettings();
+		AbstractRobotPutSettings robotPutSettings = deviceInfo.getPutStep().getRobotSettings();
 		CNCMillingMachineStartCylusSettings startCyclusSettings = (CNCMillingMachineStartCylusSettings) deviceInfo.getProcessingStep().getStartCyclusSettings();
 		CNCMillingMachineSettings deviceSettings = (CNCMillingMachineSettings) deviceInfo.getDeviceSettings();
 		// TODO take into account start cyclus settings
-		if (    (pickSettings.getWorkArea() != null) && (pickSettings.getWorkArea().getActiveClamping() != null) && 
-				  (deviceSettings.getClamping(pickSettings.getWorkArea()).equals(pickSettings.getWorkArea().getActiveClamping())) && 
-						  (putSettings.getWorkArea() != null) && (putSettings.getWorkArea().getActiveClamping() != null) && 
-						  (deviceSettings.getClamping(putSettings.getWorkArea()).equals(putSettings.getWorkArea().getActiveClamping())) )  {
+		if (    
+				(pickSettings.getWorkArea() != null) && 
+				(robotPickSettings.getWorkArea() != null) &&
+				(pickSettings.getWorkArea().equals(robotPickSettings.getWorkArea())) &&
+				(pickSettings.getWorkArea().getActiveClamping() != null) && 
+				(deviceSettings.getClamping(pickSettings.getWorkArea()).equals(pickSettings.getWorkArea().getActiveClamping())) && 
+				(putSettings.getWorkArea() != null) && 
+				(robotPutSettings.getWorkArea() != null) &&
+				(putSettings.getWorkArea().equals(robotPutSettings.getWorkArea())) &&
+				(putSettings.getWorkArea().getActiveClamping() != null) && 
+				(deviceSettings.getClamping(putSettings.getWorkArea()).equals(putSettings.getWorkArea().getActiveClamping())) 
+			)  {
 			return true;
 		} else {
 			return false;

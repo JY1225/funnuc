@@ -118,12 +118,12 @@ public class FanucRobot extends AbstractRobot {
 	}
 	public static class FanucRobotPutSettings extends AbstractRobotPutSettings {
 
-		public FanucRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
-			super(workArea, gripperHead, gripper, smoothPoint, location, workPieceDimensions);
+		public FanucRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location) {
+			super(workArea, gripperHead, gripper, smoothPoint, location);
 		}
 		
 		public FanucRobotPutSettings() {
-			super(null, null, null, null, null, null);
+			super(null, null, null, null, null);
 		}
 	}
 	
@@ -220,8 +220,7 @@ public class FanucRobot extends AbstractRobot {
 				(fanucPutSettings.getGripper() != null) && 
 				(getGripperBody().getActiveGripper(fanucPutSettings.getGripperHead()).equals(fanucPutSettings.getGripper())) &&
 				(fanucPutSettings.getSmoothPoint() != null) &&
-				(fanucPutSettings.getWorkArea() != null) &&
-				(fanucPutSettings.getWorkPieceDimensions() != null)
+				(fanucPutSettings.getWorkArea() != null)
 			) {
 			return true;
 		} else {

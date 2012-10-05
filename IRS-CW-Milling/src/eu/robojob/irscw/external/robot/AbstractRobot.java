@@ -70,15 +70,13 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		protected Gripper gripper;
 		protected Coordinates smoothPoint;
 		protected Coordinates location;
-		protected WorkPieceDimensions workPieceDimensions;
 		
-		public AbstractRobotActionSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
+		public AbstractRobotActionSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location) {
 			this.workArea = workArea;
 			this.gripper = gripper;
 			this.gripperHead = gripperHead;
 			this.smoothPoint = smoothPoint;
 			this.location = location;
-			this.workPieceDimensions = workPieceDimensions;
 		}
 		public WorkArea getWorkArea() {
 			return workArea;
@@ -110,6 +108,17 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		public void setGripper(Gripper gripper) {
 			this.gripper = gripper;
 		}
+		
+	}
+	
+	public static abstract class AbstractRobotPickSettings extends AbstractRobotActionSettings {
+		protected WorkPieceDimensions workPieceDimensions;
+
+		public AbstractRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
+			super(workArea, gripperHead, gripper, smoothPoint, location);
+			this.workPieceDimensions = workPieceDimensions;
+		}
+		
 		public WorkPieceDimensions getWorkPieceDimensions() {
 			return workPieceDimensions;
 		}
@@ -118,14 +127,10 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		}
 	}
 	
-	public static abstract class AbstractRobotPickSettings extends AbstractRobotActionSettings {
-		public AbstractRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
-			super(workArea, gripperHead, gripper, smoothPoint, location, workPieceDimensions);
-		}
-	}
+	// dimensions for put follow from pick
 	public static abstract class AbstractRobotPutSettings extends AbstractRobotActionSettings {
-		public AbstractRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
-			super(workArea, gripperHead, gripper, smoothPoint, location, workPieceDimensions);
+		public AbstractRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location) {
+			super(workArea, gripperHead, gripper, smoothPoint, location);
 		}
 	}
 	

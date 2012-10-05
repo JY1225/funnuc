@@ -12,6 +12,7 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 	private BasicStackPlateSettings deviceSettings;
 	private PickStep pickStep;
 	private WorkPieceDimensions dimensions;
+	private WorkPieceOrientation orientation;
 	
 	public BasicStackPlateWorkPiecePresenter(BasicStackPlateWorkPieceView view, PickStep pickStep, BasicStackPlateSettings deviceSettings) {
 		super(view);
@@ -19,11 +20,19 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 		
 		this.deviceSettings = deviceSettings;
 		
-		this.dimensions = deviceSettings.getDimensions();
+		this.dimensions = pickStep.getRobotSettings().getWorkPieceDimensions();
 		if (dimensions == null) {
 			dimensions = new WorkPieceDimensions();
+			pickStep.getRobotSettings().setWorkPieceDimensions(dimensions);
 		}
-			
+		deviceSettings.setDimensions(dimensions);
+					
+		orientation = deviceSettings.getOrientation();
+		if (orientation == null) {
+			orientation = WorkPieceOrientation.HORIZONTAL;
+			deviceSettings.setOrientation(orientation);
+		}
+		
 		view.setPickStep(pickStep);
 		view.build();
 	}
@@ -62,7 +71,10 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 	@Override
 	public boolean isConfigured() {
 		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
-		if ((plate.getRawStackingPositions() != null) && (plate.getRawStackingPositions().size() > 0)) {
+		if (
+				(dimensions != null) && (orientation != null) &&
+					(plate.getRawStackingPositions() != null) && (plate.getRawStackingPositions().size() > 0)
+			) {
 			return true;
 		} else {
 			return false;
