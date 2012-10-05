@@ -39,11 +39,6 @@ public class PutStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public AbstractProcessStep clone(ProcessFlow parentProcess) {
-		return new PutStep(parentProcess, robot, device, putSettings, robotPutSettings);
-	}
-
-	@Override
 	public String toString() {
 		return "PutStep to " + device + " using " + robot;
 	}

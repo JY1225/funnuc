@@ -29,11 +29,6 @@ public class PickStep extends AbstractTransportStep {
 			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
 		this(null, robot, deviceFrom, pickSettings, robotPickSettings);
 	}
-	
-	@Override
-	public PickStep clone(ProcessFlow parentProcess) {
-		return new PickStep(parentProcess, robot, device, pickSettings, robotPickSettings);
-	}
 
 	@Override
 	public void executeStep() throws IOException {

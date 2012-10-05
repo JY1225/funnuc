@@ -31,7 +31,10 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	public abstract boolean validatePickSettings(AbstractDevicePickSettings pickSettings);
 	public abstract boolean validatePutSettings(AbstractDevicePutSettings putSettings);
 	public abstract boolean validateInterventionSettings(AbstractDeviceInterventionSettings interventionSettings);
-
+	
+	public abstract AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePickSettings pickSettings);
+	public abstract AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePutSettings putSettings);
+	
 	public AbstractDevice(String id) {
 		super(id);
 		zones = new ArrayList<Zone>();

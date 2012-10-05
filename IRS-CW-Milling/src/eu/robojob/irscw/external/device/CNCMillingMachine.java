@@ -238,7 +238,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public boolean validateStartCyclusSettings(AbstractProcessingDeviceStartCyclusSettings startCyclusSettings) {
 		CNCMillingMachineStartCylusSettings cncMillingStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCyclusSettings;
-		if ( (cncMillingStartCyclusSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingStartCyclusSettings.getWorkArea())) &&
+		if ((cncMillingStartCyclusSettings != null) && (cncMillingStartCyclusSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingStartCyclusSettings.getWorkArea())) &&
 				(cncMillingStartCyclusSettings.getWorkArea().getActiveClamping() != null) ) {
 			return true;
 		} else {
@@ -249,7 +249,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public boolean validatePickSettings(AbstractDevicePickSettings pickSettings) {
 		CNCMillingMachinePickSettings cncMillingMachinePickSettings = (CNCMillingMachinePickSettings) pickSettings;
-		if ((cncMillingMachinePickSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingMachinePickSettings.getWorkArea())) &&
+		if ((cncMillingMachinePickSettings != null) && (cncMillingMachinePickSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingMachinePickSettings.getWorkArea())) &&
 				(cncMillingMachinePickSettings.getWorkArea().getActiveClamping() != null) ) {
 			return true;
 		} else {
@@ -260,7 +260,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public boolean validatePutSettings(AbstractDevicePutSettings putSettings) {
 		CNCMillingMachinePutSettings cncMillingMachinePutSettings = (CNCMillingMachinePutSettings) putSettings;
-		if ((cncMillingMachinePutSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingMachinePutSettings.getWorkArea())) &&
+		if ((cncMillingMachinePutSettings != null) && (cncMillingMachinePutSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingMachinePutSettings.getWorkArea())) &&
 				(cncMillingMachinePutSettings.getWorkArea().getActiveClamping() != null) ) {
 			return true;
 		} else {
@@ -271,12 +271,22 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public boolean validateInterventionSettings(AbstractDeviceInterventionSettings interventionSettings) {
 		CNCMillingMachineInterventionSettings cncMillingMachineInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
-		if ((cncMillingMachineInterventionSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingMachineInterventionSettings.getWorkArea())) &&
+		if ((cncMillingMachineInterventionSettings != null) && (cncMillingMachineInterventionSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingMachineInterventionSettings.getWorkArea())) &&
 				(cncMillingMachineInterventionSettings.getWorkArea().getActiveClamping() != null) ) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePickSettings pickSettings) {
+		return new CNCMillingMachineInterventionSettings(pickSettings.getWorkArea());
+	}
+
+	@Override
+	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePutSettings putSettings) {
+		return new CNCMillingMachineInterventionSettings(putSettings.getWorkArea());
 	}
 
 }

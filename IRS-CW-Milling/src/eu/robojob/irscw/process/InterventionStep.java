@@ -29,10 +29,6 @@ public class InterventionStep extends AbstractProcessStep {
 		this(null, device, interventionSettings, frequency);
 	}
 	
-	public InterventionStep clone(ProcessFlow parentProcess) {
-		return new InterventionStep(parentProcess, device, interventionSettings, frequency);
-	}
-	
 	@Override
 	public void executeStep() throws IOException {
 		// check if the parent process has locked the device to be used

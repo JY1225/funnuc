@@ -23,10 +23,7 @@ public class ProcessFlow {
 	
 	private Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> deviceSettings;
 	private Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> robotSettings;
-	
-	private int currentStepNumber;
-	
-	private boolean finished;
+		
 	private boolean needsTeaching;
 	
 	private String name;
@@ -38,40 +35,16 @@ public class ProcessFlow {
 		this.processSteps = new ArrayList<AbstractProcessStep>();
 		this.deviceSettings = new HashMap<AbstractDevice, AbstractDevice.AbstractDeviceSettings>();
 		this.robotSettings = new HashMap<AbstractRobot, AbstractRobot.AbstractRobotSettings>();
-		this.finished = false;
 		needsTeaching = true;
 	}
 			
 	public ProcessFlow(String name, List<AbstractProcessStep>processSteps, Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> deviceSettings,
 			Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> robotSettings) {
 		this.name = name;
-		this.finished = false;
 		needsTeaching = true;
 		this.deviceSettings = deviceSettings;
 		this.robotSettings = robotSettings;
-		this.currentStepNumber = 0;
 		setUpProcess(processSteps);
-	}
-	
-	public ProcessFlow(ProcessFlow aProcess) {
-		this.name = aProcess.getName();
-		this.finished = false;
-		needsTeaching = true;
-		this.currentStepNumber = 0;
-		List<AbstractProcessStep> processStepsCopy = new ArrayList<AbstractProcessStep>();
-		for (AbstractProcessStep processStep : aProcess.getProcessSteps()) {
-			AbstractProcessStep newStep = processStep.clone(this);
-			processStepsCopy.add(newStep);
-		}
-		this.deviceSettings = new HashMap<AbstractDevice, AbstractDeviceSettings>();
-		for (Entry<AbstractDevice, AbstractDeviceSettings> entry : deviceSettings.entrySet()) {
-			deviceSettings.put(entry.getKey(), entry.getValue());
-		}
-		this.robotSettings = new HashMap<AbstractRobot, AbstractRobotSettings>();
-		for (Entry<AbstractRobot, AbstractRobotSettings> entry : robotSettings.entrySet()) {
-			robotSettings.put(entry.getKey(), entry.getValue());
-		}
-		setUpProcess(processStepsCopy);
 	}
 	
 	public String getName() {
@@ -93,14 +66,6 @@ public class ProcessFlow {
 		} 
 	}
 	
-	public AbstractProcessStep getCurrentStep() {
-		if (currentStepNumber != -1) {
-			return processSteps.get(currentStepNumber);
-		} else {
-			return null;
-		}
-	}
-	
 	public boolean needsTeaching() {
 		return needsTeaching;
 	}
@@ -109,39 +74,7 @@ public class ProcessFlow {
 		this.needsTeaching = needsTeaching;
 	}
 
-	public AbstractProcessStep getNextStep() {
-		if ((currentStepNumber != -1) && (currentStepNumber < (processSteps.size() - 1))) {
-			return processSteps.get(currentStepNumber + 1);
-		} else {
-			return null;
-		}
-	}
-	
-	public void nextStep() {
-		currentStepNumber++;
-		if (currentStepNumber >= processSteps.size()) {
-			finished = true;
-		}
-	}
-	
-	public boolean hasFinished() {
-		return finished;
-	}
-	
-	public boolean hasNextStep() {
-		if (currentStepNumber == (processSteps.size() - 1)) {
-			return false; 
-		} else {
-			return true;
-		}
-	}
-	
-	public boolean isActive() {
-		return getCurrentStep().isInProcess();
-	}
-	
-
-	public boolean willNeedDevice(AbstractDevice device) {
+	public boolean willNeedDevice(AbstractDevice device, int currentStepNumber) {
 		for (int i = currentStepNumber; i < processSteps.size(); i++) {
 			if (processSteps.get(i).getDevice().equals(device)) {
 				return true;

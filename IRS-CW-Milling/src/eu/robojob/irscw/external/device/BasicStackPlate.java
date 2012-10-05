@@ -714,7 +714,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		// note we assume the corresponding device settings are loaded!
 		BasicStackPlatePickSettings stackPlatePickSettings = (BasicStackPlatePickSettings) pickSettings;
 		// the used workarea should be the one workarea configured for this device
-		if ((stackPlatePickSettings.getWorkArea() != null) && (stackPlatePickSettings.getWorkArea().equals(getWorkAreas().get(0))) && 
+		if ((stackPlatePickSettings != null) && (stackPlatePickSettings.getWorkArea() != null) && (stackPlatePickSettings.getWorkArea().equals(getWorkAreas().get(0))) && 
 				(getRawStackingPositions() != null) && (getRawStackingPositions().size() > 0)) {
 			return true;
 		} else {
@@ -727,7 +727,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		// note we assume the corresponding device settings are loaded!
 		BasicStackPlatePutSettings stackPlatePutSettings = (BasicStackPlatePutSettings) putSettings;
 		// the used workarea should be the one workarea configured for this device
-		if ((stackPlatePutSettings.getWorkArea() != null) && (stackPlatePutSettings.getWorkArea().equals(getWorkAreas().get(0))) && 
+		if ((stackPlatePutSettings != null) && (stackPlatePutSettings.getWorkArea() != null) && (stackPlatePutSettings.getWorkArea().equals(getWorkAreas().get(0))) && 
 				(getRawStackingPositions() != null) && (getRawStackingPositions().size() > 0)) {
 			return true;
 		} else {
@@ -741,12 +741,22 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		// note we assume the corresponding device settings are loaded!
 		BasicStackPlateInterventionSettings stackPlateInterventionSettings = (BasicStackPlateInterventionSettings) interventionSettings;
 		// the used workarea should be the one workarea configured for this device
-		if ((stackPlateInterventionSettings.getWorkArea() != null) && (stackPlateInterventionSettings.getWorkArea().equals(getWorkAreas().get(0))) && 
+		if ((stackPlateInterventionSettings != null) && (stackPlateInterventionSettings.getWorkArea() != null) && (stackPlateInterventionSettings.getWorkArea().equals(getWorkAreas().get(0))) && 
 				(getRawStackingPositions() != null) && (getRawStackingPositions().size() > 0)) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePickSettings pickSettings) {
+		return new BasicStackPlateInterventionSettings(pickSettings.getWorkArea());
+	}
+
+	@Override
+	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePutSettings putSettings) {
+		return new BasicStackPlateInterventionSettings(putSettings.getWorkArea());
 	}
 	
 }

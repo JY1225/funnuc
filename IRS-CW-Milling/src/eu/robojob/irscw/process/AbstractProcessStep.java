@@ -23,9 +23,7 @@ public abstract class AbstractProcessStep {
 	}
 	
 	public abstract void executeStep() throws IOException;
-	
-	public abstract AbstractProcessStep clone(ProcessFlow processFlow);
-	
+		
 	public abstract String toString();
 	
 	public boolean isInProcess() {
