@@ -149,10 +149,10 @@ public class DeviceButton extends VBox {
 	}
 	
 	public void setClickable(boolean clickable) {
-	//	mainButton.getStyleClass().remove("device-button");
+		mainButton.getStyleClass().remove("device-button");
 		mainButton.getStyleClass().remove("device-button-noclick");
 		if (clickable) {
-			//mainButton.getStyleClass().add("device-button");
+			mainButton.getStyleClass().add("device-button");
 		} else {
 			mainButton.getStyleClass().add("device-button-noclick");
 		}
