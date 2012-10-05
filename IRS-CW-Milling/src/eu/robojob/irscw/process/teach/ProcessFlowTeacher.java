@@ -42,7 +42,11 @@ public class ProcessFlowTeacher {
 				if (step instanceof PickStep) {
 					PickStep pickStep = (PickStep) step;
 					if (pickStep.needsTeaching()) {
-						
+						//TODO : let pick step prepare itself for teaching
+						//
+						// wait for teaching finished command
+						//
+						// let pick step finish
 					} else {
 						pickStep.executeStep();
 					}
@@ -50,7 +54,11 @@ public class ProcessFlowTeacher {
 				} else if (step instanceof PutStep) {
 					PutStep putStep = (PutStep) step;
 					if (putStep.needsTeaching()) {
-						
+						//TODO : let put step prepare itself for teaching
+						//
+						// wait for teaching finished command
+						//
+						// let put step finish
 					} else {
 						putStep.executeStep();
 					}
@@ -58,6 +66,9 @@ public class ProcessFlowTeacher {
 				} else if (step instanceof ProcessingStep) {
 					ProcessingStep processingStep = (ProcessingStep) step;
 					processingStep.executeStep();
+				}
+				for (TeachObserver observer : observers) {
+					observer.finishedStep(step);
 				}
 			}
 		}

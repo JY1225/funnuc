@@ -19,4 +19,5 @@ public abstract class TeachObserver {
 	public abstract void preparedForTeaching(AbstractTransportStep transportStep);
 	
 	public abstract void stepInProgress(AbstractProcessStep step);
+	public abstract void finishedStep(AbstractProcessStep step);
 }
