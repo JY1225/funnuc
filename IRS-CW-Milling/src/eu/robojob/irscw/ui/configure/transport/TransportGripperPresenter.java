@@ -30,23 +30,30 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 
 	public void changedGripperHead(String id) {
 		// for now this wil be impossible, since a fixed convention will be used! 
-		logger.debug("changed gripper head to: " + id);
+		logger.debug("Gripper head not changed for now...");
 	}
 	
 	public void changedGripper(String id) {
 		// TODO: make sure that a gripper is used with one head, and automatic gripper changed aren't possible!
-		logger.debug("changed gripper to: " + id);
+		logger.debug("Changed gripper to: " + id);
 		Gripper gripper = transportInfo.getRobot().getGripperBody().getGripper(id);
 		boolean found = false;
 		for (GripperHead head : transportInfo.getRobot().getGripperBody().getGripperHeads()) {
-			if ((head.getGripper().equals(gripper)) && (!head.equals(transportInfo.getPickStep().getRobotSettings().getGripperHead()))){
+			if ((head.getGripper() != null) && (head.getGripper().equals(gripper)) && (!head.equals(transportInfo.getPickStep().getRobotSettings().getGripperHead()))){
 				found = true;
 			}
 		}
 		if (!found) {
-			transportInfo.getPickStep().getRobotSettings().setGripper(gripper);
-			transportInfo.getPutStep().getRobotSettings().setGripper(gripper);
-			robotSettings.setGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead(), gripper);
+			if ((transportInfo.getPickStep().getRobotSettings().getGripper() != null) && transportInfo.getPickStep().getRobotSettings().getGripper().equals(gripper)) {
+				// deselect gripper
+				transportInfo.getPickStep().getRobotSettings().setGripper(null);
+				transportInfo.getPutStep().getRobotSettings().setGripper(null);
+				robotSettings.setGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead(), null);
+			} else {
+				transportInfo.getPickStep().getRobotSettings().setGripper(gripper);
+				transportInfo.getPutStep().getRobotSettings().setGripper(gripper);
+				robotSettings.setGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead(), gripper);
+			}
 			transportInfo.getRobot().loadRobotSettings(robotSettings);
 			view.setSelectedGripper();
 		} else {

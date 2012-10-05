@@ -265,5 +265,14 @@ public class ProcessFlowView extends GridPane  {
 			transportButton.setDisable(false);
 		}
 	}
+	
+	public void disableClickable() {
+		for (DeviceButton deviceButton : deviceButtons.values()) {
+			deviceButton.setClickable(false);
+		}
+		for (TransportButton transportButton : transportButtons.values()) {
+			transportButton.setClickable(false);
+		}
+	}
 }
 

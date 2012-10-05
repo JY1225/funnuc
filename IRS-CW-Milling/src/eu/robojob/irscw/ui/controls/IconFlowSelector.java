@@ -47,6 +47,12 @@ public class IconFlowSelector extends ScrollPane {
 		items.get(index).setSelected(true);
 	}
 	
+	public void deselectAll() {
+		for (IconFlowSelectorItem item : items.values()) {
+			item.setSelected(false);
+		}
+	}
+	
 	public void setSelected(String id) {
 		for (IconFlowSelectorItem item : items.values()) {
 			item.setSelected(false);

@@ -8,7 +8,7 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 
 	public TeachProcessFlowPresenter(ProcessFlowView view) {
 		super(view);
-		view.showQuestionMarks();
+		view.setPresenter(this);
 	}
 
 	@Override
@@ -32,6 +32,7 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	public void loadProcessFlow(ProcessFlow processFlow) {
 		view.setProcessFlow(processFlow);
 		view.showQuestionMarks();
+		view.disableClickable();
 	}
 
 }

@@ -36,6 +36,9 @@ public class TransportButton extends Pane {
 	
 	private TransportInformation transportInfo;
 	
+	private EventHandler<MouseEvent> handlerPressed;
+	private EventHandler<MouseEvent> handlerReleased;
+	
 	public TransportButton(TransportInformation transportInfo) {
 		super();
 		
@@ -94,22 +97,25 @@ public class TransportButton extends Pane {
 		this.setPrefWidth(WIDTH);
 		this.setMaxHeight(38.838);
 				
-		this.setEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+		handlerPressed = new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				effect.getStyleClass().remove("clicked");
 				effect.getStyleClass().add("clicked");
 				event.consume();
 			}
-		});
+		};
 		
-		this.setEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+		handlerReleased = new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				effect.getStyleClass().remove("clicked");	
 				event.consume();
 			}
-		});
+		};
+		
+		this.addEventHandler(MouseEvent.MOUSE_PRESSED, handlerPressed);
+		this.addEventHandler(MouseEvent.MOUSE_RELEASED, handlerReleased);
 		
 	}
 	
@@ -259,6 +265,24 @@ public class TransportButton extends Pane {
 		effect.getStyleClass().add("arrow-disabled");
 		this.getChildren().remove(firstCircle);
 		this.getChildren().add(firstCircle);
+	}
+	
+	public void setClickable(boolean clickable) {
+		this.removeEventHandler(MouseEvent.MOUSE_PRESSED, handlerPressed);
+		this.removeEventHandler(MouseEvent.MOUSE_RELEASED, handlerReleased);
+		//effect.getStyleClass().remove("arrow-effect");
+		effect.getStyleClass().remove("arrow-effect-noclick");
+		//arrowShape.getStyleClass().remove("arrow-background");
+		arrowShape.getStyleClass().remove("arrow-background-noclick");
+		if (clickable) {
+			this.setEventHandler(MouseEvent.MOUSE_PRESSED, handlerPressed);
+			this.setEventHandler(MouseEvent.MOUSE_RELEASED, handlerReleased);
+			//effect.getStyleClass().add("arrow-effect");
+			//arrowShape.getStyleClass().add("arrow-background");
+		} else {
+			effect.getStyleClass().add("arrow-effect-noclick");
+			arrowShape.getStyleClass().add("arrow-background-noclick");
+		}
 	}
 	
 }
