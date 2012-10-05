@@ -92,6 +92,13 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 						group.getChildren().add(txt2);
 						horizontalLabels.add(txt2);
 					} else {
+						Text txt2 = new Text("\u00B7");
+						txt2.setX(pos.getCenterPosition().getX() - TXT_WIDTH/2);
+						txt2.setY(basicStackPlate.getWidth() - TXT_HEIGHT/2);
+						txt2.setWrappingWidth(TXT_WIDTH);
+						txt2.getStyleClass().add("stacker-text");
+						group.getChildren().add(txt2);
+						horizontalLabels.add(txt2);
 						// draw line
 						Path path = new Path();
 						MoveTo moveTo = new MoveTo();

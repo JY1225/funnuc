@@ -123,8 +123,6 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 			super(workArea);
 		}
 		
-		public abstract boolean isTeachingNeeded();
-
 	}
 	
 	public static abstract class AbstractDevicePutSettings extends AbstractDeviceActionSettings<PutStep> {
@@ -133,7 +131,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 			super(workArea);
 		}
 
-		public abstract boolean isTeachingNeeded();
+		public abstract boolean isPutPositionFixed();
 		
 	}
 	

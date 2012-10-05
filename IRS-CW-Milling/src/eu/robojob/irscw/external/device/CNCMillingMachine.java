@@ -61,8 +61,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		}
 
 		@Override
-		public boolean isTeachingNeeded() {
-			return true;
+		public boolean isPutPositionFixed() {
+			return false;
 		}
 	}
 	public static class CNCMillingMachinePickSettings extends AbstractCNCMachinePickSettings{
@@ -70,10 +70,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			super(workArea);
 		}
 
-		@Override
-		public boolean isTeachingNeeded() {
-			return true;
-		}
 	}
 	public static class CNCMillingMachineInterventionSettings extends AbstractCNCMachineInterventionSettings{
 		public CNCMillingMachineInterventionSettings(WorkArea workArea) {

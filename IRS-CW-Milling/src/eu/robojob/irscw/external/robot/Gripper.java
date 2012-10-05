@@ -4,6 +4,7 @@ public class Gripper {
 	
 	private String id;
 	private float height;
+	private boolean fixedHeight;
 	private String description;
 	private String imageUrl;
 	
@@ -12,6 +13,7 @@ public class Gripper {
 		this.height = height;
 		this.description = description;
 		this.imageUrl = imageUrl;
+		this.fixedHeight = false;
 	}
 
 	public String getId() {
@@ -44,6 +46,14 @@ public class Gripper {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+	}
+
+	public boolean isFixedHeight() {
+		return fixedHeight;
+	}
+
+	public void setFixedHeight(boolean fixedHeight) {
+		this.fixedHeight = fixedHeight;
 	}
 
 }

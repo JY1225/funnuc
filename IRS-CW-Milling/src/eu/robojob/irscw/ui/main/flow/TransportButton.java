@@ -116,14 +116,14 @@ public class TransportButton extends Pane {
 		this.transportInfo = transportInfo;
 		
 		if (transportInfo.getPickStep().getDeviceSettings() != null) {
-			if (transportInfo.getPickStep().getDeviceSettings().isTeachingNeeded()) {
+			if (transportInfo.getPickStep().needsTeaching()) {
 				setLeftQuestionMarkActive(true);
 			} else {
 				setLeftQuestionMarkActive(false);
 			}
 		}
 		if (transportInfo.getPutStep().getDeviceSettings() != null) {
-			if (transportInfo.getPutStep().getDeviceSettings().isTeachingNeeded()) {
+			if (transportInfo.getPutStep().needsTeaching()) {
 				setRightQuestionMarkActive(true);
 			} else {
 				setRightQuestionMarkActive(false);

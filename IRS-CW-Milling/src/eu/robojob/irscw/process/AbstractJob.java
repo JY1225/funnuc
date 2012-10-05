@@ -12,6 +12,11 @@ public abstract class AbstractJob {
 	
 	public AbstractJob(ProcessFlow processFlow) {
 		this.processFlow = processFlow;
+		initialize();
+	}
+	
+	public void initialize() {
+		currentStepIndex = 0;
 	}
 	
 	public boolean hasNextStep() {

@@ -85,4 +85,14 @@ public class PutStep extends AbstractTransportStep {
 		this.robotPutSettings = settings;
 	}
 
+	@Override
+	public boolean needsTeaching() {
+		// since we already know the work piece's dimensions (ground pane) and griper height from picking it up
+		if (putSettings.isPutPositionFixed()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 }

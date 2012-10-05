@@ -94,4 +94,13 @@ public class PickStep extends AbstractTransportStep {
 		this.robotPickSettings = settings;
 	}
 
+	@Override
+	public boolean needsTeaching() {
+		if ((robotPickSettings.getWorkPieceDimensions().isKnownShape()) && (robotPickSettings.getGripper().isFixedHeight())) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 }

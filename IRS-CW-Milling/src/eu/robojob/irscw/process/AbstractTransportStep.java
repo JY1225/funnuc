@@ -27,4 +27,5 @@ public abstract class AbstractTransportStep extends AbstractProcessStep {
 		return robot;
 	}
 
+	public abstract boolean needsTeaching();
 }
