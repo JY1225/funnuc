@@ -36,21 +36,21 @@ public class DeviceManager {
 	private void initialize() {
 		
 		// add CNC Milling machine
-		Clamping clamping1 = new Clamping("clamping 1", new Coordinates(10, 0, 5, 0, 0, 45), new Coordinates(5, 5, 5, 0, 0, 45), null);
-		Clamping clamping2 = new Clamping("clamping 2", new Coordinates(15, 10, 5, 0, 0, 45), new Coordinates(5, 5, 5, 0, 0, 45), null);
-		Clamping clamping3 = new Clamping("clamping 3", new Coordinates(5, 20, 5, 0, 0, 45), new Coordinates(5, 5, 5, 0, 0, 45), null);
+		Clamping clamping1 = new Clamping("Clamping 1", new Coordinates(10, 0, 5, 0, 0, 45), new Coordinates(5, 5, 5, 0, 0, 45), null);
+		Clamping clamping2 = new Clamping("Clamping 2", new Coordinates(15, 10, 5, 0, 0, 45), new Coordinates(5, 5, 5, 0, 0, 45), null);
+		Clamping clamping3 = new Clamping("Clamping 3", new Coordinates(5, 20, 5, 0, 0, 45), new Coordinates(5, 5, 5, 0, 0, 45), null);
 		UserFrame uf1 = new UserFrame(1, 20);
 		UserFrame uf2 = new UserFrame(2, 25);
 		List<WorkArea> workAreas = new ArrayList<WorkArea>();
-		WorkArea workArea1 = new WorkArea("main", uf1);
+		WorkArea workArea1 = new WorkArea("Mazak VRX Main", uf1);
 		workArea1.addClamping(clamping1);
 		workArea1.addClamping(clamping2);
-		WorkArea workArea2 = new WorkArea("second", uf2);
+		WorkArea workArea2 = new WorkArea("Mazak VRX Second", uf2);
 		workArea2.addClamping(clamping3);
 		workAreas.add(workArea1);
 		workAreas.add(workArea2);
 		Zone zone1 = new Zone("zone 1", workAreas);
-		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak integrex", null);
+		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak VRX J500", null);
 		cncMillingMachine.addZone(zone1);
 		cncMachines.put(cncMillingMachine.getId(), cncMillingMachine);
 		
@@ -78,10 +78,10 @@ public class DeviceManager {
 		// add Basic Stacker
 		UserFrame uf5 = new UserFrame(5, 20);
 		List<WorkArea> workAreas4 = new ArrayList<WorkArea>();
-		WorkArea workArea5 = new WorkArea("basic stacker", uf5);
+		WorkArea workArea5 = new WorkArea("IRS M Basic", uf5);
 		workAreas4.add(workArea5);
 		Zone zone4 = new Zone("Zone 4", workAreas4);
-		BasicStackPlate basicStackPlate = new BasicStackPlate("basic stack plate",  27, 7, 10, 15, 45, 40, 35, 0, 0.25f);
+		BasicStackPlate basicStackPlate = new BasicStackPlate("IRS M Basic",  27, 7, 10, 15, 45, 40, 35, 0, 0.25f);
 		basicStackPlate.addZone(zone4);
 		stackingFromDevices.put(basicStackPlate.getId(), basicStackPlate);
 		stackingToDevices.put(basicStackPlate.getId(), basicStackPlate);

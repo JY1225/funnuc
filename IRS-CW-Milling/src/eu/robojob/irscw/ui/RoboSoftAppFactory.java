@@ -1,13 +1,24 @@
 package eu.robojob.irscw.ui;
 
-import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.BasicStackPlate;
+import eu.robojob.irscw.external.device.BasicStackPlate.BasicStackPlatePickSettings;
+import eu.robojob.irscw.external.device.BasicStackPlate.BasicStackPlatePutSettings;
+import eu.robojob.irscw.external.device.BasicStackPlate.BasicStackPlateSettings;
+import eu.robojob.irscw.external.device.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.external.device.CNCMillingMachine;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineInterventionSettings;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePickSettings;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePutSettings;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineStartCylusSettings;
 import eu.robojob.irscw.external.device.DeviceManager;
+import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.robot.FanucRobot;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPickSettings;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPutSettings;
+import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotSettings;
 import eu.robojob.irscw.external.robot.RobotManager;
+import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
@@ -33,6 +44,7 @@ import eu.robojob.irscw.ui.main.flow.ProcessFlowView;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
 import eu.robojob.irscw.ui.teach.TeachView;
 import eu.robojob.irscw.ui.teach.flow.TeachProcessFlowPresenter;
+import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class RoboSoftAppFactory {
 
@@ -148,45 +160,73 @@ public class RoboSoftAppFactory {
 		DeviceManager deviceMgr = getDeviceManager();
 		RobotManager robotMgr = getRobotManager();
 		if (processFlow == null) {
-			processFlow = new ProcessFlow("Mazak demo");
 			
-			FanucRobot robot = (FanucRobot) robotMgr.getRobotById("fanuc M110");
-			processFlow.setRobotSettings(robot, robot.getRobotSettings());
+			processFlow = new ProcessFlow("Mazak Open House");
 			
-			FanucRobotPickSettings pickSettings1 = new FanucRobot.FanucRobotPickSettings();
-			pickSettings1.setGripperHead(robot.getGripperBody().getGripperHead("A"));
+			// Fanuc M20iA
+			FanucRobot robot = (FanucRobot) robotMgr.getRobotById("Fanuc M20iA");
+			FanucRobotSettings robotSettings = (FanucRobotSettings) robot.getRobotSettings();
+			processFlow.setRobotSettings(robot, robotSettings);
 			
-			AbstractDevice device = deviceMgr.getStackingFromDeviceById("basic stack plate");
-			PickStep pick1 = new PickStep(robot, device, new BasicStackPlate.BasicStackPlatePickSettings(null), pickSettings1);
-			processFlow.setDeviceSettings(device, device.getDeviceSettings());
+			// Robot settings for pick from Basic Stacker and put in CNC Milling Machine
+			FanucRobotPickSettings robotPickSettings1 = new FanucRobot.FanucRobotPickSettings();
+			robotPickSettings1.setGripperHead(robot.getGripperBody().getGripperHead("A"));
+			robotPickSettings1.setGripper(robot.getGripperBody().getGripper("Vacuum grip"));
+			robotPickSettings1.setSmoothPoint(new Coordinates(0, 0, 10, 0, 0, 0));
+			robotSettings.setGripper(robot.getGripperBody().getGripperHead("A"), robot.getGripperBody().getGripper("Vacuum grip"));
+			FanucRobotPutSettings robotPutSettings1 = new FanucRobot.FanucRobotPutSettings();
+			robotPutSettings1.setGripperHead(robot.getGripperBody().getGripperHead("A"));
+			robotPutSettings1.setGripper(robot.getGripperBody().getGripper("Vacuum grip"));
 			
-			FanucRobotPutSettings putSettings1 = new FanucRobot.FanucRobotPutSettings();
-			putSettings1.setGripperHead(robot.getGripperBody().getGripperHead("A"));
+			// Basic Stack Plate
+			BasicStackPlate stackPlate = (BasicStackPlate) deviceMgr.getStackingFromDeviceById("IRS M Basic");
+			BasicStackPlatePickSettings stackPlatePickSettings = new BasicStackPlate.BasicStackPlatePickSettings(stackPlate.getWorkAreaById("IRS M Basic"));
+			PickStep pick1 = new PickStep(robot, stackPlate, stackPlatePickSettings, robotPickSettings1);
+			BasicStackPlateSettings stackPlateSettings = (BasicStackPlateSettings) stackPlate.getDeviceSettings();
+			stackPlateSettings.setAmount(5);
+			stackPlateSettings.setDimensions(new WorkPieceDimensions(150, 100, 30));
+			stackPlateSettings.setOrientation(WorkPieceOrientation.TILTED);
+			processFlow.setDeviceSettings(stackPlate, stackPlateSettings);
 			
-			AbstractDevice device2 = deviceMgr.getCNCMachineById("Mazak integrex");
-			PutStep put2 = new PutStep(robot, device2, new CNCMillingMachine.CNCMillingMachinePutSettings(null), putSettings1);
-			processFlow.setDeviceSettings(device2, device2.getDeviceSettings());
-			ProcessingStep processing2 = new ProcessingStep( deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachineStartCylusSettings(null));
-			InterventionStep intervention = new InterventionStep( deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachineInterventionSettings(null), 10);
+			// Mazak VRX J500
+			CNCMillingMachine cncMilling = (CNCMillingMachine) deviceMgr.getCNCMachineById("Mazak VRX J500");
+			CNCMillingMachinePutSettings cncPutSettings = new CNCMillingMachine.CNCMillingMachinePutSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
+			PutStep put2 = new PutStep(robot, cncMilling, cncPutSettings, robotPutSettings1);
+			CNCMillingMachineSettings cncMillingSetting = (CNCMillingMachineSettings) cncMilling.getDeviceSettings();
+			WorkArea mainWorkArea = cncMilling.getWorkAreaById("Mazak VRX Main");
+			cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingById("Clamping 1"));
+			processFlow.setDeviceSettings(cncMilling, cncMillingSetting);
+			CNCMillingMachineStartCylusSettings cncStartCyclusSettings =  new CNCMillingMachine.CNCMillingMachineStartCylusSettings(mainWorkArea);
+			ProcessingStep processing2 = new ProcessingStep(cncMilling, cncStartCyclusSettings);
+			CNCMillingMachineInterventionSettings cncInterventionSettings = new CNCMillingMachineInterventionSettings(mainWorkArea);
+			InterventionStep intervention = new InterventionStep(cncMilling, cncInterventionSettings, 10);
+			CNCMillingMachinePickSettings cncPickSettings = new CNCMillingMachinePickSettings(mainWorkArea);
 			
-			FanucRobotPickSettings pickSettings2 = new FanucRobot.FanucRobotPickSettings();
-			pickSettings2.setGripperHead(robot.getGripperBody().getGripperHead("B"));
+			robotPutSettings1.setSmoothPoint(mainWorkArea.getClampingById("Clamping 1").getSmoothToPoint());
+
+			// Robot settings for pick from CNC Milling Machine and put in Basic Stacker
+			FanucRobotPickSettings robotPickSettings2 = new FanucRobot.FanucRobotPickSettings();
+			robotPickSettings2.setGripperHead(robot.getGripperBody().getGripperHead("B"));
+			robotPickSettings2.setGripper(robot.getGripperBody().getGripper("2P clamp grip"));
+			robotPickSettings2.setSmoothPoint(mainWorkArea.getClampingById("Clamping 1").getSmoothFromPoint());
+			robotPickSettings2.setWorkPieceDimensions(new WorkPieceDimensions(150, 100, 10));
+			robotSettings.setGripper(robot.getGripperBody().getGripperHead("B"), robot.getGripperBody().getGripper("2P clamp grip"));
+			PickStep pick3 = new PickStep(robot, cncMilling, cncPickSettings, robotPickSettings2);
+			FanucRobotPutSettings robotPutSettings2 = new FanucRobot.FanucRobotPutSettings();
+			robotPutSettings2.setGripperHead(robot.getGripperBody().getGripperHead("B"));
+			robotPutSettings2.setGripper(robot.getGripperBody().getGripper("2P clamp grip"));
+			BasicStackPlatePutSettings stackPlatePutSettings = new BasicStackPlate.BasicStackPlatePutSettings(stackPlate.getWorkAreaById("IRS M Basic"));
+			PutStep put3 = new PutStep(robot, stackPlate, stackPlatePutSettings, robotPutSettings2);
 			
-			PickStep pick3 = new PickStep(robot, deviceMgr.getCNCMachineById("Mazak integrex"), new CNCMillingMachine.CNCMillingMachinePickSettings(null), pickSettings2);
-			
-			FanucRobotPutSettings putSettings2 = new FanucRobot.FanucRobotPutSettings();
-			putSettings2.setGripperHead(robot.getGripperBody().getGripperHead("B"));
-			
-			PutStep put3 = new PutStep(robot, deviceMgr.getStackingToDeviceById("basic stack plate"), new BasicStackPlate.BasicStackPlatePutSettings(null), putSettings2);
+			// creating process flow
 			processFlow.addStep(pick1);
-			//processFlow.addStep(put1);
-			//processFlow.addStep(processing1);
-			//processFlow.addStep(pick2);
 			processFlow.addStep(put2);
 			processFlow.addStep(processing2);
 			processFlow.addStep(intervention);
 			processFlow.addStep(pick3);
 			processFlow.addStep(put3);
+			
+			processFlow.loadAllSettings();
 		}
 		return processFlow;
 	}

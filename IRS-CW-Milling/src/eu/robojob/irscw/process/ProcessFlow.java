@@ -215,4 +215,21 @@ public class ProcessFlow {
 	public void setRobotSettings(AbstractRobot robot, AbstractRobotSettings settings) {
 		robotSettings.put(robot, settings);
 	}
+	
+	public void loadAllDeviceSettings() {
+		for (Entry<AbstractDevice, AbstractDeviceSettings> settings : deviceSettings.entrySet()) {
+			settings.getKey().loadDeviceSettings(settings.getValue());
+		}
+	}
+	
+	public void loadAllRobotSettings() {
+		for (Entry<AbstractRobot, AbstractRobotSettings> settings : robotSettings.entrySet()) {
+			settings.getKey().loadRobotSettings(settings.getValue());
+		}
+	}
+	
+	public void loadAllSettings() {
+		loadAllDeviceSettings();
+		loadAllRobotSettings();
+	}
 }
