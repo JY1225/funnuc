@@ -43,43 +43,81 @@ public class ProcessFlowTeacher {
 					PickStep pickStep = (PickStep) step;
 					if (pickStep.needsTeaching()) {
 						//TODO : let pick step prepare itself for teaching
-						//
-						// wait for teaching finished command
-						//
-						// let pick step finish
+						// TEMP: preparing for pick
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						for (TeachObserver observer : observers) {
+							observer.preparedForTeaching(pickStep);
+						}
+						// TEMP: finishing of step
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						for (TeachObserver observer : observers) {
+							observer.finishedStep(pickStep);
+						}
 					} else {
-						pickStep.executeStep();
+						// pickStep.executeStep();
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 					
 				} else if (step instanceof PutStep) {
 					PutStep putStep = (PutStep) step;
 					if (putStep.needsTeaching()) {
-						//TODO : let put step prepare itself for teaching
-						//
-						// wait for teaching finished command
-						//
-						// let put step finish
+						//TODO : let pick step prepare itself for teaching
+						// TEMP: preparing for pick
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						for (TeachObserver observer : observers) {
+							observer.preparedForTeaching(putStep);
+						}
+						// TEMP: finishing of step
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						for (TeachObserver observer : observers) {
+							observer.finishedStep(putStep);
+						}
 					} else {
-						putStep.executeStep();
+						//putStep.executeStep();
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 					
 				} else if (step instanceof ProcessingStep) {
 					ProcessingStep processingStep = (ProcessingStep) step;
-					processingStep.executeStep();
+					// processingStep.executeStep();
+					// executing process step
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 				for (TeachObserver observer : observers) {
 					observer.finishedStep(step);
 				}
 			}
 		}
-		
-	}
-	
-	public void teachingFinished() {
-		
-	}
-	
-	public void continueExecution() {
 		
 	}
 	
@@ -91,27 +129,4 @@ public class ProcessFlowTeacher {
 		return teachJob.getCurrentStep();
 	}
 	
-	public boolean currentStepNeedsTeaching() {
-		AbstractProcessStep step = getCurrentStep();
-		if (step instanceof PickStep) {
-			PickStep pickStep = (PickStep) step;
-			return pickStep.needsTeaching();
-		} else if (step instanceof PutStep) {
-			PutStep putStep = (PutStep) step;
-			return putStep.needsTeaching();
-		} else {
-			return false;
-		}
-	}
-	
-	public void prepareForTeaching() {
-		AbstractProcessStep step = getCurrentStep();
-		if (step instanceof PickStep) {
-			PickStep pickStep = (PickStep) step;
-			
-		} else if (step instanceof PutStep) {
-			PutStep putStep = (PutStep) step;
-			
-		}
-	}
 }

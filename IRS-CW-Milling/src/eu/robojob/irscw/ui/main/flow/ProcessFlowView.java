@@ -7,8 +7,11 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.ProcessFlow;
@@ -24,15 +27,17 @@ public class ProcessFlowView extends GridPane  {
 	private Map<Integer, TransportButton> transportButtons;
 	
 	private Map<Integer, Region> progressDeviceRegions;
-	private Map<Integer, Region> progressTransportRegions;
-		
+	private Map<Integer, Region> progressTransportRegionsLeft;
+	private Map<Integer, Region> progressTransportRegionsRight;
+			
 	private static final int maxDevicesFirstRow = 4;
 	
 	public ProcessFlowView() {
 		deviceButtons = new HashMap<Integer, DeviceButton>();
 		transportButtons = new HashMap<Integer, TransportButton>();
 		progressDeviceRegions = new HashMap<Integer, Region>();
-		progressTransportRegions = new HashMap<Integer, Region>();
+		progressTransportRegionsLeft = new HashMap<Integer, Region>();
+		progressTransportRegionsRight = new HashMap<Integer, Region>();
 	}
 	
 	public void setProcessFlow(ProcessFlow process) {
@@ -75,10 +80,21 @@ public class ProcessFlowView extends GridPane  {
 				TransportButton transport = new TransportButton(processFlowAdapter.getTransportInformation(i));
 				transport.showPause();
 				this.add(transport, column, row);
-				Region progressTransportRegion = new Region();
-				progressTransportRegion.getStyleClass().add("progressbar-piece");
-				this.add(progressTransportRegion, column, row + 1);
-				progressTransportRegions.put(i, progressTransportRegion);
+				HBox progressTransportHBox = new HBox();
+				Region progressTransportRegion1 = new Region();
+				progressTransportRegion1.setPrefHeight(20);
+				HBox.setHgrow(progressTransportRegion1, Priority.ALWAYS);
+				progressTransportRegion1.getStyleClass().addAll("progressbar-piece-1of2");
+				Region progressTransportRegion2 = new Region();
+				HBox.setHgrow(progressTransportRegion2, Priority.ALWAYS);
+				progressTransportRegion2.setPrefHeight(20);
+				progressTransportRegion2.getStyleClass().add("red");
+				progressTransportRegion2.getStyleClass().addAll("progressbar-piece-2of2");
+				progressTransportHBox.getChildren().addAll(progressTransportRegion1, progressTransportRegion2);
+				progressTransportHBox.getStyleClass().add("yellow");
+				this.add(progressTransportHBox, column, row + 1);
+				progressTransportRegionsLeft.put(i, progressTransportRegion1);
+				progressTransportRegionsRight.put(i, progressTransportRegion2);
 				transportButtons.put(i, transport);
 				transport.setOnAction(new TransportEventHandler(i));
 				transport.toBack();
@@ -185,17 +201,37 @@ public class ProcessFlowView extends GridPane  {
 	
 	public void setTransportProgressGreen(int transportIndex) {
 		setTransportProgressNone(transportIndex);
-		progressTransportRegions.get(transportIndex).getStyleClass().add("progressbar-piece-green");
+		progressTransportRegionsLeft.get(transportIndex).getStyleClass().add("progressbar-piece-1of2-green");
+		progressTransportRegionsRight.get(transportIndex).getStyleClass().add("progressbar-piece-2of2-green");
 	}
 	
 	public void setTransportProgressYellow(int transportIndex) {
 		setTransportProgressNone(transportIndex);
-		progressTransportRegions.get(transportIndex).getStyleClass().add("progressbar-piece-yellow");
+		progressTransportRegionsLeft.get(transportIndex).getStyleClass().add("progressbar-piece-1of2-yellow");
+		progressTransportRegionsRight.get(transportIndex).getStyleClass().add("progressbar-piece-2of2-yellow");
 	}
 	
 	public void setTransportProgressNone(int transportIndex) {
-		progressTransportRegions.get(transportIndex).getStyleClass().remove("progressbar-piece-green");
-		progressTransportRegions.get(transportIndex).getStyleClass().remove("progressbar-piece-yellow");
+		progressTransportRegionsLeft.get(transportIndex).getStyleClass().remove("progressbar-piece-1of2-green");
+		progressTransportRegionsLeft.get(transportIndex).getStyleClass().remove("progressbar-piece-1of2-yellow");
+		progressTransportRegionsRight.get(transportIndex).getStyleClass().remove("progressbar-piece-2of2-green");
+		progressTransportRegionsRight.get(transportIndex).getStyleClass().remove("progressbar-piece-2of2-yellow");
+	}
+	
+	public void setTransportProgressFirstGreen(int transportIndex) {
+		setTransportProgressNone(transportIndex);
+		progressTransportRegionsLeft.get(transportIndex).getStyleClass().add("progressbar-piece-1of2-green");
+	}
+	
+	public void setTransportProgressFirstYellow(int transportIndex) {
+		setTransportProgressNone(transportIndex);
+		progressTransportRegionsLeft.get(transportIndex).getStyleClass().add("progressbar-piece-1of2-yellow");
+	}
+	
+	public void setTransportProgressSecondYellow(int transportIndex) {
+		setTransportProgressNone(transportIndex);
+		progressTransportRegionsLeft.get(transportIndex).getStyleClass().add("progressbar-piece-1of2-green");
+		progressTransportRegionsRight.get(transportIndex).getStyleClass().add("progressbar-piece-2of2-yellow");
 	}
 
 	private class DeviceEventHandler implements EventHandler<ActionEvent> {

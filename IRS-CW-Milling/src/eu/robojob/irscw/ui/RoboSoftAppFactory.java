@@ -95,7 +95,7 @@ public class RoboSoftAppFactory {
 	public TeachPresenter getTeachPresenter() {
 		if (teachPresenter == null) {
 			TeachView view = new TeachView();
-			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter());
+			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow());
 		}
 		return teachPresenter;
 	}

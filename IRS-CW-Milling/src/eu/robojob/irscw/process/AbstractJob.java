@@ -27,12 +27,16 @@ public abstract class AbstractJob {
 		}
 	}
 	
-	public void nextStep() {
-		if (hasNextStep()) {
-			currentStepIndex++;
+	public boolean hasStep() {
+		if (processFlow.getProcessSteps().size() > currentStepIndex) {
+			return true;
 		} else {
-			throw new IllegalStateException("Last step was reached");
+			return false;
 		}
+	}
+	
+	public void nextStep() {
+		currentStepIndex++;
 	}
 	
 	public AbstractProcessStep getCurrentStep() {

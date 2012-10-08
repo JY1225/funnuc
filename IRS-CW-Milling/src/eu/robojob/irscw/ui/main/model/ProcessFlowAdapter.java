@@ -209,4 +209,34 @@ public class ProcessFlowAdapter {
 	public ProcessFlow getProcessFlow() {
 		return processFlow;
 	}
+	
+	public int getDeviceIndex(ProcessingStep processingStep) {
+		for (int i = 0; i < getDeviceStepCount(); i++) {
+			DeviceInformation deviceInfo = getDeviceInformation(i);
+			if ((deviceInfo.hasProcessingStep()) && (deviceInfo.getProcessingStep().equals(processingStep))) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	public int getTransportIndex(PickStep pickStep) {
+		for (int i = 0; i < getTransportStepCount(); i++) {
+			TransportInformation transportInfo = getTransportInformation(i);
+			if ((transportInfo.getPickStep() != null) && (transportInfo.getPickStep().equals(pickStep))) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	public int getTransportIndex(PutStep putStep) {
+		for (int i = 0; i < getTransportStepCount(); i++) {
+			TransportInformation transportInfo = getTransportInformation(i);
+			if ((transportInfo.getPutStep() != null) && (transportInfo.getPutStep().equals(putStep))) {
+				return i;
+			}
+		}
+		return -1;
+	}
 }

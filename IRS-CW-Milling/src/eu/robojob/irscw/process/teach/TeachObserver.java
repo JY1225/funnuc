@@ -8,7 +8,7 @@ public abstract class TeachObserver {
 
 	protected ProcessFlowTeacher flowTeacher;
 	
-	public void setFlowTeacher(ProcessFlowTeacher flowTeacher) {
+	public TeachObserver(ProcessFlowTeacher flowTeacher) {
 		this.flowTeacher = flowTeacher;
 		flowTeacher.addObserver(this);
 	}

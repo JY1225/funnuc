@@ -5,7 +5,7 @@ import eu.robojob.irscw.process.ProcessFlow;
 public abstract class AbstractProcessFlowPresenter {
 
 	protected ProcessFlowView view;
-
+	
 	public AbstractProcessFlowPresenter(ProcessFlowView view) {
 		this.view = view;
 	}
