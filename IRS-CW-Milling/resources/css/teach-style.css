@@ -1,0 +1,67 @@
+.teach-bottom {
+	-fx-background-color: #5a5757, #807c7c, linear-gradient(#656161 0%, #616264 100%);
+	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
+	-fx-effect: dropshadow(gaussian, rgba(76, 76, 76, 0.3), 25, 0, 0, -1);
+}
+
+.info-msg {
+	-fx-text-alignment: center;
+	-fx-alignment: center;
+	-fx-text-wrap: true;
+	-fx-text-fill: white;
+	-fx-font-family: "Helvetica";
+	-fx-font-size: 16px;
+	-fx-font-smoothing-type: lcd;
+	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 1, 0.0 , 0 , 1 ); 
+} 
+
+.btn-start {
+	-fx-background-color: 
+		#7b7b7b,
+		#343434,
+		linear-gradient(#bce694 0%, #4f821f 100%),
+		linear-gradient(#95d857 0%, #7bae45	 100%);
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 2 3 2;
+	-fx-padding: 0;
+	-fx-border-radius: 5, 4 4 3 3;
+}
+
+.btn-start:pressed {
+	-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);
+	-fx-background-color: 
+		#7b7b7b,
+		#343434,
+		linear-gradient(#7db24a 0%, #7bae45	 100%),
+		linear-gradient(#7db24a 0%, #7bae45	 100%);
+}
+
+.loading {
+	-fx-effect: dropshadow(gaussian, rgba(255, 252, 40, 0.65), 30, 0.2, 0, 0);
+	-fx-fill: radial-gradient(center 50% 50%, radius 50%, #f8ba25 0%, #f8d325 10%, #ffe328 100%);
+	-fx-stroke-width: 1px;
+	-fx-stroke: rgba(0, 0, 0, 0.2);
+}
+
+.loading-inactive {
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.8), 1, 0, 0, -1);
+	-fx-fill: radial-gradient(center 50% 50%, radius 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.btn-start-label {
+	-fx-text-fill: white;
+	-fx-font-size: 16;
+	-fx-alignment: center;
+	-fx-font-weight: bold;
+	-fx-font-smoothing-type: lcd;
+	-fx-font-family: "Helvetica";
+    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,1) , 3, 0.0 , 0 , 0 );   
+}
+
+.btn-start Label Text {
+	-fx-font-size: 24;
+}
+
+.btn-start-icon {
+	-fx-fill: white;
+	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,1) , 3, 0.0 , 0 , 0 );   
+}

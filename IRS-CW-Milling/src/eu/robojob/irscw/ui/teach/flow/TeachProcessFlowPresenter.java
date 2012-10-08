@@ -41,6 +41,7 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	
 	public void setPickStepActive(int transportIndex) {
 		logger.info("about to set pick active: " + transportIndex);
+		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
 			view.setTransportProgressGreen(i);
 			view.setDeviceProgressGreen(i);
@@ -51,6 +52,7 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	
 	public void setPickStepFinished(int transportIndex) {
 		logger.info("about to set pick finished: " + transportIndex);
+		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
 			view.setTransportProgressGreen(i);
 			view.setDeviceProgressGreen(i);
@@ -61,6 +63,7 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	
 	public void setPutStepActive(int transportIndex) {
 		logger.info("about to set put active: " + transportIndex);
+		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
 			view.setTransportProgressGreen(i);
 			view.setDeviceProgressGreen(i);
@@ -71,6 +74,7 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	
 	public void setPutStepFinished(int transportIndex) {
 		logger.info("about to set put finished: " + transportIndex);
+		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex + 1; i++) {
 			view.setTransportProgressGreen(i);
 			view.setDeviceProgressGreen(i);
@@ -79,7 +83,7 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	
 	public void setProcessingStepActive(int deviceIndex) {
 		logger.info("about to set processing active: " + deviceIndex);
-
+		view.setAllProgressNone();
 		for (int i = 0; i < deviceIndex; i++) {
 			view.setDeviceProgressGreen(i);
 			view.setTransportProgressGreen(i);
@@ -88,6 +92,7 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	}
 	
 	public void setProcessingStepFinished(int deviceIndex) {
+		view.setAllProgressNone();
 		for (int i = 0; i < deviceIndex; i++) {
 			view.setDeviceProgressGreen(i);
 			view.setTransportProgressGreen(i);

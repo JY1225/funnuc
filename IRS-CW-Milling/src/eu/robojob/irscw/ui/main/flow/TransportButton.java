@@ -51,7 +51,7 @@ public class TransportButton extends Pane {
 	private void build() {
 	
 		arrowRegion = new Region();
-		arrowRegion.getStyleClass().add("arrow");
+		arrowRegion.getStyleClass().add("arrowp");
 		
 		questionMarkLeft = new SVGPath();
 		questionMarkLeft.setContent(questionMarkLeftPath);

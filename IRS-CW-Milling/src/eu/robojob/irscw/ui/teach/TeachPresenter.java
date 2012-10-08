@@ -1,14 +1,16 @@
 package eu.robojob.irscw.ui.teach;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.TeachJob;
+import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
 import eu.robojob.irscw.ui.teach.flow.TeachProcessFlowPresenter;
@@ -21,6 +23,8 @@ public class TeachPresenter {
 	private TeachJob teachJob;
 	private ProcessFlowAdapter processFlowAdapter;
 	
+	private TeachRunnable teachRunnable;
+	
 	private static Logger logger = Logger.getLogger(TeachPresenter.class);
 	
 	public TeachPresenter(TeachView view, TeachProcessFlowPresenter processFlowPresenter, ProcessFlow processFlow) {
@@ -30,6 +34,7 @@ public class TeachPresenter {
 		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		view.setPresenter(this);
 		view.setTop(processFlowPresenter.getView());
+		this.teachRunnable = new TeachRunnable(teachJob, this);
 	}
 
 	public TeachView getView() {
@@ -44,14 +49,36 @@ public class TeachPresenter {
 		processFlowPresenter.loadProcessFlow(processFlow);
 	}
 	
-	public void startTeaching() {
-		setTeachMode();
-		Thread thread = new Thread(new TeachRunnable(teachJob, this));
-		thread.start();
+	public void startFlow() {
+		setTeachMode(true);
+		view.showInfo("Starten proces...");
+		view.setProcessPaused(false);
+		teachJob.initialize();
+		ThreadManager.getInstance().submit(teachRunnable);
 	}
 	
-	private void setTeachMode() {
-		parent.setMenuBarEnabled(false);
+	public void setInfo(String info) {
+		view.showInfo(info);
+	}
+	
+	public void continueFlow() {
+		view.setProcessPaused(false);
+		view.showInfo("");
+		teachRunnable.teachingFinished();
+	}
+	
+	public void flowFinished() {
+		setTeachMode(false);
+		view.setProcessPaused(true);
+	}
+	
+	public void teachingNeeded() {
+		view.setProcessPaused(true);
+		view.showTeachInfo();
+	}
+	
+	private void setTeachMode(boolean enable) {
+		parent.setMenuBarEnabled(!enable);
 	}
 	
 	public void pickStepInProgress(PickStep pickStep) {

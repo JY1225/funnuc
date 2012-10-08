@@ -1,11 +1,13 @@
 package eu.robojob.irscw;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.RoboSoftAppFactory;
 
@@ -23,12 +25,18 @@ public class RoboSoft extends Application {
 		MainPresenter mainPresenter = factory.getMainPresenter();
 		mainPresenter.showConfigure();
 		Scene scene = new Scene(mainPresenter.getView(), 800, 600);
-		scene.getStylesheets().addAll("css/general-style.css", "css/header-style.css", "css/keyboard-style.css", "css/configure-style.css", "css/processflow-style.css");
+		scene.getStylesheets().addAll("css/general-style.css", "css/header-style.css", "css/keyboard-style.css", "css/configure-style.css", "css/processflow-style.css", "css/teach-style.css");
 		stage.setScene(scene);
 		stage.setTitle("RoboSoft");
 		stage.centerOnScreen();
 		stage.setResizable(false);
 		//stage.initStyle(StageStyle.UNDECORATED);
 		stage.show();
+	}
+	
+	@Override
+	public void stop() {
+		logger.info("should stop now!");
+		ThreadManager.getInstance().shutDown();
 	}
 }

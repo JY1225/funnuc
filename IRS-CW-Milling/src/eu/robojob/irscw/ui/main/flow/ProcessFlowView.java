@@ -164,6 +164,15 @@ public class ProcessFlowView extends GridPane  {
 		}
 	}
 	
+	public void setAllProgressNone() {
+		for (int i : progressDeviceRegions.keySet()) {
+			setDeviceProgressNone(i);
+		}
+		for (int i : progressTransportRegionsRight.keySet()) {
+			setTransportProgressNone(i);
+		}
+	}
+	
 	public void setDeviceProgressGreen(int deviceIndex) {
 		setDeviceProgressNone(deviceIndex);
 		if (deviceIndex == 0) {
@@ -233,7 +242,7 @@ public class ProcessFlowView extends GridPane  {
 		progressTransportRegionsLeft.get(transportIndex).getStyleClass().add("progressbar-piece-1of2-green");
 		progressTransportRegionsRight.get(transportIndex).getStyleClass().add("progressbar-piece-2of2-yellow");
 	}
-
+	
 	private class DeviceEventHandler implements EventHandler<ActionEvent> {
 		private int index;
 		public DeviceEventHandler(int index) {

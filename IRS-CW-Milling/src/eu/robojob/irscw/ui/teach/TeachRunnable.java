@@ -10,21 +10,30 @@ import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.TeachJob;
+import eu.robojob.irscw.util.Translator;
 
 public class TeachRunnable implements Runnable {
 
 	private TeachJob teachJob;
 	private TeachPresenter teachPresenter;
+	private Translator translator;
 	
 	private static Logger logger = Logger.getLogger(TeachRunnable.class);
+	
+	private boolean canContinue;
+	private Object uiSyncObject;
 	
 	public TeachRunnable(TeachJob teachJob, TeachPresenter teachPresenter) {
 		this.teachJob = teachJob;
 		this.teachPresenter = teachPresenter;
+		canContinue = false;
+		this.uiSyncObject = new Object();
+		this.translator = Translator.getInstance();
 	}
 	
 	@Override
 	public void run() {
+		canContinue = true;
 		while (teachJob.hasStep()) {
 			AbstractProcessStep step = teachJob.getCurrentStep();
 			// intervention steps can be skipped
@@ -38,14 +47,39 @@ public class TeachRunnable implements Runnable {
 						}
 					});
 					if (pickStep.needsTeaching()) {
+						setStatus("prepare-pick");
 						wait2Sec();
-					
-						// TEMP: finishing of step
+						canContinue = false;
+						Platform.runLater(new Runnable() {
+							@Override
+							public void run() {
+								teachPresenter.teachingNeeded();
+							}
+						});
+						while (!canContinue) {
+							synchronized(uiSyncObject) {
+								try {
+									uiSyncObject.wait(1000);
+								} catch (InterruptedException e) {
+									if (!canContinue) {
+										logger.error(e);
+										return;
+									} else {
+										logger.info("can continue");
+									}
+								}
+							}
+						}
+						setStatus("execute-pick");
 						wait2Sec();
-					
+						setStatus("executed-pick");
 					} else {
 						// pickStep.executeStep();
+						setStatus("prepare-pick");
 						wait2Sec();
+						setStatus("execute-pick");
+						wait2Sec();
+						setStatus("executed-pick");
 					}
 					Platform.runLater(new Runnable() {
 						@Override
@@ -63,15 +97,39 @@ public class TeachRunnable implements Runnable {
 					});
 					if (putStep.needsTeaching()) {
 						//TODO : let pick step prepare itself for teaching
-						// TEMP: preparing for pick
+						setStatus("prepare-put");
 						wait2Sec();
-						
-						// TEMP: finishing of step
+						canContinue = false;
+						Platform.runLater(new Runnable() {
+							@Override
+							public void run() {
+								teachPresenter.teachingNeeded();
+							}
+						});
+						while (!canContinue) {
+							synchronized(uiSyncObject) {
+								try {
+									uiSyncObject.wait(1000);
+								} catch (InterruptedException e) {
+									if (!canContinue) {
+										logger.error(e);
+										return;
+									} else {
+										logger.info("can continue");
+									}
+								}
+							}
+						}
+						setStatus("execute-put");
 						wait2Sec();
+						setStatus("executed-pick");
 						
 					} else {
-						//putStep.executeStep();
+						setStatus("prepare-put");
 						wait2Sec();
+						setStatus("execute-put");
+						wait2Sec();
+						setStatus("executed-put");
 						
 					}
 					Platform.runLater(new Runnable() {
@@ -90,7 +148,9 @@ public class TeachRunnable implements Runnable {
 							teachPresenter.processingInProgress(processingStep);
 						}
 					});
+					setStatus("prepare-process");
 					wait2Sec();
+					setStatus("executed-process");
 					Platform.runLater(new Runnable() {
 						@Override
 						public void run() {
@@ -101,6 +161,13 @@ public class TeachRunnable implements Runnable {
 			}
 			teachJob.nextStep();
 		}
+		setStatus("process-finished");
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				teachPresenter.flowFinished();
+			}
+		});
 	}
 	
 	private void wait2Sec() {
@@ -112,4 +179,19 @@ public class TeachRunnable implements Runnable {
 		}
 	}
 
+	public void teachingFinished() {
+		synchronized (uiSyncObject) {
+			canContinue = true;
+			uiSyncObject.notify();
+		}
+	}
+	
+	private void setStatus(final String statusKey) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				teachPresenter.setInfo(translator.getTranslation(statusKey));
+			}
+		});
+	}
 }
