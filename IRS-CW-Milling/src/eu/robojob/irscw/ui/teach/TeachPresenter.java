@@ -25,6 +25,8 @@ public class TeachPresenter {
 	
 	private TeachRunnable teachRunnable;
 	
+	private boolean isTeached;
+	
 	private static Logger logger = Logger.getLogger(TeachPresenter.class);
 	
 	public TeachPresenter(TeachView view, TeachProcessFlowPresenter processFlowPresenter, ProcessFlow processFlow) {
@@ -35,6 +37,7 @@ public class TeachPresenter {
 		view.setPresenter(this);
 		view.setTop(processFlowPresenter.getView());
 		this.teachRunnable = new TeachRunnable(teachJob, this);
+		isTeached = false;
 	}
 
 	public TeachView getView() {
@@ -47,6 +50,10 @@ public class TeachPresenter {
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {
 		processFlowPresenter.loadProcessFlow(processFlow);
+	}
+	
+	public boolean isTeached() {
+		return isTeached;
 	}
 	
 	public void startFlow() {
@@ -70,6 +77,8 @@ public class TeachPresenter {
 	public void flowFinished() {
 		setTeachMode(false);
 		view.setProcessPaused(true);
+		isTeached = true;
+		parent.refreshStatus();
 	}
 	
 	public void teachingNeeded() {

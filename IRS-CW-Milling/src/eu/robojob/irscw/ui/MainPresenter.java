@@ -53,6 +53,9 @@ public class MainPresenter {
 			} else {
 				throw new IllegalStateException("Configuration UI says ok, but there is still data missing");
 			}
+		} 
+		if (teachPresenter.isTeached()) {
+			menuBarPresenter.setAutomateButtonEnabled(true);
 		}
 	}
 	

@@ -172,9 +172,9 @@ public class RoboSoftAppFactory {
 			BasicStackPlate stackPlate = (BasicStackPlate) deviceMgr.getStackingFromDeviceById("IRS M Basic");
 			BasicStackPlatePickSettings stackPlatePickSettings = new BasicStackPlate.BasicStackPlatePickSettings(stackPlate.getWorkAreaById("IRS M Basic"));
 			BasicStackPlateSettings stackPlateSettings = (BasicStackPlateSettings) stackPlate.getDeviceSettings();
-			stackPlateSettings.setAmount(5);
-			stackPlateSettings.setDimensions(new WorkPieceDimensions(150, 100, 30));
-			stackPlateSettings.setOrientation(WorkPieceOrientation.TILTED);
+			stackPlateSettings.setAmount(15);
+			stackPlateSettings.setDimensions(new WorkPieceDimensions(140, 100, 30));
+			stackPlateSettings.setOrientation(WorkPieceOrientation.HORIZONTAL);
 			processFlow.setDeviceSettings(stackPlate, stackPlateSettings);
 			
 			// Mazak VRX J500
