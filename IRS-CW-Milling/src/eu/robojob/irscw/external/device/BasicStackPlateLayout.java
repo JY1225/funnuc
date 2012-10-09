@@ -186,6 +186,9 @@ public class BasicStackPlateLayout {
 		} else if ((spaceLeft < remainingWidth) && (remainingDistanceBetweenHoles == 0)) {
 			amountVertical--;
 		}
+		if ((amountOfVerticalStudsOnePiece == 1)&&(amountVertical > verticalHoleAmount)) {
+			amountVertical--;
+		}
 				
 		initializeRawWorkPiecePositionsHorizontal(amountOfHorizontalStudsOnePiece, amountOfVerticalStudsOnePiece, amountHorizontal, amountVertical, dimensions, remainingLength, remainingWidth);
 	}
@@ -217,7 +220,6 @@ public class BasicStackPlateLayout {
 				
 				// condition one: only two vertical studs and not enough remaining width (only one leftVerticalExtraIndex)
 				// condition two: only two horizontal studs, or: only three horizontal studs and not enough remaining length (only two rightHorizontalExtraIndex)
-				
 				if ((rightHorizontalExtraIndex <=2) || (leftVerticalExtraIndex == 0)) {
 					StudPosition studPosition = new StudPosition(horizontalStudIndex, verticalStudIndex, studPositions[verticalStudIndex][horizontalStudIndex].getCenterPosition(), StudType.HORIZONTAL_CORNER);
 					stackingPosition.addstud(studPosition);
