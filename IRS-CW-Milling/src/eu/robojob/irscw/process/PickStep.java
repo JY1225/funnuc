@@ -9,12 +9,15 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
+import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.workpiece.WorkPiece;
+import eu.robojob.irscw.workpiece.WorkPiece.Type;
 
 public class PickStep extends AbstractTransportStep {
 
 	private AbstractDevice.AbstractDevicePickSettings pickSettings;
 	private AbstractRobot.AbstractRobotPickSettings robotPickSettings;
-	
+		
 	public PickStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
 			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
 		super(processFlow, deviceFrom, robot);
@@ -40,9 +43,54 @@ public class PickStep extends AbstractTransportStep {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
 				device.prepareForPick(pickSettings);
+				if (needsTeaching()) {
+					if (teachedOffset == null) {
+						throw new IllegalStateException("Unknown teached position");
+					} else {
+						Coordinates position = device.getPickLocation(pickSettings.getWorkArea());
+						position.offset(teachedOffset);
+						robotPickSettings.setLocation(position);
+					}
+				} else {
+					Coordinates position = device.getPickLocation(pickSettings.getWorkArea());
+					robotPickSettings.setLocation(position);
+				}
 				robot.pick(robotPickSettings);
 				robot.grabPiece(robotPickSettings);
+				robotPickSettings.getGripper().setWorkPiece(new WorkPiece(Type.RAW, robotPickSettings.getWorkPieceDimensions()));
 				device.releasePiece(pickSettings);
+			}
+		}
+	}
+
+	@Override
+	public void prepareForTeaching() throws IOException {
+		if (!device.lock(processFlow)) {
+			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
+		} else {
+			if (!robot.lock(processFlow)) {
+				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
+			} else {
+				device.prepareForPick(pickSettings);
+				Coordinates coordinates = device.getPickLocation(pickSettings.getWorkArea());
+				robot.moveTo(pickSettings.getWorkArea().getUserFrame(), coordinates);
+				robot.setTeachModeEnabled(true);
+			}
+		}
+	}
+
+	@Override
+	public void teachingFinished() throws IOException {
+		if (!device.lock(processFlow)) {
+			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
+		} else {
+			if (!robot.lock(processFlow)) {
+				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
+			} else {
+				robot.setTeachModeEnabled(false);
+				Coordinates coordinates = robot.getPosition();
+				teachedOffset = coordinates.calculateOffset( device.getPickLocation(pickSettings.getWorkArea()));
+				robot.grabPiece(robotPickSettings);
 			}
 		}
 	}
@@ -96,6 +144,7 @@ public class PickStep extends AbstractTransportStep {
 
 	@Override
 	public boolean needsTeaching() {
+		// pick location is always fixed!
 		if ((robotPickSettings.getWorkPieceDimensions().isKnownShape()) && (robotPickSettings.getGripper().isFixedHeight())) {
 			return false;
 		} else {
@@ -103,4 +152,7 @@ public class PickStep extends AbstractTransportStep {
 		}
 	}
 
+	public Coordinates getTeachedOffset() {
+		return teachedOffset;
+	}
 }

@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
+import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractDevice extends AbstractServiceProvider {
 	
@@ -34,6 +36,9 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public abstract AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePickSettings pickSettings);
 	public abstract AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePutSettings putSettings);
+	
+	public abstract Coordinates getPickLocation(WorkArea workArea);
+	public abstract Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions);
 	
 	public AbstractDevice(String id) {
 		super(id);

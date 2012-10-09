@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
+import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachine extends AbstractCNCMachine {
 
@@ -283,6 +285,19 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePutSettings putSettings) {
 		return new CNCMillingMachineInterventionSettings(putSettings.getWorkArea());
+	}
+
+	@Override
+	public Coordinates getPickLocation(WorkArea workArea) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Coordinates getPutLocation(WorkArea workArea,
+			WorkPieceDimensions workPieceDimensions) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

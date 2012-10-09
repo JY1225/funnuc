@@ -9,6 +9,7 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
+import eu.robojob.irscw.positioning.Coordinates;
 
 public class PutStep extends AbstractTransportStep {
 
@@ -32,10 +33,70 @@ public class PutStep extends AbstractTransportStep {
 
 	@Override
 	public void executeStep() throws IOException {
-		device.prepareForPut(putSettings);
-		robot.put(robotPutSettings);
-		device.grabPiece(putSettings);
-		robot.releasePiece(robotPutSettings);
+		// check if the parent process has locked the devices to be used
+		if (!device.lock(processFlow)) {
+			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
+		} else {
+			if (!robot.lock(processFlow)) {
+				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
+			} else {
+				device.prepareForPut(putSettings);
+				if (needsTeaching()) {
+					if (teachedOffset == null) {
+						throw new IllegalStateException("Unknown teached position");
+					} else {
+						Coordinates position = device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions());
+						position.offset(teachedOffset);
+						robotPutSettings.setLocation(position);
+					}
+				} else {
+					Coordinates position = device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions());
+					// no offset needed? sometimes there is! use offset of corresponding pick!
+					// getting pick step:
+					PickStep pickStep = (PickStep) processFlow.getStep(processFlow.getStepIndex(this) - 1);
+					if (pickStep.needsTeaching()) {
+						position.offset(pickStep.getTeachedOffset());
+					}
+					robotPutSettings.setLocation(position);
+				}
+				robot.put(robotPutSettings);
+				device.grabPiece(putSettings);
+				robot.releasePiece(robotPutSettings);
+			}
+		}
+	}
+
+	@Override
+	public void prepareForTeaching() throws IOException {
+		if (!device.lock(processFlow)) {
+			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
+		} else {
+			if (!robot.lock(processFlow)) {
+				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
+			} else {
+				device.prepareForPut(putSettings);
+				Coordinates coordinates = device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions());
+				robot.moveTo(putSettings.getWorkArea().getUserFrame(), coordinates);
+				robot.setTeachModeEnabled(true);
+			}
+		}
+	}
+
+	@Override
+	public void teachingFinished() throws IOException {
+		if (!device.lock(processFlow)) {
+			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
+		} else {
+			if (!robot.lock(processFlow)) {
+				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
+			} else {
+				robot.setTeachModeEnabled(false);
+				Coordinates coordinates = robot.getPosition();
+				teachedOffset = coordinates.calculateOffset(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
+				device.grabPiece(putSettings);
+				robot.releasePiece(robotPutSettings);
+			}
+		}
 	}
 
 	@Override
@@ -94,5 +155,4 @@ public class PutStep extends AbstractTransportStep {
 			return true;
 		}
 	}
-
 }

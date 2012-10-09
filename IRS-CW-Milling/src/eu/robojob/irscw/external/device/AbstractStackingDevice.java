@@ -16,8 +16,6 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 	
 	public abstract boolean canPickWorkpiece();
 	public abstract boolean canPutWorkpiece();
-	public abstract Coordinates getPickLocation(WorkArea workArea);
-	public abstract Coordinates getPutLocation(WorkArea workArea);
 
 	public static abstract class AbstractStackingDevicePickSettings extends AbstractDevicePickSettings {
 		public AbstractStackingDevicePickSettings(WorkArea workArea) {

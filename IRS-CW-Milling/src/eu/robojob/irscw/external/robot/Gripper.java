@@ -1,5 +1,7 @@
 package eu.robojob.irscw.external.robot;
 
+import eu.robojob.irscw.workpiece.WorkPiece;
+
 public class Gripper {
 	
 	private String id;
@@ -7,6 +9,7 @@ public class Gripper {
 	private boolean fixedHeight;
 	private String description;
 	private String imageUrl;
+	private WorkPiece workPiece;
 	
 	public Gripper(String id, float height, String description, String imageUrl) {
 		this.id = id;
@@ -14,6 +17,15 @@ public class Gripper {
 		this.description = description;
 		this.imageUrl = imageUrl;
 		this.fixedHeight = false;
+		this.workPiece = null;
+	}
+	
+	public WorkPiece getWorkPiece() {
+		return workPiece;
+	}
+	
+	public void setWorkPiece(WorkPiece workPiece) {
+		this.workPiece = workPiece;
 	}
 
 	public String getId() {

@@ -127,19 +127,14 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 		group.getTransforms().add(s);
 		//Scale t = new Scale(550 / group.getBoundsInParent().getWidth(),  280 / group.getBoundsInParent().getHeight());
 		//group.getTransforms().add(t);
-		
-		System.out.println(group.getBoundsInParent().getWidth() + ": " + group.getBoundsInParent().getHeight());
-		
+				
 		//group.setTranslateX((570 - group.getBoundsInParent().getWidth())/2);
 		//group.setTranslateY((300 - group.getBoundsInParent().getHeight())/2);
 		
 		root = new Pane();
 		root.setPrefSize(570, 300);
 		root.getChildren().clear();
-		root.getChildren().add(group);
-		
-		System.out.println(group.getBoundsInParent());
-		
+		root.getChildren().add(group);		
 		
 		group.setLayoutX(0 - group.getBoundsInParent().getMinX());
 		group.setLayoutY(0 - group.getBoundsInParent().getMinY());
@@ -162,7 +157,6 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 					Path path = new Path();
 					MoveTo moveTo = new MoveTo();
 					moveTo.setX(pos.getCenterPosition().getX() + basicStackPlateLayout.getHorizontalStudLength());
-					System.out.println(basicStackPlateLayout.getHorizontalStudLength());
 					moveTo.setY(pos.getCenterPosition().getY());
 					LineTo lineTo = new LineTo();
 					lineTo.setX(pos.getCenterPosition().getX());

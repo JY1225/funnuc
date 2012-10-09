@@ -70,4 +70,17 @@ public class Coordinates {
 		this.r = r;
 	}
 	
+	public Coordinates calculateOffset(Coordinates coordinates) {
+		return new Coordinates(getX()-coordinates.getX(), getY()-coordinates.getY(), getZ()-coordinates.getZ(), getW()-coordinates.getW(), getP()-coordinates.getP(), getR()-coordinates.getR());
+	}
+	
+	public void offset(Coordinates coordinates) {
+		setX(getX() + coordinates.getX());
+		setY(getY() + coordinates.getY());
+		setZ(getZ() + coordinates.getZ());
+		setW(getW() + coordinates.getW());
+		setP(getP() + coordinates.getP());
+		setR(getR() + coordinates.getR());
+	}
+	
 }

@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.positioning.UserFrame;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class FanucRobot extends AbstractRobot {
@@ -40,6 +41,7 @@ public class FanucRobot extends AbstractRobot {
 	
 	@Override
 	public String getStatus() throws IOException {
+		logger.debug("fanuc-robot getStatus called");
 		if (!socketConnection.isConnected()) {
 			throw new IOException(this + " was not connected");
 		} else {
@@ -47,9 +49,9 @@ public class FanucRobot extends AbstractRobot {
 		}
 	}
 	
-	//TODO parse result to coordinates object
 	@Override
 	public Coordinates getPosition() throws IOException {
+		logger.debug("fanuc-robot getPosition called");
 		if (!socketConnection.isConnected()) {
 			throw new IOException(this + " was not connected");
 		} else {
@@ -60,6 +62,7 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void pick(AbstractRobotPickSettings pickSettings) throws IOException {
+		logger.debug("fanuc-robot pick called");
 		if (!socketConnection.isConnected()) {
 			throw new IOException(this + " was not connected");
 		} else {
@@ -69,6 +72,7 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void put(AbstractRobotPutSettings putSettings) throws IOException {
+		logger.debug("fanuc-robot put called");
 		if (!socketConnection.isConnected()) {
 			throw new IOException(this + " was not connected");
 		} else {
@@ -77,8 +81,8 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void releasePiece(AbstractRobotPutSettings putSettings)
-			throws IOException {
+	public void releasePiece(AbstractRobotPutSettings putSettings) throws IOException {
+		logger.debug("fanuc-robot release piece called");
 		if (!socketConnection.isConnected()) {
 			throw new IOException(this + " was not connected");
 		} else {
@@ -87,8 +91,8 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void grabPiece(AbstractRobotPickSettings pickSettings)
-			throws IOException {
+	public void grabPiece(AbstractRobotPickSettings pickSettings) throws IOException {
+		logger.debug("fanuc-robot grabpiece called");
 		if (!socketConnection.isConnected()) {
 			throw new IOException(this + " was not connected");
 		} else {
@@ -98,11 +102,23 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void moveToHome() throws IOException {
+		logger.debug("fanuc-robot move to home called");
 		if (!socketConnection.isConnected()) {
 			throw new IOException(this + " was not connected");
 		} else {
 			String response = socketConnection.synchronizedSendAndRead(MOVE_TO_SAFE_POINT);
 		}
+	}
+	
+
+	@Override
+	public void moveTo(UserFrame uf, Coordinates coordinates) {
+		logger.debug("fanuc-robot move to called");
+	}
+
+	@Override
+	public void setTeachModeEnabled(boolean enable) {
+		logger.debug("fanuc-robot teach mode enabled: " + enable);
 	}
 	
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
@@ -226,18 +242,6 @@ public class FanucRobot extends AbstractRobot {
 		} else {
 			return false;
 		}
-	}
-
-	@Override
-	public void setTeachMode(AbstractRobotPickSettings pickSettings) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setTeachMode(AbstractRobotPutSettings putSettings) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

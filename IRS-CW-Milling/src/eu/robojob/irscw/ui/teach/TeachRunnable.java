@@ -1,5 +1,7 @@
 package eu.robojob.irscw.ui.teach;
 
+import java.io.IOException;
+
 import javafx.application.Platform;
 
 import org.apache.log4j.Logger;
@@ -44,56 +46,60 @@ public class TeachRunnable implements Runnable {
 	@Override
 	public void run() {
 		canContinue = true;
-		while (teachJob.hasStep()) {
-			AbstractProcessStep step = teachJob.getCurrentStep();
-			// intervention steps can be skipped
-			if (!(step instanceof InterventionStep)) {
-				if (step instanceof PickStep) {
-					handlePick((PickStep) step);
-				} else if (step instanceof PutStep) {
-					handlePut((PutStep) step);
-				} else if (step instanceof ProcessingStep) {
-					handleProcessing((ProcessingStep) step);
+		try {
+			while (teachJob.hasStep()) {
+				AbstractProcessStep step = teachJob.getCurrentStep();
+				// intervention steps can be skipped
+				if (!(step instanceof InterventionStep)) {
+					if (step instanceof PickStep) {
+						handlePick((PickStep) step);
+					} else if (step instanceof PutStep) {
+						handlePut((PutStep) step);
+					} else if (step instanceof ProcessingStep) {
+						handleProcessing((ProcessingStep) step);
+					}
 				}
+				teachJob.nextStep();
 			}
-			teachJob.nextStep();
+			setStatus("process-finished");
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					teachPresenter.flowFinished();
+				}
+			});
+		} catch(IOException e) {
+			logger.error(e);
 		}
-		setStatus("process-finished");
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				teachPresenter.flowFinished();
-			}
-		});
 	}
 	
-	private void handlePick(final PickStep pickStep) {
+	private void handlePick(final PickStep pickStep) throws IOException {
 		// notify presenter this pick step is in progress 
 		notifyStepInProgress(pickStep);
 		if (pickStep.needsTeaching()) {
 			
 			// set status-message to indicate we're preparing for the pick
 			setStatus(PREPARE_PICK);
-			wait2Sec();
+			pickStep.prepareForTeaching();
 			
 			canContinue = false;
 			
 			// teaching the exact position is needed at this point
 			notifyTeachingNeeded();
 			waitForTeaching();
-						
+			
+			pickStep.teachingFinished();
+			
 			// now we know the teaching position, we execute the pick
 			setStatus(EXECUTE_PICK);
 			
-			wait2Sec();
+			//wait2Sec();
 			setStatus(EXECUTED_PICK);
 			
 		} else {
 			// to teaching needed so we just prepare and execute pick
-			setStatus(PREPARE_PICK);
-			wait2Sec();
 			setStatus(EXECUTE_PICK);
-			wait2Sec();
+			pickStep.executeStep();
 			setStatus(EXECUTED_PICK);
 		}
 		notifyStepFinished(pickStep);

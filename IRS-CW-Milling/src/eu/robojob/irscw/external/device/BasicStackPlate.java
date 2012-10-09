@@ -42,89 +42,71 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public boolean canPickWorkpiece() {
-		// TODO Auto-generated method stub
+		logger.debug("basic stack plate can pick workpiece called");
 		return false;
 	}
 
 	@Override
 	public boolean canPutWorkpiece() {
-		// TODO Auto-generated method stub
+		logger.debug("basic stack plate can put workpiece called");
 		return false;
 	}
-
+	
 	@Override
 	public Coordinates getPickLocation(WorkArea workArea) {
-		// TODO Auto-generated method stub
+		logger.debug("basic stack plate get pick location called");
 		return null;
 	}
 
 	@Override
-	public Coordinates getPutLocation(WorkArea workArea) {
-		// TODO Auto-generated method stub
+	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
+		logger.debug("basic stack plate get put location called");
 		return null;
 	}
 
 	@Override
-	public void prepareForPick(AbstractDevicePickSettings pickSettings)
-			throws IOException {
-		// TODO Auto-generated method stub
-		
+	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws IOException {
+		logger.debug("basic stack plate prepare for pick called");
 	}
 
 	@Override
-	public void prepareForPut(AbstractDevicePutSettings putSettings)
-			throws IOException {
-		// TODO Auto-generated method stub
-		
+	public void prepareForPut(AbstractDevicePutSettings putSettings) throws IOException {
+		logger.debug("basic stack plate prepare for put called");
 	}
 
 	@Override
-	public void prepareForIntervention(
-			AbstractDeviceInterventionSettings interventionSettings)
-			throws IOException {
-		// TODO Auto-generated method stub
-		
+	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws IOException {
+		logger.debug("basic stack plate prepare for intervention called");
 	}
 
 	@Override
-	public void pickFinished(AbstractDevicePickSettings pickSettings)
-			throws IOException {
-		// TODO Auto-generated method stub
-		
+	public void pickFinished(AbstractDevicePickSettings pickSettings) throws IOException {
+		logger.debug("basic stack plate pick finished called");
 	}
 
 	@Override
-	public void putFinished(AbstractDevicePutSettings putSettings)
-			throws IOException {
-		// TODO Auto-generated method stub
-		
+	public void putFinished(AbstractDevicePutSettings putSettings) throws IOException {
+		logger.debug("basic stack plate put finished called");
 	}
 
 	@Override
-	public void interventionFinished(
-			AbstractDeviceInterventionSettings interventionSettings)
-			throws IOException {
-		// TODO Auto-generated method stub
-		
+	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws IOException {
+		logger.debug("basic stack plate intervention finished called");
 	}
 
 	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings)
-			throws IOException {
-		// TODO Auto-generated method stub
-		
+	public void releasePiece(AbstractDevicePickSettings pickSettings) throws IOException {
+		logger.debug("basic stack plate release piece called");
 	}
 
 	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings)
-			throws IOException {
-		// TODO Auto-generated method stub
-		
+	public void grabPiece(AbstractDevicePutSettings putSettings) throws IOException {
+		logger.debug("grab piece");
 	}
 
 	@Override
 	public String getStatus() throws IOException {
-		// TODO Auto-generated method stub
+		logger.debug("basic stack plate get status called");
 		return null;
 	}
 	
