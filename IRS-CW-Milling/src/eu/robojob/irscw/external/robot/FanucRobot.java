@@ -97,7 +97,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void moveToSafePoint() throws IOException {
+	public void moveToHome() throws IOException {
 		if (!socketConnection.isConnected()) {
 			throw new IOException(this + " was not connected");
 		} else {
@@ -226,6 +226,18 @@ public class FanucRobot extends AbstractRobot {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public void setTeachMode(AbstractRobotPickSettings pickSettings) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setTeachMode(AbstractRobotPutSettings putSettings) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

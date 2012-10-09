@@ -1,8 +1,5 @@
 package eu.robojob.irscw.ui.teach;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.process.PickStep;

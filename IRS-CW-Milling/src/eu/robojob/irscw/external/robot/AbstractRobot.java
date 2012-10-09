@@ -58,7 +58,10 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract boolean validatePickSettings(AbstractRobotPickSettings pickSettings);
 	public abstract boolean validatePutSettings(AbstractRobotPutSettings putSettings);
 	
-	public abstract void moveToSafePoint() throws IOException;
+	public abstract void moveToHome() throws IOException;
+	
+	public abstract void setTeachMode(AbstractRobotPickSettings pickSettings);
+	public abstract void setTeachMode(AbstractRobotPutSettings putSettings);
 	
 	public String toString() {
 		return "Robot: " + id;
