@@ -1,10 +1,9 @@
 package eu.robojob.irscw.process;
 
-import org.apache.log4j.Logger;
 
 public abstract class AbstractJob {
 	
-	private static Logger logger = Logger.getLogger(AbstractJob.class);
+	//private static Logger logger = Logger.getLogger(AbstractJob.class);
 	
 	private int currentStepIndex;
 	
