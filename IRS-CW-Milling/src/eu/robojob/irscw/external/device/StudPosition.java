@@ -9,15 +9,21 @@ public class StudPosition {
 	}
 
 	private Coordinates centerPosition;
+	
+	private int columnIndex;
+	private int rowIndex;
+	
 	private StudType studType;
 	
-	public StudPosition(Coordinates centerPosition, StudType studType) {
+	public StudPosition(int columnIndex, int rowIndex, Coordinates centerPosition, StudType studType) {
+		this.columnIndex = columnIndex;
+		this.rowIndex = rowIndex;
 		this.centerPosition = centerPosition;
 		this.studType = studType;
 	}
 	
-	public StudPosition(float x, float y, StudType studType) {
-		this(new Coordinates(x, y, 0, 0, 0, 0), studType);
+	public StudPosition(int columnIndex, int rowIndex, float x, float y, StudType studType) {
+		this(columnIndex, rowIndex, new Coordinates(x, y, 0, 0, 0, 0), studType);
 	}
 
 	public Coordinates getCenterPosition() {
@@ -34,6 +40,22 @@ public class StudPosition {
 
 	public void setStudType(StudType studType) {
 		this.studType = studType;
+	}
+
+	public int getColumnIndex() {
+		return columnIndex;
+	}
+
+	public void setColumnIndex(int columnIndex) {
+		this.columnIndex = columnIndex;
+	}
+
+	public int getRowIndex() {
+		return rowIndex;
+	}
+
+	public void setRowIndex(int rowIndex) {
+		this.rowIndex = rowIndex;
 	}
 	
 }

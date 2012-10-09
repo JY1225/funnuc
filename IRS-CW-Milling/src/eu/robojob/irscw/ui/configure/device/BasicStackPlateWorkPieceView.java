@@ -12,6 +12,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
 import eu.robojob.irscw.external.device.BasicStackPlate;
+import eu.robojob.irscw.external.device.BasicStackPlate.BasicStackPlateSettings;
 import eu.robojob.irscw.external.device.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
@@ -207,9 +208,10 @@ public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPla
 
 	@Override
 	public void refresh() {
-		setDimensions(((BasicStackPlate) pickStep.getDevice()).getRawWorkPieceDimensions());
-		itxtWorkPieceAmount.setText("" + ((BasicStackPlate) pickStep.getDevice()).getRawWorkPieceAmount());
-		setOrientation(((BasicStackPlate) pickStep.getDevice()).getWorkPieceOrientation());
+		BasicStackPlateSettings settings = (BasicStackPlateSettings) ((BasicStackPlate) pickStep.getDevice()).getDeviceSettings();
+		setDimensions(settings.getWorkPiece().getDimensions());
+		itxtWorkPieceAmount.setText("" + settings.getAmount());
+		setOrientation(settings.getOrientation());
 	}
 	
 	private void setOrientation(WorkPieceOrientation orientation) {

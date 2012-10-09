@@ -73,7 +73,7 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
 		if (
 				(dimensions != null) && (orientation != null) &&
-					(plate.getRawStackingPositions() != null) && (plate.getRawStackingPositions().size() > 0)
+					(plate.getLayout().getStackingPositions() != null) && (plate.getLayout().getStackingPositions().size() > 0)
 			) {
 			return true;
 		} else {
