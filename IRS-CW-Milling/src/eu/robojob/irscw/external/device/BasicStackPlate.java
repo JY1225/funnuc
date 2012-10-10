@@ -29,11 +29,16 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	private BasicStackPlateLayout layout;
 		
 	private WorkPiece rawWorkPiece;
+	private WorkPiece finishedWorkPiece;
+	
+	private StackingPosition currentPickLocation;
 	
 	public BasicStackPlate(String id, List<Zone> zones, BasicStackPlateLayout layout) {
 		super(id, zones);
 		this.layout = layout;
 		this.rawWorkPiece = null;
+		this.finishedWorkPiece = null;
+		currentPickLocation = null;
 	}
 	
 	public BasicStackPlate(String id, BasicStackPlateLayout layout) {
@@ -57,6 +62,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		logger.debug("basic stack plate get pick location called");
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if (stackingPos.getWorkPiece() != null) {
+				currentPickLocation = stackingPos;
 				Coordinates c = stackingPos.getPosition();
 				float rotation = 0;
 				if (stackingPos.getOrientation() == WorkPieceOrientation.TILTED) {
@@ -71,19 +77,9 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
+		finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, workPieceDimensions);
 		logger.debug("basic stack plate get put location called");
-		for (StackingPosition stackingPos : layout.getStackingPositions()) {
-			if (stackingPos.getWorkPiece() == null) {
-				Coordinates c = stackingPos.getPosition();
-				float rotation = 0;
-				if (stackingPos.getOrientation() == WorkPieceOrientation.TILTED) {
-					rotation = 45;
-				}
-				c.offset(new Coordinates(0, 0, 0, 0, 0, rotation));
-				return c;
-			}
-		}
-		return null;
+		return currentPickLocation.getPosition();
 	}
 
 	@Override
@@ -104,18 +100,14 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	// todo better handling of this!
 	@Override
 	public void pickFinished(AbstractDevicePickSettings pickSettings) throws IOException {
-		for (StackingPosition stackingPos : layout.getStackingPositions()) {
-			if (stackingPos.getWorkPiece() != null) {
-				stackingPos.setWorkPiece(null);
-				return;
-			}
-		}
+		currentPickLocation.setWorkPiece(null);
 	}
 
 	@Override
 	public void putFinished(AbstractDevicePutSettings putSettings) throws IOException {
 		BasicStackPlatePutSettings spPutSettings = (BasicStackPlatePutSettings) putSettings;
-		return;
+		currentPickLocation.setWorkPiece(finishedWorkPiece);
+		currentPickLocation = null;
 	}
 
 	@Override

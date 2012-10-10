@@ -113,8 +113,9 @@ public class FanucRobot extends AbstractRobot {
 	
 
 	@Override
-	public void moveTo(UserFrame uf, Coordinates coordinates) {
-		String response = externalCommunication.writeAndRead("MOVE TO UF: " + uf.getIdNumber() + " COORDINATES: " + coordinates, READ_TIMEOUT);
+	public void moveTo(UserFrame uf, Coordinates coordinates, AbstractRobotActionSettings transportSettings) {
+		String response = externalCommunication.writeAndRead("MOVE TO UF: " + uf.getIdNumber() + " COORDINATES: " + coordinates + " WITH GRIPPER: " + transportSettings.getGripper().getId() + 
+				" ON GRIPPER HEAD: " + transportSettings.getGripperHead().getId(), READ_TIMEOUT);
 		logger.debug("response: " + response);
 	}
 

@@ -76,7 +76,7 @@ public class PutStep extends AbstractTransportStep {
 			} else {
 				device.prepareForPut(putSettings);
 				Coordinates coordinates = device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions());
-				robot.moveTo(putSettings.getWorkArea().getUserFrame(), coordinates);
+				robot.moveTo(putSettings.getWorkArea().getUserFrame(), coordinates, robotPutSettings);
 				robot.setTeachModeEnabled(true);
 			}
 		}

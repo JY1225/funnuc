@@ -9,7 +9,6 @@ import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
 import eu.robojob.irscw.workpiece.WorkPiece;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {
 	
@@ -63,7 +62,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void moveToHome() throws IOException;
 	
 	public abstract void setTeachModeEnabled(boolean enable);
-	public abstract void moveTo(UserFrame uf, Coordinates coordinates);
+	public abstract void moveTo(UserFrame uf, Coordinates coordinates, AbstractRobotActionSettings transportSettings);
 	
 	public abstract boolean isConnected();
 	
