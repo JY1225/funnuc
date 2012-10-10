@@ -83,4 +83,8 @@ public class Coordinates {
 		setR(getR() + coordinates.getR());
 	}
 	
+	@Override
+	public String toString() {
+		return "(" + x + ", " + y + ", " + z + ", " + w + ", " + p + ", " + r + ")";
+	}
 }

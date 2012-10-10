@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.communication.ExternalCommunication;
 import eu.robojob.irscw.external.communication.ExternalCommunicationThread;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.WorkArea;
@@ -20,7 +21,7 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class FanucRobot extends AbstractRobot {
 
-	private ExternalCommunicationThread externalCommunicationThread;
+	private ExternalCommunication externalCommunication;
 	
 	private static final String STATUS = "STATUS";
 	private static final String POSITION = "POSITION";
@@ -32,10 +33,13 @@ public class FanucRobot extends AbstractRobot {
 	
 	private static Logger logger = Logger.getLogger(FanucRobot.class);
 
+	private static final int READ_TIMEOUT = 10000;
+	
 	public FanucRobot(String id, Set<GripperBody> gripperBodies, GripperBody gripperBody, SocketConnection socketConnection) {
 		super(id, gripperBodies, gripperBody);
-		this.externalCommunicationThread = new ExternalCommunicationThread(socketConnection);
+		ExternalCommunicationThread externalCommunicationThread = new ExternalCommunicationThread(socketConnection);
 		ThreadManager.getInstance().submit(externalCommunicationThread);
+		this.externalCommunication = new ExternalCommunication(externalCommunicationThread);
 	}
 	
 	public FanucRobot(String id, SocketConnection socketConnection) {
@@ -54,41 +58,56 @@ public class FanucRobot extends AbstractRobot {
 	
 	@Override
 	public Coordinates getPosition() throws IOException {
+		String response = externalCommunication.writeAndRead(POSITION, READ_TIMEOUT);
+		logger.debug("got position from robot: " + response);
 		return null;
 	}
 
 	@Override
 	public void pick(AbstractRobotPickSettings pickSettings) throws IOException {
-		
+		FanucRobotPickSettings fanucPickSettings = (FanucRobotPickSettings) pickSettings;
+		String response = externalCommunication.writeAndRead("PICK WITH GRIPPER: " + fanucPickSettings.getGripper().getId() + " ON HEAD: " + fanucPickSettings.getGripperHead().getId() +
+				" ON LOCATION: " + fanucPickSettings.getLocation() + " WITH SMOOTH: " + fanucPickSettings.getSmoothPoint() + " IN WA: " + fanucPickSettings.getWorkArea().getId(), READ_TIMEOUT);
+		logger.debug("response: " + response);
 	}
 
 	@Override
 	public void put(AbstractRobotPutSettings putSettings) throws IOException {
-		
+		FanucRobotPutSettings fanucPutSettings = (FanucRobotPutSettings) putSettings;
+		String response = externalCommunication.writeAndRead("PUT WITH GRIPPER: " + fanucPutSettings.getGripper().getId() + " ON HEAD: " + fanucPutSettings.getGripperHead().getId() +
+				" ON LOCATION: " + fanucPutSettings.getLocation() + " WITH SMOOTH: " + fanucPutSettings.getSmoothPoint() + " IN WA: " + fanucPutSettings.getWorkArea().getId(), READ_TIMEOUT);
+		logger.debug("response: " + response);
 	}
 
 	@Override
 	public void releasePiece(AbstractRobotPutSettings putSettings) throws IOException {
-		
+		String response = externalCommunication.writeAndRead("RELEASE PIECE", READ_TIMEOUT);
+		logger.debug("response: " + response);
 	}
 
 	@Override
 	public void grabPiece(AbstractRobotPickSettings pickSettings) throws IOException {
-		
+		String response = externalCommunication.writeAndRead("GRAB PIECE", READ_TIMEOUT);
+		logger.debug("response: " + response);
 	}
 
 	@Override
 	public void moveToHome() throws IOException {
-		
+		String response = externalCommunication.writeAndRead("MOVE TO HOME", READ_TIMEOUT);
+		logger.debug("response: " + response);
 	}
 	
 
 	@Override
 	public void moveTo(UserFrame uf, Coordinates coordinates) {
+		String response = externalCommunication.writeAndRead("MOVE TO UF: " + uf.getIdNumber() + " COORDINATES: " + coordinates, READ_TIMEOUT);
+		logger.debug("response: " + response);
 	}
 
 	@Override
 	public void setTeachModeEnabled(boolean enable) {
+		String response = externalCommunication.writeAndRead("SET TEACH MODE! ", READ_TIMEOUT);
+		logger.debug("response: " + response);
 	}
 	
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
@@ -216,7 +235,7 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public boolean isConnected() {
-		return externalCommunicationThread.isConnected();
+		return externalCommunication.isConnected();
 	}
 
 }

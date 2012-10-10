@@ -27,7 +27,7 @@ public class StackingPosition {
 	}
 
 	public StackingPosition(float horizontalPosition, float verticalPosition, WorkPiece workPiece, WorkPieceOrientation orientation) {
-		this (new Coordinates(horizontalPosition, verticalPosition, Float.NaN, Float.NaN, Float.NaN, Float.NaN), workPiece, orientation);
+		this (new Coordinates(horizontalPosition, verticalPosition, 0, 0, 0, 0), workPiece, orientation);
 	}
 	
 	public Coordinates getPosition() {

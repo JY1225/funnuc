@@ -15,6 +15,7 @@ public class ExternalCommunicationThread extends Thread {
 	private static final Logger logger = Logger.getLogger(ExternalCommunicationThread.class);
 	
 	private static final int CONNECTION_RETRY_INTERVAL = 5000;
+	
 	private SocketConnection socketConnection;
 	
 	private boolean alive;
@@ -75,7 +76,7 @@ public class ExternalCommunicationThread extends Thread {
 	
 	public synchronized String getNextMessage() {
 		if (hasNextMessage()) {
-			return incommingMessages.getFirst();
+			return incommingMessages.removeFirst();
 		} else {
 			throw new IllegalStateException("No messages in queue");
 		}
@@ -113,4 +114,5 @@ public class ExternalCommunicationThread extends Thread {
 			}
 		}
 	}
+	
 }

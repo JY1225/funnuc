@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
@@ -15,6 +17,8 @@ import eu.robojob.irscw.workpiece.WorkPiece.Type;
 
 public class PickStep extends AbstractTransportStep {
 
+	private static final Logger logger = Logger.getLogger(PickStep.class);
+	
 	private AbstractDevice.AbstractDevicePickSettings pickSettings;
 	private AbstractRobot.AbstractRobotPickSettings robotPickSettings;
 		
@@ -73,6 +77,7 @@ public class PickStep extends AbstractTransportStep {
 			} else {
 				device.prepareForPick(pickSettings);
 				Coordinates coordinates = device.getPickLocation(pickSettings.getWorkArea());
+				logger.info("pick location: " + coordinates);
 				robot.moveTo(pickSettings.getWorkArea().getUserFrame(), coordinates);
 				robot.setTeachModeEnabled(true);
 			}

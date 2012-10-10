@@ -55,12 +55,34 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	@Override
 	public Coordinates getPickLocation(WorkArea workArea) {
 		logger.debug("basic stack plate get pick location called");
+		for (StackingPosition stackingPos : layout.getStackingPositions()) {
+			if (stackingPos.getWorkPiece() != null) {
+				Coordinates c = stackingPos.getPosition();
+				float rotation = 0;
+				if (stackingPos.getOrientation() == WorkPieceOrientation.TILTED) {
+					rotation = 45;
+				}
+				c.offset(new Coordinates(0, 0, stackingPos.getWorkPiece().getDimensions().getHeight(), 0, 0, rotation));
+				return c;
+			}
+		}
 		return null;
 	}
 
 	@Override
 	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
 		logger.debug("basic stack plate get put location called");
+		for (StackingPosition stackingPos : layout.getStackingPositions()) {
+			if (stackingPos.getWorkPiece() == null) {
+				Coordinates c = stackingPos.getPosition();
+				float rotation = 0;
+				if (stackingPos.getOrientation() == WorkPieceOrientation.TILTED) {
+					rotation = 45;
+				}
+				c.offset(new Coordinates(0, 0, 0, 0, 0, rotation));
+				return c;
+			}
+		}
 		return null;
 	}
 
@@ -106,8 +128,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public String getStatus() throws IOException {
-		logger.debug("basic stack plate get status called");
-		return null;
+		return "OK";
 	}
 	
 	public BasicStackPlateLayout getLayout() {

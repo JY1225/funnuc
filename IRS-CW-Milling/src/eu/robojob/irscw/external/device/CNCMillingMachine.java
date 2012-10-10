@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.communication.ExternalCommunication;
 import eu.robojob.irscw.external.communication.ExternalCommunicationThread;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.positioning.Coordinates;
@@ -16,7 +17,7 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachine extends AbstractCNCMachine {
 
-	private ExternalCommunicationThread externalCommunicationThread;
+	private ExternalCommunication externalCommunication;
 	
 	private static Logger logger = Logger.getLogger(AbstractProcessingDevice.class);
 	
@@ -31,17 +32,21 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final String PICK_FINISHED = "PICK_FINISHED";
 	private static final String PUT_FINISHED = "PUT_FINISHED";
 	private static final String INTERVENTION_FINISHED = "INTERVENTION_FINISHED";
+	
+	private static final int READ_TIMEOUT = 10000;
 		
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
 		super(id);
-		externalCommunicationThread = new ExternalCommunicationThread(socketConnection);
+		ExternalCommunicationThread externalCommunicationThread = new ExternalCommunicationThread(socketConnection);
 		ThreadManager.getInstance().submit(externalCommunicationThread);
+		this.externalCommunication = new ExternalCommunication(externalCommunicationThread);
 	}
 	
 	public CNCMillingMachine(String id, List<Zone> zones, SocketConnection socketConnection) {
 		super(id, zones);
-		externalCommunicationThread = new ExternalCommunicationThread(socketConnection);
+		ExternalCommunicationThread externalCommunicationThread = new ExternalCommunicationThread(socketConnection);
 		ThreadManager.getInstance().submit(externalCommunicationThread);
+		this.externalCommunication = new ExternalCommunication(externalCommunicationThread);
 	}
 	
 	@Override
@@ -52,6 +57,76 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			//TODO
 			return null;
 		}
+	}
+
+	@Override
+	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException {
+		CNCMillingMachineStartCylusSettings cncStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCylusSettings;
+		String response = externalCommunication.writeAndRead("START CYCLUS IN WA: " + cncStartCyclusSettings.getWorkArea().getId(), READ_TIMEOUT);
+		logger.info(response);
+	}
+
+	@Override
+	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException {
+		CNCMillingMachineStartCylusSettings cncStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCylusSettings;
+		String response = externalCommunication.writeAndRead("PREPARE FOR START CYCLUS IN WA: " + cncStartCyclusSettings.getWorkArea().getId(), READ_TIMEOUT);
+		logger.info(response);
+	}
+
+	@Override
+	public void releasePiece(AbstractDevicePickSettings pickSettings) throws IOException {
+		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
+		String response = externalCommunication.writeAndRead("RELEASE PIECE IN WA: " + cncPickSettings.getWorkArea().getId(), READ_TIMEOUT);
+		logger.info(response);
+	}
+
+	@Override
+	public void grabPiece(AbstractDevicePutSettings putSettings) throws IOException {
+		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
+		String response = externalCommunication.writeAndRead("GRAB PIECE IN WA: " + cncPutSettings.getWorkArea().getId(), READ_TIMEOUT);
+		logger.info(response);
+	}
+
+	@Override
+	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws IOException {
+		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
+		String response = externalCommunication.writeAndRead("PREPARE FOR PICK IN WA: " + cncPickSettings.getWorkArea().getId(), READ_TIMEOUT);
+		logger.info(response);
+	}
+
+	@Override
+	public void prepareForPut(AbstractDevicePutSettings putSettings) throws IOException {
+		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
+		String response = externalCommunication.writeAndRead("PREPARE FOR PUT IN WA: " + cncPutSettings.getWorkArea().getId(), READ_TIMEOUT);
+		logger.info(response);
+	}
+
+	@Override
+	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws IOException {
+		CNCMillingMachineInterventionSettings cncInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
+		String response = externalCommunication.writeAndRead("PREPARE FOR INTERVENTION IN WA: " + cncInterventionSettings.getWorkArea().getId(), READ_TIMEOUT);
+		logger.info(response);
+	}
+
+	@Override
+	public void pickFinished(AbstractDevicePickSettings pickSettings) throws IOException {
+		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
+		String response = externalCommunication.writeAndRead("PICK HAS FINISHED IN WA: " + cncPickSettings.getWorkArea().getId(), READ_TIMEOUT);
+		logger.info(response);
+	}
+
+	@Override
+	public void putFinished(AbstractDevicePutSettings putSettings) throws IOException {
+		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
+		String response = externalCommunication.writeAndRead("PUT HAS FINISHED IN WA: " + cncPutSettings.getWorkArea().getId(), READ_TIMEOUT);
+		logger.info(response);
+	}
+
+	@Override
+	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws IOException {
+		CNCMillingMachineInterventionSettings cncInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
+		String response = externalCommunication.writeAndRead("INTERVENTION FINISHED IN WA: " + cncInterventionSettings.getWorkArea().getId(), READ_TIMEOUT);
+		logger.info(response);
 	}
 	
 	public static class CNCMillingMachinePutSettings extends AbstractCNCMachinePutSettings{
@@ -113,65 +188,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	
 	}
 
-	@Override
-	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException {
-		CNCMillingMachineStartCylusSettings cncStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCylusSettings;
-		
-	}
-
-	@Override
-	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException {
-		CNCMillingMachineStartCylusSettings cncStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCylusSettings;
-		
-	}
-
-	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings) throws IOException {
-		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
-		
-	}
-
-	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings) throws IOException {
-		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
-		
-	}
-
-	@Override
-	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws IOException {
-		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
-		
-	}
-
-	@Override
-	public void prepareForPut(AbstractDevicePutSettings putSettings) throws IOException {
-		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
-		
-	}
-
-	@Override
-	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws IOException {
-		CNCMillingMachineInterventionSettings cncInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
-		
-	}
-
-	@Override
-	public void pickFinished(AbstractDevicePickSettings pickSettings) throws IOException {
-		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
-		
-	}
-
-	@Override
-	public void putFinished(AbstractDevicePutSettings putSettings) throws IOException {
-		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
-		
-	}
-
-	@Override
-	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws IOException {
-		CNCMillingMachineInterventionSettings cncInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
-		
-	}
 
 	@Override
 	public void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {
@@ -259,7 +275,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	@Override
 	public boolean isConnected() {
-		return externalCommunicationThread.isConnected();
+		return externalCommunication.isConnected();
 	}
 
 }
