@@ -2,8 +2,6 @@ package eu.robojob.irscw.external.device;
 
 import java.util.List;
 
-import eu.robojob.irscw.positioning.Coordinates;
-
 public abstract class AbstractStackingDevice extends AbstractDevice {
 
 	public AbstractStackingDevice(String id, List<Zone> zones) {

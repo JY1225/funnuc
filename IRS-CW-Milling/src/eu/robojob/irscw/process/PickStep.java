@@ -12,8 +12,6 @@ import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSetting
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
 import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.workpiece.WorkPiece;
-import eu.robojob.irscw.workpiece.WorkPiece.Type;
 
 public class PickStep extends AbstractTransportStep {
 

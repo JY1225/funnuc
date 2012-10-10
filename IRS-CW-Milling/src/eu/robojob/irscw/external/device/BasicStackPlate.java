@@ -105,7 +105,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public void putFinished(AbstractDevicePutSettings putSettings) throws IOException {
-		BasicStackPlatePutSettings spPutSettings = (BasicStackPlatePutSettings) putSettings;
+		//BasicStackPlatePutSettings spPutSettings = (BasicStackPlatePutSettings) putSettings;
 		currentPickLocation.setWorkPiece(finishedWorkPiece);
 		currentPickLocation = null;
 	}

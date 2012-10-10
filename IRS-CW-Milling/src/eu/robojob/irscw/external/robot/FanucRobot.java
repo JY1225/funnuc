@@ -23,13 +23,13 @@ public class FanucRobot extends AbstractRobot {
 
 	private ExternalCommunication externalCommunication;
 	
-	private static final String STATUS = "STATUS";
+	/*private static final String STATUS = "STATUS";*/
 	private static final String POSITION = "POSITION";
-	private static final String PICK = "PICK";
+	/*private static final String PICK = "PICK";
 	private static final String PUT = "PUT";
 	private static final String RELEASE_PIECE = "RELEASE_PIECE";
 	private static final String GRAB_PIECE = "GRAB_PIECE";
-	private static final String MOVE_TO_SAFE_POINT = "MOVE_TO_SAFE_POINT";
+	private static final String MOVE_TO_SAFE_POINT = "MOVE_TO_SAFE_POINT";*/
 	
 	private static Logger logger = Logger.getLogger(FanucRobot.class);
 

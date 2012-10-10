@@ -21,7 +21,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	
 	private static Logger logger = Logger.getLogger(AbstractProcessingDevice.class);
 	
-	private static final String STATUS = "STATUS";
+	/*private static final String STATUS = "STATUS";
 	private static final String START_CYCLUS = "START_CYCLUS";
 	private static final String PREAPARE_FOR_START_CYCLUS = "PREAPARE_FOR_START_CYCLUS";
 	private static final String RELEASE_PIECE = "RELEASE_PIECE";
@@ -31,7 +31,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final String PREAPRE_FOR_INTERVENTION = "PREAPRE_FOR_INTERVENTION";
 	private static final String PICK_FINISHED = "PICK_FINISHED";
 	private static final String PUT_FINISHED = "PUT_FINISHED";
-	private static final String INTERVENTION_FINISHED = "INTERVENTION_FINISHED";
+	private static final String INTERVENTION_FINISHED = "INTERVENTION_FINISHED";*/
 	
 	private static final int READ_TIMEOUT = 10000;
 		
