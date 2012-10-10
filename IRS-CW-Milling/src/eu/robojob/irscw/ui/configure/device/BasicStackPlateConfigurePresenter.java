@@ -26,7 +26,6 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 	}
 	
 	public void changedDevice(String deviceId) {
-		logger.debug("changed device to: " + deviceId);
 		// TODO implement!
 	}
 

@@ -10,15 +10,17 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.communication.ExternalCommunicationThread;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
+import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class FanucRobot extends AbstractRobot {
 
-	private SocketConnection socketConnection; 
+	private ExternalCommunicationThread externalCommunicationThread;
 	
 	private static final String STATUS = "STATUS";
 	private static final String POSITION = "POSITION";
@@ -32,7 +34,8 @@ public class FanucRobot extends AbstractRobot {
 
 	public FanucRobot(String id, Set<GripperBody> gripperBodies, GripperBody gripperBody, SocketConnection socketConnection) {
 		super(id, gripperBodies, gripperBody);
-		this.socketConnection = socketConnection;
+		this.externalCommunicationThread = new ExternalCommunicationThread(socketConnection);
+		ThreadManager.getInstance().submit(externalCommunicationThread);
 	}
 	
 	public FanucRobot(String id, SocketConnection socketConnection) {
@@ -41,84 +44,51 @@ public class FanucRobot extends AbstractRobot {
 	
 	@Override
 	public String getStatus() throws IOException {
-		logger.debug("fanuc-robot getStatus called");
-		if (!socketConnection.isConnected()) {
+		if (!isConnected()) {
 			throw new IOException(this + " was not connected");
 		} else {
-			return socketConnection.synchronizedSendAndRead(STATUS);
+			//TODO
+			return null;
 		}
 	}
 	
 	@Override
 	public Coordinates getPosition() throws IOException {
-		logger.debug("fanuc-robot getPosition called");
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(POSITION);
-			return null;
-		}
+		return null;
 	}
 
 	@Override
 	public void pick(AbstractRobotPickSettings pickSettings) throws IOException {
-		logger.debug("fanuc-robot pick called");
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(PICK);
-		}
+		
 	}
 
 	@Override
 	public void put(AbstractRobotPutSettings putSettings) throws IOException {
-		logger.debug("fanuc-robot put called");
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(PUT);
-		}
+		
 	}
 
 	@Override
 	public void releasePiece(AbstractRobotPutSettings putSettings) throws IOException {
-		logger.debug("fanuc-robot release piece called");
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(RELEASE_PIECE);
-		}
+		
 	}
 
 	@Override
 	public void grabPiece(AbstractRobotPickSettings pickSettings) throws IOException {
-		logger.debug("fanuc-robot grabpiece called");
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(GRAB_PIECE);
-		}
+		
 	}
 
 	@Override
 	public void moveToHome() throws IOException {
-		logger.debug("fanuc-robot move to home called");
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(MOVE_TO_SAFE_POINT);
-		}
+		
 	}
 	
 
 	@Override
 	public void moveTo(UserFrame uf, Coordinates coordinates) {
-		logger.debug("fanuc-robot move to called");
 	}
 
 	@Override
 	public void setTeachModeEnabled(boolean enable) {
-		logger.debug("fanuc-robot teach mode enabled: " + enable);
 	}
 	
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
@@ -242,6 +212,11 @@ public class FanucRobot extends AbstractRobot {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public boolean isConnected() {
+		return externalCommunicationThread.isConnected();
 	}
 
 }

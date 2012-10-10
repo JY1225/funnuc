@@ -65,7 +65,6 @@ public class IconFlowSelector extends ScrollPane {
 	public void clearItems() {
 		box.getChildren().clear();
 		items.clear();
-		logger.debug("Cleared items!");
 	}
 	
 }

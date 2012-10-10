@@ -2,9 +2,11 @@ package eu.robojob.irscw.process;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
@@ -194,5 +196,24 @@ public class ProcessFlow {
 			}
 		}
 		return true;
+	}
+	
+	public Set<AbstractDevice> getDevices() {
+		Set<AbstractDevice> devices = new HashSet<AbstractDevice>();
+		for (AbstractProcessStep step : processSteps) {
+			devices.add(step.getDevice());
+		}
+		return devices;
+	}
+	
+	public Set<AbstractRobot> getRobots() {
+		Set<AbstractRobot> robots = new HashSet<AbstractRobot>();
+		for (AbstractProcessStep step : processSteps) {
+			if (step instanceof AbstractTransportStep) {
+				AbstractTransportStep transportStep = (AbstractTransportStep) step;
+				robots.add(transportStep.getRobot());
+			}
+		}
+		return robots;
 	}
 }

@@ -40,6 +40,8 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	public abstract Coordinates getPickLocation(WorkArea workArea);
 	public abstract Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions);
 	
+	public abstract boolean isConnected();
+	
 	public AbstractDevice(String id) {
 		super(id);
 		zones = new ArrayList<Zone>();

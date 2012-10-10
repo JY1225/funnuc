@@ -263,5 +263,10 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePutSettings putSettings) {
 		return new BasicStackPlateInterventionSettings(putSettings.getWorkArea());
 	}
+
+	@Override
+	public boolean isConnected() {
+		return true;
+	}
 	
 }

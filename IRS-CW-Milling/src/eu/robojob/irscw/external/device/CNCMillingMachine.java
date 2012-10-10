@@ -8,13 +8,15 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.communication.ExternalCommunicationThread;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachine extends AbstractCNCMachine {
 
-	private SocketConnection socketConnection;
+	private ExternalCommunicationThread externalCommunicationThread;
 	
 	private static Logger logger = Logger.getLogger(AbstractProcessingDevice.class);
 	
@@ -32,28 +34,23 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
 		super(id);
-		this.socketConnection = socketConnection;
+		externalCommunicationThread = new ExternalCommunicationThread(socketConnection);
+		ThreadManager.getInstance().submit(externalCommunicationThread);
 	}
 	
 	public CNCMillingMachine(String id, List<Zone> zones, SocketConnection socketConnection) {
 		super(id, zones);
-		this.socketConnection = socketConnection;
+		externalCommunicationThread = new ExternalCommunicationThread(socketConnection);
+		ThreadManager.getInstance().submit(externalCommunicationThread);
 	}
 	
-	public SocketConnection getSocketConnection() {
-		return socketConnection;
-	}
-
-	public void setSocketConnection(SocketConnection socketConnection) {
-		this.socketConnection = socketConnection;
-	}
-
 	@Override
 	public String getStatus() throws IOException {
-		if (!socketConnection.isConnected()) {
+		if (!isConnected()) {
 			throw new IOException(this + " was not connected");
 		} else {
-			return socketConnection.synchronizedSendAndRead(STATUS);
+			//TODO
+			return null;
 		}
 	}
 	
@@ -119,101 +116,61 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException {
 		CNCMillingMachineStartCylusSettings cncStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCylusSettings;
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(START_CYCLUS);
-		}
+		
 	}
 
 	@Override
 	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException {
 		CNCMillingMachineStartCylusSettings cncStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCylusSettings;
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(PREAPARE_FOR_START_CYCLUS);
-		}
+		
 	}
 
 	@Override
 	public void releasePiece(AbstractDevicePickSettings pickSettings) throws IOException {
 		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(RELEASE_PIECE);
-		}
+		
 	}
 
 	@Override
 	public void grabPiece(AbstractDevicePutSettings putSettings) throws IOException {
 		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(GRAB_PIECE);
-		}
+		
 	}
 
 	@Override
 	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws IOException {
 		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(PREPARE_FOR_PICK);
-		}
+		
 	}
 
 	@Override
 	public void prepareForPut(AbstractDevicePutSettings putSettings) throws IOException {
 		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(PREPARE_FOR_PUT);
-		}
+		
 	}
 
 	@Override
 	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws IOException {
 		CNCMillingMachineInterventionSettings cncInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(PREAPRE_FOR_INTERVENTION);
-		}
+		
 	}
 
 	@Override
 	public void pickFinished(AbstractDevicePickSettings pickSettings) throws IOException {
 		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(PICK_FINISHED);
-		}
+		
 	}
 
 	@Override
 	public void putFinished(AbstractDevicePutSettings putSettings) throws IOException {
 		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(PUT_FINISHED);
-		}
+		
 	}
 
 	@Override
 	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws IOException {
 		CNCMillingMachineInterventionSettings cncInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
-		if (!socketConnection.isConnected()) {
-			throw new IOException(this + " was not connected");
-		} else {
-			String response = socketConnection.synchronizedSendAndRead(INTERVENTION_FINISHED);
-		}
+		
 	}
 
 	@Override
@@ -298,6 +255,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			WorkPieceDimensions workPieceDimensions) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean isConnected() {
+		return externalCommunicationThread.isConnected();
 	}
 
 }

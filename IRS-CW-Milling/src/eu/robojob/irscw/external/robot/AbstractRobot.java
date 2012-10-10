@@ -64,6 +64,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void setTeachModeEnabled(boolean enable);
 	public abstract void moveTo(UserFrame uf, Coordinates coordinates);
 	
+	public abstract boolean isConnected();
+	
 	public String toString() {
 		return "Robot: " + id;
 	}

@@ -36,7 +36,6 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	}
 	
 	public void changedDevice(String deviceId) {
-		logger.debug("changed device to: " + deviceId);
 		// TODO: changed device!
 	}
 	

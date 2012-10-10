@@ -10,6 +10,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.communication.SocketConnection;
+import eu.robojob.irscw.external.communication.SocketConnection.Type;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
 
@@ -50,7 +52,8 @@ public class DeviceManager {
 		workAreas.add(workArea1);
 		workAreas.add(workArea2);
 		Zone zone1 = new Zone("zone 1", workAreas);
-		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak VRX J500", null);
+		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", 1234);
+		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak VRX J500", cncSocketCon);
 		cncMillingMachine.addZone(zone1);
 		cncMachines.put(cncMillingMachine.getId(), cncMillingMachine);
 		
