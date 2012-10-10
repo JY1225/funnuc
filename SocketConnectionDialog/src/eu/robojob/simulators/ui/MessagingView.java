@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -32,6 +33,7 @@ public class MessagingView extends GridPane {
 		lblLog.getStyleClass().add("lbl-log");
 		scrpLog.setContent(lblLog);
 		scrpLog.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+		scrpLog.getStyleClass().add("scrp-log");
 		tfMessage = new TextField();
 		tfMessage.getStyleClass().add("txt");
 		tfMessage.setMinWidth(100);
@@ -81,6 +83,7 @@ public class MessagingView extends GridPane {
 	
 	public void setMessage(String message) {
 		lblLog.setText(message);
+		scrpLog.setVvalue(lblLog.getHeight() + 40);
 	}
 	
 	public void setConnected(boolean connected) {
@@ -91,5 +94,9 @@ public class MessagingView extends GridPane {
 	
 	public void clearLog() {
 		lblLog.setText("");
+	}
+	
+	public void clearText() {
+		tfMessage.setText("");
 	}
 }

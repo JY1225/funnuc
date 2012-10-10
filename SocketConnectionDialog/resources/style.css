@@ -55,3 +55,8 @@
 .blue {
 	-fx-background-color: blue;
 }
+
+.scrp-log {
+	-fx-background-image: url("noisy_grid.png");
+	-fx-background-image-repeat: repeat;
+}

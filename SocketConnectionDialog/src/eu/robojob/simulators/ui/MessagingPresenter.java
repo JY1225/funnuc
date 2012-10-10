@@ -1,14 +1,10 @@
 package eu.robojob.simulators.ui;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
-import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.simulators.threading.ListeningThread;
+import eu.robojob.simulators.threading.ThreadManager;
 
 public class MessagingPresenter {
 
@@ -45,14 +41,15 @@ public class MessagingPresenter {
 	
 	public void sendMessage(String message) {
 		logger.debug("about to send message: " + message);
-		addToLog("OUT: " + message);
+		view.clearText();
+		addToLog("OUT: " + message + "\n");
 		view.setButtonEnabled(false);
 		connection.sendString(message);
 		view.setButtonEnabled(true);
 	}
 	
 	public void disconnect() {
-		parent.disconnect();
+		listeningRunnable.closeConnection();
 	}
 	
 	public void connect(int portNumber, String type) {
@@ -69,6 +66,10 @@ public class MessagingPresenter {
 		view.setConnected(connected);
 		if (connected) {
 			this.connection = listeningRunnable.getConnection();
+		} else {
+			if (parent != null) {
+				parent.disconnect();
+			}
 		}
 	}
 }

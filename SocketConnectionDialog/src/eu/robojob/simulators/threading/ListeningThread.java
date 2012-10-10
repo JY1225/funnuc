@@ -36,30 +36,37 @@ public class ListeningThread extends Thread {
 	public void run() {
 		while(alive) {
 			if (connection == null) {
+				if (type.equals("Server")) {
+					connection = new SocketConnection(SocketConnection.Type.SERVER, "Server", portNumber);
+				} else if (type.equals("Client")) {
+					connection = new SocketConnection(SocketConnection.Type.CLIENT, "Client", portNumber);
+				} else {
+					throw new IllegalStateException("Unknown connection type");
+				}
 				try {
-					Socket socket = null;
-					if (type.equals("Server")) {
-						ServerSocket serverSocket = new ServerSocket(portNumber);
-						logMessage("Wachten op client connectie...\n");
-						socket = serverSocket.accept();
-					} else if (type.equals("Client")) {
-						socket = new Socket("127.0.0.1", portNumber);
-					} else {
-						throw new IllegalStateException("Unknown type");
-					}
-					connection = new SocketConnection("Socket connection dialog", socket);
+					connection.connect();
 					logMessage("Verbonden!\n");
 					setConnected(true);
 				} catch (IOException e) {
-					e.printStackTrace();
+					logException(e);
+					logger.error(e);
+					alive = false;
 				}
 			} else {
 				String inputString;
 				try {
-					inputString = connection.readString();
-					logRead(inputString);
+					if (connection.isConnected()) {
+						inputString = connection.readString();
+						logRead(inputString);
+					} else {
+						logMessage("DISCONNECTED\n");
+						setConnected(false);
+						alive = false;
+					}
 				} catch (Exception e) {
 					logException(e);
+					logger.error(e);
+					// alive = false;
 				}
 			}
 		}
@@ -67,8 +74,25 @@ public class ListeningThread extends Thread {
 	
 	@Override
 	public void interrupt() {
+		logger.info("intterupting thread");
 		super.interrupt();
+		try {
+			connection.disconnect();
+		} catch (IOException e) {
+			logger.error(e);
+		}	
 		this.alive = false;
+	}
+	
+	public void closeConnection() {
+		logger.info("about to close connection");
+		logMessage("About to close connection\n");
+		try {
+			connection.disconnect();
+			logMessage("Connection closed\n");
+		} catch (IOException e) {
+			logger.error(e);
+		}
 	}
 	
 	private void logRead(String inputString) {
