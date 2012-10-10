@@ -68,8 +68,9 @@ public class TeachRunnable implements Runnable {
 					teachPresenter.flowFinished();
 				}
 			});
-		} catch(IOException e) {
+		} catch(Exception e) {
 			logger.error(e);
+			notifyException(e);
 		}
 	}
 	
@@ -252,6 +253,15 @@ public class TeachRunnable implements Runnable {
 			@Override
 			public void run() {
 				teachPresenter.setInfo(translator.getTranslation(statusKey));
+			}
+		});
+	}
+	
+	private void notifyException(final Exception e) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				teachPresenter.exceptionOccured(e);
 			}
 		});
 	}

@@ -71,6 +71,14 @@ public class TeachPresenter {
 		teachRunnable.teachingFinished();
 	}
 	
+	public void exceptionOccured(Exception e){
+		logger.error(e);
+		processFlowPresenter.refresh();
+		view.showInfo("FOUT: " + e);
+		view.setProcessPaused(true);
+		setTeachMode(false);
+	}
+	
 	public void flowFinished() {
 		setTeachMode(false);
 		view.setProcessPaused(true);
