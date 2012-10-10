@@ -17,7 +17,7 @@ import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
 import eu.robojob.irscw.threading.ThreadManager;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.irscw.workpiece.WorkPiece;
 
 public class FanucRobot extends AbstractRobot {
 
@@ -59,8 +59,19 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public Coordinates getPosition() throws IOException {
 		String response = externalCommunication.writeAndRead(POSITION, READ_TIMEOUT);
+		String[] parsedResponse = response.split(";");
+		Coordinates c = null;
+		if (parsedResponse.length != 6) {
+			throw new IllegalStateException("Corrupt response from robot");
+		} else {
+			Float[] convertedResponse = new Float[6];
+			for (int i = 0; i < 6; i++)  {
+				convertedResponse[i] = Float.parseFloat(parsedResponse[i]);
+			}
+			c = new Coordinates(convertedResponse[0], convertedResponse[1], convertedResponse[2], convertedResponse[3], convertedResponse[4], convertedResponse[5]);
+		}
 		logger.debug("got position from robot: " + response);
-		return null;
+		return c;
 	}
 
 	@Override
@@ -82,11 +93,14 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public void releasePiece(AbstractRobotPutSettings putSettings) throws IOException {
 		String response = externalCommunication.writeAndRead("RELEASE PIECE", READ_TIMEOUT);
+		putSettings.getGripper().setWorkPiece(null);
 		logger.debug("response: " + response);
 	}
 
 	@Override
 	public void grabPiece(AbstractRobotPickSettings pickSettings) throws IOException {
+		FanucRobotPickSettings fanucPickSettings = (FanucRobotPickSettings) pickSettings;
+		pickSettings.getGripper().setWorkPiece(fanucPickSettings.getWorkPiece());
 		String response = externalCommunication.writeAndRead("GRAB PIECE", READ_TIMEOUT);
 		logger.debug("response: " + response);
 	}
@@ -106,14 +120,14 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void setTeachModeEnabled(boolean enable) {
-		String response = externalCommunication.writeAndRead("SET TEACH MODE! ", READ_TIMEOUT);
+		String response = externalCommunication.writeAndRead("SET TEACH MODE: " + enable, READ_TIMEOUT);
 		logger.debug("response: " + response);
 	}
 	
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
 
-		public FanucRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
-			super(workArea, gripperHead, gripper, smoothPoint, location, workPieceDimensions);
+		public FanucRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPiece workPiece) {
+			super(workArea, gripperHead, gripper, smoothPoint, location, workPiece);
 		}
 		
 		public FanucRobotPickSettings() {
@@ -208,7 +222,7 @@ public class FanucRobot extends AbstractRobot {
 				(getGripperBody().getActiveGripper(fanucPickSettings.getGripperHead()).equals(fanucPickSettings.getGripper())) &&
 				(fanucPickSettings.getSmoothPoint() != null) &&
 				(fanucPickSettings.getWorkArea() != null) &&
-				(fanucPickSettings.getWorkPieceDimensions() != null)
+				(fanucPickSettings.getWorkPiece() != null)
 			) {
 			return true;
 		} else {

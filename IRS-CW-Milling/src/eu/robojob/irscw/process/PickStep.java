@@ -61,7 +61,7 @@ public class PickStep extends AbstractTransportStep {
 				}
 				robot.pick(robotPickSettings);
 				robot.grabPiece(robotPickSettings);
-				robotPickSettings.getGripper().setWorkPiece(new WorkPiece(Type.RAW, robotPickSettings.getWorkPieceDimensions()));
+				robotPickSettings.getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
 				device.releasePiece(pickSettings);
 			}
 		}
@@ -94,7 +94,8 @@ public class PickStep extends AbstractTransportStep {
 			} else {
 				robot.setTeachModeEnabled(false);
 				Coordinates coordinates = robot.getPosition();
-				teachedOffset = coordinates.calculateOffset( device.getPickLocation(pickSettings.getWorkArea()));
+				this.teachedOffset = coordinates.calculateOffset( device.getPickLocation(pickSettings.getWorkArea()));
+				logger.info("teached offset: " + teachedOffset);
 				robot.grabPiece(robotPickSettings);
 			}
 		}
@@ -150,7 +151,7 @@ public class PickStep extends AbstractTransportStep {
 	@Override
 	public boolean needsTeaching() {
 		// pick location is always fixed!
-		if ((robotPickSettings.getWorkPieceDimensions().isKnownShape()) && (robotPickSettings.getGripper().isFixedHeight())) {
+		if ((robotPickSettings.getWorkPiece().getDimensions().isKnownShape()) && (robotPickSettings.getGripper().isFixedHeight())) {
 			return false;
 		} else {
 			return true;

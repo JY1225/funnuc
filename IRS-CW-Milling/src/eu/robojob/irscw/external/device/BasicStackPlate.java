@@ -101,14 +101,21 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		logger.debug("basic stack plate prepare for intervention called");
 	}
 
+	// todo better handling of this!
 	@Override
 	public void pickFinished(AbstractDevicePickSettings pickSettings) throws IOException {
-		logger.debug("basic stack plate pick finished called");
+		for (StackingPosition stackingPos : layout.getStackingPositions()) {
+			if (stackingPos.getWorkPiece() != null) {
+				stackingPos.setWorkPiece(null);
+				return;
+			}
+		}
 	}
 
 	@Override
 	public void putFinished(AbstractDevicePutSettings putSettings) throws IOException {
-		logger.debug("basic stack plate put finished called");
+		BasicStackPlatePutSettings spPutSettings = (BasicStackPlatePutSettings) putSettings;
+		return;
 	}
 
 	@Override

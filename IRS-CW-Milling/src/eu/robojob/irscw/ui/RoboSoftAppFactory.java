@@ -48,6 +48,7 @@ import eu.robojob.irscw.ui.teach.TeachPresenter;
 import eu.robojob.irscw.ui.teach.TeachView;
 import eu.robojob.irscw.ui.teach.TeachingNeededView;
 import eu.robojob.irscw.ui.teach.flow.TeachProcessFlowPresenter;
+import eu.robojob.irscw.workpiece.WorkPiece;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class RoboSoftAppFactory {
@@ -205,7 +206,8 @@ public class RoboSoftAppFactory {
 			robotPickSettings1.setSmoothPoint(new Coordinates(0, 0, 10, 0, 0, 0));
 			robotPickSettings1.setWorkArea(stackPlate.getWorkAreaById("IRS M Basic"));
 			WorkPieceDimensions dimensions1 = new WorkPieceDimensions(140, 100, 30);
-			robotPickSettings1.setWorkPieceDimensions(dimensions1);
+			WorkPiece workPiece1 = new WorkPiece(WorkPiece.Type.RAW, dimensions1);
+			robotPickSettings1.setWorkPiece(workPiece1);
 			// general
 			robotSettings.setGripper(robot.getGripperBody().getGripperHead("A"), robot.getGripperBody().getGripper("Vacuum grip"));
 			// put
@@ -231,7 +233,8 @@ public class RoboSoftAppFactory {
 			robotPickSettings2.setSmoothPoint(mainWorkArea.getClampingById("Clamping 1").getSmoothFromPoint());
 			robotPickSettings2.setWorkArea(mainWorkArea);
 			WorkPieceDimensions dimensions2 = new WorkPieceDimensions(150, 100, 28);
-			robotPickSettings2.setWorkPieceDimensions(dimensions2);
+			WorkPiece workPiece2 = new WorkPiece(WorkPiece.Type.FINISHED, dimensions2);
+			robotPickSettings2.setWorkPiece(workPiece2);
 			// general
 			robotSettings.setGripper(robot.getGripperBody().getGripperHead("B"), robot.getGripperBody().getGripper("2P clamp grip"));
 			// put

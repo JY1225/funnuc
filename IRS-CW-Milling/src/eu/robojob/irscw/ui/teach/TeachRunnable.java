@@ -70,6 +70,7 @@ public class TeachRunnable implements Runnable {
 			});
 		} catch(Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 			notifyException(e);
 		}
 	}
@@ -107,32 +108,33 @@ public class TeachRunnable implements Runnable {
 	}
 	
 	//TODO refactor: duplicate code
-	private void handlePut(final PutStep putStep) {
-		// notify presenter this put step is in progress 
+	private void handlePut(final PutStep putStep) throws IOException {
+		// notify presenter this pick step is in progress 
 		notifyStepInProgress(putStep);
 		if (putStep.needsTeaching()) {
 			
-			// set status-message to indicate we're preparing for the put
+			// set status-message to indicate we're preparing for the pick
 			setStatus(PREPARE_PUT);
-			wait2Sec();
+			putStep.prepareForTeaching();
 			
 			canContinue = false;
+			
 			// teaching the exact position is needed at this point
 			notifyTeachingNeeded();
 			waitForTeaching();
 			
+			putStep.teachingFinished();
+			
 			// now we know the teaching position, we execute the pick
 			setStatus(EXECUTE_PUT);
 			
-			wait2Sec();
+			//wait2Sec();
 			setStatus(EXECUTED_PUT);
 			
 		} else {
 			// to teaching needed so we just prepare and execute pick
-			setStatus(PREPARE_PUT);
-			wait2Sec();
 			setStatus(EXECUTE_PUT);
-			wait2Sec();
+			putStep.executeStep();
 			setStatus(EXECUTED_PUT);
 		}
 		notifyStepFinished(putStep);
@@ -159,7 +161,7 @@ public class TeachRunnable implements Runnable {
 		}
 	}
 	
-	private void handleProcessing(final ProcessingStep step) {
+	private void handleProcessing(final ProcessingStep step) throws IOException {
 		// processingStep.executeStep();
 		// executing process step
 		Platform.runLater(new Runnable() {
@@ -169,7 +171,7 @@ public class TeachRunnable implements Runnable {
 			}
 		});
 		setStatus("prepare-process");
-		wait2Sec();
+		step.executeStep();
 		setStatus("executed-process");
 		Platform.runLater(new Runnable() {
 			@Override

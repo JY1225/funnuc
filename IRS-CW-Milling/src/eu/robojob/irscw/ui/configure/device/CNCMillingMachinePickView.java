@@ -166,9 +166,9 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 			btnResetSmooth.setDisable(true);
 		} else {
 			btnResetSmooth.setDisable(false);
-		}if (pickStep.getRobotSettings().getWorkPieceDimensions() != null) {
-			if (pickStep.getRobotSettings().getWorkPieceDimensions().getHeight() != -1) {
-				ntxtHeight.setText("" + pickStep.getRobotSettings().getWorkPieceDimensions().getHeight());
+		}if (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null) {
+			if (pickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight() != -1) {
+				ntxtHeight.setText("" + pickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight());
 			}
 		}
 	}

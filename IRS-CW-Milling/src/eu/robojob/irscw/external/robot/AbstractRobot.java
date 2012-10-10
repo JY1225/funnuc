@@ -8,6 +8,7 @@ import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
+import eu.robojob.irscw.workpiece.WorkPiece;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {
@@ -118,18 +119,19 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 	
 	public static abstract class AbstractRobotPickSettings extends AbstractRobotActionSettings {
-		protected WorkPieceDimensions workPieceDimensions;
+		protected WorkPiece workPiece;
 
-		public AbstractRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPieceDimensions workPieceDimensions) {
+		public AbstractRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPiece workPiece) {
 			super(workArea, gripperHead, gripper, smoothPoint, location);
-			this.workPieceDimensions = workPieceDimensions;
+			this.workPiece = workPiece;
 		}
-		
-		public WorkPieceDimensions getWorkPieceDimensions() {
-			return workPieceDimensions;
+
+		public WorkPiece getWorkPiece() {
+			return workPiece;
 		}
-		public void setWorkPieceDimensions(WorkPieceDimensions workPieceDimensions) {
-			this.workPieceDimensions = workPieceDimensions;
+
+		public void setWorkPiece(WorkPiece workPiece) {
+			this.workPiece = workPiece;
 		}
 	}
 	

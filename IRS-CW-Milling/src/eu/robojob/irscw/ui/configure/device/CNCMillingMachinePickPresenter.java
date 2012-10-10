@@ -61,18 +61,18 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 	}
 	
 	public void changedHeight(float height) {
-		if (pickStep.getRobotSettings().getWorkPieceDimensions() != null) {
-			pickStep.getRobotSettings().getWorkPieceDimensions().setHeight(height);
+		if (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null) {
+			pickStep.getRobotSettings().getWorkPiece().getDimensions().setHeight(height);
 		} else {
 			WorkPieceDimensions dimensions = new WorkPieceDimensions();
 			dimensions.setHeight(height);
-			pickStep.getRobotSettings().setWorkPieceDimensions(dimensions);
+			pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
 		}
 	}
 
 	@Override
 	public boolean isConfigured() {
-		if ((pickStep.getRobotSettings().getSmoothPoint() != null) && (pickStep.getRobotSettings().getWorkPieceDimensions() != null)) {
+		if ((pickStep.getRobotSettings().getSmoothPoint() != null) && (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null)) {
 			return true;
 		} else {
 			return false;

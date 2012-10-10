@@ -20,10 +20,10 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 		
 		this.deviceSettings = deviceSettings;
 		
-		this.dimensions = pickStep.getRobotSettings().getWorkPieceDimensions();
+		this.dimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
 		if (dimensions == null) {
 			dimensions = new WorkPieceDimensions();
-			pickStep.getRobotSettings().setWorkPieceDimensions(dimensions);
+			pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
 		}
 		deviceSettings.setDimensions(dimensions);
 					

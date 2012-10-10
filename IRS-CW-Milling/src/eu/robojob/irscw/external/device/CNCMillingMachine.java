@@ -262,15 +262,15 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	@Override
 	public Coordinates getPickLocation(WorkArea workArea) {
-		// TODO Auto-generated method stub
-		return null;
+		return workArea.getActiveClamping().getRelativePosition();
 	}
 
 	@Override
 	public Coordinates getPutLocation(WorkArea workArea,
 			WorkPieceDimensions workPieceDimensions) {
-		// TODO Auto-generated method stub
-		return null;
+		Coordinates c = workArea.getActiveClamping().getRelativePosition();
+		c.offset(new Coordinates(workPieceDimensions.getLength(), workPieceDimensions.getWidth(), workPieceDimensions.getHeight(), 0, 0, 0));
+		return c;
 	}
 
 	@Override
