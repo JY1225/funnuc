@@ -15,6 +15,10 @@
 	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 1, 0.0 , 0 , 1 ); 
 } 
 
+.lbl-disconnected-list {
+	-fx-text-size: 18px;
+}
+
 .btn-start {
 	-fx-background-color: 
 		#7b7b7b,

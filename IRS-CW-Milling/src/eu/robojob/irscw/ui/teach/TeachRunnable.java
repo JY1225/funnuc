@@ -252,7 +252,7 @@ public class TeachRunnable implements Runnable {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				teachPresenter.setInfo(translator.getTranslation(statusKey));
+				teachPresenter.setStatus(translator.getTranslation(statusKey));
 			}
 		});
 	}

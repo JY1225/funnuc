@@ -41,8 +41,12 @@ import eu.robojob.irscw.ui.keyboard.KeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardView;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowView;
+import eu.robojob.irscw.ui.teach.DisconnectedDevicesView;
+import eu.robojob.irscw.ui.teach.GeneralInfoView;
+import eu.robojob.irscw.ui.teach.StatusView;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
 import eu.robojob.irscw.ui.teach.TeachView;
+import eu.robojob.irscw.ui.teach.TeachingNeededView;
 import eu.robojob.irscw.ui.teach.flow.TeachProcessFlowPresenter;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
@@ -95,7 +99,11 @@ public class RoboSoftAppFactory {
 	public TeachPresenter getTeachPresenter() {
 		if (teachPresenter == null) {
 			TeachView view = new TeachView();
-			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow());
+			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
+			GeneralInfoView generalInfoView = new GeneralInfoView();
+			StatusView statusView = new StatusView();
+			TeachingNeededView teachingNeededView = new TeachingNeededView();
+			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, generalInfoView, statusView, teachingNeededView);
 		}
 		return teachPresenter;
 	}

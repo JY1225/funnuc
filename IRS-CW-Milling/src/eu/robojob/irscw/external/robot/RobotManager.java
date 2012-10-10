@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import eu.robojob.irscw.external.communication.SocketConnection;
+import eu.robojob.irscw.external.communication.SocketConnection.Type;
+
 public class RobotManager {
 	
 	private Map<String, AbstractRobot> robots;
@@ -39,7 +42,8 @@ public class RobotManager {
 		GripperBody gripperBody = new GripperBody(2, "Standard Body", gripperHeads, grippers);
 		Set<GripperBody> gripperBodies = new HashSet<GripperBody>();
 		gripperBodies.add(gripperBody);
-		FanucRobot fanucRobot = new FanucRobot("Fanuc M20iA", gripperBodies, gripperBody, null);
+		SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", 5678);
+		FanucRobot fanucRobot = new FanucRobot("Fanuc M20iA", gripperBodies, gripperBody, connection);
 		addRobot(fanucRobot);
 	}
 	
