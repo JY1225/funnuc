@@ -1,5 +1,7 @@
 package eu.robojob.simulators.ui;
 
+import javafx.stage.Stage;
+
 
 public class MainPresenter {
 
@@ -7,14 +9,16 @@ public class MainPresenter {
 	
 	private ConnectionPresenter connectionPresenter;
 	private MessagingPresenter messagingPresenter;
+	private Stage stage;
 	
-	public MainPresenter(MainView view, ConnectionPresenter connectionPresenter, MessagingPresenter messagingPresenter) {
+	public MainPresenter(MainView view, ConnectionPresenter connectionPresenter, MessagingPresenter messagingPresenter, Stage stage) {
 		this.view = view;
 		view.setPresenter(this);
 		this.connectionPresenter = connectionPresenter;
 		connectionPresenter.setParent(this);
 		this.messagingPresenter = messagingPresenter;
 		messagingPresenter.setParent(this);
+		this.stage = stage;
 		disconnect();
 	}
 	
@@ -27,6 +31,7 @@ public class MainPresenter {
 	}
 	
 	public void connect(int portNumber, String type) {
+		stage.setTitle(type + " verbinding - localhost:" + portNumber);
 		view.setCenterView(messagingPresenter.getView());
 		messagingPresenter.connect(portNumber, type);
 	}

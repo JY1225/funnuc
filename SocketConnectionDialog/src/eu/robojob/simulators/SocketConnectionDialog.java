@@ -24,7 +24,7 @@ public class SocketConnectionDialog extends Application {
 		ConnectionView connectionView = new ConnectionView();
 		ConnectionPresenter connectionPresenter = new ConnectionPresenter(connectionView);
 		MainView mainView = new MainView();
-		MainPresenter mainPresenter = new MainPresenter(mainView, connectionPresenter, messagingPresenter);
+		MainPresenter mainPresenter = new MainPresenter(mainView, connectionPresenter, messagingPresenter, stage);
 		Scene scene = new Scene(mainPresenter.getView());
 		scene.getStylesheets().addAll("style.css");
 		stage.setScene(scene);

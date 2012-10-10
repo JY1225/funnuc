@@ -88,4 +88,8 @@ public class MessagingView extends GridPane {
 		btnSend.setDisable(!connected);
 		btnDisconnect.setDisable(!connected);
 	}
+	
+	public void clearLog() {
+		lblLog.setText("");
+	}
 }

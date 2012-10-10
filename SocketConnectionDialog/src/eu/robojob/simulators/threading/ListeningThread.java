@@ -40,7 +40,7 @@ public class ListeningThread extends Thread {
 					Socket socket = null;
 					if (type.equals("Server")) {
 						ServerSocket serverSocket = new ServerSocket(portNumber);
-						logMessage("Wachten op client connectie...");
+						logMessage("Wachten op client connectie...\n");
 						socket = serverSocket.accept();
 					} else if (type.equals("Client")) {
 						socket = new Socket("127.0.0.1", portNumber);
@@ -48,7 +48,7 @@ public class ListeningThread extends Thread {
 						throw new IllegalStateException("Unknown type");
 					}
 					connection = new SocketConnection("Socket connection dialog", socket);
-					logMessage("Verbonden");
+					logMessage("Verbonden!\n");
 					setConnected(true);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -87,6 +87,10 @@ public class ListeningThread extends Thread {
 				messagingPresenter.addToLog(message);
 			}
 		});
+	}
+	
+	public SocketConnection getConnection() {
+		return connection;
 	}
 
 	private void setConnected(final boolean connected) {
