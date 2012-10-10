@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui.teach;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -45,6 +46,8 @@ public class GeneralInfoView extends VBox {
 		lblInfoMessage.getStyleClass().add("info-msg");
 		lblInfoMessage.setPrefSize(520, 130);
 		lblInfoMessage.setWrapText(true);
+		
+		setMargin(lblInfoMessage, new Insets(50, 0, 0, 0));
 		
 		btnStart = new Button();
 		arrowRight = new SVGPath();

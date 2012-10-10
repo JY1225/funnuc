@@ -3,6 +3,8 @@ package eu.robojob.irscw.ui.teach;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
@@ -22,8 +24,13 @@ public class StatusView extends VBox {
 	
 	private void build() {
 		
+		this.setFillWidth(true);
+		this.setAlignment(Pos.CENTER);
+		
 		loading = new SVGPath();
 		loading.setContent(loadingPath);
+		
+		setMargin(loading, new Insets(50, 0, 0, 0));
 		
 		rotation = new RotateTransition(Duration.millis(2000), loading);
 		rotation.setFromAngle(0);

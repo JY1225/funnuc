@@ -87,6 +87,7 @@ public class TeachPresenter {
 	public void startFlow() {
 		setTeachMode(true);
 		view.setBottom(teachStatusView);
+		logger.info("starten proces!");
 		setStatus("Starten proces...");
 		setProcessRunning(true);
 		teachJob.initialize();
@@ -124,6 +125,7 @@ public class TeachPresenter {
 	}
 	
 	public void teachingNeeded() {
+		logger.info("teaching needed");
 		setProcessRunning(false);
 		view.setBottom(teachingNeededView);
 	}
