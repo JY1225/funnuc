@@ -20,11 +20,13 @@ public class ListeningThread extends Thread {
 	
 	private boolean alive;
 	
+	private String ipAddress;
 	private int portNumber;
 	
 	private static final Logger logger = Logger.getLogger(ListeningThread.class);
 	
-	public ListeningThread(int portNumber, String type, MessagingPresenter messagingPresenter) {
+	public ListeningThread(String ipAddress, int portNumber, String type, MessagingPresenter messagingPresenter) {
+		this.ipAddress = ipAddress;
 		this.portNumber = portNumber;
 		this.connection = null;
 		this.type = type;
@@ -37,7 +39,7 @@ public class ListeningThread extends Thread {
 		while(alive) {
 			if (connection == null) {
 				if (type.equals("Server")) {
-					connection = new SocketConnection(SocketConnection.Type.SERVER, "Server", portNumber);
+					connection = new SocketConnection(SocketConnection.Type.SERVER, "Server", ipAddress, portNumber);
 				} else if (type.equals("Client")) {
 					connection = new SocketConnection(SocketConnection.Type.CLIENT, "Client", portNumber);
 				} else {
@@ -56,7 +58,9 @@ public class ListeningThread extends Thread {
 				String inputString;
 				try {
 					if (connection.isConnected()) {
+						logger.info("about to read");
 						inputString = connection.readString();
+						logger.info("read string: " + inputString);
 						logRead(inputString);
 					} else {
 						logMessage("DISCONNECTED\n");
@@ -76,23 +80,15 @@ public class ListeningThread extends Thread {
 	public void interrupt() {
 		logger.info("intterupting thread");
 		super.interrupt();
-		try {
-			connection.disconnect();
-		} catch (IOException e) {
-			logger.error(e);
-		}	
+		connection.disconnect();
 		this.alive = false;
 	}
 	
 	public void closeConnection() {
 		logger.info("about to close connection");
 		logMessage("About to close connection\n");
-		try {
-			connection.disconnect();
-			logMessage("Connection closed\n");
-		} catch (IOException e) {
-			logger.error(e);
-		}
+		connection.disconnect();
+		logMessage("Connection closed\n");
 	}
 	
 	private void logRead(String inputString) {

@@ -30,9 +30,13 @@ public class MainPresenter {
 		return view;
 	}
 	
-	public void connect(int portNumber, String type) {
-		stage.setTitle(type + " verbinding - localhost:" + portNumber);
+	public void connect(String ipAddress, int portNumber, String type) {
+		if (type.equals("Client")) {
+			stage.setTitle(type + " verbinding - " + ipAddress + ":" + portNumber);
+		} else {
+			stage.setTitle(type + " verbinding - localhost:" + portNumber);
+		}
 		view.setCenterView(messagingPresenter.getView());
-		messagingPresenter.connect(portNumber, type);
+		messagingPresenter.connect(ipAddress, portNumber, type);
 	}
 }

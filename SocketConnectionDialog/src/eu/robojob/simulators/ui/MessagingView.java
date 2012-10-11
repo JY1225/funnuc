@@ -38,6 +38,12 @@ public class MessagingView extends GridPane {
 		tfMessage.getStyleClass().add("txt");
 		tfMessage.setMinWidth(100);
 		tfMessage.setMaxWidth(Double.MAX_VALUE);
+		tfMessage.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				presenter.sendMessage(tfMessage.getText());
+			}
+		});
 		setMargin(tfMessage, new Insets(10,10,10,10));
 		btnSend = new Button();
 		btnSend.setGraphic(new Text("Verstuur"));

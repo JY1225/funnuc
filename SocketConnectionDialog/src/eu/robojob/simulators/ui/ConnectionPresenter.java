@@ -13,7 +13,7 @@ public class ConnectionPresenter {
 	
 	public void connect() {
 		if (view.getPortNumber() != -1) {
-			parent.connect(view.getPortNumber(), view.getType());
+			parent.connect(view.getIpAddress(), view.getPortNumber(), view.getType());
 		} else {
 			throw new IllegalArgumentException("Illegal port number!");
 		}

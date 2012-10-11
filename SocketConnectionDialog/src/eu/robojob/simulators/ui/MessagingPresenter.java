@@ -2,6 +2,7 @@ package eu.robojob.simulators.ui;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.communication.DisconnectedException;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.simulators.threading.ListeningThread;
 import eu.robojob.simulators.threading.ThreadManager;
@@ -44,7 +45,12 @@ public class MessagingPresenter {
 		view.clearText();
 		addToLog("OUT: " + message + "\n");
 		view.setButtonEnabled(false);
-		connection.sendString(message);
+		try {
+			connection.sendString(message);
+		} catch (DisconnectedException e) {
+			e.printStackTrace();
+			disconnect();
+		}
 		view.setButtonEnabled(true);
 	}
 	
@@ -52,8 +58,8 @@ public class MessagingPresenter {
 		listeningRunnable.closeConnection();
 	}
 	
-	public void connect(int portNumber, String type) {
-		listeningRunnable = new ListeningThread(portNumber, type, this);
+	public void connect(String ipAddress, int portNumber, String type) {
+		listeningRunnable = new ListeningThread(ipAddress, portNumber, type, this);
 		ThreadManager.getInstance().submit(listeningRunnable);
 	}
 	

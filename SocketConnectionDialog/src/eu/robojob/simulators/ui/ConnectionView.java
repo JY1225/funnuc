@@ -18,6 +18,8 @@ public class ConnectionView extends GridPane {
 
 	private Label lblPortNumber;
 	private TextField tfPortNumber;
+	private Label lblIpAddress;
+	private TextField tfIpAddress;
 	private Button btnAcceptConnections;
 	
 	private ComboBox<String> cbbType;
@@ -55,8 +57,25 @@ public class ConnectionView extends GridPane {
 				}
 			}
 		});
+		lblIpAddress = new Label("IP-adres");
+		lblIpAddress.getStyleClass().add("info-label");
+		tfIpAddress = new TextField();
+		tfIpAddress.getStyleClass().add("txt");
+		tfIpAddress.setPrefWidth(75);
 		cbbType = new ComboBox<String>();
 		cbbType.getItems().addAll("Client", "Server");
+		cbbType.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+				if (arg2.equals("Server")) {
+					lblIpAddress.setDisable(true);
+					tfIpAddress.setDisable(true);
+				} else {
+					lblIpAddress.setDisable(false);
+					tfIpAddress.setDisable(false);
+				}
+			}
+		});
 		cbbType.valueProperty().set("Server");
 		setHalignment(cbbType, HPos.CENTER);
 		cbbType.setPrefWidth(150);
@@ -78,8 +97,10 @@ public class ConnectionView extends GridPane {
 		btnAcceptConnections.setAlignment(Pos.CENTER);
 		add(lblPortNumber, 0, 0);
 		add(tfPortNumber, 1, 0);
-		add(cbbType, 0, 1, 2, 1);
-		add(btnAcceptConnections, 0, 2, 2, 1);
+		add(lblIpAddress, 0, 1);
+		add(tfIpAddress, 1, 1);
+		add(cbbType, 0, 2, 2, 1);
+		add(btnAcceptConnections, 0, 3, 2, 1);
 		/*ColumnConstraints column1 = new ColumnConstraints();
 		column1.setPercentWidth(50);
 		ColumnConstraints column2 = new ColumnConstraints();
@@ -102,5 +123,9 @@ public class ConnectionView extends GridPane {
 	
 	public String getType() {
 		return cbbType.valueProperty().getValue();
+	}
+	
+	public String getIpAddress() {
+		return tfIpAddress.getText();
 	}
 }
