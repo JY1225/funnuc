@@ -1,6 +1,5 @@
 package eu.robojob.irscw.process;
 
-import java.io.IOException;
 import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;

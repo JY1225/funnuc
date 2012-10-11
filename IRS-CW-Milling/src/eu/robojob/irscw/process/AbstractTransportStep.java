@@ -1,7 +1,5 @@
 package eu.robojob.irscw.process;
 
-import java.io.IOException;
-
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;

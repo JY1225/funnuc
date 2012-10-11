@@ -1,7 +1,5 @@
 package eu.robojob.irscw.external;
 
-import java.io.IOException;
-
 import eu.robojob.irscw.process.ProcessFlow;
 
 public abstract class AbstractServiceProvider {

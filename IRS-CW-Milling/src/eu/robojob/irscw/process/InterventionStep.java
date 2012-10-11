@@ -1,6 +1,5 @@
 package eu.robojob.irscw.process;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 

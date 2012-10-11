@@ -42,11 +42,11 @@ public class DeviceManager {
 		Clamping clamping2 = new Clamping("Clamping 2", new Coordinates(15, 10, 5, 0, 0, 0), new Coordinates(5, 5, 5, 0, 0, 0), null);
 		Clamping clamping3 = new Clamping("Clamping 3", new Coordinates(5, 20, 5, 0, 0, 0), new Coordinates(5, 5, 5, 0, 0, 0), null);
 		UserFrame uf1 = new UserFrame(1, 20);
-		UserFrame uf2 = new UserFrame(2, 25);
 		List<WorkArea> workAreas = new ArrayList<WorkArea>();
 		WorkArea workArea1 = new WorkArea("Mazak VRX Main", uf1);
 		workArea1.addClamping(clamping1);
 		workArea1.addClamping(clamping2);
+		workArea1.addClamping(clamping3);
 		/*WorkArea workArea2 = new WorkArea("Mazak VRX Second", uf2);
 		workArea2.addClamping(clamping3);*/
 		workAreas.add(workArea1);
