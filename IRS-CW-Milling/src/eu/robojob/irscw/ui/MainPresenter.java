@@ -40,6 +40,7 @@ public class MainPresenter {
 	public void showConfigure() {
 		menuBarPresenter.showConfigureView();
 		view.setContent(configurePresenter.getView());
+		teachPresenter.setEnabled(false);
 		refreshStatus();
 	}
 	
@@ -62,6 +63,7 @@ public class MainPresenter {
 	public void showTeach() {
 		menuBarPresenter.showTeachView();
 		view.setContent(teachPresenter.getView());
+		teachPresenter.setEnabled(true);
 		refreshStatus();
 	}
 	

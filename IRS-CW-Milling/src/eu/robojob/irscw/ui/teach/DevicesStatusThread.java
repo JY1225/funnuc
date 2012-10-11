@@ -59,8 +59,8 @@ public class DevicesStatusThread extends Thread {
 						}
 					} else {
 						logger.info("no disconnected devices found");
-						alive = false;
 						allDevicesConnected();
+						alive = false;
 					}
 				}
 			} catch (Exception e) {

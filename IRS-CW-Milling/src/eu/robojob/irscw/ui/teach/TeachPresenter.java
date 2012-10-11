@@ -27,10 +27,11 @@ public class TeachPresenter {
 	private StatusView teachStatusView;
 	private TeachingNeededView teachingNeededView;
 	
-	private TeachThread teachRunnable;
+	private TeachThread teachThread;
 	private DevicesStatusThread devicesStatusThread;
 	
 	private boolean isTeached;
+	private ProcessFlow processFlow;
 	
 	private static Logger logger = Logger.getLogger(TeachPresenter.class);
 	
@@ -41,7 +42,7 @@ public class TeachPresenter {
 		this.teachJob = new TeachJob(processFlow);
 		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		view.setTop(processFlowPresenter.getView());
-		this.teachRunnable = new TeachThread(teachJob, this);
+		this.teachThread = new TeachThread(teachJob, this);
 		isTeached = false;
 		this.teachDisconnectedDevicesView = teachDisconnectedDevicesView;
 		this.teachGeneralInfoView = teachGeneralInfoView;
@@ -49,12 +50,24 @@ public class TeachPresenter {
 		this.teachStatusView = teachStatusView;
 		this.teachingNeededView = teachingNeededView;
 		teachingNeededView.setPresenter(this);
-		this.devicesStatusThread = new DevicesStatusThread(this, processFlow);
-		checkDevices();
+		this.processFlow = processFlow;
 	}
 
+	public void setEnabled(boolean enabled) {
+		if (enabled) {
+			checkDevices();
+		} else {
+			if (devicesStatusThread != null) {
+				ThreadManager.getInstance().stopRunning(devicesStatusThread);
+				devicesStatusThread = null;
+			}
+			ThreadManager.getInstance().stopRunning(teachThread);
+		}
+	}
+	
 	private void checkDevices() {
 		view.setBottom(teachDisconnectedDevicesView);
+		devicesStatusThread = new DevicesStatusThread(this, processFlow);
 		ThreadManager.getInstance().submit(devicesStatusThread);
 	}
 	
@@ -91,7 +104,7 @@ public class TeachPresenter {
 		setStatus("Starten proces...");
 		setProcessRunning(true);
 		teachJob.initialize();
-		ThreadManager.getInstance().submit(teachRunnable);
+		ThreadManager.getInstance().submit(teachThread);
 	}
 	
 	public void setStatus(String status) {
@@ -106,7 +119,7 @@ public class TeachPresenter {
 		setProcessRunning(true);
 		setStatus("");
 		view.setBottom(teachStatusView);
-		teachRunnable.teachingFinished();
+		teachThread.teachingFinished();
 	}
 	
 	public void exceptionOccured(Exception e){

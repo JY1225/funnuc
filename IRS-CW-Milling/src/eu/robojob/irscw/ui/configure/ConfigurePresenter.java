@@ -39,7 +39,6 @@ public class ConfigurePresenter implements TextFieldListener {
 	private boolean keyboardActive;
 	private boolean numericKeyboardActive;
 	
-	private ProcessFlow processFlow;
 	private ProcessFlowAdapter processFlowAdapter;
 	
 	private MainPresenter parent;
@@ -64,7 +63,6 @@ public class ConfigurePresenter implements TextFieldListener {
 		view.setPresenter(this);
 		keyboardActive = false;
 		numericKeyboardActive = false;
-		processFlow = null;
 		mode = Mode.NORMAL;
 		view.setTop(processFlowPresenter.getView());
 		configureProcess();
@@ -101,12 +99,12 @@ public class ConfigurePresenter implements TextFieldListener {
 		}
 	}
 	
-	public void setBottomRightView(AbstractFormView bottomRight) {
+	public void setBottomRightView(AbstractFormView<?> bottomRight) {
 		bottomRight.refresh();
 		view.setBottomRight(bottomRight);
 	}
 
-	public void textFieldFocussed(AbstractTextField textField) {
+	public void textFieldFocussed(AbstractTextField<?> textField) {
 		if (textField instanceof FullTextField) {
 			this.textFieldFocussed((FullTextField) textField);
 		} else if (textField instanceof NumericTextField) {
@@ -145,7 +143,7 @@ public class ConfigurePresenter implements TextFieldListener {
 	}
 
 	@Override
-	public void textFieldLostFocus(AbstractTextField textField) {
+	public void textFieldLostFocus(AbstractTextField<?> textField) {
 		closeKeyboard();
 	}
 	
@@ -166,7 +164,6 @@ public class ConfigurePresenter implements TextFieldListener {
 	}
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {
-		this.processFlow = processFlow;
 		processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		processFlowPresenter.loadProcessFlow(processFlow);
 		refreshProgressBar();

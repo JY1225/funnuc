@@ -32,12 +32,12 @@ public class ThreadManager {
 		return instance;
 	}
 
-	public void submit(Runnable runnable) {
+	public void submit(Thread thread) {
 		logger.debug("New thread submitted");
-		if (runnable instanceof ExternalCommunicationThread) {
-			communicationThreads.add((ExternalCommunicationThread) runnable);
+		if (thread instanceof ExternalCommunicationThread) {
+			communicationThreads.add((ExternalCommunicationThread) thread);
 		}
-		executorService.submit(runnable);
+		executorService.submit(thread);
 	}
 	
 	public void shutDown() {
@@ -45,6 +45,18 @@ public class ThreadManager {
 			thread.disconnectAndStop();
 		}
 		executorService.shutdownNow();
+	}
+	
+	public void stopRunning(Thread thread) {
+		if (thread.isAlive()) {
+			if (communicationThreads.contains(thread)) {
+				ExternalCommunicationThread exThread = (ExternalCommunicationThread) thread;
+				exThread.disconnectAndStop();
+				communicationThreads.remove(thread);
+			} else {
+				thread.interrupt();
+			}
+		}
 	}
 
 }
