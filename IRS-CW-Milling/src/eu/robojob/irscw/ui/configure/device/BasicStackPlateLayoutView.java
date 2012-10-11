@@ -82,7 +82,7 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 					if (index2 % 2 == 0) {
 						Text txt2 = new Text("" + index2);
 						txt2.setX(pos.getCenterPosition().getX() - TXT_WIDTH/2);
-						txt2.setY(basicStackPlateLayout.getWidth() - TXT_HEIGHT/2);
+						txt2.setY(basicStackPlateLayout.getWidth() - TXT_HEIGHT/8);
 						txt2.setWrappingWidth(TXT_WIDTH);
 						txt2.getStyleClass().add("stacker-text");
 						group.getChildren().add(txt2);
@@ -90,7 +90,7 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 					} else {
 						Text txt2 = new Text("\u00B7");
 						txt2.setX(pos.getCenterPosition().getX() - TXT_WIDTH/2);
-						txt2.setY(basicStackPlateLayout.getWidth() - TXT_HEIGHT/2);
+						txt2.setY(basicStackPlateLayout.getWidth() - TXT_HEIGHT/8);
 						txt2.setWrappingWidth(TXT_WIDTH);
 						txt2.getStyleClass().add("stacker-text");
 						group.getChildren().add(txt2);
