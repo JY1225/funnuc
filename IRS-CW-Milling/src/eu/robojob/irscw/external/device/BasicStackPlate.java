@@ -1,11 +1,11 @@
 package eu.robojob.irscw.external.device;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.exception.IncorrectWorkPieceDataException;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPiece;
@@ -46,14 +46,22 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public boolean canPickWorkpiece() {
-		logger.debug("basic stack plate can pick workpiece called");
+	public boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+		for (StackingPosition stackingPos : layout.getStackingPositions()) {
+			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == Type.RAW)) {
+				return true;
+			}
+		}
 		return false;
 	}
 
 	@Override
-	public boolean canPutWorkpiece() {
-		logger.debug("basic stack plate can put workpiece called");
+	public boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
+		for (StackingPosition stackingPos : layout.getStackingPositions()) {
+			if (stackingPos.getWorkPiece() == null) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -83,50 +91,50 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws IOException {
+	public void prepareForPick(AbstractDevicePickSettings pickSettings) {
 		logger.debug("basic stack plate prepare for pick called");
 	}
 
 	@Override
-	public void prepareForPut(AbstractDevicePutSettings putSettings) throws IOException {
+	public void prepareForPut(AbstractDevicePutSettings putSettings) {
 		logger.debug("basic stack plate prepare for put called");
 	}
 
 	@Override
-	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws IOException {
+	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) {
 		logger.debug("basic stack plate prepare for intervention called");
 	}
 
 	// todo better handling of this!
 	@Override
-	public void pickFinished(AbstractDevicePickSettings pickSettings) throws IOException {
+	public void pickFinished(AbstractDevicePickSettings pickSettings) {
 		currentPickLocation.setWorkPiece(null);
 	}
 
 	@Override
-	public void putFinished(AbstractDevicePutSettings putSettings) throws IOException {
+	public void putFinished(AbstractDevicePutSettings putSettings) {
 		//BasicStackPlatePutSettings spPutSettings = (BasicStackPlatePutSettings) putSettings;
 		currentPickLocation.setWorkPiece(finishedWorkPiece);
 		currentPickLocation = null;
 	}
 
 	@Override
-	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws IOException {
+	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) {
 		logger.debug("basic stack plate intervention finished called");
 	}
 
 	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings) throws IOException {
+	public void releasePiece(AbstractDevicePickSettings pickSettings) {
 		logger.debug("basic stack plate release piece called");
 	}
 
 	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings) throws IOException {
+	public void grabPiece(AbstractDevicePutSettings putSettings) {
 		logger.debug("grab piece");
 	}
 
 	@Override
-	public String getStatus() throws IOException {
+	public String getStatus() {
 		return "OK";
 	}
 	
@@ -288,5 +296,5 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public boolean isConnected() {
 		return true;
 	}
-	
+
 }

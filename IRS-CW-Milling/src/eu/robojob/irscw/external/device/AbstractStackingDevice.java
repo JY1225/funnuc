@@ -12,9 +12,6 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 		super(id);
 	}
 	
-	public abstract boolean canPickWorkpiece();
-	public abstract boolean canPutWorkpiece();
-
 	public static abstract class AbstractStackingDevicePickSettings extends AbstractDevicePickSettings {
 		public AbstractStackingDevicePickSettings(WorkArea workArea) {
 			super(workArea);

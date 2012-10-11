@@ -47,10 +47,10 @@ public class DeviceManager {
 		WorkArea workArea1 = new WorkArea("Mazak VRX Main", uf1);
 		workArea1.addClamping(clamping1);
 		workArea1.addClamping(clamping2);
-		WorkArea workArea2 = new WorkArea("Mazak VRX Second", uf2);
-		workArea2.addClamping(clamping3);
+		/*WorkArea workArea2 = new WorkArea("Mazak VRX Second", uf2);
+		workArea2.addClamping(clamping3);*/
 		workAreas.add(workArea1);
-		workAreas.add(workArea2);
+	//	workAreas.add(workArea2);
 		Zone zone1 = new Zone("zone 1", workAreas);
 		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", 1234);
 		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak VRX J500", cncSocketCon);

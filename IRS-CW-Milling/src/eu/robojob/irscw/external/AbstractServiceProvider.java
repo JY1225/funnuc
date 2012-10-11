@@ -47,9 +47,7 @@ public abstract class AbstractServiceProvider {
 	public synchronized boolean isLocked() {
 		return isLocked;
 	}
-	
-	public abstract String getStatus() throws IOException;
-	
+		
 	public synchronized boolean hasLock(ProcessFlow parentProcess) {
 		if (this.ownerProcess.equals(parentProcess)) {
 			return true;

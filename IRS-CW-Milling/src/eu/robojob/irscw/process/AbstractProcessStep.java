@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
+import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.robot.RobotActionException;
 
 public abstract class AbstractProcessStep {
 	
@@ -22,7 +25,7 @@ public abstract class AbstractProcessStep {
 		this(null, device);
 	}
 	
-	public abstract void executeStep() throws IOException;
+	public abstract void executeStep() throws CommunicationException, RobotActionException, DeviceActionException;
 		
 	public abstract String toString();
 	

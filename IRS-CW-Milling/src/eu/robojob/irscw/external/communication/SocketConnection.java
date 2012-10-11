@@ -43,14 +43,14 @@ public class SocketConnection {
 	
 	public void connect() throws IOException{
 		if (connected) {
-			logger.info("Socket was already connected");
+			logger.info("Already connected: " + toString());
 		} else {
+			logger.info("Connecting: " + toString());
 			if (type == Type.CLIENT) {
 				try {
 					connectAsClient();
 					connectInOut();
 					connected = true;
-					logger.info("Client connection succeeded!");
 				} catch (IOException e) {
 					throw e;
 				} finally {
@@ -63,7 +63,6 @@ public class SocketConnection {
 					connectAsServer();
 					connectInOut();
 					connected = true;
-					logger.info("Server connection succeeded");
 				} catch (IOException e) {
 					throw e;
 				} finally {
@@ -72,8 +71,9 @@ public class SocketConnection {
 					}
 				}
 			} else {
-				throw new IllegalStateException("Unknown type");
+				throw new IllegalStateException("Unknown connection type");
 			}
+			logger.info("Connected! " + toString());
 		}
 	}
 	
@@ -88,28 +88,26 @@ public class SocketConnection {
 	
 	private void connectInOut() throws IOException {
 		out = new PrintWriter(socket.getOutputStream(), true);
-		logger.info("PrintWriter connected to output of " + this.toString());
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		logger.info("BufferedReader connected to input from " + this.toString());
 	}
 	
 	
 	// TODO refactor!
-	public void disconnect() throws IOException {
-		logger.info("Disconnecting connection: " + this.toString());
+	public void disconnect() {
+		logger.info("Disconnecting: " + this.toString());
 		try {
 			if (serverSocket != null) {
 				serverSocket.close();
 			}
 		} catch (IOException e) {
-			throw e;
+			e.printStackTrace();
 		} finally {
 			try {
 				if (socket != null) {
 					socket.close();
 				}
 			} catch (IOException e) {
-				throw e;
+				e.printStackTrace();
 			} finally {
 				serverSocket = null;
 				socket = null;
@@ -117,13 +115,18 @@ public class SocketConnection {
 					out.close();
 				}
 				if (in != null) {
-					in.close();
+					try {
+						in.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 				out = null;
 				in = null;
 				connected = false;
 			}
 		}
+		logger.info("Disconnected: " + toString());
 	}
 	
 	public String getName() {
@@ -146,39 +149,37 @@ public class SocketConnection {
 		this.portNumber = portNumber;
 	}
 	
-	// checks for errors in output stream to detect disconnection
-	// an alternative (better) approach would be to let the server
-	// send heartbeat-messages...
-	//TODO hearbeat-messages
 	public boolean isConnected() {
-		if ((socket == null) || (out == null) || (in == null) || (out.checkError())) {
-			connected = false;
-			return false;
+		if (connected) {
+			if ((socket == null) || (out == null) || (in == null)) {
+				throw new IllegalStateException("Status indicates connection, but one or more objects are null");
+			} else {
+				return true;
+			}
 		} else {
-			return connected;
+			return false;
 		}
 	}
 	
-	public boolean sendString(String message) {
-		logger.debug("Sending message: " + message);
+	public boolean sendString(String message) throws DisconnectedException {
 		if (isConnected()) {
-			logger.info("Sending '" + message + "' to " + this.toString());
+			logger.debug(toString() + " sending message: " + message);
 			out.println(message);
-			logger.info("Message written");
+			logger.debug(toString() + " sent message: " + message);
 			return true;
 		} else {
-			logger.info("Could not send message, socket was not connected");
-			return false;
+			throw new DisconnectedException(this);
 		}
 	}
 	
-	public String readString() throws IOException {
+	public String readString() throws IOException, DisconnectedException {
 		if (isConnected()) {
 			logger.info("Reading from " + this.toString());
 			try {
 				String msg = in.readLine();
 				if (msg == null) {
 					disconnect();
+					throw new DisconnectedException(this);
 				}
 				logger.info("message: " + msg);
 				return msg;
@@ -189,17 +190,13 @@ public class SocketConnection {
 				logger.error(e);
 				throw e;
 			}
+		} else {
+			throw new DisconnectedException(this);
 		}
-		return null;
-	}
-	
-	public String synchronizedSendAndRead(String message) throws IOException {
-		sendString(message);
-		return readString();
 	}
 	
 	@Override
 	public String toString() {
-		return "socket-connection " + this.name + " - " + socket;
+		return this.name + "(type: " + type + ", " + ipAddress + ":" + portNumber + ")";
 	}
 }

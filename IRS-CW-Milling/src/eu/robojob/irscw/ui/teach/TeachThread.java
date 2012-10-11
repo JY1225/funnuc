@@ -6,6 +6,9 @@ import javafx.application.Platform;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.InterventionStep;
@@ -35,12 +38,15 @@ public class TeachThread extends Thread {
 	
 	private final static int TEACH_TIMEOUT = 1000 * 60 * 15;
 	
+	private PickStep lastPickStep;
+	
 	public TeachThread(TeachJob teachJob, TeachPresenter teachPresenter) {
 		this.teachJob = teachJob;
 		this.teachPresenter = teachPresenter;
 		canContinue = false;
 		this.uiSyncObject = new Object();
 		this.translator = Translator.getInstance();
+		this.lastPickStep = null;
 	}
 	
 	@Override
@@ -75,9 +81,10 @@ public class TeachThread extends Thread {
 		}
 	}
 	
-	private void handlePick(final PickStep pickStep) throws IOException {
+	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException {
 		// notify presenter this pick step is in progress 
 		notifyStepInProgress(pickStep);
+		this.lastPickStep = pickStep;
 		if (pickStep.needsTeaching()) {
 			
 			// set status-message to indicate we're preparing for the pick
@@ -90,14 +97,10 @@ public class TeachThread extends Thread {
 			notifyTeachingNeeded();
 			waitForTeaching();
 			
+			setStatus(EXECUTE_PICK);
 			pickStep.teachingFinished();
 			
-			// now we know the teaching position, we execute the pick
-			setStatus(EXECUTE_PICK);
-			
-			//wait2Sec();
 			setStatus(EXECUTED_PICK);
-			
 		} else {
 			// to teaching needed so we just prepare and execute pick
 			setStatus(EXECUTE_PICK);
@@ -107,8 +110,7 @@ public class TeachThread extends Thread {
 		notifyStepFinished(pickStep);
 	}
 	
-	//TODO refactor: duplicate code
-	private void handlePut(final PutStep putStep) throws IOException {
+	private void handlePut(final PutStep putStep) throws CommunicationException, RobotActionException {
 		// notify presenter this pick step is in progress 
 		notifyStepInProgress(putStep);
 		if (putStep.needsTeaching()) {
@@ -117,16 +119,21 @@ public class TeachThread extends Thread {
 			setStatus(PREPARE_PUT);
 			putStep.prepareForTeaching();
 			
+			if (lastPickStep != null) {
+				lastPickStep.finalize();
+				lastPickStep = null;
+			} else {
+				throw new IllegalStateException("Put without previous pick?");
+			}
+			
 			canContinue = false;
 			
 			// teaching the exact position is needed at this point
 			notifyTeachingNeeded();
 			waitForTeaching();
 			
-			putStep.teachingFinished();
-			
-			// now we know the teaching position, we execute the pick
 			setStatus(EXECUTE_PUT);
+			putStep.teachingFinished();
 			
 			//wait2Sec();
 			setStatus(EXECUTED_PUT);
@@ -161,7 +168,7 @@ public class TeachThread extends Thread {
 		}
 	}
 	
-	private void handleProcessing(final ProcessingStep step) throws IOException {
+	private void handleProcessing(final ProcessingStep step) throws CommunicationException, DeviceActionException {
 		// processingStep.executeStep();
 		// executing process step
 		Platform.runLater(new Runnable() {
@@ -188,14 +195,6 @@ public class TeachThread extends Thread {
 				teachPresenter.teachingNeeded();
 			}
 		});
-	}
-	
-	private void notifyStepInProgress(final AbstractTransportStep step) {
-		if (step instanceof PickStep) {
-			notifyStepInProgress((PickStep) step);
-		} else if (step instanceof PutStep) {
-			notifyStepInProgress((PutStep) step);
-		}
 	}
 	
 	private void notifyStepInProgress(final PickStep pickStep) {
@@ -232,15 +231,6 @@ public class TeachThread extends Thread {
 				teachPresenter.putStepFinished(putStep);
 			}
 		});
-	}
-	
-	private void wait2Sec() {
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public void teachingFinished() {

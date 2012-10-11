@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
+import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
@@ -47,22 +48,24 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public void setPossibleGripperBodies(Set<GripperBody> possibleGripperBodies) {
 		this.possibleGripperBodies = possibleGripperBodies;
 	}
+	
+	public abstract String getStatus() throws CommunicationException, RobotActionException;
 
-	public abstract Coordinates getPosition() throws IOException;
+	public abstract Coordinates getPosition() throws CommunicationException, RobotActionException;
 	
-	public abstract void pick(AbstractRobotPickSettings pickSettings) throws IOException;
-	public abstract void put(AbstractRobotPutSettings putSettings) throws IOException;
+	public abstract void pick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
+	public abstract void put(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;
 	
-	public abstract void releasePiece(AbstractRobotPutSettings putSettings) throws IOException;
-	public abstract void grabPiece(AbstractRobotPickSettings pickSettings) throws IOException;
+	public abstract void releasePiece(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;
+	public abstract void grabPiece(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
+	
+	public abstract void moveToHome() throws CommunicationException, RobotActionException;
+	
+	public abstract void setTeachModeEnabled(boolean enable) throws CommunicationException, RobotActionException;
+	public abstract void moveTo(UserFrame uf, Coordinates coordinates, AbstractRobotActionSettings transportSettings) throws CommunicationException, RobotActionException;
 	
 	public abstract boolean validatePickSettings(AbstractRobotPickSettings pickSettings);
 	public abstract boolean validatePutSettings(AbstractRobotPutSettings putSettings);
-	
-	public abstract void moveToHome() throws IOException;
-	
-	public abstract void setTeachModeEnabled(boolean enable);
-	public abstract void moveTo(UserFrame uf, Coordinates coordinates, AbstractRobotActionSettings transportSettings);
 	
 	public abstract boolean isConnected();
 	

@@ -1,10 +1,10 @@
 package eu.robojob.irscw.external.device;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
+import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
@@ -16,16 +16,21 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	protected List<Zone> zones;
 	
-	public abstract void prepareForPick(AbstractDevicePickSettings pickSettings) throws IOException;
-	public abstract void prepareForPut(AbstractDevicePutSettings putSettings) throws IOException;
-	public abstract void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws IOException;
+	public abstract String getStatus() throws CommunicationException;
 	
-	public abstract void pickFinished(AbstractDevicePickSettings pickSettings) throws IOException;
-	public abstract void putFinished(AbstractDevicePutSettings putSettings) throws IOException;
-	public abstract void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws IOException;
+	public abstract boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException;
+	public abstract boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException;
 	
-	public abstract void releasePiece(AbstractDevicePickSettings pickSettings) throws IOException;
-	public abstract void grabPiece(AbstractDevicePutSettings putSettings) throws IOException;
+	public abstract void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException;
+	public abstract void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException;
+	public abstract void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException;
+	
+	public abstract void pickFinished(AbstractDevicePickSettings pickSettings) throws CommunicationException;
+	public abstract void putFinished(AbstractDevicePutSettings putSettings) throws CommunicationException;
+	public abstract void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException;
+	
+	public abstract void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException;
+	public abstract void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException;
 	
 	public abstract void loadDeviceSettings(AbstractDeviceSettings deviceSettings);
 	public abstract AbstractDeviceSettings getDeviceSettings();

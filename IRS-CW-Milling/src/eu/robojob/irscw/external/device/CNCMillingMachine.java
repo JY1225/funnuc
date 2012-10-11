@@ -1,6 +1,5 @@
 package eu.robojob.irscw.external.device;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,126 +7,109 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.communication.ExternalCommunication;
-import eu.robojob.irscw.external.communication.ExternalCommunicationThread;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
+//TODO refactor so many of the used methods are contained in the AbstractCNCMachine (as they also apply to that class)
+//TODO cyclus start voorzien
 public class CNCMillingMachine extends AbstractCNCMachine {
 
 	private ExternalCommunication externalCommunication;
 	
 	private static Logger logger = Logger.getLogger(AbstractProcessingDevice.class);
 	
-	/*private static final String STATUS = "STATUS";
-	private static final String START_CYCLUS = "START_CYCLUS";
-	private static final String PREAPARE_FOR_START_CYCLUS = "PREAPARE_FOR_START_CYCLUS";
-	private static final String RELEASE_PIECE = "RELEASE_PIECE";
-	private static final String GRAB_PIECE = "GRAB_PIECE";
-	private static final String PREPARE_FOR_PICK = "PREPARE_FOR_PICK";
-	private static final String PREPARE_FOR_PUT = "PREPARE_FOR_PUT";
-	private static final String PREAPRE_FOR_INTERVENTION = "PREAPRE_FOR_INTERVENTION";
-	private static final String PICK_FINISHED = "PICK_FINISHED";
-	private static final String PUT_FINISHED = "PUT_FINISHED";
-	private static final String INTERVENTION_FINISHED = "INTERVENTION_FINISHED";*/
-	
 	private static final int READ_TIMEOUT = 10000;
 		
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
 		super(id);
-		ExternalCommunicationThread externalCommunicationThread = new ExternalCommunicationThread(socketConnection);
-		ThreadManager.getInstance().submit(externalCommunicationThread);
-		this.externalCommunication = new ExternalCommunication(externalCommunicationThread);
+		this.externalCommunication = new ExternalCommunication(socketConnection);
 	}
 	
 	public CNCMillingMachine(String id, List<Zone> zones, SocketConnection socketConnection) {
 		super(id, zones);
-		ExternalCommunicationThread externalCommunicationThread = new ExternalCommunicationThread(socketConnection);
-		ThreadManager.getInstance().submit(externalCommunicationThread);
-		this.externalCommunication = new ExternalCommunication(externalCommunicationThread);
+		this.externalCommunication = new ExternalCommunication(socketConnection);
 	}
 	
 	@Override
-	public String getStatus() throws IOException {
-		if (!isConnected()) {
-			throw new IOException(this + " was not connected");
+	public String getStatus() throws CommunicationException {
+		return null;
+	}
+
+	@Override
+	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
+		// check which workarea (1 or 2)
+		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0))) {
+			// first WA
+			
+			// with this kind of machines, the work-area stays the same, so the clamp of the finished product is the same
+			
 		} else {
-			//TODO
-			return null;
+			throw new IllegalArgumentException("I only have one workarea!");
 		}
 	}
 
 	@Override
-	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException {
-		CNCMillingMachineStartCylusSettings cncStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCylusSettings;
-		String response = externalCommunication.writeAndRead("START CYCLUS IN WA: " + cncStartCyclusSettings.getWorkArea().getId(), READ_TIMEOUT);
-		logger.info(response);
+	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	//TODO these are not taken into account by the machine for now...
+	@Override
+	public void pickFinished(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+	}
+	@Override
+	public void putFinished(AbstractDevicePutSettings putSettings) throws CommunicationException {
+	}
+	@Override
+	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException {
 	}
 
 	@Override
-	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws IOException {
-		CNCMillingMachineStartCylusSettings cncStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCylusSettings;
-		String response = externalCommunication.writeAndRead("PREPARE FOR START CYCLUS IN WA: " + cncStartCyclusSettings.getWorkArea().getId(), READ_TIMEOUT);
-		logger.info(response);
+	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings) throws IOException {
-		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
-		String response = externalCommunication.writeAndRead("RELEASE PIECE IN WA: " + cncPickSettings.getWorkArea().getId(), READ_TIMEOUT);
-		logger.info(response);
+	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings) throws IOException {
-		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
-		String response = externalCommunication.writeAndRead("GRAB PIECE IN WA: " + cncPutSettings.getWorkArea().getId(), READ_TIMEOUT);
-		logger.info(response);
+	public boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
-	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws IOException {
-		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
-		String response = externalCommunication.writeAndRead("PREPARE FOR PICK IN WA: " + cncPickSettings.getWorkArea().getId(), READ_TIMEOUT);
-		logger.info(response);
+	public boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
-	@Override
-	public void prepareForPut(AbstractDevicePutSettings putSettings) throws IOException {
-		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
-		String response = externalCommunication.writeAndRead("PREPARE FOR PUT IN WA: " + cncPutSettings.getWorkArea().getId(), READ_TIMEOUT);
-		logger.info(response);
-	}
-
-	@Override
-	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws IOException {
-		CNCMillingMachineInterventionSettings cncInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
-		String response = externalCommunication.writeAndRead("PREPARE FOR INTERVENTION IN WA: " + cncInterventionSettings.getWorkArea().getId(), READ_TIMEOUT);
-		logger.info(response);
-	}
-
-	@Override
-	public void pickFinished(AbstractDevicePickSettings pickSettings) throws IOException {
-		CNCMillingMachinePickSettings cncPickSettings = (CNCMillingMachinePickSettings) pickSettings;
-		String response = externalCommunication.writeAndRead("PICK HAS FINISHED IN WA: " + cncPickSettings.getWorkArea().getId(), READ_TIMEOUT);
-		logger.info(response);
-	}
-
-	@Override
-	public void putFinished(AbstractDevicePutSettings putSettings) throws IOException {
-		CNCMillingMachinePutSettings cncPutSettings = (CNCMillingMachinePutSettings) putSettings;
-		String response = externalCommunication.writeAndRead("PUT HAS FINISHED IN WA: " + cncPutSettings.getWorkArea().getId(), READ_TIMEOUT);
-		logger.info(response);
-	}
-
-	@Override
-	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws IOException {
-		CNCMillingMachineInterventionSettings cncInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
-		String response = externalCommunication.writeAndRead("INTERVENTION FINISHED IN WA: " + cncInterventionSettings.getWorkArea().getId(), READ_TIMEOUT);
-		logger.info(response);
-	}
 	
 	public static class CNCMillingMachinePutSettings extends AbstractCNCMachinePutSettings{
 		public CNCMillingMachinePutSettings(WorkArea workArea) {
@@ -187,7 +169,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		}
 	
 	}
-
 
 	@Override
 	public void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {
@@ -277,5 +258,4 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public boolean isConnected() {
 		return externalCommunication.isConnected();
 	}
-
 }

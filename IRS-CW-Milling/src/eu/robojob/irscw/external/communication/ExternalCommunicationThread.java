@@ -25,20 +25,18 @@ public class ExternalCommunicationThread extends Thread {
 	public ExternalCommunicationThread(SocketConnection socketConnection) {
 		this.socketConnection = socketConnection;
 		this.incommingMessages = new LinkedList<String>();
-		if (socketConnection != null) {
-			alive = true;
-		} else {
-			logger.info("empty socket connection");
-			alive = false;
+		this.alive = true;
+		if (socketConnection == null) {
+			throw new IllegalArgumentException("SocketConnection must be provided");
 		}
 	}
 	
 	@Override
 	public void run() {
-		logger.info("Starting communication thread");
+		logger.info(toString() + " started...");
 		while(alive) {
 			if (!socketConnection.isConnected()) {
-				logger.info("Connection " + socketConnection + " offline, trying to connect...");
+				logger.info(socketConnection + " offline, trying to connect...");
 				try {
 					socketConnection.connect();
 				} catch (IOException e) {
@@ -48,7 +46,7 @@ public class ExternalCommunicationThread extends Thread {
 						Thread.sleep(CONNECTION_RETRY_INTERVAL);
 					} catch (InterruptedException e1) {
 						// we got interrupted, so let's just stop executing!
-						logger.error("Woken up! " + e1);
+						logger.info("Waiting for re-trying connection interrupted, so stopping thread...");
 						alive = false;
 					}
 				}
@@ -60,10 +58,15 @@ public class ExternalCommunicationThread extends Thread {
 					putMessage(icommingMsg);
 				} catch (IOException e) {
 					logger.error("Error while reading: " + e);
+					e.printStackTrace();
+					// disconnect to be sure
+					socketConnection.disconnect();
+				} catch (DisconnectedException e) {
+					throw new IllegalStateException("This catch shouldn't be reached as in case of disconnected socket, connection occurs");
 				}
 			}
 		}
-		logger.info("Ending communication thread");
+		logger.info(toString() + " ended...");
 	}
 	
 	public synchronized boolean hasNextMessage() {
@@ -86,12 +89,8 @@ public class ExternalCommunicationThread extends Thread {
 		incommingMessages.addLast(message);
 	}
 	
-	public void writeMessage(String message) {
-		if (socketConnection.isConnected()) {
-			socketConnection.sendString(message);
-		} else {
-			throw new IllegalStateException("Can't send message, connection is down");
-		}
+	public void writeMessage(String message) throws DisconnectedException {
+		socketConnection.sendString(message);
 	}
 	
 	public boolean isConnected() {
@@ -105,14 +104,13 @@ public class ExternalCommunicationThread extends Thread {
 	
 	public void disconnectAndStop() {
 		if (socketConnection.isConnected()) {
-			try {
-				socketConnection.disconnect();
-			} catch (IOException e) {
-				logger.error(e);
-			} finally {
-				alive = false;
-			}
+			socketConnection.disconnect();
+			alive = false;
 		}
+	}
+	
+	public String toString() {
+		return "CommunicatingThread: " + socketConnection;
 	}
 	
 }

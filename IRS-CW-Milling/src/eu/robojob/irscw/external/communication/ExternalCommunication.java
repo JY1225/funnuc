@@ -1,13 +1,20 @@
 package eu.robojob.irscw.external.communication;
 
+import eu.robojob.irscw.threading.ThreadManager;
+
 public class ExternalCommunication {
 
 	private static final int READ_RETRY_INTERVAL = 500;
+	private static final int DEFAULT_WAIT_TIMEOUT = 30000;
+	
+	private int defaultWaitTimeout;
 	
 	private ExternalCommunicationThread extCommThread;
-	
-	public ExternalCommunication(ExternalCommunicationThread extCommThread) {
-		this.extCommThread = extCommThread;
+		
+	public ExternalCommunication(SocketConnection socketConnection) {
+		this.extCommThread = new ExternalCommunicationThread(socketConnection);
+		ThreadManager.getInstance().submit(extCommThread);
+		defaultWaitTimeout = DEFAULT_WAIT_TIMEOUT;
 	}
 	
 	public boolean isConnected() {
@@ -22,11 +29,23 @@ public class ExternalCommunication {
 		return extCommThread.getNextMessage();
 	}
 	
-	public void writeMessage(String message) {
+	public void writeMessage(String message) throws DisconnectedException {
 		extCommThread.writeMessage(message);
 	}
 	
-	public String writeAndRead(String message, int timeout) {
+	public void setDefaultWaitTimeout(int defaultWaitTimeout) {
+		this.defaultWaitTimeout = defaultWaitTimeout;
+	}
+	
+	public int getDefaultWaitTimeout() {
+		return defaultWaitTimeout;
+	}
+	
+	public String writeAndRead(String message) throws DisconnectedException, ResponseTimedOutException {
+		return writeAndRead(message, defaultWaitTimeout);
+	}
+	
+	public String writeAndRead(String message, int timeout) throws DisconnectedException, ResponseTimedOutException {
 		writeMessage(message);
 		int waitingTime = 0;
 		String readMessage = null;
@@ -46,7 +65,10 @@ public class ExternalCommunication {
 			}
 			waitingTime += timeToWait;
 		} while (waitingTime <= timeout);
-			
-		return readMessage;
+		if (readMessage != null) {
+			return readMessage;
+		} else {
+			throw new ResponseTimedOutException(this);
+		}
 	}
 }

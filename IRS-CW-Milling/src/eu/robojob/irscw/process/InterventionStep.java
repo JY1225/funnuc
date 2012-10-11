@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
+import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 
 public class InterventionStep extends AbstractProcessStep {
@@ -30,7 +31,7 @@ public class InterventionStep extends AbstractProcessStep {
 	}
 	
 	@Override
-	public void executeStep() throws IOException {
+	public void executeStep() throws CommunicationException {
 		// check if the parent process has locked the device to be used
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());

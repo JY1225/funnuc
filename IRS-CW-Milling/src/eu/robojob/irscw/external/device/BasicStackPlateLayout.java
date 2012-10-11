@@ -254,9 +254,9 @@ public class BasicStackPlateLayout {
 		
 		float a = (float) (horizontalHoleDistance/2 - Math.sqrt(2)*(studDiameter/2));
 		float b = (float) (studDiameter/(2*Math.sqrt(2)));
-		float c = (float) (dimensions.getLength() / (Math.sqrt(2)));
+		//float c = (float) (dimensions.getLength() / (Math.sqrt(2)));
 		float d = (float) ((dimensions.getWidth() / (Math.sqrt(2)))  - horizontalHoleDistance/2);
-		float e = (float) (horizontalHoleDistance/2 - studDiameter / (2 * Math.sqrt(2)));
+		//float e = (float) (horizontalHoleDistance/2 - studDiameter / (2 * Math.sqrt(2)));
 		float dright = (float) ((dimensions.getLength() / (Math.sqrt(2))) - horizontalHoleDistance/2);
 		
 		if (dimensions.getWidth() - MIN_OVERLAP_DISTANCE < Math.sqrt(2) * (a+b)) {
@@ -289,7 +289,7 @@ public class BasicStackPlateLayout {
 		float f = horizontalHoleDistance - remainingD;
 		float fr = horizontalHoleDistance - remainingDr;
 		// total workpiece width (and height)
-		float totalHorizontalSize = (float) ((dimensions.getHeight() + dimensions.getLength())/Math.sqrt(2));
+		//float totalHorizontalSize = (float) ((dimensions.getHeight() + dimensions.getLength())/Math.sqrt(2));
 		
 		float remainingLeft = remainingD;
 		float remainingRight = remainingDr;
