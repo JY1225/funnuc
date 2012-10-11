@@ -14,7 +14,7 @@ public class ExternalCommunicationThread extends Thread {
 
 	private static final Logger logger = Logger.getLogger(ExternalCommunicationThread.class);
 	
-	private static final int CONNECTION_RETRY_INTERVAL = 5000;
+	private static final int CONNECTION_RETRY_INTERVAL = 1000;
 	
 	private SocketConnection socketConnection;
 	

@@ -18,7 +18,7 @@ public class DevicesStatusThread extends Thread {
 	
 	private boolean alive;
 	
-	private static final int SLEEP_TIME = 5000;
+	private static final int SLEEP_TIME = 1000;
 	
 	private static final Logger logger = Logger.getLogger(DevicesStatusThread.class);
 	
