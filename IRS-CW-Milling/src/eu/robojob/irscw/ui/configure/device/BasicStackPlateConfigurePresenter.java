@@ -1,7 +1,5 @@
 package eu.robojob.irscw.ui.configure.device;
 
-import org.apache.log4j.Logger;
-
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
@@ -10,7 +8,7 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 
 	private DeviceInformation deviceInfo;
 	
-	private static Logger logger = Logger.getLogger(BasicStackPlateConfigurePresenter.class);
+//	private static Logger logger = Logger.getLogger(BasicStackPlateConfigurePresenter.class);
 	
 	public BasicStackPlateConfigurePresenter(BasicStackPlateConfigureView view, DeviceInformation deviceInfo, DeviceManager deviceManager) {
 		super(view);

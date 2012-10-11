@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePickSettings;
 import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePutSettings;
 import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineStartCylusSettings;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
@@ -17,14 +16,12 @@ import eu.robojob.irscw.ui.main.model.DeviceInformation;
 public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<CNCMillingMachineConfigureView, CNCMillingMachineMenuPresenter>{
 
 	private DeviceInformation deviceInfo;
-	private DeviceManager deviceManager;
 	
 	private static Logger logger = Logger.getLogger(CNCMillingMachineConfigurePresenter.class);
 	
 	public CNCMillingMachineConfigurePresenter(CNCMillingMachineConfigureView view, DeviceInformation deviceInfo, DeviceManager deviceManager) {
 		super(view);
 		this.deviceInfo = deviceInfo;
-		this.deviceManager = deviceManager;
 		view.setDeviceInfo(deviceInfo);
 		view.setCNCMillingMachineIds(deviceManager.getCNCMachineIds());
 		view.build();
@@ -102,7 +99,6 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		AbstractRobotPickSettings robotPickSettings = deviceInfo.getPickStep().getRobotSettings();
 		CNCMillingMachinePutSettings putSettings = (CNCMillingMachinePutSettings) deviceInfo.getPutStep().getDeviceSettings();
 		AbstractRobotPutSettings robotPutSettings = deviceInfo.getPutStep().getRobotSettings();
-		CNCMillingMachineStartCylusSettings startCyclusSettings = (CNCMillingMachineStartCylusSettings) deviceInfo.getProcessingStep().getStartCyclusSettings();
 		CNCMillingMachineSettings deviceSettings = (CNCMillingMachineSettings) deviceInfo.getDeviceSettings();
 		// TODO take into account start cyclus settings
 		if (    

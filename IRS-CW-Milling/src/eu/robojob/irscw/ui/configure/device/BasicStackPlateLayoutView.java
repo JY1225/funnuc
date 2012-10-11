@@ -24,7 +24,6 @@ import eu.robojob.irscw.ui.controls.TextFieldListener;
 
 public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateLayoutPresenter> {
 
-	private BasicStackPlate basicStackPlate;
 	private BasicStackPlateLayout basicStackPlateLayout;
 	
 	private Group group;
@@ -48,7 +47,6 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	}
 	
 	public void setBasicStackPlate(BasicStackPlate basicStackPlate) {
-		this.basicStackPlate = basicStackPlate;
 		this.basicStackPlateLayout = basicStackPlate.getLayout();
 	}
 	

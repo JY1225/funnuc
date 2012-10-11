@@ -1,7 +1,5 @@
 package eu.robojob.irscw.ui.teach;
 
-import java.io.IOException;
-
 import javafx.application.Platform;
 
 import org.apache.log4j.Logger;
@@ -10,7 +8,6 @@ import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessingStep;

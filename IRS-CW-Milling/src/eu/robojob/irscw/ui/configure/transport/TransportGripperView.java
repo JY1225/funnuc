@@ -6,9 +6,6 @@ import javafx.event.EventHandler;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-
-import org.apache.log4j.Logger;
-
 import eu.robojob.irscw.external.robot.Gripper;
 import eu.robojob.irscw.external.robot.GripperBody;
 import eu.robojob.irscw.external.robot.GripperHead;
@@ -32,7 +29,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 	private static final int HGAP = 15;
 	private static final int VGAP = 10;
 	
-	private static Logger logger = Logger.getLogger(TransportGripperView.class); 
+	//private static Logger logger = Logger.getLogger(TransportGripperView.class); 
 	
 	public TransportGripperView() {
 		super();
