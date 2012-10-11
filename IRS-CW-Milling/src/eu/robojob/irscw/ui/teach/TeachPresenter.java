@@ -27,7 +27,7 @@ public class TeachPresenter {
 	private StatusView teachStatusView;
 	private TeachingNeededView teachingNeededView;
 	
-	private TeachRunnable teachRunnable;
+	private TeachThread teachRunnable;
 	private DevicesStatusThread devicesStatusThread;
 	
 	private boolean isTeached;
@@ -41,7 +41,7 @@ public class TeachPresenter {
 		this.teachJob = new TeachJob(processFlow);
 		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		view.setTop(processFlowPresenter.getView());
-		this.teachRunnable = new TeachRunnable(teachJob, this);
+		this.teachRunnable = new TeachThread(teachJob, this);
 		isTeached = false;
 		this.teachDisconnectedDevicesView = teachDisconnectedDevicesView;
 		this.teachGeneralInfoView = teachGeneralInfoView;

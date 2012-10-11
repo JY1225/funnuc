@@ -62,6 +62,8 @@ public class PutStep extends AbstractTransportStep {
 				robot.put(robotPutSettings);
 				device.grabPiece(putSettings);
 				robot.releasePiece(robotPutSettings);
+				robot.moveToHome();
+				device.putFinished(putSettings);
 			}
 		}
 	}
@@ -95,6 +97,8 @@ public class PutStep extends AbstractTransportStep {
 				teachedOffset = coordinates.calculateOffset(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
 				device.grabPiece(putSettings);
 				robot.releasePiece(robotPutSettings);
+				robot.moveToHome();
+				device.putFinished(putSettings);
 			}
 		}
 	}

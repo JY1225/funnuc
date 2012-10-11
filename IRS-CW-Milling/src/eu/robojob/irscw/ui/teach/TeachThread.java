@@ -15,13 +15,13 @@ import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.TeachJob;
 import eu.robojob.irscw.util.Translator;
 
-public class TeachRunnable implements Runnable {
+public class TeachThread extends Thread {
 
 	private TeachJob teachJob;
 	private TeachPresenter teachPresenter;
 	private Translator translator;
 	
-	private static Logger logger = Logger.getLogger(TeachRunnable.class);
+	private static Logger logger = Logger.getLogger(TeachThread.class);
 	
 	private boolean canContinue;
 	private Object uiSyncObject;
@@ -35,7 +35,7 @@ public class TeachRunnable implements Runnable {
 	
 	private final static int TEACH_TIMEOUT = 1000 * 60 * 15;
 	
-	public TeachRunnable(TeachJob teachJob, TeachPresenter teachPresenter) {
+	public TeachThread(TeachJob teachJob, TeachPresenter teachPresenter) {
 		this.teachJob = teachJob;
 		this.teachPresenter = teachPresenter;
 		canContinue = false;
