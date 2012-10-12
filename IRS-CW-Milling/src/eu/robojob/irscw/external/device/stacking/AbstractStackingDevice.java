@@ -6,10 +6,6 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceInterventionSettings;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
 
 public abstract class AbstractStackingDevice extends AbstractDevice {
 

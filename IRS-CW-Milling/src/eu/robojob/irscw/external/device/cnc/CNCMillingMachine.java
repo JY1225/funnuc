@@ -10,17 +10,11 @@ import org.apache.log4j.Logger;
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.communication.ExternalCommunication;
 import eu.robojob.irscw.external.communication.SocketConnection;
-import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceInterventionSettings;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
-import eu.robojob.irscw.external.device.AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
