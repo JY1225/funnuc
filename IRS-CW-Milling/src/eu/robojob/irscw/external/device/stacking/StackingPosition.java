@@ -1,9 +1,9 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.irscw.external.device.stacking;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.robojob.irscw.external.device.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPiece;
 

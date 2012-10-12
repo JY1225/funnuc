@@ -1,14 +1,14 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.irscw.external.device.stacking;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.robojob.irscw.external.device.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.irscw.external.device.StudPosition.StudType;
 import eu.robojob.irscw.external.device.exception.IncorrectWorkPieceDataException;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.irscw.external.device.stacking.StudPosition.StudType;
 import eu.robojob.irscw.workpiece.WorkPiece;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 import eu.robojob.irscw.workpiece.WorkPiece.Type;
+import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class BasicStackPlateLayout {
 	

@@ -3,9 +3,9 @@ package eu.robojob.irscw.ui.configure.device;
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.robojob.irscw.external.device.BasicStackPlate;
-import eu.robojob.irscw.external.device.BasicStackPlate.BasicStackPlateSettings;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlateSettings;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.PutStep;

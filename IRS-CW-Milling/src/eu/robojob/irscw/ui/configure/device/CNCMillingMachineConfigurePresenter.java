@@ -2,9 +2,9 @@ package eu.robojob.irscw.ui.configure.device;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePickSettings;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePutSettings;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePickSettings;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePutSettings;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;

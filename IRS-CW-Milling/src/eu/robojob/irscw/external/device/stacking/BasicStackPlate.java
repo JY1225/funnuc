@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.irscw.external.device.stacking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.device.DeviceType;
+import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.device.Zone;
 import eu.robojob.irscw.external.device.exception.IncorrectWorkPieceDataException;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPiece;

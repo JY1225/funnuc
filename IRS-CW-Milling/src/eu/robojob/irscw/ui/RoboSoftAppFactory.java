@@ -1,16 +1,16 @@
 package eu.robojob.irscw.ui;
 
-import eu.robojob.irscw.external.device.BasicStackPlate;
-import eu.robojob.irscw.external.device.BasicStackPlate.BasicStackPlatePickSettings;
-import eu.robojob.irscw.external.device.BasicStackPlate.BasicStackPlatePutSettings;
-import eu.robojob.irscw.external.device.BasicStackPlate.BasicStackPlateSettings;
-import eu.robojob.irscw.external.device.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.irscw.external.device.CNCMillingMachine;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineInterventionSettings;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePickSettings;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachinePutSettings;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineSettings;
-import eu.robojob.irscw.external.device.CNCMillingMachine.CNCMillingMachineStartCylusSettings;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineInterventionSettings;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePickSettings;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePutSettings;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineStartCylusSettings;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlatePickSettings;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlatePutSettings;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlateSettings;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.robot.FanucRobot;

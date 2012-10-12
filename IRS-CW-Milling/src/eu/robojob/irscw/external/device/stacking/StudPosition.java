@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.irscw.external.device.stacking;
 
 import eu.robojob.irscw.positioning.Coordinates;
 

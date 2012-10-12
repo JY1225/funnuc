@@ -13,12 +13,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
-import eu.robojob.irscw.external.device.BasicStackPlate;
-import eu.robojob.irscw.external.device.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.irscw.external.device.BasicStackPlateLayout;
-import eu.robojob.irscw.external.device.StackingPosition;
-import eu.robojob.irscw.external.device.StudPosition;
-import eu.robojob.irscw.external.device.StudPosition.StudType;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlateLayout;
+import eu.robojob.irscw.external.device.stacking.StackingPosition;
+import eu.robojob.irscw.external.device.stacking.StudPosition;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.irscw.external.device.stacking.StudPosition.StudType;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 

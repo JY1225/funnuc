@@ -12,6 +12,11 @@ import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.communication.SocketConnection.Type;
+import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine;
+import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlateLayout;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
 
