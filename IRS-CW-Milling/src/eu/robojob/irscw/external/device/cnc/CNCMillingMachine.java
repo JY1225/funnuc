@@ -22,7 +22,7 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 //TODO cyclus start voorzien
 public class CNCMillingMachine extends AbstractCNCMachine {
 
-	private ExternalCommunication externalCommunication;
+	private CNCMachineCommunication cncMachineCommunication;
 	
 	private static Logger logger = Logger.getLogger(AbstractProcessingDevice.class);
 	
@@ -30,12 +30,12 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
 		super(id);
-		this.externalCommunication = new ExternalCommunication(socketConnection);
+		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection);
 	}
 	
 	public CNCMillingMachine(String id, List<Zone> zones, SocketConnection socketConnection) {
 		super(id, zones);
-		this.externalCommunication = new ExternalCommunication(socketConnection);
+		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection);
 	}
 	
 	@Override
@@ -57,18 +57,37 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	@Override
 	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
-		// TODO Auto-generated method stub
-		
+		// check first workarea is selected 
+		if (pickSettings.getWorkArea().getId().equals(getWorkAreas().get(0))) {
+			// first WA
+			int command = 0;
+			command = command | CNCMachineConstants.IPC_PICK_WA1_RQST;
+			
+			int registers[] = {command};
+			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
+			
+		} else {
+			throw new IllegalArgumentException("I only have one workarea!");
+		}
 	}
 
 	@Override
 	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
-		// check which workarea (1 or 2)
+		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0))) {
 			// first WA
+			int command = 0;
+			command = command | CNCMachineConstants.IPC_PICK_WA1_RQST;
 			
 			// with this kind of machines, the work-area stays the same, so the WA (clamp) of the finished product is the same as that of the raw
+			int cncTask = 0;
+			cncTask = cncTask | CNCMachineConstants.WA1_CNC_PROCESS;
 			
+			int registers[] = {command, cncTask};
+			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
+			
+			// TODO: check put is prepared
+					
 		} else {
 			throw new IllegalArgumentException("I only have one workarea!");
 		}
@@ -261,6 +280,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	@Override
 	public boolean isConnected() {
-		return externalCommunication.isConnected();
+		return cncMachineCommunication.isConnected();
 	}
 }
