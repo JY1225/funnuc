@@ -1,6 +1,7 @@
 package eu.robojob.irscw.external.communication;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -88,7 +89,7 @@ public class SocketConnection {
 	
 	private void connectInOut() throws IOException {
 		out = new PrintWriter(socket.getOutputStream(), true);
-		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 	}
 	
 	
@@ -183,6 +184,28 @@ public class SocketConnection {
 				}
 				logger.info("message: " + msg);
 				return msg;
+			} catch (IOException e) {
+				logger.error("error while reading from: " + this.toString());
+				connected = false;
+				disconnect();
+				logger.error(e);
+				throw e;
+			}
+		} else {
+			throw new DisconnectedException(this);
+		}
+	}
+	
+	public int read() throws IOException, DisconnectedException {
+		if (isConnected()) {
+			logger.info("Reading from " + this.toString());
+			try {
+		      int b = in.read();
+		      if (b < 0) {
+		    	  disconnect();
+		    	  throw new IOException("Data truncated");
+			   }
+			   return b;
 			} catch (IOException e) {
 				logger.error("error while reading from: " + this.toString());
 				connected = false;

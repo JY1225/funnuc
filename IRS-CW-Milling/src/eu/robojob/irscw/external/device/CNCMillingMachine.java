@@ -62,7 +62,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0))) {
 			// first WA
 			
-			// with this kind of machines, the work-area stays the same, so the clamp of the finished product is the same
+			// with this kind of machines, the work-area stays the same, so the WA (clamp) of the finished product is the same as that of the raw
 			
 		} else {
 			throw new IllegalArgumentException("I only have one workarea!");
