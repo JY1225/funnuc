@@ -20,11 +20,11 @@ public class ExternalCommunicationThread extends Thread {
 	
 	private boolean alive;
 	
-	private LinkedList<String> incommingMessages;
+	private LinkedList<Character> incommingCharacters;
 	
 	public ExternalCommunicationThread(SocketConnection socketConnection) {
 		this.socketConnection = socketConnection;
-		this.incommingMessages = new LinkedList<String>();
+		this.incommingCharacters = new LinkedList<Character>();
 		this.alive = true;
 		if (socketConnection == null) {
 			throw new IllegalArgumentException("SocketConnection must be provided");
@@ -52,15 +52,18 @@ public class ExternalCommunicationThread extends Thread {
 				}
 			} else {
 				// connected!
-				// this thread should just try reading messages and add these to the reading buffer
+				// this thread should just try reading messages and add these to the reading buffer, will also serve as 
+				// check for connection-liveness
 				try {
-					String icommingMsg = socketConnection.readString();
-					putMessage(icommingMsg);
+					char icommingChar = socketConnection.read();
+					putMessage(icommingChar);
 				} catch (IOException e) {
-					logger.error("Error while reading: " + e);
-					e.printStackTrace();
-					// disconnect to be sure
-					socketConnection.disconnect();
+					if (alive) {
+						logger.error("Error while reading: " + e);
+						e.printStackTrace();
+						// disconnect to be sure
+						socketConnection.disconnect();
+					}
 				} catch (DisconnectedException e) {
 					throw new IllegalStateException("This catch shouldn't be reached as in case of disconnected socket, connection occurs");
 				}
@@ -69,27 +72,39 @@ public class ExternalCommunicationThread extends Thread {
 		logger.info(toString() + " ended...");
 	}
 	
-	public synchronized boolean hasNextMessage() {
-		if (incommingMessages.size() > 0) {
+	public synchronized boolean hasNextCharacter() {
+		if (incommingCharacters.size() > 0) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
-	public synchronized String getNextMessage() {
-		if (hasNextMessage()) {
-			return incommingMessages.removeFirst();
+	public synchronized char getNextCharacter() {
+		if (hasNextCharacter()) {
+			return incommingCharacters.removeFirst();
 		} else {
 			throw new IllegalStateException("No messages in queue");
 		}
 	}
 	
-	public synchronized void putMessage(String message) {
-		incommingMessages.addLast(message);
+	public synchronized void clearIncommingCharacterBuffer() {
+		incommingCharacters.clear();
+	}
+	
+	private synchronized void putMessage(char character) {
+		incommingCharacters.addLast(character);
 	}
 	
 	public void writeMessage(String message) throws DisconnectedException {
+		socketConnection.sendString(message);
+	}
+	
+	public void writeCharacter(char character) throws DisconnectedException {
+		socketConnection.sendCharacter(character);
+	}
+	
+	public void writeString(String message) throws DisconnectedException {
 		socketConnection.sendString(message);
 	}
 	
@@ -104,8 +119,8 @@ public class ExternalCommunicationThread extends Thread {
 	
 	public void disconnectAndStop() {
 		if (socketConnection.isConnected()) {
-			socketConnection.disconnect();
 			alive = false;
+			socketConnection.disconnect();
 		}
 	}
 	

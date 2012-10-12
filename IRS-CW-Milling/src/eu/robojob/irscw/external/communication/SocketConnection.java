@@ -161,12 +161,23 @@ public class SocketConnection {
 		}
 	}
 	
-	public boolean sendString(String message) throws DisconnectedException {
+	public void sendString(String message) throws DisconnectedException {
 		if (isConnected()) {
 			logger.debug(toString() + " sending message: " + message);
-			out.println(message);
+			out.print(message);
+			out.flush();
 			logger.debug(toString() + " sent message: " + message);
-			return true;
+		} else {
+			throw new DisconnectedException(this);
+		}
+	}
+	
+	public void sendCharacter(char character) throws DisconnectedException {
+		if (isConnected()) {
+			logger.debug(toString() + " sending character: " + character);
+			out.print(character);
+			out.flush();
+			logger.debug(toString() + " sent character: " + character);
 		} else {
 			throw new DisconnectedException(this);
 		}
@@ -174,7 +185,7 @@ public class SocketConnection {
 	
 	public String readString() throws IOException, DisconnectedException {
 		if (isConnected()) {
-			logger.info("Reading from " + this.toString());
+			logger.debug("Reading from " + this.toString());
 			try {
 				String msg = in.readLine();
 				if (msg == null) {
@@ -184,7 +195,7 @@ public class SocketConnection {
 				logger.info("message: " + msg);
 				return msg;
 			} catch (IOException e) {
-				logger.error("error while reading from: " + this.toString());
+				logger.debug("error while reading from: " + this.toString());
 				connected = false;
 				disconnect();
 				logger.error(e);
@@ -195,16 +206,19 @@ public class SocketConnection {
 		}
 	}
 	
-	public int read() throws IOException, DisconnectedException {
+	public char read() throws IOException, DisconnectedException {
 		if (isConnected()) {
-			logger.info("Reading from " + this.toString());
+			logger.debug("Reading from " + this.toString());
 			try {
 		      int b = in.read();
+		    //  logger.info("read: " + b);
 		      if (b < 0) {
 		    	  disconnect();
 		    	  throw new IOException("Data truncated");
+			   } else {
+				   logger.debug("Read character: " + (char) b);
 			   }
-			   return b;
+			   return (char) b;
 			} catch (IOException e) {
 				logger.error("error while reading from: " + this.toString());
 				connected = false;

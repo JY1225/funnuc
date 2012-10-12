@@ -43,71 +43,36 @@ public class FanucRobot extends AbstractRobot {
 	
 	@Override
 	public Coordinates getPosition() throws CommunicationException, RobotActionException {
-		String response = externalCommunication.writeAndRead(POSITION, READ_TIMEOUT);
-		String[] parsedResponse = response.split(";");
-		Coordinates c = null;
-		if (parsedResponse.length != 6) {
-			throw new IllegalStateException("Corrupt response from robot");
-		} else {
-			Float[] convertedResponse = new Float[6];
-			for (int i = 0; i < 6; i++)  {
-				convertedResponse[i] = Float.parseFloat(parsedResponse[i]);
-			}
-			c = new Coordinates(convertedResponse[0], convertedResponse[1], convertedResponse[2], convertedResponse[3], convertedResponse[4], convertedResponse[5]);
-		}
-		logger.debug("got position from robot: " + response);
-		return c;
+		return null;
 	}
 
 	@Override
 	public void pick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
-		FanucRobotPickSettings fanucPickSettings = (FanucRobotPickSettings) pickSettings;
-		String response = externalCommunication.writeAndRead("PICK WITH GRIPPER: " + fanucPickSettings.getGripper().getId() + " ON HEAD: " + fanucPickSettings.getGripperHead().getId() +
-				" ON LOCATION: " + fanucPickSettings.getLocation() + " WITH SMOOTH: " + fanucPickSettings.getSmoothPoint() + " IN WA: " + fanucPickSettings.getWorkArea().getId(), READ_TIMEOUT);
-		logger.debug("response: " + response);
 	}
 
 	@Override
 	public void put(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
-		FanucRobotPutSettings fanucPutSettings = (FanucRobotPutSettings) putSettings;
-		String response = externalCommunication.writeAndRead("PUT WITH GRIPPER: " + fanucPutSettings.getGripper().getId() + " ON HEAD: " + fanucPutSettings.getGripperHead().getId() +
-				" ON LOCATION: " + fanucPutSettings.getLocation() + " WITH SMOOTH: " + fanucPutSettings.getSmoothPoint() + " IN WA: " + fanucPutSettings.getWorkArea().getId(), READ_TIMEOUT);
-		logger.debug("response: " + response);
 	}
 
 	@Override
 	public void releasePiece(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
-		String response = externalCommunication.writeAndRead("RELEASE PIECE", READ_TIMEOUT);
-		putSettings.getGripper().setWorkPiece(null);
-		logger.debug("response: " + response);
 	}
 
 	@Override
 	public void grabPiece(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
-		FanucRobotPickSettings fanucPickSettings = (FanucRobotPickSettings) pickSettings;
-		pickSettings.getGripper().setWorkPiece(fanucPickSettings.getWorkPiece());
-		String response = externalCommunication.writeAndRead("GRAB PIECE", READ_TIMEOUT);
-		logger.debug("response: " + response);
 	}
 
 	@Override
 	public void moveToHome() throws CommunicationException, RobotActionException {
-		String response = externalCommunication.writeAndRead("MOVE TO HOME", READ_TIMEOUT);
-		logger.debug("response: " + response);
 	}
 	
 
 	@Override
 	public void moveTo(UserFrame uf, Coordinates coordinates, AbstractRobotActionSettings transportSettings) throws CommunicationException, RobotActionException {
-		String response = externalCommunication.writeAndRead("MOVE TO UF: " + uf.getIdNumber() + " COORDINATES: " + coordinates + " WITH GRIPPER: " + transportSettings.getGripper().getId() + 
-				" ON GRIPPER HEAD: " + transportSettings.getGripperHead().getId(), READ_TIMEOUT);
-		logger.debug("response: " + response);
 	}
 
 	@Override
 	public void setTeachModeEnabled(boolean enable) throws CommunicationException, RobotActionException {
-		String response = externalCommunication.writeAndRead("SET TEACH MODE: " + enable, READ_TIMEOUT);
-		logger.debug("response: " + response);
 	}
 	
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
