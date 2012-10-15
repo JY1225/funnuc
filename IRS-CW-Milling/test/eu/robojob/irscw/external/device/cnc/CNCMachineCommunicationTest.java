@@ -1,5 +1,6 @@
 package eu.robojob.irscw.external.device.cnc;
 
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePickSettings;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePutSettings;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineStartCylusSettings;
 
 public class CNCMachineCommunicationTest {
 
@@ -18,9 +20,10 @@ public class CNCMachineCommunicationTest {
 	private CNCMillingMachinePutSettings putSettings;
 	private CNCMillingMachinePickSettings pickSettings;
 	private CNCMillingMachineSettings cncMillingSetting;
+	private CNCMillingMachineStartCylusSettings startCyclusSettings;
 	private DeviceManager deviceManager;
 	
-	//private static Logger logger = Logger.getLogger(CNCMachineCommunicationTest.class);
+	private static Logger logger = Logger.getLogger(CNCMachineCommunicationTest.class);
 	
 	@Before
 	public void setup() {
@@ -28,13 +31,14 @@ public class CNCMachineCommunicationTest {
 		cncMillingMachine = (CNCMillingMachine) deviceManager.getCNCMachineById("Mazak VRX J500");
 		putSettings = new CNCMillingMachine.CNCMillingMachinePutSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
 		pickSettings = new CNCMillingMachinePickSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
+		startCyclusSettings = new CNCMillingMachineStartCylusSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
 		cncMillingSetting = (CNCMillingMachineSettings) cncMillingMachine.getDeviceSettings();
 		WorkArea mainWorkArea = cncMillingMachine.getWorkAreaById("Mazak VRX Main");
 		cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingById("Clamping 1"));
 		cncMillingMachine.loadDeviceSettings(cncMillingSetting);
 	}
 	
-	
+	@Ignore
 	@Test
 	public void testPrepareForPut() {
 		try {
@@ -58,4 +62,50 @@ public class CNCMachineCommunicationTest {
 		}
 	}
 	
+	@Ignore
+	@Test
+	public void testClamp() {
+		try {
+			cncMillingMachine.grabPiece(putSettings);
+		} catch (CommunicationException | DeviceActionException e) {
+			e.printStackTrace();
+		} finally {
+			cncMillingMachine.disconnect();
+		}
+	}
+	
+	@Ignore
+	@Test
+	public void testUnClamp() {
+		try {
+			cncMillingMachine.releasePiece(pickSettings);
+		} catch (CommunicationException | DeviceActionException e) {
+			e.printStackTrace();
+		} finally {
+			cncMillingMachine.disconnect();
+		}
+	}
+	
+	@Ignore
+	@Test
+	public void testCanPut() {
+		try {
+			logger.info("Can I ask you to prepare for put? : " + cncMillingMachine.canPut(putSettings));
+		} catch (CommunicationException e) {
+			e.printStackTrace();
+		} finally {
+			cncMillingMachine.disconnect();
+		}
+	}
+	
+	@Test
+	public void testStartCycle() {
+		try {
+			cncMillingMachine.startCyclus(startCyclusSettings);
+		} catch (CommunicationException | DeviceActionException e) {
+			e.printStackTrace();
+		} finally {
+			cncMillingMachine.disconnect();
+		}
+	}
 }

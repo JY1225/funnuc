@@ -17,8 +17,6 @@ import eu.robojob.irscw.external.device.Zone;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
-//TODO refactor so many of the used methods are contained in the AbstractCNCMachine (as they also apply to that class)
-//TODO cyclus start voorzien
 public class CNCMillingMachine extends AbstractCNCMachine {
 
 	private CNCMachineCommunication cncMachineCommunication;
@@ -27,7 +25,13 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	
 	private static final int PREPARE_PUT_TIMEOUT = 30000;
 	private static final int PREPARE_PICK_TIMEOUT = 30000;
-		
+	private static final int CLAMP_TIMEOUT = 10000;
+	private static final int UNCLAMP_TIMEOUT = 10000;
+	private static final int PUT_ALLOWED_TIMEOUT = 10000;
+	private static final int START_CYCLE_TIMEOUT = 10000;
+	// TODO provide check method that does not need timeout?
+	private static final int CYCLE_FINISHED_TIMEOUT = Integer.MAX_VALUE;
+	
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
 		super(id);
 		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection);
@@ -45,14 +49,36 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	@Override
 	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException {
-		// TODO Auto-generated method stub
-		
+		// check first workarea is selected 
+		if (startCylusSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
+			int command = 0;
+			command = command | CNCMachineConstants.IPC_CYCLESTART_WA1_REQUEST;
+			
+			int registers[] = {command};
+			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
+			
+			// check put is prepared
+			boolean cycleStartReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
+			if (!cycleStartReady) {
+				throw new DeviceActionException("Machine could not prepare for pick");
+			} else {
+				logger.info("Cycle started!");
+				// we now wait for pick requested
+				boolean cycleFinished = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_PICK_WA1_REQUESTED, CYCLE_FINISHED_TIMEOUT);
+				if (cycleFinished) {
+					return;
+				} else {
+					throw new DeviceActionException("Timeout when waiting for machine to start cyclus");
+				}
+			}
+		} else {
+			throw new IllegalArgumentException("Wrong workarea, should be: " + getWorkAreas().get(0).getId() + " but got: " + startCylusSettings.getWorkArea().getId());
+		}
 	}
 
+	// this is not taken into account for now
 	@Override
 	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -78,7 +104,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			}
 			
 		} else {
-			throw new IllegalArgumentException("I only have one workarea!");
+			throw new IllegalArgumentException("Wrong workarea, should be: " + getWorkAreas().get(0).getId() + " but got: " + pickSettings.getWorkArea().getId());
 		}
 	}
 
@@ -97,11 +123,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			
 			int registers[] = {command, cncTask};
 			
-			logger.info("Writing request for IPC_PUT: " + command + " - " + cncTask);
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
-			logger.info("Wrote request");
 			
-			logger.info("About to check if put is prepared");
 			// check put is prepared
 			boolean putReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
 			if (!putReady) {
@@ -116,12 +139,78 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
+	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException {
+		// check first workarea is selected 
+		if (pickSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
+			int command = 0;
+			command = command | CNCMachineConstants.IPC_UNCLAMP_WA1_RQST;
+			
+			int registers[] = {command};
+			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
+			
+			boolean clampReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_UNCLAMP_WA1_READY, UNCLAMP_TIMEOUT);
+			if (!clampReady) {
+				throw new DeviceActionException("Could not open clamp");
+			} else {
+				logger.info("closed clamp");
+			}
+			
+		} else {
+			throw new IllegalArgumentException("Wrong workarea, should be: " + getWorkAreas().get(0).getId() + " but got: " + pickSettings.getWorkArea().getId());
+		}
+	}
+
+	@Override
+	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException {
+		// check first workarea is selected 
+		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
+			int command = 0;
+			command = command | CNCMachineConstants.IPC_CLAMP_WA1_REQUEST;
+			
+			int registers[] = {command};
+			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
+			
+			boolean clampReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_CLAMP_WA1_READY, CLAMP_TIMEOUT);
+			if (!clampReady) {
+				throw new DeviceActionException("Could not close clamp");
+			} else {
+				logger.info("closed clamp");
+			}
+			
+		} else {
+			throw new IllegalArgumentException("Wrong workarea, should be: " + getWorkAreas().get(0).getId() + " but got: " + putSettings.getWorkArea().getId());
+		}
+	}
+
+	@Override
+	public boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
+		// check first workarea is selected 
+		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
+			boolean canPut = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_PUT_WA1_ALLOWED, PUT_ALLOWED_TIMEOUT);
+			if (canPut) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			throw new IllegalArgumentException("Wrong workarea, should be: " + getWorkAreas().get(0).getId() + " but got: " + putSettings.getWorkArea().getId());
+		}
+	}
+	
+	// this is not taken into account on the Machine-side for now
+	@Override
+	public boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+		return true;
+	}
+
+	// be aware! this will not be easy! of toch: prepare for pick!!
+	@Override
 	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException {
 		// TODO Auto-generated method stub
 		
 	}
-
-	//TODO these are not taken into account by the machine for now...
+	
+	// these are not taken into account by the machine for now...
 	@Override
 	public void pickFinished(AbstractDevicePickSettings pickSettings) throws CommunicationException {
 	}
@@ -131,31 +220,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException {
 	}
-
-	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	
 	public static class CNCMillingMachinePutSettings extends AbstractCNCMachinePutSettings{
 		public CNCMillingMachinePutSettings(WorkArea workArea) {
