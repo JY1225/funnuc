@@ -185,14 +185,12 @@ public class SocketConnection {
 	
 	public String readString() throws IOException, DisconnectedException {
 		if (isConnected()) {
-			logger.debug("Reading from " + this.toString());
 			try {
 				String msg = in.readLine();
 				if (msg == null) {
 					disconnect();
 					throw new DisconnectedException(this);
 				}
-				logger.info("message: " + msg);
 				return msg;
 			} catch (IOException e) {
 				logger.debug("error while reading from: " + this.toString());
@@ -208,15 +206,12 @@ public class SocketConnection {
 	
 	public char read() throws IOException, DisconnectedException {
 		if (isConnected()) {
-			logger.debug("Reading from " + this.toString());
 			try {
 		      int b = in.read();
-		    //  logger.info("read: " + b);
 		      if (b < 0) {
 		    	  disconnect();
 		    	  throw new IOException("Data truncated");
 			   } else {
-				   logger.debug("Read character: " + (char) b);
 			   }
 			   return (char) b;
 			} catch (IOException e) {

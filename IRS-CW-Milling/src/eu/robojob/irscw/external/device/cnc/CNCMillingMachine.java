@@ -75,26 +75,32 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException {
 		// check first workarea is selected 
-		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0))) {
+		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			// first WA
 			int command = 0;
-			command = command | CNCMachineConstants.IPC_PICK_WA1_RQST;
+			command = command | CNCMachineConstants.IPC_PUT_WA1_REQUEST;
 			
 			// with this kind of machines, the work-area stays the same, so the WA (clamp) of the finished product is the same as that of the raw
 			int cncTask = 0;
 			cncTask = cncTask | CNCMachineConstants.WA1_CNC_PROCESS;
 			
 			int registers[] = {command, cncTask};
-			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 			
+			logger.info("Writing request for IPC_PICK: " + command + " - " + cncTask);
+			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
+			logger.info("Wrote request");
+			
+			logger.info("About to check is put is prepared");
 			// check put is prepared
-			boolean putReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_PUT_WA1_ALLOWED, PREPARE_PUT_TIMEOUT);
+			boolean putReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
 			if (!putReady) {
 				throw new DeviceActionException("Machine could not prepare for put");
+			} else {
+				logger.info("put is prepared!");
 			}
 					
 		} else {
-			throw new IllegalArgumentException("I only have one workarea!");
+			throw new IllegalArgumentException("Wrong workarea, should be: " + getWorkAreas().get(0).getId() + " but got: " + putSettings.getWorkArea().getId());
 		}
 	}
 
@@ -286,5 +292,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public boolean isConnected() {
 		return cncMachineCommunication.isConnected();
+	}
+	
+	public void disconnect() {
+		cncMachineCommunication.disconnect();
 	}
 }

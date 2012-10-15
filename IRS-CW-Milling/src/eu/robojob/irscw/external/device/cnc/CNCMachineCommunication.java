@@ -3,6 +3,8 @@ package eu.robojob.irscw.external.device.cnc;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.communication.DisconnectedException;
 import eu.robojob.irscw.external.communication.ExternalCommunication;
@@ -14,6 +16,8 @@ public class CNCMachineCommunication extends ExternalCommunication {
 	private StringBuffer command;
 	private StringBuffer reply;
 		
+	private static final Logger logger = Logger.getLogger(CNCMachineCommunication.class);
+	
 	public CNCMachineCommunication(SocketConnection socketConnection) {
 		super(socketConnection);
 		this.command = new StringBuffer();
@@ -107,6 +111,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 						values.add(Character.getNumericValue(character));
 					}
 					if (values.size() == amount) {
+						logger.info("read values: " + values);
 						return values;
 					}
 				}
@@ -153,11 +158,11 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		List<Integer> readRegisters;
 		boolean timeout = false;
 		while (!timeout) {
+			logger.info("checking again regiser value: " + System.currentTimeMillis() + " - " + currentTime);
 			if (System.currentTimeMillis() - currentTime >= waitTimeout) {
+				logger.error("time out!");
 				timeout = true;
 				break;
-			} else {
-				currentTime = System.currentTimeMillis();
 			}
 			readRegisters = readRegisters(registerNumber, 1);
 			if ((readRegisters.get(0) & bitPattern) == bitPattern) {
