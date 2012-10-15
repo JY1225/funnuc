@@ -25,12 +25,12 @@ public class ExternalCommunication {
 		extCommThread.disconnectAndStop();
 	}
 	
-	public boolean hasCharacter() {
-		return extCommThread.hasNextCharacter();
+	public boolean hasMessage() {
+		return extCommThread.hasNextMessage();
 	}
 	
-	public int getNextCharacter() {
-		return extCommThread.getNextCharacter();
+	public String getNextMessage() {
+		return extCommThread.getNextMessage();
 	}
 	
 	public void writeMessage(String message) throws DisconnectedException {

@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
-import eu.robojob.irscw.external.communication.ExternalCommunication;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.Clamping;
@@ -26,8 +25,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	
 	private static Logger logger = Logger.getLogger(AbstractProcessingDevice.class);
 	
-	private static final int READ_TIMEOUT = 10000;
 	private static final int PREPARE_PUT_TIMEOUT = 30000;
+	private static final int PREPARE_PICK_TIMEOUT = 30000;
 		
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
 		super(id);
@@ -57,15 +56,26 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException {
 		// check first workarea is selected 
-		if (pickSettings.getWorkArea().getId().equals(getWorkAreas().get(0))) {
+		if (pickSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			// first WA
 			int command = 0;
 			command = command | CNCMachineConstants.IPC_PICK_WA1_RQST;
 			
 			int registers[] = {command};
+			logger.info("Writing request for IPC_PICK: " + command);
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
+			logger.info("Wrote request");
+
+			logger.info("About to check if pick is prepared");
+			// check put is prepared
+			boolean pickReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_PICK_WA1_READY, PREPARE_PICK_TIMEOUT);
+			if (!pickReady) {
+				throw new DeviceActionException("Machine could not prepare for pick");
+			} else {
+				logger.info("pick is prepared!");
+			}
 			
 		} else {
 			throw new IllegalArgumentException("I only have one workarea!");
@@ -81,16 +91,17 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			command = command | CNCMachineConstants.IPC_PUT_WA1_REQUEST;
 			
 			// with this kind of machines, the work-area stays the same, so the WA (clamp) of the finished product is the same as that of the raw
+			// TODO not sure if this is necessary here!
 			int cncTask = 0;
 			cncTask = cncTask | CNCMachineConstants.WA1_CNC_PROCESS;
 			
 			int registers[] = {command, cncTask};
 			
-			logger.info("Writing request for IPC_PICK: " + command + " - " + cncTask);
+			logger.info("Writing request for IPC_PUT: " + command + " - " + cncTask);
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 			logger.info("Wrote request");
 			
-			logger.info("About to check is put is prepared");
+			logger.info("About to check if put is prepared");
 			// check put is prepared
 			boolean putReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
 			if (!putReady) {

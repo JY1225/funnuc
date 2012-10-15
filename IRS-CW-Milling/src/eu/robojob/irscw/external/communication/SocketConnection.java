@@ -212,6 +212,7 @@ public class SocketConnection {
 		    	  disconnect();
 		    	  throw new IOException("Data truncated");
 			   } else {
+					logger.info("read character: " + b);
 			   }
 			   return (char) b;
 			} catch (IOException e) {
@@ -221,6 +222,37 @@ public class SocketConnection {
 				logger.error(e);
 				throw e;
 			}
+		} else {
+			throw new DisconnectedException(this);
+		}
+	}
+	
+	
+	
+	public String readMessage() throws IOException, DisconnectedException {
+		if (isConnected()) {
+			String message = "";
+			try {
+			      int b = in.read();
+			      if (b < 0) {
+			    	  disconnect();
+			    	  throw new IOException("Data truncated");
+				   } else {
+						message = message + (char) b;
+						while (in.ready()) {
+							b = in.read();
+							message = message + (char) b;
+						}
+						logger.info("read message: " + message);
+						return message;
+				   }
+				} catch (IOException e) {
+					logger.error("error while reading from: " + this.toString());
+					connected = false;
+					disconnect();
+					logger.error(e);
+					throw e;
+				}
 		} else {
 			throw new DisconnectedException(this);
 		}

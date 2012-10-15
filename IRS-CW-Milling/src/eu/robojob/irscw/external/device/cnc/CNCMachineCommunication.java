@@ -26,7 +26,6 @@ public class CNCMachineCommunication extends ExternalCommunication {
 
 	public void writeRegisters(int startingRegisterNr, int timeout, int[] values) throws CommunicationException, DisconnectedException {
 		command = new StringBuffer();
-		reply = new StringBuffer();
 		command.append('W');
 		command.append('W');
 		if (startingRegisterNr >= 100) {
@@ -52,11 +51,11 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		int waitedTime = 0;
 		extCommThread.writeString(command.toString());
 		do {
-			while (extCommThread.hasNextCharacter()) {
-				reply.append(extCommThread.getNextCharacter());
-			}
-			if (reply.toString().equals(command.toString())) {
-				return;
+			if (extCommThread.hasNextMessage()) {
+				String message = extCommThread.getNextMessage();
+				if (message.equals(command.toString())) {
+					return;
+				}
 			}
 			int timeToWait = READ_RETRY_INTERVAL;
 			if (timeout - waitedTime < READ_RETRY_INTERVAL) {
@@ -78,7 +77,6 @@ public class CNCMachineCommunication extends ExternalCommunication {
 	
 	public List<Integer> readRegisters(int startingRegisterNr, int amount, int timeout) throws CommunicationException, DisconnectedException{
 		command = new StringBuffer();
-		reply = new StringBuffer();
 		command.append('W');
 		command.append('R');
 		if (startingRegisterNr >= 100) {
@@ -99,25 +97,10 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		extCommThread.clearIncommingCharacterBuffer();
 		int waitedTime = 0;
 		extCommThread.writeString(command.toString());
-		List<Integer> values = new ArrayList<Integer>();
-		boolean commandReached = false;
 		do {
-			char character = Character.UNASSIGNED;
-			while (extCommThread.hasNextCharacter()) {
-				character = extCommThread.getNextCharacter();
-				reply.append(character);
-				if (commandReached) {
-					if ((character != ';') && (character != Character.UNASSIGNED)) {
-						values.add(Character.getNumericValue(character));
-					}
-					if (values.size() == amount) {
-						logger.info("read values: " + values);
-						return values;
-					}
-				}
-				if (reply.toString().startsWith(command.toString())) {
-					commandReached = true;
-				}
+			if (extCommThread.hasNextMessage()) {
+				String response = extCommThread.getNextMessage();
+				return parseResult(response, command.toString());
 			}
 			int timeToWait = READ_RETRY_INTERVAL;
 			if (timeout - waitedTime < READ_RETRY_INTERVAL) {
@@ -131,6 +114,19 @@ public class CNCMachineCommunication extends ExternalCommunication {
 			waitedTime += timeToWait;
 		} while (waitedTime <= timeout);
 		throw new ResponseTimedOutException(this);
+	}
+	
+	public List<Integer> parseResult(String message, String command) {
+		List<Integer> results = new ArrayList<Integer>();
+		if (!message.startsWith(command)) {
+			throw new IllegalArgumentException("message does not start with command");
+		}
+		message = message.substring(command.length());
+		String[] values = message.split(";");
+		for (String value : values) {
+			results.add(Integer.valueOf(value));
+		}
+		return results;
 	}
 	
 	public boolean checkRegisterValue(int registerNumber, int value, int waitTimeout) throws CommunicationException, DisconnectedException {

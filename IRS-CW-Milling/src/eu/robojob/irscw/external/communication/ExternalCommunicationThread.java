@@ -20,11 +20,11 @@ public class ExternalCommunicationThread extends Thread {
 	
 	private boolean alive;
 	
-	private LinkedList<Character> incommingCharacters;
+	private LinkedList<String> incommingMessages;
 	
 	public ExternalCommunicationThread(SocketConnection socketConnection) {
 		this.socketConnection = socketConnection;
-		this.incommingCharacters = new LinkedList<Character>();
+		this.incommingMessages = new LinkedList<String>();
 		this.alive = true;
 		if (socketConnection == null) {
 			throw new IllegalArgumentException("SocketConnection must be provided");
@@ -55,8 +55,8 @@ public class ExternalCommunicationThread extends Thread {
 				// this thread should just try reading messages and add these to the reading buffer, will also serve as 
 				// check for connection-liveness
 				try {
-					char icommingChar = socketConnection.read();
-					putMessage(icommingChar);
+					String icommingMessage = socketConnection.readMessage();
+					putMessage(icommingMessage);
 				} catch (IOException e) {
 					if (alive) {
 						logger.error("Error while reading: " + e);
@@ -72,28 +72,28 @@ public class ExternalCommunicationThread extends Thread {
 		logger.info(toString() + " ended...");
 	}
 	
-	public synchronized boolean hasNextCharacter() {
-		if (incommingCharacters.size() > 0) {
+	public synchronized boolean hasNextMessage() {
+		if (incommingMessages.size() > 0) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
-	public synchronized char getNextCharacter() {
-		if (hasNextCharacter()) {
-			return incommingCharacters.removeFirst();
+	public synchronized String getNextMessage() {
+		if (hasNextMessage()) {
+			return incommingMessages.removeFirst();
 		} else {
 			throw new IllegalStateException("No messages in queue");
 		}
 	}
 	
 	public synchronized void clearIncommingCharacterBuffer() {
-		incommingCharacters.clear();
+		incommingMessages.clear();
 	}
 	
-	private synchronized void putMessage(char character) {
-		incommingCharacters.addLast(character);
+	private synchronized void putMessage(String message) {
+		incommingMessages.addLast(message);
 	}
 	
 	public void writeMessage(String message) throws DisconnectedException {
