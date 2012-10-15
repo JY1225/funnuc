@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device.exception;
+package eu.robojob.irscw.external.device.stacking;
 
 public class IncorrectWorkPieceDataException extends Exception {
 

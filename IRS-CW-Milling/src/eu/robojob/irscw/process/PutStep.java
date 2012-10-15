@@ -7,6 +7,7 @@ import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
+import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
 import eu.robojob.irscw.external.robot.RobotActionException;
@@ -33,7 +34,7 @@ public class PutStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public void executeStep() throws CommunicationException, RobotActionException {
+	public void executeStep() throws CommunicationException, RobotActionException, DeviceActionException {
 		// check if the parent process has locked the devices to be used
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
@@ -70,7 +71,7 @@ public class PutStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public void prepareForTeaching() throws CommunicationException, RobotActionException {
+	public void prepareForTeaching() throws CommunicationException, RobotActionException, DeviceActionException {
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
@@ -86,7 +87,7 @@ public class PutStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public void teachingFinished() throws CommunicationException, RobotActionException {
+	public void teachingFinished() throws CommunicationException, RobotActionException, DeviceActionException {
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
@@ -110,7 +111,7 @@ public class PutStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public void finalize() throws CommunicationException {
+	public void finalize() throws CommunicationException, DeviceActionException {
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {

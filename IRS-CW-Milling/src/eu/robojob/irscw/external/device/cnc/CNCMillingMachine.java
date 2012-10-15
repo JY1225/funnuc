@@ -27,6 +27,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static Logger logger = Logger.getLogger(AbstractProcessingDevice.class);
 	
 	private static final int READ_TIMEOUT = 10000;
+	private static final int PREPARE_PUT_TIMEOUT = 30000;
 		
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
 		super(id);
@@ -72,7 +73,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
+	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0))) {
 			// first WA
@@ -86,7 +87,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			int registers[] = {command, cncTask};
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 			
-			// TODO: check put is prepared
+			// check put is prepared
+			boolean putReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_PUT_WA1_ALLOWED, PREPARE_PUT_TIMEOUT);
+			if (!putReady) {
+				throw new DeviceActionException("Machine could not prepare for put");
+			}
 					
 		} else {
 			throw new IllegalArgumentException("I only have one workarea!");

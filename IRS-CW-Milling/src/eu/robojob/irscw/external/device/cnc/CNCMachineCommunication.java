@@ -128,6 +128,45 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		throw new ResponseTimedOutException(this);
 	}
 	
+	public boolean checkRegisterValue(int registerNumber, int value, int waitTimeout) throws CommunicationException, DisconnectedException {
+		long currentTime = System.currentTimeMillis();
+		List<Integer> readRegisters;
+		boolean timeout = false;
+		while (!timeout) {
+			if (System.currentTimeMillis() - currentTime >= waitTimeout) {
+				timeout = true;
+				break;
+			} else {
+				currentTime = System.currentTimeMillis();
+			}
+			readRegisters = readRegisters(registerNumber, 1);
+			if (readRegisters.get(0) == value) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	// TODO test this method
+	public boolean checkRegisterValueBitPattern(int registerNumber, int bitPattern, int waitTimeout) throws CommunicationException, DisconnectedException {
+		long currentTime = System.currentTimeMillis();
+		List<Integer> readRegisters;
+		boolean timeout = false;
+		while (!timeout) {
+			if (System.currentTimeMillis() - currentTime >= waitTimeout) {
+				timeout = true;
+				break;
+			} else {
+				currentTime = System.currentTimeMillis();
+			}
+			readRegisters = readRegisters(registerNumber, 1);
+			if ((readRegisters.get(0) & bitPattern) == bitPattern) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public List<Integer> readRegisters(int startingRegisterNr, int amount) throws CommunicationException, DisconnectedException {
 		return readRegisters(startingRegisterNr, amount, getDefaultWaitTimeout());
 	}

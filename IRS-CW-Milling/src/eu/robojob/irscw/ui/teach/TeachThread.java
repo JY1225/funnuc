@@ -72,13 +72,14 @@ public class TeachThread extends Thread {
 				}
 			});
 		} catch(Exception e) {
+			//TODO better handling of these exceptions (communication, robot, device, ...)
 			logger.error(e);
 			e.printStackTrace();
 			notifyException(e);
 		}
 	}
 	
-	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException {
+	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException {
 		// notify presenter this pick step is in progress 
 		notifyStepInProgress(pickStep);
 		this.lastPickStep = pickStep;
@@ -107,7 +108,7 @@ public class TeachThread extends Thread {
 		notifyStepFinished(pickStep);
 	}
 	
-	private void handlePut(final PutStep putStep) throws CommunicationException, RobotActionException {
+	private void handlePut(final PutStep putStep) throws CommunicationException, RobotActionException, DeviceActionException {
 		// notify presenter this pick step is in progress 
 		notifyStepInProgress(putStep);
 		if (putStep.needsTeaching()) {
