@@ -29,7 +29,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int UNCLAMP_TIMEOUT = 10000;
 	private static final int PUT_ALLOWED_TIMEOUT = 10000;
 	private static final int START_CYCLE_TIMEOUT = 10000;
-	// TODO provide check method that does not need timeout?
 	private static final int CYCLE_FINISHED_TIMEOUT = Integer.MAX_VALUE;
 	
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
@@ -42,6 +41,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection);
 	}
 	
+	//TODO!
 	@Override
 	public String getStatus() throws CommunicationException {
 		return null;

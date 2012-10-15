@@ -48,6 +48,7 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void pick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
+		
 	}
 
 	@Override

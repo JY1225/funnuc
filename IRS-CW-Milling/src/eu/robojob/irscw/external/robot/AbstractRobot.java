@@ -16,6 +16,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	private Set<GripperBody> possibleGripperBodies;
 	
+	private int speed;
+	
 	public AbstractRobot(String id, Set<GripperBody> possibleGripperBodies, GripperBody activeGripperBody) {
 		super(id);
 		if (possibleGripperBodies != null) {
@@ -26,10 +28,22 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		if (activeGripperBody != null) {
 			setActiveGripperBody(activeGripperBody);
 		}
+		this.speed = 50;
 	}
 	
 	public AbstractRobot(String id) {
 		this(id, null, null);
+	}
+	
+	public void setSpeed(int speed) {
+		if ((speed < 0) || (speed > 100)) {
+			throw new IllegalArgumentException("Illegal speed value: " + speed + ", should be between 0 and 100");
+		}
+		this.speed = speed;
+	}
+	
+	public int getSpeed() {
+		return speed;
 	}
 	
 	public void setActiveGripperBody(GripperBody body) {
