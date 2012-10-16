@@ -57,7 +57,7 @@ public class ListeningThread extends Thread {
 				try {
 					if (connection.isConnected()) {
 						logger.info("about to read");
-						inputString = connection.readString();
+						inputString = connection.readMessage();
 						logger.info("read string: " + inputString);
 						logRead(inputString);
 					} else {
@@ -98,7 +98,7 @@ public class ListeningThread extends Thread {
 		logger.error(e);
 	}
 	
-	private void logMessage(final String message) {
+	private synchronized void logMessage(final String message) {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
