@@ -20,12 +20,8 @@ import eu.robojob.irscw.workpiece.WorkPiece;
 public class FanucRobot extends AbstractRobot {
 
 	private ExternalCommunication externalCommunication;
-	
-	private static final String POSITION = "POSITION";
-	
+		
 	private static Logger logger = Logger.getLogger(FanucRobot.class);
-
-	private static final int READ_TIMEOUT = 10000;
 	
 	public FanucRobot(String id, Set<GripperBody> gripperBodies, GripperBody gripperBody, SocketConnection socketConnection) {
 		super(id, gripperBodies, gripperBody);

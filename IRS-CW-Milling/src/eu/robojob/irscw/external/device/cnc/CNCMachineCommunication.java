@@ -14,14 +14,12 @@ import eu.robojob.irscw.external.communication.SocketConnection;
 public class CNCMachineCommunication extends ExternalCommunication {
 
 	private StringBuffer command;
-	private StringBuffer reply;
 		
 	private static final Logger logger = Logger.getLogger(CNCMachineCommunication.class);
 	
 	public CNCMachineCommunication(SocketConnection socketConnection) {
 		super(socketConnection);
 		this.command = new StringBuffer();
-		this.reply = new StringBuffer();
 	}
 
 	public void writeRegisters(int startingRegisterNr, int timeout, int[] values) throws CommunicationException, DisconnectedException {
