@@ -60,4 +60,22 @@ public class FanucRobotConstants {
 	public static final int COMMAND_SET_SPEED					=	67;
 	public static final int COMMAND_TO_TRANSPORT_POINT			=	68;
 	
+	// RESPONSE IDS
+	public static final int RESPONSE_ASK_STATUS					=	120;
+	public static final int RESPONSE_WRITE_SERVICE_GRIPPER		=	140;
+	public static final int RESPONSE_WRITE_SERVICE_HANDLING		=	141;
+	public static final int RESPONSE_WRITE_SERVICE_POINT		=	142;
+	public static final int RESPONSE_WRITE_REGISTER				=	143;
+	public static final int RESPONSE_WIRTE_POSITION_REGISER		=	144;
+	public static final int RESPONSE_WRITE_USERFRAME			=	145;
+	public static final int RESPONSE_SET_PERMISSIONS			=	150;
+	public static final int RESPONSE_START_SERVICE				=	151;
+	public static final int RESPONSE_RESTART_PROGRAM			=	160;
+	public static final int RESPONSE_RESET						=	161;
+	public static final int RESPONSE_ABORT						=	162;
+	public static final int RESPONSE_TO_HOME					=	165;
+	public static final int RESPONSETO_JAW_CHANGE				=	166;
+	public static final int RESPONSE_SET_SPEED					=	167;
+	public static final int RESPONSE_TO_TRANSPORT_POINT			=	168;
+	
 }
