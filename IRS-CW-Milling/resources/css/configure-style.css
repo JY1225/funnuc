@@ -186,11 +186,20 @@
 .normal-stud {
 	-fx-fill: yellow;
 	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 0, 2);
+	-fx-stroke: rgba(0, 0, 0, 0.4);
+	-fx-stroke-width: 1px;
 }
 
 .horizontal-stud {
 	-fx-fill: red;
 	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 0, 2);
+}
+
+.corner-shape {
+	-fx-fill: orange;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 0, 2);
+	-fx-stroke: rgba(0, 0, 0, 0.4);
+	-fx-stroke-width: 1px;
 }
 
 .workpiece {
@@ -211,7 +220,7 @@
 }
 
 .corner-stud-lines {
-	-fx-stroke: yellow;
+	-fx-stroke: red;
 	-fx-stroke-line-cap: butt;
 	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 0, 2);
 }

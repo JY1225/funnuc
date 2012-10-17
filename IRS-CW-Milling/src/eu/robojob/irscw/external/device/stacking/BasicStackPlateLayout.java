@@ -73,11 +73,11 @@ public class BasicStackPlateLayout {
 	}
 
 	public float getHorizontalStudLength() {
-		return (float) (1.3 * horizontalHoleDistance);
+		return (float) (64.5);
 	}
 	
 	public float getHorizontalStudWidth() {
-		return (float) (0.5 * verticalHoleDistance);
+		return (float) (48);
 	}
 	
 	/**
