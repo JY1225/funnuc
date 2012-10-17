@@ -211,13 +211,14 @@ public class BasicStackPlateLayout {
 			for (int j = 0; j < amountHorizontal; j++) {
 				float horizontalPos = horizontalStudIndex * horizontalHoleDistance + studDiameter/2 + workPieceDimensions.getLength()/2 + horizontalPadding;
 				
-				int leftVerticalExtraIndex = (int) Math.floor(amountOfVerticalStudsOnePiece / 2);
+				int leftVerticalExtraIndex = (int) Math.ceil(amountOfVerticalStudsOnePiece / 2);
 				int rightHorizontalExtraIndex = amountOfHorizontalStudsOnePiece - 1;
 				
 				if (remainingLength <= MIN_OVERLAP_DISTANCE) {
 					rightHorizontalExtraIndex--;
 				}
-				if (remainingWidth <= MIN_OVERLAP_DISTANCE) {
+				// not necessary as we divide by 2
+				if ((remainingWidth <= MIN_OVERLAP_DISTANCE) && (leftVerticalExtraIndex == amountOfVerticalStudsOnePiece -1)) {
 					leftVerticalExtraIndex--;
 				}
 				
@@ -231,6 +232,11 @@ public class BasicStackPlateLayout {
 					StudPosition studPosition = new StudPosition(horizontalStudIndex, verticalStudIndex, studPositions[verticalStudIndex][horizontalStudIndex].getCenterPosition(), StudType.HORIZONTAL_CORNER);
 					stackingPosition.addstud(studPosition);
 					corner = true;
+					// we can still add the vertical stud!
+					if (leftVerticalExtraIndex > 0) {
+						StudPosition studPosition2 = new StudPosition(horizontalStudIndex, verticalStudIndex + leftVerticalExtraIndex, studPositions[verticalStudIndex + leftVerticalExtraIndex][horizontalStudIndex].getCenterPosition(), StudType.NORMAL); 
+						stackingPosition.addstud(studPosition2);
+					}
 				} else {
 					StudPosition studPosition1 = new StudPosition(horizontalStudIndex, verticalStudIndex+leftVerticalExtraIndex, studPositions[verticalStudIndex+leftVerticalExtraIndex][horizontalStudIndex].getCenterPosition(), StudType.NORMAL);
 					StudPosition studPosition2 = new StudPosition(horizontalStudIndex + 1, verticalStudIndex, studPositions[verticalStudIndex][horizontalStudIndex + 1].getCenterPosition(), StudType.NORMAL);
