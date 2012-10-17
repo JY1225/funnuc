@@ -36,17 +36,17 @@ public class ExternalCommunicationThread extends Thread {
 		logger.info(toString() + " started...");
 		while(alive) {
 			if (!socketConnection.isConnected()) {
-				logger.info(socketConnection + " offline, trying to connect...");
+				//logger.info(socketConnection + " offline, trying to connect...");
 				try {
 					socketConnection.connect();
 				} catch (IOException e) {
-					logger.error("Could not connect : " + e);
+					//logger.error("Could not connect : " + e);
 					// wait CONNECTION_RETRY_INTERVAL before re-trying
 					try {
 						Thread.sleep(CONNECTION_RETRY_INTERVAL);
 					} catch (InterruptedException e1) {
 						// we got interrupted, so let's just stop executing!
-						logger.info("Waiting for re-trying connection interrupted, so stopping thread...");
+						//logger.info("Waiting for re-trying connection interrupted, so stopping thread...");
 						alive = false;
 					}
 				}

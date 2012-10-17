@@ -94,7 +94,7 @@ public class SocketConnection {
 	
 	// TODO refactor!
 	public void disconnect() {
-		logger.info("Disconnecting: " + this.toString());
+		//logger.info("Disconnecting: " + this.toString());
 		try {
 			if (serverSocket != null) {
 				serverSocket.close();
@@ -126,7 +126,7 @@ public class SocketConnection {
 				connected = false;
 			}
 		}
-		logger.info("Disconnected: " + toString());
+		//logger.info("Disconnected: " + toString());
 	}
 	
 	public String getName() {

@@ -193,6 +193,27 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 					circle2.getStyleClass().add("normal-stud");
 					studs.add(circle2);
 					group.getChildren().add(circle2);
+				} else if (pos.getStudType() == StudType.TILTED_CORNER) {
+					SVGPath corner = new SVGPath();
+					corner.setContent(CORNER_PATH);
+					corner.getStyleClass().add("corner-shape");
+					Rotate rt = new Rotate(-45, 7.5, 15.751);
+					Translate tr = new Translate();
+					tr.setX(pos.getCenterPosition().getX()-7.5);
+					tr.setY(pos.getCenterPosition().getY()-40.5+24.749);
+					corner.getTransforms().addAll(tr);
+					corner.getTransforms().add(rt);
+					group.getChildren().add(corner);
+					// add first stud
+					Circle circle = new Circle(pos.getCenterPosition().getX(), pos.getCenterPosition().getY(), basicStackPlateLayout.getStudDiameter()/2);
+					circle.getStyleClass().add("normal-stud");
+					studs.add(circle);
+					group.getChildren().add(circle);
+					// add second stud
+					Circle circle2 = new Circle(pos.getCenterPosition().getX() + basicStackPlateLayout.getHorizontalHoleDistance(), pos.getCenterPosition().getY(), basicStackPlateLayout.getStudDiameter()/2);
+					circle2.getStyleClass().add("normal-stud");
+					studs.add(circle2);
+					group.getChildren().add(circle2);
 				}
 			}
 		}
