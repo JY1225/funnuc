@@ -90,7 +90,7 @@ public class BasicStackPlateLayout {
 		stackingPositions.clear();
 		clearStuds();
 		
-		// Todo: add upper limits
+		//TODO add upper limits
 		WorkPieceDimensions dimensions = rawWorkPiece.getDimensions();
 		if (!((dimensions != null) && (dimensions.getWidth() > 0) && (dimensions.getLength() > 0) && (dimensions.getHeight() > 0))) {
 			throw new IncorrectWorkPieceDataException();
@@ -108,14 +108,14 @@ public class BasicStackPlateLayout {
 		}
 		
 		this.orientation = orientation;
-
 	}
 	
 	
 	private void configureHorizontalStackingPositions(WorkPieceDimensions dimensions) {
 		
+		// STARTING WITH HORIZONTAL CALCULATIONS
 		float remainingLength = dimensions.getLength();
-		// initially two studs are used
+		// initially two studs are used (even if corner is needed!)
 		int amountOfHorizontalStudsOnePiece = 2;
 		
 		// the piece is moved studDiameter/2 from the center of its left-most stud (since it's aligned against it)
@@ -153,8 +153,15 @@ public class BasicStackPlateLayout {
 		float spaceLeft = remainingDistanceBetweenHoles + horizontalPadding + overFlowPercentage*dimensions.getLength() - studDiameter/2;
 		// if enough space if left (taking into account the overflowPercentage), an extra piece can be placed
 		if (spaceLeft >= dimensions.getLength()) {
-			amountHorizontal++;
+			// add an extra piece, note minimum two stud-holes should be available:
+			if (horizontalHoleAmount % amountOfHorizontalStudsOnePiece >= 2) {
+				// also the space over the right-most stud should be smaller than a third of the length
+				if ((dimensions.getLength() - remainingDistanceBetweenHoles)/dimensions.getLength() <= 0.4) {
+					amountHorizontal++;
+				}
+			}
 		} else if ((spaceLeft < remainingLength) && (remainingDistanceBetweenHoles == 0)) {
+			// the last piece would come over the edge
 			amountHorizontal--;
 		}
 				
@@ -164,6 +171,7 @@ public class BasicStackPlateLayout {
 			remainingWidth -= verticalHoleDistance;
 			amountOfVerticalStudsOnePiece ++;
 		}
+		
 		remainingDistance = verticalHoleDistance - remainingWidth;
 		// note: whole studDiameter here, because we measure from top of studs (see documentation)
 		if (remainingDistance - studDiameter < interferenceDistance) {
@@ -257,17 +265,6 @@ public class BasicStackPlateLayout {
 		float d = (float) ((dimensions.getWidth() / (Math.sqrt(2)))  - horizontalHoleDistance/2);
 		//float e = (float) (horizontalHoleDistance/2 - studDiameter / (2 * Math.sqrt(2)));
 		float dright = (float) ((dimensions.getLength() / (Math.sqrt(2))) - horizontalHoleDistance/2);
-		
-		if (dimensions.getWidth() - MIN_OVERLAP_DISTANCE < Math.sqrt(2) * (a+b)) {
-			// stud left to bottom-corner can't be reached
-			throw new IncorrectWorkPieceDataException("Workpiece-width is too small");
-		}
-		
-		double temp = (2*horizontalHoleDistance)*(2 * horizontalHoleDistance) + (verticalHoleDistance*verticalHoleDistance);
-		if (dimensions.getLength() - MIN_OVERLAP_DISTANCE - (a+b)/(Math.sqrt(2)) < Math.sqrt(temp)) {
-			// no upper-stud can be reached
-			throw new IncorrectWorkPieceDataException("Workpiece-length is too small");
-		}
 		
 		int amountOfHorizontalStudsOnePieceLeft = 1;
 		int amountOfHorizontalStudsOnePieceRight = 1;
