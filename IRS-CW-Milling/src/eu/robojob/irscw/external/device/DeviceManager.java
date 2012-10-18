@@ -46,9 +46,9 @@ public class DeviceManager {
 		Clamping clamping1 = new Clamping("Clamping 1", new Coordinates(10, 0, 5, 0, 0, 0), new Coordinates(5, 5, 5, 0, 0, 0), null);
 		Clamping clamping2 = new Clamping("Clamping 2", new Coordinates(15, 10, 5, 0, 0, 0), new Coordinates(5, 5, 5, 0, 0, 0), null);
 		Clamping clamping3 = new Clamping("Clamping 3", new Coordinates(5, 20, 5, 0, 0, 0), new Coordinates(5, 5, 5, 0, 0, 0), null);
-		UserFrame uf1 = new UserFrame(1, 20);
+		UserFrame uf3 = new UserFrame(3, 20);
 		List<WorkArea> workAreas = new ArrayList<WorkArea>();
-		WorkArea workArea1 = new WorkArea("Mazak VRX Main", uf1);
+		WorkArea workArea1 = new WorkArea("Mazak VRX Main", uf3);
 		workArea1.addClamping(clamping1);
 		workArea1.addClamping(clamping2);
 		workArea1.addClamping(clamping3);
@@ -84,9 +84,9 @@ public class DeviceManager {
 		preProcessingDevices.put(embossing1.getId(), embossing1);*/
 		
 		// add Basic Stacker
-		UserFrame uf5 = new UserFrame(5, 20);
+		UserFrame uf1 = new UserFrame(1, 20);
 		List<WorkArea> workAreas4 = new ArrayList<WorkArea>();
-		WorkArea workArea5 = new WorkArea("IRS M Basic", uf5);
+		WorkArea workArea5 = new WorkArea("IRS M Basic", uf1);
 		workAreas4.add(workArea5);
 		Zone zone4 = new Zone("Zone 4", workAreas4);
 		BasicStackPlateLayout basicStackPlateLayout = new BasicStackPlateLayout(27, 7, 10f, 15f, 45f, 26f, 35f, 5f, 0.35f);

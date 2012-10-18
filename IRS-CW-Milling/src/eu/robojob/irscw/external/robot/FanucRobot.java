@@ -10,22 +10,28 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
-import eu.robojob.irscw.external.communication.ExternalCommunication;
+import eu.robojob.irscw.external.communication.DisconnectedException;
+import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
 import eu.robojob.irscw.workpiece.WorkPiece;
+import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class FanucRobot extends AbstractRobot {
 
-	private ExternalCommunication externalCommunication;
+	private FanucRobotCommunication fanucRobotCommunication;
+	
+	private static final int WRITE_VALUES_TIMEOUT = 5000;
+	private static final int PICK_TO_LOCATION_TIMEOUT = 10000;
+	private static final int PICK_FINISH_TIMEOUT = 10000;
 		
 	private static Logger logger = Logger.getLogger(FanucRobot.class);
 	
 	public FanucRobot(String id, Set<GripperBody> gripperBodies, GripperBody gripperBody, SocketConnection socketConnection) {
 		super(id, gripperBodies, gripperBody);
-		this.externalCommunication = new ExternalCommunication(socketConnection);
+		this.fanucRobotCommunication = new FanucRobotCommunication(socketConnection);
 	}
 	
 	public FanucRobot(String id, SocketConnection socketConnection) {
@@ -41,12 +47,161 @@ public class FanucRobot extends AbstractRobot {
 	public Coordinates getPosition() throws CommunicationException, RobotActionException {
 		return null;
 	}
+	
+	public void disconnect() {
+		fanucRobotCommunication.disconnect();
+	}
+	
+	public void restartProgram() throws CommunicationException {
+		// write start service
+		fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_RESTART_PROGRAM, FanucRobotConstants.RESPONSE_RESTART_PROGRAM, WRITE_VALUES_TIMEOUT);
+	}
 
 	@Override
 	public void pick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
+		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;
 		
+		// TODO use default timeouts
+		
+		// write service gripper set
+		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
+		
+		// write service handling set
+		writeServiceHandlingSet();
+		
+		// write service point set
+		writeServicePointSet(fPickSettings.getWorkArea(), fPickSettings.getLocation(), fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions());
+		
+		// write command
+		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK);
+		
+		// write start service
+		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
+		
+		// we now wait for the robot to indicate he moved to its location
+		boolean waitingForRelease = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PICK_RELEASE_REQUEST, PICK_TO_LOCATION_TIMEOUT);
+		
+		if (!waitingForRelease) {
+			logger.info("Troubles!");
+			throw new RobotActionException();
+		} else {
+			logger.info("Robot in place, sending release ACK!");
+			writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
+			logger.info("waiting for pick to finish!");
+			boolean waitingForPickFinished = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PICK_FINISHED, PICK_FINISH_TIMEOUT);
+			if (waitingForPickFinished) {
+				logger.info("Pick finished!");
+				return;
+			} else {
+				throw new RobotActionException();
+			}
+		}
+	}
+	
+	private void writeServiceGripperSet(GripperHead gHead, Gripper gripper, int serviceType) throws DisconnectedException, ResponseTimedOutException {
+		List<String> values = new ArrayList<String>();
+		boolean a = false;
+		if (gHead.getId().equals("A")) {
+			a = true;
+		} else if (gHead.getId().equals("B")) {
+			a = false;
+		} else {
+			throw new IllegalArgumentException("Gripper head id should be 'A' or 'B'.");
+		}
+		// service type ; main grip id ; sub a grip id ; sub b grip id ; grip type ; sub a height ; sub b height ; exchange jaws ; inner/outer gripper type ;
+		values.add("" + FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
+		values.add("0");
+		values.add("1");
+		values.add("2");
+		if (a) {
+			values.add("2");
+		} else {
+			values.add("3");
+		}
+		if (a) {
+			values.add("" + (int) Math.floor(gripper.getHeight()));
+			values.add("0");
+		} else {
+			values.add("0");
+			values.add("" + (int) Math.floor(gripper.getHeight()));
+		}
+		// changing jaws will not be necessary
+		values.add("0");
+		// outer gripper type will be used
+		values.add("1");
+		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_GRIPPER, FanucRobotConstants.RESPONSE_WRITE_SERVICE_GRIPPER, WRITE_VALUES_TIMEOUT, values);
+	}
+	
+	private void writeServiceHandlingSet() throws DisconnectedException, ResponseTimedOutException {
+		List<String> values = new ArrayList<String>();
+		// free after this service ; WP thickness ;  WP Z grip ; grip Z face till front ; dx correction P1 ; dy correction P1 ; dx correction P2 ; dy correction P2 ; dW correction ;
+		//    dP correction ; robot speed ; payload 1 ; payload 2 ; soft float range ; soft float force ; PP mode ; bar move distance
+		values.add("1");
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("50"); // robot speed is set to 50 for now! 
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("" + FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12);
+		values.add("0");
+		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_HANDLING, FanucRobotConstants.RESPONSE_WRITE_SERVICE_HANDLING, WRITE_VALUES_TIMEOUT, values);
+	}
+	
+	private void writeServicePointSet(WorkArea workArea, Coordinates location, Coordinates smoothPoint, WorkPieceDimensions dimensions) throws DisconnectedException, ResponseTimedOutException {
+		List<String> values = new ArrayList<String>();
+		// user frame location ; x offset ; y offset ; z offset ; r offset ; z-safe plane offset ; safety add z ; smooth x ; smooth y ; smooth z ; tangent to/from ; xyz allowed ;
+		// clamp height ; bar break iterations ; bar break main axis ; bar break angle ; bar move length
+		int userFrameId = workArea.getUserFrame().getIdNumber();
+		//UF: stacker = 1; Machine = 3
+		if ((userFrameId != 1) && (userFrameId != 3)) {
+			throw new IllegalArgumentException("Illegal Userframe id");
+		} else {
+			values.add("" + userFrameId);
+		}
+		//TODO check the offsets, for now we take 0
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("" + dimensions.getHeight());
+		// TODO we take 20 as safety add z for now
+		values.add("20");
+		values.add("" + smoothPoint.getX());
+		values.add("" + smoothPoint.getY());
+		values.add("" + smoothPoint.getZ());
+		values.add("0");
+		// we take xyz allowed as xyz for stacker and xy for machine
+		if (userFrameId == 1) {
+			values.add("" + FanucRobotConstants.SERVICE_POINT_XYZ_ALLOWED_XYZ);
+		} else if (userFrameId == 3) {
+			values.add("" + FanucRobotConstants.SERVICE_POINT_XYZ_ALLOWED_XY);
+		} else {
+			throw new IllegalStateException("Should not be here! Illegal Userframe id");
+		}
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_POINT, FanucRobotConstants.RESPONSE_WRITE_SERVICE_POINT, WRITE_VALUES_TIMEOUT, values);
 	}
 
+	private void writeCommand(int permission) throws DisconnectedException, ResponseTimedOutException {
+		// permission
+		List<String> values = new ArrayList<String>();
+		values.add("" + permission);
+		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_SET_PERMISSIONS, FanucRobotConstants.RESPONSE_SET_PERMISSIONS, WRITE_VALUES_TIMEOUT, values);
+	}
+	
 	@Override
 	public void put(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
 	}
@@ -62,7 +217,6 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public void moveToHome() throws CommunicationException, RobotActionException {
 	}
-	
 
 	@Override
 	public void moveTo(UserFrame uf, Coordinates coordinates, AbstractRobotActionSettings transportSettings) throws CommunicationException, RobotActionException {
@@ -197,7 +351,7 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public boolean isConnected() {
-		return externalCommunication.isConnected();
+		return fanucRobotCommunication.isConnected();
 	}
 
 }

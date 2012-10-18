@@ -78,4 +78,32 @@ public class FanucRobotConstants {
 	public static final int RESPONSE_SET_SPEED					=	167;
 	public static final int RESPONSE_TO_TRANSPORT_POINT			=	168;
 	
+	// SERVICE GRIPPER
+	public static final int SERVICE_GRIPPER_SERVICE_TYPE_TOOL_CHANGE = 1;
+	public static final int SERVICE_GRIPPER_SERVICE_TYPE_PICK = 2;
+	public static final int SERVICE_GRIPPER_SERVICE_TYPE_PUT = 3;
+	public static final int SERVICE_GRIPPER_SERVICE_TYPE_HOME = 4;
+	public static final int SERVICE_GRIPPER_SERVICE_TYPE_JAW_CHANGE = 5;
+	
+	// SERVICE HANDLING
+	public static final int SERVICE_HANDLING_PP_MODE_BAR_MOVE 		=	BIT0;
+	public static final int SERVICE_HANDLING_PP_MODE_BAR_BREAK 		=	BIT1;
+	public static final int SERIVCE_HANDLING_PP_MODE_NOT_TAKE_WP	=	BIT2;
+	public static final int SERVICE_HANDLING_PP_MODE_TC_TEST		=	BIT3;
+	public static final int SERVICE_HANDLING_PP_MODE_ORDER_12		=	BIT4;
+	public static final int SERVICE_HANDLING_PP_MODE_ORDER_21		=	0;
+	
+	// SERVICE POINT
+	public static final int SERVICE_POINT_XYZ_ALLOWED_XYZ			=	1;
+	public static final int SERVICE_POINT_XYZ_ALLOWED_XY			=	2;
+	public static final int SERVICE_POINT_XYZ_ALLOWED_ANGLE			=	3;
+	
+	// COMMAND_PERMISSIONS
+	public static final int PERMISSIONS_COMMAND_PICK						=	BIT0;
+	public static final int PERMISSIONS_COMMAND_PUT							= 	BIT1;
+	public static final int PERMISSIONS_COMMAND_PICK_RELEASE_ACK			=	BIT2;
+	public static final int ERMISSIONS_COMMAND_PPUT_CLAMP_ACK				=	BIT3;
+	public static final int PERMISSIONS_COMMAND_JAWS_CHANGED_ACK			=	BIT4;
+	public static final int PERMISSIONS_COMMAND_RUN_AFTER_JAWS_CHANGED_ACK 	=	BIT5;
+	public static final int PERMISSIOSN_COMMAND_BAR_MOVE_ACK				=	BIT6;
 }
