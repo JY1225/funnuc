@@ -31,7 +31,7 @@ public class BasicStackPlateLayout {
 	
 	private List<StackingPosition> stackingPositions;
 	
-	private static final float MIN_OVERLAP_DISTANCE = 10;
+	private static final float MIN_OVERLAP_DISTANCE = 9;
 	
 	private static final Logger logger = Logger.getLogger(BasicStackPlateLayout.class);
 		

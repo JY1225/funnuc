@@ -80,5 +80,12 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 			return false;
 		}
 	}
+	
+	public void setMaxAmount() {
+		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
+		deviceSettings.setAmount(plate.getLayout().getStackingPositions().size());
+		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		view.refresh();
+	}
 
 }

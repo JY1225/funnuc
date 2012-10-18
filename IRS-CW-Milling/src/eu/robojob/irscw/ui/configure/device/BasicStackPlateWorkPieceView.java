@@ -43,8 +43,10 @@ public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPla
 	private Label lblWorkPieceWidth;
 	private Label lblWorkPieceLength;
 	private Label lblWorkPieceHeight;
-	
+		
+	private Label lblOrientation;
 	private Label lblWorkPieceAmount;
+	private Button btnMaxAmount;
 	
 	private NumericTextField ntxtWorkPieceWidth;
 	private NumericTextField ntxtWorkPieceLength;
@@ -59,7 +61,7 @@ public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPla
 	
 	private static final int nMaxLength = 6;
 	
-	private static final int HGAP = 15;
+	private static final int HGAP = 10;
 	private static final int VGAP = 0;
 	
 	private static final double BTN_WIDTH = 80;
@@ -149,10 +151,11 @@ public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPla
 		add(ntxtWorkPieceHeight, column++, row);
 		
 		spacer = new Region();
-		spacer.setPrefSize(HGAP*2, BTN_HEIGHT);
+		spacer.setPrefSize(HGAP, BTN_HEIGHT);
 		
 		add(spacer, 3, 0);
 		
+		lblOrientation = new Label(translator.getTranslation("Orientation"));
 		orientationsBox = new HBox();
 		btnHorizontal = createButton(horizontalPath, "btn-orientation", translator.getTranslation("horizontal"), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
@@ -175,6 +178,7 @@ public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPla
 		orientationsBox.setAlignment(Pos.CENTER);
 		row = 0;
 		column = 4;
+		add(lblOrientation, column++, row);
 		add(orientationsBox, column, row, 2, 1);
 		
 		column = 4;
@@ -193,6 +197,17 @@ public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPla
 			}
 		});
 		add(itxtWorkPieceAmount, column++, row);
+		
+		btnMaxAmount = new Button(translator.getTranslation("Max"));
+		btnMaxAmount.getStyleClass().add("form-button");
+		btnMaxAmount.setPrefSize(UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT);
+		btnMaxAmount.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				presenter.setMaxAmount();
+			}
+		});
+		add(btnMaxAmount, column++, row);
 		
 		refresh();
 		
