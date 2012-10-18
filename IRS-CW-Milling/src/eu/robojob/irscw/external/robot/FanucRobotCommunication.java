@@ -106,7 +106,8 @@ public class FanucRobotCommunication extends ExternalCommunication {
 				break;
 			}
 			List<String> statusValues = readValues(FanucRobotConstants.COMMAND_ASK_STATUS, FanucRobotConstants.RESPONSE_ASK_STATUS, getDefaultWaitTimeout());
-			if (statusValues.get(valueIndex).equals("" + value)) {
+			int responseValue = Integer.parseInt(statusValues.get(valueIndex));
+			if ((responseValue & value) != 0) {
 				return true;
 			}
 		}
