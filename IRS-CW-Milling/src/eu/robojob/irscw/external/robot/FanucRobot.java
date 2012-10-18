@@ -80,6 +80,56 @@ public class FanucRobot extends AbstractRobot {
 		}
 	}
 	
+	@Override
+	public void initiatePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
+		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
+		// write service gripper set
+		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
+		// write service handling set
+		writeServiceHandlingSet();
+		// write service point set
+		if (fPutSettings.getGripper().getWorkPiece() == null) {
+			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
+		}
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions());
+		// write command
+		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT);
+		//TODO in progress
+		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
+		boolean waitingForRelease = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PUT_CLAMP_REQUEST, PICK_TO_LOCATION_TIMEOUT);
+		if (!waitingForRelease) {
+			logger.info("Troubles!");
+			throw new RobotActionException();
+		}
+	}
+
+	@Override
+	public void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
+		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT_CLAMP_ACK);
+		logger.info("waiting for put to finish!");
+		boolean waitingForPickFinished = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PUT_FINISHED, PICK_FINISH_TIMEOUT);
+		if (waitingForPickFinished) {
+			logger.info("Pick finished!");
+			return;
+		} else {
+			throw new RobotActionException();
+		}
+	}
+
+	@Override
+	public void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
+		pickSettings.getGripper().setWorkPiece(pickSettings.getWorkPiece());
+		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
+		logger.info("waiting for pick to finish!");
+		boolean waitingForPickFinished = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PICK_FINISHED, PICK_FINISH_TIMEOUT);
+		if (waitingForPickFinished) {
+			logger.info("Pick finished!");
+			return;
+		} else {
+			throw new RobotActionException();
+		}
+	}
+
 	private void writeServiceGripperSet(GripperHead gHead, Gripper gripper, int serviceType) throws DisconnectedException, ResponseTimedOutException {
 		List<String> values = new ArrayList<String>();
 		boolean a = false;
@@ -184,27 +234,6 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_SET_PERMISSIONS, FanucRobotConstants.RESPONSE_SET_PERMISSIONS, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	@Override
-	public void initiatePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
-	}
-
-	@Override
-	public void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
-	}
-
-	@Override
-	public void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
-		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
-		logger.info("waiting for pick to finish!");
-		boolean waitingForPickFinished = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PICK_FINISHED, PICK_FINISH_TIMEOUT);
-		if (waitingForPickFinished) {
-			logger.info("Pick finished!");
-			return;
-		} else {
-			throw new RobotActionException();
-		}
-	}
-
 	@Override
 	public void moveToHome() throws CommunicationException, RobotActionException {
 		//we now use a speed of 50%

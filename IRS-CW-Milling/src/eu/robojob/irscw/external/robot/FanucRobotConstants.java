@@ -102,7 +102,7 @@ public class FanucRobotConstants {
 	public static final int PERMISSIONS_COMMAND_PICK						=	BIT0;
 	public static final int PERMISSIONS_COMMAND_PUT							= 	BIT1;
 	public static final int PERMISSIONS_COMMAND_PICK_RELEASE_ACK			=	BIT2;
-	public static final int ERMISSIONS_COMMAND_PPUT_CLAMP_ACK				=	BIT3;
+	public static final int PERMISSIONS_COMMAND_PUT_CLAMP_ACK				=	BIT3;
 	public static final int PERMISSIONS_COMMAND_JAWS_CHANGED_ACK			=	BIT4;
 	public static final int PERMISSIONS_COMMAND_RUN_AFTER_JAWS_CHANGED_ACK 	=	BIT5;
 	public static final int PERMISSIOSN_COMMAND_BAR_MOVE_ACK				=	BIT6;

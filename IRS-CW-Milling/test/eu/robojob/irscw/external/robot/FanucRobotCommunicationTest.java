@@ -7,8 +7,10 @@ import org.junit.Test;
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPickSettings;
+import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPutSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPiece;
 import eu.robojob.irscw.workpiece.WorkPiece.Type;
@@ -18,8 +20,10 @@ public class FanucRobotCommunicationTest {
 
 	private FanucRobot fanucRobot;
 	private FanucRobotPickSettings pickSettings;
+	private FanucRobotPutSettings putSettings;
 	
 	private BasicStackPlate basicStackPlate;
+	private CNCMillingMachine cncMillingMachine;
 	private RobotManager robotManager;
 	private DeviceManager deviceManager;
 	
@@ -36,6 +40,11 @@ public class FanucRobotCommunicationTest {
 		
 		WorkPiece wp = new WorkPiece(Type.RAW, new WorkPieceDimensions(100, 40, 100));
 		pickSettings = new FanucRobotPickSettings(wa, head, gripper, new Coordinates(10, 10, 10, 0, 0, 0), new Coordinates(5, 5, 5, 0, 0, 0), wp);
+		
+		this.cncMillingMachine = (CNCMillingMachine) deviceManager.getDeviceById("Mazak VRX J500");
+		WorkArea wa2 = cncMillingMachine.getWorkAreaById("Mazak VRX Main");
+		
+		putSettings = new FanucRobotPutSettings(wa2, head, gripper, new Coordinates(20, 20, 20, 0, 0, 0), new Coordinates(5, 5, 5, 0, 0, 0));
 	}
 	
 	@Ignore
@@ -44,6 +53,20 @@ public class FanucRobotCommunicationTest {
 		try {
 			fanucRobot.restartProgram();
 			fanucRobot.initiatePick(pickSettings);
+			fanucRobot.finalizePick(pickSettings);
+		} catch (CommunicationException | RobotActionException e) {
+			e.printStackTrace();
+		} finally {
+			fanucRobot.disconnect();
+		}
+	}
+	
+	@Ignore
+	@Test
+	public void testToHome() {
+		try {
+			fanucRobot.restartProgram();
+			fanucRobot.moveToHome();
 		} catch (CommunicationException | RobotActionException e) {
 			e.printStackTrace();
 		} finally {
@@ -52,10 +75,13 @@ public class FanucRobotCommunicationTest {
 	}
 	
 	@Test
-	public void testToHome() {
+	public void testPut() {
 		try {
 			fanucRobot.restartProgram();
-			fanucRobot.moveToHome();
+			fanucRobot.initiatePick(pickSettings);
+			fanucRobot.finalizePick(pickSettings);
+			fanucRobot.initiatePut(putSettings);
+			fanucRobot.finalizePut(putSettings);
 		} catch (CommunicationException | RobotActionException e) {
 			e.printStackTrace();
 		} finally {
