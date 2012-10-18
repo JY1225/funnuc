@@ -1,6 +1,7 @@
 package eu.robojob.irscw.external.robot;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
@@ -37,11 +38,24 @@ public class FanucRobotCommunicationTest {
 		pickSettings = new FanucRobotPickSettings(wa, head, gripper, new Coordinates(10, 10, 10, 0, 0, 0), new Coordinates(5, 5, 5, 0, 0, 0), wp);
 	}
 	
+	@Ignore
 	@Test
 	public void testPick() {
 		try {
 			fanucRobot.restartProgram();
-			fanucRobot.pick(pickSettings);
+			fanucRobot.initiatePick(pickSettings);
+		} catch (CommunicationException | RobotActionException e) {
+			e.printStackTrace();
+		} finally {
+			fanucRobot.disconnect();
+		}
+	}
+	
+	@Test
+	public void testToHome() {
+		try {
+			fanucRobot.restartProgram();
+			fanucRobot.moveToHome();
 		} catch (CommunicationException | RobotActionException e) {
 			e.printStackTrace();
 		} finally {

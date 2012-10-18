@@ -26,7 +26,9 @@ public class FanucRobot extends AbstractRobot {
 	private static final int WRITE_VALUES_TIMEOUT = 5000;
 	private static final int PICK_TO_LOCATION_TIMEOUT = 10000;
 	private static final int PICK_FINISH_TIMEOUT = 10000;
-		
+	
+	private static final int TO_HOME_TIMEOUT = 10000;
+	
 	private static Logger logger = Logger.getLogger(FanucRobot.class);
 	
 	public FanucRobot(String id, Set<GripperBody> gripperBodies, GripperBody gripperBody, SocketConnection socketConnection) {
@@ -58,43 +60,23 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void pick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
-		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;
-		
-		// TODO use default timeouts
-		
+	public void initiatePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
+		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;		
 		// write service gripper set
 		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
-		
 		// write service handling set
 		writeServiceHandlingSet();
-		
 		// write service point set
 		writeServicePointSet(fPickSettings.getWorkArea(), fPickSettings.getLocation(), fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions());
-		
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK);
-		
 		// write start service
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
-		
 		// we now wait for the robot to indicate he moved to its location
 		boolean waitingForRelease = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PICK_RELEASE_REQUEST, PICK_TO_LOCATION_TIMEOUT);
-		
 		if (!waitingForRelease) {
 			logger.info("Troubles!");
 			throw new RobotActionException();
-		} else {
-			logger.info("Robot in place, sending release ACK!");
-			writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
-			logger.info("waiting for pick to finish!");
-			boolean waitingForPickFinished = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PICK_FINISHED, PICK_FINISH_TIMEOUT);
-			if (waitingForPickFinished) {
-				logger.info("Pick finished!");
-				return;
-			} else {
-				throw new RobotActionException();
-			}
 		}
 	}
 	
@@ -203,19 +185,31 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void put(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
+	public void initiatePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
 	}
 
 	@Override
-	public void releasePiece(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
+	public void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
 	}
 
 	@Override
-	public void grabPiece(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
+	public void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
+		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
+		logger.info("waiting for pick to finish!");
+		boolean waitingForPickFinished = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PICK_FINISHED, PICK_FINISH_TIMEOUT);
+		if (waitingForPickFinished) {
+			logger.info("Pick finished!");
+			return;
+		} else {
+			throw new RobotActionException();
+		}
 	}
 
 	@Override
 	public void moveToHome() throws CommunicationException, RobotActionException {
+		//we now use a speed of 50%
+		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_TO_HOME, FanucRobotConstants.RESPONSE_TO_HOME, TO_HOME_TIMEOUT, "" + 50);
+		//TODO there's no way of knowing the robot is in its home point, so for now, we just leave him there
 	}
 
 	@Override

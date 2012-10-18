@@ -59,8 +59,8 @@ public class PickStep extends AbstractTransportStep {
 					Coordinates position = device.getPickLocation(pickSettings.getWorkArea());
 					robotPickSettings.setLocation(position);
 				}
-				robot.pick(robotPickSettings);
-				robot.grabPiece(robotPickSettings);
+				robot.initiatePick(robotPickSettings);
+				robot.finalizePick(robotPickSettings);
 				robotPickSettings.getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
 				device.releasePiece(pickSettings);
 			}
@@ -96,7 +96,7 @@ public class PickStep extends AbstractTransportStep {
 				Coordinates coordinates = robot.getPosition();
 				this.teachedOffset = coordinates.calculateOffset( device.getPickLocation(pickSettings.getWorkArea()));
 				logger.info("teached offset: " + teachedOffset);
-				robot.grabPiece(robotPickSettings);
+				robot.finalizePick(robotPickSettings);
 				device.releasePiece(pickSettings);
 			}
 		}

@@ -66,11 +66,11 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 
 	public abstract Coordinates getPosition() throws CommunicationException, RobotActionException;
 	
-	public abstract void pick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
-	public abstract void put(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;
+	public abstract void initiatePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
+	public abstract void initiatePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;
 	
-	public abstract void releasePiece(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;
-	public abstract void grabPiece(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
+	public abstract void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;
+	public abstract void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
 	
 	public abstract void moveToHome() throws CommunicationException, RobotActionException;
 	
