@@ -7,7 +7,6 @@ import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.positioning.UserFrame;
 import eu.robojob.irscw.workpiece.WorkPiece;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {
@@ -74,8 +73,11 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	public abstract void moveToHome() throws CommunicationException, RobotActionException;
 	
-	public abstract void setTeachModeEnabled(boolean enable) throws CommunicationException, RobotActionException;
-	public abstract void moveTo(UserFrame uf, Coordinates coordinates, AbstractRobotActionSettings transportSettings) throws CommunicationException, RobotActionException;
+	public abstract void initiateTeachedPick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
+	public abstract void initiateTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;
+	
+	public abstract void finalizeTeachedPick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
+	public abstract void finalizeTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;
 	
 	public abstract boolean validatePickSettings(AbstractRobotPickSettings pickSettings);
 	public abstract boolean validatePutSettings(AbstractRobotPutSettings putSettings);

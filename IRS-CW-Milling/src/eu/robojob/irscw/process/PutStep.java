@@ -3,6 +3,8 @@ package eu.robojob.irscw.process;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
@@ -17,6 +19,8 @@ public class PutStep extends AbstractTransportStep {
 
 	private AbstractDevice.AbstractDevicePutSettings putSettings;
 	private AbstractRobot.AbstractRobotPutSettings robotPutSettings;
+	
+	private static final Logger logger = Logger.getLogger(PutStep.class);
 	
 	public PutStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceTo,
 			AbstractDevice.AbstractDevicePutSettings putSettings, AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
@@ -80,8 +84,9 @@ public class PutStep extends AbstractTransportStep {
 			} else {
 				device.prepareForPut(putSettings);
 				Coordinates coordinates = device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions());
-				robot.moveTo(putSettings.getWorkArea().getUserFrame(), coordinates, robotPutSettings);
-				robot.setTeachModeEnabled(true);
+				logger.info("put location: " + coordinates);
+				robotPutSettings.setLocation(coordinates);
+				robot.initiatePut(robotPutSettings);
 			}
 		}
 	}
@@ -94,13 +99,13 @@ public class PutStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
-				robot.setTeachModeEnabled(false);
+				// TODO: check!
 				Coordinates coordinates = robot.getPosition();
-				teachedOffset = coordinates.calculateOffset(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
+				this.teachedOffset = coordinates.calculateOffset(device.getPickLocation(putSettings.getWorkArea()));
+				logger.info("teached offset: " + teachedOffset);
+				robotPutSettings.setLocation(device.getPutLocation(putSettings.getWorkArea(), null));
 				device.grabPiece(putSettings);
-				robot.finalizePut(robotPutSettings);
-				robot.moveToHome();
-				device.putFinished(putSettings);
+				robot.finalizeTeachedPut(robotPutSettings);
 			}
 		}
 	}

@@ -15,7 +15,6 @@ import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.positioning.UserFrame;
 import eu.robojob.irscw.workpiece.WorkPiece;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
@@ -65,7 +64,7 @@ public class FanucRobot extends AbstractRobot {
 		// write service gripper set
 		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
 		// write service handling set
-		writeServiceHandlingSet();
+		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12);
 		// write service point set
 		writeServicePointSet(fPickSettings.getWorkArea(), fPickSettings.getLocation(), fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions());
 		// write command
@@ -86,7 +85,7 @@ public class FanucRobot extends AbstractRobot {
 		// write service gripper set
 		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
 		// write service handling set
-		writeServiceHandlingSet();
+		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12);
 		// write service point set
 		if (fPutSettings.getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
@@ -129,6 +128,49 @@ public class FanucRobot extends AbstractRobot {
 			throw new RobotActionException();
 		}
 	}
+	
+	@Override
+	public void initiateTeachedPick(AbstractRobotPickSettings pickSettings)
+			throws CommunicationException, RobotActionException {
+		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;		
+		// write service gripper set
+		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
+		// write service handling set
+		writeServiceHandlingSet(FanucRobotConstants.SERVICe_HANDLING_PP_MODE_TEACH);
+		// write service point set
+		writeServicePointSet(fPickSettings.getWorkArea(), fPickSettings.getLocation(), fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions());
+		// write command
+		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK);
+		// write start service
+		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
+		// we now wait for the robot to indicate he moved to its location
+		boolean waitingForRelease = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PICK_RELEASE_REQUEST, PICK_TO_LOCATION_TIMEOUT);
+		if (!waitingForRelease) {
+			logger.info("Troubles!");
+			throw new RobotActionException();
+		}
+	}
+
+	@Override
+	public void initiateTeachedPut(AbstractRobotPutSettings putSettings)
+			throws CommunicationException, RobotActionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void finalizeTeachedPick(AbstractRobotPickSettings pickSettings)
+			throws CommunicationException, RobotActionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void finalizeTeachedPut(AbstractRobotPutSettings putSettings)
+			throws CommunicationException, RobotActionException {
+		// TODO Auto-generated method stub
+		
+	}
 
 	private void writeServiceGripperSet(GripperHead gHead, Gripper gripper, int serviceType) throws DisconnectedException, ResponseTimedOutException {
 		List<String> values = new ArrayList<String>();
@@ -141,7 +183,7 @@ public class FanucRobot extends AbstractRobot {
 			throw new IllegalArgumentException("Gripper head id should be 'A' or 'B'.");
 		}
 		// service type ; main grip id ; sub a grip id ; sub b grip id ; grip type ; sub a height ; sub b height ; exchange jaws ; inner/outer gripper type ;
-		values.add("" + FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
+		values.add("" + serviceType);
 		values.add("0");
 		values.add("1");
 		values.add("2");
@@ -164,7 +206,7 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_GRIPPER, FanucRobotConstants.RESPONSE_WRITE_SERVICE_GRIPPER, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	private void writeServiceHandlingSet() throws DisconnectedException, ResponseTimedOutException {
+	private void writeServiceHandlingSet(int serviceHandlingPPMode) throws DisconnectedException, ResponseTimedOutException {
 		List<String> values = new ArrayList<String>();
 		// free after this service ; WP thickness ;  WP Z grip ; grip Z face till front ; dx correction P1 ; dy correction P1 ; dx correction P2 ; dy correction P2 ; dW correction ;
 		//    dP correction ; robot speed ; payload 1 ; payload 2 ; soft float range ; soft float force ; PP mode ; bar move distance
@@ -183,7 +225,7 @@ public class FanucRobot extends AbstractRobot {
 		values.add("0");
 		values.add("0");
 		values.add("0");
-		values.add("" + FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12);
+		values.add("" + serviceHandlingPPMode);
 		values.add("0");
 		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_HANDLING, FanucRobotConstants.RESPONSE_WRITE_SERVICE_HANDLING, WRITE_VALUES_TIMEOUT, values);
 	}
@@ -210,11 +252,13 @@ public class FanucRobot extends AbstractRobot {
 		values.add("" + smoothPoint.getX());
 		values.add("" + smoothPoint.getY());
 		values.add("" + smoothPoint.getZ());
-		values.add("0");
+		// we take 1 as tangent
+		values.add("1");
 		// we take xyz allowed as xyz for stacker and xy for machine
 		if (userFrameId == 1) {
 			values.add("" + FanucRobotConstants.SERVICE_POINT_XYZ_ALLOWED_XYZ);
 		} else if (userFrameId == 3) {
+			// TODO: review this!
 			values.add("" + FanucRobotConstants.SERVICE_POINT_XYZ_ALLOWED_XY);
 		} else {
 			throw new IllegalStateException("Should not be here! Illegal Userframe id");
@@ -241,14 +285,6 @@ public class FanucRobot extends AbstractRobot {
 		//TODO there's no way of knowing the robot is in its home point, so for now, we just leave him there
 	}
 
-	@Override
-	public void moveTo(UserFrame uf, Coordinates coordinates, AbstractRobotActionSettings transportSettings) throws CommunicationException, RobotActionException {
-	}
-
-	@Override
-	public void setTeachModeEnabled(boolean enable) throws CommunicationException, RobotActionException {
-	}
-	
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
 
 		public FanucRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPiece workPiece) {

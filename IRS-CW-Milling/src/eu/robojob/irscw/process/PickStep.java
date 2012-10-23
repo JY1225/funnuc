@@ -78,8 +78,8 @@ public class PickStep extends AbstractTransportStep {
 				device.prepareForPick(pickSettings);
 				Coordinates coordinates = device.getPickLocation(pickSettings.getWorkArea());
 				logger.info("pick location: " + coordinates);
-				robot.moveTo(pickSettings.getWorkArea().getUserFrame(), coordinates, robotPickSettings);
-				robot.setTeachModeEnabled(true);
+				robotPickSettings.setLocation(coordinates);
+				robot.initiateTeachedPick(robotPickSettings);
 			}
 		}
 	}
@@ -92,12 +92,13 @@ public class PickStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
-				robot.setTeachModeEnabled(false);
+				// TODO: check!
 				Coordinates coordinates = robot.getPosition();
-				this.teachedOffset = coordinates.calculateOffset( device.getPickLocation(pickSettings.getWorkArea()));
+				this.teachedOffset = coordinates.calculateOffset(device.getPickLocation(pickSettings.getWorkArea()));
 				logger.info("teached offset: " + teachedOffset);
-				robot.finalizePick(robotPickSettings);
+				robotPickSettings.setLocation(device.getPickLocation(pickSettings.getWorkArea()));
 				device.releasePiece(pickSettings);
+				robot.finalizeTeachedPick(robotPickSettings);
 			}
 		}
 	}
