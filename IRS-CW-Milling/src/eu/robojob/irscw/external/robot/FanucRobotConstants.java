@@ -41,6 +41,9 @@ public class FanucRobotConstants {
 	public static final int STATUS_GRIPS_CHANGED_FINISHED		=	BIT7;
 	public static final int STATUS_ROBOT_IN_JAW_CHANGE_POINT	=	BIT8;
 	public static final int STATUS_ROBOT_MOVED_BAR				=	BIT9;
+	// TEACHING
+	public static final int STATUS_PICK_POSITION_TEACHED		=	BIT10;
+	public static final int STATUS_PUT_POSITION_TEACHED			=	BIT11;
 	
 	// COMMAND IDS
 	public static final int COMMAND_ASK_STATUS					=	20;
@@ -59,6 +62,7 @@ public class FanucRobotConstants {
 	public static final int COMMAND_TO_JAW_CHANGE				=	66;
 	public static final int COMMAND_SET_SPEED					=	67;
 	public static final int COMMAND_TO_TRANSPORT_POINT			=	68;
+	public static final int COMMAND_ASK_POSITION				=	70;
 	
 	// RESPONSE IDS
 	public static final int RESPONSE_ASK_STATUS					=	120;
@@ -74,9 +78,10 @@ public class FanucRobotConstants {
 	public static final int RESPONSE_RESET						=	161;
 	public static final int RESPONSE_ABORT						=	162;
 	public static final int RESPONSE_TO_HOME					=	165;
-	public static final int RESPONSETO_JAW_CHANGE				=	166;
+	public static final int RESPONSE_TO_JAW_CHANGE				=	166;
 	public static final int RESPONSE_SET_SPEED					=	167;
 	public static final int RESPONSE_TO_TRANSPORT_POINT			=	168;
+	public static final int RESPONSE_ASK_POSITION				=	170;
 	
 	// SERVICE GRIPPER
 	public static final int SERVICE_GRIPPER_SERVICE_TYPE_TOOL_CHANGE = 1;
@@ -92,7 +97,7 @@ public class FanucRobotConstants {
 	public static final int SERVICE_HANDLING_PP_MODE_TC_TEST		=	BIT3;
 	public static final int SERVICE_HANDLING_PP_MODE_ORDER_12		=	BIT4;
 	public static final int SERVICE_HANDLING_PP_MODE_ORDER_21		=	0;
-	public static final int SERVICe_HANDLING_PP_MODE_TEACH 			=	BIT5;
+	public static final int SERVICE_HANDLING_PP_MODE_TEACH 			=	BIT5;
 	
 	// SERVICE POINT
 	public static final int SERVICE_POINT_XYZ_ALLOWED_XYZ			=	1;

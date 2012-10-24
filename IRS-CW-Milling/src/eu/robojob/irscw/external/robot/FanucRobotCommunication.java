@@ -9,6 +9,7 @@ import eu.robojob.irscw.external.communication.DisconnectedException;
 import eu.robojob.irscw.external.communication.ExternalCommunication;
 import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.external.communication.SocketConnection;
+import eu.robojob.irscw.positioning.Coordinates;
 
 public class FanucRobotCommunication extends ExternalCommunication {
 
@@ -112,5 +113,25 @@ public class FanucRobotCommunication extends ExternalCommunication {
 			}
 		}
 		return false;
+	}
+	
+	public Coordinates getPosition(int waitTimeout) throws CommunicationException, DisconnectedException {
+		long currentTime = System.currentTimeMillis();
+		boolean timeout = false;
+		while (!timeout) {
+			if (System.currentTimeMillis() - currentTime >= waitTimeout) {
+				timeout = true;
+				break;
+			}
+			List<String> positionValues = readValues(FanucRobotConstants.COMMAND_ASK_POSITION, FanucRobotConstants.RESPONSE_ASK_POSITION, getDefaultWaitTimeout());
+			float x = Float.parseFloat(positionValues.get(0));
+			float y = Float.parseFloat(positionValues.get(1));
+			float z = Float.parseFloat(positionValues.get(2));
+			float w = Float.parseFloat(positionValues.get(3));
+			float p = Float.parseFloat(positionValues.get(4));
+			float r = Float.parseFloat(positionValues.get(5));
+			return new Coordinates(x, y, z, w, p, r);
+		}
+		return null;
 	}
 }

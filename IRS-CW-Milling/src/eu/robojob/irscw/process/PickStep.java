@@ -60,9 +60,11 @@ public class PickStep extends AbstractTransportStep {
 					robotPickSettings.setLocation(position);
 				}
 				robot.initiatePick(robotPickSettings);
+				device.releasePiece(pickSettings);
 				robot.finalizePick(robotPickSettings);
 				robotPickSettings.getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
-				device.releasePiece(pickSettings);
+				robot.moveToHome();
+				device.pickFinished(pickSettings);
 			}
 		}
 	}

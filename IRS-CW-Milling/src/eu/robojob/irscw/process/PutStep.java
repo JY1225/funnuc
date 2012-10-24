@@ -103,7 +103,7 @@ public class PutStep extends AbstractTransportStep {
 				Coordinates coordinates = robot.getPosition();
 				this.teachedOffset = coordinates.calculateOffset(device.getPickLocation(putSettings.getWorkArea()));
 				logger.info("teached offset: " + teachedOffset);
-				robotPutSettings.setLocation(device.getPutLocation(putSettings.getWorkArea(), null));
+				robotPutSettings.setLocation(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
 				device.grabPiece(putSettings);
 				robot.finalizeTeachedPut(robotPutSettings);
 			}

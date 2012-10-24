@@ -74,6 +74,7 @@ public class FanucRobotCommunicationTest {
 		}
 	}
 	
+	@Ignore
 	@Test
 	public void testPut() {
 		try {
@@ -82,6 +83,19 @@ public class FanucRobotCommunicationTest {
 			fanucRobot.finalizePick(pickSettings);
 			fanucRobot.initiatePut(putSettings);
 			fanucRobot.finalizePut(putSettings);
+		} catch (CommunicationException | RobotActionException e) {
+			e.printStackTrace();
+		} finally {
+			fanucRobot.disconnect();
+		}
+	}
+	
+	@Test
+	public void testTeachPick() {
+		try {
+			fanucRobot.restartProgram();
+			fanucRobot.initiateTeachedPick(pickSettings);
+			fanucRobot.finalizeTeachedPick(pickSettings);
 		} catch (CommunicationException | RobotActionException e) {
 			e.printStackTrace();
 		} finally {

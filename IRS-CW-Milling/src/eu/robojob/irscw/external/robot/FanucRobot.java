@@ -25,7 +25,9 @@ public class FanucRobot extends AbstractRobot {
 	private static final int WRITE_VALUES_TIMEOUT = 5000;
 	private static final int PICK_TO_LOCATION_TIMEOUT = 10000;
 	private static final int PICK_FINISH_TIMEOUT = 10000;
-	
+	private static final int ASK_POSITION_TIMEOUT = 50000;
+	private static final int PICK_TEACH_TIMEOUT = 10*60*1000;
+	private static final int PUT_TEACH_TIMEOUT = 10*60*1000;
 	private static final int TO_HOME_TIMEOUT = 10000;
 	
 	private static Logger logger = Logger.getLogger(FanucRobot.class);
@@ -46,7 +48,8 @@ public class FanucRobot extends AbstractRobot {
 	
 	@Override
 	public Coordinates getPosition() throws CommunicationException, RobotActionException {
-		return null;
+		Coordinates position = fanucRobotCommunication.getPosition(ASK_POSITION_TIMEOUT);
+		return position;
 	}
 	
 	public void disconnect() {
@@ -136,7 +139,7 @@ public class FanucRobot extends AbstractRobot {
 		// write service gripper set
 		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
 		// write service handling set
-		writeServiceHandlingSet(FanucRobotConstants.SERVICe_HANDLING_PP_MODE_TEACH);
+		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH);
 		// write service point set
 		writeServicePointSet(fPickSettings.getWorkArea(), fPickSettings.getLocation(), fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions());
 		// write command
@@ -144,7 +147,40 @@ public class FanucRobot extends AbstractRobot {
 		// write start service
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 		// we now wait for the robot to indicate he moved to its location
-		boolean waitingForRelease = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PICK_RELEASE_REQUEST, PICK_TO_LOCATION_TIMEOUT);
+		boolean waitingForTeachingFinished = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PICK_POSITION_TEACHED, PICK_TEACH_TIMEOUT);
+		if (!waitingForTeachingFinished) {
+			logger.info("Troubles!");
+			throw new RobotActionException();
+		} else {
+			logger.info("TEACHINGOK!");
+			boolean waitingForPickFinished = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PICK_RELEASE_REQUEST, PICK_TO_LOCATION_TIMEOUT);
+			if (waitingForPickFinished) {
+				logger.info("Pick finished!");
+				return;
+			} else {
+				throw new RobotActionException();
+			}
+		}
+	}
+
+	@Override
+	public void initiateTeachedPut(AbstractRobotPutSettings putSettings)
+			throws CommunicationException, RobotActionException {
+		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
+		// write service gripper set
+		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
+		// write service handling set
+		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH);
+		// write service point set
+		if (fPutSettings.getGripper().getWorkPiece() == null) {
+			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
+		}
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions());
+		// write command
+		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT);
+		//TODO in progress
+		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
+		boolean waitingForRelease = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PUT_POSITION_TEACHED, PUT_TEACH_TIMEOUT);
 		if (!waitingForRelease) {
 			logger.info("Troubles!");
 			throw new RobotActionException();
@@ -152,24 +188,15 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void initiateTeachedPut(AbstractRobotPutSettings putSettings)
-			throws CommunicationException, RobotActionException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void finalizeTeachedPick(AbstractRobotPickSettings pickSettings)
 			throws CommunicationException, RobotActionException {
-		// TODO Auto-generated method stub
-		
+		finalizePick(pickSettings);
 	}
 
 	@Override
 	public void finalizeTeachedPut(AbstractRobotPutSettings putSettings)
 			throws CommunicationException, RobotActionException {
-		// TODO Auto-generated method stub
-		
+		finalizePut(putSettings);
 	}
 
 	private void writeServiceGripperSet(GripperHead gHead, Gripper gripper, int serviceType) throws DisconnectedException, ResponseTimedOutException {
