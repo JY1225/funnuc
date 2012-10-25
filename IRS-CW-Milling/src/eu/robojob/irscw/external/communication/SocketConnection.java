@@ -163,10 +163,10 @@ public class SocketConnection {
 	
 	public void sendString(String message) throws DisconnectedException {
 		if (isConnected()) {
-			logger.debug(toString() + " sending message: " + message);
+			//logger.debug(toString() + " sending message: " + message);
 			out.print(message);
 			out.flush();
-			logger.debug(toString() + " sent message: " + message);
+			//logger.debug(toString() + " sent message: " + message);
 		} else {
 			throw new DisconnectedException(this);
 		}
@@ -174,10 +174,10 @@ public class SocketConnection {
 	
 	public void sendCharacter(char character) throws DisconnectedException {
 		if (isConnected()) {
-			logger.debug(toString() + " sending character: " + character);
+			//logger.debug(toString() + " sending character: " + character);
 			out.print(character);
 			out.flush();
-			logger.debug(toString() + " sent character: " + character);
+			//logger.debug(toString() + " sent character: " + character);
 		} else {
 			throw new DisconnectedException(this);
 		}
@@ -243,7 +243,7 @@ public class SocketConnection {
 							b = in.read();
 							message = message + (char) b;
 						}
-						logger.info("read message: " + message);
+						//logger.info("read message: " + message);
 						return message;
 				   }
 				} catch (IOException e) {

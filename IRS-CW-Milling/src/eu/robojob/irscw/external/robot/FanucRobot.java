@@ -23,12 +23,12 @@ public class FanucRobot extends AbstractRobot {
 	private FanucRobotCommunication fanucRobotCommunication;
 	
 	private static final int WRITE_VALUES_TIMEOUT = 5000;
-	private static final int PICK_TO_LOCATION_TIMEOUT = 10000;
-	private static final int PICK_FINISH_TIMEOUT = 10000;
+	private static final int PICK_TO_LOCATION_TIMEOUT = 100000;
+	private static final int PICK_FINISH_TIMEOUT = 100000;
 	private static final int ASK_POSITION_TIMEOUT = 50000;
 	private static final int PICK_TEACH_TIMEOUT = 10*60*1000;
 	private static final int PUT_TEACH_TIMEOUT = 10*60*1000;
-	private static final int TO_HOME_TIMEOUT = 10000;
+	private static final int TO_HOME_TIMEOUT = 100000;
 	
 	private static Logger logger = Logger.getLogger(FanucRobot.class);
 	
@@ -56,6 +56,7 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.disconnect();
 	}
 	
+	@Override
 	public void restartProgram() throws CommunicationException {
 		// write start service
 		fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_RESTART_PROGRAM, FanucRobotConstants.RESPONSE_RESTART_PROGRAM, WRITE_VALUES_TIMEOUT);
@@ -269,11 +270,11 @@ public class FanucRobot extends AbstractRobot {
 			values.add("" + userFrameId);
 		}
 		//TODO check the offsets, for now we take 0
-		values.add("0");
-		values.add("0");
-		values.add("0");
-		values.add("0");
-		values.add("" + dimensions.getHeight());
+		values.add("" + location.getX());
+		values.add("" + location.getY());
+		values.add("" + location.getZ());
+		values.add("" + location.getR());
+		values.add("" + (dimensions.getHeight() + location.getZ()));
 		// TODO we take 20 as safety add z for now
 		values.add("20");
 		values.add("" + smoothPoint.getX());

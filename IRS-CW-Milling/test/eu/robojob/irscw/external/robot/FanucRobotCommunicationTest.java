@@ -44,7 +44,7 @@ public class FanucRobotCommunicationTest {
 		this.cncMillingMachine = (CNCMillingMachine) deviceManager.getDeviceById("Mazak VRX J500");
 		WorkArea wa2 = cncMillingMachine.getWorkAreaById("Mazak VRX Main");
 		
-		putSettings = new FanucRobotPutSettings(wa2, head, gripper, new Coordinates(20, 20, 20, 0, 0, 0), new Coordinates(5, 5, 5, 0, 0, 0));
+		putSettings = new FanucRobotPutSettings(wa2, head, gripper, new Coordinates(20, 20, 20, 0, 0, 0), new Coordinates(5, 5, 500, 0, 0, 0));
 	}
 	
 	@Ignore
@@ -90,12 +90,28 @@ public class FanucRobotCommunicationTest {
 		}
 	}
 	
+	@Ignore
 	@Test
 	public void testTeachPick() {
 		try {
 			fanucRobot.restartProgram();
 			fanucRobot.initiateTeachedPick(pickSettings);
 			fanucRobot.finalizeTeachedPick(pickSettings);
+		} catch (CommunicationException | RobotActionException e) {
+			e.printStackTrace();
+		} finally {
+			fanucRobot.disconnect();
+		}
+	}
+	
+	@Test
+	public void testTeachPut() {
+		try {
+			fanucRobot.restartProgram();
+			fanucRobot.initiateTeachedPick(pickSettings);
+			fanucRobot.finalizeTeachedPick(pickSettings);
+			fanucRobot.initiateTeachedPut(putSettings);
+			fanucRobot.finalizeTeachedPut(putSettings);
 		} catch (CommunicationException | RobotActionException e) {
 			e.printStackTrace();
 		} finally {

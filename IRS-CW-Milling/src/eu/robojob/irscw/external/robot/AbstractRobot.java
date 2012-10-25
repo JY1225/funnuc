@@ -62,7 +62,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 	
 	public abstract String getStatus() throws CommunicationException, RobotActionException;
-
+	public abstract void restartProgram() throws CommunicationException;
 	public abstract Coordinates getPosition() throws CommunicationException, RobotActionException;
 	
 	public abstract void initiatePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
