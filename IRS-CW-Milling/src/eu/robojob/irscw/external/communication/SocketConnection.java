@@ -45,7 +45,7 @@ public class SocketConnection {
 		if (connected) {
 			logger.info("Already connected: " + toString());
 		} else {
-			logger.info("Connecting: " + toString());
+			//logger.info("Connecting: " + toString());
 			if (type == Type.CLIENT) {
 				try {
 					connectAsClient();

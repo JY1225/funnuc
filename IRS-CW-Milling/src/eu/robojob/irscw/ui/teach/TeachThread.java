@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
@@ -50,6 +51,9 @@ public class TeachThread extends Thread {
 	public void run() {
 		canContinue = true;
 		try {
+			for (AbstractRobot robot : teachJob.getProcessFlow().getRobots()) {
+				robot.restartProgram();
+			}
 			while (teachJob.hasStep()) {
 				AbstractProcessStep step = teachJob.getCurrentStep();
 				// intervention steps can be skipped

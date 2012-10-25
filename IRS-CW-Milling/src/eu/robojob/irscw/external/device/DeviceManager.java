@@ -89,7 +89,7 @@ public class DeviceManager {
 		WorkArea workArea5 = new WorkArea("IRS M Basic", uf1);
 		workAreas4.add(workArea5);
 		Zone zone4 = new Zone("Zone 4", workAreas4);
-		BasicStackPlateLayout basicStackPlateLayout = new BasicStackPlateLayout(27, 7, 10f, 15f, 45f, 26f, 35f, 5f, 0.35f);
+		BasicStackPlateLayout basicStackPlateLayout = new BasicStackPlateLayout(27, 7, 10f, 15f, 45f, 40f, 26f, 35f, 5f, 0.35f);
 		BasicStackPlate basicStackPlate = new BasicStackPlate("IRS M Basic", basicStackPlateLayout);
 		basicStackPlate.addZone(zone4);
 		stackingFromDevices.put(basicStackPlate.getId(), basicStackPlate);

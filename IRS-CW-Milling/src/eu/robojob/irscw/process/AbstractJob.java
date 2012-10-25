@@ -45,4 +45,8 @@ public abstract class AbstractJob {
 	public int getCurrentStepIndex() {
 		return currentStepIndex;
 	}
+	
+	public ProcessFlow getProcessFlow() {
+		return processFlow;
+	}
 }

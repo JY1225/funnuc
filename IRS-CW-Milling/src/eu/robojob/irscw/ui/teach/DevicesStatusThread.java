@@ -44,9 +44,8 @@ public class DevicesStatusThread extends Thread {
 					}
 					for (AbstractRobot robot : processFlow.getRobots()) {
 						if (!robot.isConnected()) {
-							robot.restartProgram();
 							disconnectedDevices.add(robot.getId());
-						}
+						} 
 					}
 					if (disconnectedDevices.size() > 0) {
 						logger.info("found " + disconnectedDevices.size() + " disconnected devices");

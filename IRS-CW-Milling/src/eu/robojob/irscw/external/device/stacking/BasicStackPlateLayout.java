@@ -20,6 +20,7 @@ public class BasicStackPlateLayout {
 	private float studDiameter;
 	private float horizontalPadding;
 	private float verticalPadding;
+	private float verticalPaddingBottom; 
 	private float horizontalHoleDistance;
 	private float verticalHoleDistance;
 	private float interferenceDistance;
@@ -36,13 +37,14 @@ public class BasicStackPlateLayout {
 	private static final Logger logger = Logger.getLogger(BasicStackPlateLayout.class);
 		
 	public BasicStackPlateLayout(int horizontalHoleAmount, int verticalHoleAmount, float holeDiameter, float studDiameter, float horizontalPadding,
-			float verticalPadding, float horizontalHoleDistance, float interferenceDistance, float overflowPercentage) {
+			float verticalPadding, float verticalPaddingBottom, float horizontalHoleDistance, float interferenceDistance, float overflowPercentage) {
 		this.horizontalHoleAmount = horizontalHoleAmount;
 		this.verticalHoleAmount = verticalHoleAmount;
 		this.holeDiameter = holeDiameter;
 		this.studDiameter = studDiameter;
 		this.horizontalPadding = horizontalPadding;
 		this.verticalPadding = verticalPadding;
+		this.verticalPaddingBottom = verticalPaddingBottom;
 		this.horizontalHoleDistance = horizontalHoleDistance;
 		this.verticalHoleDistance = 2*horizontalHoleDistance;
 		this.interferenceDistance = interferenceDistance;
@@ -52,7 +54,7 @@ public class BasicStackPlateLayout {
 		for (int i = 0; i < verticalHoleAmount; i++) {
 			for (int j = 0; j < horizontalHoleAmount; j++) {
 				float x = j * horizontalHoleDistance + horizontalPadding;
-				float y = getWidth() - (i * verticalHoleDistance + verticalPadding);
+				float y = i * verticalHoleDistance + verticalPaddingBottom;
 				studPositions[i][j] = new StudPosition(j, i, x, y, StudType.NONE);
 			}
 		}
@@ -61,7 +63,7 @@ public class BasicStackPlateLayout {
 	}
 	
 	public float getWidth() {
-		return verticalPadding*2 + (verticalHoleAmount - 1) * verticalHoleDistance;
+		return verticalPadding + verticalPaddingBottom + (verticalHoleAmount - 1) * verticalHoleDistance;
 	}
 	
 	public float getLength() {
@@ -214,7 +216,7 @@ public class BasicStackPlateLayout {
 		for (int i = 0; i < amountVertical; i++) {
 			// calculate vertical position
 			// position is calculated using width, because of the orientation of x: right, y: down
-			float verticalPos = getWidth() - (verticalStudIndex * verticalHoleDistance + studDiameter/2 + workPieceDimensions.getWidth()/2 + verticalPadding);
+			float verticalPos = verticalStudIndex * verticalHoleDistance + studDiameter/2 + workPieceDimensions.getWidth()/2 + verticalPaddingBottom;
 			int horizontalStudIndex = 0;
 			for (int j = 0; j < amountHorizontal; j++) {
 				float horizontalPos = horizontalStudIndex * horizontalHoleDistance + studDiameter/2 + workPieceDimensions.getLength()/2 + horizontalPadding;
@@ -401,7 +403,7 @@ public class BasicStackPlateLayout {
 				horizontalIndex += amountOfHorizontalStudsOnePieceLeft;
 				
 				float x = horizontalPadding + (horizontalIndex * horizontalHoleDistance) + h;
-				float y = getWidth() - (verticalPadding + (verticalIndex * verticalHoleDistance) + v);
+				float y = verticalPaddingBottom + (verticalIndex * verticalHoleDistance) + v;
 				
 				StackingPosition position = new StackingPosition(x, y, null, WorkPieceOrientation.TILTED);
 								
@@ -501,6 +503,10 @@ public class BasicStackPlateLayout {
 
 	public float getVerticalPadding() {
 		return verticalPadding;
+	}
+	
+	public float getVerticalPaddingBottom() {
+		return verticalPaddingBottom;
 	}
 
 	public void setVerticalPadding(float verticalPadding) {
