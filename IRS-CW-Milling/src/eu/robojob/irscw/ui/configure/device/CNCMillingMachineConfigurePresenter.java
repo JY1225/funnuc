@@ -91,6 +91,8 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		CNCMillingMachineSettings settings = (CNCMillingMachineSettings) deviceInfo.getDeviceSettings();
 		settings.setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
 		deviceInfo.getDevice().loadDeviceSettings(settings);
+		deviceInfo.getPickStep().getRobotSettings().setClampHeight(clamping.getHeight());
+		deviceInfo.getPutStep().getRobotSettings().setClampHeight(clamping.getHeight());
 	}
 
 	@Override

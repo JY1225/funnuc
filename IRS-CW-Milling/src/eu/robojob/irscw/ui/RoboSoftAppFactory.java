@@ -203,8 +203,9 @@ public class RoboSoftAppFactory {
 			FanucRobotPickSettings robotPickSettings1 = new FanucRobot.FanucRobotPickSettings();
 			robotPickSettings1.setGripperHead(robot.getGripperBody().getGripperHead("A"));
 			robotPickSettings1.setGripper(robot.getGripperBody().getGripper("Vacuum grip"));
-			robotPickSettings1.setSmoothPoint(new Coordinates(0, 0, 10, 0, 0, 0));
+			robotPickSettings1.setSmoothPoint(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getSmoothFromPoint());
 			robotPickSettings1.setWorkArea(stackPlate.getWorkAreaById("IRS M Basic"));
+			robotPickSettings1.setClampHeight(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getHeight());
 			WorkPieceDimensions dimensions1 = new WorkPieceDimensions(140, 80, 30);
 			WorkPiece workPiece1 = new WorkPiece(WorkPiece.Type.RAW, dimensions1);
 			robotPickSettings1.setWorkPiece(workPiece1);
@@ -215,6 +216,7 @@ public class RoboSoftAppFactory {
 			robotPutSettings1.setGripperHead(robot.getGripperBody().getGripperHead("A"));
 			robotPutSettings1.setGripper(robot.getGripperBody().getGripper("Vacuum grip"));
 			robotPutSettings1.setSmoothPoint(mainWorkArea.getClampingById("Clamping 1").getSmoothToPoint());
+			robotPutSettings1.setClampHeight(mainWorkArea.getClampingById("Clamping 1").getHeight());
 			robotPutSettings1.setWorkArea(mainWorkArea);
 			
 			// PICK 1
@@ -231,6 +233,7 @@ public class RoboSoftAppFactory {
 			robotPickSettings2.setGripperHead(robot.getGripperBody().getGripperHead("B"));
 			robotPickSettings2.setGripper(robot.getGripperBody().getGripper("2P clamp grip"));
 			robotPickSettings2.setSmoothPoint(mainWorkArea.getClampingById("Clamping 1").getSmoothFromPoint());
+			robotPickSettings2.setClampHeight(mainWorkArea.getClampingById("Clamping 1").getHeight());
 			robotPickSettings2.setWorkArea(mainWorkArea);
 			WorkPieceDimensions dimensions2 = new WorkPieceDimensions(140, 80, 30);
 			WorkPiece workPiece2 = new WorkPiece(WorkPiece.Type.FINISHED, dimensions2);
@@ -241,9 +244,9 @@ public class RoboSoftAppFactory {
 			FanucRobotPutSettings robotPutSettings2 = new FanucRobot.FanucRobotPutSettings();
 			robotPutSettings2.setGripperHead(robot.getGripperBody().getGripperHead("B"));
 			robotPutSettings2.setGripper(robot.getGripperBody().getGripper("2P clamp grip"));
-			robotPutSettings2.setSmoothPoint(new Coordinates(0, 0, 10, 0, 0, 0));
+			robotPutSettings2.setSmoothPoint(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getSmoothToPoint());
 			robotPutSettings2.setWorkArea(stackPlate.getWorkAreaById("IRS M Basic"));			
-			
+			robotPutSettings2.setClampHeight(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getHeight());
 			BasicStackPlatePutSettings stackPlatePutSettings = new BasicStackPlate.BasicStackPlatePutSettings(stackPlate.getWorkAreaById("IRS M Basic"));
 			
 			// PICK 2

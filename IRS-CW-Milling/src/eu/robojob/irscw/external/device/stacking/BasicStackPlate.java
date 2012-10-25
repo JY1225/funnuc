@@ -73,12 +73,12 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if (stackingPos.getWorkPiece() != null) {
 				currentPickLocation = stackingPos;
-				Coordinates c = stackingPos.getPosition();
+				Coordinates c = new Coordinates(stackingPos.getPosition());
 				float rotation = 0;
 				if (stackingPos.getOrientation() == WorkPieceOrientation.TILTED) {
 					rotation = 45;
 				}
-				c.offset(new Coordinates(0, 0, stackingPos.getWorkPiece().getDimensions().getHeight(), 0, 0, rotation));
+				c.offset(new Coordinates(0, 0, 0, 0, 0, rotation));
 				return c;
 			}
 		}

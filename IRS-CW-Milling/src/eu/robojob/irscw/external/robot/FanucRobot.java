@@ -70,7 +70,7 @@ public class FanucRobot extends AbstractRobot {
 		// write service handling set
 		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12);
 		// write service point set
-		writeServicePointSet(fPickSettings.getWorkArea(), fPickSettings.getLocation(), fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions());
+		writeServicePointSet(fPickSettings.getWorkArea(), fPickSettings.getLocation(), fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClampHeight());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK);
 		// write start service
@@ -94,7 +94,7 @@ public class FanucRobot extends AbstractRobot {
 		if (fPutSettings.getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
 		}
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClampHeight());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT);
 		//TODO in progress
@@ -142,7 +142,7 @@ public class FanucRobot extends AbstractRobot {
 		// write service handling set
 		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH);
 		// write service point set
-		writeServicePointSet(fPickSettings.getWorkArea(), fPickSettings.getLocation(), fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions());
+		writeServicePointSet(fPickSettings.getWorkArea(), fPickSettings.getLocation(), fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClampHeight());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK);
 		// write start service
@@ -176,7 +176,7 @@ public class FanucRobot extends AbstractRobot {
 		if (fPutSettings.getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
 		}
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClampHeight());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT);
 		//TODO in progress
@@ -258,7 +258,7 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_HANDLING, FanucRobotConstants.RESPONSE_WRITE_SERVICE_HANDLING, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	private void writeServicePointSet(WorkArea workArea, Coordinates location, Coordinates smoothPoint, WorkPieceDimensions dimensions) throws DisconnectedException, ResponseTimedOutException {
+	private void writeServicePointSet(WorkArea workArea, Coordinates location, Coordinates smoothPoint, WorkPieceDimensions dimensions, float clampHeight) throws DisconnectedException, ResponseTimedOutException {
 		List<String> values = new ArrayList<String>();
 		// user frame location ; x offset ; y offset ; z offset ; r offset ; z-safe plane offset ; safety add z ; smooth x ; smooth y ; smooth z ; tangent to/from ; xyz allowed ;
 		// clamp height ; bar break iterations ; bar break main axis ; bar break angle ; bar move length
@@ -276,7 +276,7 @@ public class FanucRobot extends AbstractRobot {
 		values.add("" + location.getR());
 		values.add("" + (dimensions.getHeight() + location.getZ()));
 		// TODO we take 20 as safety add z for now
-		values.add("20");
+		values.add("" + 20);
 		values.add("" + smoothPoint.getX());
 		values.add("" + smoothPoint.getY());
 		values.add("" + smoothPoint.getZ());
@@ -286,16 +286,21 @@ public class FanucRobot extends AbstractRobot {
 		if (userFrameId == 1) {
 			values.add("" + FanucRobotConstants.SERVICE_POINT_XYZ_ALLOWED_XYZ);
 		} else if (userFrameId == 3) {
-			// TODO: review this!
 			values.add("" + FanucRobotConstants.SERVICE_POINT_XYZ_ALLOWED_XY);
+			//values.add("" + FanucRobotConstants.SERVICE_POINT_XYZ_ALLOWED_XYZ);
 		} else {
 			throw new IllegalStateException("Should not be here! Illegal Userframe id");
+		}
+		if (clampHeight != Float.NaN) {
+			values.add("" + clampHeight);
+		} else {
+			throw new IllegalArgumentException("Invalid clamp height!");
 		}
 		values.add("0");
 		values.add("0");
 		values.add("0");
 		values.add("0");
-		values.add("0");
+		logger.info("ServicePoint: " + values);
 		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_POINT, FanucRobotConstants.RESPONSE_WRITE_SERVICE_POINT, WRITE_VALUES_TIMEOUT, values);
 	}
 
@@ -315,23 +320,23 @@ public class FanucRobot extends AbstractRobot {
 
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
 
-		public FanucRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, WorkPiece workPiece) {
-			super(workArea, gripperHead, gripper, smoothPoint, location, workPiece);
+		public FanucRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, float clampHeight, WorkPiece workPiece) {
+			super(workArea, gripperHead, gripper, smoothPoint, location, clampHeight, workPiece);
 		}
 		
 		public FanucRobotPickSettings() {
-			super(null, null, null, null, null, null);
+			super(null, null, null, null, null, Float.NaN, null);
 		}
 		
 	}
 	public static class FanucRobotPutSettings extends AbstractRobotPutSettings {
 
-		public FanucRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location) {
-			super(workArea, gripperHead, gripper, smoothPoint, location);
+		public FanucRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, float clampHeight) {
+			super(workArea, gripperHead, gripper, smoothPoint, location, clampHeight);
 		}
 		
 		public FanucRobotPutSettings() {
-			super(null, null, null, null, null);
+			super(null, null, null, null, null, Float.NaN);
 		}
 	}
 	

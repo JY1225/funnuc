@@ -20,6 +20,13 @@ public class StackingPosition {
 		this.workPiece = workPiece;
 		this.studs = studs;
 		this.orientation = orientation;
+		if (orientation == WorkPieceOrientation.TILTED) {
+			position.setR(45);
+		} else if (orientation == WorkPieceOrientation.HORIZONTAL) {
+			position.setR(0);
+		} else {
+			throw new IllegalArgumentException("Unkown orientation");
+		}
 	}
 	
 	public StackingPosition(Coordinates position,WorkPiece workPiece, WorkPieceOrientation orientation) {

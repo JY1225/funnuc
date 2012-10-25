@@ -9,20 +9,22 @@ public class Clamping {
 	private Coordinates relativePosition;
 	private Coordinates smoothToPoint;
 	private Coordinates smoothFromPoint;
+	private float height;
 	private String imageURL;
 	
-	public Clamping(String id, Coordinates relativePosition, Coordinates smoothToPoint,
+	public Clamping(String id, float height, Coordinates relativePosition, Coordinates smoothToPoint,
 				Coordinates smoothFromPoint, String imageURL) {
 		this.id = id;
+		this.height = height;
 		this.relativePosition = relativePosition;
 		this.smoothToPoint = smoothToPoint;
 		this.smoothFromPoint = smoothFromPoint;
 		this.imageURL = imageURL;
 	}
 	
-	public Clamping(String id, Coordinates relativePosition, Coordinates smoothPoint,
+	public Clamping(String id, float height, Coordinates relativePosition, Coordinates smoothPoint,
 			String imageURL) {
-		this(id, relativePosition, smoothPoint, smoothPoint, imageURL);
+		this(id, height, relativePosition, smoothPoint, smoothPoint, imageURL);
 	}
 
 	public String getId() {
@@ -73,4 +75,11 @@ public class Clamping {
 		this.correspondingWorkArea = correspondingWorkArea;
 	}
 
+	public float getHeight() {
+		return height;
+	}
+
+	public void setHeight(float height) {
+		this.height = height;
+	}
 }

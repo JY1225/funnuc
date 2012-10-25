@@ -21,6 +21,8 @@ public class FanucRobotCommunicationTest {
 	private FanucRobot fanucRobot;
 	private FanucRobotPickSettings pickSettings;
 	private FanucRobotPutSettings putSettings;
+	private FanucRobotPickSettings pickInMachineSettings;
+	private FanucRobotPickSettings pickInMachineW2Settings;
 	
 	private BasicStackPlate basicStackPlate;
 	private CNCMillingMachine cncMillingMachine;
@@ -36,15 +38,20 @@ public class FanucRobotCommunicationTest {
 		
 		fanucRobot = (FanucRobot) robotManager.getRobotById("Fanuc M20iA");
 		GripperHead head = fanucRobot.getGripperBody().getGripperHead("A");
+		GripperHead head2 = fanucRobot.getGripperBody().getGripperHead("B");
 		Gripper gripper = fanucRobot.getGripperBody().getGripper("Vacuum grip");
 		
 		WorkPiece wp = new WorkPiece(Type.RAW, new WorkPieceDimensions(100, 40, 100));
-		pickSettings = new FanucRobotPickSettings(wa, head, gripper, new Coordinates(10, 10, 10, 0, 0, 0), new Coordinates(5, 5, 5, 0, 0, 0), wp);
+		pickSettings = new FanucRobotPickSettings(wa, head, gripper, wa.getActiveClamping().getSmoothFromPoint(), new Coordinates(5, 5, 5, 0, 0, 0), wa.getActiveClamping().getHeight(),wp);
 		
 		this.cncMillingMachine = (CNCMillingMachine) deviceManager.getDeviceById("Mazak VRX J500");
 		WorkArea wa2 = cncMillingMachine.getWorkAreaById("Mazak VRX Main");
 		
-		putSettings = new FanucRobotPutSettings(wa2, head, gripper, new Coordinates(20, 20, 20, 0, 0, 0), new Coordinates(5, 5, 500, 0, 0, 0));
+		putSettings = new FanucRobotPutSettings(wa2, head, gripper, wa2.getActiveClamping().getSmoothToPoint(), cncMillingMachine.getPickLocation(wa2), wa2.getActiveClamping().getHeight());
+		
+		pickInMachineSettings = new FanucRobotPickSettings(wa2, head, gripper, wa2.getActiveClamping().getSmoothFromPoint(),cncMillingMachine.getPutLocation(wa2, wp.getDimensions()), wa2.getActiveClamping().getHeight(), wp);
+		
+		pickInMachineW2Settings = new FanucRobotPickSettings(wa2, head2, gripper, wa2.getActiveClamping().getSmoothFromPoint(),cncMillingMachine.getPutLocation(wa2, wp.getDimensions()), wa2.getActiveClamping().getHeight(), wp);
 	}
 	
 	@Ignore
@@ -104,6 +111,7 @@ public class FanucRobotCommunicationTest {
 		}
 	}
 	
+	@Ignore
 	@Test
 	public void testTeachPut() {
 		try {
@@ -112,6 +120,33 @@ public class FanucRobotCommunicationTest {
 			fanucRobot.finalizeTeachedPick(pickSettings);
 			fanucRobot.initiateTeachedPut(putSettings);
 			fanucRobot.finalizeTeachedPut(putSettings);
+		} catch (CommunicationException | RobotActionException e) {
+			e.printStackTrace();
+		} finally {
+			fanucRobot.disconnect();
+		}
+	}
+	
+	@Ignore
+	@Test
+	public void testTeachPickInMachine() {
+		try {
+			fanucRobot.restartProgram();
+			fanucRobot.initiateTeachedPick(pickInMachineSettings);
+			fanucRobot.finalizeTeachedPick(pickInMachineSettings);
+		} catch (CommunicationException | RobotActionException e) {
+			e.printStackTrace();
+		} finally {
+			fanucRobot.disconnect();
+		}
+	}
+	
+	@Test
+	public void testTeachPickInMachineWithSecondHead() {
+		try {
+			fanucRobot.restartProgram();
+			fanucRobot.initiateTeachedPick(pickInMachineW2Settings);
+			fanucRobot.finalizeTeachedPick(pickInMachineW2Settings);
 		} catch (CommunicationException | RobotActionException e) {
 			e.printStackTrace();
 		} finally {
