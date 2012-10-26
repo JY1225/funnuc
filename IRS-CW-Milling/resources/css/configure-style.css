@@ -6,7 +6,7 @@
 	-fx-font-size: 12px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	
+	-fx-font-smoothing-type: lcd;
 	-fx-font-family: "Helvetica";
 	-fx-padding: 0;
 	
@@ -26,7 +26,7 @@
 .form-full-textfield, .text-field {
 	-fx-font-size: 16px;
 	-fx-font-weight: bold;
-	
+	-fx-font-smoothing-type: lcd;
 	-fx-font-family: "Helvetica";
 	
 	-fx-text-fill: #323232;
@@ -68,7 +68,7 @@
 	-fx-font-size: 15px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	
+	-fx-font-smoothing-type: lcd;
 	-fx-font-family: "Helvetica";
 	
 	-fx-text-fill: #737373;
@@ -83,7 +83,7 @@
 	-fx-font-size: 13px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	
+	-fx-font-smoothing-type: lcd;
 	-fx-font-family: "Helvetica";
 }
 
@@ -121,6 +121,7 @@
 	-fx-alignment: center-left;
 	-fx-font-family: "Helvetica";
 	-fx-text-fill: #323232;
+	-fx-font-smoothing-type: lcd;
 }
 
 .combo-box-popup {
@@ -141,7 +142,7 @@
 	-fx-font-size: 13px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	
+	-fx-font-smoothing-type: lcd;
 	-fx-font-family: "Helvetica";
 	-fx-text-fill: #323232;
 	
@@ -163,7 +164,7 @@
 
 .stackplate {
 	-fx-fill: linear-gradient( #c2c2c2 0%, #acacac 100%);
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.4), 1, 0, -1, 1);
+	-fx-effect: innershadow(gaussian, #676767, 1, 0, -1, 1);
 	-fx-stroke-type: inside;
 	-fx-stroke-width: 2px;
 	-fx-stroke: rgba(255, 255, 255, 0.3);
@@ -175,38 +176,38 @@
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
 	-fx-fill: #e9441e;
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.5), 1, 0, 0, 1);
+	-fx-effect: innershadow(gaussian, #565656, 1, 0, 0, 1);
 }
 
 .hole {
 	-fx-fill: #818181;
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 0, 5);
+	-fx-effect: innershadow(gaussian, #404040, 5, 0, 0, 5);
 }
 
 .normal-stud {
 	-fx-fill: yellow;
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 0, 2);
+	-fx-effect: dropshadow(gaussian, #999900, 5, 0, 0, 2);
 	-fx-stroke: rgba(0, 0, 0, 0.4);
 	-fx-stroke-width: 1px;
 }
 
 .horizontal-stud {
 	-fx-fill: red;
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 0, 2);
+	-fx-effect: dropshadow(gaussian, #660000, 5, 0, 0, 2);
 }
 
 .corner-shape {
 	-fx-fill: orange;
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 0, 2);
+	-fx-effect: dropshadow(gaussian, #994c00, 5, 0, 0, 2);
 	-fx-stroke: rgba(0, 0, 0, 0.4);
 	-fx-stroke-width: 1px;
 }
 
 .workpiece {
-	-fx-fill: linear-gradient(rgba(236, 236, 236, 0.8) 0%, rgba(221, 225, 221,  0.8) 95%, rgba(100, 100, 100,  0.8) 100%);
+	-fx-fill: linear-gradient(#ececec 0%, #dddddd 95%, #646464 100%);
 	-fx-stroke-width: 1px;
 	-fx-stroke: rgba(120, 120, 120, 1);
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 5);
+	-fx-effect: dropshadow(gaussian, #646464, 10, 0, 0, 5);
 }
 
 .root {
@@ -222,7 +223,7 @@
 .corner-stud-lines {
 	-fx-stroke: red;
 	-fx-stroke-line-cap: butt;
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 0, 2);
+	/*-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 0, 2);*/
 }
 
 .iconflow-selector {
@@ -263,7 +264,7 @@
 	-fx-font-size: 13px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	
+	-fx-font-smoothing-type: lcd;
 	-fx-font-family: "Helvetica";
 	-fx-alignment: center;
 	

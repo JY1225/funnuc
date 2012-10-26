@@ -134,7 +134,6 @@
 
 .device-label {
 	-fx-font-size: 13px;
-	-fx-font-smoothing-type: lcd;
 	-fx-text-alignment: center;
 	
 	-fx-font-family: "Helvetica";

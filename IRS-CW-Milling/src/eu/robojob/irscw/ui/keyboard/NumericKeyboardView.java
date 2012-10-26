@@ -20,7 +20,7 @@ public class NumericKeyboardView extends AbstractKeyboardView {
 		int column = 0;
 		addKey("Esc", KeyCode.ESCAPE, column++, row, 1, 1, "key-escape", null);
 		addKey("Clr", KeyCode.DELETE, column++, row, 1, 1, "key-Clr", null);
-		addKey("←", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-back-space", null);
+		addKey("\u2190", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-back-space", null);
 		
 		column = 0;
 		row++;

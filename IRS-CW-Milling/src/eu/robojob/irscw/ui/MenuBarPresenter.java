@@ -76,4 +76,8 @@ public class MenuBarPresenter {
 		view.setEnabled(enabled);
 	}
 	
+	public void clickedExit() {
+		parent.exit();
+	}
+	
 }

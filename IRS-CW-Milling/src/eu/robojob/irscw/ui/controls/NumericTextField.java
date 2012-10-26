@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.controls;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 public class NumericTextField extends AbstractTextField<Float> {
 
@@ -18,6 +19,9 @@ public class NumericTextField extends AbstractTextField<Float> {
 	public void cleanText() {
 		DecimalFormat formatter = new DecimalFormat("#0.00");
 		formatter.setDecimalSeparatorAlwaysShown(true);
+		DecimalFormatSymbols custom = new DecimalFormatSymbols();
+		custom.setDecimalSeparator('.');
+		formatter.setDecimalFormatSymbols(custom);
 		if (!this.getText().equals("")) {
 			setText(formatter.format(Float.valueOf(this.getText())));
 		} else {

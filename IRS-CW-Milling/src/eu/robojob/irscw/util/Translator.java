@@ -22,12 +22,12 @@ public class Translator {
 	
 	public void setLanguageNL() {
 		locale = new Locale("nl");
-		messages = ResourceBundle.getBundle("messages");
+		messages = ResourceBundle.getBundle("messages", locale);
 	}
 	
 	public void setLanguageEN() {
 		locale = new Locale("nl");
-		messages = ResourceBundle.getBundle("messages");
+		messages = ResourceBundle.getBundle("messages", locale);
 	}
 	
 	public String getTranslation(String key) {

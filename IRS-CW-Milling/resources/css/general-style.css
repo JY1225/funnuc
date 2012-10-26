@@ -1,21 +1,13 @@
 
-.hidden {
-	visibility: hidden;
-}
-
-.top-panel {
-	
-}
-
 .bottompane {
 	-fx-background-color: white;
-	-fx-effect: dropshadow(gaussian, rgba(76, 76, 76, 0.3), 25, 0, 0, -1);
+	/*-fx-effect: dropshadow(gaussian, rgba(76, 76, 76, 0.3), 25, 0, 0, -1);*/
 }
 
 .bottom-left {
 	-fx-background-color: #5a5757, #807c7c, linear-gradient(#656161 0%, #616264 100%);
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.4), 8, 0, -4, 0);
+	/*-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.4), 8, 0, -4, 0);*/
 }
 
 .bottom-right {
@@ -30,17 +22,12 @@
 }
 
 .left-menu-button {
-	-fx-font-size: 14px;
-	-fx-font-smoothing-type: lcd;
-	-fx-text-alignment: center;
-	-fx-font-weight: bold;
-	-fx-font-family: "Helvetica";
 	-fx-padding: 0;
 	-fx-background-radius: 0;
-	
+	-fx-font-weight: bold;
 	-fx-background-color: #494545, #807878, #696666;
 	-fx-background-insets: 0 0 0 0, 1 1 1 1, 2 1 0 1;
-	-fx-effect: innershadow(gaussian, #1f1f1f, 1, 0, 0, 0);
+	/*-fx-effect: innershadow(gaussian, #1f1f1f, 1, 0, 0, 0);*/
 }
 
 .left-menu-button:pressed, .menu-item-selected {
@@ -50,17 +37,21 @@
 .left-menu-button .left-menu-item-label {
 	-fx-padding: 0 0 0 5;
 	-fx-text-fill: white;
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 2, 0.0 , 0 , -1 );
+	-fx-font-size: 14px;
+	-fx-font-weight: bold;
+	-fx-font-family: "Helvetica";
+	-fx-font-smoothing-type: lcd;
+	/*-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 2, 0.0 , 0 , -1 );*/
 }
 
 .menu-icon {
 	-fx-fill: white;
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 2, 0.0 , 0 , -1 );
+	/*-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 2, 0.0 , 0 , -1 );*/
 }
 
 .left-menu-top {
 	-fx-background-radius: 5 5 0 0;
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.4), 2, 0, 0, 2);
+	/*-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.4), 2, 0, 0, 2);*/
 }
 
 .left-menu-bottom {
@@ -70,16 +61,4 @@
 
 .left-menu-both {
 	-fx-background-radius: 5;
-}
-
-.green {
-	-fx-background-color: rgba(0, 255, 0, 0.5);
-}
-
-.red {
-	-fx-background-color: rgba(255, 0, 0, 0.5);
-}
-
-.yellow {
-	-fx-background-color: rgba(255, 255, 0, 0.5);
 }

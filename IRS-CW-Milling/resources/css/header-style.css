@@ -27,7 +27,7 @@
 	-fx-padding: 1 0 0 0;
 	-fx-font-family: "Helvetica";
 	-fx-font-weight: bold;
-	
+	-fx-font-smoothing-type: lcd;
 }
 
 .header-button-shape {

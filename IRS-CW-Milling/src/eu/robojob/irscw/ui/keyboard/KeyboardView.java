@@ -89,7 +89,7 @@ public class KeyboardView extends AbstractKeyboardView {
 		addKey("L", KeyCode.L, column++, row, 1, 1, "key-L", null);
 		addKey("Ö", KeyCode.COLORED_KEY_1, column++, row, 1, 1, "key-O-special", null);
 		addKey("Ä", KeyCode.COLORED_KEY_2, column++, row, 1, 1, "key-A-special", null);
-		addKey("←", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-back-space", null);
+		addKey("\u2190", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-back-space", null);
 		
 		column = 0;
 		row++;
@@ -153,7 +153,7 @@ public class KeyboardView extends AbstractKeyboardView {
 		addKey("L", KeyCode.L, column++, row, 1, 1, "key-L", null);
 		column++;
 		column++;
-		addKey("←", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-back-space", null);
+		addKey("\u2190", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-back-space", null);
 		
 		column = 0;
 		row++;
@@ -215,7 +215,7 @@ public class KeyboardView extends AbstractKeyboardView {
 		addKey("K", KeyCode.K, column++, row, 1, 1, "key-K", null);
 		addKey("L", KeyCode.L, column++, row, 1, 1, "key-L", null);
 		addKey("M", KeyCode.M, column++, row, 1, 1, "key-M", null);
-		addKey("←", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-back-space", null);
+		addKey("\u2190", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-back-space", null);
 		
 		column = 1;
 		row++;

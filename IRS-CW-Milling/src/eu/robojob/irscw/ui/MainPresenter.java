@@ -1,5 +1,6 @@
 package eu.robojob.irscw.ui;
 
+import javafx.application.Platform;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
@@ -103,5 +104,9 @@ public class MainPresenter {
 	
 	public void updateProcessConfiguredStatus(boolean configured) {
 		
+	}
+	
+	public void exit() {
+		Platform.exit();
 	}
 }

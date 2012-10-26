@@ -10,7 +10,6 @@
 		linear-gradient(#f6f6f6 0%, #c9cdd0 100%);
 	-fx-background-insets: 0, 1, 2;
 	-fx-font-size: 18px;
-	-fx-font-smoothing-type: lcd;
 	-fx-text-alignment: center;
 	
 	-fx-font-family: "Helvetica";

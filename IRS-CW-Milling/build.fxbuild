@@ -1,0 +1,8 @@
+jfx.build.stagingdir = ${workspace}/IRS-CW-Milling/build
+jfx.build.apptitle = IRS-CW-Milling
+jfx.build.vendorname = RoboJob
+jfx.build.appversion = 1.0
+jfx.build.applicationClass = eu.robojob.irscw.RoboSoft
+jfx.deploy.nativePackage = true
+jfx.deploy.appletWith = 800
+jfx.deploy.appletHeight = 600
