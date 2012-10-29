@@ -29,7 +29,7 @@ public class RoboSoft extends Application {
 		mainPresenter.showConfigure();
 		Scene scene = new Scene(mainPresenter.getView(), 800, 600);
 		Locale.setDefault(new Locale("nl"));
-		scene.setCursor(Cursor.NONE);
+		//scene.setCursor(Cursor.NONE);
 		scene.getStylesheets().add("css/general-style.css");
 		scene.getStylesheets().add("css/header-style.css");
 		scene.getStylesheets().add("css/keyboard-style.css");

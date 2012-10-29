@@ -11,13 +11,13 @@ import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.TeachJob;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainPresenter;
+import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
-import eu.robojob.irscw.ui.teach.flow.TeachProcessFlowPresenter;
 
 public class TeachPresenter {
 
 	private TeachView view;
-	private TeachProcessFlowPresenter processFlowPresenter;
+	private FixedProcessFlowPresenter processFlowPresenter;
 	private MainPresenter parent;
 	private TeachJob teachJob;
 	private ProcessFlowAdapter processFlowAdapter;
@@ -35,7 +35,7 @@ public class TeachPresenter {
 	
 	private static Logger logger = Logger.getLogger(TeachPresenter.class);
 	
-	public TeachPresenter(TeachView view, TeachProcessFlowPresenter processFlowPresenter, ProcessFlow processFlow, DisconnectedDevicesView teachDisconnectedDevicesView,
+	public TeachPresenter(TeachView view, FixedProcessFlowPresenter processFlowPresenter, ProcessFlow processFlow, DisconnectedDevicesView teachDisconnectedDevicesView,
 			GeneralInfoView teachGeneralInfoView, StatusView teachStatusView, TeachingNeededView teachingNeededView) {
 		this.view = view;
 		this.processFlowPresenter = processFlowPresenter;

@@ -47,7 +47,10 @@ public class FanucRobotCommunicationTest {
 		this.cncMillingMachine = (CNCMillingMachine) deviceManager.getDeviceById("Mazak VRX J500");
 		WorkArea wa2 = cncMillingMachine.getWorkAreaById("Mazak VRX Main");
 		
-		putSettings = new FanucRobotPutSettings(wa2, head, gripper, wa2.getActiveClamping().getSmoothToPoint(), cncMillingMachine.getPickLocation(wa2), wa2.getActiveClamping().getHeight());
+		Coordinates point = cncMillingMachine.getPickLocation(wa2);
+		System.out.println(point);
+		point.setR(-45);
+		putSettings = new FanucRobotPutSettings(wa2, head, gripper, wa2.getActiveClamping().getSmoothToPoint(), point, wa2.getActiveClamping().getHeight());
 		
 		pickInMachineSettings = new FanucRobotPickSettings(wa2, head, gripper, wa2.getActiveClamping().getSmoothFromPoint(),cncMillingMachine.getPutLocation(wa2, wp.getDimensions()), wa2.getActiveClamping().getHeight(), wp);
 		
@@ -81,7 +84,6 @@ public class FanucRobotCommunicationTest {
 		}
 	}
 	
-	@Ignore
 	@Test
 	public void testPut() {
 		try {
@@ -142,6 +144,7 @@ public class FanucRobotCommunicationTest {
 	}
 	
 	@Test
+	@Ignore
 	public void testTeachPickInMachineWithSecondHead() {
 		try {
 			fanucRobot.restartProgram();

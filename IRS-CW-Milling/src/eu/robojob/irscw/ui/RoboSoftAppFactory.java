@@ -41,13 +41,13 @@ import eu.robojob.irscw.ui.keyboard.KeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardView;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowView;
+import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.ui.teach.DisconnectedDevicesView;
 import eu.robojob.irscw.ui.teach.GeneralInfoView;
 import eu.robojob.irscw.ui.teach.StatusView;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
 import eu.robojob.irscw.ui.teach.TeachView;
 import eu.robojob.irscw.ui.teach.TeachingNeededView;
-import eu.robojob.irscw.ui.teach.flow.TeachProcessFlowPresenter;
 import eu.robojob.irscw.workpiece.WorkPiece;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
@@ -61,7 +61,7 @@ public class RoboSoftAppFactory {
 	private TeachPresenter teachPresenter;
 	private NumericKeyboardPresenter numericKeyboardPresenter;
 	private ConfigureProcessFlowPresenter configureProcessFlowPresenter;
-	private TeachProcessFlowPresenter teachProcessFlowPresenter;
+	private FixedProcessFlowPresenter teachProcessFlowPresenter;
 	private ProcessMenuPresenter processConfigurationMenuPresenter;
 	private ProcessOpenPresenter processOpenPresenter;
 	private ProcessFlow processFlow;
@@ -141,10 +141,10 @@ public class RoboSoftAppFactory {
 		return configureProcessFlowPresenter;
 	}
 	
-	public TeachProcessFlowPresenter getTeachProcessFlowPresenter() {
+	public FixedProcessFlowPresenter getTeachProcessFlowPresenter() {
 		if (teachProcessFlowPresenter == null) {
 			ProcessFlowView processFlowView = new ProcessFlowView();
-			teachProcessFlowPresenter = new TeachProcessFlowPresenter(processFlowView);
+			teachProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView);
 		}
 		return teachProcessFlowPresenter;
 	}

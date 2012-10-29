@@ -1,16 +1,14 @@
-package eu.robojob.irscw.ui.teach.flow;
+package eu.robojob.irscw.ui.main.flow;
 
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.main.flow.AbstractProcessFlowPresenter;
-import eu.robojob.irscw.ui.main.flow.ProcessFlowView;
 
-public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
+public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter {
 
-	private static Logger logger = Logger.getLogger(TeachProcessFlowPresenter.class);
+	private static Logger logger = Logger.getLogger(FixedProcessFlowPresenter.class);
 	
-	public TeachProcessFlowPresenter(ProcessFlowView view) {
+	public FixedProcessFlowPresenter(ProcessFlowView view) {
 		super(view);
 		view.setPresenter(this);
 	}
@@ -40,7 +38,6 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	}
 	
 	public void setPickStepActive(int transportIndex) {
-		logger.info("about to set pick active: " + transportIndex);
 		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
 			view.setTransportProgressGreen(i);
@@ -51,7 +48,6 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	}
 	
 	public void setPickStepFinished(int transportIndex) {
-		logger.info("about to set pick finished: " + transportIndex);
 		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
 			view.setTransportProgressGreen(i);
@@ -62,7 +58,6 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	}
 	
 	public void setPutStepActive(int transportIndex) {
-		logger.info("about to set put active: " + transportIndex);
 		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
 			view.setTransportProgressGreen(i);
@@ -73,7 +68,6 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	}
 	
 	public void setPutStepFinished(int transportIndex) {
-		logger.info("about to set put finished: " + transportIndex);
 		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex + 1; i++) {
 			view.setTransportProgressGreen(i);
@@ -82,7 +76,6 @@ public class TeachProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	}
 	
 	public void setProcessingStepActive(int deviceIndex) {
-		logger.info("about to set processing active: " + deviceIndex);
 		view.setAllProgressNone();
 		for (int i = 0; i < deviceIndex; i++) {
 			view.setDeviceProgressGreen(i);
