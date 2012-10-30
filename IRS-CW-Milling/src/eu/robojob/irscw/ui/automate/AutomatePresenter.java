@@ -14,6 +14,7 @@ public class AutomatePresenter {
 	
 	public AutomatePresenter(AutomateView view, FixedProcessFlowPresenter processFlowPresenter, ProcessFlow processFlow) {
 		this.view = view;
+		view.setPresenter(this);
 		this.processFlowPresenter = processFlowPresenter;
 		view.setTop(processFlowPresenter.getView());
 		this.processFlow = processFlow;
@@ -29,5 +30,13 @@ public class AutomatePresenter {
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {
 		processFlowPresenter.loadProcessFlow(processFlow);
+	}
+	
+	public void clickedStart() {
+		
+	}
+	
+	public void clickedPause() {
+		
 	}
 }

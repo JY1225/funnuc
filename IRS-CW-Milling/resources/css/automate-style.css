@@ -1,5 +1,5 @@
 .automate-bottom {
-	-fx-background-color: #5a5757, #807c7c, #656161;
+	-fx-background-color: #5a5757, #807c7c, linear-gradient(#6a6767 100%, #5f5b5b 0%);
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
 	-fx-effect: dropshadow(gaussian, rgba(76, 76, 76, 0.3), 25, 0, 0, -1);
 }
@@ -46,10 +46,21 @@
 }
 
 .automate-progress {
-	-fx-fill: radial-gradient(center 50% 50%, radius 100%, #67be00, #5caa00);
 	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.6), 2, 0.0, 0, -1);
 	-fx-smooth: true; 
 	-fx-stroke: null;
+}
+
+.automate-progress-green {
+	-fx-fill: radial-gradient(center 50% 50%, radius 100%, #67be00, #5caa00);
+}
+
+.automate-progress-orange {
+	-fx-fill: radial-gradient(center 50% 50%, radius 100%, #f3df00, #f3d400);
+}
+
+.automate-progress-red {
+	-fx-fill: radial-gradient(center 50% 50%, radius 100%, #da5a3f, #a42f1b);
 }
 
 .invisible {
@@ -78,7 +89,7 @@
 }
 
 .time-vbox {
-	-fx-background-color: linear-gradient( #4a4747 0%, #545151 100%), linear-gradient(#5e5b5b 0%, #5a5757 100%), #5a5757;
+	-fx-background-color: linear-gradient( #423f3f 0%, #423f3f 100%), linear-gradient(#666363 0%, #666363 100%), linear-gradient(#5f5d5d 0%, #575454 100%);
 	-fx-background-insets: 0, 1 0 0 1, 2 1 0 2;
 }
 
@@ -87,4 +98,60 @@
 
 .yellow {
 	-fx-background-color: yellow;
+}
+
+.automate-btn-icon {
+	-fx-fill: white;
+	-fx-padding: 0 10 0 10;
+	-fx-effect: innershadow(gaussian, rgba(0,0,0,0.8) , 1, 0.0 , 0 , 1 ); 
+}
+
+.automate-btn {
+	-fx-background-color: 
+		linear-gradient(#4b4848 0%, #464343 100%),
+		linear-gradient(#8a8686 0%, #787373 100%);
+	-fx-background-insets: 0, 1 1 2 1;
+	-fx-border-radius: 5, 4 4 3 3;
+}
+
+.automate-btn:pressed {
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0.5), 7, 0, 0, 2);
+	-fx-background-color: 
+		linear-gradient(#4b4848 0%, #464343 100%),
+		linear-gradient(#787373 0%, #686565 100%);
+	-fx-background-insets: 0, 1;
+}
+
+.automate-btn-text {
+	-fx-font-size: 20px;
+	-fx-font-weight: bold;
+	-fx-text-alignment: center;
+	-fx-font-smoothing-type: lcd;
+	-fx-font-family: "Helvetica";
+	-fx-fill: white;
+	-fx-padding: 0 10 0 10;
+	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
+}
+
+.status-msg {
+	-fx-font-size: 20px;
+	-fx-font-weight: bold;
+	-fx-text-alignment: left;
+	-fx-font-smoothing-type: lcd;
+	-fx-font-family: "Helvetica";
+	-fx-text-fill: white;
+	-fx-wrap-text: true;
+	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
+}
+
+.status-msg-green {
+	-fx-text-fill: white;
+}
+
+.status-msg-orange {
+	-fx-text-fill: #f3d400;
+}
+
+.status-msg-red {
+	-fx-text-fill: #ff4b2d;
 }

@@ -1,8 +1,11 @@
 package eu.robojob.irscw.ui.automate;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -17,10 +20,15 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.StrokeType;
+import javafx.scene.text.Text;
 import eu.robojob.irscw.util.Translator;
 
 public class AutomateView extends VBox {
 
+	public enum Status {
+		OK, WARNING, ERROR
+	}
+	
 	public static final int HEIGHT_TOP = 245;
 	public static final int HEIGHT_BOTTOM_TOP = 185;
 	public static final int HEIGHT_BOTTOM = 300;
@@ -32,6 +40,12 @@ public class AutomateView extends VBox {
 	public static final double ICON_WIDTH = 49.5;
 	public static final double ICON_HEIGHT = 55.813;
 	
+	private static final int BTN_WIDTH = 150;
+	private static final int BTN_HEIGHT = 50;
+	
+	private int totalAmount;
+	private int finishedAmount;
+	
 	private StackPane top;
 	private VBox bottom;
 	private GridPane bottomTop;
@@ -41,10 +55,16 @@ public class AutomateView extends VBox {
 	private static final String timeTillPausePath = "M 18.875 8.6875 C 10.492226 8.8180594 3.424332 15.301651 2.6875 23.84375 C 1.906544 32.954071 8.6421766 40.995295 17.75 41.78125 C 26.862821 42.562206 34.870295 35.765322 35.65625 26.65625 C 35.74871 25.572908 35.73496 24.539609 35.625 23.5 L 31.53125 22 C 31.894863 23.380732 32.063702 24.808066 31.9375 26.3125 C 31.322731 33.358598 25.111098 38.626025 18.0625 38.03125 C 11.016403 37.412732 5.811474 31.203598 6.40625 24.15625 C 7.023518 17.107652 13.171402 11.903974 20.21875 12.5 C 23.252609 12.766149 25.967015 14.071987 28 16.03125 L 25.96875 17.75 L 34.75 20.9375 L 33.09375 11.71875 L 30.875 13.625 C 28.209753 10.937261 24.632218 9.0998687 20.5625 8.75 C 19.99373 8.701112 19.433853 8.678797 18.875 8.6875 z M 19.15625 14.15625 C 18.466509 14.15625 17.9375 14.68526 17.9375 15.375 L 17.34375 24.59375 L 13.5625 27.03125 C 12.965224 27.37737 12.77888 28.156472 13.125 28.75 C 13.468621 29.348524 14.248974 29.53362 14.84375 29.1875 L 18.9375 27.09375 C 19.00497 27.10375 19.085027 27.125 19.15625 27.125 C 20.19211 27.1262 21.03125 26.25586 21.03125 25.21875 L 20.40625 15.375 C 20.40625 14.68526 19.84599 14.15625 19.15625 14.15625 z M 14.09375 15.5 C 13.932678 15.51995 13.774319 15.538775 13.625 15.625 C 13.027725 15.96987 12.81138 16.777725 13.15625 17.375 C 13.50362 17.973525 14.246475 18.15987 14.84375 17.8125 C 15.442276 17.46763 15.68862 16.722275 15.34375 16.125 C 15.085097 15.677044 14.576967 15.440139 14.09375 15.5 z M 23.875 15.5 C 23.524709 15.56257 23.185555 15.789736 23 16.125 C 22.661378 16.724775 22.891467 17.46763 23.46875 17.8125 C 24.067275 18.15737 24.84138 17.972276 25.1875 17.375 C 25.53362 16.778974 25.287275 15.96987 24.6875 15.625 C 24.538494 15.53878 24.41078 15.519855 24.25 15.5 C 24.129416 15.4851 23.991764 15.47915 23.875 15.5 z M 10.4375 19.09375 C 10.078715 19.15606 9.75649 19.351533 9.5625 19.6875 C 9.21763 20.284775 9.4364726 21.092629 10.03125 21.4375 C 10.631025 21.78362 11.34263 21.568525 11.6875 20.96875 C 12.031121 20.371476 11.846026 19.59612 11.25 19.25 C 11.100369 19.16378 10.973632 19.113704 10.8125 19.09375 C 10.691653 19.07878 10.557096 19.07298 10.4375 19.09375 z M 27.5 19.09375 C 27.339376 19.1137 27.177757 19.163785 27.03125 19.25 C 26.432724 19.59737 26.278881 20.372724 26.625 20.96875 C 26.97112 21.564776 27.683974 21.78487 28.28125 21.4375 C 28.878525 21.093878 29.12862 20.284775 28.78125 19.6875 C 28.524471 19.239543 27.98187 19.03389 27.5 19.09375 z M 9.3125 24 C 8.620261 24 8.0625 24.530258 8.0625 25.21875 C 8.0625 25.90974 8.624009 26.5 9.3125 26.5 C 10.00224 26.5 10.592501 25.908489 10.59375 25.21875 C 10.59245 24.529009 10.00349 24.00125 9.3125 24 z M 29 24 C 28.307761 24.0025 27.78125 24.531508 27.78125 25.21875 C 27.78245 25.908489 28.309011 26.5 29 26.5 C 29.689741 26.5013 30.25 25.90974 30.25 25.21875 C 30.25 24.530258 29.689741 24 29 24 z M 10.5 28.90625 C 10.338753 28.92816 10.180881 29.035346 10.03125 29.125 C 9.4339746 29.463623 9.216381 30.232718 9.5625 30.8125 C 9.904871 31.411023 10.655224 31.624871 11.25 31.28125 C 11.848525 30.942627 12.09487 30.129775 11.75 29.53125 C 11.491347 29.084231 10.983745 28.840532 10.5 28.90625 z M 27.46875 28.96875 C 27.12035 29.02404 26.817584 29.207231 26.625 29.53125 C 26.282629 30.126026 26.432724 30.93638 27.03125 31.28125 C 27.627275 31.62362 28.437629 31.408525 28.78125 30.8125 C 29.119873 30.213975 28.86603 29.452377 28.28125 29.125 C 28.131306 29.04035 27.974003 28.988157 27.8125 28.96875 C 27.691374 28.9542 27.584883 28.95032 27.46875 28.96875 z M 14.15625 32.5 C 14.07726 32.5027 13.983408 32.54176 13.90625 32.5625 C 13.597616 32.64544 13.329935 32.826362 13.15625 33.125 C 12.812629 33.723524 13.028974 34.500129 13.625 34.84375 C 14.222275 35.182373 15.001379 34.961029 15.34375 34.375 C 15.68987 33.776475 15.441026 33.06487 14.84375 32.71875 C 14.619773 32.589892 14.393231 32.491996 14.15625 32.5 z M 23.90625 32.5625 C 23.745393 32.58228 23.618069 32.632845 23.46875 32.71875 C 22.870226 33.06487 22.650132 33.777724 23 34.375 C 23.342372 34.971025 24.090225 35.191119 24.6875 34.84375 C 25.284775 34.500129 25.53362 33.711028 25.1875 33.125 C 24.927911 32.677043 24.388823 32.503166 23.90625 32.5625 z M 19.15625 33.84375 C 18.466509 33.84375 17.9375 34.40276 17.9375 35.09375 C 17.9375 35.78474 18.466509 36.34375 19.15625 36.34375 C 19.84599 36.34375 20.40625 35.78474 20.40625 35.09375 C 20.40625 34.40276 19.84599 33.84375 19.15625 33.84375 z M 33.0625 37.9375 L 33.0625 49.1875 L 35.875 49.1875 L 35.875 37.9375 L 33.0625 37.9375 z M 38.65625 37.9375 L 38.65625 49.1875 L 41.5 49.1875 L 41.5 37.9375 L 38.65625 37.9375 z";
 	private static final String timeTillFinishedPath = "M 19 8.03125 C 10.337463 8.1661674 3.0426729 14.860322 2.28125 23.6875 C 1.4742306 33.101866 8.4319667 41.406565 17.84375 42.21875 C 27.260697 43.025769 35.531565 36.006824 36.34375 26.59375 C 36.439295 25.474253 36.426133 24.418053 36.3125 23.34375 L 32.0625 21.78125 C 32.438248 23.208061 32.630415 24.695358 32.5 26.25 C 31.864715 33.531251 25.408834 38.989626 18.125 38.375 C 10.843748 37.73584 5.4791239 31.282543 6.09375 24 C 6.7316182 16.716166 13.092457 11.352833 20.375 11.96875 C 23.51011 12.243782 26.305418 13.60035 28.40625 15.625 L 26.3125 17.40625 L 35.375 20.65625 L 33.6875 11.21875 L 31.375 13.125 C 28.620804 10.347562 24.92429 8.4552948 20.71875 8.09375 C 20.130998 8.0432305 19.577503 8.0222558 19 8.03125 z M 19.28125 13.6875 C 18.56849 13.6875 17.96875 14.255991 17.96875 14.96875 L 17.375 24.46875 L 13.53125 27.03125 C 12.914042 27.388922 12.673579 28.136666 13.03125 28.75 C 13.386339 29.3685 14.166624 29.576422 14.78125 29.21875 L 19.0625 27.03125 C 19.13222 27.041554 19.20765 27.09375 19.28125 27.09375 C 20.35168 27.095057 21.21875 26.227972 21.21875 25.15625 L 20.5625 14.96875 C 20.5625 14.255991 19.99401 13.6875 19.28125 13.6875 z M 14.03125 15.0625 C 13.864802 15.083119 13.716803 15.129655 13.5625 15.21875 C 12.945292 15.57513 12.70612 16.382792 13.0625 17 C 13.421462 17.6185 14.226542 17.796462 14.84375 17.4375 C 15.462249 17.08112 15.66888 16.304709 15.3125 15.6875 C 15.045215 15.224594 14.530594 15.000642 14.03125 15.0625 z M 24.15625 15.0625 C 23.800499 15.132377 23.504247 15.341047 23.3125 15.6875 C 22.962577 16.307291 23.122202 17.08112 23.71875 17.4375 C 24.33725 17.79388 25.142328 17.617208 25.5 17 C 25.857672 16.384083 25.651041 15.57513 25.03125 15.21875 C 24.87727 15.129655 24.697395 15.083019 24.53125 15.0625 C 24.406641 15.047111 24.274834 15.039209 24.15625 15.0625 z M 10.25 18.75 C 9.8781399 18.819608 9.5129635 19.090321 9.3125 19.4375 C 8.9561201 20.054708 9.1978739 20.83112 9.8125 21.1875 C 10.432291 21.545172 11.20612 21.338541 11.5625 20.71875 C 11.917588 20.101541 11.740917 19.295172 11.125 18.9375 C 10.970375 18.848405 10.791508 18.770619 10.625 18.75 C 10.500119 18.734538 10.373953 18.726802 10.25 18.75 z M 27.90625 18.75 C 27.740267 18.770617 27.588897 18.848404 27.4375 18.9375 C 26.819 19.296462 26.611078 20.102833 26.96875 20.71875 C 27.326422 21.334667 28.101542 21.546462 28.71875 21.1875 C 29.335958 20.832411 29.546462 20.054708 29.1875 19.4375 C 28.922151 18.974593 28.404202 18.688142 27.90625 18.75 z M 9.09375 23.84375 C 8.3784079 23.84375 7.8125 24.444782 7.8125 25.15625 C 7.8125 25.870301 8.3822817 26.4375 9.09375 26.4375 C 9.8065095 26.4375 10.404959 25.86901 10.40625 25.15625 C 10.404956 24.44349 9.8078009 23.845041 9.09375 23.84375 z M 29.4375 23.84375 C 28.722158 23.846363 28.15625 24.446073 28.15625 25.15625 C 28.157557 25.86901 28.723449 26.4375 29.4375 26.4375 C 30.15026 26.438807 30.75 25.870301 30.75 25.15625 C 30.75 24.444782 30.15026 23.84375 29.4375 23.84375 z M 10.3125 28.9375 C 10.145871 28.960133 9.9671249 29.094854 9.8125 29.1875 C 9.1952917 29.537424 8.954829 30.307119 9.3125 30.90625 C 9.6662972 31.524749 10.510374 31.730089 11.125 31.375 C 11.7435 31.025076 11.95013 30.212249 11.59375 29.59375 C 11.326465 29.131813 10.812388 28.86959 10.3125 28.9375 z M 27.875 29 C 27.514974 29.057129 27.16776 29.258918 26.96875 29.59375 C 26.614952 30.208376 26.819 31.01862 27.4375 31.375 C 28.053417 31.728798 28.832411 31.522167 29.1875 30.90625 C 29.537423 30.28775 29.323047 29.525803 28.71875 29.1875 C 28.563802 29.100019 28.385642 29.020054 28.21875 29 C 28.093581 28.984964 27.995009 28.98096 27.875 29 z M 14.125 32.65625 C 14.043371 32.65905 13.923483 32.66608 13.84375 32.6875 C 13.524816 32.773208 13.241982 33.003896 13.0625 33.3125 C 12.707412 33.931 12.946583 34.707411 13.5625 35.0625 C 14.179708 35.412424 14.958702 35.199338 15.3125 34.59375 C 15.670172 33.97525 15.460958 33.201422 14.84375 32.84375 C 14.612297 32.710592 14.36989 32.647981 14.125 32.65625 z M 24.1875 32.6875 C 24.021274 32.70794 23.873053 32.754971 23.71875 32.84375 C 23.100251 33.201422 22.857205 33.976542 23.21875 34.59375 C 23.572548 35.209667 24.414041 35.421462 25.03125 35.0625 C 25.648458 34.707411 25.857672 33.918088 25.5 33.3125 C 25.231748 32.849593 24.686178 32.626187 24.1875 32.6875 z M 19.28125 34.03125 C 18.56849 34.03125 17.96875 34.59845 17.96875 35.3125 C 17.96875 36.026551 18.56849 36.625 19.28125 36.625 C 19.99401 36.625 20.5625 36.026551 20.5625 35.3125 C 20.5625 34.59845 19.99401 34.03125 19.28125 34.03125 z M 45.34375 34.59375 L 32.71875 47.34375 L 28 42.625 L 23.71875 46.9375 L 32.53125 55.875 L 49.5625 38.84375 L 45.34375 34.59375 z";
 	
+	private static final String pauseIconPath = "M 15 0.03125 C 6.7162491 0.03125 0 6.7474991 0 15.03125 C 0 23.315 6.7162491 30.03125 15 30.03125 C 23.28375 30.03125 30 23.315 30 15.03125 C 30 6.7474991 23.28375 0.03125 15 0.03125 z M 9 7.03125 L 13 7.03125 L 13 23.03125 L 9 23.03125 L 9 7.03125 z M 17 7.03125 L 21 7.03125 L 21 23.03125 L 17 23.03125 L 17 7.03125 z";
+	private static final String playIconPath = "M 15 0.03125 C 6.71625 0.03125 0 6.7475 0 15.03125 C 0 23.315 6.71625 30.03125 15 30.03125 C 23.28375 30.03125 30 23.315 30 15.03125 C 30 6.7475 23.28375 0.03125 15 0.03125 z M 9.375 7.53125 L 24.375 15.03125 L 9.375 22.53125 L 9.375 7.53125 z";
+	
 	private SVGPath cycleTimeShape;
 	private SVGPath cycleTimePassedShape;
 	private SVGPath timeTillPauseShape;
 	private SVGPath timeTillFinishedShape;
+	
+	private SVGPath pauseIconShape;
+	private SVGPath playIconShape;
 	
 	private Label lblCycleTimeMessage;
 	private Label lblCycleTimePassedMessage;
@@ -62,10 +82,26 @@ public class AutomateView extends VBox {
 	private Translator translator;
 	
 	private Path piePiecePath;
+	
+	private Label lblStatus;
+	
+	private Button btnPause;
+	private Button btnStart;
+	
+	private StackPane btnPane;
+	private VBox lblPane;
+	
+	private AutomatePresenter presenter;
 		
 	public AutomateView() {
 		this.translator = Translator.getInstance();
+		totalAmount = -1;
+		finishedAmount = 0;
 		build();
+	}
+	
+	public void setPresenter(AutomatePresenter presenter) {
+		this.presenter = presenter;
 	}
 	
 	private void build() {
@@ -88,6 +124,66 @@ public class AutomateView extends VBox {
 
 		bottomBottom = new HBox();
 		bottom.getChildren().add(bottomBottom);
+		
+		lblStatus = new Label();
+		lblStatus.getStyleClass().add("status-msg");
+		lblStatus.setPrefSize(200, 100);
+		lblPane = new VBox();
+		lblPane.setAlignment(Pos.CENTER);
+		lblPane.setPrefWidth(300);
+		lblPane.getChildren().add(lblStatus);
+		
+		btnPause = new Button();
+		btnPause.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
+		HBox hboxBtnPause = new HBox();
+		pauseIconShape = new SVGPath();
+		pauseIconShape.setContent(pauseIconPath);
+		pauseIconShape.getStyleClass().addAll("automate-icon", "automate-btn-icon");
+		btnPause.getStyleClass().add("automate-btn");
+		Text txtPause = new Text(translator.getTranslation("pause"));
+		StackPane txtPausePane = new StackPane();
+		txtPausePane.getChildren().add(txtPause);
+		txtPausePane.setPrefWidth(150);
+		txtPausePane.setAlignment(Pos.CENTER);
+		txtPause.getStyleClass().add("automate-btn-text");
+		hboxBtnPause.getChildren().add(pauseIconShape);
+		hboxBtnPause.getChildren().add(txtPausePane);
+		hboxBtnPause.setAlignment(Pos.CENTER_LEFT);
+		btnPause.setGraphic(hboxBtnPause);
+		btnPause.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				presenter.clickedPause();
+			}
+		});
+		btnStart = new Button();
+		btnStart.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
+		HBox hboxBtnStart = new HBox();
+		playIconShape = new SVGPath();
+		playIconShape.setContent(playIconPath);
+		playIconShape.getStyleClass().addAll("automate-icon", "automate-btn-icon");
+		btnStart.getStyleClass().add("automate-btn");
+		Text txtStart = new Text(translator.getTranslation("play"));
+		StackPane txtStartPane = new StackPane();
+		txtStartPane.getChildren().add(txtStart);
+		txtStartPane.setPrefWidth(150);
+		txtStartPane.setAlignment(Pos.CENTER);
+		txtStart.getStyleClass().add("automate-btn-text");
+		hboxBtnStart.getChildren().add(playIconShape);
+		hboxBtnStart.getChildren().add(txtStartPane);
+		hboxBtnStart.setAlignment(Pos.CENTER_LEFT);
+		btnStart.setGraphic(hboxBtnStart);
+		btnStart.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				presenter.clickedStart();
+			}
+		});
+		btnPane = new StackPane();
+		btnPane.setPrefWidth(300);
+		btnPane.setAlignment(Pos.CENTER);
+		showStartButton();
+		//showPauseButton();
 		
 		piePiecePath = new Path();
 		piePiecePath.getStyleClass().add("automate-progress");
@@ -116,15 +212,18 @@ public class AutomateView extends VBox {
 		pane.setAlignment(Pos.CENTER);
 		pane2.setTranslateX(PROGRESS_RADIUS);
 		pane2.setTranslateY(PROGRESS_RADIUS);
-		lblAmountFinished = new Label("" + 7);
-		lblTotalAmount = new Label("/" + 30);
+		lblAmountFinished = new Label();
+		lblTotalAmount = new Label();
 		lblTotalAmount.setPrefWidth(PROGRESS_RADIUS*2);
 		lblTotalAmount.getStyleClass().add("lbl-total");
 		lblAmountFinished.getStyleClass().add("finished-amount");
 		pane.getChildren().add(lblAmountFinished);
 		pane.getChildren().add(lblTotalAmount);
-		StackPane.setMargin(lblTotalAmount, new Insets(50, 0, 0, 40));
-		bottomTop.getChildren().add(pane);
+		StackPane.setMargin(lblTotalAmount, new Insets(80, 0, 0, 40));
+		
+		bottomTop.add(lblPane, 0, 0);
+		bottomTop.add(pane, 1, 0);
+		bottomTop.add(btnPane, 2, 0);
 		
 		int row = 0;
 		int column = 0;
@@ -209,6 +308,11 @@ public class AutomateView extends VBox {
 		vboxTimeTillFinished.setPrefHeight(HEIGHT_BOTTOM - HEIGHT_BOTTOM_TOP);
 		bottomBottom.getChildren().add(vboxTimeTillFinished);
 		
+		setTotalAmount(35);
+		setFinishedAmount(1);
+		
+		setStatus(Status.WARNING, translator.getTranslation("status-first"));
+		
 		pane.toFront();
 	}
 	
@@ -220,8 +324,38 @@ public class AutomateView extends VBox {
 		}
 	}
 	
-	public void setPercentage(int percentage) {
-
+	public void setStatus(Status type, String message) {
+		lblStatus.setText(message);
+		lblStatus.getStyleClass().removeAll("status-msg-green", "status-msg-orange", "status-msg-red");
+		piePiecePath.getStyleClass().removeAll("automate-progress-green", "automate-progress-orange", "automate-progress-red");
+		switch (type) {
+		case OK:
+			piePiecePath.getStyleClass().add("automate-progress-green");
+			lblStatus.getStyleClass().add("status-msg-green");
+			break;
+		case WARNING:
+			piePiecePath.getStyleClass().add("automate-progress-orange");
+			lblStatus.getStyleClass().add("status-msg-orange");
+			break;
+		case ERROR:
+			piePiecePath.getStyleClass().add("automate-progress-red");
+			lblStatus.getStyleClass().add("status-msg-red");
+			break;
+		}
+	}
+	
+	public void showStartButton() {
+		btnPane.getChildren().clear();
+		btnPane.getChildren().add(btnStart);
+	}
+	
+	public void showPauseButton() {
+		btnPane.getChildren().clear();
+		btnPane.getChildren().add(btnPause);
+	}
+	
+	private void setPercentage(int percentage) {
+		
 		if ((percentage < 0) || (percentage > 100)) {
 			throw new IllegalArgumentException("Illegal percentage value");
 		}
@@ -299,6 +433,19 @@ public class AutomateView extends VBox {
 			lblTimeTillFinished.setText(translator.getTranslation("unknown"));
 		} else {
 			lblTimeTillFinished.setText(timeString);
+		}
+	}
+	
+	public void setTotalAmount(int amount) {
+		totalAmount = amount;
+		lblTotalAmount.setText("/" + amount);
+	}
+	
+	public void setFinishedAmount(int amount) {
+		finishedAmount = amount;
+		lblAmountFinished.setText("" + amount);
+		if ((totalAmount >= 0) && (finishedAmount >= 0)) {
+			setPercentage((int) Math.floor(((double) finishedAmount/ (double) totalAmount) * 100));
 		}
 	}
 	
