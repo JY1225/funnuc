@@ -1,5 +1,7 @@
 package eu.robojob.irscw.ui;
 
+import eu.robojob.irscw.external.device.DeviceManager;
+import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineInterventionSettings;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePickSettings;
@@ -11,19 +13,18 @@ import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlate
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlatePutSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlateSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.robot.FanucRobot;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPickSettings;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPutSettings;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotSettings;
 import eu.robojob.irscw.external.robot.RobotManager;
-import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.ui.automate.AutomatePresenter;
+import eu.robojob.irscw.ui.automate.AutomateView;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.ConfigureView;
 import eu.robojob.irscw.ui.configure.device.DeviceMenuFactory;
@@ -40,8 +41,8 @@ import eu.robojob.irscw.ui.keyboard.KeyboardView;
 import eu.robojob.irscw.ui.keyboard.KeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardView;
-import eu.robojob.irscw.ui.main.flow.ProcessFlowView;
 import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
+import eu.robojob.irscw.ui.main.flow.ProcessFlowView;
 import eu.robojob.irscw.ui.teach.DisconnectedDevicesView;
 import eu.robojob.irscw.ui.teach.GeneralInfoView;
 import eu.robojob.irscw.ui.teach.StatusView;
@@ -59,9 +60,11 @@ public class RoboSoftAppFactory {
 	private KeyboardPresenter keyboardPresenter;
 	private ProcessConfigurePresenter processConfigurationPresenter;
 	private TeachPresenter teachPresenter;
+	private AutomatePresenter automatePresenter;
 	private NumericKeyboardPresenter numericKeyboardPresenter;
 	private ConfigureProcessFlowPresenter configureProcessFlowPresenter;
 	private FixedProcessFlowPresenter teachProcessFlowPresenter;
+	private FixedProcessFlowPresenter automateProcessFlowPresenter;
 	private ProcessMenuPresenter processConfigurationMenuPresenter;
 	private ProcessOpenPresenter processOpenPresenter;
 	private ProcessFlow processFlow;
@@ -74,7 +77,7 @@ public class RoboSoftAppFactory {
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
 			MainView mainView = new MainView();
-			mainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter());
+			mainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter(), getAutomatePresenter());
 			mainPresenter.loadProcessFlow(getProcessFlow());
 		}
 		return mainPresenter;
@@ -107,6 +110,14 @@ public class RoboSoftAppFactory {
 			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, generalInfoView, statusView, teachingNeededView);
 		}
 		return teachPresenter;
+	}
+	
+	public AutomatePresenter getAutomatePresenter() {
+		if (automatePresenter == null) {
+			AutomateView view = new AutomateView();
+			automatePresenter = new AutomatePresenter(view, getAutomateProcessFlowPresenter(), getProcessFlow());
+		}
+		return automatePresenter;
 	}
 	
 	public KeyboardPresenter getKeyboardPresenter() {
@@ -144,9 +155,17 @@ public class RoboSoftAppFactory {
 	public FixedProcessFlowPresenter getTeachProcessFlowPresenter() {
 		if (teachProcessFlowPresenter == null) {
 			ProcessFlowView processFlowView = new ProcessFlowView();
-			teachProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView);
+			teachProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView, true);
 		}
 		return teachProcessFlowPresenter;
+	}
+	
+	public FixedProcessFlowPresenter getAutomateProcessFlowPresenter() {
+		if (automateProcessFlowPresenter == null) {
+			ProcessFlowView processFlowView = new ProcessFlowView();
+			automateProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView, false);
+		}
+		return automateProcessFlowPresenter;
 	}
 	
 	public ProcessMenuPresenter getProcessConfigurationMenuPresenter() {

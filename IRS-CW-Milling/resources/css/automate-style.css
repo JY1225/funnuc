@@ -1,0 +1,90 @@
+.automate-bottom {
+	-fx-background-color: #5a5757, #807c7c, #656161;
+	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
+	-fx-effect: dropshadow(gaussian, rgba(76, 76, 76, 0.3), 25, 0, 0, -1);
+}
+
+.automate-icon {
+	-fx-fill: #dfdfdf;
+	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
+}
+
+.circle-front {
+	-fx-fill: #656161;
+	-fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.5), 2, 0.0, 0, 1);
+}
+
+.circle-back {
+	-fx-fill: #534f4f;
+	-fx-effect: innershadow(one-pass-box, rgba(0, 0, 0, 0.5), 2, 0.0, 0, 1);
+}
+
+.automate-info-lbl {
+	-fx-text-alignment: center;
+	-fx-alignment: center;
+	-fx-text-wrap: true;
+	-fx-text-fill: #dfdfdf;
+	-fx-font-family: "Helvetica";
+	-fx-font-size: 14px;
+	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
+}
+
+.automate-time-lbl {
+	-fx-text-alignment: center;
+	-fx-alignment: center;
+	-fx-text-wrap: true;
+	-fx-text-fill: white;
+	-fx-font-family: "Helvetica";
+	-fx-font-size: 20px;
+	-fx-font-width: bold;
+	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
+	-fx-padding: 7 0 7 0;
+}
+
+.automate-time-hl-lbl {
+	-fx-text-fill: white;
+}
+
+.automate-progress {
+	-fx-fill: radial-gradient(center 50% 50%, radius 100%, #67be00, #5caa00);
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.6), 2, 0.0, 0, -1);
+	-fx-smooth: true; 
+	-fx-stroke: null;
+}
+
+.invisible {
+	visibility: hidden;
+}
+
+.lbl-total {
+	-fx-text-alignment: center;
+	-fx-alignment: center;
+	-fx-text-wrap: true;
+	-fx-text-fill: #dfdfdf;
+	-fx-font-family: "Helvetica";
+	-fx-font-size: 12px;
+	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
+}
+
+.finished-amount {
+	-fx-text-alignment: center;
+	-fx-alignment: center;
+	-fx-text-wrap: true;
+	-fx-text-fill: white;
+	-fx-font-family: "Helvetica";
+	-fx-font-size: 80px;
+	-fx-font-width: bold;
+	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
+}
+
+.time-vbox {
+	-fx-background-color: linear-gradient( #4a4747 0%, #545151 100%), linear-gradient(#5e5b5b 0%, #5a5757 100%), #5a5757;
+	-fx-background-insets: 0, 1 0 0 1, 2 1 0 2;
+}
+
+.blue-time {
+}
+
+.yellow {
+	-fx-background-color: yellow;
+}

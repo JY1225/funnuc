@@ -7,10 +7,12 @@ import eu.robojob.irscw.process.ProcessFlow;
 public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter {
 
 	private static Logger logger = Logger.getLogger(FixedProcessFlowPresenter.class);
+	private boolean showQuestionMarks;
 	
-	public FixedProcessFlowPresenter(ProcessFlowView view) {
+	public FixedProcessFlowPresenter(ProcessFlowView view, boolean showQuestionMarks) {
 		super(view);
 		view.setPresenter(this);
+		this.showQuestionMarks = showQuestionMarks;
 	}
 
 	@Override
@@ -33,7 +35,9 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {
 		view.setProcessFlow(processFlow);
-		view.showQuestionMarks();
+		if (showQuestionMarks) {
+			view.showQuestionMarks();
+		}
 		view.disableClickable();
 	}
 	

@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui;
 
 import javafx.application.Platform;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.ui.automate.AutomatePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
 
@@ -14,8 +15,9 @@ public class MainPresenter {
 	private MenuBarPresenter menuBarPresenter;
 	private ConfigurePresenter configurePresenter;
 	private TeachPresenter teachPresenter;
+	private AutomatePresenter automatePresenter;
 		
-	public MainPresenter(MainView view, MenuBarPresenter menuBarPresenter, ConfigurePresenter configurePresenter, TeachPresenter teachPresenter) {
+	public MainPresenter(MainView view, MenuBarPresenter menuBarPresenter, ConfigurePresenter configurePresenter, TeachPresenter teachPresenter, AutomatePresenter automatePresenter) {
 		this.view = view;
 		view.setPresenter(this);
 		this.menuBarPresenter = menuBarPresenter;
@@ -24,7 +26,8 @@ public class MainPresenter {
 		configurePresenter.setParent(this);
 		this.teachPresenter = teachPresenter;
 		teachPresenter.setParent(this);
-		
+		this.automatePresenter = automatePresenter;
+		automatePresenter.setParent(this);
 		this.process = null;
 
 		view.setHeader(menuBarPresenter.getView());
@@ -48,7 +51,7 @@ public class MainPresenter {
 	public void refreshStatus() {
 		menuBarPresenter.setConfigureButtonEnabled(true);
 		menuBarPresenter.setTeachButtonEnabled(false);
-		menuBarPresenter.setAutomateButtonEnabled(false);
+		//menuBarPresenter.setAutomateButtonEnabled(false);
 		if (configurePresenter.isConfigured()) {
 			if (process.isConfigured()) {
 				menuBarPresenter.setTeachButtonEnabled(true);
@@ -70,6 +73,8 @@ public class MainPresenter {
 	
 	public void showAutomate() {
 		menuBarPresenter.showAutomateView();
+		view.setContent(automatePresenter.getView());
+		refreshStatus();
 	}
 	
 	public void showAlarms() {
@@ -92,6 +97,7 @@ public class MainPresenter {
 		this.process = process;
 		configurePresenter.loadProcessFlow(process);
 		teachPresenter.loadProcessFlow(process);
+		automatePresenter.loadProcessFlow(process);
 	}
 	
 	public void showMessage(String message) {
