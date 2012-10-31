@@ -92,6 +92,7 @@ public class TransportButton extends Pane {
 		handlerPressed = new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				TransportButton.this.requestFocus();
 				arrowRegion.getStyleClass().remove("arrow-clicked");
 				arrowRegion.getStyleClass().add("arrow-clicked");
 				event.consume();

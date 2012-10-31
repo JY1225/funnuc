@@ -108,6 +108,7 @@ public class ProcessFlowView extends GridPane  {
 		this.setEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent> () {
 			@Override
 			public void handle(MouseEvent arg0) {
+				ProcessFlowView.this.requestFocus();
 				presenter.backgroundClicked();
 				arg0.consume();
 			}

@@ -28,7 +28,9 @@ public class FanucRobot extends AbstractRobot {
 	private static final int ASK_POSITION_TIMEOUT = 50000;
 	private static final int PICK_TEACH_TIMEOUT = 10*60*1000;
 	private static final int PUT_TEACH_TIMEOUT = 10*60*1000;
+	
 	private static final int TO_HOME_TIMEOUT = 100000;
+	private static final int TO_JAW_CHANGE_TIMEOUT = 100000;
 	
 	private static Logger logger = Logger.getLogger(FanucRobot.class);
 	
@@ -44,6 +46,12 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public String getStatus() throws CommunicationException, RobotActionException {
 		return null;
+	}
+	
+	@Override
+	public void setSpeed(int speedPercentage) throws CommunicationException {
+		super.setSpeed(speedPercentage);
+		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_SET_SPEED, FanucRobotConstants.RESPONSE_SET_SPEED, WRITE_VALUES_TIMEOUT, speedPercentage + "");
 	}
 	
 	@Override
@@ -234,7 +242,7 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_GRIPPER, FanucRobotConstants.RESPONSE_WRITE_SERVICE_GRIPPER, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	private void writeServiceHandlingSet(int serviceHandlingPPMode) throws DisconnectedException, ResponseTimedOutException {
+	private void writeServiceHandlingSet(int serviceHandlingPPMode) throws CommunicationException {
 		List<String> values = new ArrayList<String>();
 		// free after this service ; WP thickness ;  WP Z grip ; grip Z face till front ; dx correction P1 ; dy correction P1 ; dx correction P2 ; dy correction P2 ; dW correction ;
 		//    dP correction ; robot speed ; payload 1 ; payload 2 ; soft float range ; soft float force ; PP mode ; bar move distance
@@ -248,7 +256,10 @@ public class FanucRobot extends AbstractRobot {
 		values.add("0");
 		values.add("0");
 		values.add("0");
-		values.add("50"); // robot speed is set to 50 for now! 
+		if ((getSpeed() < 25) || (getSpeed() > 100)) {
+			setSpeed(50);
+		}
+		values.add(getSpeed() + ""); // robot speed is set to 50 for now! 
 		values.add("0");
 		values.add("0");
 		values.add("0");
@@ -314,8 +325,20 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public void moveToHome() throws CommunicationException, RobotActionException {
 		//we now use a speed of 50%
-		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_TO_HOME, FanucRobotConstants.RESPONSE_TO_HOME, TO_HOME_TIMEOUT, "" + 50);
+		if ((getSpeed() < 25) || (getSpeed() > 100)) {
+			setSpeed(50);
+		}
+		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_TO_HOME, FanucRobotConstants.RESPONSE_TO_HOME, TO_HOME_TIMEOUT, "" + getSpeed());
 		//TODO there's no way of knowing the robot is in its home point, so for now, we just leave him there
+	}
+
+	@Override
+	public void moveToChangePoint() throws CommunicationException,
+			RobotActionException {
+		if ((getSpeed() < 25) || (getSpeed() > 100)) {
+			setSpeed(50);
+		}
+		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_TO_JAW_CHANGE, FanucRobotConstants.RESPONSE_TO_JAW_CHANGE, TO_JAW_CHANGE_TIMEOUT, "" + getSpeed());
 	}
 
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {

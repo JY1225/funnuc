@@ -44,6 +44,8 @@ import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardView;
 import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.ui.main.flow.ProcessFlowView;
+import eu.robojob.irscw.ui.robot.RobotPopUpPresenter;
+import eu.robojob.irscw.ui.robot.RobotPopUpView;
 import eu.robojob.irscw.ui.teach.DisconnectedDevicesView;
 import eu.robojob.irscw.ui.teach.GeneralInfoView;
 import eu.robojob.irscw.ui.teach.StatusView;
@@ -66,6 +68,7 @@ public class RoboSoftAppFactory {
 	private ConfigureProcessFlowPresenter configureProcessFlowPresenter;
 	private FixedProcessFlowPresenter teachProcessFlowPresenter;
 	private FixedProcessFlowPresenter automateProcessFlowPresenter;
+	private RobotPopUpPresenter robotPopUpPresenter;
 	private ProcessMenuPresenter processConfigurationMenuPresenter;
 	private ProcessOpenPresenter processOpenPresenter;
 	private ProcessFlow processFlow;
@@ -78,7 +81,7 @@ public class RoboSoftAppFactory {
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
 			MainView mainView = new MainView();
-			mainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter(), getAutomatePresenter());
+			mainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter(), getAutomatePresenter(), getRobotPopUpPresenter());
 			mainPresenter.loadProcessFlow(getProcessFlow());
 		}
 		return mainPresenter;
@@ -119,6 +122,15 @@ public class RoboSoftAppFactory {
 			automatePresenter = new AutomatePresenter(view, getAutomateProcessFlowPresenter(), getProcessFlow());
 		}
 		return automatePresenter;
+	}
+	
+	public RobotPopUpPresenter getRobotPopUpPresenter() {
+		if (robotPopUpPresenter == null) {
+			RobotPopUpView view = new RobotPopUpView();
+			// TODO review: now fixed robot
+			robotPopUpPresenter = new RobotPopUpPresenter(view, robotManager.getRobotById("Fanuc M20iA"));
+		}
+		return robotPopUpPresenter;
 	}
 	
 	public KeyboardPresenter getKeyboardPresenter() {

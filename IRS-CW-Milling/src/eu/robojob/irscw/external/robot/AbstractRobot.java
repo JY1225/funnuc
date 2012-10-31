@@ -5,6 +5,8 @@ import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.DisconnectedException;
+import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPiece;
@@ -27,18 +29,17 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		if (activeGripperBody != null) {
 			setActiveGripperBody(activeGripperBody);
 		}
-		this.speed = 50;
 	}
 	
 	public AbstractRobot(String id) {
 		this(id, null, null);
 	}
 	
-	public void setSpeed(int speed) {
-		if ((speed < 0) || (speed > 100)) {
-			throw new IllegalArgumentException("Illegal speed value: " + speed + ", should be between 0 and 100");
+	public void setSpeed(int speedPercentage) throws CommunicationException {
+		if ((speedPercentage < 0) || (speedPercentage > 100) || !((speedPercentage == 25) || (speedPercentage == 50) || (speedPercentage == 75) || (speedPercentage == 100))) {
+			throw new IllegalArgumentException("Illegal speed value: " + speedPercentage + ", should be between 0 and 100");
 		}
-		this.speed = speed;
+		this.speed = speedPercentage;
 	}
 	
 	public int getSpeed() {
@@ -72,6 +73,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
 	
 	public abstract void moveToHome() throws CommunicationException, RobotActionException;
+	public abstract void moveToChangePoint() throws CommunicationException, RobotActionException;
 	
 	public abstract void initiateTeachedPick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
 	public abstract void initiateTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;

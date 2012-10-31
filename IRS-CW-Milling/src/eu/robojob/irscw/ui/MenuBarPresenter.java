@@ -7,9 +7,14 @@ public class MenuBarPresenter {
 	private MenuBarView view;
 	private MainPresenter parent;
 	
+	private boolean robotActive;
+	private boolean alarmsActive;
+	
 	public MenuBarPresenter(MenuBarView processMenuBarView) {
 		this.view = processMenuBarView;
 		processMenuBarView.setPresenter(this);
+		robotActive = false;
+		alarmsActive = false;
 	}
 	
 	public void setParent(MainPresenter parent) {
@@ -53,10 +58,32 @@ public class MenuBarPresenter {
 	}
 	
 	public void clickedAlarms() {
-		parent.showAlarms();
+		if (!alarmsActive) {
+			parent.showAlarms();
+		}
 	}
 	
-	public void showAlarmsView() {
+	public void disablePopUp() {
+		view.setNonePopupActive();
+		robotActive = false;
+		alarmsActive = false;
+	}
+	
+	public void clickedRobot() {
+		if (!robotActive) {
+			parent.showRobot();
+		} else {
+			parent.closePopUps();
+		}
+	}
+	
+	public void robotActive() {
+		robotActive = true;
+		view.setRobotActive();
+	}
+	
+	public void alarmsActive() {
+		alarmsActive = true;
 		view.setAlarmsActive();
 	}
 	

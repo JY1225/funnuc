@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.robot.RobotPopUpPresenter;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
 
 public class MainPresenter {
@@ -16,8 +17,10 @@ public class MainPresenter {
 	private ConfigurePresenter configurePresenter;
 	private TeachPresenter teachPresenter;
 	private AutomatePresenter automatePresenter;
+	private RobotPopUpPresenter robotPopUpPresenter;
 		
-	public MainPresenter(MainView view, MenuBarPresenter menuBarPresenter, ConfigurePresenter configurePresenter, TeachPresenter teachPresenter, AutomatePresenter automatePresenter) {
+	public MainPresenter(MainView view, MenuBarPresenter menuBarPresenter, ConfigurePresenter configurePresenter, TeachPresenter teachPresenter, AutomatePresenter automatePresenter,
+			RobotPopUpPresenter robotPopUpPresenter) {
 		this.view = view;
 		view.setPresenter(this);
 		this.menuBarPresenter = menuBarPresenter;
@@ -28,6 +31,8 @@ public class MainPresenter {
 		teachPresenter.setParent(this);
 		this.automatePresenter = automatePresenter;
 		automatePresenter.setParent(this);
+		this.robotPopUpPresenter = robotPopUpPresenter;
+		robotPopUpPresenter.setParent(this);
 		this.process = null;
 
 		view.setHeader(menuBarPresenter.getView());
@@ -78,7 +83,21 @@ public class MainPresenter {
 	}
 	
 	public void showAlarms() {
-		menuBarPresenter.showAlarmsView();
+		menuBarPresenter.alarmsActive();
+	}
+	
+	public void showRobot() {
+		menuBarPresenter.robotActive();
+		view.addPopup(robotPopUpPresenter.getView());
+	}
+	
+	public void closePopUp(AbstractPopUpPresenter<?> presenter) {
+		closePopUps();
+	}
+	
+	public void closePopUps() {
+		menuBarPresenter.disablePopUp();
+		view.closePopup();
 	}
 	
 	public void showAdmin() {
