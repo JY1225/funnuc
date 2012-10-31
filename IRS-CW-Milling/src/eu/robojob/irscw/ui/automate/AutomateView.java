@@ -309,9 +309,9 @@ public class AutomateView extends VBox {
 		bottomBottom.getChildren().add(vboxTimeTillFinished);
 		
 		setTotalAmount(35);
-		setFinishedAmount(1);
+		setFinishedAmount(7);
 		
-		setStatus(Status.WARNING, translator.getTranslation("status-first"));
+		setStatus(Status.OK, translator.getTranslation("status-first"));
 		
 		pane.toFront();
 	}

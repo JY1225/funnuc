@@ -29,6 +29,10 @@ public class FanucRobotConstants {
 	public static final int PERMISSIONS_CHANGE_OK				=	BIT5;
 	public static final int PERMISSIONS_BAR_MOVED_ACK			=	BIT6;
 	
+	// ROBOT CONTROLLER VALUE
+	public static final int CONTROLLER_VALUE_FAULT_LED			=	BIT0;
+	public static final int CONTROLLER_VALUE_CMOS_BATTERY_LOW	=	BIT1;
+	
 	// ROBOT STATUS REGISTERS
 	public static final int STATUS								=	104;
 	public static final int STATUS_PICK_RELEASE_REQUEST			=	BIT0;

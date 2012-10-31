@@ -42,9 +42,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	//TODO!
-	@Override
-	public String getStatus() throws CommunicationException {
-		return null;
+	public CNCMillingMachineStatus getStatus() throws CommunicationException {
+		int statusInt = (cncMachineCommunication.readRegisters(CNCMachineConstants.STATUS, 1)).get(0);
+		return new CNCMillingMachineStatus(statusInt);
 	}
 
 	@Override

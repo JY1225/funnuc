@@ -134,11 +134,6 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public void grabPiece(AbstractDevicePutSettings putSettings) {
 		logger.debug("grab piece");
 	}
-
-	@Override
-	public String getStatus() {
-		return "OK";
-	}
 	
 	public BasicStackPlateLayout getLayout() {
 		return layout;

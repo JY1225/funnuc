@@ -15,9 +15,7 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	protected List<Zone> zones;
-	
-	public abstract String getStatus() throws CommunicationException;
-	
+		
 	public abstract boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException;
 	public abstract boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException;
 	
