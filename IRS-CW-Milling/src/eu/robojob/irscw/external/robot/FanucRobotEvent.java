@@ -1,6 +1,6 @@
 package eu.robojob.irscw.external.robot;
 
-public class RobotEvent {
+public class FanucRobotEvent {
 
 	private AbstractRobot source;
 	private int id;
@@ -10,7 +10,7 @@ public class RobotEvent {
 	public static final int ROBOT_DISCONNECTED = 2;
 	public static final int ROBOT_STATUS_CHANGED = 3;
 	
-	public RobotEvent (AbstractRobot source, int id, long when) {
+	public FanucRobotEvent (AbstractRobot source, int id, long when) {
 		this.source = source;
 		this.id = id;
 		this.when = when;

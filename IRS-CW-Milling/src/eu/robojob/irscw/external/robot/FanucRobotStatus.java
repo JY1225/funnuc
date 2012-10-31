@@ -1,11 +1,11 @@
 package eu.robojob.irscw.external.robot;
 
-public class RobotStatus {
+public class FanucRobotStatus {
 
 	private int controllerString;
 	private double zRest;
 	
-	public RobotStatus(int controllerString, double zRest) {
+	public FanucRobotStatus(int controllerString, double zRest) {
 		this.controllerString = controllerString;
 		this.zRest = zRest;
 	}
