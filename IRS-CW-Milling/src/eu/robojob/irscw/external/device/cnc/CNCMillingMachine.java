@@ -1,9 +1,11 @@
 package eu.robojob.irscw.external.device.cnc;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -31,20 +33,61 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int START_CYCLE_TIMEOUT = 10000;
 	private static final int CYCLE_FINISHED_TIMEOUT = Integer.MAX_VALUE;
 	
+	private Set<CNCMillingMachineListener> listeners;
+	
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
 		super(id);
 		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection);
+		this.listeners = new HashSet<CNCMillingMachineListener>();
 	}
 	
 	public CNCMillingMachine(String id, List<Zone> zones, SocketConnection socketConnection) {
 		super(id, zones);
 		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection);
+		this.listeners = new HashSet<CNCMillingMachineListener>();
 	}
 	
 	//TODO!
 	public CNCMillingMachineStatus getStatus() throws CommunicationException {
 		int statusInt = (cncMachineCommunication.readRegisters(CNCMachineConstants.STATUS, 1)).get(0);
 		return new CNCMillingMachineStatus(statusInt);
+	}
+	
+	public void addListener(CNCMillingMachineListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeListener(CNCMillingMachineListener listener) {
+		listeners.remove(listener);
+	}
+	
+	public void processCNCMillingMachineEvent(CNCMillingMachineEvent event) {
+		switch(event.getId()) {
+			case CNCMillingMachineEvent.CNC_MILLING_CONNECTED : 
+				for (CNCMillingMachineListener listener : listeners) {
+					listener.cNCMillingMachineConnected(event);
+				}
+				break;
+			case CNCMillingMachineEvent.CNC_MILLING_DISCONNECTED : 
+				for (CNCMillingMachineListener listener : listeners) {
+					listener.cNCMillingMachineDisconnected(event);
+				}
+				break;
+			case CNCMillingMachineEvent.ALARM_OCCURED : 
+				for (CNCMillingMachineListener listener : listeners) {
+					// TODO get list of alarms!
+					listener.cNCMillingMachineAlarmsOccured(event, null);
+				}
+				break;
+			case CNCMillingMachineEvent.STATUS_CHANGED : 
+				for (CNCMillingMachineListener listener : listeners) {
+					// TODO get status!
+					listener.cNCMillingMachineStatusChanged(event, null);
+				}
+				break;
+			default:
+				throw new IllegalArgumentException("Unknown event type");
+		}
 	}
 
 	@Override

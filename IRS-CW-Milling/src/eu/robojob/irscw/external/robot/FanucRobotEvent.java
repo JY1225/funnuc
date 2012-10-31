@@ -10,10 +10,10 @@ public class FanucRobotEvent {
 	public static final int ROBOT_DISCONNECTED = 2;
 	public static final int ROBOT_STATUS_CHANGED = 3;
 	
-	public FanucRobotEvent (AbstractRobot source, int id, long when) {
+	public FanucRobotEvent (AbstractRobot source, int id) {
 		this.source = source;
 		this.id = id;
-		this.when = when;
+		this.when = System.currentTimeMillis();
 	}
 
 	public AbstractRobot getSource() {
