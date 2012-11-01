@@ -33,7 +33,7 @@ public class ThreadManager {
 	}
 
 	public void submit(Thread thread) {
-		logger.debug("New thread submitted");
+		logger.debug("New thread submitted: " + thread);
 		if (thread instanceof ExternalCommunicationThread) {
 			communicationThreads.add((ExternalCommunicationThread) thread);
 		}

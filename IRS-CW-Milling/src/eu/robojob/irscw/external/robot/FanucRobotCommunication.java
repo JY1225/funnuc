@@ -1,5 +1,6 @@
 package eu.robojob.irscw.external.robot;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,9 +15,11 @@ import eu.robojob.irscw.positioning.Coordinates;
 public class FanucRobotCommunication extends ExternalCommunication {
 
 	private StringBuffer command;
+	private FanucRobot fanucRobot;
 	
-	public FanucRobotCommunication(SocketConnection socketConnection) {
+	public FanucRobotCommunication(SocketConnection socketConnection, FanucRobot fanucRobot) {
 		super(socketConnection);
+		this.fanucRobot = fanucRobot;
 		this.command = new StringBuffer();
 	}
 
@@ -133,5 +136,22 @@ public class FanucRobotCommunication extends ExternalCommunication {
 			return new Coordinates(x, y, z, w, p, r);
 		}
 		return null;
+	}
+
+	@Override
+	public void connected() {
+		
+	}
+
+	@Override
+	public void disconnected() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void iOExceptionOccured(IOException e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

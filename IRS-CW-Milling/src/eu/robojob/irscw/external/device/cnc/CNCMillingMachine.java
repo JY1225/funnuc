@@ -32,62 +32,103 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int PUT_ALLOWED_TIMEOUT = 10000;
 	private static final int START_CYCLE_TIMEOUT = 10000;
 	private static final int CYCLE_FINISHED_TIMEOUT = Integer.MAX_VALUE;
-	
-	private Set<CNCMillingMachineListener> listeners;
-	
+		
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
 		super(id);
-		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection);
-		this.listeners = new HashSet<CNCMillingMachineListener>();
+		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection, this);
 	}
 	
 	public CNCMillingMachine(String id, List<Zone> zones, SocketConnection socketConnection) {
 		super(id, zones);
-		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection);
-		this.listeners = new HashSet<CNCMillingMachineListener>();
+		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection, this);
 	}
 	
-	//TODO!
-	public CNCMillingMachineStatus getStatus() throws CommunicationException {
+	@Override
+	public CNCMachineStatus getStatus() throws CommunicationException {
 		int statusInt = (cncMachineCommunication.readRegisters(CNCMachineConstants.STATUS, 1)).get(0);
-		return new CNCMillingMachineStatus(statusInt);
+		return new CNCMachineStatus(statusInt);
 	}
 	
-	public void addListener(CNCMillingMachineListener listener) {
-		listeners.add(listener);
-	}
-	
-	public void removeListener(CNCMillingMachineListener listener) {
-		listeners.remove(listener);
-	}
-	
-	public void processCNCMillingMachineEvent(CNCMillingMachineEvent event) {
-		switch(event.getId()) {
-			case CNCMillingMachineEvent.CNC_MILLING_CONNECTED : 
-				for (CNCMillingMachineListener listener : listeners) {
-					listener.cNCMillingMachineConnected(event);
-				}
-				break;
-			case CNCMillingMachineEvent.CNC_MILLING_DISCONNECTED : 
-				for (CNCMillingMachineListener listener : listeners) {
-					listener.cNCMillingMachineDisconnected(event);
-				}
-				break;
-			case CNCMillingMachineEvent.ALARM_OCCURED : 
-				for (CNCMillingMachineListener listener : listeners) {
-					// TODO get list of alarms!
-					listener.cNCMillingMachineAlarmsOccured(event, null);
-				}
-				break;
-			case CNCMillingMachineEvent.STATUS_CHANGED : 
-				for (CNCMillingMachineListener listener : listeners) {
-					// TODO get status!
-					listener.cNCMillingMachineStatusChanged(event, null);
-				}
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown event type");
+	@Override
+	public Set<CNCMachineAlarm> getAlarms() throws CommunicationException {
+		Set<CNCMachineAlarm> alarms = new HashSet<CNCMachineAlarm>();
+		List<Integer> alarmInts = cncMachineCommunication.readRegisters(CNCMachineConstants.ALARMS_REG1, 2);
+		int alarmReg1 = alarmInts.get(0);
+		int alarmReg2 = alarmInts.get(1);
+		if ((alarmReg1 & CNCMachineConstants.ALR_MACHINE)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MACHINE));
 		}
+		if ((alarmReg1 & CNCMachineConstants.ALR_FEED_HOLD)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.FEED_HOLD));
+		}
+		if ((alarmReg1 & CNCMachineConstants.ALR_MAIN_PRESSURE)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MAIN_PRESSURE));
+		}
+		if ((alarmReg1 & CNCMachineConstants.ALR_OIL_TEMP_HIGH)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.OIL_TEMP_HIGH));
+		}
+		if ((alarmReg1 & CNCMachineConstants.ALR_OIL_LEVEL_LOW)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.OIL_LEVEL_LOW));
+		}
+		if ((alarmReg1 & CNCMachineConstants.ALR_DOOR1_NOT_OPEN)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.DOOR1_NOT_OPEN));
+		}
+		if ((alarmReg1 & CNCMachineConstants.ALR_DOOR2_NOT_OPEN)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.DOOR2_NOT_OPEN));
+		}
+		if ((alarmReg1 & CNCMachineConstants.ALR_DOOR1_NOT_CLOSE)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.DOOR1_NOT_CLOSED));
+		}
+		if ((alarmReg1 & CNCMachineConstants.ALR_DOOR2_NOT_CLOSE)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.DOOR2_NOT_CLOSED));
+		}
+		if ((alarmReg1 & CNCMachineConstants.ALR_CLAMP1_NOT_OPEN)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.CLAMP1_NOT_OPEN));
+		}
+		if ((alarmReg1 & CNCMachineConstants.ALR_CLAMP2_NOT_OPEN)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.CLAMP2_NOT_OPEN));
+		}
+		if ((alarmReg1 & CNCMachineConstants.ALR_CLAMP1_NOT_CLOSE)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.CLAMP1_NOT_CLOSED));
+		}
+		if ((alarmReg1 & CNCMachineConstants.ALR_CLAMP2_NOT_CLOSE)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.CLAMP2_NOT_CLOSED));
+		}
+		
+		if ((alarmReg2 & CNCMachineConstants.ALR_WA1_PUT)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA1_PUT));
+		}
+		if ((alarmReg2 & CNCMachineConstants.ALR_WA2_PUT)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA2_PUT));
+		}
+		if ((alarmReg2 & CNCMachineConstants.ALR_WA1_PICK)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA1_PICK));
+		}
+		if ((alarmReg2 & CNCMachineConstants.ALR_WA2_PICK)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA2_PICK));
+		}
+		if ((alarmReg2 & CNCMachineConstants.ALR_WA1_CYST)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA1_CYCLUS_START));
+		}
+		if ((alarmReg2 & CNCMachineConstants.ALR_WA2_CYST)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA2_CYCLUS_START));
+		}
+		if ((alarmReg2 & CNCMachineConstants.ALR_WA1_CLAMP)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA1_CLAMP));
+		}
+		if ((alarmReg2 & CNCMachineConstants.ALR_WA2_CLAMP)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA2_CLAMP));
+		}
+		if ((alarmReg2 & CNCMachineConstants.ALR_WA1_UNCLAMP)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA1_UNCLAMP));
+		}
+		if ((alarmReg2 & CNCMachineConstants.ALR_WA2_UNCLAMP)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA2_UNCLAMP));
+		}
+		if ((alarmReg2 & CNCMachineConstants.ALR_MULTIPLE_IPC_RQST)>0) {
+			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MULTIPLE_IPC_REQUESTS));
+		}
+		return alarms;
 	}
 
 	@Override
@@ -409,7 +450,10 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	@Override
 	public boolean isConnected() {
-		return cncMachineCommunication.isConnected();
+		if (cncMachineCommunication != null) {
+			return cncMachineCommunication.isConnected();
+		}
+		return false;
 	}
 	
 	public void disconnect() {

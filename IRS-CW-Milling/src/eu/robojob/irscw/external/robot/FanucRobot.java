@@ -2,6 +2,7 @@ package eu.robojob.irscw.external.robot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,11 +33,14 @@ public class FanucRobot extends AbstractRobot {
 	private static final int TO_HOME_TIMEOUT = 100000;
 	private static final int TO_JAW_CHANGE_TIMEOUT = 100000;
 	
+	private Set<FanucRobotListener> listeners;
+	
 	private static Logger logger = Logger.getLogger(FanucRobot.class);
 	
 	public FanucRobot(String id, Set<GripperBody> gripperBodies, GripperBody gripperBody, SocketConnection socketConnection) {
 		super(id, gripperBodies, gripperBody);
-		this.fanucRobotCommunication = new FanucRobotCommunication(socketConnection);
+		this.fanucRobotCommunication = new FanucRobotCommunication(socketConnection, this);
+		this.listeners = new HashSet<FanucRobotListener>();
 	}
 	
 	public FanucRobot(String id, SocketConnection socketConnection) {
@@ -46,6 +50,42 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public String getStatus() throws CommunicationException, RobotActionException {
 		return null;
+	}
+	
+	public void addListener(FanucRobotListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeListener(FanucRobotListener listener) {
+		listeners.remove(listener);
+	}
+	
+	public void ProcessFanucRobotEvent(FanucRobotEvent event) {
+		switch(event.getId()) {
+			case FanucRobotEvent.ROBOT_CONNECTED:
+				for (FanucRobotListener listener : listeners) {
+					listener.robotConnected(event);
+				}
+				break;
+			case FanucRobotEvent.ROBOT_DISCONNECTED:
+				for (FanucRobotListener listener : listeners) {
+					listener.robotDisconnected(event);
+				}
+				break;
+			case FanucRobotEvent.STATUS_CHANGED:
+				for (FanucRobotListener listener : listeners) {
+					// TODO: incorporate status object
+					listener.robotStatusChanged(event, null);
+				}
+				break;
+			case FanucRobotEvent.ALARMS_OCCURED:
+				for (FanucRobotListener listener : listeners) {
+					listener.robotAlarmsOccured(event);
+				}
+				break;
+			default:
+					break;
+		}
 	}
 	
 	@Override

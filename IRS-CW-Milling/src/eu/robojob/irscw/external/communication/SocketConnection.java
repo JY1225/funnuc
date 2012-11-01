@@ -43,9 +43,7 @@ public class SocketConnection {
 	
 	public void connect() throws IOException{
 		if (connected) {
-			logger.info("Already connected: " + toString());
 		} else {
-			//logger.info("Connecting: " + toString());
 			if (type == Type.CLIENT) {
 				try {
 					connectAsClient();
@@ -73,7 +71,6 @@ public class SocketConnection {
 			} else {
 				throw new IllegalStateException("Unknown connection type");
 			}
-			logger.info("Connected! " + toString());
 		}
 	}
 	
@@ -94,7 +91,6 @@ public class SocketConnection {
 	
 	// TODO refactor!
 	public void disconnect() {
-		//logger.info("Disconnecting: " + this.toString());
 		try {
 			if (serverSocket != null) {
 				serverSocket.close();
@@ -126,7 +122,6 @@ public class SocketConnection {
 				connected = false;
 			}
 		}
-		//logger.info("Disconnected: " + toString());
 	}
 	
 	public String getName() {
@@ -163,10 +158,8 @@ public class SocketConnection {
 	
 	public void sendString(String message) throws DisconnectedException {
 		if (isConnected()) {
-			//logger.debug(toString() + " sending message: " + message);
 			out.print(message);
 			out.flush();
-			//logger.debug(toString() + " sent message: " + message);
 		} else {
 			throw new DisconnectedException(this);
 		}
@@ -174,10 +167,8 @@ public class SocketConnection {
 	
 	public void sendCharacter(char character) throws DisconnectedException {
 		if (isConnected()) {
-			//logger.debug(toString() + " sending character: " + character);
 			out.print(character);
 			out.flush();
-			//logger.debug(toString() + " sent character: " + character);
 		} else {
 			throw new DisconnectedException(this);
 		}
@@ -193,10 +184,8 @@ public class SocketConnection {
 				}
 				return msg;
 			} catch (IOException e) {
-				logger.debug("error while reading from: " + this.toString());
 				connected = false;
 				disconnect();
-				logger.error(e);
 				throw e;
 			}
 		} else {
@@ -216,18 +205,14 @@ public class SocketConnection {
 			   }
 			   return (char) b;
 			} catch (IOException e) {
-				logger.error("error while reading from: " + this.toString());
 				connected = false;
 				disconnect();
-				logger.error(e);
 				throw e;
 			}
 		} else {
 			throw new DisconnectedException(this);
 		}
 	}
-	
-	
 	
 	public String readMessage() throws IOException, DisconnectedException {
 		if (isConnected()) {
@@ -247,10 +232,8 @@ public class SocketConnection {
 						return message;
 				   }
 				} catch (IOException e) {
-					logger.error("error while reading from: " + this.toString());
 					connected = false;
 					disconnect();
-					logger.error(e);
 					throw e;
 				}
 		} else {

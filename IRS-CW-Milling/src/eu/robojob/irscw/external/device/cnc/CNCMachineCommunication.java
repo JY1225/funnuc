@@ -1,5 +1,6 @@
 package eu.robojob.irscw.external.device.cnc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,13 +17,15 @@ public class CNCMachineCommunication extends ExternalCommunication {
 	private StringBuffer command;
 		
 	private static final Logger logger = Logger.getLogger(CNCMachineCommunication.class);
+	private AbstractCNCMachine cncMachine;
 	
-	public CNCMachineCommunication(SocketConnection socketConnection) {
+	public CNCMachineCommunication(SocketConnection socketConnection, AbstractCNCMachine cncMachine) {
 		super(socketConnection);
+		this.cncMachine = cncMachine;
 		this.command = new StringBuffer();
 	}
 
-	public void writeRegisters(int startingRegisterNr, int timeout, int[] values) throws CommunicationException, DisconnectedException {
+	public synchronized void writeRegisters(int startingRegisterNr, int timeout, int[] values) throws CommunicationException, DisconnectedException {
 		command = new StringBuffer();
 		command.append('W');
 		command.append('W');
@@ -69,11 +72,11 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		throw new ResponseTimedOutException(this);
 	}
 	
-	public void writeRegisters(int startingRegisterNr, int[] values) throws CommunicationException, DisconnectedException {
+	public synchronized void writeRegisters(int startingRegisterNr, int[] values) throws CommunicationException, DisconnectedException {
 		writeRegisters(startingRegisterNr, getDefaultWaitTimeout(), values);
 	}
 	
-	public List<Integer> readRegisters(int startingRegisterNr, int amount, int timeout) throws CommunicationException, DisconnectedException{
+	public synchronized List<Integer> readRegisters(int startingRegisterNr, int amount, int timeout) throws CommunicationException, DisconnectedException{
 		command = new StringBuffer();
 		command.append('W');
 		command.append('R');
@@ -127,7 +130,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		return results;
 	}
 	
-	public boolean checkRegisterValue(int registerNumber, int value, int waitTimeout) throws CommunicationException, DisconnectedException {
+	public synchronized boolean checkRegisterValue(int registerNumber, int value, int waitTimeout) throws CommunicationException, DisconnectedException {
 		long currentTime = System.currentTimeMillis();
 		List<Integer> readRegisters;
 		boolean timeout = false;
@@ -147,14 +150,13 @@ public class CNCMachineCommunication extends ExternalCommunication {
 	}
 	
 	// TODO test this method
-	public boolean checkRegisterValueBitPattern(int registerNumber, int bitPattern, int waitTimeout) throws CommunicationException, DisconnectedException {
+	public synchronized boolean checkRegisterValueBitPattern(int registerNumber, int bitPattern, int waitTimeout) throws CommunicationException, DisconnectedException {
 		long currentTime = System.currentTimeMillis();
 		List<Integer> readRegisters;
 		boolean timeout = false;
 		while (!timeout) {
 			logger.info("checking again regiser value: " + System.currentTimeMillis() + " - " + currentTime);
 			if (System.currentTimeMillis() - currentTime >= waitTimeout) {
-				logger.error("time out!");
 				timeout = true;
 				break;
 			}
@@ -166,7 +168,23 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		return false;
 	}
 	
-	public List<Integer> readRegisters(int startingRegisterNr, int amount) throws CommunicationException, DisconnectedException {
+	public synchronized List<Integer> readRegisters(int startingRegisterNr, int amount) throws CommunicationException, DisconnectedException {
 		return readRegisters(startingRegisterNr, amount, getDefaultWaitTimeout());
+	}
+
+	@Override
+	public void connected() {
+		cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.CNC_MACHINE_CONNECTED));
+	}
+
+	@Override
+	public void disconnected() {
+		cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.CNC_MACHINE_DISCONNECTED));
+	}
+
+	@Override
+	public void iOExceptionOccured(IOException e) {
+		// we just log the error here
+		logger.error(e);
 	}
 }

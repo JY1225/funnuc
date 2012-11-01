@@ -58,7 +58,7 @@ public class DeviceManager {
 		workAreas.add(workArea1);
 	//	workAreas.add(workArea2);
 		Zone zone1 = new Zone("zone 1", workAreas);
-		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "10.10.40.12", 2010);
+		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.0.102", 2010);
 		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak VRX J500", cncSocketCon);
 		cncMillingMachine.addZone(zone1);
 		cncMachines.put(cncMillingMachine.getId(), cncMillingMachine);

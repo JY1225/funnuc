@@ -8,7 +8,9 @@ public class FanucRobotEvent {
 	
 	public static final int ROBOT_CONNECTED = 1;
 	public static final int ROBOT_DISCONNECTED = 2;
-	public static final int ROBOT_STATUS_CHANGED = 3;
+	
+	public static final int STATUS_CHANGED = 3;
+	public static final int ALARMS_OCCURED = 4;
 	
 	public FanucRobotEvent (AbstractRobot source, int id) {
 		this.source = source;

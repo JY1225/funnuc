@@ -1,15 +1,19 @@
 package eu.robojob.irscw.external.device.cnc;
 
-public class CNCMillingMachineStatus {
+public class CNCMachineStatus {
 
 	private int status;
 	
-	public CNCMillingMachineStatus(int status) {
+	public CNCMachineStatus(int status) {
 		setStatus(status);
 	}
 	
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	
+	public int getStatus() {
+		return status;
 	}
 	
 	public boolean isPutWa1Allowed() {

@@ -21,11 +21,16 @@ public class ExternalCommunicationThread extends Thread {
 	private boolean alive;
 	
 	private LinkedList<String> incommingMessages;
+	private ExternalCommunication externalCommunication;
 	
-	public ExternalCommunicationThread(SocketConnection socketConnection) {
+	private boolean wasConnected;
+	
+	public ExternalCommunicationThread(SocketConnection socketConnection, ExternalCommunication externalCommunication) {
 		this.socketConnection = socketConnection;
 		this.incommingMessages = new LinkedList<String>();
 		this.alive = true;
+		this.wasConnected = false;
+		this.externalCommunication = externalCommunication;
 		if (socketConnection == null) {
 			throw new IllegalArgumentException("SocketConnection must be provided");
 		}
@@ -33,20 +38,21 @@ public class ExternalCommunicationThread extends Thread {
 	
 	@Override
 	public void run() {
-		logger.info(toString() + " started...");
 		while(alive) {
 			if (!socketConnection.isConnected()) {
-				//logger.info(socketConnection + " offline, trying to connect...");
+				if (wasConnected) {
+					wasConnected = false;
+					externalCommunication.disconnected();
+				}
 				try {
 					socketConnection.connect();
+					wasConnected = true;
+					externalCommunication.connected();
 				} catch (IOException e) {
-					//logger.error("Could not connect : " + e);
-					// wait CONNECTION_RETRY_INTERVAL before re-trying
 					try {
 						Thread.sleep(CONNECTION_RETRY_INTERVAL);
 					} catch (InterruptedException e1) {
-						// we got interrupted, so let's just stop executing!
-						//logger.info("Waiting for re-trying connection interrupted, so stopping thread...");
+						// we got interrupted, so let's just stop executing! Are already disconnected so no need to call disconnect()
 						alive = false;
 					}
 				}
@@ -59,9 +65,7 @@ public class ExternalCommunicationThread extends Thread {
 					putMessage(icommingMessage);
 				} catch (IOException e) {
 					if (alive) {
-						logger.error("Error while reading: " + e);
-						e.printStackTrace();
-						// disconnect to be sure
+						externalCommunication.iOExceptionOccured(e);
 						socketConnection.disconnect();
 					}
 				} catch (DisconnectedException e) {
@@ -96,19 +100,19 @@ public class ExternalCommunicationThread extends Thread {
 		incommingMessages.addLast(message);
 	}
 	
-	public void writeMessage(String message) throws DisconnectedException {
+	public synchronized void writeMessage(String message) throws DisconnectedException {
 		socketConnection.sendString(message);
 	}
 	
-	public void writeCharacter(char character) throws DisconnectedException {
+	public synchronized void writeCharacter(char character) throws DisconnectedException {
 		socketConnection.sendCharacter(character);
 	}
 	
-	public void writeString(String message) throws DisconnectedException {
+	public synchronized void writeString(String message) throws DisconnectedException {
 		socketConnection.sendString(message);
 	}
 	
-	public boolean isConnected() {
+	public synchronized boolean isConnected() {
 		return socketConnection.isConnected();
 	}
 	
@@ -117,7 +121,7 @@ public class ExternalCommunicationThread extends Thread {
 		disconnectAndStop();
 	}
 	
-	public void disconnectAndStop() {
+	public synchronized void disconnectAndStop() {
 		if (socketConnection.isConnected()) {
 			alive = false;
 			socketConnection.disconnect();

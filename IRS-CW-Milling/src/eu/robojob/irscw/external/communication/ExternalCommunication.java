@@ -1,8 +1,10 @@
 package eu.robojob.irscw.external.communication;
 
+import java.io.IOException;
+
 import eu.robojob.irscw.threading.ThreadManager;
 
-public class ExternalCommunication {
+public abstract class ExternalCommunication {
 
 	public static final int READ_RETRY_INTERVAL = 500;
 	public static final int DEFAULT_WAIT_TIMEOUT = 30000;
@@ -12,28 +14,28 @@ public class ExternalCommunication {
 	protected ExternalCommunicationThread extCommThread;
 		
 	public ExternalCommunication(SocketConnection socketConnection) {
-		this.extCommThread = new ExternalCommunicationThread(socketConnection);
+		this.extCommThread = new ExternalCommunicationThread(socketConnection, this);
 		ThreadManager.getInstance().submit(extCommThread);
 		defaultWaitTimeout = DEFAULT_WAIT_TIMEOUT;
 	}
 	
-	public boolean isConnected() {
+	public synchronized boolean isConnected() {
 		return extCommThread.isConnected();
 	}
 	
-	public void disconnect() {
+	public synchronized void disconnect() {
 		extCommThread.disconnectAndStop();
 	}
 	
-	public boolean hasMessage() {
+	public synchronized boolean hasMessage() {
 		return extCommThread.hasNextMessage();
 	}
 	
-	public String getNextMessage() {
+	public synchronized String getNextMessage() {
 		return extCommThread.getNextMessage();
 	}
 	
-	public void writeMessage(String message) throws DisconnectedException {
+	public synchronized void writeMessage(String message) throws DisconnectedException {
 		extCommThread.writeMessage(message);
 	}
 	
@@ -44,5 +46,9 @@ public class ExternalCommunication {
 	public int getDefaultWaitTimeout() {
 		return defaultWaitTimeout;
 	}
+	
+	public abstract void connected();
+	public abstract void disconnected();
+	public abstract void iOExceptionOccured(IOException e);
 	
 }
