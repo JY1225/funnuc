@@ -1,6 +1,5 @@
 package eu.robojob.irscw.external.device.cnc;
 
-import java.util.List;
 
 public interface CNCMachineListener {
 

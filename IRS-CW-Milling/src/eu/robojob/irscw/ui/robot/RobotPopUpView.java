@@ -3,7 +3,6 @@ package eu.robojob.irscw.ui.robot;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
-import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import eu.robojob.irscw.ui.PopUpView;

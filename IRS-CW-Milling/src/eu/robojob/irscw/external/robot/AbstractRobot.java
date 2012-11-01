@@ -5,8 +5,6 @@ import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.CommunicationException;
-import eu.robojob.irscw.external.communication.DisconnectedException;
-import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPiece;

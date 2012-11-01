@@ -1,8 +1,6 @@
 package eu.robojob.irscw.ui.robot;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
-import eu.robojob.irscw.external.communication.DisconnectedException;
-import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.ui.AbstractPopUpPresenter;
