@@ -100,7 +100,7 @@ public class FanucRobot extends AbstractRobot {
 					break;
 		}
 	}
-	
+
 	@Override
 	public synchronized void setSpeed(int speedPercentage) throws CommunicationException {
 		super.setSpeed(speedPercentage);

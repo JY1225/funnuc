@@ -1,12 +1,9 @@
 package eu.robojob.irscw.ui.main.flow;
 
-import org.apache.log4j.Logger;
-
 import eu.robojob.irscw.process.ProcessFlow;
 
 public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter {
 
-	private static Logger logger = Logger.getLogger(FixedProcessFlowPresenter.class);
 	private boolean showQuestionMarks;
 	
 	public FixedProcessFlowPresenter(ProcessFlowView view, boolean showQuestionMarks) {

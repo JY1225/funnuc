@@ -3,7 +3,7 @@ package eu.robojob.irscw.ui;
 import javafx.scene.layout.StackPane;
 import eu.robojob.irscw.util.Translator;
 
-public class PopUpView<T extends AbstractPopUpPresenter> extends StackPane {
+public class PopUpView<T extends AbstractPopUpPresenter<?>> extends StackPane {
 	
 	private double topLeftX;
 	private double topLeftY;
