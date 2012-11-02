@@ -15,7 +15,6 @@ import eu.robojob.irscw.external.communication.DisconnectedException;
 import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.cnc.CNCMachineAlarmsOccuredEvent;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.workpiece.WorkPiece;
