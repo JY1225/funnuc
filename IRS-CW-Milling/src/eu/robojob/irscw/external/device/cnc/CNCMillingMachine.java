@@ -44,14 +44,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public synchronized CNCMachineStatus getStatus() throws CommunicationException {
+	public void updateStatusAndAlarms() throws CommunicationException {
 		int statusInt = (cncMachineCommunication.readRegisters(CNCMachineConstants.STATUS, 1)).get(0);
-		return new CNCMachineStatus(statusInt);
-	}
-	
-	@Override
-	public synchronized Set<CNCMachineAlarm> getAlarms() throws CommunicationException {
-		Set<CNCMachineAlarm> alarms = new HashSet<CNCMachineAlarm>();
+		this.status = new CNCMachineStatus(statusInt);
+		
+		this.alarms = new HashSet<CNCMachineAlarm>();
 		List<Integer> alarmInts = cncMachineCommunication.readRegisters(CNCMachineConstants.ALARMS_REG1, 2);
 		int alarmReg1 = alarmInts.get(0);
 		int alarmReg2 = alarmInts.get(1);
@@ -128,11 +125,10 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if ((alarmReg2 & CNCMachineConstants.ALR_MULTIPLE_IPC_RQST)>0) {
 			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MULTIPLE_IPC_REQUESTS));
 		}
-		return alarms;
 	}
 
 	@Override
-	public synchronized void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException {
+	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException {
 		// check first workarea is selected 
 		if (startCylusSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			int command = 0;
@@ -141,14 +137,13 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			int registers[] = {command};
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 			
-			// check put is prepared
-			boolean cycleStartReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
+			boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
 			if (!cycleStartReady) {
-				throw new DeviceActionException("Machine could not prepare for pick");
+				throw new DeviceActionException("Machine could not prepare for starting cycle");
 			} else {
 				logger.info("Cycle started!");
 				// we now wait for pick requested
-				boolean cycleFinished = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_PICK_WA1_REQUESTED, CYCLE_FINISHED_TIMEOUT);
+				boolean cycleFinished =  waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED, CYCLE_FINISHED_TIMEOUT);
 				if (cycleFinished) {
 					return;
 				} else {
@@ -162,11 +157,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	// this is not taken into account for now
 	@Override
-	public synchronized void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException {
+	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException {
 	}
 
 	@Override
-	public synchronized void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException {
+	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException {
 		// check first workarea is selected 
 		if (pickSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			// first WA
@@ -180,7 +175,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 			logger.info("About to check if pick is prepared");
 			// check put is prepared
-			boolean pickReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_PICK_WA1_READY, PREPARE_PICK_TIMEOUT);
+			boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA1_READY, PREPARE_PICK_TIMEOUT);
 			if (!pickReady) {
 				throw new DeviceActionException("Machine could not prepare for pick");
 			} else {
@@ -193,7 +188,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public synchronized void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException {
+	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			// first WA
@@ -210,7 +205,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 			
 			// check put is prepared
-			boolean putReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
+			boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
 			if (!putReady) {
 				throw new DeviceActionException("Machine could not prepare for put");
 			} else {
@@ -223,7 +218,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public synchronized void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException {
+	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException {
 		// check first workarea is selected 
 		if (pickSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			int command = 0;
@@ -232,7 +227,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			int registers[] = {command};
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 			
-			boolean clampReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_UNCLAMP_WA1_READY, UNCLAMP_TIMEOUT);
+			boolean clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY, UNCLAMP_TIMEOUT);
 			if (!clampReady) {
 				throw new DeviceActionException("Could not open clamp");
 			} else {
@@ -245,7 +240,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public synchronized void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException {
+	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			int command = 0;
@@ -254,7 +249,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			int registers[] = {command};
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 			
-			boolean clampReady = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_CLAMP_WA1_READY, CLAMP_TIMEOUT);
+			boolean clampReady =  waitForStatus(CNCMachineConstants.R_CLAMP_WA1_READY, CLAMP_TIMEOUT);
 			if (!clampReady) {
 				throw new DeviceActionException("Could not close clamp");
 			} else {
@@ -267,10 +262,10 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public synchronized boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
+	public boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
-			boolean canPut = cncMachineCommunication.checkRegisterValueBitPattern(CNCMachineConstants.STATUS, CNCMachineConstants.R_PUT_WA1_ALLOWED, PUT_ALLOWED_TIMEOUT);
+			boolean canPut =  waitForStatus(CNCMachineConstants.R_PUT_WA1_ALLOWED, PUT_ALLOWED_TIMEOUT);
 			if (canPut) {
 				return true;
 			} else {
@@ -283,26 +278,26 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	
 	// this is not taken into account on the Machine-side for now
 	@Override
-	public synchronized boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+	public boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
 		return true;
 	}
 
 	// be aware! this will not be easy! of toch: prepare for pick!!
 	@Override
-	public synchronized void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException {
+	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	// these are not taken into account by the machine for now...
 	@Override
-	public synchronized void pickFinished(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+	public void pickFinished(AbstractDevicePickSettings pickSettings) throws CommunicationException {
 	}
 	@Override
-	public synchronized void putFinished(AbstractDevicePutSettings putSettings) throws CommunicationException {
+	public void putFinished(AbstractDevicePutSettings putSettings) throws CommunicationException {
 	}
 	@Override
-	public synchronized void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException {
+	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException {
 	}
 	
 	public static class CNCMillingMachinePutSettings extends AbstractCNCMachinePutSettings{

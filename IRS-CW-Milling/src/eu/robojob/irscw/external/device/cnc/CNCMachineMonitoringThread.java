@@ -30,6 +30,7 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 		while (alive) {
 			if (cncMachine.isConnected()) {
 				try {
+					cncMachine.updateStatusAndAlarms();
 					CNCMachineStatus status = cncMachine.getStatus();
 					if (status.getStatus() != previousStatus) {
 						cncMachine.processCNCMachineEvent(new CNCMachineStatusChangedEvent(cncMachine, status));
