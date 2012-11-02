@@ -26,7 +26,7 @@ public class ProcessFlow {
 	}
 	
 	public enum Mode {
-		TEACH, AUTO, PAUSED, STOPPED, CONFIG
+		TEACH, READY, AUTO, PAUSED, STOPPED, CONFIG
 	}
 	
 	//private static Logger logger = Logger.getLogger(ProcessFlow.class);

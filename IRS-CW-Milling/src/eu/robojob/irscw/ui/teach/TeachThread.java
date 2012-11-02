@@ -11,6 +11,7 @@ import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
+import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.TeachJob;
@@ -50,6 +51,7 @@ public class TeachThread extends Thread {
 	@Override
 	public void run() {
 		canContinue = true;
+		teachJob.getProcessFlow().setMode(Mode.TEACH);
 		try {
 			for (AbstractRobot robot : teachJob.getProcessFlow().getRobots()) {
 				robot.restartProgram();
@@ -68,6 +70,7 @@ public class TeachThread extends Thread {
 				}
 				teachJob.nextStep();
 			}
+			teachJob.getProcessFlow().setMode(Mode.READY);
 			setStatus("process-finished");
 			Platform.runLater(new Runnable() {
 				@Override
@@ -85,7 +88,6 @@ public class TeachThread extends Thread {
 	
 	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException {
 		// notify presenter this pick step is in progress 
-		notifyStepInProgress(pickStep);
 		this.lastPickStep = pickStep;
 		if (pickStep.needsTeaching()) {
 			
@@ -109,12 +111,10 @@ public class TeachThread extends Thread {
 			pickStep.executeStep();
 			setStatus(EXECUTED_PICK);
 		}
-		notifyStepFinished(pickStep);
 	}
 	
 	private void handlePut(final PutStep putStep) throws CommunicationException, RobotActionException, DeviceActionException {
 		// notify presenter this pick step is in progress 
-		notifyStepInProgress(putStep);
 		if (putStep.needsTeaching()) {
 			
 			// set status-message to indicate we're preparing for the pick
@@ -146,7 +146,6 @@ public class TeachThread extends Thread {
 			putStep.executeStep();
 			setStatus(EXECUTED_PUT);
 		}
-		notifyStepFinished(putStep);
 	}
 	
 	private void waitForTeaching() {
@@ -199,42 +198,6 @@ public class TeachThread extends Thread {
 		});
 	}
 	
-	private void notifyStepInProgress(final PickStep pickStep) {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				teachPresenter.pickStepInProgress(pickStep);
-			}
-		});
-	}
-	
-	private void notifyStepInProgress(final PutStep putStep) {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				teachPresenter.putStepInProgress(putStep);
-			}
-		});
-	}
-	
-	private void notifyStepFinished(final PickStep pickStep) {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				teachPresenter.pickStepFinished(pickStep);
-			}
-		});
-	}
-	
-	private void notifyStepFinished(final PutStep putStep) {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				teachPresenter.putStepFinished(putStep);
-			}
-		});
-	}
-
 	public void teachingFinished() {
 		synchronized (uiSyncObject) {
 			canContinue = true;

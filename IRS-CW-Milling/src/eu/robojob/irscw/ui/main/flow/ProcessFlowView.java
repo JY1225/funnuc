@@ -115,9 +115,15 @@ public class ProcessFlowView extends GridPane  {
 		});
 	}
 	
-	public void showQuestionMarks() {
-		for (TransportButton transportButton : transportButtons.values()) {
-			transportButton.showTeach();
+	public void showQuestionMarks(boolean showQuestionMarks) {
+		if (showQuestionMarks) {
+			for (TransportButton transportButton : transportButtons.values()) {
+				transportButton.showTeach();
+			}
+		} else {
+			for (TransportButton transportButton : transportButtons.values()) {
+				transportButton.showPause();
+			}
 		}
 	}
 	
@@ -269,7 +275,15 @@ public class ProcessFlowView extends GridPane  {
 		if ((index<0) || (index>=processFlowAdapter.getDeviceStepCount()) || (deviceButtons.get(index) == null)) {
 			throw new IllegalArgumentException("Index is out of bounds or incorrect.");
 		} else {
-			deviceButtons.get(index).animate();
+			deviceButtons.get(index).animate(true);
+		}
+	}
+	
+	public void stopDeviceAnimation(int index) {
+		if ((index<0) || (index>=processFlowAdapter.getDeviceStepCount()) || (deviceButtons.get(index) == null)) {
+			throw new IllegalArgumentException("Index is out of bounds or incorrect.");
+		} else {
+			deviceButtons.get(index).animate(false);
 		}
 	}
 	

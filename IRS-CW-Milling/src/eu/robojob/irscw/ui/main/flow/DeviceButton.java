@@ -35,6 +35,8 @@ public class DeviceButton extends VBox {
 	private SVGPath imagePath;
 	private Label deviceName;
 	
+	RotateTransition rt;
+	
 	private DeviceInformation deviceInfo;
 	
 	public DeviceButton(DeviceInformation deviceInfo) {
@@ -51,6 +53,13 @@ public class DeviceButton extends VBox {
 			deviceName.getStyleClass().add("unknown-device");
 		}
 		setImage();
+		if (deviceInfo.getDevice().getType() == DeviceType.CNC_MACHINE) {
+			rt = new RotateTransition(Duration.millis(5000), imagePath);
+			rt.setFromAngle(0);
+			rt.setToAngle(360);
+			rt.setInterpolator(Interpolator.LINEAR);
+			rt.setCycleCount(Timeline.INDEFINITE);
+		}
 	}
 	
 	public DeviceInformation getDeviceInformation() {
@@ -122,14 +131,15 @@ public class DeviceButton extends VBox {
 		}
 	}
 	
-	public void animate() {
-		if (deviceInfo.getDevice().getType() == DeviceType.CNC_MACHINE) {
-			RotateTransition rt = new RotateTransition(Duration.millis(5000), imagePath);
-			rt.setFromAngle(0);
-			rt.setToAngle(360);
-			rt.setInterpolator(Interpolator.LINEAR);
-			rt.setCycleCount(Timeline.INDEFINITE);
-			rt.play();
+	public void animate(boolean animate) {
+		if (animate) {
+			if (rt != null) {
+				rt.play();
+			}
+		} else {
+			if (rt != null) {
+				rt.pause();
+			}
 		}
 	}
 	
