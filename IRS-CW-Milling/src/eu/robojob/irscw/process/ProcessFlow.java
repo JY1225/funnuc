@@ -115,6 +115,7 @@ public class ProcessFlow {
 				}
 				break;
 			case ProcessFlowEvent.ACTIVE_STEP_CHANGED:
+				System.out.println("ACTIVE STEP CHANGED: " + event);
 				for (ProcessFlowListener listener : listeners) {
 					listener.activeStepChanged((ActiveStepChangedEvent) event);
 				}

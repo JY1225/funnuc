@@ -41,4 +41,8 @@ public class ActiveStepChangedEvent extends ProcessFlowEvent {
 	public int getStatusId() {
 		return statusId;
 	}
+	
+	public String toString() {
+		return "ActiveStepChangedEvent: " + statusId + " - " + activeStep;
+	}
 }
