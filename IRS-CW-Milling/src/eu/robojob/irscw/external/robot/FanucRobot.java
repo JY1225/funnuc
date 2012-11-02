@@ -29,6 +29,7 @@ public class FanucRobot extends AbstractRobot {
 	private static final int ASK_POSITION_TIMEOUT = 50000;
 	private static final int PICK_TEACH_TIMEOUT = 10*60*1000;
 	private static final int PUT_TEACH_TIMEOUT = 10*60*1000;
+	private static final int ASK_STATUS_TIMEOUT = 1*60*1000;
 	
 	private static final int TO_HOME_TIMEOUT = 100000;
 	private static final int TO_JAW_CHANGE_TIMEOUT = 100000;
@@ -47,9 +48,12 @@ public class FanucRobot extends AbstractRobot {
 		this(id, null, null, socketConnection);
 	}
 	
-	@Override
-	public String getStatus() throws CommunicationException, RobotActionException {
-		return null;
+	public FanucRobotStatus getStatus() throws CommunicationException {
+		List<String> values = fanucRobotCommunication.readValues(FanucRobotConstants.COMMAND_ASK_STATUS, FanucRobotConstants.RESPONSE_ASK_STATUS, ASK_STATUS_TIMEOUT);
+		int controllerString = Integer.parseInt(values.get(2));
+		double zrest = Float.parseFloat(values.get(3));
+		FanucRobotStatus status = new FanucRobotStatus(controllerString, zrest);
+		return status;		
 	}
 	
 	public void addListener(FanucRobotListener listener) {
@@ -60,7 +64,7 @@ public class FanucRobot extends AbstractRobot {
 		listeners.remove(listener);
 	}
 	
-	public void ProcessFanucRobotEvent(FanucRobotEvent event) {
+	public void processFanucRobotEvent(FanucRobotEvent event) {
 		switch(event.getId()) {
 			case FanucRobotEvent.ROBOT_CONNECTED:
 				for (FanucRobotListener listener : listeners) {

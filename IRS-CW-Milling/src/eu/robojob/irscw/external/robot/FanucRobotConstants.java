@@ -116,4 +116,25 @@ public class FanucRobotConstants {
 	public static final int PERMISSIONS_COMMAND_JAWS_CHANGED_ACK			=	BIT4;
 	public static final int PERMISSIONS_COMMAND_RUN_AFTER_JAWS_CHANGED_ACK 	=	BIT5;
 	public static final int PERMISSIOSN_COMMAND_BAR_MOVE_ACK				=	BIT6;
+	
+	// ERROR VALUES
+	public static final int E_NO_ERROR										=	0;
+	public static final int E_INVALID_SERVICE_TYPE							=	1;
+	public static final int E_INVALID_USERFRAME								=	2;
+	public static final int E_INVALID_GRIPTYPE_FOR_SERVICE					=	3;
+	public static final int E_NO_PNEUMATIC_PRESSURE							=	10;
+	public static final int E_REQUESTED_BODY_NOT_IN_TOOLBAY					=	20;
+	public static final int E_REQUESTED_SUBAGRIP_NOT_IN_TOOLBAY				=	21;
+	public static final int E_REQUESTED_SUBBGRIP_NOT_IN_TOOLBAY				=	22;
+	public static final int E_REQUESTED_BODY_NOT_FORESEEN_IN_TOOLBAY		=	23;
+	public static final int E_REQUESTED_SUBAGRIP_NOT_FORESEEN_IN_TOOLBAY	=	24;
+	public static final int E_REQUESTED_SUBBGRIP_NOT_FORESEEN_IN_TOOLBAY	=	25;
+	public static final int E_DOCKING_BODY_GIVES_ERROR						=	26;
+	public static final int E_DOCKING_SUBAGRIP_GIVES_ERROR					=	27;
+	public static final int E_DOCKING_SUBBGRIP_GIVES_ERROR					=	28;
+	public static final int E_UNDOCKING_BODY_GIVES_ERROR					=	29;
+	public static final int E_UNDOCKING_SUBAGRIP_GIVES_ERROR				=	30;
+	public static final int E_UNDOCKING_SUBBGRIP_GIVES_ERROR				=	31;
+	public static final int E_WORKPIECE_NOT_GRIPPED							=	40;
+	public static final int E_ROBOT_NOT_IN_START_POSITION					=	45;
 }

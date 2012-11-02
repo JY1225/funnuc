@@ -46,7 +46,24 @@ public class FanucRobotStatus {
 		return ((controllerString & FanucRobotConstants.STATUS_ROBOT_MOVED_BAR) > 0);
 	}
 	
+	public int getControllerString() {
+		return controllerString;
+	}
+	
 	public double getZRest() {
 		return zRest;
+	}
+	
+	public boolean equals(Object o) {
+		if (o instanceof FanucRobotStatus) {
+			if ((((FanucRobotStatus) o).getZRest() == zRest) && (((FanucRobotStatus) o).getControllerString() == controllerString)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public int hashCode() {
+		return controllerString + ((new Double(zRest)).hashCode());
 	}
 }

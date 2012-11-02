@@ -60,7 +60,6 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.possibleGripperBodies = possibleGripperBodies;
 	}
 	
-	public abstract String getStatus() throws CommunicationException, RobotActionException;
 	public abstract void restartProgram() throws CommunicationException;
 	public abstract Coordinates getPosition() throws CommunicationException, RobotActionException;
 	
