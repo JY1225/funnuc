@@ -12,11 +12,21 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotSettings;
+import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
+import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
+import eu.robojob.irscw.process.event.ModeChangedEvent;
+import eu.robojob.irscw.process.event.ProcessFlowEvent;
+import eu.robojob.irscw.process.event.ProcessFlowListener;
 
 public class ProcessFlow {
 	
 	enum ProcessFlowType  {
 		CNC_MILLING, CNC_TURNING;
+	}
+	
+	public enum Mode {
+		TEACH, AUTO, PAUSED, STOPPED, CONFIG
 	}
 	
 	//private static Logger logger = Logger.getLogger(ProcessFlow.class);
@@ -26,9 +36,15 @@ public class ProcessFlow {
 	private Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> deviceSettings;
 	private Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> robotSettings;
 		
+	private int totalAmount;
+	private int finishedAmount;
+	
 	private boolean needsTeaching;
 	
 	private String name;
+	
+	private Set<ProcessFlowListener> listeners;
+	private Mode mode;
 	
 	
 	//TODO refactor constructors so there is one constructor, called by the others
@@ -38,6 +54,10 @@ public class ProcessFlow {
 		this.deviceSettings = new HashMap<AbstractDevice, AbstractDevice.AbstractDeviceSettings>();
 		this.robotSettings = new HashMap<AbstractRobot, AbstractRobot.AbstractRobotSettings>();
 		needsTeaching = true;
+		this.totalAmount = 0;
+		this.finishedAmount = 0;
+		this.mode = Mode.CONFIG;
+		this.listeners = new HashSet<ProcessFlowListener>();
 	}
 			
 	public ProcessFlow(String name, List<AbstractProcessStep>processSteps, Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> deviceSettings,
@@ -46,7 +66,77 @@ public class ProcessFlow {
 		needsTeaching = true;
 		this.deviceSettings = deviceSettings;
 		this.robotSettings = robotSettings;
+		this.listeners = new HashSet<ProcessFlowListener>();
+		this.totalAmount = 0;
+		this.finishedAmount = 0;
+		this.mode = Mode.CONFIG;
 		setUpProcess(processSteps);
+	}
+	
+	public Mode getMode() {
+		return mode;
+	}
+
+	public void setMode(Mode mode) {
+		this.mode = mode;
+		processProcessFlowEvent(new ModeChangedEvent(this, mode));
+	}
+
+	public void addListener(ProcessFlowListener listener) {
+		this.listeners.add(listener);
+	}
+	
+	public void removeListener(ProcessFlowListener listener) {
+		this.listeners.remove(listener);
+	}
+	
+	public int getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(int totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	public int getFinishedAmount() {
+		return finishedAmount;
+	}
+
+	public void setFinishedAmount(int finishedAmount) {
+		this.finishedAmount = finishedAmount;
+		processProcessFlowEvent(new FinishedAmountChangedEvent(this, finishedAmount, totalAmount));
+	}
+
+	public void processProcessFlowEvent(ProcessFlowEvent event) {
+		switch(event.getId()) {
+			case ProcessFlowEvent.MODE_CHANGED:
+				for (ProcessFlowListener listener : listeners) {
+					listener.modeChanged((ModeChangedEvent) event);
+				}
+				break;
+			case ProcessFlowEvent.ACTIVE_STEP_CHANGED:
+				for (ProcessFlowListener listener : listeners) {
+					listener.activeStepChanged((ActiveStepChangedEvent) event);
+				}
+				break;
+			case ProcessFlowEvent.EXCEPTION_OCCURED:
+				for (ProcessFlowListener listener : listeners) {
+					listener.exceptionOccured((ExceptionOccuredEvent) event);
+				}
+				break;
+			case ProcessFlowEvent.DATA_CHANGED:
+				for (ProcessFlowListener listener : listeners) {
+					listener.dataChanged(event);
+				}
+				break;
+			case ProcessFlowEvent.FINISHED_AMOUNT_CHANGED:
+				for (ProcessFlowListener listener : listeners) {
+					listener.finishedAmountChanged((FinishedAmountChangedEvent) event);
+				}
+				break;
+			default:
+				throw new IllegalArgumentException("Unkown event-id");
+		}
 	}
 	
 	public String getName() {
@@ -113,10 +203,12 @@ public class ProcessFlow {
 	
 	public void removeStep (AbstractProcessStep step) {
 		processSteps.remove(step);
+		processProcessFlowEvent(new ProcessFlowEvent(this, ProcessFlowEvent.DATA_CHANGED));
 	}
 	
 	public void removeSteps(List<AbstractProcessStep> steps) {
 		processSteps.removeAll(steps);
+		processProcessFlowEvent(new ProcessFlowEvent(this, ProcessFlowEvent.DATA_CHANGED));
 	}
 	
 	public void addStepAfter(AbstractProcessStep step, AbstractProcessStep newStep) {
@@ -124,6 +216,7 @@ public class ProcessFlow {
 			throw new IllegalArgumentException("Could not find this step");
 		} else {
 			processSteps.add(processSteps.indexOf(step) + 1, newStep);
+			processProcessFlowEvent(new ProcessFlowEvent(this, ProcessFlowEvent.DATA_CHANGED));
 		}
 	}
 	
@@ -132,6 +225,7 @@ public class ProcessFlow {
 			throw new IllegalArgumentException("Could not find this step");
 		} else {
 			processSteps.add(processSteps.indexOf(step), newStep);
+			processProcessFlowEvent(new ProcessFlowEvent(this, ProcessFlowEvent.DATA_CHANGED));
 		}
 	}
 	

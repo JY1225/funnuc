@@ -22,23 +22,12 @@ public class CNCMachineEvent {
 		return source;
 	}
 
-	public void setSource(AbstractCNCMachine source) {
-		this.source = source;
-	}
-
 	public int getId() {
 		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public long getWhen() {
 		return when;
 	}
 
-	public void setWhen(long when) {
-		this.when = when;
-	}
 }
