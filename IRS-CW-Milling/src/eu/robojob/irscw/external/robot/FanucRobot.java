@@ -113,16 +113,13 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	private void statusChanged() {
-		System.out.println("status changed, waiting for lock");
 		synchronized(syncObject) {
-			System.out.println("status changed!");
 			statusChanged = true;
 			syncObject.notifyAll();
 		}
 	}
 	
 	private boolean waitForStatus(int status, long timeout) {
-		System.out.println("waiting for status");
 		long waitedTime = 0;
 		do {
 			long lastTime = System.currentTimeMillis();
@@ -132,11 +129,8 @@ public class FanucRobot extends AbstractRobot {
 				try {
 					statusChanged = false;
 					if (timeout > waitedTime) {
-						System.out.println("about to synchronize");
 						synchronized(syncObject) {
-							System.out.println("about to wait");
 							syncObject.wait(timeout - waitedTime);
-							System.out.println("finished waiting");
 						}
 					}
 				} catch (InterruptedException e) {
