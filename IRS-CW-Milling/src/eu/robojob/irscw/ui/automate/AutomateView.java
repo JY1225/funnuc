@@ -225,9 +225,6 @@ public class AutomateView extends VBox {
 		bottomTop.add(pane, 1, 0);
 		bottomTop.add(btnPane, 2, 0);
 		
-		int row = 0;
-		int column = 0;
-		
 		VBox vboxCycleTime = new VBox();
 		vboxCycleTime.getStyleClass().add("time-vbox");
 		cycleTimeShape = new SVGPath();
@@ -367,9 +364,6 @@ public class AutomateView extends VBox {
 		double endXInner = 0;
 		double endYInner = 0;
 		double corner = (((double) percentage)/ 100) * (Math.PI * 2);
-		
-		int arcRadiusX = PROGRESS_RADIUS;
-		int arcRadiusY = PROGRESS_RADIUS;
 		
 		endX = PROGRESS_RADIUS * Math.sin(corner);
 		endXInner = PROGRESS_RADIUS_INNER * Math.sin(corner);

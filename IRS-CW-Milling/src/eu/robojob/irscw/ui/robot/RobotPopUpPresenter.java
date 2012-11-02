@@ -1,17 +1,22 @@
 package eu.robojob.irscw.ui.robot;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
-import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.external.robot.FanucRobot;
+import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredEvent;
+import eu.robojob.irscw.external.robot.FanucRobotEvent;
+import eu.robojob.irscw.external.robot.FanucRobotListener;
+import eu.robojob.irscw.external.robot.FanucRobotStatusChangedEvent;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.ui.AbstractPopUpPresenter;
 
-public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> {
+public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> implements FanucRobotListener {
 
-	private AbstractRobot robot;
+	private FanucRobot robot;
 	
-	public RobotPopUpPresenter(RobotPopUpView view, AbstractRobot robot) {
+	public RobotPopUpPresenter(RobotPopUpView view, FanucRobot robot) {
 		super(view);
 		this.robot = robot;
+		robot.addListener(this);
 		if (robot.isConnected()) {
 			view.refreshSpeed(robot.getSpeed());
 		} else {
@@ -65,6 +70,24 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 		}
 		System.out.println("robot speed: " + robot.getSpeed());
 		view.refreshSpeed(robot.getSpeed());
+	}
+
+	@Override
+	public void robotConnected(FanucRobotEvent event) {
+		view.setRobotConnected(true);
+	}
+
+	@Override
+	public void robotDisconnected(FanucRobotEvent event) {
+		view.setRobotConnected(false);
+	}
+
+	@Override
+	public void robotStatusChanged(FanucRobotStatusChangedEvent event) {
+	}
+
+	@Override
+	public void robotAlarmsOccured(FanucRobotAlarmsOccuredEvent event) {
 	}
 	
 }
