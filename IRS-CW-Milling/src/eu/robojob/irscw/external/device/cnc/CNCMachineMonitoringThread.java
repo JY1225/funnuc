@@ -6,8 +6,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.threading.MonitoringThread;
 
-public class CNCMachineMonitoringThread extends Thread {
+public class CNCMachineMonitoringThread extends Thread implements MonitoringThread {
 
 	private static final int REFRESH_TIME = 500;
 	
@@ -61,5 +62,10 @@ public class CNCMachineMonitoringThread extends Thread {
 	@Override
 	public String toString() {
 		return "CNCMachineMonitoringThread: " + cncMachine.toString();
+	}
+
+	@Override
+	public void stopExecution() {
+		alive = false;
 	}
 }

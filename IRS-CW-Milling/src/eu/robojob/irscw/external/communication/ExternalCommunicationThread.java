@@ -84,6 +84,10 @@ public class ExternalCommunicationThread extends Thread {
 		}
 	}
 	
+	public SocketConnection getSocketConnection() {
+		return socketConnection;
+	}
+	
 	public synchronized String getNextMessage() {
 		if (hasNextMessage()) {
 			return incommingMessages.removeFirst();

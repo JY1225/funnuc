@@ -19,10 +19,12 @@ public class ThreadManager {
 	private static final Logger logger = Logger.getLogger(ThreadManager.class);
 	
 	private Set<ExternalCommunicationThread> communicationThreads;
+	private Set<MonitoringThread> monitoringThreads;
 	
 	private ThreadManager () {
 		executorService = Executors.newFixedThreadPool(amountOfThreads);
 		communicationThreads = new HashSet<ExternalCommunicationThread>();
+		monitoringThreads = new HashSet<MonitoringThread>();
 	}
 	
 	public static ThreadManager getInstance() {
@@ -36,6 +38,8 @@ public class ThreadManager {
 		logger.debug("New thread submitted: " + thread);
 		if (thread instanceof ExternalCommunicationThread) {
 			communicationThreads.add((ExternalCommunicationThread) thread);
+		} else if (thread instanceof MonitoringThread) {
+			monitoringThreads.add((MonitoringThread) thread);
 		}
 		executorService.submit(thread);
 	}
@@ -43,6 +47,9 @@ public class ThreadManager {
 	public void shutDown() {
 		for (ExternalCommunicationThread thread : communicationThreads) {
 			thread.disconnectAndStop();
+		}
+		for (MonitoringThread thread : monitoringThreads) {
+			thread.stopExecution();
 		}
 		executorService.shutdownNow();
 	}
@@ -53,6 +60,10 @@ public class ThreadManager {
 				ExternalCommunicationThread exThread = (ExternalCommunicationThread) thread;
 				exThread.disconnectAndStop();
 				communicationThreads.remove(thread);
+			} else if (monitoringThreads.contains(thread)) {
+				MonitoringThread mThread = (MonitoringThread) thread;
+				mThread.stopExecution();
+				monitoringThreads.remove(mThread);
 			} else {
 				thread.interrupt();
 			}

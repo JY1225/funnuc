@@ -137,4 +137,8 @@ public class FanucRobotConstants {
 	public static final int E_UNDOCKING_SUBBGRIP_GIVES_ERROR				=	31;
 	public static final int E_WORKPIECE_NOT_GRIPPED							=	40;
 	public static final int E_ROBOT_NOT_IN_START_POSITION					=	45;
+	
+	// CONTROLLER VALUES
+	public static final int CV_FAULT_LED									=	BIT0;
+	public static final int CV_CMOS_BATTERY_LOW 							= 	BIT1;
 }

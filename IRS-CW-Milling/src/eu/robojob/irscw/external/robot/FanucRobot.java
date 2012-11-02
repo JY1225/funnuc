@@ -15,7 +15,9 @@ import eu.robojob.irscw.external.communication.DisconnectedException;
 import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.device.cnc.CNCMachineAlarmsOccuredEvent;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.workpiece.WorkPiece;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
@@ -42,17 +44,21 @@ public class FanucRobot extends AbstractRobot {
 		super(id, gripperBodies, gripperBody);
 		this.fanucRobotCommunication = new FanucRobotCommunication(socketConnection, this);
 		this.listeners = new HashSet<FanucRobotListener>();
+		FanucRobotMonitoringThread monitoringThread = new FanucRobotMonitoringThread(this);
+		ThreadManager.getInstance().submit(monitoringThread);
 	}
 	
 	public FanucRobot(String id, SocketConnection socketConnection) {
 		this(id, null, null, socketConnection);
 	}
 	
-	public FanucRobotStatus getStatus() throws CommunicationException {
+	public synchronized FanucRobotStatus getStatus() throws CommunicationException {
 		List<String> values = fanucRobotCommunication.readValues(FanucRobotConstants.COMMAND_ASK_STATUS, FanucRobotConstants.RESPONSE_ASK_STATUS, ASK_STATUS_TIMEOUT);
+		int errorId = Integer.parseInt(values.get(0));
+		int controllerValue = Integer.parseInt(values.get(1));
 		int controllerString = Integer.parseInt(values.get(2));
 		double zrest = Float.parseFloat(values.get(3));
-		FanucRobotStatus status = new FanucRobotStatus(controllerString, zrest);
+		FanucRobotStatus status = new FanucRobotStatus(errorId, controllerValue, controllerString, zrest);
 		return status;		
 	}
 	
@@ -64,27 +70,31 @@ public class FanucRobot extends AbstractRobot {
 		listeners.remove(listener);
 	}
 	
-	public void processFanucRobotEvent(FanucRobotEvent event) {
+	public synchronized void processFanucRobotEvent(FanucRobotEvent event) {
 		switch(event.getId()) {
 			case FanucRobotEvent.ROBOT_CONNECTED:
+				System.out.println("CONNECTED: " + toString());
 				for (FanucRobotListener listener : listeners) {
 					listener.robotConnected(event);
 				}
 				break;
 			case FanucRobotEvent.ROBOT_DISCONNECTED:
+				System.out.println("DISCONNECTED: " + toString());
 				for (FanucRobotListener listener : listeners) {
 					listener.robotDisconnected(event);
 				}
 				break;
-			case FanucRobotEvent.STATUS_CHANGED:
+			case FanucRobotEvent.ALARMS_OCCURED:
+				System.out.println("ALARMS CHANGED: " + ((FanucRobotAlarmsOccuredEvent) event).getAlarms());
 				for (FanucRobotListener listener : listeners) {
-					// TODO: incorporate status object
-					listener.robotStatusChanged(event, null);
+					listener.robotAlarmsOccured((FanucRobotAlarmsOccuredEvent) event);
 				}
 				break;
-			case FanucRobotEvent.ALARMS_OCCURED:
+			case FanucRobotEvent.STATUS_CHANGED:
+				System.out.println("STATUS CHANGED: " +  toString());
 				for (FanucRobotListener listener : listeners) {
-					listener.robotAlarmsOccured(event);
+					// TODO: incorporate status object
+					listener.robotStatusChanged((FanucRobotStatusChangedEvent) event);
 				}
 				break;
 			default:
@@ -93,29 +103,29 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void setSpeed(int speedPercentage) throws CommunicationException {
+	public synchronized void setSpeed(int speedPercentage) throws CommunicationException {
 		super.setSpeed(speedPercentage);
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_SET_SPEED, FanucRobotConstants.RESPONSE_SET_SPEED, WRITE_VALUES_TIMEOUT, speedPercentage + "");
 	}
 	
 	@Override
-	public Coordinates getPosition() throws CommunicationException, RobotActionException {
+	public synchronized Coordinates getPosition() throws CommunicationException, RobotActionException {
 		Coordinates position = fanucRobotCommunication.getPosition(ASK_POSITION_TIMEOUT);
 		return position;
 	}
 	
-	public void disconnect() {
+	public synchronized void disconnect() {
 		fanucRobotCommunication.disconnect();
 	}
 	
 	@Override
-	public void restartProgram() throws CommunicationException {
+	public synchronized void restartProgram() throws CommunicationException {
 		// write start service
 		fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_RESTART_PROGRAM, FanucRobotConstants.RESPONSE_RESTART_PROGRAM, WRITE_VALUES_TIMEOUT);
 	}
 
 	@Override
-	public void initiatePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
+	public synchronized void initiatePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
 		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;		
 		// write service gripper set
 		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
@@ -136,7 +146,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void initiatePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
+	public synchronized void initiatePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
 		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
 		// write service gripper set
 		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
@@ -159,7 +169,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
+	public synchronized void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT_CLAMP_ACK);
 		logger.info("waiting for put to finish!");
 		boolean waitingForPickFinished = fanucRobotCommunication.checkStatusValue(2, FanucRobotConstants.STATUS_PUT_FINISHED, PICK_FINISH_TIMEOUT);
@@ -172,7 +182,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
+	public synchronized void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
 		pickSettings.getGripper().setWorkPiece(pickSettings.getWorkPiece());
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
 		logger.info("waiting for pick to finish!");
@@ -186,7 +196,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void initiateTeachedPick(AbstractRobotPickSettings pickSettings)
+	public synchronized void initiateTeachedPick(AbstractRobotPickSettings pickSettings)
 			throws CommunicationException, RobotActionException {
 		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;		
 		// write service gripper set
@@ -217,7 +227,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void initiateTeachedPut(AbstractRobotPutSettings putSettings)
+	public synchronized void initiateTeachedPut(AbstractRobotPutSettings putSettings)
 			throws CommunicationException, RobotActionException {
 		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
 		// write service gripper set
@@ -241,13 +251,13 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void finalizeTeachedPick(AbstractRobotPickSettings pickSettings)
+	public synchronized void finalizeTeachedPick(AbstractRobotPickSettings pickSettings)
 			throws CommunicationException, RobotActionException {
 		finalizePick(pickSettings);
 	}
 
 	@Override
-	public void finalizeTeachedPut(AbstractRobotPutSettings putSettings)
+	public synchronized void finalizeTeachedPut(AbstractRobotPutSettings putSettings)
 			throws CommunicationException, RobotActionException {
 		finalizePut(putSettings);
 	}
@@ -367,7 +377,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void moveToHome() throws CommunicationException, RobotActionException {
+	public synchronized void moveToHome() throws CommunicationException, RobotActionException {
 		//we now use a speed of 50%
 		if ((getSpeed() < 25) || (getSpeed() > 100)) {
 			setSpeed(50);
@@ -377,7 +387,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void moveToChangePoint() throws CommunicationException,
+	public synchronized void moveToChangePoint() throws CommunicationException,
 			RobotActionException {
 		if ((getSpeed() < 25) || (getSpeed() > 100)) {
 			setSpeed(50);

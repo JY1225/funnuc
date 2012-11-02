@@ -3,8 +3,9 @@ package eu.robojob.irscw.external.robot;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.threading.MonitoringThread;
 
-public class FanucRobotMonitoringThread extends Thread {
+public class FanucRobotMonitoringThread extends Thread implements MonitoringThread{
 
 	private static final int REFRESH_TIME = 500;
 	private FanucRobot fanucRobot;
@@ -15,6 +16,7 @@ public class FanucRobotMonitoringThread extends Thread {
 	private static Logger logger = Logger.getLogger(FanucRobotMonitoringThread.class);
 	
 	public FanucRobotMonitoringThread(FanucRobot fanucRobot) {
+		this.alive = true;
 		this.fanucRobot = fanucRobot;
 	}
 	
@@ -24,6 +26,13 @@ public class FanucRobotMonitoringThread extends Thread {
 			if (fanucRobot.isConnected()) {
 				try {
 					FanucRobotStatus status = fanucRobot.getStatus();
+					if ((previousStatus == null) || (status.getControllerString() != previousStatus.getControllerString()) || (status.getZRest() != status.getZRest())) {
+						fanucRobot.processFanucRobotEvent(new FanucRobotStatusChangedEvent(fanucRobot, status));
+					}
+					if ((previousStatus != null) && ((previousStatus.getErrorId() != status.getErrorId()) || (previousStatus.getControllerValue() != status.getControllerValue()))) {
+						fanucRobot.processFanucRobotEvent(new FanucRobotAlarmsOccuredEvent(fanucRobot, status.getAlarms()));
+					}
+					this.previousStatus = status;
 				} catch (CommunicationException e) {
 					logger.error(e);
 				}
@@ -36,5 +45,20 @@ public class FanucRobotMonitoringThread extends Thread {
 			}
 		}
 		logger.info(toString() + " ended...");
+	}
+	
+	@Override
+	public void interrupt() {
+		alive = false;
+	}
+	
+	@Override
+	public String toString() {
+		return "FanucRobotMonitoringThread: " + fanucRobot.toString();
+	}
+
+	@Override
+	public void stopExecution() {
+		alive = false;
 	}
 }

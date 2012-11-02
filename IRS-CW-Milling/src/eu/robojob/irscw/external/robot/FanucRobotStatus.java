@@ -1,13 +1,103 @@
 package eu.robojob.irscw.external.robot;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class FanucRobotStatus {
 
 	private int controllerString;
+	private int errorId;
+	private int controllerValue;
 	private double zRest;
+	private Set<FanucRobotAlarm> alarms;
 	
-	public FanucRobotStatus(int controllerString, double zRest) {
+	public FanucRobotStatus(int errorId, int controllerValue, int controllerString, double zRest) {
 		this.controllerString = controllerString;
+		this.errorId = errorId;
+		this.controllerValue = controllerValue;
+		updateAlarmSet();
 		this.zRest = zRest;
+	}
+	
+	public int getErrorId() {
+		return errorId;
+	}
+	
+	public int getControllerValue() {
+		return controllerValue;
+	}
+	
+	public Set<FanucRobotAlarm> getAlarms() {
+		return alarms;
+	}
+	
+	private void updateAlarmSet() {
+		alarms = new HashSet<FanucRobotAlarm>();
+		if (errorId != FanucRobotConstants.E_NO_ERROR) {
+			switch (errorId) {
+				case FanucRobotConstants.E_INVALID_SERVICE_TYPE:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.INVALID_SERVICE_TYPE));
+					break;
+				case FanucRobotConstants.E_INVALID_USERFRAME:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.INVALID_USERFRAME));
+					break;
+				case FanucRobotConstants.E_INVALID_GRIPTYPE_FOR_SERVICE:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.INVALID_GRIPTYPE_FOR_SERVICE));
+					break;
+				case FanucRobotConstants.E_NO_PNEUMATIC_PRESSURE:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.NO_PNEUMATIC_PRESSURE));
+					break;
+				case FanucRobotConstants.E_REQUESTED_BODY_NOT_IN_TOOLBAY:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.REQUESTED_BODY_NOT_IN_TOOLBAY));
+					break;
+				case FanucRobotConstants.E_REQUESTED_SUBAGRIP_NOT_IN_TOOLBAY:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.REQUESTED_SUBAGRIP_NOT_IN_TOOLBAY));
+					break;
+				case FanucRobotConstants.E_REQUESTED_SUBBGRIP_NOT_IN_TOOLBAY:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.REQUESTED_SUBBGRIP_NOT_IN_TOOLBAY));
+					break;
+				case FanucRobotConstants.E_REQUESTED_BODY_NOT_FORESEEN_IN_TOOLBAY:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.REQUESTED_BODY_NOT_FORESEEN_IN_TOOLBAY));
+					break;
+				case FanucRobotConstants.E_REQUESTED_SUBAGRIP_NOT_FORESEEN_IN_TOOLBAY:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.REQUESTED_SUBAGRIP_NOT_FORESEEN_IN_TOOLBAY));
+					break;
+				case FanucRobotConstants.E_REQUESTED_SUBBGRIP_NOT_FORESEEN_IN_TOOLBAY:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.REQUESTED_SUBBGRIP_NOT_FORESEEN_IN_TOOLBAY));
+					break;
+				case FanucRobotConstants.E_DOCKING_BODY_GIVES_ERROR:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.DOCKING_BODY_GIVES_ERROR));
+					break;
+				case FanucRobotConstants.E_DOCKING_SUBAGRIP_GIVES_ERROR:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.DOCKING_SUBAGRIP_GIVES_ERROR));
+					break;
+				case FanucRobotConstants.E_DOCKING_SUBBGRIP_GIVES_ERROR:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.DOCKING_SUBBGRIP_GIVES_ERROR));
+					break;
+				case FanucRobotConstants.E_UNDOCKING_BODY_GIVES_ERROR:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.UNDOCKING_BODY_GIVES_ERROR));
+					break;
+				case FanucRobotConstants.E_UNDOCKING_SUBAGRIP_GIVES_ERROR:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.UNDOCKING_SUBAGRIP_GIVES_ERROR));
+					break;
+				case FanucRobotConstants.E_UNDOCKING_SUBBGRIP_GIVES_ERROR:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.UNDOCKING_SUBBGRIP_GIVES_ERROR));
+					break;
+				case FanucRobotConstants.E_WORKPIECE_NOT_GRIPPED:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.WORKPIECE_NOT_GRIPPED));
+					break;
+				case FanucRobotConstants.E_ROBOT_NOT_IN_START_POSITION:
+					alarms.add(new FanucRobotAlarm(FanucRobotAlarm.ROBOT_NOT_IN_START_POSITION));
+					break;
+			}
+			
+		}
+		if ((controllerValue & FanucRobotConstants.CV_FAULT_LED) != 0) {
+			alarms.add(new FanucRobotAlarm(FanucRobotAlarm.FAULT_LED));
+		}
+		if ((controllerValue & FanucRobotConstants.CV_CMOS_BATTERY_LOW) != 0) {
+			alarms.add(new FanucRobotAlarm(FanucRobotAlarm.CMOS_BATTERY_LOW));
+		}
 	}
 	
 	public boolean isPickReleaseRequested() {
