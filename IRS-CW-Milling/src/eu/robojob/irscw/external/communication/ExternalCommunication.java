@@ -19,7 +19,7 @@ public abstract class ExternalCommunication {
 		defaultWaitTimeout = DEFAULT_WAIT_TIMEOUT;
 	}
 	
-	public synchronized boolean isConnected() {
+	public boolean isConnected() {
 		return extCommThread.isConnected();
 	}
 	

@@ -27,7 +27,7 @@ public class FanucRobotCommunication extends ExternalCommunication {
 		this.command = new StringBuffer();
 	}
 
-	public void writeValues(int commandId, int ackId, int timeout, List<String> values) throws DisconnectedException, ResponseTimedOutException {
+	public synchronized void writeValues(int commandId, int ackId, int timeout, List<String> values) throws DisconnectedException, ResponseTimedOutException {
 		command = new StringBuffer();
 		command.append(commandId);
 		command.append(";");
@@ -62,17 +62,17 @@ public class FanucRobotCommunication extends ExternalCommunication {
 		throw new ResponseTimedOutException(this);
 	}
 
-	public void writeCommand(int commandId, int ackId, int timeout) throws DisconnectedException, ResponseTimedOutException {
+	public synchronized void writeCommand(int commandId, int ackId, int timeout) throws DisconnectedException, ResponseTimedOutException {
 		writeValues(commandId, ackId, timeout, new ArrayList<String>());
 	}
 	
-	public void writeValue(int commandId, int ackId, int timeout, String value) throws DisconnectedException, ResponseTimedOutException {
+	public synchronized void writeValue(int commandId, int ackId, int timeout, String value) throws DisconnectedException, ResponseTimedOutException {
 		List<String> values = new ArrayList<String>();
 		values.add(value);
 		writeValues(commandId, ackId, timeout, values);
 	}
 	
-	public List<String> readValues(int commandId, int ackId, int timeout) throws DisconnectedException, ResponseTimedOutException {
+	public synchronized List<String> readValues(int commandId, int ackId, int timeout) throws DisconnectedException, ResponseTimedOutException {
 		int waitedTime = 0;
 		extCommThread.writeString(commandId + ";");
 		do {
@@ -105,7 +105,7 @@ public class FanucRobotCommunication extends ExternalCommunication {
 		return new ArrayList<String>(Arrays.asList(values));
 	}
 	
-	public boolean checkStatusValue(int valueIndex, int value, int waitTimeout) throws CommunicationException, DisconnectedException {
+	/*public boolean checkStatusValue(int valueIndex, int value, int waitTimeout) throws CommunicationException, DisconnectedException {
 		long currentTime = System.currentTimeMillis();
 		boolean timeout = false;
 		while (!timeout) {
@@ -120,9 +120,9 @@ public class FanucRobotCommunication extends ExternalCommunication {
 			}
 		}
 		return false;
-	}
+	}*/
 	
-	public Coordinates getPosition(int waitTimeout) throws CommunicationException, DisconnectedException {
+	public synchronized Coordinates getPosition(int waitTimeout) throws CommunicationException, DisconnectedException {
 		long currentTime = System.currentTimeMillis();
 		boolean timeout = false;
 		while (!timeout) {

@@ -12,4 +12,8 @@ public class FanucRobotStatusChangedEvent extends FanucRobotEvent {
 	public FanucRobotStatus getStatus() {
 		return status;
 	}
+	
+	public String toString() {
+		return "FanucRobotStatusChangedEvent: " + status.toString();
+	}
 }

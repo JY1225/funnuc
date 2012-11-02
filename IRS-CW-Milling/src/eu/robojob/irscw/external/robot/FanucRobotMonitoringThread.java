@@ -7,7 +7,7 @@ import eu.robojob.irscw.threading.MonitoringThread;
 
 public class FanucRobotMonitoringThread extends Thread implements MonitoringThread{
 
-	private static final int REFRESH_TIME = 500;
+	private static final int REFRESH_TIME = 100;
 	private FanucRobot fanucRobot;
 	private boolean alive;
 	private FanucRobotStatus previousStatus;
@@ -25,8 +25,9 @@ public class FanucRobotMonitoringThread extends Thread implements MonitoringThre
 		while (alive) {
 			if (fanucRobot.isConnected()) {
 				try {
+					fanucRobot.updateStatus();
 					FanucRobotStatus status = fanucRobot.getStatus();
-					if ((previousStatus == null) || (status.getControllerString() != previousStatus.getControllerString()) || (status.getZRest() != status.getZRest())) {
+					if ((previousStatus == null) || (status.getControllerString() != previousStatus.getControllerString()) || (status.getZRest() != previousStatus.getZRest())) {
 						fanucRobot.processFanucRobotEvent(new FanucRobotStatusChangedEvent(fanucRobot, status));
 					}
 					if ((previousStatus != null) && ((previousStatus.getErrorId() != status.getErrorId()) || (previousStatus.getControllerValue() != status.getControllerValue()))) {
