@@ -91,7 +91,7 @@ public class FanucRobot extends AbstractRobot {
 				}
 				break;
 			case FanucRobotEvent.STATUS_CHANGED:
-				System.out.println("STATUS CHANGED: " +  toString());
+				System.out.println("STATUS CHANGED: " +  toString() + " - " + ((FanucRobotStatusChangedEvent) event).toString());
 				for (FanucRobotListener listener : listeners) {
 					// TODO: incorporate status object
 					listener.robotStatusChanged((FanucRobotStatusChangedEvent) event);

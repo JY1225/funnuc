@@ -156,4 +156,8 @@ public class FanucRobotStatus {
 	public int hashCode() {
 		return controllerString + ((new Double(zRest)).hashCode());
 	}
+	
+	public String toString() {
+		return errorId + "-" + controllerValue + "-" + controllerString + "-" + zRest;
+	}
 }
