@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui.main.model;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceType;
+import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
@@ -124,7 +125,8 @@ public class ProcessFlowAdapter {
 	
 	public void addInterventionStepAfterPut(TransportInformation transportInfo) {
 		AbstractDevice device = transportInfo.getPutStep().getDevice();
-		InterventionStep intervention = new InterventionStep(device, device.getInterventionSettings(transportInfo.getPutStep().getDeviceSettings()), 0);
+		AbstractRobot robot = transportInfo.getPutStep().getRobot();
+		InterventionStep intervention = new InterventionStep(device, robot, device.getInterventionSettings(transportInfo.getPutStep().getDeviceSettings()), 0);
 		processFlow.addStepAfter(transportInfo.getPutStep(), intervention);
 	}
 	
@@ -134,7 +136,8 @@ public class ProcessFlowAdapter {
 	
 	public void addInterventionStepBeforePick(TransportInformation transportInfo) {
 		AbstractDevice device = transportInfo.getPickStep().getDevice();
-		InterventionStep intervention = new InterventionStep(device, device.getInterventionSettings(transportInfo.getPickStep().getDeviceSettings()), 0);
+		AbstractRobot robot = transportInfo.getPickStep().getRobot();
+		InterventionStep intervention = new InterventionStep(device, robot, device.getInterventionSettings(transportInfo.getPickStep().getDeviceSettings()), 0);
 		processFlow.addStepBefore(transportInfo.getPickStep(), intervention);
 	}
 	

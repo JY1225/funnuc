@@ -227,7 +227,7 @@ public class RoboSoftAppFactory {
 			processFlow.setDeviceSettings(cncMilling, cncMillingSetting);
 			CNCMillingMachineStartCylusSettings cncStartCyclusSettings =  new CNCMillingMachine.CNCMillingMachineStartCylusSettings(mainWorkArea);
 			CNCMillingMachineInterventionSettings cncInterventionSettings = new CNCMillingMachineInterventionSettings(mainWorkArea);
-			InterventionStep intervention = new InterventionStep(cncMilling, cncInterventionSettings, 10);
+			InterventionStep intervention = new InterventionStep(cncMilling, robot, cncInterventionSettings, 10);
 			CNCMillingMachinePickSettings cncPickSettings = new CNCMillingMachinePickSettings(mainWorkArea);
 			
 			// Robot settings for pick from Basic Stacker and put in CNC Milling Machine

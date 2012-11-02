@@ -14,6 +14,7 @@ import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
 public class PickStep extends AbstractTransportStep {
 
@@ -40,13 +41,16 @@ public class PickStep extends AbstractTransportStep {
 	@Override
 	public void executeStep() throws CommunicationException, RobotActionException, DeviceActionException {
 		// check if the parent process has locked the devices to be used
+		//TODO IMPLEMENT!!
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_PREPARE_DEVICE));
 				device.prepareForPick(pickSettings);
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_EXECUTE_NORMAL));
 				if (needsTeaching()) {
 					if (teachedOffset == null) {
 						throw new IllegalStateException("Unknown teached position");
@@ -77,10 +81,12 @@ public class PickStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_PREPARE_DEVICE));
 				device.prepareForPick(pickSettings);
 				Coordinates coordinates = device.getPickLocation(pickSettings.getWorkArea());
 				logger.info("pick location: " + coordinates);
 				robotPickSettings.setLocation(coordinates);
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_EXECUTE_TEACHED));
 				robot.initiateTeachedPick(robotPickSettings);
 			}
 		}
@@ -101,11 +107,13 @@ public class PickStep extends AbstractTransportStep {
 				robotPickSettings.setLocation(device.getPickLocation(pickSettings.getWorkArea()));
 				device.releasePiece(pickSettings);
 				robot.finalizeTeachedPick(robotPickSettings);
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_FINISHED));
 			}
 		}
 	}
 	
 	@Override
+	//TODO review!!
 	public void finalize() throws CommunicationException, DeviceActionException {
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
@@ -116,6 +124,7 @@ public class PickStep extends AbstractTransportStep {
 				device.pickFinished(pickSettings);
 				device.release(processFlow);
 				robot.release(processFlow);
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_FINISHED));
 			}
 		}
 	}

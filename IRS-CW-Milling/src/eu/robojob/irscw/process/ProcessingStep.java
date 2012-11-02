@@ -7,6 +7,7 @@ import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
 public class ProcessingStep extends AbstractProcessStep {
 
@@ -28,9 +29,12 @@ public class ProcessingStep extends AbstractProcessStep {
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
+			processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PROCESSING_PREPARE_DEVICE));
 			((AbstractProcessingDevice) device).prepareForStartCyclus(startCyclusSettings);
+			processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PROCESSING_IN_PROGRESS));
 			((AbstractProcessingDevice) device).startCyclus(startCyclusSettings);
 			device.release(processFlow);
+			processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PROCESSING_FINISHED));
 		}
 	}
 

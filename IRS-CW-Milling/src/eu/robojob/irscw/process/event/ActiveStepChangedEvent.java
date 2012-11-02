@@ -8,19 +8,13 @@ public class ActiveStepChangedEvent extends ProcessFlowEvent {
 	private AbstractProcessStep activeStep;
 	
 	public static final int PICK_PREPARE_DEVICE = 1;
-	public static final int PICK_MOVING_TO_LOCATION = 2;
-	public static final int PICK_ROBOT_GRABBING_PIECE = 3;
-	public static final int PICK_DEVICE_RELEASING_PIECE = 4;
-	public static final int PICK_MOVING_FROM_LOCATION = 5;
-	public static final int PICK_WAITING_FOR_TEACH = 6;
+	public static final int PICK_EXECUTE_TEACHED = 2;
+	public static final int PICK_EXECUTE_NORMAL = 3;
 	public static final int PICK_FINISHED = 7;
 	
 	public static final int PUT_PREPARE_DEVICE = 21;
-	public static final int PUT_MOVING_TO_LOCATION = 22;
-	public static final int PUT_DEVICE_GRABBING_PIECE = 23;
-	public static final int PUT_ROBOT_RELEASING_PIECE = 24;
-	public static final int PUT_MOVING_FROM_LOCATION = 25;
-	public static final int PUT_WAITING_FOR_TEACH = 26;
+	public static final int PUT_EXECUTE_TEACHED = 22;
+	public static final int PUT_EXECUTE_NORMAL = 23;
 	public static final int PUT_FINISHED = 27;
 	
 	public static final int PROCESSING_PREPARE_DEVICE = 41;

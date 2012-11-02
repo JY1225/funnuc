@@ -118,7 +118,9 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 						}
 					}
 				} catch (InterruptedException e) {
-					break;
+					if (!statusChanged) {
+						break;
+					}
 				} 
 				if (statusChanged == true) {
 					waitedTime += System.currentTimeMillis() - lastTime;

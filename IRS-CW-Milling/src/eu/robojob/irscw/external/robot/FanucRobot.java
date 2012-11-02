@@ -134,7 +134,9 @@ public class FanucRobot extends AbstractRobot {
 						}
 					}
 				} catch (InterruptedException e) {
-					break;
+					if (!statusChanged) {
+						break;
+					}
 				} 
 				if (statusChanged == true) {
 					waitedTime += System.currentTimeMillis() - lastTime;

@@ -14,6 +14,7 @@ import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
 public class PutStep extends AbstractTransportStep {
 
@@ -46,7 +47,9 @@ public class PutStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_PREPARE_DEVICE));
 				device.prepareForPut(putSettings);
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_EXECUTE_NORMAL));
 				if (needsTeaching()) {
 					if (teachedOffset == null) {
 						throw new IllegalStateException("Unknown teached position");
@@ -82,10 +85,12 @@ public class PutStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_PREPARE_DEVICE));
 				device.prepareForPut(putSettings);
 				Coordinates coordinates = device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions());
 				logger.info("put location: " + coordinates);
 				robotPutSettings.setLocation(coordinates);
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_EXECUTE_TEACHED));
 				robot.initiateTeachedPut(robotPutSettings);
 			}
 		}
@@ -106,6 +111,7 @@ public class PutStep extends AbstractTransportStep {
 				robotPutSettings.setLocation(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
 				device.grabPiece(putSettings);
 				robot.finalizeTeachedPut(robotPutSettings);
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_FINISHED));
 			}
 		}
 	}
@@ -126,6 +132,7 @@ public class PutStep extends AbstractTransportStep {
 				device.putFinished(putSettings);
 				device.release(processFlow);
 				robot.release(processFlow);
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_FINISHED));
 			}
 		}
 	}
