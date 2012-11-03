@@ -80,28 +80,23 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	public void processFanucRobotEvent(FanucRobotEvent event) {
-		System.out.println("processing new event!");
 		switch(event.getId()) {
 			case FanucRobotEvent.ROBOT_CONNECTED:
-				System.out.println("CONNECTED: " + toString());
 				for (FanucRobotListener listener : listeners) {
 					listener.robotConnected(event);
 				}
 				break;
 			case FanucRobotEvent.ROBOT_DISCONNECTED:
-				System.out.println("DISCONNECTED: " + toString());
 				for (FanucRobotListener listener : listeners) {
 					listener.robotDisconnected(event);
 				}
 				break;
 			case FanucRobotEvent.ALARMS_OCCURED:
-				System.out.println("ALARMS CHANGED: " + ((FanucRobotAlarmsOccuredEvent) event).getAlarms());
 				for (FanucRobotListener listener : listeners) {
 					listener.robotAlarmsOccured((FanucRobotAlarmsOccuredEvent) event);
 				}
 				break;
 			case FanucRobotEvent.STATUS_CHANGED:
-				System.out.println("STATUS CHANGED: " +  toString() + " - " + ((FanucRobotStatusChangedEvent) event).toString());
 				statusChanged();
 				for (FanucRobotListener listener : listeners) {
 					listener.robotStatusChanged((FanucRobotStatusChangedEvent) event);

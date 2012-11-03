@@ -1,5 +1,7 @@
 package eu.robojob.irscw.ui.main.flow;
 
+import org.apache.log4j.Logger;
+
 import javafx.application.Platform;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
@@ -20,6 +22,8 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 
 	private boolean showQuestionMarks;
 	private ProcessFlowAdapter processFlowAdapter;
+	
+	private static final Logger logger = Logger.getLogger(FixedProcessFlowPresenter.class);
 	
 	public FixedProcessFlowPresenter(ProcessFlowView view, boolean showQuestionMarks) {
 		super(view);
@@ -57,6 +61,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	}
 	
 	public void setPickStepActive(int transportIndex) {
+		logger.info("pick step active: " + transportIndex);
 		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
 			view.setTransportProgressGreen(i);
@@ -67,6 +72,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	}
 	
 	public void setPickStepFinished(int transportIndex) {
+		logger.info("pick step finished: " + transportIndex);
 		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
 			view.setTransportProgressGreen(i);
@@ -77,6 +83,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	}
 	
 	public void setPutStepActive(int transportIndex) {
+		logger.info("put step active: " + transportIndex);
 		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
 			view.setTransportProgressGreen(i);
@@ -87,6 +94,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	}
 	
 	public void setPutStepFinished(int transportIndex) {
+		logger.info("put step active: " + transportIndex);
 		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex + 1; i++) {
 			view.setTransportProgressGreen(i);
@@ -95,6 +103,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	}
 	
 	public void setProcessingStepActive(int deviceIndex) {
+		logger.info("processing step active: " + deviceIndex);
 		view.setAllProgressNone();
 		view.startDeviceAnimation(deviceIndex);
 		for (int i = 0; i < deviceIndex; i++) {
@@ -105,6 +114,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	}
 	
 	public void setProcessingStepFinished(int deviceIndex) {
+		logger.info("processing step finished: " + deviceIndex);
 		view.setAllProgressNone();
 		view.stopDeviceAnimation(deviceIndex);
 		for (int i = 0; i < deviceIndex; i++) {
@@ -128,21 +138,22 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	}
 	
 	private void showActiveStepChange(ActiveStepChangedEvent e) {
+		logger.info("new event: " + e);
 		AbstractProcessStep step = e.getActiveStep();
 		if (step instanceof PickStep) {
-			if (e.getId() != ActiveStepChangedEvent.PICK_FINISHED) {
+			if (e.getStatusId() != ActiveStepChangedEvent.PICK_FINISHED) {
 				setPickStepActive(processFlowAdapter.getTransportIndex((PickStep) step));
 			} else {
 				setPickStepFinished(processFlowAdapter.getTransportIndex((PickStep) step));
 			}
 		} else if (step instanceof PutStep) {
-			if (e.getId() != ActiveStepChangedEvent.PUT_FINISHED) {
+			if (e.getStatusId() != ActiveStepChangedEvent.PUT_FINISHED) {
 				setPutStepActive(processFlowAdapter.getTransportIndex((PutStep) step));
 			} else {
 				setPutStepFinished(processFlowAdapter.getTransportIndex((PutStep) step));
 			}
 		} else if (step instanceof ProcessingStep) {
-			if (e.getId() != ActiveStepChangedEvent.PROCESSING_FINISHED) {
+			if (e.getStatusId() != ActiveStepChangedEvent.PROCESSING_FINISHED) {
 				setProcessingStepActive(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
 			} else {
 				setProcessingStepFinished(processFlowAdapter.getDeviceIndex((ProcessingStep) step));

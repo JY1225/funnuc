@@ -72,26 +72,22 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	public void processCNCMachineEvent(CNCMachineEvent event) {
 		switch(event.getId()) {
 			case CNCMachineEvent.CNC_MACHINE_CONNECTED : 
-				System.out.println("CONNECTED: " + toString());
 				for (CNCMachineListener listener : listeners) {
 					listener.cNCMachineConnected(event);
 				}
 				break;
 			case CNCMachineEvent.CNC_MACHINE_DISCONNECTED : 
-				System.out.println("DISCONNECTED: " + toString());
 				for (CNCMachineListener listener : listeners) {
 					listener.cNCMachineDisconnected(event);
 				}
 				break;
 			case CNCMachineEvent.ALARM_OCCURED : 
-				System.out.println("ALARMS CHANGED: " + ((CNCMachineAlarmsOccuredEvent) event).getAlarms());
 				for (CNCMachineListener listener : listeners) {
 					// TODO get list of alarms!
 					listener.cNCMachineAlarmsOccured((CNCMachineAlarmsOccuredEvent) event);
 				}
 				break;
 			case CNCMachineEvent.STATUS_CHANGED : 
-				System.out.println("STATUS CHANGED: " +  toString());
 				statusChanged();
 				for (CNCMachineListener listener : listeners) {
 					// TODO get status!

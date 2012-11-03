@@ -115,11 +115,12 @@ public class TeachPresenter {
 		teachStatusView.setProcessPaused(!running);
 	}
 	
+	//TODO: delete this method
 	public void continueFlow() {
 		setProcessRunning(true);
 		setStatus("");
 		view.setBottom(teachStatusView);
-		teachThread.teachingFinished();
+		//teachThread.teachingFinished();
 	}
 	
 	public void exceptionOccured(Exception e){
