@@ -144,13 +144,18 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 			if (e.getStatusId() != ActiveStepChangedEvent.PICK_FINISHED) {
 				setPickStepActive(processFlowAdapter.getTransportIndex((PickStep) step));
 			} else {
-				setPickStepFinished(processFlowAdapter.getTransportIndex((PickStep) step));
+				//setPickStepFinished(processFlowAdapter.getTransportIndex((PickStep) step));
 			}
 		} else if (step instanceof PutStep) {
 			if (e.getStatusId() != ActiveStepChangedEvent.PUT_FINISHED) {
 				setPutStepActive(processFlowAdapter.getTransportIndex((PutStep) step));
 			} else {
-				setPutStepFinished(processFlowAdapter.getTransportIndex((PutStep) step));
+				int transportIndex = processFlowAdapter.getTransportIndex((PutStep) step);
+				if (!processFlowAdapter.getDeviceInformation(transportIndex + 1).hasProcessingStep()) {
+					setProcessingStepFinished(transportIndex+1);
+				} else {
+					setPutStepFinished(transportIndex);
+				}
 			}
 		} else if (step instanceof ProcessingStep) {
 			if (e.getStatusId() != ActiveStepChangedEvent.PROCESSING_FINISHED) {

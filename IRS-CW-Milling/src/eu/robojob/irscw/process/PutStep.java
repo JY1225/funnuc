@@ -73,6 +73,7 @@ public class PutStep extends AbstractTransportStep {
 				robot.finalizePut(robotPutSettings);
 				robot.moveToHome();
 				device.putFinished(putSettings);
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_FINISHED));
 			}
 		}
 	}

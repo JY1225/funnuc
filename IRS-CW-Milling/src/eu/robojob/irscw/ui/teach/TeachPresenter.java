@@ -23,11 +23,18 @@ import eu.robojob.irscw.external.robot.FanucRobotEvent;
 import eu.robojob.irscw.external.robot.FanucRobotListener;
 import eu.robojob.irscw.external.robot.FanucRobotStatusChangedEvent;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
+import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
+import eu.robojob.irscw.process.event.ModeChangedEvent;
+import eu.robojob.irscw.process.event.ProcessFlowEvent;
+import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
+import eu.robojob.irscw.util.Translator;
 
-public class TeachPresenter implements CNCMachineListener, FanucRobotListener{
+public class TeachPresenter implements CNCMachineListener, FanucRobotListener, ProcessFlowListener {
 
 	private TeachView view;
 	private FixedProcessFlowPresenter processFlowPresenter;
@@ -42,6 +49,8 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener{
 	private boolean isTeached;
 	private ProcessFlow processFlow;
 	
+	private Translator translator;
+	
 	private static Logger logger = Logger.getLogger(TeachPresenter.class);
 	
 	private Map<AbstractCNCMachine, Boolean> machines;
@@ -53,6 +62,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener{
 		this.processFlowPresenter = processFlowPresenter;
 		view.setTop(processFlowPresenter.getView());
 		this.processFlow = processFlow;
+		processFlow.addListener(this);
 		this.teachThread = new TeachThread(processFlow);
 		isTeached = false;
 		this.teachDisconnectedDevicesView = teachDisconnectedDevicesView;
@@ -61,6 +71,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener{
 		this.teachStatusView = teachStatusView;
 		machines = new HashMap<AbstractCNCMachine, Boolean>();
 		robots = new HashMap<FanucRobot, Boolean>();
+		this.translator = Translator.getInstance();
 	}
 
 	public void setEnabled(boolean enabled) {
@@ -162,11 +173,9 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener{
 	}
 	
 	public void startFlow() {
-		setTeachMode(true);
 		view.setBottom(teachStatusView);
 		logger.info("starten proces!");
 		setStatus("Starten proces...");
-		setProcessRunning(true);
 		processFlow.initialize();
 		ThreadManager.getInstance().submit(teachThread);
 	}
@@ -175,20 +184,28 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener{
 		teachStatusView.setMessage(status);
 	}
 	
-	public void setProcessRunning(boolean running) {
-		teachStatusView.setProcessPaused(!running);
-	}
-	
 	public void exceptionOccured(Exception e){
 		logger.error(e);
 		processFlowPresenter.refresh();
 		setStatus("FOUT: " + e);
-		setProcessRunning(false);
 		setTeachMode(false);
 	}
 	
 	private void setTeachMode(boolean enable) {
 		parent.setMenuBarEnabled(!enable);
+		teachStatusView.setProcessPaused(!enable);
+	}
+	
+	@Override
+	public void modeChanged(ModeChangedEvent e) {
+		switch (e.getMode()) {
+			case TEACH :
+				setTeachMode(true);
+				break;
+			default:
+				setTeachMode(false);
+				break;
+		}
 	}
 	
 	@Override
@@ -229,6 +246,58 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener{
 			}
 		});
 	}
+	
+	@Override
+	public void activeStepChanged(final ActiveStepChangedEvent e) {
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+			switch (e.getStatusId()) {
+				case ActiveStepChangedEvent.PICK_PREPARE_DEVICE:
+					setStatus(translator.getTranslation("pick-prepare-device"));
+					break;
+				case ActiveStepChangedEvent.PICK_EXECUTE_TEACHED:
+					setStatus(translator.getTranslation("pick-execute-teached"));
+					break;
+				case ActiveStepChangedEvent.PICK_EXECUTE_NORMAL:
+					setStatus(translator.getTranslation("pick-execute-normal"));
+					break;
+				case ActiveStepChangedEvent.PICK_FINISHED:
+					setStatus(translator.getTranslation("pick-finished"));
+					break;
+				case ActiveStepChangedEvent.PUT_PREPARE_DEVICE:
+					setStatus(translator.getTranslation("put-prepare-device"));
+					break;
+				case ActiveStepChangedEvent.PUT_EXECUTE_TEACHED:
+					setStatus(translator.getTranslation("put-execute-teached"));
+					break;
+				case ActiveStepChangedEvent.PUT_EXECUTE_NORMAL:
+					setStatus(translator.getTranslation("put-execute-normal"));
+					break;
+				case ActiveStepChangedEvent.PUT_FINISHED:
+					setStatus(translator.getTranslation("put-finished"));
+					break;
+				case ActiveStepChangedEvent.PROCESSING_PREPARE_DEVICE:
+					setStatus(translator.getTranslation("processing-prepare-device"));
+					break;
+				case ActiveStepChangedEvent.PROCESSING_IN_PROGRESS:
+					setStatus(translator.getTranslation("processing-in-progress"));
+					break;
+				case ActiveStepChangedEvent.PROCESSING_FINISHED:
+					setStatus(translator.getTranslation("processing-finished"));
+					break;
+				default:
+					throw new IllegalStateException("Unkown process state changed event");
+			}
+		}});
+	}
+
+	@Override
+	public void exceptionOccured(final ExceptionOccuredEvent e) {
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				exceptionOccured(e.getE());
+			}});
+	}
 
 	@Override
 	public void robotStatusChanged(FanucRobotStatusChangedEvent event) {}
@@ -238,4 +307,9 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener{
 	public void cNCMachineStatusChanged(CNCMachineStatusChangedEvent event) {}
 	@Override
 	public void cNCMachineAlarmsOccured(CNCMachineAlarmsOccuredEvent event) {}
+	@Override
+	public void dataChanged(ProcessFlowEvent e) {}
+	@Override
+	public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
+	
 }
