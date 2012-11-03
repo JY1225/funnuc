@@ -4,7 +4,7 @@ public class FanucRobotStatusChangedEvent extends FanucRobotEvent {
 
 	private FanucRobotStatus status;
 	
-	public FanucRobotStatusChangedEvent(AbstractRobot source, FanucRobotStatus status) {
+	public FanucRobotStatusChangedEvent(FanucRobot source, FanucRobotStatus status) {
 		super(source, FanucRobotEvent.STATUS_CHANGED);
 		this.status = status;
 	}

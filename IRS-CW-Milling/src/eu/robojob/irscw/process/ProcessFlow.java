@@ -46,6 +46,7 @@ public class ProcessFlow {
 	private Set<ProcessFlowListener> listeners;
 	private Mode mode;
 	
+	private int currentStepIndex;
 	
 	//TODO refactor constructors so there is one constructor, called by the others
 	public ProcessFlow(String name) {
@@ -58,6 +59,7 @@ public class ProcessFlow {
 		this.finishedAmount = 0;
 		this.mode = Mode.CONFIG;
 		this.listeners = new HashSet<ProcessFlowListener>();
+		initialize();
 	}
 			
 	public ProcessFlow(String name, List<AbstractProcessStep>processSteps, Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> deviceSettings,
@@ -71,6 +73,44 @@ public class ProcessFlow {
 		this.finishedAmount = 0;
 		this.mode = Mode.CONFIG;
 		setUpProcess(processSteps);
+		initialize();
+	}
+	
+	public void restart() {
+		incrementFinishedAmount();
+		currentStepIndex = 0;
+	}
+	
+	public void initialize() {
+		currentStepIndex = 0;
+	}
+	
+	public boolean hasNextStep() {
+		if (getProcessSteps().size() > currentStepIndex + 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean hasStep() {
+		if (getProcessSteps().size() > currentStepIndex) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public void nextStep() {
+		currentStepIndex++;
+	}
+	
+	public AbstractProcessStep getCurrentStep() {
+		return getStep(currentStepIndex);
+	}
+	
+	public int getCurrentStepIndex() {
+		return currentStepIndex;
 	}
 	
 	public Mode getMode() {
@@ -100,6 +140,10 @@ public class ProcessFlow {
 
 	public int getFinishedAmount() {
 		return finishedAmount;
+	}
+	
+	public void incrementFinishedAmount() {
+		setFinishedAmount(finishedAmount++);
 	}
 
 	public void setFinishedAmount(int finishedAmount) {

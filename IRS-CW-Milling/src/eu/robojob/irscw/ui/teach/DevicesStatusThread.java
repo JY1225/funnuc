@@ -8,10 +8,18 @@ import javafx.application.Platform;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.cnc.CNCMachineAlarmsOccuredEvent;
+import eu.robojob.irscw.external.device.cnc.CNCMachineEvent;
+import eu.robojob.irscw.external.device.cnc.CNCMachineListener;
+import eu.robojob.irscw.external.device.cnc.CNCMachineStatusChangedEvent;
 import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredEvent;
+import eu.robojob.irscw.external.robot.FanucRobotEvent;
+import eu.robojob.irscw.external.robot.FanucRobotListener;
+import eu.robojob.irscw.external.robot.FanucRobotStatusChangedEvent;
 import eu.robojob.irscw.process.ProcessFlow;
 
-public class DevicesStatusThread extends Thread {
+public class DevicesStatusThread extends Thread implements FanucRobotListener, CNCMachineListener {
 
 	private ProcessFlow processFlow;
 	private TeachPresenter teachPresenter;
@@ -90,6 +98,42 @@ public class DevicesStatusThread extends Thread {
 	@Override
 	public void interrupt() {
 		alive = false;
+	}
+
+	@Override
+	public void cNCMachineConnected(CNCMachineEvent event) {
+		
+	}
+
+	@Override
+	public void cNCMachineDisconnected(CNCMachineEvent event) {
+		
+	}
+
+	@Override
+	public void cNCMachineStatusChanged(CNCMachineStatusChangedEvent event) {
+	}
+
+	@Override
+	public void cNCMachineAlarmsOccured(CNCMachineAlarmsOccuredEvent event) {
+	}
+
+	@Override
+	public void robotConnected(FanucRobotEvent event) {
+		
+	}
+
+	@Override
+	public void robotDisconnected(FanucRobotEvent event) {
+		
+	}
+
+	@Override
+	public void robotStatusChanged(FanucRobotStatusChangedEvent event) {
+	}
+
+	@Override
+	public void robotAlarmsOccured(FanucRobotAlarmsOccuredEvent event) {
 	}
 	
 }

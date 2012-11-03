@@ -2,7 +2,7 @@ package eu.robojob.irscw.external.robot;
 
 public class FanucRobotEvent {
 
-	private AbstractRobot source;
+	private FanucRobot source;
 	private int id;
 	private long when;
 	
@@ -12,17 +12,17 @@ public class FanucRobotEvent {
 	public static final int STATUS_CHANGED = 3;
 	public static final int ALARMS_OCCURED = 4;
 	
-	public FanucRobotEvent (AbstractRobot source, int id) {
+	public FanucRobotEvent (FanucRobot source, int id) {
 		this.source = source;
 		this.id = id;
 		this.when = System.currentTimeMillis();
 	}
 
-	public AbstractRobot getSource() {
+	public FanucRobot getSource() {
 		return source;
 	}
 
-	public void setSource(AbstractRobot source) {
+	public void setSource(FanucRobot source) {
 		this.source = source;
 	}
 

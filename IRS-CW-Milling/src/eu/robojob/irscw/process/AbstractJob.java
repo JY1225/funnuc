@@ -18,6 +18,11 @@ public abstract class AbstractJob {
 		currentStepIndex = 0;
 	}
 	
+	public void restart() {
+		this.processFlow.incrementFinishedAmount();
+		currentStepIndex = 0;
+	}
+	
 	public boolean hasNextStep() {
 		if (processFlow.getProcessSteps().size() > currentStepIndex + 1) {
 			return true;
