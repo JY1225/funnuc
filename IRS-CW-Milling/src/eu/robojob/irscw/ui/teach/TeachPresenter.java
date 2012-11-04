@@ -23,6 +23,7 @@ import eu.robojob.irscw.external.robot.FanucRobotEvent;
 import eu.robojob.irscw.external.robot.FanucRobotListener;
 import eu.robojob.irscw.external.robot.FanucRobotStatusChangedEvent;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
@@ -274,7 +275,11 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 					setStatus(translator.getTranslation("put-execute-normal"));
 					break;
 				case ActiveStepChangedEvent.PUT_FINISHED:
-					setStatus(translator.getTranslation("put-finished"));
+					if (processFlow.getProcessSteps().get(processFlow.getProcessSteps().size() - 1).equals(e.getActiveStep())) {
+						setStatus(translator.getTranslation("teach-finished"));
+					} else {
+						setStatus(translator.getTranslation("put-finished"));
+					}
 					break;
 				case ActiveStepChangedEvent.PROCESSING_PREPARE_DEVICE:
 					setStatus(translator.getTranslation("processing-prepare-device"));

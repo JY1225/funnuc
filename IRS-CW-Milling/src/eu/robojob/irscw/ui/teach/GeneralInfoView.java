@@ -58,7 +58,7 @@ public class GeneralInfoView extends VBox {
 		lblStart.getStyleClass().add("btn-start-label");
 		hboxStart.getChildren().add(lblStart);
 		lblStart.setPrefSize(BUTTON_WIDTH - 40, UIConstants.BUTTON_HEIGHT);
-		hboxStart.getChildren().add(arrowRight);
+		//hboxStart.getChildren().add(arrowRight);
 		hboxStart.setPrefSize(BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT);
 		hboxStart.setAlignment(Pos.CENTER);
 		HBox.setHgrow(lblStart, Priority.ALWAYS);
@@ -69,7 +69,7 @@ public class GeneralInfoView extends VBox {
 				presenter.startFlow();
 			}
 		});
-		btnStart.setPrefSize(BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT);
+		btnStart.setPrefSize(75, 75);
 		btnStart.getStyleClass().add("btn-start");
 		
 		getChildren().add(lblInfoMessage);
