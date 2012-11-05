@@ -18,6 +18,8 @@ public class MainPresenter {
 	private TeachPresenter teachPresenter;
 	private AutomatePresenter automatePresenter;
 	private RobotPopUpPresenter robotPopUpPresenter;
+	
+	private MainContentPresenter activeContentPresenter;
 		
 	public MainPresenter(MainView view, MenuBarPresenter menuBarPresenter, ConfigurePresenter configurePresenter, TeachPresenter teachPresenter, AutomatePresenter automatePresenter,
 			RobotPopUpPresenter robotPopUpPresenter) {
@@ -34,7 +36,6 @@ public class MainPresenter {
 		this.robotPopUpPresenter = robotPopUpPresenter;
 		robotPopUpPresenter.setParent(this);
 		this.process = null;
-
 		view.setHeader(menuBarPresenter.getView());
 	}
 	
@@ -46,13 +47,38 @@ public class MainPresenter {
 		this.configurePresenter = configurePresenter;
 	}
 
+	private void setActiveMainContentPresenter(MainContentPresenter presenter) {
+		if (activeContentPresenter != null) {
+			activeContentPresenter.setActive(false);
+		}
+		activeContentPresenter = presenter;
+		view.setContent(activeContentPresenter.getView());
+		activeContentPresenter.setActive(true);
+	}
+	
 	public void showConfigure() {
 		menuBarPresenter.showConfigureView();
-		view.setContent(configurePresenter.getView());
-		teachPresenter.setEnabled(false);
+		setActiveMainContentPresenter(configurePresenter);
 		refreshStatus();
 	}
 	
+	public void showTeach() {
+		menuBarPresenter.showTeachView();
+		setActiveMainContentPresenter(teachPresenter);
+		refreshStatus();
+	}
+	
+	public void showAutomate() {
+		menuBarPresenter.showAutomateView();
+		setActiveMainContentPresenter(automatePresenter);
+		refreshStatus();
+	}
+	
+	public void showAlarms() {
+		menuBarPresenter.alarmsActive();
+	}
+	
+	//TODO refresh based on process flow status
 	public void refreshStatus() {
 		menuBarPresenter.setConfigureButtonEnabled(true);
 		menuBarPresenter.setTeachButtonEnabled(false);
@@ -67,23 +93,6 @@ public class MainPresenter {
 		if (teachPresenter.isTeached()) {
 			menuBarPresenter.setAutomateButtonEnabled(true);
 		}
-	}
-	
-	public void showTeach() {
-		menuBarPresenter.showTeachView();
-		view.setContent(teachPresenter.getView());
-		teachPresenter.setEnabled(true);
-		refreshStatus();
-	}
-	
-	public void showAutomate() {
-		menuBarPresenter.showAutomateView();
-		view.setContent(automatePresenter.getView());
-		refreshStatus();
-	}
-	
-	public void showAlarms() {
-		menuBarPresenter.alarmsActive();
 	}
 	
 	public void showRobot() {

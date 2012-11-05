@@ -33,11 +33,12 @@ import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.threading.ThreadManager;
+import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.util.Translator;
 
-public class TeachPresenter implements CNCMachineListener, FanucRobotListener, ProcessFlowListener {
+public class TeachPresenter implements CNCMachineListener, FanucRobotListener, ProcessFlowListener, MainContentPresenter {
 
 	private TeachView view;
 	private FixedProcessFlowPresenter processFlowPresenter;
@@ -65,7 +66,6 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		this.processFlowPresenter = processFlowPresenter;
 		view.setTop(processFlowPresenter.getView());
 		this.processFlow = processFlow;
-		processFlow.addListener(this);
 		this.teachThread = new TeachThread(processFlow);
 		isTeached = false;
 		this.teachDisconnectedDevicesView = teachDisconnectedDevicesView;
@@ -77,8 +77,9 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		this.translator = Translator.getInstance();
 	}
 
-	public void setEnabled(boolean enabled) {
-		if (enabled) {
+	@Override
+	public void setActive(boolean active) {
+		if (active) {
 			enable();
 		} else {
 			ThreadManager.getInstance().stopRunning(teachThread);
@@ -88,7 +89,48 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 			for (FanucRobot robot: robots.keySet()) {
 				robot.removeListener(this);
 			}
+			machines.clear();
+			robots.clear();
+			processFlow.removeListener(this);
 		}
+	}
+	
+	private void enable() {
+		view.setBottom(teachDisconnectedDevicesView);
+		processFlow.addListener(this);
+		for (AbstractCNCMachine machine : machines.keySet()) {
+			machine.removeListener(this);
+		}
+		for (FanucRobot robot : robots.keySet()) {
+			robot.removeListener(this);
+		}
+		machines.clear();
+		robots.clear();
+		//TODO for now we assume the devices/robots of the processflow will not change, so we register as a listener to all the devices/robots contained in the processflow
+		for (AbstractDevice device : processFlow.getDevices()) {
+			if (device instanceof AbstractCNCMachine) {
+				AbstractCNCMachine machine = (AbstractCNCMachine) device;
+				machine.addListener(this);
+				System.out.println("ADDED LISTENER");
+				if (machine.isConnected()) {
+					machines.put(machine, true);
+				} else {
+					machines.put(machine, false);
+				}
+			}
+		}
+		for (AbstractRobot robot : processFlow.getRobots()) {
+			if (robot instanceof FanucRobot) {
+				FanucRobot fRobot = (FanucRobot) robot;
+				fRobot.addListener(this);
+				if (fRobot.isConnected()) {
+					robots.put(fRobot, true);
+				} else {
+					robots.put(fRobot, false);
+				}
+			}
+		}
+		checkAllConnected();
 	}
 	
 	public void checkAllConnected() {
@@ -113,48 +155,13 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		}
 	}
 	
-	private void enable() {
-		view.setBottom(teachDisconnectedDevicesView);
-		for (AbstractCNCMachine machine : machines.keySet()) {
-			machine.removeListener(this);
-		}
-		for (FanucRobot robot : robots.keySet()) {
-			robot.removeListener(this);
-		}
-		machines.clear();
-		robots.clear();
-		//TODO for now we assume the devices/robots of the processflow will not change, so we register as a listener to all the devices/robots contained in the processflow
-		for (AbstractDevice device : processFlow.getDevices()) {
-			if (device instanceof AbstractCNCMachine) {
-				AbstractCNCMachine machine = (AbstractCNCMachine) device;
-				machine.addListener(this);
-				if (machine.isConnected()) {
-					machines.put(machine, true);
-				} else {
-					machines.put(machine, false);
-				}
-			}
-		}
-		for (AbstractRobot robot : processFlow.getRobots()) {
-			if (robot instanceof FanucRobot) {
-				FanucRobot fRobot = (FanucRobot) robot;
-				fRobot.addListener(this);
-				if (fRobot.isConnected()) {
-					robots.put(fRobot, true);
-				} else {
-					robots.put(fRobot, false);
-				}
-			}
-		}
-		checkAllConnected();
-	}
-	
 	public void showDisconnectedDevices(Set<String> deviceNames) {
 		logger.info("about to show " + deviceNames.size() + " disconnected devices");
 		view.setBottom(teachDisconnectedDevicesView);
 		teachDisconnectedDevicesView.setDisconnectedDevices(deviceNames);
 	}
 	
+	@Override
 	public TeachView getView() {
 		return view;
 	}
@@ -217,7 +224,8 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	
 	@Override
 	public void cNCMachineConnected(final CNCMachineEvent event) {
-		if (processFlow.getMode() == Mode.STOPPED) {
+		logger.info("CONNEECTEED");
+		if (processFlow.getMode() != Mode.TEACH) {
 			Platform.runLater(new Runnable() {
 				@Override public void run() {
 					machines.put(event.getSource(), true);
@@ -229,7 +237,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 
 	@Override
 	public void cNCMachineDisconnected(final CNCMachineEvent event) {
-		if (processFlow.getMode() == Mode.STOPPED) {
+		if (processFlow.getMode() != Mode.TEACH) {
 			Platform.runLater(new Runnable() {
 				@Override public void run() {
 					machines.put(event.getSource(), false);
@@ -241,7 +249,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 
 	@Override
 	public void robotConnected(final FanucRobotEvent event) {
-		if (processFlow.getMode() == Mode.STOPPED) {
+		if (processFlow.getMode() != Mode.TEACH) {
 			Platform.runLater(new Runnable() {
 				@Override public void run() {
 					robots.put(event.getSource(), true);
@@ -253,7 +261,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 
 	@Override
 	public void robotDisconnected(FanucRobotEvent event) {
-		if (processFlow.getMode() == Mode.STOPPED) {
+		if (processFlow.getMode() != Mode.TEACH) {
 			Platform.runLater(new Runnable() {
 				@Override public void run() {
 					checkAllConnected();

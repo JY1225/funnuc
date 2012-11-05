@@ -3,6 +3,7 @@
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.configure.device.DeviceMenuFactory;
 import eu.robojob.irscw.ui.configure.flow.ConfigureProcessFlowPresenter;
@@ -17,7 +18,7 @@ import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
 
-public class ConfigurePresenter implements TextFieldListener {
+public class ConfigurePresenter implements TextFieldListener, MainContentPresenter {
 
 	public enum Mode {
 		NORMAL, ADD_DEVICE, REMOVE_DEVICE
@@ -72,6 +73,7 @@ public class ConfigurePresenter implements TextFieldListener {
 		this.parent = parent;
 	}
 	
+	@Override
 	public ConfigureView getView() {
 		return view;
 	}
@@ -257,6 +259,12 @@ public class ConfigurePresenter implements TextFieldListener {
 		} else {
 			isConfigured();
 		}
+	}
+
+	@Override
+	public void setActive(boolean active) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

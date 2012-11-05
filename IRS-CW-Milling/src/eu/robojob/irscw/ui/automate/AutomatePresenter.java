@@ -1,11 +1,12 @@
 package eu.robojob.irscw.ui.automate;
 
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
 
 
-public class AutomatePresenter {
+public class AutomatePresenter implements MainContentPresenter {
 
 	private AutomateView view;
 	private FixedProcessFlowPresenter processFlowPresenter;
@@ -24,12 +25,18 @@ public class AutomatePresenter {
 		this.parent = parent;
 	}
 	
+	@Override
 	public AutomateView getView() {
 		return view;
 	}
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {
 		processFlowPresenter.loadProcessFlow(processFlow);
+	}
+	
+	@Override
+	public void setActive(boolean active) {
+		
 	}
 	
 	public void clickedStart() {
