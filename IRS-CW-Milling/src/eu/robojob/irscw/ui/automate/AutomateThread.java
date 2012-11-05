@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.teach;
+package eu.robojob.irscw.ui.automate;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.DeviceActionException;
@@ -8,44 +8,44 @@ import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 
-public class TeachThread extends Thread {
+public class AutomateThread extends Thread{
 
 	private ProcessFlow processFlow;
-		
-	private PickStep lastPickStep;
 	
-	public TeachThread(ProcessFlow processFlow) {
+	public AutomateThread(ProcessFlow processFlow) {
 		this.processFlow = processFlow;
-		this.lastPickStep = null;
 	}
 	
 	@Override
 	public void run() {
-		processFlow.setMode(Mode.TEACH);
+		processFlow.setMode(Mode.AUTO);
 		processFlow.initialize();
 		try {
 			for (AbstractRobot robot :processFlow.getRobots()) {
 				robot.restartProgram();
 				robot.moveToHome();
 			}
-			while (processFlow.hasStep()) {
-				AbstractProcessStep step = processFlow.getCurrentStep();
-				// intervention steps can be skipped
-				if (!(step instanceof InterventionStep)) {
-					if (step instanceof PickStep) {
-						handlePick((PickStep) step);
-					} else if (step instanceof PutStep) {
-						handlePut((PutStep) step);
-					} else if (step instanceof ProcessingStep) {
-						handleProcessing((ProcessingStep) step);
+			while(processFlow.getFinishedAmount() < processFlow.getTotalAmount()) {
+				while (processFlow.hasStep()) {
+					AbstractProcessStep step = processFlow.getCurrentStep();
+					// intervention steps can be skipped
+					if (!(step instanceof InterventionStep)) {
+						if (step instanceof PickStep) {
+							handlePick((PickStep) step);
+						} else if (step instanceof PutStep) {
+							handlePut((PutStep) step);
+						} else if (step instanceof ProcessingStep) {
+							handleProcessing((ProcessingStep) step);
+						}
 					}
+					processFlow.nextStep();
 				}
-				processFlow.nextStep();
+				processFlow.restart();
 			}
 			processFlow.setMode(Mode.READY);
 		} catch(Exception e) {
@@ -54,28 +54,11 @@ public class TeachThread extends Thread {
 	}
 	
 	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException {
-		this.lastPickStep = pickStep;
-		if (pickStep.needsTeaching()) {
-			pickStep.prepareForTeaching();
-			pickStep.teachingFinished();
-		} else {
-			pickStep.executeStep();
-		}
+		pickStep.executeStep();
 	}
 	
 	private void handlePut(final PutStep putStep) throws CommunicationException, RobotActionException, DeviceActionException {
-		if (putStep.needsTeaching()) {
-			putStep.prepareForTeaching();
-			if (lastPickStep != null) {
-				lastPickStep.finalize();
-				lastPickStep = null;
-			} else {
-				throw new IllegalStateException("Put without previous pick?");
-			}
-			putStep.teachingFinished();
-		} else {
-			putStep.executeStep();
-		}
+		putStep.executeStep();
 	}
 
 	private void handleProcessing(final ProcessingStep step) throws CommunicationException, DeviceActionException {

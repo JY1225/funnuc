@@ -16,9 +16,9 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	private Button btnToHome;
 	private Button btnToChange;
 	
+	private Button btn10;
 	private Button btn25;
 	private Button btn50;
-	private Button btn75;
 	private Button btn100;
 	
 	private static final int width = UIConstants.BUTTON_HEIGHT*4;
@@ -70,6 +70,19 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		});
 		vBoxMenuItems.getChildren().add(btnToChange);
 		
+		btn10 = new Button();
+		btn10.setGraphic(new Text("10%"));
+		btn10.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		btn10.getStyleClass().add("pop-up-btn");
+		btn10.getStyleClass().add("pop-up-btn-pressed");
+		btn10.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				presenter.setSpeedClicked(10);
+			}
+		});
+		vBoxMenuItems.getChildren().add(btn10);
+		
 		btn25 = new Button();
 		btn25.setGraphic(new Text("25%"));
 		btn25.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
@@ -94,19 +107,6 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		});
 		vBoxMenuItems.getChildren().add(btn50);
 		
-		btn75 = new Button();
-		btn75.setGraphic(new Text("75%"));
-		btn75.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
-		btn75.getStyleClass().add("pop-up-btn");
-		btn75.getStyleClass().add("pop-up-btn-pressed");
-		btn75.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				presenter.setSpeedClicked(75);
-			}
-		});
-		vBoxMenuItems.getChildren().add(btn75);
-		
 		btn100 = new Button();
 		btn100.setGraphic(new Text("100%"));
 		btn100.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
@@ -124,14 +124,14 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	public void refreshSpeed(int speed) {
 		btn25.getStyleClass().remove("pop-up-btn-pressed");
 		btn50.getStyleClass().remove("pop-up-btn-pressed");
-		btn75.getStyleClass().remove("pop-up-btn-pressed");
+		btn10.getStyleClass().remove("pop-up-btn-pressed");
 		btn100.getStyleClass().remove("pop-up-btn-pressed");
 		if (speed == 25) {
 			btn25.getStyleClass().add("pop-up-btn-pressed");
 		} else if (speed == 50) {
 			btn50.getStyleClass().add("pop-up-btn-pressed");
-		} else if (speed == 75) {
-			btn75.getStyleClass().add("pop-up-btn-pressed");
+		} else if (speed == 10) {
+			btn10.getStyleClass().add("pop-up-btn-pressed");
 		} else  if (speed == 100) {
 			btn100.getStyleClass().add("pop-up-btn-pressed");
 		}
@@ -140,7 +140,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	public void setRobotConnected(boolean connected) {
 		btn25.setDisable(!connected);
 		btn50.setDisable(!connected);
-		btn75.setDisable(!connected);
+		btn10.setDisable(!connected);
 		btn100.setDisable(!connected);
 		btnReset.setDisable(!connected);
 		btnToChange.setDisable(!connected);

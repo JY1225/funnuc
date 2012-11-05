@@ -30,7 +30,7 @@ public class PutStep extends AbstractTransportStep {
 		if (putSettings != null) {
 			putSettings.setStep(this);
 		}
-		this.robotPutSettings = robotPutSettings;
+		setRobotSettings(robotPutSettings);
 	}
 	
 	public PutStep(AbstractRobot robot, AbstractDevice deviceTo, AbstractDevice.AbstractDevicePutSettings putSettings,
@@ -163,6 +163,9 @@ public class PutStep extends AbstractTransportStep {
 	
 	public void setRobotSettings(AbstractRobotPutSettings settings) {
 		this.robotPutSettings = settings;
+		if (robotPutSettings != null) {
+			robotPutSettings.setPutStep(this);
+		}
 	}
 
 	@Override

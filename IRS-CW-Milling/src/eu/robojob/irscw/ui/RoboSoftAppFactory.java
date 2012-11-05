@@ -212,6 +212,7 @@ public class RoboSoftAppFactory {
 			BasicStackPlatePickSettings stackPlatePickSettings = new BasicStackPlate.BasicStackPlatePickSettings(stackPlate.getWorkAreaById("IRS M Basic"));
 			BasicStackPlateSettings stackPlateSettings = (BasicStackPlateSettings) stackPlate.getDeviceSettings();
 			stackPlateSettings.setAmount(15);
+			processFlow.setTotalAmount(15);
 			stackPlateSettings.setDimensions(new WorkPieceDimensions(140, 80, 30));
 			stackPlateSettings.setOrientation(WorkPieceOrientation.HORIZONTAL);
 			processFlow.setDeviceSettings(stackPlate, stackPlateSettings);

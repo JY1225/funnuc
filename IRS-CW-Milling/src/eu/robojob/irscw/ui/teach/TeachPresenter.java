@@ -22,7 +22,10 @@ import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredEvent;
 import eu.robojob.irscw.external.robot.FanucRobotEvent;
 import eu.robojob.irscw.external.robot.FanucRobotListener;
 import eu.robojob.irscw.external.robot.FanucRobotStatusChangedEvent;
+import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.ProcessFlow.Mode;
+import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
@@ -193,7 +196,11 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	
 	private void setTeachMode(boolean enable) {
 		parent.setMenuBarEnabled(!enable);
-		teachStatusView.setProcessPaused(!enable);
+		if (enable) {
+			teachStatusView.setProcessRunning();
+		} else {
+			teachStatusView.setProcessStopped();
+		}
 	}
 	
 	@Override
@@ -210,41 +217,49 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	
 	@Override
 	public void cNCMachineConnected(final CNCMachineEvent event) {
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
-				machines.put(event.getSource(), true);
-				checkAllConnected();
-			}
-		});
+		if (processFlow.getMode() == Mode.STOPPED) {
+			Platform.runLater(new Runnable() {
+				@Override public void run() {
+					machines.put(event.getSource(), true);
+					checkAllConnected();
+				}
+			});
+		}
 	}
 
 	@Override
 	public void cNCMachineDisconnected(final CNCMachineEvent event) {
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
-				machines.put(event.getSource(), false);
-				checkAllConnected();
-			}
-		});
+		if (processFlow.getMode() == Mode.STOPPED) {
+			Platform.runLater(new Runnable() {
+				@Override public void run() {
+					machines.put(event.getSource(), false);
+					checkAllConnected();
+				}
+			});
+		}
 	}
 
 	@Override
 	public void robotConnected(final FanucRobotEvent event) {
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
-				robots.put(event.getSource(), true);
-				checkAllConnected();
-			}
-		});
+		if (processFlow.getMode() == Mode.STOPPED) {
+			Platform.runLater(new Runnable() {
+				@Override public void run() {
+					robots.put(event.getSource(), true);
+					checkAllConnected();
+				}
+			});
+		}
 	}
 
 	@Override
 	public void robotDisconnected(FanucRobotEvent event) {
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
-				checkAllConnected();
-			}
-		});
+		if (processFlow.getMode() == Mode.STOPPED) {
+			Platform.runLater(new Runnable() {
+				@Override public void run() {
+					checkAllConnected();
+				}
+			});
+		}
 	}
 	
 	@Override
@@ -262,7 +277,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 					setStatus(translator.getTranslation("pick-execute-normal"));
 					break;
 				case ActiveStepChangedEvent.PICK_FINISHED:
-					setStatus(translator.getTranslation("pick-finished"));
+					//setStatus(translator.getTranslation("pick-finished"));
 					break;
 				case ActiveStepChangedEvent.PUT_PREPARE_DEVICE:
 					setStatus(translator.getTranslation("put-prepare-device"));
@@ -284,10 +299,26 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 					setStatus(translator.getTranslation("processing-prepare-device"));
 					break;
 				case ActiveStepChangedEvent.PROCESSING_IN_PROGRESS:
+					teachStatusView.setProcessPaused();
 					setStatus(translator.getTranslation("processing-in-progress"));
 					break;
 				case ActiveStepChangedEvent.PROCESSING_FINISHED:
+					teachStatusView.setProcessRunning();
 					setStatus(translator.getTranslation("processing-finished"));
+					break;
+				case ActiveStepChangedEvent.TEACHING_NEEDED:
+					setStatus(translator.getTranslation("teaching-needed"));
+					teachStatusView.setProcessPaused();
+					break;
+				case ActiveStepChangedEvent.TEACHING_FINISHED:
+					teachStatusView.setProcessRunning();
+					if (e.getActiveStep() instanceof PickStep) {
+						setStatus(translator.getTranslation("pick-execute-normal"));
+					} else if (e.getActiveStep() instanceof PutStep) {
+						setStatus(translator.getTranslation("put-execute-normal"));
+					} else {
+						throw new IllegalStateException("Teaching finished, but no pick or put step");
+					}
 					break;
 				default:
 					throw new IllegalStateException("Unkown process state changed event");
@@ -304,13 +335,22 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	}
 
 	@Override
-	public void robotStatusChanged(FanucRobotStatusChangedEvent event) {}
+	public void robotStatusChanged(final FanucRobotStatusChangedEvent event) {
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				teachStatusView.setZRest(event.getStatus().getZRest());
+			}});
+	}
 	@Override
-	public void robotAlarmsOccured(FanucRobotAlarmsOccuredEvent event) {}
+	public void robotAlarmsOccured(FanucRobotAlarmsOccuredEvent event) {
+		System.out.println("ROBOT ALARM:  " + event.getAlarms());
+	}
 	@Override
 	public void cNCMachineStatusChanged(CNCMachineStatusChangedEvent event) {}
 	@Override
-	public void cNCMachineAlarmsOccured(CNCMachineAlarmsOccuredEvent event) {}
+	public void cNCMachineAlarmsOccured(CNCMachineAlarmsOccuredEvent event) {
+		System.out.println("MACHINE ALARM:  " + event.getAlarms());
+	}
 	@Override
 	public void dataChanged(ProcessFlowEvent e) {}
 	@Override

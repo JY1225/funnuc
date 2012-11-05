@@ -6,6 +6,7 @@ import java.util.Set;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
+import eu.robojob.irscw.external.device.DeviceDisconnectedException;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
@@ -77,6 +78,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 				}
 				break;
 			case CNCMachineEvent.CNC_MACHINE_DISCONNECTED : 
+				statusChanged();
 				for (CNCMachineListener listener : listeners) {
 					listener.cNCMachineDisconnected(event);
 				}
@@ -99,7 +101,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		}
 	}
 	
-	protected boolean waitForStatus(int status, long timeout) {
+	protected boolean waitForStatus(int status, long timeout) throws CommunicationException {
 		long waitedTime = 0;
 		do {
 			long lastTime = System.currentTimeMillis();
@@ -118,8 +120,11 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 						break;
 					}
 				} 
+				if (!isConnected()) {
+					throw new DeviceDisconnectedException(this);
+				}
+				waitedTime += System.currentTimeMillis() - lastTime;
 				if (statusChanged == true) {
-					waitedTime += System.currentTimeMillis() - lastTime;
 					if ((getStatus().getStatus() & status) > 0) {
 						return true;
 					}

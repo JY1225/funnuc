@@ -22,6 +22,7 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 import eu.robojob.irscw.util.Translator;
+import eu.robojob.irscw.util.UIConstants;
 
 public class AutomateView extends VBox {
 
@@ -40,8 +41,8 @@ public class AutomateView extends VBox {
 	public static final double ICON_WIDTH = 49.5;
 	public static final double ICON_HEIGHT = 55.813;
 	
-	private static final int BTN_WIDTH = 150;
-	private static final int BTN_HEIGHT = 50;
+	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
+	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
 	
 	private int totalAmount;
 	private int finishedAmount;
@@ -146,7 +147,7 @@ public class AutomateView extends VBox {
 		txtPausePane.setPrefWidth(150);
 		txtPausePane.setAlignment(Pos.CENTER);
 		txtPause.getStyleClass().add("automate-btn-text");
-		hboxBtnPause.getChildren().add(pauseIconShape);
+		//hboxBtnPause.getChildren().add(pauseIconShape);
 		hboxBtnPause.getChildren().add(txtPausePane);
 		hboxBtnPause.setAlignment(Pos.CENTER_LEFT);
 		btnPause.setGraphic(hboxBtnPause);
@@ -162,14 +163,14 @@ public class AutomateView extends VBox {
 		playIconShape = new SVGPath();
 		playIconShape.setContent(playIconPath);
 		playIconShape.getStyleClass().addAll("automate-icon", "automate-btn-icon");
-		btnStart.getStyleClass().add("automate-btn");
+		btnStart.getStyleClass().add("automate-btn-start");
 		Text txtStart = new Text(translator.getTranslation("play"));
 		StackPane txtStartPane = new StackPane();
 		txtStartPane.getChildren().add(txtStart);
 		txtStartPane.setPrefWidth(150);
 		txtStartPane.setAlignment(Pos.CENTER);
 		txtStart.getStyleClass().add("automate-btn-text");
-		hboxBtnStart.getChildren().add(playIconShape);
+		//hboxBtnStart.getChildren().add(playIconShape);
 		hboxBtnStart.getChildren().add(txtStartPane);
 		hboxBtnStart.setAlignment(Pos.CENTER_LEFT);
 		btnStart.setGraphic(hboxBtnStart);

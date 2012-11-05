@@ -27,7 +27,7 @@ public class GeneralInfoView extends VBox {
 	
 	private TeachPresenter presenter;
 	
-	private static final double BUTTON_WIDTH = UIConstants.BUTTON_HEIGHT * 4;
+	private static final double BUTTON_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
 	
 	public GeneralInfoView() {
 		translator = Translator.getInstance();
@@ -69,7 +69,7 @@ public class GeneralInfoView extends VBox {
 				presenter.startFlow();
 			}
 		});
-		btnStart.setPrefSize(75, 75);
+		btnStart.setPrefSize(BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT);
 		btnStart.getStyleClass().add("btn-start");
 		
 		getChildren().add(lblInfoMessage);

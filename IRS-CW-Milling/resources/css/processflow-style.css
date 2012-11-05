@@ -174,7 +174,7 @@
 }
 
 .progressbar-piece-green {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#52e128 0%, #437f43 100%), linear-gradient(#40c319 0%, #38a717 100%);
+	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
 	-fx-background-insets: 0, 1 1 1 0, 1 1 1 0, 3 1 3 0, 4 1 4 0;
 }
 
@@ -189,12 +189,12 @@
 }
 
 .progressbar-piece-1of2-green {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#52e128 0%, #437f43 100%), linear-gradient(#40c319 0%, #38a717 100%);
+	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
 	-fx-background-insets: 0, 1 1 1 0, 1 1 1 0, 3 1 3 0, 4 1 4 0;
 }
 
 .progressbar-piece-2of2-green {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#52e128 0%, #437f43 100%), linear-gradient(#40c319 0%, #38a717 100%);
+	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
 	-fx-background-insets: 0, 1 2 1 0, 1 2 1 0, 3 2 3 0, 4 2 4 0;
 }
 
@@ -209,13 +209,13 @@
 }
 
 .progressbar-first-green {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#52e128 0%, #437f43 100%), linear-gradient(#40c319 0%, #38a717 100%);
+	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
 	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1, 3 1 3 3, 4 1 4 4;
 	-fx-background-radius: 8 0 0 8, 8 0 0 8, 6 0 0 6, 5 0 0 5;
 }
 
 .progressbar-last-green {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#52e128 0%, #437f43 100%), linear-gradient(#40c319 0%, #38a717 100%);
+	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
 	-fx-background-insets: 0, 1 1 1 0, 1 1 1 0, 3 3 3 0, 4 4 4 0;
 	-fx-background-radius: 0 8 8 0, 0 8 8 0, 0 6 6 0, 0 5 5 0;
 }

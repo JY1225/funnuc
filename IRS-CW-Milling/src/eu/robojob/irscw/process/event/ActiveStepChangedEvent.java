@@ -26,6 +26,9 @@ public class ActiveStepChangedEvent extends ProcessFlowEvent {
 	public static final int INTERVENTION_WAITING_FOR_FINISH = 63;
 	public static final int INTERVENTION_FINISHED = 64;
 	
+	public static final int TEACHING_NEEDED = 81;
+	public static final int TEACHING_FINISHED = 82;
+	
 	private int statusId;
 	
 	public ActiveStepChangedEvent(ProcessFlow source, AbstractProcessStep activeStep, int statusId) {

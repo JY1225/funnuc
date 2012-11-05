@@ -52,6 +52,9 @@ public class FanucRobotCommunication extends ExternalCommunication {
 			if (timeout - waitedTime < READ_RETRY_INTERVAL) {
 				timeToWait = timeout - waitedTime;
 			}
+			if (timeToWait <= 0) {
+				break;
+			}
 			try {
 				Thread.sleep(timeToWait);
 			} catch(InterruptedException e) {
@@ -89,6 +92,9 @@ public class FanucRobotCommunication extends ExternalCommunication {
 			int timeToWait = READ_RETRY_INTERVAL;
 			if (timeout - waitedTime < READ_RETRY_INTERVAL) {
 				timeToWait = timeout - waitedTime;
+			}
+			if (timeToWait <= 0) {
+				break;
 			}
 			try {
 				Thread.sleep(timeToWait);

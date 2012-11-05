@@ -60,6 +60,7 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 	public void changedAmount(int amount) {
 		deviceSettings.setAmount(amount);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		pickStep.getProcessFlow().setTotalAmount(amount);
 	}
 	
 	public void changedOrientation(WorkPieceOrientation orientation) {

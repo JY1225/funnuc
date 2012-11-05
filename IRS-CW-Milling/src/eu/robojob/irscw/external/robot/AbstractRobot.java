@@ -7,6 +7,8 @@ import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.process.PickStep;
+import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.workpiece.WorkPiece;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {
@@ -34,7 +36,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 	
 	public void setSpeed(int speedPercentage) throws CommunicationException {
-		if ((speedPercentage < 0) || (speedPercentage > 100) || !((speedPercentage == 25) || (speedPercentage == 50) || (speedPercentage == 75) || (speedPercentage == 100))) {
+		if ((speedPercentage < 0) || (speedPercentage > 100) || !((speedPercentage == 10) || (speedPercentage == 50) || (speedPercentage == 75) || (speedPercentage == 100))) {
 			throw new IllegalArgumentException("Illegal speed value: " + speedPercentage + ", should be between 0 and 100");
 		}
 		this.speed = speedPercentage;
@@ -142,6 +144,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 	
 	public static abstract class AbstractRobotPickSettings extends AbstractRobotActionSettings {
+		protected PickStep pickStep;
 		protected WorkPiece workPiece;
 
 		public AbstractRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, float clampHeight, WorkPiece workPiece) {
@@ -156,13 +159,34 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		public void setWorkPiece(WorkPiece workPiece) {
 			this.workPiece = workPiece;
 		}
+
+		public PickStep getPickStep() {
+			return pickStep;
+		}
+
+		public void setPickStep(PickStep pickStep) {
+			this.pickStep = pickStep;
+		}
+		
 	}
 	
 	// dimensions for put follow from pick
 	public static abstract class AbstractRobotPutSettings extends AbstractRobotActionSettings {
+		
+		protected PutStep putStep;
+		
 		public AbstractRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, float clampHeight) {
 			super(workArea, gripperHead, gripper, smoothPoint, location, clampHeight);
 		}
+
+		public PutStep getPutStep() {
+			return putStep;
+		}
+
+		public void setPutStep(PutStep putStep) {
+			this.putStep = putStep;
+		}
+		
 	}
 	
 	public static abstract class AbstractRobotSettings {

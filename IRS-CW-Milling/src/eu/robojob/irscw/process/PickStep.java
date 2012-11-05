@@ -30,7 +30,7 @@ public class PickStep extends AbstractTransportStep {
 		if (pickSettings != null) {
 			pickSettings.setStep(this);
 		}
-		this.robotPickSettings = robotPickSettings;
+		setRobotSettings(robotPickSettings);
 	}
 	
 	public PickStep(AbstractRobot robot, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
@@ -159,6 +159,9 @@ public class PickStep extends AbstractTransportStep {
 
 	public void setRobotSettings(AbstractRobotPickSettings settings) {
 		this.robotPickSettings = settings;
+		if (robotPickSettings != null) {
+			robotPickSettings.setPickStep(this);
+		}
 	}
 
 	@Override

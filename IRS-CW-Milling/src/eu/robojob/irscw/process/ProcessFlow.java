@@ -83,6 +83,7 @@ public class ProcessFlow {
 	
 	public void initialize() {
 		currentStepIndex = 0;
+		setFinishedAmount(0);
 	}
 	
 	public boolean hasNextStep() {

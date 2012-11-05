@@ -16,6 +16,7 @@ import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.workpiece.WorkPiece;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
@@ -87,6 +88,7 @@ public class FanucRobot extends AbstractRobot {
 				}
 				break;
 			case FanucRobotEvent.ROBOT_DISCONNECTED:
+				statusChanged();
 				for (FanucRobotListener listener : listeners) {
 					listener.robotDisconnected(event);
 				}
@@ -114,7 +116,7 @@ public class FanucRobot extends AbstractRobot {
 		}
 	}
 	
-	private boolean waitForStatus(int status, long timeout) {
+	private boolean waitForStatus(int status, long timeout) throws CommunicationException {
 		long waitedTime = 0;
 		do {
 			long lastTime = System.currentTimeMillis();
@@ -133,6 +135,9 @@ public class FanucRobot extends AbstractRobot {
 						break;
 					}
 				} 
+				if (!isConnected()) {
+					throw new FanucRobotDisconnectedException(this);
+				}
 				if (statusChanged == true) {
 					waitedTime += System.currentTimeMillis() - lastTime;
 					if ((getStatus().getControllerString() & status) > 0) {
@@ -253,13 +258,13 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 		// we now wait for the robot to indicate he moved to its location
 		boolean waitForTeachingNeeded = waitForStatus(FanucRobotConstants.STATUS_AWAITING_TEACHING, PICK_TEACH_TIMEOUT);
-		System.out.println("**--**TEACHING NEEDED**--**");
+		pickSettings.getPickStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(pickSettings.getPickStep().getProcessFlow(), pickSettings.getPickStep(), ActiveStepChangedEvent.TEACHING_NEEDED));
 		if (!waitForTeachingNeeded) {
 			logger.info("Troubled");
 			throw new RobotActionException();
 		} else {
 			boolean waitingForTeachingFinished = waitForStatus(FanucRobotConstants.STATUS_TEACHING_FINISHED, PICK_TEACH_TIMEOUT);
-			System.out.println("**--**TEACHING FINISHED**--**");
+			pickSettings.getPickStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(pickSettings.getPickStep().getProcessFlow(), pickSettings.getPickStep(), ActiveStepChangedEvent.TEACHING_FINISHED));
 			if (!waitingForTeachingFinished) {
 				logger.info("Troubles!");
 				throw new RobotActionException();
@@ -293,13 +298,13 @@ public class FanucRobot extends AbstractRobot {
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT);
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 		boolean waitingForTeachingNeeded = waitForStatus(FanucRobotConstants.STATUS_AWAITING_TEACHING, PUT_TEACH_TIMEOUT);
-		System.out.println("**--**TEACHING NEEDED**--**");
+		putSettings.getPutStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getPutStep().getProcessFlow(), putSettings.getPutStep(), ActiveStepChangedEvent.TEACHING_NEEDED));
 		if (!waitingForTeachingNeeded) {
 			logger.info("Troubles");
 			throw new RobotActionException();
 		} else {
 			boolean waitingForRelease = waitForStatus(FanucRobotConstants.STATUS_TEACHING_FINISHED, PUT_TEACH_TIMEOUT);
-			System.out.println("**--**TEACHING FINISHED**--**");
+			putSettings.getPutStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getPutStep().getProcessFlow(), putSettings.getPutStep(), ActiveStepChangedEvent.TEACHING_FINISHED));
 			if (!waitingForRelease) {
 				logger.info("Troubles!");
 				throw new RobotActionException();
@@ -367,7 +372,7 @@ public class FanucRobot extends AbstractRobot {
 		values.add("0");
 		values.add("0");
 		values.add("0");
-		if ((getSpeed() < 25) || (getSpeed() > 100)) {
+		if ((getSpeed() < 10) || (getSpeed() > 100)) {
 			setSpeed(50);
 		}
 		values.add(getSpeed() + ""); // robot speed is set to 50 for now! 
@@ -436,7 +441,7 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public synchronized void moveToHome() throws CommunicationException, RobotActionException {
 		//we now use a speed of 50%
-		if ((getSpeed() < 25) || (getSpeed() > 100)) {
+		if ((getSpeed() < 10) || (getSpeed() > 100)) {
 			setSpeed(50);
 		}
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_TO_HOME, FanucRobotConstants.RESPONSE_TO_HOME, TO_HOME_TIMEOUT, "" + getSpeed());
@@ -446,7 +451,7 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public synchronized void moveToChangePoint() throws CommunicationException,
 			RobotActionException {
-		if ((getSpeed() < 25) || (getSpeed() > 100)) {
+		if ((getSpeed() < 10) || (getSpeed() > 100)) {
 			setSpeed(50);
 		}
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_TO_JAW_CHANGE, FanucRobotConstants.RESPONSE_TO_JAW_CHANGE, TO_JAW_CHANGE_TIMEOUT, "" + getSpeed());

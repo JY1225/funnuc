@@ -155,3 +155,14 @@
 .status-msg-red {
 	-fx-text-fill: #ff4b2d;
 }
+
+.automate-btn-start {
+	-fx-background-color: 
+		linear-gradient(#616264 0%, #7b7b7b 100%),
+		#2e5500,
+		linear-gradient(#75d800 0%, #3e7300 100%), 
+		linear-gradient(#67be00 0%, #5caa00 100%);
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 2 3 2;
+	-fx-background-radius: 5, 4, 3, 2;
+	-fx-padding: 0;
+}
