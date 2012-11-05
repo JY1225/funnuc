@@ -252,18 +252,26 @@ public class FanucRobot extends AbstractRobot {
 		// write start service
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 		// we now wait for the robot to indicate he moved to its location
-		boolean waitingForTeachingFinished = waitForStatus(FanucRobotConstants.STATUS_PICK_POSITION_TEACHED, PICK_TEACH_TIMEOUT);
-		if (!waitingForTeachingFinished) {
-			logger.info("Troubles!");
+		boolean waitForTeachingNeeded = waitForStatus(FanucRobotConstants.STATUS_AWAITING_TEACHING, PICK_TEACH_TIMEOUT);
+		System.out.println("**--**TEACHING NEEDED**--**");
+		if (!waitForTeachingNeeded) {
+			logger.info("Troubled");
 			throw new RobotActionException();
 		} else {
-			logger.info("TEACHINGOK!");
-			boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PICK_RELEASE_REQUEST, PICK_TO_LOCATION_TIMEOUT);
-			if (waitingForPickFinished) {
-				logger.info("Pick finished!");
-				return;
-			} else {
+			boolean waitingForTeachingFinished = waitForStatus(FanucRobotConstants.STATUS_TEACHING_FINISHED, PICK_TEACH_TIMEOUT);
+			System.out.println("**--**TEACHING FINISHED**--**");
+			if (!waitingForTeachingFinished) {
+				logger.info("Troubles!");
 				throw new RobotActionException();
+			} else {
+				logger.info("TEACHINGOK!");
+				boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PICK_RELEASE_REQUEST, PICK_TO_LOCATION_TIMEOUT);
+				if (waitingForPickFinished) {
+					logger.info("Pick finished!");
+					return;
+				} else {
+					throw new RobotActionException();
+				}
 			}
 		}
 	}
@@ -283,12 +291,19 @@ public class FanucRobot extends AbstractRobot {
 		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClampHeight());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT);
-		//TODO in progress
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
-		boolean waitingForRelease = waitForStatus(FanucRobotConstants.STATUS_PUT_POSITION_TEACHED, PUT_TEACH_TIMEOUT);
-		if (!waitingForRelease) {
-			logger.info("Troubles!");
+		boolean waitingForTeachingNeeded = waitForStatus(FanucRobotConstants.STATUS_AWAITING_TEACHING, PUT_TEACH_TIMEOUT);
+		System.out.println("**--**TEACHING NEEDED**--**");
+		if (!waitingForTeachingNeeded) {
+			logger.info("Troubles");
 			throw new RobotActionException();
+		} else {
+			boolean waitingForRelease = waitForStatus(FanucRobotConstants.STATUS_TEACHING_FINISHED, PUT_TEACH_TIMEOUT);
+			System.out.println("**--**TEACHING FINISHED**--**");
+			if (!waitingForRelease) {
+				logger.info("Troubles!");
+				throw new RobotActionException();
+			}
 		}
 	}
 

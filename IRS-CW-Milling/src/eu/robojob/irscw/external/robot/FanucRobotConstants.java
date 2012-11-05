@@ -46,8 +46,8 @@ public class FanucRobotConstants {
 	public static final int STATUS_ROBOT_IN_JAW_CHANGE_POINT	=	BIT8;
 	public static final int STATUS_ROBOT_MOVED_BAR				=	BIT9;
 	// TEACHING
-	public static final int STATUS_PICK_POSITION_TEACHED		=	BIT10;
-	public static final int STATUS_PUT_POSITION_TEACHED			=	BIT11;
+	public static final int STATUS_AWAITING_TEACHING			=	BIT10;
+	public static final int STATUS_TEACHING_FINISHED			=	BIT11;
 	
 	// COMMAND IDS
 	public static final int COMMAND_ASK_STATUS					=	20;
