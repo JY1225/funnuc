@@ -26,7 +26,7 @@ public class ProcessFlow {
 	}
 	
 	public enum Mode {
-		TEACH, READY, AUTO, PAUSED, STOPPED, CONFIG
+		TEACH, READY, AUTO, PAUSED, STOPPED, CONFIG, FINISHED
 	}
 	
 	//private static Logger logger = Logger.getLogger(ProcessFlow.class);
@@ -84,6 +84,7 @@ public class ProcessFlow {
 	public void initialize() {
 		currentStepIndex = 0;
 		setFinishedAmount(0);
+		this.mode = Mode.READY;
 	}
 	
 	public boolean hasNextStep() {
@@ -144,7 +145,7 @@ public class ProcessFlow {
 	}
 	
 	public void incrementFinishedAmount() {
-		setFinishedAmount(finishedAmount++);
+		setFinishedAmount(finishedAmount + 1);
 	}
 
 	public void setFinishedAmount(int finishedAmount) {

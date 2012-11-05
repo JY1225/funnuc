@@ -117,8 +117,11 @@ public class MainPresenter {
 		return view;
 	}
 	
-	public void setMenuBarEnabled(boolean enabled) {
-		menuBarPresenter.setMenuBarEnabled(enabled);
+	public void setChangeContentEnabled(boolean enabled) {
+		menuBarPresenter.setAutomateButtonEnabled(enabled);
+		menuBarPresenter.setConfigureButtonEnabled(enabled);
+		menuBarPresenter.setTeachButtonEnabled(enabled);
+		menuBarPresenter.setAdminButtonEnabled(enabled);
 	}
 	
 	public void loadProcessFlow(ProcessFlow process) {

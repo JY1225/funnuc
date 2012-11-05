@@ -29,6 +29,16 @@
 	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
 }
 
+.lbl-z-rest-auto {
+	-fx-text-alignment: left;
+	-fx-padding: 0 0 0 15;
+	-fx-text-wrap: true;
+	-fx-text-fill: #ffe328;
+	-fx-font-family: "Helvetica";
+	-fx-font-size: 16px;
+	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 1, 0.0 , 0 , 0 ); 
+}
+
 .automate-time-lbl {
 	-fx-text-alignment: center;
 	-fx-alignment: center;
@@ -107,19 +117,19 @@
 }
 
 .automate-btn {
+	
 	-fx-background-color: 
-		linear-gradient(#4b4848 0%, #464343 100%),
-		linear-gradient(#8a8686 0%, #787373 100%);
-	-fx-background-insets: 0, 1 1 2 1;
-	-fx-border-radius: 5, 4 4 3 3;
+		linear-gradient(#616264 0%, #7b7b7b 100%),
+		#4f4f4f,
+		linear-gradient(#a7a7a7 0%, #535353 100%), 
+		linear-gradient(#929292 0%, #818181 100%);
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 2 3 2;
+	-fx-background-radius: 5, 4, 3, 2;
+	-fx-padding: 0;
 }
 
 .automate-btn:pressed {
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0.5), 7, 0, 0, 2);
-	-fx-background-color: 
-		linear-gradient(#4b4848 0%, #464343 100%),
-		linear-gradient(#787373 0%, #686565 100%);
-	-fx-background-insets: 0, 1;
+	-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);
 }
 
 .automate-btn-text {
@@ -165,4 +175,9 @@
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 2 3 2;
 	-fx-background-radius: 5, 4, 3, 2;
 	-fx-padding: 0;
+	-fx-effect: null;
+}
+
+.automate-btn-start:pressed {
+	-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);
 }

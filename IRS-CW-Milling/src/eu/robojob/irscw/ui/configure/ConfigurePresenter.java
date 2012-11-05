@@ -191,21 +191,21 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	
 	public void setAddDeviceMode() {
 		view.setBottomLeftEnabled(false);
-		parent.setMenuBarEnabled(false);
+		parent.setChangeContentEnabled(false);
 		processFlowPresenter.setAddDeviceMode();
 		mode = Mode.ADD_DEVICE;
 	}
 	
 	public void setRemoveDeviceMode() {
 		view.setBottomLeftEnabled(false);
-		parent.setMenuBarEnabled(false);
+		parent.setChangeContentEnabled(false);
 		processFlowPresenter.setRemoveDeviceMode();
 		mode = Mode.REMOVE_DEVICE;
 	}
 	
 	public void setNormalMode() {
 		view.setBottomLeftEnabled(true);
-		parent.setMenuBarEnabled(true);
+		parent.setChangeContentEnabled(true);
 		processFlowPresenter.setNormalMode();
 		mode = Mode.NORMAL;
 	}

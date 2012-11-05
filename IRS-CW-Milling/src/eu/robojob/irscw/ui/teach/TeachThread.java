@@ -31,7 +31,7 @@ public class TeachThread extends Thread {
 		try {
 			for (AbstractRobot robot :processFlow.getRobots()) {
 				robot.restartProgram();
-				robot.moveToHome();
+				//robot.moveToHome();
 			}
 			while (processFlow.hasStep()) {
 				AbstractProcessStep step = processFlow.getCurrentStep();
@@ -47,6 +47,7 @@ public class TeachThread extends Thread {
 				}
 				processFlow.nextStep();
 			}
+			processFlow.restart();
 			processFlow.setMode(Mode.READY);
 		} catch(Exception e) {
 			notifyException(e);

@@ -36,7 +36,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 	
 	public void setSpeed(int speedPercentage) throws CommunicationException {
-		if ((speedPercentage < 0) || (speedPercentage > 100) || !((speedPercentage == 10) || (speedPercentage == 50) || (speedPercentage == 75) || (speedPercentage == 100))) {
+		if ((speedPercentage < 0) || (speedPercentage > 100) || !((speedPercentage == 10) || (speedPercentage == 25) || (speedPercentage == 50) || (speedPercentage == 100))) {
 			throw new IllegalArgumentException("Illegal speed value: " + speedPercentage + ", should be between 0 and 100");
 		}
 		this.speed = speedPercentage;

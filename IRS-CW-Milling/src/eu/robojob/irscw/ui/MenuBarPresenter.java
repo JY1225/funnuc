@@ -95,6 +95,10 @@ public class MenuBarPresenter {
 		view.setTeachButtonEnabled(enabled);
 	}
 	
+	public void setAdminButtonEnabled(boolean enabled) {
+		view.setAdminButtonEnabled(enabled);
+	}
+	
 	public void setAutomateButtonEnabled(boolean enabled) {
 		view.setAutomateButtonEnabled(enabled);
 	}

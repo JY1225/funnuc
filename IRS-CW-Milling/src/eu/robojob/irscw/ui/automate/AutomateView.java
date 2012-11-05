@@ -1,5 +1,8 @@
 package eu.robojob.irscw.ui.automate;
 
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -21,6 +24,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 
@@ -59,6 +63,8 @@ public class AutomateView extends VBox {
 	private static final String pauseIconPath = "M 15 0.03125 C 6.7162491 0.03125 0 6.7474991 0 15.03125 C 0 23.315 6.7162491 30.03125 15 30.03125 C 23.28375 30.03125 30 23.315 30 15.03125 C 30 6.7474991 23.28375 0.03125 15 0.03125 z M 9 7.03125 L 13 7.03125 L 13 23.03125 L 9 23.03125 L 9 7.03125 z M 17 7.03125 L 21 7.03125 L 21 23.03125 L 17 23.03125 L 17 7.03125 z";
 	private static final String playIconPath = "M 15 0.03125 C 6.71625 0.03125 0 6.7475 0 15.03125 C 0 23.315 6.71625 30.03125 15 30.03125 C 23.28375 30.03125 30 23.315 30 15.03125 C 30 6.7475 23.28375 0.03125 15 0.03125 z M 9.375 7.53125 L 24.375 15.03125 L 9.375 22.53125 L 9.375 7.53125 z";
 	
+	private static final String loadingPath = "M 15 -0.03125 C 13.960313 -0.03125 13.125 0.80781244 13.125 1.84375 C 13.125 2.8796875 13.960313 3.71875 15 3.71875 C 16.033125 3.71875 16.875 2.8796875 16.875 1.84375 C 16.875 0.80781244 16.033125 -0.03125 15 -0.03125 z M 5.625 3.71875 C 4.5894661 3.71875 3.75 4.5582161 3.75 5.59375 C 3.75 6.6292839 4.5894661 7.46875 5.625 7.46875 C 6.6605339 7.46875 7.5 6.6292839 7.5 5.59375 C 7.5 4.5582161 6.6605339 3.71875 5.625 3.71875 z M 24.375 3.71875 C 23.895234 3.71875 23.428594 3.8848437 23.0625 4.25 C 22.330313 4.9840625 22.330313 6.1703125 23.0625 6.90625 C 23.794688 7.6365625 24.986563 7.6365625 25.71875 6.90625 C 26.458438 6.1759375 26.458438 5.0134375 25.71875 4.28125 C 25.352656 3.9142187 24.854766 3.71875 24.375 3.71875 z M 15 7.46875 C 10.854375 7.46875 7.5 10.826875 7.5 14.96875 C 7.5 19.110625 10.854375 22.46875 15 22.46875 C 19.138125 22.46875 22.5 19.110625 22.5 14.96875 C 22.5 10.826875 19.138125 7.46875 15 7.46875 z M 1.875 13.09375 C 0.83531244 13.09375 0 13.932812 0 14.96875 C 0 16.006563 0.83531244 16.84375 1.875 16.84375 C 2.908125 16.84375 3.75 16.006563 3.75 14.96875 C 3.75 13.932813 2.908125 13.09375 1.875 13.09375 z M 28.125 13.09375 C 27.084375 13.09375 26.25 13.929062 26.25 14.96875 C 26.25 16.00375 27.095625 16.84375 28.125 16.84375 C 29.164687 16.84565 30.01125 16.006563 30 14.96875 C 30.01125 13.932813 29.154375 13.09375 28.125 13.09375 z M 5.625 22.46875 C 4.5894661 22.46875 3.75 23.308216 3.75 24.34375 C 3.75 25.379284 4.5894661 26.21875 5.625 26.21875 C 6.6605339 26.21875 7.5 25.379284 7.5 24.34375 C 7.5 23.308216 6.6605339 22.46875 5.625 22.46875 z M 24.375 22.46875 C 23.895234 22.46875 23.428594 22.633906 23.0625 23 C 22.330313 23.732187 22.330313 24.924063 23.0625 25.65625 C 23.794688 26.388437 24.986563 26.388437 25.71875 25.65625 C 26.458438 24.924063 26.458438 23.732187 25.71875 23 C 25.352656 22.633906 24.854766 22.46875 24.375 22.46875 z M 15 26.21875 C 13.960313 26.21875 13.125 27.054063 13.125 28.09375 C 13.125 29.129688 13.960313 29.96875 15 29.96875 C 16.039687 29.96875 16.875 29.129688 16.875 28.09375 C 16.875 27.054063 16.039687 26.21875 15 26.21875 z";
+
 	private SVGPath cycleTimeShape;
 	private SVGPath cycleTimePassedShape;
 	private SVGPath timeTillPauseShape;
@@ -66,6 +72,10 @@ public class AutomateView extends VBox {
 	
 	private SVGPath pauseIconShape;
 	private SVGPath playIconShape;
+	private RotateTransition rotation;
+	private SVGPath loading;
+	
+	private Label lblZRest;
 	
 	private Label lblCycleTimeMessage;
 	private Label lblCycleTimePassedMessage;
@@ -88,6 +98,7 @@ public class AutomateView extends VBox {
 	
 	private Button btnPause;
 	private Button btnStart;
+	private Button btnRestart;
 	
 	private StackPane btnPane;
 	private VBox lblPane;
@@ -126,12 +137,36 @@ public class AutomateView extends VBox {
 		bottomBottom = new HBox();
 		bottom.getChildren().add(bottomBottom);
 		
+		loading = new SVGPath();
+		loading.setContent(loadingPath);
+				
+		rotation = new RotateTransition(Duration.millis(2000), loading);
+		rotation.setFromAngle(0);
+		rotation.setToAngle(360);
+		rotation.setInterpolator(Interpolator.LINEAR);
+		rotation.setCycleCount(Timeline.INDEFINITE);
+				
+		lblZRest = new Label();
+		lblZRest.getStyleClass().add("lbl-z-rest-auto");
+		lblZRest.setPrefSize(180, 20);
+		lblZRest.setWrapText(true);
+		
+		HBox loadingPane = new HBox();
+		loadingPane.setAlignment(Pos.CENTER_LEFT);
+		loadingPane.setPrefSize(200, 50);
+		loadingPane.setMaxSize(200, 50);
+		loadingPane.getChildren().add(loading);
+		loadingPane.getChildren().add(lblZRest);
+		
 		lblStatus = new Label();
 		lblStatus.getStyleClass().add("status-msg");
 		lblStatus.setPrefSize(200, 100);
+		
 		lblPane = new VBox();
 		lblPane.setAlignment(Pos.CENTER);
 		lblPane.setPrefWidth(300);
+		
+		lblPane.getChildren().add(loadingPane);
 		lblPane.getChildren().add(lblStatus);
 		
 		btnPause = new Button();
@@ -180,6 +215,28 @@ public class AutomateView extends VBox {
 				presenter.clickedStart();
 			}
 		});
+		
+		btnRestart = new Button();
+		btnRestart.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
+		btnRestart.getStyleClass().add("automate-btn-start");
+		HBox hboxBtnReStart = new HBox();
+		Text txtRestart = new Text(translator.getTranslation("restart"));
+		StackPane txtRestartPane = new StackPane();
+		txtRestartPane.getChildren().add(txtRestart);
+		txtRestartPane.setPrefWidth(150);
+		txtRestartPane.setAlignment(Pos.CENTER);
+		txtRestart.getStyleClass().add("automate-btn-text");
+		//hboxBtnStart.getChildren().add(playIconShape);
+		hboxBtnReStart.getChildren().add(txtRestartPane);
+		hboxBtnReStart.setAlignment(Pos.CENTER_LEFT);
+		btnRestart.setGraphic(hboxBtnReStart);
+		btnRestart.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				presenter.clickedRestart();
+			}
+		});
+		
 		btnPane = new StackPane();
 		btnPane.setPrefWidth(300);
 		btnPane.setAlignment(Pos.CENTER);
@@ -189,7 +246,6 @@ public class AutomateView extends VBox {
 		piePiecePath = new Path();
 		piePiecePath.getStyleClass().add("automate-progress");
 		piePiecePath.setStrokeType(StrokeType.CENTERED);
-		setPercentage(30);
 		
 		bottomTop.setAlignment(Pos.CENTER);
 		
@@ -306,10 +362,9 @@ public class AutomateView extends VBox {
 		vboxTimeTillFinished.setPrefHeight(HEIGHT_BOTTOM - HEIGHT_BOTTOM_TOP);
 		bottomBottom.getChildren().add(vboxTimeTillFinished);
 		
-		setTotalAmount(35);
-		setFinishedAmount(7);
-		
 		setStatus(Status.OK, translator.getTranslation("status-first"));
+		
+		setProcessStopped();
 		
 		pane.toFront();
 	}
@@ -352,9 +407,20 @@ public class AutomateView extends VBox {
 		btnPane.getChildren().add(btnPause);
 	}
 	
+	public void showRestartButton() {
+		btnPane.getChildren().clear();
+		btnPane.getChildren().add(btnRestart);
+	}
+	
 	private void setPercentage(int percentage) {
 		
-		if ((percentage < 0) || (percentage > 100)) {
+		double percentaged = percentage;
+		
+		if (percentage == 100) {
+			percentaged = 99.999;
+		}
+		
+		if ((percentaged < 0) || (percentaged > 100)) {
 			throw new IllegalArgumentException("Illegal percentage value");
 		}
 		
@@ -364,7 +430,7 @@ public class AutomateView extends VBox {
 		double endY = 0;
 		double endXInner = 0;
 		double endYInner = 0;
-		double corner = (((double) percentage)/ 100) * (Math.PI * 2);
+		double corner = ((percentaged)/ 100) * (Math.PI * 2);
 		
 		endX = PROGRESS_RADIUS * Math.sin(corner);
 		endXInner = PROGRESS_RADIUS_INNER * Math.sin(corner);
@@ -468,5 +534,36 @@ public class AutomateView extends VBox {
 	public void setBottom(Node bottom) {
 		this.bottom.getChildren().clear();
 		this.bottom.getChildren().add(bottom);
+	}
+	
+	public void setProcessPaused() {
+		loading.getStyleClass().remove("loading");
+		loading.getStyleClass().remove("loading-inactive");
+		rotation.pause();
+		loading.getStyleClass().add("loading");
+	}
+	
+	public void setProcessRunning() {
+		loading.getStyleClass().remove("loading");
+		loading.getStyleClass().remove("loading-inactive");
+		rotation.play();
+		loading.getStyleClass().add("loading");
+	}
+	
+	public void setProcessStopped() {
+		loading.getStyleClass().remove("loading");
+		loading.getStyleClass().remove("loading-inactive");
+		rotation.pause();
+		loading.getStyleClass().add("loading-inactive");
+	}
+	
+	public void setZRest(double zrest) {
+		System.out.println("SETTING Z_REST: " + zrest);
+		if (zrest > 0) {
+			lblZRest.setText("Z resterend: " + zrest);
+			lblZRest.setVisible(true);
+		} else {
+			lblZRest.setVisible(false);
+		}
 	}
 }

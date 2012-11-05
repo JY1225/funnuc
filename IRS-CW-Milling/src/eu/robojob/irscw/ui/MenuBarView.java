@@ -244,6 +244,10 @@ public class MenuBarView extends ToolBar {
 		btnTeach.setDisable(!enabled);
 	}
 	
+	public void setAdminButtonEnabled(boolean enabled) {
+		btnAdmin.setDisable(!enabled);
+	}
+	
 	public void setAutomateButtonEnabled(boolean enabled) {
 		btnAutomate.setDisable(!enabled);
 	}
