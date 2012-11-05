@@ -21,8 +21,11 @@ public class AutomateThread extends Thread{
 	
 	private static final Logger logger = Logger.getLogger(AutomateThread.class);
 	
+	private boolean running;
+	
 	public AutomateThread(ProcessFlow processFlow) {
 		this.processFlow = processFlow;
+		this.running = true;
 	}
 	
 	@Override
@@ -33,8 +36,8 @@ public class AutomateThread extends Thread{
 				robot.restartProgram();
 				//robot.moveToHome();
 			}
-			while(processFlow.getFinishedAmount() < processFlow.getTotalAmount()) {
-				while (processFlow.hasStep()) {
+			while(processFlow.getFinishedAmount() < processFlow.getTotalAmount() && running) {
+				while (processFlow.hasStep() && running) {
 					AbstractProcessStep step = processFlow.getCurrentStep();
 					logger.info("current step: " + step);
 					// intervention steps can be skipped
@@ -49,11 +52,19 @@ public class AutomateThread extends Thread{
 					}
 					processFlow.nextStep();
 				}
-				processFlow.restart();
+				if (running) {
+					processFlow.restart();
+				}
 			}
-			processFlow.setMode(Mode.FINISHED);
+			if (running) {
+				processFlow.setMode(Mode.FINISHED);
+			} else {
+				processFlow.setMode(Mode.PAUSED);
+			}
 		} catch(Exception e) {
+			running = false;
 			notifyException(e);
+			processFlow.setMode(Mode.STOPPED);
 			logger.error(e);
 		}
 		logger.info(toString() + " has ended");
@@ -78,5 +89,9 @@ public class AutomateThread extends Thread{
 	@Override
 	public String toString() {
 		return "AutomateThread: " + processFlow.toString();
+	}
+	
+	public void stopRunning() {
+		running = false;
 	}
 }

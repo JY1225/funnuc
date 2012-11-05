@@ -119,6 +119,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	}
 	
 	public void clickedStart() {
+		automateThread = new AutomateThread(processFlow);
 		ThreadManager.getInstance().submit(automateThread);
 	}
 	
@@ -128,7 +129,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	}
 	
 	public void clickedPause() {
-		
+		automateThread.stopRunning();
 	}
 	
 	private void setAutoMode(boolean autoMode) {
