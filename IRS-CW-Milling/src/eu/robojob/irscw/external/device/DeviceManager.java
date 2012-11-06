@@ -43,9 +43,9 @@ public class DeviceManager {
 	private void initialize() {
 		
 		// add CNC Milling machine
-		Clamping clamping1 = new Clamping("Clamping 1", 153, new Coordinates(-75, 0, 153, 0, 0, 0), new Coordinates(50, 0, 50, 0, 0, 0), null);
-		Clamping clamping2 = new Clamping("Clamping 2", 153, new Coordinates(15, 10, 5, 0, 0, 0), new Coordinates(5, 5, 5, 0, 0, 0), null);
-		Clamping clamping3 = new Clamping("Clamping 3", 153, new Coordinates(5, 20, 5, 0, 0, 0), new Coordinates(5, 5, 5, 0, 0, 0), null);
+		Clamping clamping1 = new Clamping("Clamping 1", 50, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
+		Clamping clamping2 = new Clamping("Clamping 2", 50, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
+		Clamping clamping3 = new Clamping("Clamping 3", 50, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
 		UserFrame uf3 = new UserFrame(3, 20);
 		List<WorkArea> workAreas = new ArrayList<WorkArea>();
 		WorkArea workArea1 = new WorkArea("Mazak VRX Main", uf3);
@@ -58,7 +58,7 @@ public class DeviceManager {
 		workAreas.add(workArea1);
 	//	workAreas.add(workArea2);
 		Zone zone1 = new Zone("zone 1", workAreas);
-		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "10.10.40.12", 2010);
+		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.200.1", 2010);
 		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak VRX J500", cncSocketCon);
 		cncMillingMachine.addZone(zone1);
 		cncMachines.put(cncMillingMachine.getId(), cncMillingMachine);

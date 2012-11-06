@@ -134,13 +134,11 @@ public class DeviceButton extends VBox {
 	public void animate(boolean animate) {
 		if (animate) {
 			if (rt != null) {
-				System.out.println("STARTING ANIMATION");
 				rt.pause();
 				rt.play();
 			}
 		} else {
 			if (rt != null) {
-				System.out.println("STOPPING ANIMATION");
 				rt.stop();
 			}
 		}

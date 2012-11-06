@@ -140,7 +140,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			if (!cycleStartReady) {
 				throw new DeviceActionException("Machine could not prepare for starting cycle");
 			} else {
-				logger.info("Cycle started!");
 				// we now wait for pick requested
 				boolean cycleFinished =  waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED, CYCLE_FINISHED_TIMEOUT);
 				if (cycleFinished) {
@@ -168,17 +167,13 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			command = command | CNCMachineConstants.IPC_PICK_WA1_RQST;
 			
 			int registers[] = {command};
-			logger.info("Writing request for IPC_PICK: " + command);
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
-			logger.info("Wrote request");
 
-			logger.info("About to check if pick is prepared");
 			// check put is prepared
 			boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA1_READY, PREPARE_PICK_TIMEOUT);
 			if (!pickReady) {
 				throw new DeviceActionException("Machine could not prepare for pick");
 			} else {
-				logger.info("pick is prepared!");
 			}
 			
 		} else {
@@ -208,7 +203,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			if (!putReady) {
 				throw new DeviceActionException("Machine could not prepare for put");
 			} else {
-				logger.info("put is prepared!");
 			}
 					
 		} else {
@@ -230,7 +224,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			if (!clampReady) {
 				throw new DeviceActionException("Could not open clamp");
 			} else {
-				logger.info("closed clamp");
 			}
 			
 		} else {
@@ -252,7 +245,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			if (!clampReady) {
 				throw new DeviceActionException("Could not close clamp");
 			} else {
-				logger.info("closed clamp");
 			}
 			
 		} else {

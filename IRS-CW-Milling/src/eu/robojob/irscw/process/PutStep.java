@@ -47,33 +47,44 @@ public class PutStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
+				logger.debug("About to execute put in " + device.getId() + " using " + robot.getId());
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_PREPARE_DEVICE));
+				logger.debug("Preparing device...");
 				device.prepareForPut(putSettings);
+				logger.debug("Device prepared.");
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_EXECUTE_NORMAL));
 				if (needsTeaching()) {
+					logger.debug("The exact pick location should have been teached: " + teachedOffset);
 					if (teachedOffset == null) {
 						throw new IllegalStateException("Unknown teached position");
 					} else {
-						Coordinates position = device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions());
+						Coordinates position = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
+						logger.debug("Normal coordinates: " + position);
 						position.offset(teachedOffset);
+						logger.debug("Coordinates after adding teached offset: " + position);
 						robotPutSettings.setLocation(position);
 					}
 				} else {
-					Coordinates position = device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions());
-					// no offset needed? sometimes there is! use offset of corresponding pick!
+					Coordinates position = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
+					/*// no offset needed? sometimes there is! use offset of corresponding pick!
 					// getting pick step:
 					PickStep pickStep = (PickStep) processFlow.getStep(processFlow.getStepIndex(this) - 1);
 					if (pickStep.needsTeaching()) {
 						position.offset(pickStep.getTeachedOffset());
-					}
+					}*/
+					logger.debug("The location of this put was calculated (no teaching): " + position);
 					robotPutSettings.setLocation(position);
 				}
+				logger.debug("Robot initiating put action");
 				robot.initiatePut(robotPutSettings);
+				logger.debug("Robot action succeeded, about to ask device to grab piece");
 				device.grabPiece(putSettings);
+				logger.debug("Device grabbed piece, about to finalize put");
 				robot.finalizePut(robotPutSettings);
 				robot.moveToHome();
 				device.putFinished(putSettings);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_FINISHED));
+				logger.debug("Put finished");
 			}
 		}
 	}
@@ -86,13 +97,18 @@ public class PutStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
+				logger.debug("About to execute put using teaching in " + device.getId() + " using " + robot.getId());
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_PREPARE_DEVICE));
+				logger.debug("Preparing device...");
 				device.prepareForPut(putSettings);
-				Coordinates coordinates = device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions());
-				logger.info("put location: " + coordinates);
+				logger.debug("Device prepared...");
+				Coordinates coordinates = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
+				logger.info("Coordinates before teaching: " + coordinates);
 				robotPutSettings.setLocation(coordinates);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_EXECUTE_TEACHED));
+				logger.debug("Robot initiating pick action");
 				robot.initiateTeachedPut(robotPutSettings);
+				logger.debug("Robot action succeeded");
 			}
 		}
 	}
@@ -105,14 +121,17 @@ public class PutStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
-				// TODO: check!
-				Coordinates coordinates = robot.getPosition();
-				this.teachedOffset = coordinates.calculateOffset(device.getPickLocation(putSettings.getWorkArea()));
-				logger.info("teached offset: " + teachedOffset);
+				logger.debug("Teaching finished");
+				Coordinates coordinates = new Coordinates(robot.getPosition());
+				this.teachedOffset = coordinates.calculateOffset(new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions())));
+				logger.debug("The teached offset is: " + teachedOffset);
 				robotPutSettings.setLocation(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
+				logger.debug("About to ask device to grab piece");
 				device.grabPiece(putSettings);
+				logger.debug("Device grabbed piece, about to finalize put");
 				robot.finalizeTeachedPut(robotPutSettings);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_FINISHED));
+				logger.debug("Put finished");
 			}
 		}
 	}
@@ -171,10 +190,11 @@ public class PutStep extends AbstractTransportStep {
 	@Override
 	public boolean needsTeaching() {
 		// since we already know the work piece's dimensions (ground pane) and griper height from picking it up
-		if (putSettings.isPutPositionFixed()) {
+		/*if (putSettings.isPutPositionFixed()) {
 			return false;
 		} else {
 			return true;
-		}
+		}*/
+		return true;
 	}
 }

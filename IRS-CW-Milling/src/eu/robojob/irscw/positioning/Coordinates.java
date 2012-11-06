@@ -1,6 +1,5 @@
 package eu.robojob.irscw.positioning;
 
-import org.apache.log4j.Logger;
 
 public class Coordinates {
 	
@@ -10,9 +9,7 @@ public class Coordinates {
 	private float w;
 	private float p;
 	private float r;
-	
-	private static final Logger logger = Logger.getLogger(Coordinates.class);
-	
+		
 	public Coordinates(float x, float y, float z, float w, float p, float r) {
 		this.x = x;
 		this.y = y;
@@ -84,7 +81,6 @@ public class Coordinates {
 	}
 	
 	public Coordinates calculateOffset(Coordinates coordinates) {
-		logger.info("Calculating offset between: " + this.toString() + "  -and-  " + coordinates.toString());
 		return new Coordinates(getX()-coordinates.getX(), getY()-coordinates.getY(), getZ()-coordinates.getZ(), getW()-coordinates.getW(), getP()-coordinates.getP(), getR()-coordinates.getR());
 	}
 	

@@ -68,7 +68,6 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 				e.printStackTrace();
 			}
 		}
-		System.out.println("robot speed: " + robot.getSpeed());
 		view.refreshSpeed(robot.getSpeed());
 	}
 

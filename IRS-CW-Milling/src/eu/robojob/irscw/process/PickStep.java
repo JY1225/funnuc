@@ -48,27 +48,38 @@ public class PickStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
+				logger.debug("About to execute pick in " + device.getId() + " using " + robot.getId());
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_PREPARE_DEVICE));
+				logger.debug("Preparing device...");
 				device.prepareForPick(pickSettings);
+				logger.debug("Device prepared.");
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_EXECUTE_NORMAL));
 				if (needsTeaching()) {
+					logger.debug("The exact pick location should have been teached: " + teachedOffset);
 					if (teachedOffset == null) {
 						throw new IllegalStateException("Unknown teached position");
 					} else {
-						Coordinates position = device.getPickLocation(pickSettings.getWorkArea());
+						Coordinates position = new Coordinates(device.getPickLocation(pickSettings.getWorkArea()));
+						logger.debug("Normal coordinates: " + position);
 						position.offset(teachedOffset);
+						logger.debug("Coordinates after adding teached offset: " + position);
 						robotPickSettings.setLocation(position);
 					}
 				} else {
-					Coordinates position = device.getPickLocation(pickSettings.getWorkArea());
+					Coordinates position = new Coordinates(device.getPickLocation(pickSettings.getWorkArea()));
+					logger.debug("The location of this pick was calculated (no teaching): " + position);
 					robotPickSettings.setLocation(position);
 				}
+				logger.debug("Robot initiating pick action");
 				robot.initiatePick(robotPickSettings);
+				logger.debug("Robot action succeeded, about to ask device to release piece");
 				device.releasePiece(pickSettings);
+				logger.debug("Device released piece, about to finalize pick");
 				robot.finalizePick(robotPickSettings);
 				robotPickSettings.getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
 				robot.moveToHome();
 				device.pickFinished(pickSettings);
+				logger.debug("Pick finished");
 			}
 		}
 	}
@@ -81,13 +92,18 @@ public class PickStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
+				logger.debug("About to execute pick using teaching in " + device.getId() + " using " + robot.getId());
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_PREPARE_DEVICE));
+				logger.debug("Preparing device...");
 				device.prepareForPick(pickSettings);
-				Coordinates coordinates = device.getPickLocation(pickSettings.getWorkArea());
-				logger.info("pick location: " + coordinates);
+				logger.debug("Device prepared...");
+				Coordinates coordinates = new Coordinates(device.getPickLocation(pickSettings.getWorkArea()));
+				logger.info("Coordinates before teaching: " + coordinates);
 				robotPickSettings.setLocation(coordinates);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_EXECUTE_TEACHED));
+				logger.debug("Robot initiating pick action");
 				robot.initiateTeachedPick(robotPickSettings);
+				logger.debug("Robot action succeeded");
 			}
 		}
 	}
@@ -100,14 +116,18 @@ public class PickStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
-				// TODO: check!
-				Coordinates coordinates = robot.getPosition();
+				logger.debug("Teaching finished");
+				Coordinates coordinates = new Coordinates(robot.getPosition());
 				this.teachedOffset = coordinates.calculateOffset(device.getPickLocation(pickSettings.getWorkArea()));
-				logger.info("teached offset: " + teachedOffset);
+				logger.debug("The teached offset is: " + teachedOffset);
 				robotPickSettings.setLocation(device.getPickLocation(pickSettings.getWorkArea()));
+				logger.debug("About to ask device to release piece");
 				device.releasePiece(pickSettings);
+				logger.debug("Device released piece, about to finalize pick");
 				robot.finalizeTeachedPick(robotPickSettings);
+				device.pickFinished(pickSettings);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_FINISHED));
+				logger.debug("Pick finished");
 			}
 		}
 	}
@@ -167,11 +187,12 @@ public class PickStep extends AbstractTransportStep {
 	@Override
 	public boolean needsTeaching() {
 		// pick location is always fixed!
-		if ((robotPickSettings.getWorkPiece().getDimensions().isKnownShape()) && (robotPickSettings.getGripper().isFixedHeight())) {
+		/*if ((robotPickSettings.getWorkPiece().getDimensions().isKnownShape()) && (robotPickSettings.getGripper().isFixedHeight())) {
 			return false;
 		} else {
 			return true;
-		}
+		}*/
+		return true;
 	}
 
 	public Coordinates getTeachedOffset() {

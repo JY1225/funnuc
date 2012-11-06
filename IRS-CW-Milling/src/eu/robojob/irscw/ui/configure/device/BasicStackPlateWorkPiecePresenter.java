@@ -45,16 +45,19 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 	public void changedWidth(float width) {
 		dimensions.setWidth(width);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
 	}
 	
 	public void changedLength(float length) {
 		dimensions.setLength(length);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
 	}
 	
 	public void changedHeight(float height) {
 		dimensions.setHeight(height);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
 	}
 	
 	public void changedAmount(int amount) {

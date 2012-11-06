@@ -83,7 +83,6 @@ public class StatusView extends VBox {
 	}
 	
 	public void setZRest(double zrest) {
-		System.out.println("SETTING Z_REST: " + zrest);
 		if (zrest > 0) {
 			lblZRest.setText("Z resterend: " + zrest);
 			lblZRest.setVisible(true);

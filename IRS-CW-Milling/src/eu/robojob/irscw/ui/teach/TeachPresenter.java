@@ -111,7 +111,6 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 			if (device instanceof AbstractCNCMachine) {
 				AbstractCNCMachine machine = (AbstractCNCMachine) device;
 				machine.addListener(this);
-				System.out.println("ADDED LISTENER");
 				if (machine.isConnected()) {
 					machines.put(machine, true);
 				} else {
@@ -355,13 +354,11 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	}
 	@Override
 	public void robotAlarmsOccured(FanucRobotAlarmsOccuredEvent event) {
-		System.out.println("ROBOT ALARM:  " + event.getAlarms());
 	}
 	@Override
 	public void cNCMachineStatusChanged(CNCMachineStatusChangedEvent event) {}
 	@Override
 	public void cNCMachineAlarmsOccured(CNCMachineAlarmsOccuredEvent event) {
-		System.out.println("MACHINE ALARM:  " + event.getAlarms());
 	}
 	@Override
 	public void dataChanged(ProcessFlowEvent e) {}

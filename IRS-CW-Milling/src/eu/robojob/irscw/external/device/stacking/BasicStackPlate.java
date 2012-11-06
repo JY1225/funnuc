@@ -69,9 +69,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	
 	@Override
 	public Coordinates getPickLocation(WorkArea workArea) {
-		logger.debug("basic stack plate get pick location called");
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
-			if (stackingPos.getWorkPiece() != null) {
+			if ((stackingPos.getWorkPiece() != null)&&(stackingPos.getWorkPiece().getType() != Type.FINISHED)) {
 				currentPickLocation = stackingPos;
 				Coordinates c = new Coordinates(stackingPos.getPosition());
 				float rotation = 0;
@@ -88,26 +87,21 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	@Override
 	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
 		finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, workPieceDimensions);
-		logger.debug("basic stack plate get put location called");
 		return currentPickLocation.getPosition();
 	}
 
 	@Override
 	public void prepareForPick(AbstractDevicePickSettings pickSettings) {
-		logger.debug("basic stack plate prepare for pick called");
 	}
 
 	@Override
 	public void prepareForPut(AbstractDevicePutSettings putSettings) {
-		logger.debug("basic stack plate prepare for put called");
 	}
 
 	@Override
 	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) {
-		logger.debug("basic stack plate prepare for intervention called");
 	}
 
-	// todo better handling of this!
 	@Override
 	public void pickFinished(AbstractDevicePickSettings pickSettings) {
 		currentPickLocation.setWorkPiece(null);
@@ -122,17 +116,14 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) {
-		logger.debug("basic stack plate intervention finished called");
 	}
 
 	@Override
 	public void releasePiece(AbstractDevicePickSettings pickSettings) {
-		logger.debug("basic stack plate release piece called");
 	}
 
 	@Override
 	public void grabPiece(AbstractDevicePutSettings putSettings) {
-		logger.debug("grab piece");
 	}
 	
 	public BasicStackPlateLayout getLayout() {

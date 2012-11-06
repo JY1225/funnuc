@@ -179,7 +179,9 @@ public class FanucRobot extends AbstractRobot {
 		// write service handling set
 		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12);
 		// write service point set
-		writeServicePointSet(fPickSettings.getWorkArea(), fPickSettings.getLocation(), fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClampHeight());
+		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
+		pickLocation.offset(new Coordinates(0, 0, fPickSettings.getWorkPiece().getDimensions().getHeight(), 0, 0, 0));
+		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClampHeight());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK);
 		// write start service
@@ -218,10 +220,8 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT_CLAMP_ACK);
-		logger.info("waiting for put to finish!");
 		boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PUT_FINISHED, PICK_FINISH_TIMEOUT);
 		if (waitingForPickFinished) {
-			logger.info("Pick finished!");
 			return;
 		} else {
 			throw new RobotActionException();
@@ -232,10 +232,8 @@ public class FanucRobot extends AbstractRobot {
 	public void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
 		pickSettings.getGripper().setWorkPiece(pickSettings.getWorkPiece());
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
-		logger.info("waiting for pick to finish!");
 		boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PICK_FINISHED, PICK_FINISH_TIMEOUT);
 		if (waitingForPickFinished) {
-			logger.info("Pick finished!");
 			return;
 		} else {
 			throw new RobotActionException();
@@ -251,7 +249,9 @@ public class FanucRobot extends AbstractRobot {
 		// write service handling set
 		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH);
 		// write service point set
-		writeServicePointSet(fPickSettings.getWorkArea(), fPickSettings.getLocation(), fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClampHeight());
+		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
+		pickLocation.offset(new Coordinates(0, 0, fPickSettings.getWorkPiece().getDimensions().getHeight(), 0, 0, 0));
+		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClampHeight());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK);
 		// write start service
@@ -269,10 +269,8 @@ public class FanucRobot extends AbstractRobot {
 				logger.info("Troubles!");
 				throw new RobotActionException();
 			} else {
-				logger.info("TEACHINGOK!");
 				boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PICK_RELEASE_REQUEST, PICK_TO_LOCATION_TIMEOUT);
 				if (waitingForPickFinished) {
-					logger.info("Pick finished!");
 					return;
 				} else {
 					throw new RobotActionException();
@@ -413,7 +411,7 @@ public class FanucRobot extends AbstractRobot {
 		if (userFrameId == 1) {
 			values.add("" + FanucRobotConstants.SERVICE_POINT_XYZ_ALLOWED_XYZ);
 		} else if (userFrameId == 3) {
-			values.add("" + FanucRobotConstants.SERVICE_POINT_XYZ_ALLOWED_XY);
+			values.add("" + FanucRobotConstants.SERVICE_POINT_XYZ_ALLOWED_XYZ);
 			//values.add("" + FanucRobotConstants.SERVICE_POINT_XYZ_ALLOWED_XYZ);
 		} else {
 			throw new IllegalStateException("Should not be here! Illegal Userframe id");
@@ -427,7 +425,7 @@ public class FanucRobot extends AbstractRobot {
 		values.add("0");
 		values.add("0");
 		values.add("0");
-		logger.info("ServicePoint: " + values);
+		logger.debug("wrote service point: " + values);
 		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_POINT, FanucRobotConstants.RESPONSE_WRITE_SERVICE_POINT, WRITE_VALUES_TIMEOUT, values);
 	}
 

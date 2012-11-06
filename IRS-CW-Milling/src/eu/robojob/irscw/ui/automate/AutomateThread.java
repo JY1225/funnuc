@@ -39,7 +39,6 @@ public class AutomateThread extends Thread{
 			while(processFlow.getFinishedAmount() < processFlow.getTotalAmount() && running) {
 				while (processFlow.hasStep() && running) {
 					AbstractProcessStep step = processFlow.getCurrentStep();
-					logger.info("current step: " + step);
 					// intervention steps can be skipped
 					if (!(step instanceof InterventionStep)) {
 						if (step instanceof PickStep) {
@@ -67,7 +66,6 @@ public class AutomateThread extends Thread{
 			processFlow.setMode(Mode.STOPPED);
 			logger.error(e);
 		}
-		logger.info(toString() + " has ended");
 	}
 	
 	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException {
