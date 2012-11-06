@@ -177,7 +177,7 @@ public class FanucRobot extends AbstractRobot {
 		// write service gripper set
 		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
 		// write service handling set
-		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12);
+		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12, pickSettings.getWorkPiece().getDimensions());
 		// write service point set
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
 		pickLocation.offset(new Coordinates(0, 0, fPickSettings.getWorkPiece().getDimensions().getHeight(), 0, 0, 0));
@@ -200,7 +200,7 @@ public class FanucRobot extends AbstractRobot {
 		// write service gripper set
 		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
 		// write service handling set
-		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12);
+		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12, fPutSettings.getGripper().getWorkPiece().getDimensions());
 		// write service point set
 		if (fPutSettings.getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
@@ -247,10 +247,10 @@ public class FanucRobot extends AbstractRobot {
 		// write service gripper set
 		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
 		// write service handling set
-		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH);
+		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH, pickSettings.getWorkPiece().getDimensions());
 		// write service point set
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
-		pickLocation.offset(new Coordinates(0, 0, fPickSettings.getWorkPiece().getDimensions().getHeight(), 0, 0, 0));
+		//pickLocation.offset(new Coordinates(0, 0, fPickSettings.getWorkPiece().getDimensions().getHeight(), 0, 0, 0));
 		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClampHeight());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK);
@@ -286,7 +286,7 @@ public class FanucRobot extends AbstractRobot {
 		// write service gripper set
 		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
 		// write service handling set
-		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH);
+		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH, fPutSettings.getGripper().getWorkPiece().getDimensions());
 		// write service point set
 		if (fPutSettings.getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
@@ -356,12 +356,12 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_GRIPPER, FanucRobotConstants.RESPONSE_WRITE_SERVICE_GRIPPER, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	private void writeServiceHandlingSet(int serviceHandlingPPMode) throws CommunicationException {
+	private void writeServiceHandlingSet(int serviceHandlingPPMode, WorkPieceDimensions dimensions) throws CommunicationException {
 		List<String> values = new ArrayList<String>();
 		// free after this service ; WP thickness ;  WP Z grip ; grip Z face till front ; dx correction P1 ; dy correction P1 ; dx correction P2 ; dy correction P2 ; dW correction ;
 		//    dP correction ; robot speed ; payload 1 ; payload 2 ; soft float range ; soft float force ; PP mode ; bar move distance
 		values.add("1");
-		values.add("0");
+		values.add("" + dimensions.getHeight());
 		values.add("0");
 		values.add("0");
 		values.add("0");

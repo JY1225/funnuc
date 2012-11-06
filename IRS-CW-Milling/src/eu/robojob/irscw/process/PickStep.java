@@ -118,6 +118,7 @@ public class PickStep extends AbstractTransportStep {
 			} else {
 				logger.debug("Teaching finished");
 				Coordinates coordinates = new Coordinates(robot.getPosition());
+				System.out.println("Position: " + coordinates);
 				this.teachedOffset = coordinates.calculateOffset(device.getPickLocation(pickSettings.getWorkArea()));
 				logger.debug("The teached offset is: " + teachedOffset);
 				robotPickSettings.setLocation(device.getPickLocation(pickSettings.getWorkArea()));

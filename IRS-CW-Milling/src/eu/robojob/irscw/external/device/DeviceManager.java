@@ -43,9 +43,9 @@ public class DeviceManager {
 	private void initialize() {
 		
 		// add CNC Milling machine
-		Clamping clamping1 = new Clamping("Clamping 1", 50, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
-		Clamping clamping2 = new Clamping("Clamping 2", 50, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
-		Clamping clamping3 = new Clamping("Clamping 3", 50, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
+		Clamping clamping1 = new Clamping("Clamping 1", 52.7f, new Coordinates(0, 0, 90.5f, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
+		Clamping clamping2 = new Clamping("Clamping 2", 52.7f, new Coordinates(0, 0, 90.5f, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
+		Clamping clamping3 = new Clamping("Clamping 3", 52.7f, new Coordinates(0, 0, 90.5f, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
 		UserFrame uf3 = new UserFrame(3, 20);
 		List<WorkArea> workAreas = new ArrayList<WorkArea>();
 		WorkArea workArea1 = new WorkArea("Mazak VRX Main", uf3);
@@ -87,7 +87,7 @@ public class DeviceManager {
 		// add Basic Stacker
 		UserFrame uf1 = new UserFrame(1, 20);
 		List<WorkArea> workAreas4 = new ArrayList<WorkArea>();
-		Clamping clamping4 = new Clamping("Clamping 4", 25, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(5, 0, 5, 0, 0, 0), null);
+		Clamping clamping4 = new Clamping("Clamping 4", 25, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(10, 10, 10, 0, 0, 0), null);
 		WorkArea workArea5 = new WorkArea("IRS M Basic", uf1);
 		workArea5.addClamping(clamping4);
 		workArea5.setActiveClamping(clamping4);

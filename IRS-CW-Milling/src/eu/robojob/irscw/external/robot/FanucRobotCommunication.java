@@ -137,6 +137,7 @@ public class FanucRobotCommunication extends ExternalCommunication {
 				break;
 			}
 			List<String> positionValues = readValues(FanucRobotConstants.COMMAND_ASK_POSITION, FanucRobotConstants.RESPONSE_ASK_POSITION, getDefaultWaitTimeout());
+			System.out.println("Position values: " + positionValues);
 			float x = Float.parseFloat(positionValues.get(0));
 			float y = Float.parseFloat(positionValues.get(1));
 			float z = Float.parseFloat(positionValues.get(2));
