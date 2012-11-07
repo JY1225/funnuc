@@ -123,7 +123,8 @@ public class PutStep extends AbstractTransportStep {
 			} else {
 				logger.debug("Teaching finished");
 				Coordinates coordinates = new Coordinates(robot.getPosition());
-				this.teachedOffset = coordinates.calculateOffset(new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions())));
+				Coordinates oldCoordinates = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
+				this.teachedOffset = coordinates.calculateOffset(oldCoordinates);
 				logger.debug("The teached offset is: " + teachedOffset);
 				robotPutSettings.setLocation(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
 				logger.debug("About to ask device to grab piece");
