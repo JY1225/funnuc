@@ -55,4 +55,7 @@ public class WorkPieceDimensions {
 		this.knownShape = knownShape;
 	}
 
+	public String toString() {
+		return "(" + length + ", " + width + ", " + height + ")";
+	}
 }

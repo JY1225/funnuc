@@ -61,4 +61,7 @@ public class StackingPosition {
 		studs.add(stud);
 	}
 
+	public String toString() {
+		return "StackingPosition: " + position + "  -  " + workPiece;
+	}
 }

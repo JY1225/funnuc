@@ -67,12 +67,6 @@ public class TeachThread extends Thread {
 	private void handlePut(final PutStep putStep) throws CommunicationException, RobotActionException, DeviceActionException {
 		if (putStep.needsTeaching()) {
 			putStep.prepareForTeaching();
-			if (lastPickStep != null) {
-				lastPickStep.finalize();
-				lastPickStep = null;
-			} else {
-				throw new IllegalStateException("Put without previous pick?");
-			}
 			putStep.teachingFinished();
 		} else {
 			putStep.executeStep();

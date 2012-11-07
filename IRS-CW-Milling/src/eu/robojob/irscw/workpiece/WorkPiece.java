@@ -29,4 +29,8 @@ public class WorkPiece {
 	public void setDimensions(WorkPieceDimensions dimensions) {
 		this.dimensions = dimensions;
 	}
+	
+	public String toString() {
+		return "WorkPiece: " + type + " - " + dimensions;
+	}
 }

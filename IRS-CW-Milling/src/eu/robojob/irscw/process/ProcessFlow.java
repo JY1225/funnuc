@@ -309,7 +309,6 @@ public class ProcessFlow {
 	}
 	
 	public boolean isConfigured() {
-		loadAllDeviceSettings();
 		for (AbstractProcessStep step : processSteps) {
 			if (step instanceof PickStep) {
 				PickStep pickStep = (PickStep) step;

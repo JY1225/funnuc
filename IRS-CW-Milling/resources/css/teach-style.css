@@ -51,7 +51,7 @@
 }
 
 .loading-inactive {
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.8), 1, 0, 0, -1);
+	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 1, 0.0 , 0 , 0 ); 
 	-fx-fill: radial-gradient(center 50% 50%, radius 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 100%);
 }
 
