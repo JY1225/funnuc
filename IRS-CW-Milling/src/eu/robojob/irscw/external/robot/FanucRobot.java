@@ -99,7 +99,6 @@ public class FanucRobot extends AbstractRobot {
 				}
 				break;
 			case FanucRobotEvent.STATUS_CHANGED:
-				statusChanged();
 				for (FanucRobotListener listener : listeners) {
 					listener.robotStatusChanged((FanucRobotStatusChangedEvent) event);
 				}
@@ -168,6 +167,7 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public void restartProgram() throws CommunicationException {
 		// write start service
+		fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_RESET, FanucRobotConstants.RESPONSE_RESET, WRITE_VALUES_TIMEOUT);
 		fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_RESTART_PROGRAM, FanucRobotConstants.RESPONSE_RESTART_PROGRAM, WRITE_VALUES_TIMEOUT);
 	}
 

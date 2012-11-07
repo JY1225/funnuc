@@ -13,12 +13,14 @@ import org.apache.log4j.Logger;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.cnc.CNCMachineAlarmsOccuredEvent;
+import eu.robojob.irscw.external.device.cnc.CNCMachineAlarmsOccuredException;
 import eu.robojob.irscw.external.device.cnc.CNCMachineEvent;
 import eu.robojob.irscw.external.device.cnc.CNCMachineListener;
 import eu.robojob.irscw.external.device.cnc.CNCMachineStatusChangedEvent;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.FanucRobot;
 import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredEvent;
+import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredException;
 import eu.robojob.irscw.external.robot.FanucRobotEvent;
 import eu.robojob.irscw.external.robot.FanucRobotListener;
 import eu.robojob.irscw.external.robot.FanucRobotStatusChangedEvent;
@@ -198,6 +200,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		processFlowPresenter.refresh();
 		setStatus("FOUT: " + e);
 		setTeachMode(false);
+		ThreadManager.getInstance().stopRunning(teachThread);
 	}
 	
 	private void setTeachMode(boolean enable) {
@@ -352,13 +355,27 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 				teachStatusView.setZRest(event.getStatus().getZRest());
 			}});
 	}
+	
 	@Override
-	public void robotAlarmsOccured(FanucRobotAlarmsOccuredEvent event) {
+	public void robotAlarmsOccured(final FanucRobotAlarmsOccuredEvent event) {
+		if (event.getAlarms().size() > 0) {
+			Platform.runLater(new Runnable() {
+				@Override public void run() {
+					exceptionOccured(new FanucRobotAlarmsOccuredException(event.getSource(), event.getAlarms()));
+				}});
+		}
 	}
+	
 	@Override
 	public void cNCMachineStatusChanged(CNCMachineStatusChangedEvent event) {}
 	@Override
-	public void cNCMachineAlarmsOccured(CNCMachineAlarmsOccuredEvent event) {
+	public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) {
+		if (event.getAlarms().size() > 0) {
+			Platform.runLater(new Runnable() {
+				@Override public void run() {
+					exceptionOccured(new CNCMachineAlarmsOccuredException(event.getSource(), event.getAlarms()));
+				}});
+		}
 	}
 	@Override
 	public void dataChanged(ProcessFlowEvent e) {}

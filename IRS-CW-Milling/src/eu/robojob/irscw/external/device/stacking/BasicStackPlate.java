@@ -69,12 +69,9 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	
 	@Override
 	public Coordinates getPickLocation(WorkArea workArea) {
-		int index = 0;
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
-			logger.info("index: " + index);
 			if ((stackingPos.getWorkPiece() != null)&&(stackingPos.getWorkPiece().getType() != Type.FINISHED)) {
 				currentPickLocation = stackingPos;
-				logger.info("Set current pick location: " + currentPickLocation);
 				Coordinates c = new Coordinates(stackingPos.getPosition());
 				float rotation = 0;
 				if (stackingPos.getOrientation() == WorkPieceOrientation.TILTED) {
@@ -85,7 +82,6 @@ public class BasicStackPlate extends AbstractStackingDevice {
 				c.offset(new Coordinates(0, 0, 0, 0, 0, rotation));
 				return c;
 			}
-			index++;
 		}
 		return null;
 	}
@@ -93,7 +89,6 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	@Override
 	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
 		finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, workPieceDimensions);
-		logger.info("set finished workpiece: " + finishedWorkPiece);
 		Coordinates c = new Coordinates(currentPickLocation.getPosition());
 		float rotation = 0;
 		if (currentPickLocation.getOrientation() == WorkPieceOrientation.TILTED) {
@@ -120,14 +115,12 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	@Override
 	public void pickFinished(AbstractDevicePickSettings pickSettings) {
 		currentPickLocation.setWorkPiece(null);
-		logger.info("Set current pick location wp to null: " + currentPickLocation);
 	}
 
 	@Override
 	public void putFinished(AbstractDevicePutSettings putSettings) {
 		//BasicStackPlatePutSettings spPutSettings = (BasicStackPlatePutSettings) putSettings;
 		currentPickLocation.setWorkPiece(finishedWorkPiece);
-		logger.info("Set workpiece of current pick location finished: " + currentPickLocation);
 		currentPickLocation = null;
 	}
 
@@ -231,7 +224,6 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		if (deviceSettings instanceof BasicStackPlateSettings) {
 			BasicStackPlateSettings settings = (BasicStackPlateSettings) deviceSettings;
 			try {
-				logger.info("recalculating!");
 				layout.configureStackingPositions(settings.getWorkPiece(), settings.getOrientation());
 				this.rawWorkPiece = settings.getWorkPiece();
 				layout.placeRawWorkPieces(rawWorkPiece, settings.getAmount());

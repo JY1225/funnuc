@@ -61,6 +61,26 @@ public class FanucRobotAlarm {
 	}
 	
 	public String toString() {
-		return id + "";
+		switch (id) {
+			case INVALID_SERVICE_TYPE:
+				return "Invalid service type";
+			case INVALID_USERFRAME:
+				return "Invalid userframe";
+			case INVALID_GRIPTYPE_FOR_SERVICE:
+				return "Invalid griptype for service";
+			case NO_PNEUMATIC_PRESSURE:
+				return "No pneumatic pressure";
+			case WORKPIECE_NOT_GRIPPED:
+				return "Workpiece not gripped";
+			case ROBOT_NOT_IN_START_POSITION:
+				return "Robot not in start position";
+			case FAULT_LED:
+				return "Fault led";
+			case CMOS_BATTERY_LOW:
+				return "CMOS battery low";
+			default:
+				return "" + id;
+		}
 	}
+	
 }

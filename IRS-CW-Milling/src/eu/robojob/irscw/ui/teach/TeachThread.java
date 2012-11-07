@@ -16,12 +16,9 @@ import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 public class TeachThread extends Thread {
 
 	private ProcessFlow processFlow;
-		
-	private PickStep lastPickStep;
-	
+			
 	public TeachThread(ProcessFlow processFlow) {
 		this.processFlow = processFlow;
-		this.lastPickStep = null;
 	}
 	
 	@Override
@@ -55,7 +52,6 @@ public class TeachThread extends Thread {
 	}
 	
 	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException {
-		this.lastPickStep = pickStep;
 		if (pickStep.needsTeaching()) {
 			pickStep.prepareForTeaching();
 			pickStep.teachingFinished();
