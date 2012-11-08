@@ -58,7 +58,7 @@ public class DeviceManager {
 		workAreas.add(workArea1);
 	//	workAreas.add(workArea2);
 		Zone zone1 = new Zone("zone 1", workAreas);
-		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "10.10.40.12", 2010);
+		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.200.6", 2010);
 		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak VRX J500", cncSocketCon);
 		cncMillingMachine.addZone(zone1);
 		cncMachines.put(cncMillingMachine.getId(), cncMillingMachine);
@@ -87,7 +87,7 @@ public class DeviceManager {
 		// add Basic Stacker
 		UserFrame uf1 = new UserFrame(1, 20);
 		List<WorkArea> workAreas4 = new ArrayList<WorkArea>();
-		Clamping clamping4 = new Clamping("Clamping 4", 25, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(10, 10, 10, 0, 0, 0), null);
+		Clamping clamping4 = new Clamping("Clamping 4", 25, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
 		WorkArea workArea5 = new WorkArea("IRS M Basic", uf1);
 		workArea5.addClamping(clamping4);
 		workArea5.setActiveClamping(clamping4);

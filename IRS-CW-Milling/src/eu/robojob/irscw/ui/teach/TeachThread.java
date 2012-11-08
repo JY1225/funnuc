@@ -28,6 +28,7 @@ public class TeachThread extends Thread {
 		try {
 			for (AbstractRobot robot :processFlow.getRobots()) {
 				robot.restartProgram();
+				robot.setSpeed(10);
 				//robot.moveToHome();
 			}
 			while (processFlow.hasStep()) {

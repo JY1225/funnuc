@@ -213,8 +213,8 @@ public class RoboSoftAppFactory {
 			BasicStackPlateSettings stackPlateSettings = (BasicStackPlateSettings) stackPlate.getDeviceSettings();
 			stackPlateSettings.setAmount(3);
 			processFlow.setTotalAmount(3);
-			stackPlateSettings.setDimensions(new WorkPieceDimensions(200, 127, 100));
-			stackPlateSettings.setOrientation(WorkPieceOrientation.HORIZONTAL);
+			stackPlateSettings.setDimensions(new WorkPieceDimensions(200, 127.5f, 100));
+			stackPlateSettings.setOrientation(WorkPieceOrientation.TILTED);
 			processFlow.setDeviceSettings(stackPlate, stackPlateSettings);
 			
 			// Mazak VRX J500
@@ -237,7 +237,7 @@ public class RoboSoftAppFactory {
 			robotPickSettings1.setSmoothPoint(new Coordinates(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getSmoothFromPoint()));
 			robotPickSettings1.setWorkArea(stackPlate.getWorkAreaById("IRS M Basic"));
 			robotPickSettings1.setClampHeight(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getHeight());
-			WorkPieceDimensions dimensions1 = new WorkPieceDimensions(200, 127, 100);
+			WorkPieceDimensions dimensions1 = new WorkPieceDimensions(200, 127.5f, 100);
 			WorkPiece workPiece1 = new WorkPiece(WorkPiece.Type.RAW, dimensions1);
 			robotPickSettings1.setWorkPiece(workPiece1);
 			// general

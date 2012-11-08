@@ -54,7 +54,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		do {
 			if (extCommThread.hasNextMessage()) {
 				String message = extCommThread.getNextMessage();
-				if (message.equals(command.toString())) {
+				if (command.toString().startsWith(message)) {
 					return;
 				}
 			}

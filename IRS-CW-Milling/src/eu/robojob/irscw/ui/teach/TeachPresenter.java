@@ -197,6 +197,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	
 	public void exceptionOccured(Exception e){
 		logger.error(e);
+		e.printStackTrace();
 		processFlowPresenter.refresh();
 		setStatus("FOUT: " + e);
 		setTeachMode(false);
@@ -371,6 +372,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	@Override
 	public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) {
 		if (event.getAlarms().size() > 0) {
+			System.out.println("MACHINE ALARM OCCURED");
 			Platform.runLater(new Runnable() {
 				@Override public void run() {
 					exceptionOccured(new CNCMachineAlarmsOccuredException(event.getSource(), event.getAlarms()));

@@ -75,7 +75,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 				Coordinates c = new Coordinates(stackingPos.getPosition());
 				float rotation = 0;
 				if (stackingPos.getOrientation() == WorkPieceOrientation.TILTED) {
-					rotation = 45;
+					rotation = 0;
 				} else {
 					rotation = 90;
 				}
@@ -92,7 +92,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		Coordinates c = new Coordinates(currentPickLocation.getPosition());
 		float rotation = 0;
 		if (currentPickLocation.getOrientation() == WorkPieceOrientation.TILTED) {
-			rotation = 45;
+			rotation = 0;
 		} else {
 			rotation = 90;
 		}

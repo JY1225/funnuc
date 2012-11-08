@@ -125,6 +125,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	
 	public void clickedRestart() {
 		processFlow.initialize();
+		automateThread = new AutomateThread(processFlow);
 		ThreadManager.getInstance().submit(automateThread);
 	}
 	

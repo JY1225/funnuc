@@ -138,7 +138,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			
 			boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
 			if (!cycleStartReady) {
-				throw new DeviceActionException("Machine could not prepare for starting cycle");
+				throw new DeviceActionException("Machine cycle start was not given");
 			} else {
 				// we now wait for pick requested
 				boolean cycleFinished =  waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED, CYCLE_FINISHED_TIMEOUT);

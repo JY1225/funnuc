@@ -83,6 +83,8 @@ public class ProcessFlow {
 	
 	public void initialize() {
 		currentStepIndex = 0;
+		loadAllDeviceSettings();
+		loadAllRobotSettings();
 		setFinishedAmount(0);
 		this.mode = Mode.READY;
 	}

@@ -63,6 +63,7 @@ public class AutomateThread extends Thread{
 		} catch(Exception e) {
 			running = false;
 			notifyException(e);
+			e.printStackTrace();
 			processFlow.setMode(Mode.STOPPED);
 			logger.error(e);
 		}

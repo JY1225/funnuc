@@ -99,6 +99,7 @@ public class FanucRobot extends AbstractRobot {
 				}
 				break;
 			case FanucRobotEvent.STATUS_CHANGED:
+				statusChanged();
 				for (FanucRobotListener listener : listeners) {
 					listener.robotStatusChanged((FanucRobotStatusChangedEvent) event);
 				}
@@ -247,7 +248,8 @@ public class FanucRobot extends AbstractRobot {
 		// write service gripper set
 		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
 		// write service handling set
-		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH, pickSettings.getWorkPiece().getDimensions());
+		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH | FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
+		writeServiceHandlingSet(ppMode, pickSettings.getWorkPiece().getDimensions());
 		// write service point set
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
 		//pickLocation.offset(new Coordinates(0, 0, fPickSettings.getWorkPiece().getDimensions().getHeight(), 0, 0, 0));
@@ -286,7 +288,8 @@ public class FanucRobot extends AbstractRobot {
 		// write service gripper set
 		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
 		// write service handling set
-		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH, fPutSettings.getGripper().getWorkPiece().getDimensions());
+		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH | FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
+		writeServiceHandlingSet(ppMode, fPutSettings.getGripper().getWorkPiece().getDimensions());
 		// write service point set
 		if (fPutSettings.getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");

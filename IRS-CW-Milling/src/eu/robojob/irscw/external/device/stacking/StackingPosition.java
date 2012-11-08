@@ -21,7 +21,7 @@ public class StackingPosition {
 		this.studs = studs;
 		this.orientation = orientation;
 		if (orientation == WorkPieceOrientation.TILTED) {
-			position.setR(45);
+			position.setR(135);
 		} else if (orientation == WorkPieceOrientation.HORIZONTAL) {
 			position.setR(0);
 		} else {
