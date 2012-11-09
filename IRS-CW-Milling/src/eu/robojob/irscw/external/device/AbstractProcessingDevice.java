@@ -23,7 +23,7 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 		return isInvasive;
 	}
 	
-	public abstract void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException;	
+	public abstract void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException, InterruptedException;	
 	public abstract void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException;
 	
 	public abstract boolean validateStartCyclusSettings(AbstractProcessingDeviceStartCyclusSettings startCyclusSettings);

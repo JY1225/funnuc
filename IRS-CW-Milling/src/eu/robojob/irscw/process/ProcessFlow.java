@@ -79,6 +79,7 @@ public class ProcessFlow {
 	public void restart() {
 		incrementFinishedAmount();
 		currentStepIndex = 0;
+		processProcessFlowEvent(new ActiveStepChangedEvent(this, null, ActiveStepChangedEvent.NONE_ACTIVE));
 	}
 	
 	public void initialize() {
@@ -87,6 +88,7 @@ public class ProcessFlow {
 		loadAllRobotSettings();
 		setFinishedAmount(0);
 		this.mode = Mode.READY;
+		processProcessFlowEvent(new ActiveStepChangedEvent(this, null, ActiveStepChangedEvent.NONE_ACTIVE));
 	}
 	
 	public boolean hasNextStep() {

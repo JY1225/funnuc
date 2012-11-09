@@ -43,7 +43,7 @@ public class CNCMachineCommunicationTest {
 	public void testPrepareForPut() {
 		try {
 			cncMillingMachine.prepareForPut(putSettings);
-		} catch (CommunicationException | DeviceActionException e) {
+		} catch (CommunicationException | DeviceActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			cncMillingMachine.disconnect();
@@ -55,7 +55,7 @@ public class CNCMachineCommunicationTest {
 	public void testPrepareForPick() {
 		try {
 			cncMillingMachine.prepareForPick(pickSettings);
-		} catch (CommunicationException | DeviceActionException e) {
+		} catch (CommunicationException | DeviceActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			cncMillingMachine.disconnect();
@@ -67,7 +67,7 @@ public class CNCMachineCommunicationTest {
 	public void testClamp() {
 		try {
 			cncMillingMachine.grabPiece(putSettings);
-		} catch (CommunicationException | DeviceActionException e) {
+		} catch (CommunicationException | DeviceActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			cncMillingMachine.disconnect();
@@ -79,7 +79,7 @@ public class CNCMachineCommunicationTest {
 	public void testUnClamp() {
 		try {
 			cncMillingMachine.releasePiece(pickSettings);
-		} catch (CommunicationException | DeviceActionException e) {
+		} catch (CommunicationException | DeviceActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			cncMillingMachine.disconnect();
@@ -91,7 +91,7 @@ public class CNCMachineCommunicationTest {
 	public void testCanPut() {
 		try {
 			logger.info("Can I ask you to prepare for put? : " + cncMillingMachine.canPut(putSettings));
-		} catch (CommunicationException e) {
+		} catch (CommunicationException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			cncMillingMachine.disconnect();
@@ -102,7 +102,7 @@ public class CNCMachineCommunicationTest {
 	public void testStartCycle() {
 		try {
 			cncMillingMachine.startCyclus(startCyclusSettings);
-		} catch (CommunicationException | DeviceActionException e) {
+		} catch (CommunicationException | DeviceActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			cncMillingMachine.disconnect();

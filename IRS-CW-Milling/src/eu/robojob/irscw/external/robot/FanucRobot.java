@@ -33,9 +33,10 @@ public class FanucRobot extends AbstractRobot {
 	private static final int PUT_TEACH_TIMEOUT = 10*60*1000;
 	private static final int ASK_STATUS_TIMEOUT = 1*60*1000;
 	
-	private static final int TO_HOME_TIMEOUT = 100000;
-	private static final int TO_JAW_CHANGE_TIMEOUT = 100000;
+	private static final int TO_HOME_TIMEOUT = 5*60*1000;
+	private static final int TO_JAW_CHANGE_TIMEOUT = 5*60*1000;
 	
+	private boolean stopAction;
 	private Set<FanucRobotListener> listeners;
 	
 	private FanucRobotStatus status;
@@ -53,6 +54,7 @@ public class FanucRobot extends AbstractRobot {
 		this.listeners = new HashSet<FanucRobotListener>();
 		FanucRobotMonitoringThread monitoringThread = new FanucRobotMonitoringThread(this);
 		ThreadManager.getInstance().submit(monitoringThread);
+		this.stopAction = false;
 	}
 	
 	public FanucRobot(String id, SocketConnection socketConnection) {
@@ -98,12 +100,6 @@ public class FanucRobot extends AbstractRobot {
 					logger.info("ALARM!!");
 				} else {
 					logger.info("GEEN ALARMS MEER!");
-					try {
-						fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_CONTINUE, FanucRobotConstants.RESPONSE_CONTINUE, WRITE_VALUES_TIMEOUT);
-					} catch (DisconnectedException | ResponseTimedOutException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
 				}
 				
 				for (FanucRobotListener listener : listeners) {
@@ -128,7 +124,16 @@ public class FanucRobot extends AbstractRobot {
 		}
 	}
 	
-	private boolean waitForStatus(int status, long timeout) throws CommunicationException {
+
+	@Override
+	public void stopCurrentAction() {
+		stopAction = true;
+		synchronized(syncObject) {
+			syncObject.notifyAll();
+		}
+	}
+	
+	private boolean waitForStatus(int status, long timeout) throws CommunicationException, InterruptedException {
 		long waitedTime = 0;
 		do {
 			long lastTime = System.currentTimeMillis();
@@ -143,10 +148,12 @@ public class FanucRobot extends AbstractRobot {
 						}
 					}
 				} catch (InterruptedException e) {
-					if (!statusChanged) {
-						break;
-					}
+					throw e;
 				} 
+				if (stopAction) {
+					stopAction = false;
+					throw new InterruptedException();
+				}
 				if (!isConnected()) {
 					throw new FanucRobotDisconnectedException(this);
 				}
@@ -173,6 +180,17 @@ public class FanucRobot extends AbstractRobot {
 		return position;
 	}
 	
+
+	@Override
+	public void continueProgram() throws CommunicationException {
+		fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_CONTINUE, FanucRobotConstants.RESPONSE_CONTINUE, WRITE_VALUES_TIMEOUT);
+	}
+	
+	@Override
+	public void abort() throws CommunicationException {
+		fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_ABORT, FanucRobotConstants.RESPONSE_ABORT, WRITE_VALUES_TIMEOUT);
+	}
+	
 	public synchronized void disconnect() {
 		fanucRobotCommunication.disconnect();
 	}
@@ -185,7 +203,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void initiatePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
+	public void initiatePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;		
 		// write service gripper set
 		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
@@ -208,7 +226,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void initiatePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
+	public void initiatePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
 		// write service gripper set
 		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
@@ -236,7 +254,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException {
+	public void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT_CLAMP_ACK);
 		boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PUT_FINISHED, PICK_FINISH_TIMEOUT);
 		if (waitingForPickFinished) {
@@ -247,7 +265,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException {
+	public void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		pickSettings.getGripper().setWorkPiece(pickSettings.getWorkPiece());
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
 		boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PICK_FINISHED, PICK_FINISH_TIMEOUT);
@@ -259,8 +277,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void initiateTeachedPick(AbstractRobotPickSettings pickSettings)
-			throws CommunicationException, RobotActionException {
+	public void initiateTeachedPick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;		
 		// write service gripper set
 		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
@@ -299,8 +316,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void initiateTeachedPut(AbstractRobotPutSettings putSettings)
-			throws CommunicationException, RobotActionException {
+	public void initiateTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
 		// write service gripper set
 		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
@@ -331,14 +347,12 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void finalizeTeachedPick(AbstractRobotPickSettings pickSettings)
-			throws CommunicationException, RobotActionException {
+	public void finalizeTeachedPick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		finalizePick(pickSettings);
 	}
 
 	@Override
-	public void finalizeTeachedPut(AbstractRobotPutSettings putSettings)
-			throws CommunicationException, RobotActionException {
+	public void finalizeTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		finalizePut(putSettings);
 	}
 

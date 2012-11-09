@@ -56,6 +56,10 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 		view.disableClickable();
 	}
 	
+	public void setNoneActive() {
+		view.setAllProgressNone();
+	}
+	
 	public void setPickStepActive(int transportIndex) {
 		view.setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
@@ -129,31 +133,35 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	
 	private void showActiveStepChange(ActiveStepChangedEvent e) {
 		AbstractProcessStep step = e.getActiveStep();
-		if (step instanceof PickStep) {
-			if (e.getStatusId() != ActiveStepChangedEvent.PICK_FINISHED) {
-				setPickStepActive(processFlowAdapter.getTransportIndex((PickStep) step));
-			} else {
-				//setPickStepFinished(processFlowAdapter.getTransportIndex((PickStep) step));
-			}
-		} else if (step instanceof PutStep) {
-			if (e.getStatusId() != ActiveStepChangedEvent.PUT_FINISHED) {
-				setPutStepActive(processFlowAdapter.getTransportIndex((PutStep) step));
-			} else {
-				int transportIndex = processFlowAdapter.getTransportIndex((PutStep) step);
-				if (!processFlowAdapter.getDeviceInformation(transportIndex + 1).hasProcessingStep()) {
-					setProcessingStepFinished(transportIndex+1);
+		if (step == null) {
+			setNoneActive();
+		} else {
+			if (step instanceof PickStep) {
+				if (e.getStatusId() != ActiveStepChangedEvent.PICK_FINISHED) {
+					setPickStepActive(processFlowAdapter.getTransportIndex((PickStep) step));
 				} else {
-					setPutStepFinished(transportIndex);
+					//setPickStepFinished(processFlowAdapter.getTransportIndex((PickStep) step));
 				}
+			} else if (step instanceof PutStep) {
+				if (e.getStatusId() != ActiveStepChangedEvent.PUT_FINISHED) {
+					setPutStepActive(processFlowAdapter.getTransportIndex((PutStep) step));
+				} else {
+					int transportIndex = processFlowAdapter.getTransportIndex((PutStep) step);
+					if (!processFlowAdapter.getDeviceInformation(transportIndex + 1).hasProcessingStep()) {
+						setProcessingStepFinished(transportIndex+1);
+					} else {
+						setPutStepFinished(transportIndex);
+					}
+				}
+			} else if (step instanceof ProcessingStep) {
+				if (e.getStatusId() != ActiveStepChangedEvent.PROCESSING_FINISHED) {
+					setProcessingStepActive(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
+				} else {
+					setProcessingStepFinished(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
+				}
+			} else if (step instanceof InterventionStep) {
+				// TODO
 			}
-		} else if (step instanceof ProcessingStep) {
-			if (e.getStatusId() != ActiveStepChangedEvent.PROCESSING_FINISHED) {
-				setProcessingStepActive(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
-			} else {
-				setProcessingStepFinished(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
-			}
-		} else if (step instanceof InterventionStep) {
-			// TODO
 		}
 	}
 

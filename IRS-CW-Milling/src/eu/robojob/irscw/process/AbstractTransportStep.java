@@ -32,6 +32,6 @@ public abstract class AbstractTransportStep extends AbstractProcessStep {
 	}
 
 	public abstract boolean needsTeaching();
-	public abstract void prepareForTeaching() throws CommunicationException, RobotActionException, DeviceActionException;
-	public abstract void teachingFinished() throws CommunicationException, RobotActionException, DeviceActionException;
+	public abstract void prepareForTeaching() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException;
+	public abstract void teachingFinished() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException;
 }

@@ -1,6 +1,9 @@
 package eu.robojob.irscw.ui.teach;
 
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
@@ -17,12 +20,19 @@ public class TeachThread extends Thread {
 
 	private ProcessFlow processFlow;
 			
+	private boolean running;
+	
+	private static final Logger logger = Logger.getLogger(TeachThread.class);
+	
 	public TeachThread(ProcessFlow processFlow) {
 		this.processFlow = processFlow;
+		this.running = false;
 	}
 	
 	@Override
 	public void run() {
+		this.running = true;
+		logger.info("started teach thread!");
 		processFlow.setMode(Mode.TEACH);
 		processFlow.initialize();
 		try {
@@ -47,12 +57,38 @@ public class TeachThread extends Thread {
 			}
 			processFlow.restart();
 			processFlow.setMode(Mode.READY);
-		} catch(Exception e) {
+		} catch(CommunicationException | RobotActionException | DeviceActionException e) {
 			notifyException(e);
+		} catch(InterruptedException e) {
+			logger.info("Execution of one or more steps got interrupted, so let't just stop");
+			processFlow.initialize();
+			processFlow.setMode(Mode.STOPPED);
+		}
+		logger.info("ended teach thread!");
+		this.running = false;
+	}
+	
+	@Override
+	public void interrupt() {
+		logger.info("about to interrupt teach thread");
+		for (AbstractRobot robot :processFlow.getRobots()) {
+			robot.stopCurrentAction();
+			try {
+				robot.abort();
+			} catch (CommunicationException e) {
+				notifyException(e);
+			}
+		}
+		for (AbstractDevice device :processFlow.getDevices()) {
+			device.stopCurrentAction();
 		}
 	}
 	
-	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException {
+	public boolean isRunning() {
+		return running;
+	}
+	
+	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		if (pickStep.needsTeaching()) {
 			pickStep.prepareForTeaching();
 			pickStep.teachingFinished();
@@ -61,7 +97,7 @@ public class TeachThread extends Thread {
 		}
 	}
 	
-	private void handlePut(final PutStep putStep) throws CommunicationException, RobotActionException, DeviceActionException {
+	private void handlePut(final PutStep putStep) throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		if (putStep.needsTeaching()) {
 			putStep.prepareForTeaching();
 			putStep.teachingFinished();
@@ -70,7 +106,7 @@ public class TeachThread extends Thread {
 		}
 	}
 
-	private void handleProcessing(final ProcessingStep step) throws CommunicationException, DeviceActionException {
+	private void handleProcessing(final ProcessingStep step) throws CommunicationException, DeviceActionException, InterruptedException {
 		step.executeStep();
 	}
 	

@@ -69,15 +69,15 @@ public class AutomateThread extends Thread{
 		}
 	}
 	
-	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException {
+	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		pickStep.executeStep();
 	}
 	
-	private void handlePut(final PutStep putStep) throws CommunicationException, RobotActionException, DeviceActionException {
+	private void handlePut(final PutStep putStep) throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		putStep.executeStep();
 	}
 
-	private void handleProcessing(final ProcessingStep step) throws CommunicationException, DeviceActionException {
+	private void handleProcessing(final ProcessingStep step) throws CommunicationException, DeviceActionException, InterruptedException {
 		step.executeStep();
 	}
 	

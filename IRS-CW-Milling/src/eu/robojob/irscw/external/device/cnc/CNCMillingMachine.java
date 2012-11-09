@@ -6,11 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
-
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.communication.SocketConnection;
-import eu.robojob.irscw.external.device.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.WorkArea;
@@ -21,17 +18,15 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 public class CNCMillingMachine extends AbstractCNCMachine {
 
 	private CNCMachineCommunication cncMachineCommunication;
-	
-	private static Logger logger = Logger.getLogger(AbstractProcessingDevice.class);
-	
-	private static final int PREPARE_PUT_TIMEOUT = 30000;
-	private static final int PREPARE_PICK_TIMEOUT = 30000;
-	private static final int CLAMP_TIMEOUT = 10000;
-	private static final int UNCLAMP_TIMEOUT = 10000;
-	private static final int PUT_ALLOWED_TIMEOUT = 10000;
-	private static final int START_CYCLE_TIMEOUT = 10000;
-	private static final int CYCLE_FINISHED_TIMEOUT = Integer.MAX_VALUE;
 		
+	private static final int PREPARE_PUT_TIMEOUT = 5*60*1000;
+	private static final int PREPARE_PICK_TIMEOUT = 5*60*1000;
+	private static final int CLAMP_TIMEOUT = 5*60*1000;
+	private static final int UNCLAMP_TIMEOUT = 5*60*1000;
+	private static final int PUT_ALLOWED_TIMEOUT = 5*60*1000;
+	private static final int START_CYCLE_TIMEOUT = 5*60*1000;
+	private static final int CYCLE_FINISHED_TIMEOUT = Integer.MAX_VALUE;
+			
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
 		super(id);
 		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection, this);
@@ -127,7 +122,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException {
+	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (startCylusSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			int command = 0;
@@ -159,7 +154,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException {
+	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (pickSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			// first WA
@@ -182,7 +177,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException {
+	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			// first WA
@@ -211,7 +206,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException {
+	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (pickSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			int command = 0;
@@ -232,7 +227,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException {
+	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			int command = 0;
@@ -253,7 +248,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
+	public boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException, InterruptedException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			boolean canPut =  waitForStatus(CNCMachineConstants.R_PUT_WA1_ALLOWED, PUT_ALLOWED_TIMEOUT);
@@ -446,4 +441,5 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public void disconnect() {
 		cncMachineCommunication.disconnect();
 	}
+
 }

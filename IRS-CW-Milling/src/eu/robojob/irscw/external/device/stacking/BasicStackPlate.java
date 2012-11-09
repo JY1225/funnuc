@@ -295,4 +295,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		return true;
 	}
 
+	@Override
+	public void stopCurrentAction() {
+	}
+
 }

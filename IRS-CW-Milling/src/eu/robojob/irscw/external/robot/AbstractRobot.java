@@ -65,23 +65,28 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void restartProgram() throws CommunicationException;
 	public abstract Coordinates getPosition() throws CommunicationException, RobotActionException;
 	
-	public abstract void initiatePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
-	public abstract void initiatePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;
+	public abstract void initiatePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void initiatePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;
-	public abstract void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
+	public abstract void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException;
 	
 	public abstract void moveToHome() throws CommunicationException, RobotActionException;
 	public abstract void moveToChangePoint() throws CommunicationException, RobotActionException;
 	
-	public abstract void initiateTeachedPick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
-	public abstract void initiateTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;
+	public abstract void initiateTeachedPick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void initiateTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void finalizeTeachedPick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException;
-	public abstract void finalizeTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException;
+	public abstract void finalizeTeachedPick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizeTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException;
 	
 	public abstract boolean validatePickSettings(AbstractRobotPickSettings pickSettings);
 	public abstract boolean validatePutSettings(AbstractRobotPutSettings putSettings);
+	
+	public abstract void continueProgram() throws CommunicationException;
+	public abstract void abort() throws CommunicationException;
+	
+	public abstract void stopCurrentAction();
 	
 	public abstract boolean isConnected();
 	

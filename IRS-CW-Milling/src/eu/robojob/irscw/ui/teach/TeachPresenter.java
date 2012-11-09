@@ -10,6 +10,7 @@ import javafx.application.Platform;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.cnc.CNCMachineAlarmsOccuredEvent;
@@ -20,7 +21,6 @@ import eu.robojob.irscw.external.device.cnc.CNCMachineStatusChangedEvent;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.FanucRobot;
 import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredEvent;
-import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredException;
 import eu.robojob.irscw.external.robot.FanucRobotEvent;
 import eu.robojob.irscw.external.robot.FanucRobotListener;
 import eu.robojob.irscw.external.robot.FanucRobotStatusChangedEvent;
@@ -74,6 +74,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		this.teachGeneralInfoView = teachGeneralInfoView;
 		teachGeneralInfoView.setPresenter(this);
 		this.teachStatusView = teachStatusView;
+		teachStatusView.setPresenter(this);
 		machines = new HashMap<AbstractCNCMachine, Boolean>();
 		robots = new HashMap<FanucRobot, Boolean>();
 		this.translator = Translator.getInstance();
@@ -81,9 +82,11 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 
 	@Override
 	public void setActive(boolean active) {
+		logger.info("teach presenter set: " + active);
 		if (active) {
 			enable();
 		} else {
+			logger.info("hello");
 			ThreadManager.getInstance().stopRunning(teachThread);
 			for (AbstractCNCMachine machine : machines.keySet()) {
 				machine.removeListener(this);
@@ -188,6 +191,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		logger.info("starten proces!");
 		setStatus("Starten proces...");
 		processFlow.initialize();
+		this.teachThread = new TeachThread(processFlow);
 		ThreadManager.getInstance().submit(teachThread);
 	}
 	
@@ -195,11 +199,15 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		teachStatusView.setMessage(status);
 	}
 	
+	public void setAlarmStatus(String alarmStatus) {
+		teachStatusView.setAlarmMessage(alarmStatus);
+	}
+	
 	public void exceptionOccured(Exception e){
 		logger.error(e);
 		e.printStackTrace();
 		processFlowPresenter.refresh();
-		setStatus("FOUT: " + e);
+		setStatus("Er heeft zich een fout voorgedaan: " + e + "\n. Het proces dient opnieuw doorlopen te worden.");
 		setTeachMode(false);
 		ThreadManager.getInstance().stopRunning(teachThread);
 	}
@@ -282,6 +290,9 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 			switch (e.getStatusId()) {
+				case ActiveStepChangedEvent.NONE_ACTIVE:
+					setStatus(translator.getTranslation("none-active"));
+					break;
 				case ActiveStepChangedEvent.PICK_PREPARE_DEVICE:
 					setStatus(translator.getTranslation("pick-prepare-device"));
 					break;
@@ -343,10 +354,12 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 
 	@Override
 	public void exceptionOccured(final ExceptionOccuredEvent e) {
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
-				exceptionOccured(e.getE());
-			}});
+		if (teachThread.isRunning()) {
+			Platform.runLater(new Runnable() {
+				@Override public void run() {
+					exceptionOccured(e.getE());
+				}});
+		}
 	}
 
 	@Override
@@ -359,12 +372,21 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	
 	@Override
 	public void robotAlarmsOccured(final FanucRobotAlarmsOccuredEvent event) {
-		if (event.getAlarms().size() > 0) {
-			Platform.runLater(new Runnable() {
-				@Override public void run() {
-					exceptionOccured(new FanucRobotAlarmsOccuredException(event.getSource(), event.getAlarms()));
-				}});
-		}
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				if (event.getAlarms().size() > 0) {
+					setAlarmStatus("De robot geeft aan dat zich een alarm heeft voorgedaan!");
+				} else {
+					setAlarmStatus("");
+					if (teachThread.isRunning()) {
+						try {
+							event.getSource().continueProgram();
+						} catch (CommunicationException e) {
+							exceptionOccured(e);
+						}
+					}
+				}
+			}});
 	}
 	
 	@Override
@@ -372,11 +394,12 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	@Override
 	public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) {
 		if (event.getAlarms().size() > 0) {
-			System.out.println("MACHINE ALARM OCCURED");
 			Platform.runLater(new Runnable() {
 				@Override public void run() {
 					exceptionOccured(new CNCMachineAlarmsOccuredException(event.getSource(), event.getAlarms()));
 				}});
+		} else {
+			
 		}
 	}
 	@Override

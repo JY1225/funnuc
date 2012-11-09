@@ -39,9 +39,8 @@ public class PickStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public void executeStep() throws CommunicationException, RobotActionException, DeviceActionException {
+	public void executeStep() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the devices to be used
-		//TODO IMPLEMENT!!
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
@@ -85,7 +84,7 @@ public class PickStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public void prepareForTeaching() throws CommunicationException, RobotActionException, DeviceActionException {
+	public void prepareForTeaching() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
@@ -109,7 +108,7 @@ public class PickStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public void teachingFinished() throws CommunicationException, RobotActionException, DeviceActionException {
+	public void teachingFinished() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {

@@ -17,18 +17,18 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	protected List<Zone> zones;
 		
 	public abstract boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException;
-	public abstract boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException;
+	public abstract boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException;
 	
-	public abstract void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException;
-	public abstract void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException;
+	public abstract void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException;
+	public abstract void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException;
 	public abstract void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException, DeviceActionException;
 	
 	public abstract void pickFinished(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException;
 	public abstract void putFinished(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException;
 	public abstract void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException, DeviceActionException;
 	
-	public abstract void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException;
-	public abstract void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException;
+	public abstract void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException;
+	public abstract void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException;
 	
 	public abstract void loadDeviceSettings(AbstractDeviceSettings deviceSettings);
 	public abstract AbstractDeviceSettings getDeviceSettings();
@@ -42,6 +42,8 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public abstract Coordinates getPickLocation(WorkArea workArea);
 	public abstract Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions);
+	
+	public abstract void stopCurrentAction();
 	
 	public abstract boolean isConnected();
 	

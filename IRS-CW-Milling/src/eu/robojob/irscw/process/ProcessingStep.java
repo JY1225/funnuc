@@ -28,7 +28,7 @@ public class ProcessingStep extends AbstractProcessStep {
 	}
 	
 	@Override
-	public void executeStep() throws CommunicationException, DeviceActionException {
+	public void executeStep() throws CommunicationException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the device to be used
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());

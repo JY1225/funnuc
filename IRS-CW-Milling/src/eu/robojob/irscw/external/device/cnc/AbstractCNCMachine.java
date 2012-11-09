@@ -23,6 +23,8 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private boolean statusChanged;
 	private Object syncObject;
 	
+	private boolean stopAction;
+	
 	public AbstractCNCMachine(String id) {
 		super(id, true);
 		this.statusChanged = false;
@@ -32,6 +34,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.listeners = new HashSet<CNCMachineListener>();
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
 		ThreadManager.getInstance().submit(cncMachineMonitoringThread);
+		this.stopAction = false;
 	}
 	
 	public AbstractCNCMachine(String id, List<Zone> zones) {
@@ -43,6 +46,15 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.listeners = new HashSet<CNCMachineListener>();
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
 		ThreadManager.getInstance().submit(cncMachineMonitoringThread);
+		this.stopAction = false;
+	}
+	
+	@Override
+	public void stopCurrentAction() {
+		stopAction = true;
+		synchronized(syncObject) {
+			syncObject.notifyAll();
+		}
 	}
 
 	public void addListener(CNCMachineListener listener) {
@@ -101,7 +113,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		}
 	}
 	
-	protected boolean waitForStatus(int status, long timeout) throws CommunicationException {
+	protected boolean waitForStatus(int status, long timeout) throws CommunicationException, InterruptedException {
 		long waitedTime = 0;
 		do {
 			long lastTime = System.currentTimeMillis();
@@ -117,9 +129,13 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 					}
 				} catch (InterruptedException e) {
 					if (!statusChanged) {
-						break;
+						throw e;
 					}
 				} 
+				if (stopAction) {
+					stopAction = false;
+					throw new InterruptedException();
+				}
 				if (!isConnected()) {
 					throw new DeviceDisconnectedException(this);
 				}

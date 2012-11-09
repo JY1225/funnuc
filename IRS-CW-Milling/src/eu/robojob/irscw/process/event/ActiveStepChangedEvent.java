@@ -7,6 +7,8 @@ public class ActiveStepChangedEvent extends ProcessFlowEvent {
 
 	private AbstractProcessStep activeStep;
 	
+	public static final int NONE_ACTIVE = 0;
+	
 	public static final int PICK_PREPARE_DEVICE = 1;
 	public static final int PICK_EXECUTE_TEACHED = 2;
 	public static final int PICK_EXECUTE_NORMAL = 3;

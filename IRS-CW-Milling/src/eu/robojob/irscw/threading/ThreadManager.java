@@ -55,7 +55,7 @@ public class ThreadManager {
 	}
 	
 	public void stopRunning(Thread thread) {
-		if (thread.isAlive()) {
+		//if (thread.isAlive()) {
 			if (communicationThreads.contains(thread)) {
 				ExternalCommunicationThread exThread = (ExternalCommunicationThread) thread;
 				exThread.disconnectAndStop();
@@ -65,9 +65,10 @@ public class ThreadManager {
 				mThread.stopExecution();
 				monitoringThreads.remove(mThread);
 			} else {
+				logger.info("about to interrupt: " + thread);
 				thread.interrupt();
 			}
-		}
+		//}
 	}
 
 }

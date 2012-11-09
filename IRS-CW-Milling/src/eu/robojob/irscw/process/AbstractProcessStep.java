@@ -24,7 +24,7 @@ public abstract class AbstractProcessStep {
 		this(null, device);
 	}
 	
-	public abstract void executeStep() throws CommunicationException, RobotActionException, DeviceActionException;
+	public abstract void executeStep() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException;
 		
 	public abstract String toString();
 	
