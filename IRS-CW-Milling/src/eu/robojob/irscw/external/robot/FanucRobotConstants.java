@@ -62,6 +62,7 @@ public class FanucRobotConstants {
 	public static final int COMMAND_RESTART_PROGRAM				=	60;
 	public static final int COMMAND_RESET						=	61;
 	public static final int COMMAND_ABORT						=	62;
+	public static final int COMMAND_CONTINUE					=	63;
 	public static final int COMMAND_TO_HOME						=	65;
 	public static final int COMMAND_TO_JAW_CHANGE				=	66;
 	public static final int COMMAND_SET_SPEED					=	67;
@@ -81,6 +82,7 @@ public class FanucRobotConstants {
 	public static final int RESPONSE_RESTART_PROGRAM			=	160;
 	public static final int RESPONSE_RESET						=	161;
 	public static final int RESPONSE_ABORT						=	162;
+	public static final int RESPONSE_CONTINUE					=	163;
 	public static final int RESPONSE_TO_HOME					=	165;
 	public static final int RESPONSE_TO_JAW_CHANGE				=	166;
 	public static final int RESPONSE_SET_SPEED					=	167;
@@ -102,6 +104,7 @@ public class FanucRobotConstants {
 	public static final int SERVICE_HANDLING_PP_MODE_ORDER_12		=	BIT4;
 	public static final int SERVICE_HANDLING_PP_MODE_ORDER_21		=	0;
 	public static final int SERVICE_HANDLING_PP_MODE_TEACH 			=	BIT5;
+	public static final int SERVICE_HANDLING_PP_MODE_AIRBLOW		=	BIT6;
 	
 	// SERVICE POINT
 	public static final int SERVICE_POINT_XYZ_ALLOWED_XYZ			=	1;

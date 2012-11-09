@@ -94,6 +94,18 @@ public class FanucRobot extends AbstractRobot {
 				}
 				break;
 			case FanucRobotEvent.ALARMS_OCCURED:
+				if (((FanucRobotAlarmsOccuredEvent) event).getAlarms().size() > 0) {
+					logger.info("ALARM!!");
+				} else {
+					logger.info("GEEN ALARMS MEER!");
+					try {
+						fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_CONTINUE, FanucRobotConstants.RESPONSE_CONTINUE, WRITE_VALUES_TIMEOUT);
+					} catch (DisconnectedException | ResponseTimedOutException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				
 				for (FanucRobotListener listener : listeners) {
 					listener.robotAlarmsOccured((FanucRobotAlarmsOccuredEvent) event);
 				}
@@ -201,7 +213,12 @@ public class FanucRobot extends AbstractRobot {
 		// write service gripper set
 		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
 		// write service handling set
-		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12, fPutSettings.getGripper().getWorkPiece().getDimensions());
+		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
+		if (fPutSettings.doMachineAirblow) {
+			ppMode = ppMode | FanucRobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
+			logger.info("ALSO SENT: AIRBLOW!!");
+		}
+		writeServiceHandlingSet(ppMode, fPutSettings.getGripper().getWorkPiece().getDimensions());
 		// write service point set
 		if (fPutSettings.getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
@@ -383,6 +400,7 @@ public class FanucRobot extends AbstractRobot {
 		values.add("0");
 		values.add("" + serviceHandlingPPMode);
 		values.add("0");
+		logger.debug("wrote service handling: " + values);
 		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_HANDLING, FanucRobotConstants.RESPONSE_WRITE_SERVICE_HANDLING, WRITE_VALUES_TIMEOUT, values);
 	}
 	
@@ -404,7 +422,11 @@ public class FanucRobot extends AbstractRobot {
 		values.add("" + location.getR());
 		values.add("" + (dimensions.getHeight() + location.getZ()));
 		// TODO we take 20 as safety add z for now
-		values.add("" + 20);
+		if (smoothPoint.getZ() > 40) {
+			values.add("" + smoothPoint.getZ());
+		} else {
+			values.add("40");
+		}
 		values.add("" + smoothPoint.getX());
 		values.add("" + smoothPoint.getY());
 		values.add("" + smoothPoint.getZ());
@@ -471,10 +493,21 @@ public class FanucRobot extends AbstractRobot {
 	}
 	public static class FanucRobotPutSettings extends AbstractRobotPutSettings {
 
+		protected boolean doMachineAirblow;
+		
 		public FanucRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, float clampHeight) {
 			super(workArea, gripperHead, gripper, smoothPoint, location, clampHeight);
+			this.doMachineAirblow = false;
 		}
 		
+		public boolean isDoMachineAirblow() {
+			return doMachineAirblow;
+		}
+
+		public void setDoMachineAirblow(boolean doMachineAirblow) {
+			this.doMachineAirblow = doMachineAirblow;
+		}
+
 		public FanucRobotPutSettings() {
 			super(null, null, null, null, null, Float.NaN);
 		}

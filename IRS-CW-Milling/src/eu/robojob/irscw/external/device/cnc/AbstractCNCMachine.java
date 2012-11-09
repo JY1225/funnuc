@@ -140,14 +140,19 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	}
 
 	public abstract static class AbstractCNCMachinePutSettings extends AbstractProcessingDevicePutSettings{
+				
 		public AbstractCNCMachinePutSettings(WorkArea workArea) {
 			super(workArea);
 		}
+		
 	}
 	public abstract static class AbstractCNCMachinePickSettings extends AbstractProcessingDevicePickSettings{
+				
 		public AbstractCNCMachinePickSettings(WorkArea workArea) {
 			super(workArea);
 		}
+
+		
 	}
 	public abstract static class AbstractCNCMachineInterventionSettings extends AbstractProcessingDeviceInterventionSettings{
 		public AbstractCNCMachineInterventionSettings(WorkArea workArea) {

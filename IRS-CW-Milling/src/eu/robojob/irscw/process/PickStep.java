@@ -77,7 +77,7 @@ public class PickStep extends AbstractTransportStep {
 				logger.debug("Device released piece, about to finalize pick");
 				robot.finalizePick(robotPickSettings);
 				robotPickSettings.getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
-				robot.moveToHome();
+				//robot.moveToHome();
 				device.pickFinished(pickSettings);
 				logger.debug("Pick finished");
 			}

@@ -249,6 +249,7 @@ public class RoboSoftAppFactory {
 			robotPutSettings1.setSmoothPoint(new Coordinates(mainWorkArea.getClampingById("Clamping 1").getSmoothToPoint()));
 			robotPutSettings1.setClampHeight(mainWorkArea.getClampingById("Clamping 1").getHeight());
 			robotPutSettings1.setWorkArea(mainWorkArea);
+			robotPutSettings1.setDoMachineAirblow(true);
 			
 			// PICK 1
 			PickStep pick1 = new PickStep(robot, stackPlate, stackPlatePickSettings, robotPickSettings1);
