@@ -14,6 +14,7 @@ import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.communication.DisconnectedException;
 import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.external.communication.SocketConnection;
+import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
@@ -208,11 +209,11 @@ public class FanucRobot extends AbstractRobot {
 		// write service gripper set
 		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
 		// write service handling set
-		writeServiceHandlingSet(FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12, pickSettings.getWorkPiece().getDimensions());
+		writeServiceHandlingSet(false, FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12, pickSettings.getWorkPiece().getDimensions());
 		// write service point set
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
 		//pickLocation.offset(new Coordinates(0, 0, fPickSettings.getWorkPiece().getDimensions().getHeight(), 0, 0, 0));
-		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClampHeight());
+		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClamping());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK);
 		// write start service
@@ -236,12 +237,12 @@ public class FanucRobot extends AbstractRobot {
 			ppMode = ppMode | FanucRobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 			logger.info("ALSO SENT: AIRBLOW!!");
 		}
-		writeServiceHandlingSet(ppMode, fPutSettings.getGripper().getWorkPiece().getDimensions());
+		writeServiceHandlingSet(true, ppMode, fPutSettings.getGripper().getWorkPiece().getDimensions());
 		// write service point set
 		if (fPutSettings.getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
 		}
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClampHeight());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClamping());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT);
 		//TODO in progress
@@ -283,11 +284,11 @@ public class FanucRobot extends AbstractRobot {
 		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
 		// write service handling set
 		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH | FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
-		writeServiceHandlingSet(ppMode, pickSettings.getWorkPiece().getDimensions());
+		writeServiceHandlingSet(false, ppMode, pickSettings.getWorkPiece().getDimensions());
 		// write service point set
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
 		//pickLocation.offset(new Coordinates(0, 0, fPickSettings.getWorkPiece().getDimensions().getHeight(), 0, 0, 0));
-		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClampHeight());
+		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClamping());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK);
 		// write start service
@@ -322,12 +323,12 @@ public class FanucRobot extends AbstractRobot {
 		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
 		// write service handling set
 		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH | FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
-		writeServiceHandlingSet(ppMode, fPutSettings.getGripper().getWorkPiece().getDimensions());
+		writeServiceHandlingSet(true, ppMode, fPutSettings.getGripper().getWorkPiece().getDimensions());
 		// write service point set
 		if (fPutSettings.getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
 		}
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClampHeight());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClamping());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT);
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
@@ -386,15 +387,19 @@ public class FanucRobot extends AbstractRobot {
 		// changing jaws will not be necessary
 		values.add("0");
 		// outer gripper type will be used
-		values.add("1");
+		values.add("0");
 		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_GRIPPER, FanucRobotConstants.RESPONSE_WRITE_SERVICE_GRIPPER, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	private void writeServiceHandlingSet(int serviceHandlingPPMode, WorkPieceDimensions dimensions) throws CommunicationException {
+	private void writeServiceHandlingSet(boolean freeAfterService, int serviceHandlingPPMode, WorkPieceDimensions dimensions) throws CommunicationException {
 		List<String> values = new ArrayList<String>();
 		// free after this service ; WP thickness ;  WP Z grip ; grip Z face till front ; dx correction P1 ; dy correction P1 ; dx correction P2 ; dy correction P2 ; dW correction ;
 		//    dP correction ; robot speed ; payload 1 ; payload 2 ; soft float range ; soft float force ; PP mode ; bar move distance
-		values.add("1");
+		if (freeAfterService) {
+			values.add("1");
+		} else {
+			values.add("0");
+		}
 		values.add("" + dimensions.getHeight());
 		values.add("0");
 		values.add("0");
@@ -418,7 +423,7 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_SERVICE_HANDLING, FanucRobotConstants.RESPONSE_WRITE_SERVICE_HANDLING, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	private void writeServicePointSet(WorkArea workArea, Coordinates location, Coordinates smoothPoint, WorkPieceDimensions dimensions, float clampHeight) throws DisconnectedException, ResponseTimedOutException {
+	private void writeServicePointSet(WorkArea workArea, Coordinates location, Coordinates smoothPoint, WorkPieceDimensions dimensions, Clamping clamping) throws DisconnectedException, ResponseTimedOutException {
 		List<String> values = new ArrayList<String>();
 		// user frame location ; x offset ; y offset ; z offset ; r offset ; z-safe plane offset ; safety add z ; smooth x ; smooth y ; smooth z ; tangent to/from ; xyz allowed ;
 		// clamp height ; bar break iterations ; bar break main axis ; bar break angle ; bar move length
@@ -455,8 +460,8 @@ public class FanucRobot extends AbstractRobot {
 		} else {
 			throw new IllegalStateException("Should not be here! Illegal Userframe id");
 		}
-		if (clampHeight != Float.NaN) {
-			values.add("" + clampHeight);
+		if (clamping != null) {
+			values.add("" + (clamping.getHeight() + clamping.getRelativePosition().getZ()));
 		} else {
 			throw new IllegalArgumentException("Invalid clamp height!");
 		}
@@ -496,12 +501,12 @@ public class FanucRobot extends AbstractRobot {
 
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
 
-		public FanucRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, float clampHeight, WorkPiece workPiece) {
-			super(workArea, gripperHead, gripper, smoothPoint, location, clampHeight, workPiece);
+		public FanucRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, Clamping clamping, WorkPiece workPiece) {
+			super(workArea, gripperHead, gripper, smoothPoint, location, clamping, workPiece);
 		}
 		
 		public FanucRobotPickSettings() {
-			super(null, null, null, null, null, Float.NaN, null);
+			super(null, null, null, null, null, null, null);
 		}
 		
 	}
@@ -509,8 +514,8 @@ public class FanucRobot extends AbstractRobot {
 
 		protected boolean doMachineAirblow;
 		
-		public FanucRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, float clampHeight) {
-			super(workArea, gripperHead, gripper, smoothPoint, location, clampHeight);
+		public FanucRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, Clamping clamping) {
+			super(workArea, gripperHead, gripper, smoothPoint, location, clamping);
 			this.doMachineAirblow = false;
 		}
 		
@@ -523,7 +528,7 @@ public class FanucRobot extends AbstractRobot {
 		}
 
 		public FanucRobotPutSettings() {
-			super(null, null, null, null, null, Float.NaN);
+			super(null, null, null, null, null, null);
 		}
 	}
 	

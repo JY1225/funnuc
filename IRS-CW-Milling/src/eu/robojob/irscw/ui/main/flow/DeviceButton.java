@@ -53,7 +53,7 @@ public class DeviceButton extends VBox {
 			deviceName.getStyleClass().add("unknown-device");
 		}
 		setImage();
-		if (deviceInfo.getDevice().getType() == DeviceType.CNC_MACHINE) {
+		if ((deviceInfo != null) && (deviceInfo.getDevice()!= null) && (deviceInfo.getDevice().getType() == DeviceType.CNC_MACHINE)) {
 			rt = new RotateTransition(Duration.millis(5000), imagePath);
 			rt.setFromAngle(0);
 			rt.setToAngle(360);

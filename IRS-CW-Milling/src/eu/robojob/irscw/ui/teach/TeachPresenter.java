@@ -87,7 +87,9 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 			enable();
 		} else {
 			logger.info("hello");
-			ThreadManager.getInstance().stopRunning(teachThread);
+			if (teachThread.isRunning()) {
+				ThreadManager.getInstance().stopRunning(teachThread);
+			}
 			for (AbstractCNCMachine machine : machines.keySet()) {
 				machine.removeListener(this);
 			}

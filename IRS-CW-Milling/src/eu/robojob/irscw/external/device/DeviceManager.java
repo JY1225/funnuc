@@ -58,8 +58,8 @@ public class DeviceManager {
 		workAreas.add(workArea1);
 	//	workAreas.add(workArea2);
 		Zone zone1 = new Zone("zone 1", workAreas);
-		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.200.4", 2010);  // other: 6
-		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "10.10.40.12", 2010);  // other: 6
+		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.200.4", 2010);  // other: 6
+		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "10.10.40.12", 2010);  // other: 6
 		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak VRX J500", cncSocketCon);
 		cncMillingMachine.addZone(zone1);
 		cncMachines.put(cncMillingMachine.getId(), cncMillingMachine);
@@ -94,7 +94,7 @@ public class DeviceManager {
 		workArea5.setActiveClamping(clamping4);
 		workAreas4.add(workArea5);
 		Zone zone4 = new Zone("Zone 4", workAreas4);
-		BasicStackPlateLayout basicStackPlateLayout = new BasicStackPlateLayout(27, 7, 10f, 15f, 45f, 40f, 26f, 35f, 5f, 0.35f);
+		BasicStackPlateLayout basicStackPlateLayout = new BasicStackPlateLayout(27, 7, 10f, 15f, 45f, 40f, 26f, 35f, 5f, 0.5f);
 		BasicStackPlate basicStackPlate = new BasicStackPlate("IRS M Basic", basicStackPlateLayout);
 		basicStackPlate.addZone(zone4);
 		stackingFromDevices.put(basicStackPlate.getId(), basicStackPlate);

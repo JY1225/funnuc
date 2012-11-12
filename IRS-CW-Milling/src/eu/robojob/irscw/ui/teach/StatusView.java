@@ -52,7 +52,7 @@ public class StatusView extends VBox {
 		loading = new SVGPath();
 		loading.setContent(loadingPath);
 		
-		setMargin(loading, new Insets(50, 0, 0, 0));
+		setMargin(loading, new Insets(30, 0, 0, 0));
 		
 		rotation = new RotateTransition(Duration.millis(2000), loading);
 		rotation.setFromAngle(0);
@@ -69,15 +69,15 @@ public class StatusView extends VBox {
 		
 		lblAlarmMessage = new Label();
 		lblAlarmMessage.getStyleClass().add("alarm-msg");
-		lblAlarmMessage.setPrefSize(520, 40);
+		lblAlarmMessage.setPrefSize(520, 30);
 		lblAlarmMessage.setWrapText(true);
-		setMargin(lblAlarmMessage, new Insets(20, 0, 0, 20));
+		setMargin(lblAlarmMessage, new Insets(20, 0, 20, 0));
 		
 		lblInfoMessage = new Label();
 		lblInfoMessage.getStyleClass().add("info-msg");
 		lblInfoMessage.setPrefSize(520, 60);
 		lblInfoMessage.setWrapText(true);
-		setMargin(lblInfoMessage, new Insets(20, 0, 0, 20));
+		setMargin(lblInfoMessage, new Insets(0, 0, 20, 0));
 		
 		btnRestart = new Button();
 		btnRestart.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
@@ -92,7 +92,7 @@ public class StatusView extends VBox {
 				presenter.setActive(true);
 			}
 		});
-		setMargin(btnRestart, new Insets(20, 0, 0, 20));
+		setMargin(btnRestart, new Insets(0, 0, 30, 0));
 
 		
 		this.getChildren().add(loading);

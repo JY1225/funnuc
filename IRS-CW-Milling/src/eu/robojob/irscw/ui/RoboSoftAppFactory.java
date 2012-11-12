@@ -211,9 +211,9 @@ public class RoboSoftAppFactory {
 			BasicStackPlate stackPlate = (BasicStackPlate) deviceMgr.getStackingFromDeviceById("IRS M Basic");
 			BasicStackPlatePickSettings stackPlatePickSettings = new BasicStackPlate.BasicStackPlatePickSettings(stackPlate.getWorkAreaById("IRS M Basic"));
 			BasicStackPlateSettings stackPlateSettings = (BasicStackPlateSettings) stackPlate.getDeviceSettings();
-			stackPlateSettings.setAmount(3);
-			processFlow.setTotalAmount(3);
-			stackPlateSettings.setDimensions(new WorkPieceDimensions(200, 127.5f, 100));
+			stackPlateSettings.setAmount(12);
+			processFlow.setTotalAmount(12);
+			stackPlateSettings.setDimensions(new WorkPieceDimensions(125.8f, 64.9f, 40));
 			stackPlateSettings.setOrientation(WorkPieceOrientation.TILTED);
 			processFlow.setDeviceSettings(stackPlate, stackPlateSettings);
 			
@@ -236,8 +236,8 @@ public class RoboSoftAppFactory {
 			robotPickSettings1.setGripper(robot.getGripperBody().getGripper("Vacuum grip"));
 			robotPickSettings1.setSmoothPoint(new Coordinates(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getSmoothFromPoint()));
 			robotPickSettings1.setWorkArea(stackPlate.getWorkAreaById("IRS M Basic"));
-			robotPickSettings1.setClampHeight(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getHeight());
-			WorkPieceDimensions dimensions1 = new WorkPieceDimensions(200, 127.5f, 100);
+			robotPickSettings1.setClamping(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping());
+			WorkPieceDimensions dimensions1 = new WorkPieceDimensions(125.8f, 64.9f, 40);
 			WorkPiece workPiece1 = new WorkPiece(WorkPiece.Type.RAW, dimensions1);
 			robotPickSettings1.setWorkPiece(workPiece1);
 			// general
@@ -247,7 +247,7 @@ public class RoboSoftAppFactory {
 			robotPutSettings1.setGripperHead(robot.getGripperBody().getGripperHead("A"));
 			robotPutSettings1.setGripper(robot.getGripperBody().getGripper("Vacuum grip"));
 			robotPutSettings1.setSmoothPoint(new Coordinates(mainWorkArea.getClampingById("Clamping 1").getSmoothToPoint()));
-			robotPutSettings1.setClampHeight(mainWorkArea.getClampingById("Clamping 1").getHeight());
+			robotPutSettings1.setClamping(mainWorkArea.getClampingById("Clamping 1"));
 			robotPutSettings1.setWorkArea(mainWorkArea);
 			robotPutSettings1.setDoMachineAirblow(true);
 			
@@ -265,9 +265,9 @@ public class RoboSoftAppFactory {
 			robotPickSettings2.setGripperHead(robot.getGripperBody().getGripperHead("B"));
 			robotPickSettings2.setGripper(robot.getGripperBody().getGripper("2P clamp grip"));
 			robotPickSettings2.setSmoothPoint(new Coordinates(mainWorkArea.getClampingById("Clamping 1").getSmoothFromPoint()));
-			robotPickSettings2.setClampHeight(mainWorkArea.getClampingById("Clamping 1").getHeight());
+			robotPickSettings2.setClamping(mainWorkArea.getClampingById("Clamping 1"));
 			robotPickSettings2.setWorkArea(mainWorkArea);
-			WorkPieceDimensions dimensions2 = new WorkPieceDimensions(140, 80, 100);
+			WorkPieceDimensions dimensions2 = new WorkPieceDimensions(125.8f, 64.9f, 40);
 			WorkPiece workPiece2 = new WorkPiece(WorkPiece.Type.FINISHED, dimensions2);
 			robotPickSettings2.setWorkPiece(workPiece2);
 			// general
@@ -278,7 +278,7 @@ public class RoboSoftAppFactory {
 			robotPutSettings2.setGripper(robot.getGripperBody().getGripper("2P clamp grip"));
 			robotPutSettings2.setSmoothPoint(new Coordinates(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getSmoothToPoint()));
 			robotPutSettings2.setWorkArea(stackPlate.getWorkAreaById("IRS M Basic"));			
-			robotPutSettings2.setClampHeight(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getHeight());
+			robotPutSettings2.setClamping(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping());
 			BasicStackPlatePutSettings stackPlatePutSettings = new BasicStackPlate.BasicStackPlatePutSettings(stackPlate.getWorkAreaById("IRS M Basic"));
 			
 			// PICK 2

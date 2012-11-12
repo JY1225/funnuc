@@ -176,6 +176,9 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 			switch (e.getStatusId()) {
+				case ActiveStepChangedEvent.NONE_ACTIVE:
+					view.setStatus(Status.OK, translator.getTranslation("none-active"));
+					break;
 				case ActiveStepChangedEvent.PICK_PREPARE_DEVICE:
 					view.setStatus(Status.OK, translator.getTranslation("pick-prepare-device"));
 					break;

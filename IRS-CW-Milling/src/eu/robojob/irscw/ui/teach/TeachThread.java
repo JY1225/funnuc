@@ -57,6 +57,7 @@ public class TeachThread extends Thread {
 			}
 			processFlow.restart();
 			processFlow.setMode(Mode.READY);
+			this.running = false;
 		} catch(CommunicationException | RobotActionException | DeviceActionException e) {
 			notifyException(e);
 		} catch(InterruptedException e) {
@@ -71,16 +72,18 @@ public class TeachThread extends Thread {
 	@Override
 	public void interrupt() {
 		logger.info("about to interrupt teach thread");
-		for (AbstractRobot robot :processFlow.getRobots()) {
-			robot.stopCurrentAction();
-			try {
-				robot.abort();
-			} catch (CommunicationException e) {
-				notifyException(e);
+		if (running) {
+			for (AbstractRobot robot :processFlow.getRobots()) {
+				robot.stopCurrentAction();
+				try {
+					robot.abort();
+				} catch (CommunicationException e) {
+					notifyException(e);
+				}
 			}
-		}
-		for (AbstractDevice device :processFlow.getDevices()) {
-			device.stopCurrentAction();
+			for (AbstractDevice device :processFlow.getDevices()) {
+				device.stopCurrentAction();
+			}
 		}
 	}
 	

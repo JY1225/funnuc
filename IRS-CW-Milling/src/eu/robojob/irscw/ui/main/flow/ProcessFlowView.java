@@ -141,6 +141,14 @@ public class ProcessFlowView extends GridPane  {
 					deviceButtons.get(i).setFocussed(false);
 				}
 			}
+			for (Region progressRegion : progressTransportRegionsLeft.values()) {
+				progressRegion.setDisable(true);
+				System.out.println("disabling region");
+			}
+			for (Region progressRegion : progressTransportRegionsRight.values()) {
+				progressRegion.setDisable(true);
+				System.out.println("disabling region");
+			}
 		}
 	}
 	
@@ -158,6 +166,12 @@ public class ProcessFlowView extends GridPane  {
 					transportButtons.get(i).setFocussed(false);
 				}
 			}
+			for (Region progressRegion : progressTransportRegionsLeft.values()) {
+				progressRegion.setDisable(true);
+			}
+			for (Region progressRegion : progressTransportRegionsRight.values()) {
+				progressRegion.setDisable(true);
+			}
 		}
 	}
 	
@@ -168,6 +182,12 @@ public class ProcessFlowView extends GridPane  {
 		for (TransportButton transport : transportButtons.values()) {
 			transport.setFocussed(true);
 		}
+		for (Region progressRegion : progressTransportRegionsLeft.values()) {
+			progressRegion.setDisable(false);
+		}
+		for (Region progressRegion : progressTransportRegionsRight.values()) {
+			progressRegion.setDisable(false);
+		}
 	}
 	
 	public void setAllProgressNone() {
@@ -176,6 +196,9 @@ public class ProcessFlowView extends GridPane  {
 		}
 		for (int i : progressTransportRegionsRight.keySet()) {
 			setTransportProgressNone(i);
+		}
+		for (DeviceButton device : deviceButtons.values()) {
+			device.animate(false);
 		}
 	}
 	
