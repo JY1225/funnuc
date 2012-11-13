@@ -134,7 +134,9 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	private void showActiveStepChange(ActiveStepChangedEvent e) {
 		AbstractProcessStep step = e.getActiveStep();
 		if (step == null) {
-			setNoneActive();
+			if (processFlowAdapter.getProcessFlow().getMode() != ProcessFlow.Mode.PAUSED) {
+				setNoneActive();
+			}
 		} else {
 			if (step instanceof PickStep) {
 				if (e.getStatusId() != ActiveStepChangedEvent.PICK_FINISHED) {

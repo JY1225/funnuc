@@ -30,6 +30,14 @@ public abstract class AbstractTransportStep extends AbstractProcessStep {
 	public AbstractRobot getRobot() {
 		return robot;
 	}
+	
+	public void setTeachedOffset(Coordinates teachedOffset) {
+		this.teachedOffset = teachedOffset;
+	}
+	
+	public Coordinates getTeachedOffset() {
+		return teachedOffset;
+	}
 
 	public abstract boolean needsTeaching();
 	public abstract void prepareForTeaching() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException;

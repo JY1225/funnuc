@@ -13,6 +13,7 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 
 public class AutomateThread extends Thread{
@@ -36,9 +37,13 @@ public class AutomateThread extends Thread{
 				robot.restartProgram();
 				//robot.moveToHome();
 			}
+			logger.info("1");
 			while(processFlow.getFinishedAmount() < processFlow.getTotalAmount() && running) {
+				logger.info("2");
 				while (processFlow.hasStep() && running) {
+					logger.info("3");
 					AbstractProcessStep step = processFlow.getCurrentStep();
+					logger.info("running...: " + step);
 					// intervention steps can be skipped
 					if (!(step instanceof InterventionStep)) {
 						if (step instanceof PickStep) {
@@ -67,6 +72,8 @@ public class AutomateThread extends Thread{
 			processFlow.setMode(Mode.STOPPED);
 			logger.error(e);
 		}
+		processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, null, ActiveStepChangedEvent.NONE_ACTIVE));
+		logger.info("Thread ended: " + toString());
 	}
 	
 	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {

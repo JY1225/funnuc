@@ -71,87 +71,53 @@ public class PrageMachine extends AbstractProcessingDevice {
 	public void putFinished(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException {}
 	@Override
 	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException, DeviceActionException {}
-
 	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException {
-		// TODO commando sturen om klem te openen
-	}
+	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException {}
 	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
-		// TODO commando sturen om klem te sluiten
-	}
-
+	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {}
 	@Override
-	public void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {
-	}
-
+	public void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {}
 	@Override
 	public AbstractDeviceSettings getDeviceSettings() {
 		return null;
 	}
-
 	@Override
 	public boolean validatePickSettings(AbstractDevicePickSettings pickSettings) {
-		// TODO Auto-generated method stub
 		return false;
 	}
-
 	@Override
 	public boolean validatePutSettings(AbstractDevicePutSettings putSettings) {
-		// TODO Auto-generated method stub
 		return false;
 	}
-
 	@Override
-	public boolean validateInterventionSettings(
-			AbstractDeviceInterventionSettings interventionSettings) {
-		// TODO Auto-generated method stub
+	public boolean validateInterventionSettings(AbstractDeviceInterventionSettings interventionSettings) {
 		return false;
 	}
-
 	@Override
-	public AbstractDeviceInterventionSettings getInterventionSettings(
-			AbstractDevicePickSettings pickSettings) {
-		// TODO Auto-generated method stub
+	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePickSettings pickSettings) {
 		return null;
 	}
-
 	@Override
-	public AbstractDeviceInterventionSettings getInterventionSettings(
-			AbstractDevicePutSettings putSettings) {
-		// TODO Auto-generated method stub
+	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePutSettings putSettings) {
 		return null;
 	}
-
 	@Override
 	public Coordinates getPickLocation(WorkArea workArea) {
-		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
-	public Coordinates getPutLocation(WorkArea workArea,
-			WorkPieceDimensions workPieceDimensions) {
-		// TODO Auto-generated method stub
+	public Coordinates getPutLocation(WorkArea workArea,WorkPieceDimensions workPieceDimensions) {
 		return null;
 	}
-
 	@Override
-	public void stopCurrentAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
+	public void stopCurrentAction() {}
 	@Override
 	public boolean isConnected() {
-		// TODO Auto-generated method stub
 		return false;
 	}
-
 	@Override
 	public DeviceType getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return DeviceType.PRE_PROCESSING;
 	}
  
 }

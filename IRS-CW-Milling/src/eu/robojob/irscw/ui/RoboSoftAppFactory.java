@@ -22,6 +22,7 @@ import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.ProcessFlowTimer;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
@@ -77,6 +78,8 @@ public class RoboSoftAppFactory {
 	private DeviceMenuFactory deviceMenuFactory;
 	private TransportMenuFactory transportMenuFactory;
 	
+	private ProcessFlowTimer processFlowTimer;
+	
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
 			MainView mainView = new MainView();
@@ -92,6 +95,13 @@ public class RoboSoftAppFactory {
 			menuBarPresenter = new MenuBarPresenter(processMenuBarView);
 		}
 		return menuBarPresenter;
+	}
+	
+	public ProcessFlowTimer getProcessFlowTimer() {
+		if (processFlowTimer == null) {
+			processFlowTimer = new ProcessFlowTimer(getProcessFlow());
+		}
+		return processFlowTimer;
 	}
 	
 	public ConfigurePresenter getConfigurePresenter() {
@@ -117,7 +127,7 @@ public class RoboSoftAppFactory {
 	public AutomatePresenter getAutomatePresenter() {
 		if (automatePresenter == null) {
 			AutomateView view = new AutomateView();
-			automatePresenter = new AutomatePresenter(view, getAutomateProcessFlowPresenter(), getProcessFlow());
+			automatePresenter = new AutomatePresenter(view, getAutomateProcessFlowPresenter(), getProcessFlow(), getProcessFlowTimer());
 		}
 		return automatePresenter;
 	}
@@ -286,7 +296,10 @@ public class RoboSoftAppFactory {
 			PutStep put2 = new PutStep(robot, stackPlate, stackPlatePutSettings, robotPutSettings2);
 			
 			
-			
+			pick1.setTeachedOffset(new Coordinates(0, 0, 0, 0, 0, 0));
+			put1.setTeachedOffset(new Coordinates(0, 0, 0, 0, 0, 0));
+			pick2.setTeachedOffset(new Coordinates(0, 0, 0, 0, 0, 0));
+			put2.setTeachedOffset(new Coordinates(0, 0, 0, 0, 0, 0));
 			
 			// creating process flow
 			processFlow.addStep(pick1);
@@ -298,6 +311,9 @@ public class RoboSoftAppFactory {
 			
 			processFlow.loadAllSettings();
 		}
+		
+		processFlowTimer = new ProcessFlowTimer(processFlow);
+		
 		return processFlow;
 	}
 	

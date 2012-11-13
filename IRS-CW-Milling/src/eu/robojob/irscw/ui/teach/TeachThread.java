@@ -14,6 +14,7 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 
 public class TeachThread extends Thread {
@@ -65,6 +66,7 @@ public class TeachThread extends Thread {
 			processFlow.initialize();
 			processFlow.setMode(Mode.STOPPED);
 		}
+		processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, null, ActiveStepChangedEvent.NONE_ACTIVE));
 		logger.info("ended teach thread!");
 		this.running = false;
 	}

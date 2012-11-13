@@ -82,11 +82,9 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 
 	@Override
 	public void setActive(boolean active) {
-		logger.info("teach presenter set: " + active);
 		if (active) {
 			enable();
 		} else {
-			logger.info("hello");
 			if (teachThread.isRunning()) {
 				ThreadManager.getInstance().stopRunning(teachThread);
 			}

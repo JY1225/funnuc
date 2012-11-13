@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
@@ -29,8 +31,6 @@ public class ProcessFlow {
 		TEACH, READY, AUTO, PAUSED, STOPPED, CONFIG, FINISHED
 	}
 	
-	//private static Logger logger = Logger.getLogger(ProcessFlow.class);
-	
 	private List<AbstractProcessStep> processSteps;
 	
 	private Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> deviceSettings;
@@ -45,6 +45,8 @@ public class ProcessFlow {
 	
 	private Set<ProcessFlowListener> listeners;
 	private Mode mode;
+	
+	private static final Logger logger = Logger.getLogger(ProcessFlow.class);
 	
 	private int currentStepIndex;
 	
@@ -77,6 +79,7 @@ public class ProcessFlow {
 	}
 	
 	public void restart() {
+		logger.info("restarted");
 		incrementFinishedAmount();
 		currentStepIndex = 0;
 		processProcessFlowEvent(new ActiveStepChangedEvent(this, null, ActiveStepChangedEvent.NONE_ACTIVE));

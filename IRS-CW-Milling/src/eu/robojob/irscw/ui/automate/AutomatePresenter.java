@@ -20,6 +20,7 @@ import eu.robojob.irscw.external.robot.FanucRobotEvent;
 import eu.robojob.irscw.external.robot.FanucRobotListener;
 import eu.robojob.irscw.external.robot.FanucRobotStatusChangedEvent;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.ProcessFlowTimer;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
@@ -47,19 +48,23 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	private AutomateThread automateThread;
 	
 	private Translator translator;
+	private ProcessFlowTimer processFlowTimer;
+	private AutomateTimingThread automateTimingThread;
 	
 	private static final Logger logger = Logger.getLogger(AutomatePresenter.class);
 	
-	public AutomatePresenter(AutomateView view, FixedProcessFlowPresenter processFlowPresenter, ProcessFlow processFlow) {
+	public AutomatePresenter(AutomateView view, FixedProcessFlowPresenter processFlowPresenter, ProcessFlow processFlow, ProcessFlowTimer processFlowTimer) {
 		this.view = view;
 		view.setPresenter(this);
 		this.processFlowPresenter = processFlowPresenter;
 		view.setTop(processFlowPresenter.getView());
 		this.processFlow = processFlow;
+		this.processFlowTimer = processFlowTimer;
 		this.machines = new HashSet<AbstractCNCMachine>();
 		this.robots = new HashSet<FanucRobot>();
 		this.automateThread = new AutomateThread(processFlow);
 		this.translator = Translator.getInstance();
+		this.automateTimingThread = new AutomateTimingThread(this, processFlowTimer);
 	}
 	
 	public void setParent(MainPresenter parent) {
@@ -83,6 +88,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 			enable();
 		} else {
 			ThreadManager.getInstance().stopRunning(automateThread);
+			ThreadManager.getInstance().stopRunning(automateTimingThread);
 			for (AbstractCNCMachine machine : machines) {
 				machine.removeListener(this);
 			}
@@ -95,6 +101,17 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 			view.setTotalAmount(processFlow.getTotalAmount());
 			view.setFinishedAmount(processFlow.getFinishedAmount());
 		}
+	}
+	
+	public void setTimers(final String cycleTime, final String cycleTimePassed, final String timeTillPause, final String timeTillFinished) {
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				view.setCycleTime(cycleTime);
+				view.setCycleTimePassed(cycleTimePassed);
+				view.setTimeTillPause(timeTillPause);
+				view.setTimeTillFinished(timeTillFinished);
+			}
+		});
 	}
 	
 	// we assume all devices are connected, so no extra check is done
@@ -116,9 +133,12 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		processFlow.addListener(this);
 		view.setTotalAmount(processFlow.getTotalAmount());
 		view.setFinishedAmount(processFlow.getFinishedAmount());
+		automateTimingThread = new AutomateTimingThread(this, processFlowTimer);
+		ThreadManager.getInstance().submit(automateTimingThread);
 	}
 	
 	public void clickedStart() {
+		logger.info("clicked start thread");
 		automateThread = new AutomateThread(processFlow);
 		ThreadManager.getInstance().submit(automateThread);
 	}
