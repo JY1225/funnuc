@@ -151,10 +151,14 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	
 	public void configureDevice(int index) {
 		activeMenu = deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(index));
-		activeMenu.setParent(this);
-		activeMenu.setTextFieldListener(this);
-		view.setBottomLeft(activeMenu.getView());
-		activeMenu.openFirst();
+		if (activeMenu != null) {
+			activeMenu.setParent(this);
+			activeMenu.setTextFieldListener(this);
+			view.setBottomLeft(activeMenu.getView());
+			activeMenu.openFirst();
+		} else {
+			processFlowPresenter.removeFocus();
+		}
 	}
 	
 	public void configureTransport(int index) {
@@ -234,8 +238,12 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 				if ((deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)) != null) && (deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)).isConfigured())){
 					processFlowPresenter.setDeviceConfigured(i, true);
 				} else {
-					processFlowPresenter.setDeviceConfigured(i, false);
-					configured = false;
+					if (deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)) != null) {
+						processFlowPresenter.setDeviceConfigured(i, false);
+						configured = false;
+					} else {
+						processFlowPresenter.setDeviceConfigured(i, true);
+					}
 				}
 			}
 			for (int j = 0; j < processFlowAdapter.getTransportStepCount(); j++) {

@@ -358,6 +358,27 @@ public class FanucRobot extends AbstractRobot {
 	public void finalizeTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		finalizePut(putSettings);
 	}
+	
+
+	@Override
+	public void moveToAndWait(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
+		logger.info("move to and wait");
+	}
+
+	@Override
+	public void teachedMoveToAndWait(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
+		logger.info("teached move to and wait");
+	}
+
+	@Override
+	public void moveAway(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
+		logger.info("move away");
+	}
+
+	@Override
+	public void teachedMoveAway(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
+		logger.info("teached move away");
+	}
 
 	private void writeServiceGripperSet(GripperHead gHead, Gripper gripper, int serviceType) throws DisconnectedException, ResponseTimedOutException {
 		List<String> values = new ArrayList<String>();
@@ -639,5 +660,6 @@ public class FanucRobot extends AbstractRobot {
 	public boolean isConnected() {
 		return fanucRobotCommunication.isConnected();
 	}
+
 
 }

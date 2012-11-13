@@ -20,8 +20,8 @@ public class PickStep extends AbstractTransportStep {
 
 	private static final Logger logger = Logger.getLogger(PickStep.class);
 	
-	private AbstractDevice.AbstractDevicePickSettings pickSettings;
-	private AbstractRobot.AbstractRobotPickSettings robotPickSettings;
+	protected AbstractDevice.AbstractDevicePickSettings pickSettings;
+	protected AbstractRobot.AbstractRobotPickSettings robotPickSettings;
 		
 	public PickStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
 			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {

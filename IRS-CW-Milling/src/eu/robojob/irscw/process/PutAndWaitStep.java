@@ -1,11 +1,7 @@
 package eu.robojob.irscw.process;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
@@ -16,26 +12,16 @@ import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
-public class PutStep extends AbstractTransportStep {
+public class PutAndWaitStep extends PutStep {
+	
+	private static final Logger logger = Logger.getLogger(PutAndWaitStep.class);
 
-	protected AbstractDevice.AbstractDevicePutSettings putSettings;
-	protected AbstractRobot.AbstractRobotPutSettings robotPutSettings;
-	
-	private static final Logger logger = Logger.getLogger(PutStep.class);
-	
-	public PutStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceTo,
-			AbstractDevice.AbstractDevicePutSettings putSettings, AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
-		super(processFlow, deviceTo, robot);
-		this.putSettings = putSettings;
-		if (putSettings != null) {
-			putSettings.setStep(this);
-		}
-		setRobotSettings(robotPutSettings);
+	public PutAndWaitStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceTo, AbstractDevicePutSettings putSettings, AbstractRobotPutSettings robotPutSettings) {
+		super(processFlow, robot, deviceTo, putSettings, robotPutSettings);
 	}
-	
-	public PutStep(AbstractRobot robot, AbstractDevice deviceTo, AbstractDevice.AbstractDevicePutSettings putSettings,
-			AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
-		this(null, robot, deviceTo, putSettings, robotPutSettings);
+
+	public PutAndWaitStep(AbstractRobot robot, AbstractDevice deviceTo, AbstractDevicePutSettings putSettings, AbstractRobotPutSettings robotPutSettings) {
+		super(robot, deviceTo, putSettings, robotPutSettings);
 	}
 
 	@Override
@@ -47,14 +33,14 @@ public class PutStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
-				logger.debug("About to execute put in " + device.getId() + " using " + robot.getId());
+				logger.debug("About to execute put and wait in " + device.getId() + " using " + robot.getId());
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_PREPARE_DEVICE));
 				logger.debug("Preparing device...");
 				device.prepareForPut(putSettings);
 				logger.debug("Device prepared.");
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_EXECUTE_NORMAL));
 				if (needsTeaching()) {
-					logger.debug("The exact put location should have been teached: " + teachedOffset);
+					logger.debug("The exact put and wait location should have been teached: " + teachedOffset);
 					if (teachedOffset == null) {
 						throw new IllegalStateException("Unknown teached position");
 					} else {
@@ -72,23 +58,19 @@ public class PutStep extends AbstractTransportStep {
 					if (pickStep.needsTeaching()) {
 						position.offset(pickStep.getTeachedOffset());
 					}*/
-					logger.debug("The location of this put was calculated (no teaching): " + position);
+					logger.debug("The location of this put and wait was calculated (no teaching): " + position);
 					robotPutSettings.setLocation(position);
 				}
-				logger.debug("Robot initiating put action");
-				robot.initiatePut(robotPutSettings);
+				logger.debug("Robot initiating put and wait action");
+				robot.moveToAndWait(robotPutSettings);
 				logger.debug("Robot action succeeded, about to ask device to grab piece");
 				device.grabPiece(putSettings);
-				logger.debug("Device grabbed piece, about to finalize put");
-				robot.finalizePut(robotPutSettings);
-				robot.moveToHome();
-				device.putFinished(putSettings);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_FINISHED));
-				logger.debug("Put finished");
+				logger.debug("Put and wait finished");
 			}
 		}
 	}
-
+	
 	@Override
 	public void prepareForTeaching() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		if (!device.lock(processFlow)) {
@@ -97,7 +79,7 @@ public class PutStep extends AbstractTransportStep {
 			if (!robot.lock(processFlow)) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
-				logger.debug("About to execute put using teaching in " + device.getId() + " using " + robot.getId());
+				logger.debug("About to execute put and wait using teaching in " + device.getId() + " using " + robot.getId());
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_PREPARE_DEVICE));
 				logger.debug("Preparing device...");
 				device.prepareForPut(putSettings);
@@ -106,8 +88,8 @@ public class PutStep extends AbstractTransportStep {
 				logger.info("Coordinates before teaching: " + coordinates);
 				robotPutSettings.setLocation(coordinates);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_EXECUTE_TEACHED));
-				logger.debug("Robot initiating put action");
-				robot.initiateTeachedPut(robotPutSettings);
+				logger.debug("Robot initiating put and wait action");
+				robot.teachedMoveToAndWait(robotPutSettings);
 				logger.debug("Robot action succeeded");
 			}
 		}
@@ -130,73 +112,10 @@ public class PutStep extends AbstractTransportStep {
 				logger.debug("About to ask device to grab piece");
 				device.grabPiece(putSettings);
 				logger.debug("Device grabbed piece, about to finalize put");
-				robot.finalizeTeachedPut(robotPutSettings);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_FINISHED));
 				device.putFinished(putSettings);
-				logger.debug("Put finished");
+				logger.debug("Put and wait finished");
 			}
 		}
-	}
-
-	@Override
-	public String toString() {
-		return "PutStep to " + device + " using " + robot;
-	}
-
-	@Override
-	public void finalize() throws CommunicationException, DeviceActionException {
-		if (!device.lock(processFlow)) {
-			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
-		} else {
-			if (!robot.lock(processFlow)) {
-				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
-			} else {
-				device.putFinished(putSettings);
-				device.release(processFlow);
-				robot.release(processFlow);
-				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_FINISHED));
-			}
-		}
-	}
-	
-	@Override
-	public Set<AbstractServiceProvider> getServiceProviders() {
-		Set<AbstractServiceProvider> providers = new HashSet<AbstractServiceProvider>();
-		providers.add(device);
-		providers.add(robot);
-		return providers;
-	}
-
-	@Override
-	public AbstractDevicePutSettings getDeviceSettings() {
-		return putSettings;
-	}
-
-	@Override
-	public ProcessStepType getType() {
-		return ProcessStepType.PUT_STEP;
-	}
-
-	@Override
-	public AbstractRobotPutSettings getRobotSettings() {
-		return robotPutSettings;
-	}
-	
-	public void setRobotSettings(AbstractRobotPutSettings settings) {
-		this.robotPutSettings = settings;
-		if (robotPutSettings != null) {
-			robotPutSettings.setPutStep(this);
-		}
-	}
-
-	@Override
-	public boolean needsTeaching() {
-		// since we already know the work piece's dimensions (ground pane) and griper height from picking it up
-		/*if (putSettings.isPutPositionFixed()) {
-			return false;
-		} else {
-			return true;
-		}*/
-		return true;
 	}
 }

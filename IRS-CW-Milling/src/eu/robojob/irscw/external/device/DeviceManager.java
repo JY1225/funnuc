@@ -14,6 +14,7 @@ import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.communication.SocketConnection.Type;
 import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine;
+import eu.robojob.irscw.external.device.pre.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateLayout;
@@ -78,12 +79,15 @@ public class DeviceManager {
 		// add Embossing Machine
 		UserFrame uf4 = new UserFrame(4, 10);
 		List<WorkArea> workAreas3 = new ArrayList<WorkArea>();
-		WorkArea workArea4 = new WorkArea("main", uf4);
+		WorkArea workArea4 = new WorkArea("Präge", uf4);
 		workAreas3.add(workArea4);
-		/*Zone zone3 = new Zone("Zone 3", workAreas3);
-		EmbossingDevice embossing1 = new EmbossingDevice("embossing 1", null);
-		embossing1.addZone(zone3);
-		preProcessingDevices.put(embossing1.getId(), embossing1);*/
+		Clamping clamping5 = new Clamping("Clamping 5", 25, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
+		workArea4.addClamping(clamping5);
+		workArea4.setActiveClamping(clamping5);
+		Zone zone3 = new Zone("Zone 3", workAreas3);
+		PrageDevice prageDevice = new PrageDevice("Präge", null);
+		prageDevice.addZone(zone3);
+		preProcessingDevices.put(prageDevice.getId(), prageDevice);
 		
 		// add Basic Stacker
 		UserFrame uf1 = new UserFrame(1, 20);

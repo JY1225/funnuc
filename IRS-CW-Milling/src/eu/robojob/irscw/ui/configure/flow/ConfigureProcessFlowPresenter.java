@@ -46,6 +46,10 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 		}
 	}
 	
+	public void removeFocus() {
+		view.focusAll();
+	}
+	
 	public void transportClicked(int index) {
 		if (parent.getMode() == Mode.NORMAL) {
 			logger.debug("Clicked transport with index: " + index);

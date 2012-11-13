@@ -2,6 +2,8 @@ package eu.robojob.irscw.external.device.pre;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
@@ -12,23 +14,25 @@ import eu.robojob.irscw.external.robot.FanucRobotCommunication;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
-public class PrageMachine extends AbstractProcessingDevice {
+public class PrageDevice extends AbstractProcessingDevice {
 
 	private FanucRobotCommunication fanucRobotCommunication;
 	
-	public PrageMachine(String id, FanucRobotCommunication fanucRobotCommunication) {
+	private static final Logger logger = Logger.getLogger(PrageDevice.class);
+	
+	public PrageDevice(String id, FanucRobotCommunication fanucRobotCommunication) {
 		super(id, false);
 		this.fanucRobotCommunication = fanucRobotCommunication;
 	}
 	
-	public PrageMachine (String id, List<Zone> zones, FanucRobotCommunication fanucRobotCommunication) {
+	public PrageDevice (String id, List<Zone> zones, FanucRobotCommunication fanucRobotCommunication) {
 		super(id, zones, false);
 		this.fanucRobotCommunication = fanucRobotCommunication;
 	}
 
 	@Override
 	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException, InterruptedException {
-		// TODO commando sturen om klem te sluiten (en weer te openen)
+		logger.info("start cyclus.");
 	}
 
 	@Override
@@ -72,9 +76,13 @@ public class PrageMachine extends AbstractProcessingDevice {
 	@Override
 	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException, DeviceActionException {}
 	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException {}
+	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+		logger.info("reliece piece.");
+	}
 	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {}
+	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+		logger.info("grab piece.");
+	}
 	@Override
 	public void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {}
 	@Override
@@ -83,15 +91,15 @@ public class PrageMachine extends AbstractProcessingDevice {
 	}
 	@Override
 	public boolean validatePickSettings(AbstractDevicePickSettings pickSettings) {
-		return false;
+		return true;
 	}
 	@Override
 	public boolean validatePutSettings(AbstractDevicePutSettings putSettings) {
-		return false;
+		return true;
 	}
 	@Override
 	public boolean validateInterventionSettings(AbstractDeviceInterventionSettings interventionSettings) {
-		return false;
+		return true;
 	}
 	@Override
 	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePickSettings pickSettings) {
@@ -103,12 +111,13 @@ public class PrageMachine extends AbstractProcessingDevice {
 	}
 	@Override
 	public Coordinates getPickLocation(WorkArea workArea) {
-		return null;
+		return workArea.getActiveClamping().getRelativePosition();
 	}
 	@Override
-	public Coordinates getPutLocation(WorkArea workArea,WorkPieceDimensions workPieceDimensions) {
-		return null;
+	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
+		return workArea.getActiveClamping().getRelativePosition();
 	}
+	
 	@Override
 	public void stopCurrentAction() {}
 	@Override
@@ -119,5 +128,29 @@ public class PrageMachine extends AbstractProcessingDevice {
 	public DeviceType getType() {
 		return DeviceType.PRE_PROCESSING;
 	}
- 
+	
+	public static class PrageDevicePickSettings extends AbstractProcessingDevice.AbstractProcessingDevicePickSettings {
+		public PrageDevicePickSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
+	public static class PrageDevicePutSettings extends AbstractProcessingDevice.AbstractProcessingDevicePutSettings {
+		public PrageDevicePutSettings(WorkArea workArea) {
+			super(workArea);
+		}
+		@Override
+		public boolean isPutPositionFixed() {
+			return true;
+		}
+	}
+	public static class PrageDeviceStartCyclusSettings extends AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings {
+		public PrageDeviceStartCyclusSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
+	public static class PrageDeviceInterventionSettings extends AbstractProcessingDevice.AbstractProcessingDeviceInterventionSettings {
+		public PrageDeviceInterventionSettings(WorkArea workArea) {
+			super(workArea);
+		}
+	}
 }
