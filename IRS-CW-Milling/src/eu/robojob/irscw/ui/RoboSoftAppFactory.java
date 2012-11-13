@@ -310,10 +310,10 @@ public class RoboSoftAppFactory {
 			processFlow.addStep(put2);
 			
 			processFlow.loadAllSettings();
+			
+			processFlowTimer = new ProcessFlowTimer(processFlow);
 		}
-		
-		processFlowTimer = new ProcessFlowTimer(processFlow);
-		
+			
 		return processFlow;
 	}
 	

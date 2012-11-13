@@ -88,6 +88,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
+		logger.info("getting put location: " + workPieceDimensions);
 		finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, workPieceDimensions);
 		Coordinates c = new Coordinates(currentPickLocation.getPosition());
 		float rotation = 0;

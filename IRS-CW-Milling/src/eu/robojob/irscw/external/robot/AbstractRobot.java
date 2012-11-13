@@ -96,6 +96,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 	
 	public static abstract class AbstractRobotActionSettings {
+		
 		protected WorkArea workArea;
 		protected GripperHead gripperHead;
 		protected Gripper gripper;

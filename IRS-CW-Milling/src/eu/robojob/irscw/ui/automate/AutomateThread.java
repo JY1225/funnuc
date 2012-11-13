@@ -37,13 +37,9 @@ public class AutomateThread extends Thread{
 				robot.restartProgram();
 				//robot.moveToHome();
 			}
-			logger.info("1");
 			while(processFlow.getFinishedAmount() < processFlow.getTotalAmount() && running) {
-				logger.info("2");
 				while (processFlow.hasStep() && running) {
-					logger.info("3");
 					AbstractProcessStep step = processFlow.getCurrentStep();
-					logger.info("running...: " + step);
 					// intervention steps can be skipped
 					if (!(step instanceof InterventionStep)) {
 						if (step instanceof PickStep) {

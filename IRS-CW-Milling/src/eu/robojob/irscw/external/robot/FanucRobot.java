@@ -76,10 +76,12 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	public void addListener(FanucRobotListener listener) {
+		logger.info("added listener: " + listener);
 		listeners.add(listener);
 	}
 	
 	public void removeListener(FanucRobotListener listener) {
+		logger.info("removed listener: " + listener);
 		listeners.remove(listener);
 	}
 	

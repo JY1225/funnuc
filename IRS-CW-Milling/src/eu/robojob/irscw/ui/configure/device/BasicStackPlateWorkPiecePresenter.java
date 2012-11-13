@@ -1,9 +1,12 @@
 package eu.robojob.irscw.ui.configure.device;
 
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlateSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.process.PickStep;
+import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
@@ -13,6 +16,8 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 	private PickStep pickStep;
 	private WorkPieceDimensions dimensions;
 	private WorkPieceOrientation orientation;
+	
+	private static final Logger logger = Logger.getLogger(BasicStackPlateWorkPiecePresenter.class);
 	
 	public BasicStackPlateWorkPiecePresenter(BasicStackPlateWorkPieceView view, PickStep pickStep, BasicStackPlateSettings deviceSettings) {
 		super(view);
@@ -43,33 +48,39 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 	}
 	
 	public void changedWidth(float width) {
+		logger.info("changed width");
 		dimensions.setWidth(width);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
 		pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	public void changedLength(float length) {
 		dimensions.setLength(length);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
 		pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	public void changedHeight(float height) {
 		dimensions.setHeight(height);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
 		pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	public void changedAmount(int amount) {
 		deviceSettings.setAmount(amount);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
 		pickStep.getProcessFlow().setTotalAmount(amount);
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	public void changedOrientation(WorkPieceOrientation orientation) {
 		deviceSettings.setOrientation(orientation);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
 		view.refresh();
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 
 	@Override
@@ -90,6 +101,7 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 		deviceSettings.setAmount(plate.getLayout().getStackingPositions().size());
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
 		view.refresh();
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 
 }

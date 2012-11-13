@@ -3,6 +3,8 @@ package eu.robojob.irscw.process;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
@@ -14,13 +16,14 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 
 	private long startingTimeCurrentStep;
 	private long otherTimeCurrentStep;
-	private long pauseTime;
 
 	private Map<AbstractProcessStep, Long> stepDurations;
 	
 	private ProcessFlow processFlow;
 	
 	private AbstractProcessStep currentStep;
+	
+	private static final Logger logger = Logger.getLogger(ProcessFlowTimer.class);
 	
 	enum Mode {
 		RUNNING, PAUSED, STOPPED
@@ -42,6 +45,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 				setMode(Mode.RUNNING);
 				break;
 			case FINISHED:
+				setMode(Mode.STOPPED);
 				break;
 			case PAUSED:
 				setMode(Mode.PAUSED);
@@ -56,6 +60,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 				setMode(Mode.PAUSED);
 				break;
 			default:
+				setMode(Mode.STOPPED);
 				break;
 		}
 	}
@@ -63,7 +68,6 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	private void reset() {
 		startingTimeCurrentStep = -1;
 		otherTimeCurrentStep = 0;
-		pauseTime = 0;
 		currentStep = null;
 		setMode(Mode.STOPPED);
 	}
@@ -77,7 +81,6 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 				break;
 			case ActiveStepChangedEvent.TEACHING_NEEDED:
 				setMode(Mode.PAUSED);
-				pauseTime = System.currentTimeMillis();
 				break;
 			case ActiveStepChangedEvent.TEACHING_FINISHED:
 				setMode(Mode.RUNNING);
@@ -96,15 +99,18 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	}
 	
 	private void setMode(Mode mode) {
+		logger.info("setting mode: " + mode + " previous mode: " + this.mode);
 		if (this.mode != null) {
 			if ((this.mode == Mode.RUNNING) && (mode == Mode.PAUSED)) {
-				pauseTime = System.currentTimeMillis();
+				if (startingTimeCurrentStep != -1) {
+					otherTimeCurrentStep += System.currentTimeMillis() - startingTimeCurrentStep;
+					startingTimeCurrentStep = -1;
+				}
 			} else if ((this.mode == Mode.PAUSED) && (mode == Mode.RUNNING)) {
-				otherTimeCurrentStep += (System.currentTimeMillis() - pauseTime);
-				pauseTime = -1;
+				startingTimeCurrentStep = System.currentTimeMillis();
 			} else if (mode == Mode.STOPPED) {
 				otherTimeCurrentStep = 0;
-				pauseTime = -1;
+				startingTimeCurrentStep = -1;
 			}
 		}
 		this.mode = mode;
@@ -113,7 +119,12 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	private void currentStepEnded() {
 		if (currentStep != null) {
 			long currentTime = System.currentTimeMillis();
-			long stepTime = currentTime - startingTimeCurrentStep + otherTimeCurrentStep;
+			long stepTime = otherTimeCurrentStep;
+			if (startingTimeCurrentStep != -1) {
+				stepTime += currentTime - startingTimeCurrentStep;
+			} else {
+				throw new IllegalStateException("Starting time current step not shown");
+			}
 			stepDurations.put(currentStep, stepTime);
 		}
 		startingTimeCurrentStep = -1;
@@ -136,14 +147,16 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	public long getTimeInCurrentCycle() {
 		long timeInCycle = 0;
 		for (int i = 0; i < processFlow.getCurrentStepIndex(); i++) {
-			timeInCycle += stepDurations.get(processFlow.getProcessSteps().get(i));
+			if (stepDurations.containsKey(processFlow.getProcessSteps().get(i))) {
+				timeInCycle += stepDurations.get(processFlow.getProcessSteps().get(i));
+			}
 		}
+		timeInCycle += otherTimeCurrentStep;
 		if (mode == Mode.RUNNING) {
 			if (startingTimeCurrentStep != -1) {
-				timeInCycle += (System.currentTimeMillis() - startingTimeCurrentStep + otherTimeCurrentStep);
+				timeInCycle += (System.currentTimeMillis() - startingTimeCurrentStep);
 			}
 		} else if (mode == Mode.PAUSED) {
-			timeInCycle += otherTimeCurrentStep;
 		} else {
 			timeInCycle = -1;
 		}

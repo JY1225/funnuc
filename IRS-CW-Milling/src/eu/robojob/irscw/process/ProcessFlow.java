@@ -132,10 +132,12 @@ public class ProcessFlow {
 	}
 
 	public void addListener(ProcessFlowListener listener) {
+		logger.debug("added listener: " + listener);
 		this.listeners.add(listener);
 	}
 	
 	public void removeListener(ProcessFlowListener listener) {
+		logger.debug("removed listener: " + listener);
 		this.listeners.remove(listener);
 	}
 	
@@ -337,6 +339,23 @@ public class ProcessFlow {
 			} else if (step instanceof ProcessingStep) {
 				ProcessingStep processingStep = (ProcessingStep) step;
 				if (!processingStep.getDevice().validateStartCyclusSettings(processingStep.getStartCyclusSettings())) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	public boolean isTeached() {
+		for (AbstractProcessStep step : processSteps) {
+			if (step instanceof PickStep) {
+				PickStep pickStep = (PickStep) step;
+				if (pickStep.needsTeaching() && pickStep.getTeachedOffset() == null) {
+					return false;
+				}
+			} else if (step instanceof PutStep) {
+				PutStep putStep = (PutStep) step;
+				if (putStep.needsTeaching() && putStep.getTeachedOffset() == null) {
 					return false;
 				}
 			}

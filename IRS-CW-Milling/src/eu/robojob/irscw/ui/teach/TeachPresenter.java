@@ -52,7 +52,6 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	
 	private TeachThread teachThread;
 	
-	private boolean isTeached;
 	private ProcessFlow processFlow;
 	
 	private Translator translator;
@@ -69,7 +68,6 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		view.setTop(processFlowPresenter.getView());
 		this.processFlow = processFlow;
 		this.teachThread = new TeachThread(processFlow);
-		isTeached = false;
 		this.teachDisconnectedDevicesView = teachDisconnectedDevicesView;
 		this.teachGeneralInfoView = teachGeneralInfoView;
 		teachGeneralInfoView.setPresenter(this);
@@ -180,10 +178,6 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	
 	public void showInfoMessage() {
 		view.setBottom(teachGeneralInfoView);
-	}
-	
-	public boolean isTeached() {
-		return isTeached;
 	}
 	
 	public void startFlow() {

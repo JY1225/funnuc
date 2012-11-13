@@ -2,26 +2,38 @@ package eu.robojob.irscw.ui.configure.device;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePickSettings;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePutSettings;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePickSettings;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePutSettings;
+import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
+import eu.robojob.irscw.process.PickStep;
+import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.DataChangedEvent;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
+import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
+import eu.robojob.irscw.process.event.ModeChangedEvent;
+import eu.robojob.irscw.process.event.ProcessFlowEvent;
+import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
-public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<CNCMillingMachineConfigureView, CNCMillingMachineMenuPresenter>{
+public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<CNCMillingMachineConfigureView, CNCMillingMachineMenuPresenter> implements ProcessFlowListener {
 
 	private DeviceInformation deviceInfo;
 	
 	private static Logger logger = Logger.getLogger(CNCMillingMachineConfigurePresenter.class);
+	private ProcessFlow processFlow;
 	
 	public CNCMillingMachineConfigurePresenter(CNCMillingMachineConfigureView view, DeviceInformation deviceInfo, DeviceManager deviceManager) {
 		super(view);
 		this.deviceInfo = deviceInfo;
+		this.processFlow = deviceInfo.getPickStep().getProcessFlow();
+		processFlow.addListener(this);
 		view.setDeviceInfo(deviceInfo);
 		view.setCNCMillingMachineIds(deviceManager.getCNCMachineIds());
 		view.build();
@@ -120,6 +132,28 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			return false;
 		}
 	}
-	
-	
+
+	@Override
+	public void modeChanged(ModeChangedEvent e) {}
+	@Override
+	public void activeStepChanged(ActiveStepChangedEvent e) {}
+	@Override
+	public void exceptionOccured(ExceptionOccuredEvent e) {}
+	@Override
+	public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
+	@Override
+	public void dataChanged(ProcessFlowEvent e) {
+		DataChangedEvent de = (DataChangedEvent) e;
+		if (de.getStep() instanceof PickStep) {
+			int changedStepIndex = processFlow.getStepIndex(de.getStep());
+			int currentStepIndex = processFlow.getStepIndex(deviceInfo.getPickStep());
+			//TODO testen!
+			if ((changedStepIndex < currentStepIndex) && ((currentStepIndex-changedStepIndex == 3) && !(deviceInfo.hasInterventionStepAfterPut() || deviceInfo.hasInterventionStepBeforePick())) ||
+					((currentStepIndex-changedStepIndex < 5) && (deviceInfo.hasInterventionStepAfterPut() || deviceInfo.hasInterventionStepBeforePick()))) {
+				PickStep prevPickStep = (PickStep) de.getStep();
+				deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getDimensions().setLength(prevPickStep.getRobotSettings().getWorkPiece().getDimensions().getLength());
+				deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getDimensions().setWidth(prevPickStep.getRobotSettings().getWorkPiece().getDimensions().getWidth());
+			}
+		}
+	}
 }

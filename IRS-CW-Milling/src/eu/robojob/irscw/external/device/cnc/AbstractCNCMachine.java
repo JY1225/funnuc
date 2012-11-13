@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.DeviceDisconnectedException;
@@ -24,6 +26,8 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private Object syncObject;
 	
 	private boolean stopAction;
+	
+	private static final Logger logger = Logger.getLogger(AbstractCNCMachine.class);
 	
 	public AbstractCNCMachine(String id) {
 		super(id, true);
@@ -58,10 +62,12 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	}
 
 	public void addListener(CNCMachineListener listener) {
+		logger.info("added listener: " + listener);
 		listeners.add(listener);
 	}
 	
 	public void removeListener(CNCMachineListener listener) {
+		logger.info("removed listener: " + listener);
 		listeners.remove(listener);
 	}
 	

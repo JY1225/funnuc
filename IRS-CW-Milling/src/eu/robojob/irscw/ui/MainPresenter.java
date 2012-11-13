@@ -90,7 +90,7 @@ public class MainPresenter {
 				throw new IllegalStateException("Configuration UI says ok, but there is still data missing");
 			}
 		} 
-		if (teachPresenter.isTeached()) {
+		if (process.isTeached()) {
 			menuBarPresenter.setAutomateButtonEnabled(true);
 		}
 	}

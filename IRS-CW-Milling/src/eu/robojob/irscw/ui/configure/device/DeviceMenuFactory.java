@@ -3,10 +3,10 @@ package eu.robojob.irscw.ui.configure.device;
 import java.util.HashMap;
 import java.util.Map;
 
+import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlateSettings;
-import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
@@ -16,15 +16,15 @@ public class DeviceMenuFactory {
 	
 	private DeviceManager deviceManager;
 	
-	private Map<DeviceInformation, AbstractMenuPresenter<?>> presentersBuffer;
-	
+	private Map<Integer, AbstractMenuPresenter<?>> presentersBuffer;
+		
 	public DeviceMenuFactory(DeviceManager deviceManager) {
 		this.deviceManager = deviceManager;
-		presentersBuffer = new HashMap<DeviceInformation, AbstractMenuPresenter<?>>();
+		presentersBuffer = new HashMap<Integer, AbstractMenuPresenter<?>>();
 	}
 	
-	public AbstractMenuPresenter<?> getDeviceMenu(DeviceInformation deviceInfo) {
-		AbstractMenuPresenter<?> menuPresenter = presentersBuffer.get(deviceInfo);
+	public synchronized AbstractMenuPresenter<?> getDeviceMenu(DeviceInformation deviceInfo) {
+		AbstractMenuPresenter<?> menuPresenter = presentersBuffer.get(deviceInfo.getIndex());
 		if (menuPresenter == null) {
 			switch(deviceInfo.getType()) {
 				case CNC_MACHINE:
@@ -36,7 +36,7 @@ public class DeviceMenuFactory {
 				default:
 					menuPresenter = null;
 			}
-			presentersBuffer.put(deviceInfo, menuPresenter);
+			presentersBuffer.put(deviceInfo.getIndex(), menuPresenter);
 		}
 		return menuPresenter;
 	}
