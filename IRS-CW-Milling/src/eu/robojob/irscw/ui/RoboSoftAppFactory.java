@@ -367,7 +367,7 @@ public class RoboSoftAppFactory {
 	
 	private DeviceManager getDeviceManager() {
 		if (deviceManager == null) {
-			deviceManager = new DeviceManager();
+			deviceManager = new DeviceManager(getRobotManager());
 		}
 		return deviceManager;
 	}

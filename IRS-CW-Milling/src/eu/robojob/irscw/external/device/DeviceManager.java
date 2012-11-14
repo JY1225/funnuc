@@ -18,6 +18,7 @@ import eu.robojob.irscw.external.device.pre.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateLayout;
+import eu.robojob.irscw.external.robot.RobotManager;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
 
@@ -31,13 +32,16 @@ public class DeviceManager {
 	
 	private static Logger logger = Logger.getLogger(DeviceManager.class);
 	
+	private RobotManager robotManager;
+	
 	//TODO enforce unique ids
-	public DeviceManager() {
+	public DeviceManager(RobotManager robotManager) {
 		cncMachines = new HashMap<String, AbstractCNCMachine>();
 		preProcessingDevices = new HashMap<String, AbstractProcessingDevice>();
 		postProcessingDevices = new HashMap<String, AbstractProcessingDevice>();
 		stackingFromDevices = new HashMap<String, AbstractStackingDevice>();
 		stackingToDevices = new HashMap<String, AbstractStackingDevice>();
+		this.robotManager = robotManager;
 		initialize();
 	}
 	
@@ -76,19 +80,6 @@ public class DeviceManager {
 		stackingFromDevices.put(conveyor1.getId(), conveyor1);
 		stackingToDevices.put(conveyor1.getId(), conveyor1);	*/
 		
-		// add Embossing Machine
-		UserFrame uf4 = new UserFrame(4, 10);
-		List<WorkArea> workAreas3 = new ArrayList<WorkArea>();
-		WorkArea workArea4 = new WorkArea("Präge", uf4);
-		workAreas3.add(workArea4);
-		Clamping clamping5 = new Clamping("Clamping 5", 25, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
-		workArea4.addClamping(clamping5);
-		workArea4.setActiveClamping(clamping5);
-		Zone zone3 = new Zone("Zone 3", workAreas3);
-		PrageDevice prageDevice = new PrageDevice("Präge", null);
-		prageDevice.addZone(zone3);
-		preProcessingDevices.put(prageDevice.getId(), prageDevice);
-		
 		// add Basic Stacker
 		UserFrame uf1 = new UserFrame(1, 20);
 		List<WorkArea> workAreas4 = new ArrayList<WorkArea>();
@@ -103,6 +94,20 @@ public class DeviceManager {
 		basicStackPlate.addZone(zone4);
 		stackingFromDevices.put(basicStackPlate.getId(), basicStackPlate);
 		stackingToDevices.put(basicStackPlate.getId(), basicStackPlate);
+		
+		// add Embossing Machine
+		//UserFrame uf4 = new UserFrame(4, 10);
+		List<WorkArea> workAreas3 = new ArrayList<WorkArea>();
+		WorkArea workArea4 = new WorkArea("Präge", uf1);
+		workAreas3.add(workArea4);
+		Clamping clamping5 = new Clamping("Clamping 5", 25, new Coordinates(1000, 150, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
+		workArea4.addClamping(clamping5);
+		workArea4.setActiveClamping(clamping5);
+		Zone zone3 = new Zone("Zone 3", workAreas3);
+		PrageDevice prageDevice = new PrageDevice("Präge", robotManager.getRobotById("Fanuc M20iA"));
+		prageDevice.addZone(zone3);
+		preProcessingDevices.put(prageDevice.getId(), prageDevice);
+				
 		
 	}
 	

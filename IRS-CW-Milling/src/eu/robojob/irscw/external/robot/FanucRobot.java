@@ -27,8 +27,8 @@ public class FanucRobot extends AbstractRobot {
 	private FanucRobotCommunication fanucRobotCommunication;
 	
 	private static final int WRITE_VALUES_TIMEOUT = 5000;
-	private static final int PICK_TO_LOCATION_TIMEOUT = 100000;
-	private static final int PICK_FINISH_TIMEOUT = 100000;
+	private static final int MOVE_TO_LOCATION_TIMEOUT = 3*60*1000;
+	private static final int MOVE_FINISH_TIMEOUT = 3*60*1000;
 	private static final int ASK_POSITION_TIMEOUT = 50000;
 	private static final int PICK_TEACH_TIMEOUT = 10*60*1000;
 	private static final int PUT_TEACH_TIMEOUT = 10*60*1000;
@@ -36,6 +36,9 @@ public class FanucRobot extends AbstractRobot {
 	
 	private static final int TO_HOME_TIMEOUT = 5*60*1000;
 	private static final int TO_JAW_CHANGE_TIMEOUT = 5*60*1000;
+	
+	private static final int WRITE_REGISTER_TIMEOUT = 2*60*1000;
+	private static final int PRAGE_TIMEOUT = 2*60*1000;
 	
 	private boolean stopAction;
 	private Set<FanucRobotListener> listeners;
@@ -206,6 +209,24 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
+	public void writeRegister(int registerNr, String value) throws CommunicationException, RobotActionException {
+		List<String> values = new ArrayList<String>();
+		values.add("" + registerNr);
+		values.add(value);
+		fanucRobotCommunication.writeValues(FanucRobotConstants.COMMAND_WRITE_REGISTER, FanucRobotConstants.RESPONSE_WRITE_REGISTER, WRITE_REGISTER_TIMEOUT, values);
+	}
+
+	@Override
+	public void doPrage() throws CommunicationException, RobotActionException, InterruptedException {
+		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_DO_PRAGE);
+		boolean prageSucceeded = waitForStatus(FanucRobotConstants.STATUS_PRAGE_FINISHED, PRAGE_TIMEOUT);
+		if (!prageSucceeded) {
+			logger.info("Troubles!");
+			throw new RobotActionException();
+		}
+	}
+
+	@Override
 	public void initiatePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;		
 		// write service gripper set
@@ -221,7 +242,7 @@ public class FanucRobot extends AbstractRobot {
 		// write start service
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 		// we now wait for the robot to indicate he moved to its location
-		boolean waitingForRelease = waitForStatus(FanucRobotConstants.STATUS_PICK_RELEASE_REQUEST, PICK_TO_LOCATION_TIMEOUT);
+		boolean waitingForRelease = waitForStatus(FanucRobotConstants.STATUS_PICK_RELEASE_REQUEST, MOVE_TO_LOCATION_TIMEOUT);
 		if (!waitingForRelease) {
 			logger.info("Troubles!");
 			throw new RobotActionException();
@@ -249,7 +270,7 @@ public class FanucRobot extends AbstractRobot {
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT);
 		//TODO in progress
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
-		boolean waitingForRelease = waitForStatus(FanucRobotConstants.STATUS_PUT_CLAMP_REQUEST, PICK_TO_LOCATION_TIMEOUT);
+		boolean waitingForRelease = waitForStatus(FanucRobotConstants.STATUS_PUT_CLAMP_REQUEST, MOVE_TO_LOCATION_TIMEOUT);
 		if (!waitingForRelease) {
 			logger.info("Troubles!");
 			throw new RobotActionException();
@@ -259,7 +280,7 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT_CLAMP_ACK);
-		boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PUT_FINISHED, PICK_FINISH_TIMEOUT);
+		boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PUT_FINISHED, MOVE_FINISH_TIMEOUT);
 		if (waitingForPickFinished) {
 			return;
 		} else {
@@ -271,7 +292,7 @@ public class FanucRobot extends AbstractRobot {
 	public void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		pickSettings.getGripper().setWorkPiece(pickSettings.getWorkPiece());
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
-		boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PICK_FINISHED, PICK_FINISH_TIMEOUT);
+		boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PICK_FINISHED, MOVE_FINISH_TIMEOUT);
 		if (waitingForPickFinished) {
 			return;
 		} else {
@@ -308,7 +329,7 @@ public class FanucRobot extends AbstractRobot {
 				logger.info("Troubles!");
 				throw new RobotActionException();
 			} else {
-				boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PICK_RELEASE_REQUEST, PICK_TO_LOCATION_TIMEOUT);
+				boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PICK_RELEASE_REQUEST, MOVE_TO_LOCATION_TIMEOUT);
 				if (waitingForPickFinished) {
 					return;
 				} else {
@@ -362,22 +383,79 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void moveToAndWait(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
-		logger.info("move to and wait");
+		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
+		// write service gripper set
+		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT);
+		// write service handling set
+		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
+		writeServiceHandlingSet(true, ppMode, fPutSettings.getGripper().getWorkPiece().getDimensions());
+		// write service point set
+		if (fPutSettings.getGripper().getWorkPiece() == null) {
+			throw new IllegalStateException("When executing move-to-and-wait, the gripper should contain a workpiece");
+		}
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClamping());
+		// write command
+		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
+		//TODO in progress
+		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
+		boolean waitingForLocation = waitForStatus(FanucRobotConstants.STATUS_WAITING_AFTER_MOVE, MOVE_TO_LOCATION_TIMEOUT);
+		if (!waitingForLocation) {
+			logger.info("Troubles!");
+			throw new RobotActionException();
+		}
 	}
 
 	@Override
 	public void teachedMoveToAndWait(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
-		logger.info("teached move to and wait");
+		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
+		// write service gripper set
+		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT);
+		// write service handling set
+		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH | FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
+		writeServiceHandlingSet(true, ppMode, fPutSettings.getGripper().getWorkPiece().getDimensions());
+		// write service point set
+		if (fPutSettings.getGripper().getWorkPiece() == null) {
+			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
+		}
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClamping());
+		// write command
+		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
+		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
+		boolean waitingForTeachingNeeded = waitForStatus(FanucRobotConstants.STATUS_AWAITING_TEACHING, MOVE_TO_LOCATION_TIMEOUT);
+		putSettings.getPutStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getPutStep().getProcessFlow(), putSettings.getPutStep(), ActiveStepChangedEvent.TEACHING_NEEDED));
+		if (!waitingForTeachingNeeded) {
+			logger.info("Troubles");
+			throw new RobotActionException();
+		} else {
+			boolean waitingForRelease = waitForStatus(FanucRobotConstants.STATUS_TEACHING_FINISHED, PUT_TEACH_TIMEOUT);
+			putSettings.getPutStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getPutStep().getProcessFlow(), putSettings.getPutStep(), ActiveStepChangedEvent.TEACHING_FINISHED));
+			if (!waitingForRelease) {
+				logger.info("Troubles!");
+				throw new RobotActionException();
+			} else {
+				boolean waitingForLocation = waitForStatus(FanucRobotConstants.STATUS_WAITING_AFTER_MOVE, MOVE_TO_LOCATION_TIMEOUT);
+				if (!waitingForLocation) {
+					logger.info("Troubles!");
+					throw new RobotActionException();
+				}
+			}
+		}
 	}
 
 	@Override
 	public void moveAway(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
-		logger.info("move away");
+		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_MOVEWAIT_CONTINUE);
+		boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_MOVEWAIT_FINISHED, MOVE_FINISH_TIMEOUT);
+		if (waitingForPickFinished) {
+			return;
+		} else {
+			throw new RobotActionException();
+		}
 	}
 
 	@Override
 	public void teachedMoveAway(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
-		logger.info("teached move away");
+		throw new IllegalStateException("Why would you want to do this?");
 	}
 
 	private void writeServiceGripperSet(GripperHead gHead, Gripper gripper, int serviceType) throws DisconnectedException, ResponseTimedOutException {
@@ -660,6 +738,5 @@ public class FanucRobot extends AbstractRobot {
 	public boolean isConnected() {
 		return fanucRobotCommunication.isConnected();
 	}
-
 
 }

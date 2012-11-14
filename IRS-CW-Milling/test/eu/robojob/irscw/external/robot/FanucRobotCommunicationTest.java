@@ -32,7 +32,7 @@ public class FanucRobotCommunicationTest {
 	@Before
 	public void setup() {
 		this.robotManager = new RobotManager();
-		this.deviceManager = new DeviceManager();
+		this.deviceManager = new DeviceManager(robotManager);
 		this.basicStackPlate = (BasicStackPlate) deviceManager.getDeviceById("IRS M Basic");
 		WorkArea wa = basicStackPlate.getWorkAreaById("IRS M Basic");
 		

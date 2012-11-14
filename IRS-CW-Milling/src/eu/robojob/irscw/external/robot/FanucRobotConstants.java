@@ -28,10 +28,18 @@ public class FanucRobotConstants {
 	public static final int PERMISSIONS_JAWS_CHANGE_ACK			=	BIT4;
 	public static final int PERMISSIONS_CHANGE_OK				=	BIT5;
 	public static final int PERMISSIONS_BAR_MOVED_ACK			=	BIT6;
+	public static final int PERMISSIONS_MOVEWAIT_GIVEN			=	BIT7;
+	public static final int PERMISSIONS_MOVEWAIT_CONTINUE		=	BIT8;
+	public static final int PERMISSIONS_DO_PRAGE				=	BIT9;
 	
 	// ROBOT CONTROLLER VALUE
 	public static final int CONTROLLER_VALUE_FAULT_LED			=	BIT0;
 	public static final int CONTROLLER_VALUE_CMOS_BATTERY_LOW	=	BIT1;
+	
+	// REGISTERS
+	public static final int REGISTER_IPC_TO_ROBOT				= 	58;
+	public static final int REGISTER_IPC_TO_ROBOT_PRAGE_CLAMP	= 	BIT14;
+	public static final int REGISTER_IPC_TO_ROBOT_PRAGE_UNCLAMP = 	BIT15;
 	
 	// ROBOT STATUS REGISTERS
 	public static final int STATUS								=	104;
@@ -48,6 +56,11 @@ public class FanucRobotConstants {
 	// TEACHING
 	public static final int STATUS_AWAITING_TEACHING			=	BIT10;
 	public static final int STATUS_TEACHING_FINISHED			=	BIT11;
+	// MOVE_WAIT
+	public static final int STATUS_WAITING_AFTER_MOVE			=	BIT12;
+	public static final int STATUS_MOVEWAIT_FINISHED			=	BIT13;
+	// PRAGE
+	public static final int STATUS_PRAGE_FINISHED				=	BIT14;
 	
 	// COMMAND IDS
 	public static final int COMMAND_ASK_STATUS					=	20;
@@ -95,6 +108,7 @@ public class FanucRobotConstants {
 	public static final int SERVICE_GRIPPER_SERVICE_TYPE_PUT = 3;
 	public static final int SERVICE_GRIPPER_SERVICE_TYPE_HOME = 4;
 	public static final int SERVICE_GRIPPER_SERVICE_TYPE_JAW_CHANGE = 5;
+	public static final int SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT = 7;
 	
 	// SERVICE HANDLING
 	public static final int SERVICE_HANDLING_PP_MODE_BAR_MOVE 		=	BIT0;
@@ -119,7 +133,10 @@ public class FanucRobotConstants {
 	public static final int PERMISSIONS_COMMAND_JAWS_CHANGED_ACK			=	BIT4;
 	public static final int PERMISSIONS_COMMAND_RUN_AFTER_JAWS_CHANGED_ACK 	=	BIT5;
 	public static final int PERMISSIOSN_COMMAND_BAR_MOVE_ACK				=	BIT6;
-	
+	public static final int PERMISSIONS_COMMAND_MOVEWAIT					=	BIT7;
+	public static final int PERMISSIONS_COMMAND_MOVEWAIT_CONTINUE			=	BIT8;
+	public static final int PERMISSIONS_COMMAND_DO_PRAGE					=	BIT9;
+
 	// ERROR VALUES
 	public static final int E_NO_ERROR										=	0;
 	public static final int E_INVALID_SERVICE_TYPE							=	1;

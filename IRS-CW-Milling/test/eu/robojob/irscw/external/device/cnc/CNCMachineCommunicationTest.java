@@ -13,6 +13,7 @@ import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineP
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePutSettings;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineStartCylusSettings;
+import eu.robojob.irscw.external.robot.RobotManager;
 
 public class CNCMachineCommunicationTest {
 
@@ -21,13 +22,15 @@ public class CNCMachineCommunicationTest {
 	private CNCMillingMachinePickSettings pickSettings;
 	private CNCMillingMachineSettings cncMillingSetting;
 	private CNCMillingMachineStartCylusSettings startCyclusSettings;
+	private RobotManager robotManager;
 	private DeviceManager deviceManager;
 	
 	private static Logger logger = Logger.getLogger(CNCMachineCommunicationTest.class);
 	
 	@Before
 	public void setup() {
-		this.deviceManager = new DeviceManager();
+		this.robotManager = new RobotManager();
+		this.deviceManager = new DeviceManager(robotManager);
 		cncMillingMachine = (CNCMillingMachine) deviceManager.getCNCMachineById("Mazak VRX J500");
 		putSettings = new CNCMillingMachine.CNCMillingMachinePutSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
 		pickSettings = new CNCMillingMachinePickSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));

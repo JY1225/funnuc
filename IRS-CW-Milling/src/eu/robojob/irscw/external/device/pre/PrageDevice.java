@@ -10,24 +10,26 @@ import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
-import eu.robojob.irscw.external.robot.FanucRobotCommunication;
+import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.external.robot.FanucRobotConstants;
+import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class PrageDevice extends AbstractProcessingDevice {
-
-	private FanucRobotCommunication fanucRobotCommunication;
+	
+	private AbstractRobot robot;
 	
 	private static final Logger logger = Logger.getLogger(PrageDevice.class);
 	
-	public PrageDevice(String id, FanucRobotCommunication fanucRobotCommunication) {
+	public PrageDevice(String id, AbstractRobot robot) {
 		super(id, false);
-		this.fanucRobotCommunication = fanucRobotCommunication;
+		this.robot = robot;
 	}
 	
-	public PrageDevice (String id, List<Zone> zones, FanucRobotCommunication fanucRobotCommunication) {
+	public PrageDevice (String id, List<Zone> zones, AbstractRobot robot) {
 		super(id, zones, false);
-		this.fanucRobotCommunication = fanucRobotCommunication;
+		this.robot = robot;
 	}
 
 	@Override
@@ -64,7 +66,12 @@ public class PrageDevice extends AbstractProcessingDevice {
 
 	@Override
 	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
-		// TODO klem openen
+		// make sure Präge clamps are open
+		try {
+			robot.writeRegister(FanucRobotConstants.REGISTER_IPC_TO_ROBOT, ""+FanucRobotConstants.REGISTER_IPC_TO_ROBOT_PRAGE_UNCLAMP);
+		} catch (RobotActionException e) {
+			throw new DeviceActionException(e.getMessage());
+		}
 	}
 
 	@Override
@@ -77,11 +84,14 @@ public class PrageDevice extends AbstractProcessingDevice {
 	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException, DeviceActionException {}
 	@Override
 	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException {
-		logger.info("reliece piece.");
 	}
 	@Override
 	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
-		logger.info("grab piece.");
+		try {
+			robot.doPrage();
+		} catch (RobotActionException e) {
+			throw new DeviceActionException(e.getMessage());
+		}
 	}
 	@Override
 	public void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {}

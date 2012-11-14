@@ -89,6 +89,9 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract boolean validatePickSettings(AbstractRobotPickSettings pickSettings);
 	public abstract boolean validatePutSettings(AbstractRobotPutSettings putSettings);
 	
+	public abstract void writeRegister(int registerNr, String value) throws CommunicationException, RobotActionException;
+	public abstract void doPrage() throws CommunicationException, RobotActionException, InterruptedException;
+	
 	public abstract void continueProgram() throws CommunicationException;
 	public abstract void abort() throws CommunicationException;
 	
