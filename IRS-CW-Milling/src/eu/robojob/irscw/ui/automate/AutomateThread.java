@@ -7,6 +7,7 @@ import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
@@ -40,6 +41,18 @@ public class AutomateThread extends Thread{
 			while(processFlow.getFinishedAmount() < processFlow.getTotalAmount() && running) {
 				while (processFlow.hasStep() && running) {
 					AbstractProcessStep step = processFlow.getCurrentStep();
+					
+					AbstractProcessStep nextStep = processFlow.getNextStep();
+					if ((nextStep != null) && (nextStep instanceof AbstractTransportStep) && (step instanceof AbstractTransportStep)) {
+						AbstractTransportStep trStep = (AbstractTransportStep) step;
+						AbstractTransportStep trNextStep = (AbstractTransportStep) nextStep;
+						if (trStep.getRobotSettings().getWorkArea().equals(trNextStep.getRobotSettings().getWorkArea())) {
+							trStep.getRobotSettings().setFreeAfter(false);
+						} else {
+							trStep.getRobotSettings().setFreeAfter(true);
+						}
+					}
+					
 					// intervention steps can be skipped
 					if (!(step instanceof InterventionStep)) {
 						if (step instanceof PickStep) {

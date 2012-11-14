@@ -83,6 +83,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 
 	@Override
 	public void robotStatusChanged(FanucRobotStatusChangedEvent event) {
+		view.refreshSpeed(event.getStatus().getSpeed());
 	}
 
 	@Override

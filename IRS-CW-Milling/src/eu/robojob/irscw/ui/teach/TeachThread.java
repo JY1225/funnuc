@@ -8,6 +8,7 @@ import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
@@ -45,6 +46,18 @@ public class TeachThread extends Thread {
 			while (processFlow.hasStep()) {
 				AbstractProcessStep step = processFlow.getCurrentStep();
 				// intervention steps can be skipped
+				
+				AbstractProcessStep nextStep = processFlow.getNextStep();
+				if ((nextStep != null) && (nextStep instanceof AbstractTransportStep) && (step instanceof AbstractTransportStep)) {
+					AbstractTransportStep trStep = (AbstractTransportStep) step;
+					AbstractTransportStep trNextStep = (AbstractTransportStep) nextStep;
+					if (trStep.getRobotSettings().getWorkArea().getUserFrame().equals(trNextStep.getRobotSettings().getWorkArea().getUserFrame())) {
+						trStep.getRobotSettings().setFreeAfter(false);
+					} else {
+						trStep.getRobotSettings().setFreeAfter(true);
+					}
+				}
+				
 				if (!(step instanceof InterventionStep)) {
 					if (step instanceof PickStep) {
 						handlePick((PickStep) step);
@@ -67,6 +80,7 @@ public class TeachThread extends Thread {
 			processFlow.setMode(Mode.STOPPED);
 		} catch(Exception e) {
 			e.printStackTrace();
+			processFlow.setMode(Mode.STOPPED);
 		}
 		processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, null, ActiveStepChangedEvent.NONE_ACTIVE));
 		logger.info("ended teach thread!");

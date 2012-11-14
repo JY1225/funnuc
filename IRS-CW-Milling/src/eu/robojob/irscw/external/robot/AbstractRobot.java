@@ -22,6 +22,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	public AbstractRobot(String id, Set<GripperBody> possibleGripperBodies, GripperBody activeGripperBody) {
 		super(id);
+		this.speed = 50;
 		if (possibleGripperBodies != null) {
 			this.possibleGripperBodies = possibleGripperBodies;
 		} else {
@@ -111,6 +112,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		protected Coordinates smoothPoint;
 		protected Coordinates location;
 		protected Clamping clamping; 
+		protected boolean freeAfter;
 		
 		public AbstractRobotActionSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, Clamping clamping) {
 			this.workArea = workArea;
@@ -119,7 +121,17 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 			this.smoothPoint = smoothPoint;
 			this.location = location;
 			this.clamping = clamping;
+			this.freeAfter = false;
 		}
+		
+		public boolean isFreeAfter() {
+			return freeAfter;
+		}
+
+		public void setFreeAfter(boolean freeAfter) {
+			this.freeAfter = freeAfter;
+		}
+
 		public WorkArea getWorkArea() {
 			return workArea;
 		}

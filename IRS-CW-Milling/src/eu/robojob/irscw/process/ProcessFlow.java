@@ -118,6 +118,16 @@ public class ProcessFlow {
 		return getStep(currentStepIndex);
 	}
 	
+	public AbstractProcessStep getNextStep() {
+		if (hasNextStep()) {
+			return getProcessSteps().get(currentStepIndex + 1);
+		} else if (finishedAmount < totalAmount) {
+			return getProcessSteps().get(0);
+		} else {
+			return null;
+		}
+	}
+	
 	public int getCurrentStepIndex() {
 		return currentStepIndex;
 	}

@@ -24,6 +24,8 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	private static final int width = UIConstants.BUTTON_HEIGHT*4;
 	private static final int height = 7* UIConstants.BUTTON_HEIGHT;
 	
+	private int speed;
+	
 	public RobotPopUpView() {
 		super(80, 0, width, height);
 	}
@@ -122,18 +124,21 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	}
 	
 	public void refreshSpeed(int speed) {
-		btn25.getStyleClass().remove("pop-up-btn-pressed");
-		btn50.getStyleClass().remove("pop-up-btn-pressed");
-		btn10.getStyleClass().remove("pop-up-btn-pressed");
-		btn100.getStyleClass().remove("pop-up-btn-pressed");
-		if (speed == 25) {
-			btn25.getStyleClass().add("pop-up-btn-pressed");
-		} else if (speed == 50) {
-			btn50.getStyleClass().add("pop-up-btn-pressed");
-		} else if (speed == 10) {
-			btn10.getStyleClass().add("pop-up-btn-pressed");
-		} else  if (speed == 100) {
-			btn100.getStyleClass().add("pop-up-btn-pressed");
+		if (this.speed != speed) {
+			btn25.getStyleClass().remove("pop-up-btn-pressed");
+			btn50.getStyleClass().remove("pop-up-btn-pressed");
+			btn10.getStyleClass().remove("pop-up-btn-pressed");
+			btn100.getStyleClass().remove("pop-up-btn-pressed");
+			if (speed == 25) {
+				btn25.getStyleClass().add("pop-up-btn-pressed");
+			} else if (speed == 50) {
+				btn50.getStyleClass().add("pop-up-btn-pressed");
+			} else if (speed == 10) {
+				btn10.getStyleClass().add("pop-up-btn-pressed");
+			} else  if (speed == 100) {
+				btn100.getStyleClass().add("pop-up-btn-pressed");
+			}
+			this.speed = speed;
 		}
 	}
 

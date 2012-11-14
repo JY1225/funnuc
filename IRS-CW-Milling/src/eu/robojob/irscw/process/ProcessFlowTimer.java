@@ -122,10 +122,10 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 			long stepTime = otherTimeCurrentStep;
 			if (startingTimeCurrentStep != -1) {
 				stepTime += currentTime - startingTimeCurrentStep;
+				stepDurations.put(currentStep, stepTime);
 			} else {
-				throw new IllegalStateException("Starting time current step not shown");
+				// must have been interrupted!
 			}
-			stepDurations.put(currentStep, stepTime);
 		}
 		startingTimeCurrentStep = -1;
 		otherTimeCurrentStep = 0;

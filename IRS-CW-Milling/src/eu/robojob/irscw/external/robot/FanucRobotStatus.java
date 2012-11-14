@@ -10,13 +10,15 @@ public class FanucRobotStatus {
 	private int controllerValue;
 	private double zRest;
 	private Set<FanucRobotAlarm> alarms;
+	private int speed;
 	
-	public FanucRobotStatus(int errorId, int controllerValue, int controllerString, double zRest) {
+	public FanucRobotStatus(int errorId, int controllerValue, int controllerString, double zRest, int speed) {
 		this.controllerString = controllerString;
 		this.errorId = errorId;
 		this.controllerValue = controllerValue;
 		updateAlarmSet();
 		this.zRest = zRest;
+		this.speed = speed;
 	}
 	
 	public int getErrorId() {
@@ -29,6 +31,14 @@ public class FanucRobotStatus {
 	
 	public Set<FanucRobotAlarm> getAlarms() {
 		return alarms;
+	}
+	
+	public int getSpeed() {
+		return speed;
+	}
+	
+	public void setSpeed(int speed) {
+		this.speed = speed;
 	}
 	
 	private void updateAlarmSet() {

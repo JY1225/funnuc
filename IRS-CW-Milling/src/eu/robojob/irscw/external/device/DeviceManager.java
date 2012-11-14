@@ -100,7 +100,7 @@ public class DeviceManager {
 		List<WorkArea> workAreas3 = new ArrayList<WorkArea>();
 		WorkArea workArea4 = new WorkArea("Präge", uf1);
 		workAreas3.add(workArea4);
-		Clamping clamping5 = new Clamping("Clamping 5", 25, new Coordinates(1000, 150, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
+		Clamping clamping5 = new Clamping("Clamping 5", 25, new Coordinates(1000, 150, 0, 0, 0, 90), new Coordinates(2, 10, 10, 0, 0, 0), null);
 		workArea4.addClamping(clamping5);
 		workArea4.setActiveClamping(clamping5);
 		Zone zone3 = new Zone("Zone 3", workAreas3);

@@ -81,7 +81,6 @@ public class PutStep extends AbstractTransportStep {
 				device.grabPiece(putSettings);
 				logger.debug("Device grabbed piece, about to finalize put");
 				robot.finalizePut(robotPutSettings);
-				robot.moveToHome();
 				device.putFinished(putSettings);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_FINISHED));
 				logger.debug("Put finished");

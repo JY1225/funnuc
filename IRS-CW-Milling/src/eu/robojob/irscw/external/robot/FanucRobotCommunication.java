@@ -45,7 +45,7 @@ public class FanucRobotCommunication extends ExternalCommunication {
 				if (message.equals(ackId + ";")) {
 					return;
 				} else {
-					throw new IllegalStateException("Illegal reponse");
+					throw new IllegalStateException("Illegal reponse: " + message + " but expected: " + ackId);
 				}
 			}
 			int timeToWait = READ_RETRY_INTERVAL;
