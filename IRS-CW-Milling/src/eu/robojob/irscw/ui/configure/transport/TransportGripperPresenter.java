@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotSettings;
 import eu.robojob.irscw.external.robot.Gripper;
 import eu.robojob.irscw.external.robot.GripperHead;
+import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.ui.main.model.TransportInformation;
 
@@ -55,6 +56,8 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 				robotSettings.setGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead(), gripper);
 			}
 			transportInfo.getRobot().loadRobotSettings(robotSettings);
+			transportInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(transportInfo.getPickStep().getProcessFlow(), transportInfo.getPickStep(), true));
+			transportInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(transportInfo.getPutStep().getProcessFlow(), transportInfo.getPutStep(), true));
 			view.setSelectedGripper();
 		} else {
 			logger.debug("duplicate gripper usage!");

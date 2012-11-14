@@ -3,6 +3,7 @@ package eu.robojob.irscw.ui.configure.device;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PickStep;
+import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
@@ -68,6 +69,7 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 			dimensions.setHeight(height);
 			pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
 		}
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 
 	@Override

@@ -105,6 +105,8 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		deviceInfo.getDevice().loadDeviceSettings(settings);
 		deviceInfo.getPickStep().getRobotSettings().setClamping(clamping);
 		deviceInfo.getPutStep().getRobotSettings().setClamping(clamping);
+		deviceInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPutStep().getProcessFlow(), deviceInfo.getPutStep(), true));
+		deviceInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPickStep().getProcessFlow(), deviceInfo.getPickStep(), true));
 	}
 
 	@Override
