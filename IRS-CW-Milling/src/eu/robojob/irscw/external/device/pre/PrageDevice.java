@@ -67,11 +67,11 @@ public class PrageDevice extends AbstractProcessingDevice {
 	@Override
 	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
 		// make sure Präge clamps are open
-		try {
+		/*try {
 			robot.writeRegister(FanucRobotConstants.REGISTER_IPC_TO_ROBOT, ""+FanucRobotConstants.REGISTER_IPC_TO_ROBOT_PRAGE_UNCLAMP);
 		} catch (RobotActionException e) {
 			throw new DeviceActionException(e.getMessage());
-		}
+		}*/
 	}
 
 	@Override

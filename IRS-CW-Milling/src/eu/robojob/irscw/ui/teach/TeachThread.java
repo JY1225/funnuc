@@ -76,6 +76,7 @@ public class TeachThread extends Thread {
 			notifyException(e);
 		} catch(InterruptedException e) {
 			logger.info("Execution of one or more steps got interrupted, so let't just stop");
+			e.printStackTrace();
 			processFlow.initialize();
 			processFlow.setMode(Mode.STOPPED);
 		} catch(Exception e) {
