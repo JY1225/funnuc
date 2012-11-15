@@ -5,6 +5,7 @@ import java.util.Locale;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import org.apache.log4j.Logger;
 
@@ -40,7 +41,7 @@ public class RoboSoft extends Application {
 		stage.setTitle("RoboSoft");
 		stage.centerOnScreen();
 		stage.setResizable(false);
-		//stage.initStyle(StageStyle.UNDECORATED);
+		stage.initStyle(StageStyle.UNDECORATED);
 		//stage.setFullScreen(true);
 		stage.show();
 	}
