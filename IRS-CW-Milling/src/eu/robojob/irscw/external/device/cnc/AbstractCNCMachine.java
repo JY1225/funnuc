@@ -135,7 +135,11 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 					}
 				} catch (InterruptedException e) {
 					if (!statusChanged) {
-						throw e;
+						if (stopAction) {
+							throw e;
+						} else {
+							e.printStackTrace();
+						}
 					}
 				} 
 				if (stopAction) {

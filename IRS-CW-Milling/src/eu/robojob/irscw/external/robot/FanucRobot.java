@@ -154,7 +154,13 @@ public class FanucRobot extends AbstractRobot {
 						}
 					}
 				} catch (InterruptedException e) {
-					throw e;
+					if (!statusChanged) {
+						if (stopAction) {
+							throw e;
+						} else {
+							e.printStackTrace();
+						}
+					}
 				} 
 				if (stopAction) {
 					stopAction = false;
