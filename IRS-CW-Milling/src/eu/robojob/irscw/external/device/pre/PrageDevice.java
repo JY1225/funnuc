@@ -121,11 +121,15 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	@Override
 	public Coordinates getPickLocation(WorkArea workArea) {
-		return workArea.getActiveClamping().getRelativePosition();
+		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		// TODO add offset!
+		return c;
 	}
 	@Override
 	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
-		return workArea.getActiveClamping().getRelativePosition();
+		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		c.offset(new Coordinates(0, workPieceDimensions.getWidth()/2, 0, 0, 0, 0));
+		return c;
 	}
 	
 	@Override

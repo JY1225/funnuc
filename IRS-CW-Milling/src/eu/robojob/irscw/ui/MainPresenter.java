@@ -82,7 +82,7 @@ public class MainPresenter {
 	public void refreshStatus() {
 		menuBarPresenter.setConfigureButtonEnabled(true);
 		menuBarPresenter.setTeachButtonEnabled(false);
-		//menuBarPresenter.setAutomateButtonEnabled(false);
+		menuBarPresenter.setAutomateButtonEnabled(false);
 		if (configurePresenter.isConfigured()) {
 			if (process.isConfigured()) {
 				menuBarPresenter.setTeachButtonEnabled(true);

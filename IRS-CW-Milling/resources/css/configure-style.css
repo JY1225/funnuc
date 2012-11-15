@@ -207,7 +207,12 @@
 	-fx-fill: linear-gradient(#ececec 0%, #dddddd 95%, #b9b9b9 100%);
 	-fx-stroke-width: 1px;
 	-fx-stroke: rgba(120, 120, 120, 1);
-	-fx-effect: dropshadow(gaussian, #646464, 10, 0, 0, 5);
+	-fx-effect: dropshadow(gaussian, #8f8f8f, 10, 0, 0, 5);
+}
+
+.finished {
+	-fx-fill: linear-gradient(#87d715 0%, #70d60c 95%, #64bd04 100%);
+	-fx-stroke: #3c7703;
 }
 
 .root {

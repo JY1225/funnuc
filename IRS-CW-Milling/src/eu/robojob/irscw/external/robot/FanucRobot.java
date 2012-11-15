@@ -234,7 +234,12 @@ public class FanucRobot extends AbstractRobot {
 		// write service gripper set
 		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
 		// write service handling set
-		writeServiceHandlingSet(pickSettings.isFreeAfter(), FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12, pickSettings.getWorkPiece().getDimensions());
+		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
+		if (fPickSettings.doMachineAirblow) {
+			ppMode = ppMode | FanucRobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
+			logger.info("ALSO SENT: AIRBLOW!!");
+		}
+		writeServiceHandlingSet(pickSettings.isFreeAfter(), ppMode, pickSettings.getWorkPiece().getDimensions());
 		// write service point set
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
 		//pickLocation.offset(new Coordinates(0, 0, fPickSettings.getWorkPiece().getDimensions().getHeight(), 0, 0, 0));
@@ -605,12 +610,24 @@ public class FanucRobot extends AbstractRobot {
 
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {
 
+		protected boolean doMachineAirblow;
+
 		public FanucRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, Clamping clamping, WorkPiece workPiece) {
 			super(workArea, gripperHead, gripper, smoothPoint, location, clamping, workPiece);
+			this.doMachineAirblow = false;
 		}
 		
 		public FanucRobotPickSettings() {
 			super(null, null, null, null, null, null, null);
+			this.doMachineAirblow = false;
+		}
+		
+		public boolean isDoMachineAirblow() {
+			return doMachineAirblow;
+		}
+
+		public void setDoMachineAirblow(boolean doMachineAirblow) {
+			this.doMachineAirblow = doMachineAirblow;
 		}
 		
 	}

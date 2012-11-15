@@ -382,6 +382,7 @@ public class BasicStackPlateLayout {
 		
 		int amountVertical = (int) Math.floor(verticalHoleAmount / amountOfVerticalStudsOnePiece);
 		//TODO take into account overlap
+		remainingG = remainingG - (verticalHoleAmount % amountOfVerticalStudsOnePiece) * verticalHoleDistance;
 		if (remainingG > verticalPadding) {
 			amountVertical--;
 		}

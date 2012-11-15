@@ -309,6 +309,7 @@ public class RoboSoftAppFactory {
 			robotPickSettings2.setSmoothPoint(new Coordinates(mainWorkArea.getClampingById("Clamping 1").getSmoothFromPoint()));
 			robotPickSettings2.setClamping(mainWorkArea.getClampingById("Clamping 1"));
 			robotPickSettings2.setWorkArea(mainWorkArea);
+			robotPickSettings2.setDoMachineAirblow(true);
 			WorkPieceDimensions dimensions2 = new WorkPieceDimensions(125.8f, 64.9f, 40);
 			WorkPiece workPiece2 = new WorkPiece(WorkPiece.Type.FINISHED, dimensions2);
 			robotPickSettings2.setWorkPiece(workPiece2);
@@ -328,11 +329,12 @@ public class RoboSoftAppFactory {
 			PutStep put2 = new PutStep(robot, stackPlate, stackPlatePutSettings, robotPutSettings2);
 			
 			
-			pick1.setTeachedOffset(new Coordinates(0, 0, 0, 0, 0, 0));
-			put1.setTeachedOffset(new Coordinates(0, 0, 0, 0, 0, 0));
-			pick2.setTeachedOffset(new Coordinates(0, 0, 0, 0, 0, 0));
-			put2.setTeachedOffset(new Coordinates(0, 0, 0, 0, 0, 0));
-			
+			pick1.setTeachedOffset(new Coordinates(0, 0, -20.89f, 0, 0, 0));
+			putAndWait1.setTeachedOffset(new Coordinates(0, 0.9f, -19.36f, 0, 0, 0));
+			put1.setTeachedOffset(new Coordinates(0, 0, -55.85f, 0, 0, 0));
+			pick2.setTeachedOffset(new Coordinates(0, -28.12f, -26.39f, 0, 0, 0));
+			put2.setTeachedOffset(new Coordinates(19.1f, 20.46f, -46.35f, 0, 0, 0));
+						
 			// creating process flow
 			processFlow.addStep(pick1);
 			processFlow.addStep(putAndWait1);

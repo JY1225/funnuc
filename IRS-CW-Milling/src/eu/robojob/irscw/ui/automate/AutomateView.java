@@ -565,4 +565,5 @@ public class AutomateView extends VBox {
 			lblZRest.setVisible(false);
 		}
 	}
+	
 }

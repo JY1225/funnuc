@@ -7,6 +7,7 @@ import javafx.application.Platform;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.cnc.CNCMachineAlarmsOccuredEvent;
@@ -153,6 +154,10 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		automateThread.stopRunning();
 	}
 	
+	public void setAlarmStatus(String alarmStatus) {
+		view.setStatus(Status.ERROR, alarmStatus);
+	}
+	
 	private void setAutoMode(boolean autoMode) {
 		parent.setChangeContentEnabled(!autoMode);
 		if (autoMode) {
@@ -283,7 +288,23 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	}
 
 	@Override
-	public void robotAlarmsOccured(FanucRobotAlarmsOccuredEvent event) {}
+	public void robotAlarmsOccured(final FanucRobotAlarmsOccuredEvent event) {
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				if (event.getAlarms().size() > 0) {
+					setAlarmStatus("De robot geeft aan dat zich een alarm heeft voorgedaan!");
+				} else {
+					setAlarmStatus("");
+					if (automateThread.isRunning()) {
+						try {
+							event.getSource().continueProgram();
+						} catch (CommunicationException e) {
+							exceptionOccured(e);
+						}
+					}
+				}
+			}});
+	}
 
 	@Override
 	public void cNCMachineConnected(CNCMachineEvent event) {}

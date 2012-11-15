@@ -23,6 +23,7 @@ import eu.robojob.irscw.external.device.stacking.StudPosition;
 import eu.robojob.irscw.external.device.stacking.StudPosition.StudType;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.workpiece.WorkPiece.Type;
 
 public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateLayoutPresenter> {
 
@@ -230,8 +231,11 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 							width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
 							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
 					rp.getStyleClass().add("workpiece");
-					rp.setArcHeight(10);
-					rp.setArcWidth(10);
+					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
+						rp.getStyleClass().add("finished");
+					}
+					rp.setArcHeight(0);
+					rp.setArcWidth(0);
 					group.getChildren().add(rp);
 				} else if (stackingPosition.getOrientation() == WorkPieceOrientation.TILTED){
 					// TILTED
@@ -241,8 +245,11 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 					Rotate rotate = new Rotate(-45, stackingPosition.getPosition().getX(), width - stackingPosition.getPosition().getY());
 					rp.getTransforms().add(rotate);
 					rp.getStyleClass().add("workpiece");
-					rp.setArcHeight(10);
-					rp.setArcWidth(10);
+					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
+						rp.getStyleClass().add("finished");
+					}
+					rp.setArcHeight(0);
+					rp.setArcWidth(0);
 					group.getChildren().add(rp);
 				} else {
 					throw new IllegalArgumentException("Unknown orientation");
