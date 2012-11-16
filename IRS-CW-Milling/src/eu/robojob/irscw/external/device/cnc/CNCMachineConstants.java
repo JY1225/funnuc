@@ -47,6 +47,8 @@ public class CNCMachineConstants {
 	public static final int X_CLAMP2_PRESSURE_OPEN		= 	BIT7;
 	public static final int X_CLAMP2_PRESSURE_CLOSE		= 	BIT8;
 	public static final int X_CLAMP2_WPP				= 	BIT9;
+	public static final int X_CLAMP1_ORIENT				= 	BIT10;
+	public static final int X_CLAMP2_ORIENT				= 	BIT11;
 	
 	public static final int INPUT_SLOT_3 = 3;
 	public static final int X_DOOR1_OPEN_PERMISSION		= 	BIT0;
@@ -83,7 +85,8 @@ public class CNCMachineConstants {
 	public static final int Y_CYCLUS_START				= 	BIT2;
 	public static final int Y_Z1_RELEASE				= 	BIT3;
 	public static final int Y_Z2_RELEASE				= 	BIT4;
-	
+	public static final int Y_CLAMP1_ORIENT				= 	BIT5;
+	public static final int Y_CLAMP2_ORIENT				= 	BIT6;
 	
 	// R: RESULTS
 	
@@ -102,6 +105,7 @@ public class CNCMachineConstants {
 	public static final int R_PICK_WA2_READY			= 	BIT11;
 	public static final int R_UNCLAMP_WA1_READY			= 	BIT12;
 	public static final int R_UNCLAMP_WA2_READY			= 	BIT13;
+	public static final int R_ROBOT_SERVREQ				= 	BIT14;
 	
 	
 	public static final int CONFIGURATION = 7;
@@ -183,5 +187,13 @@ public class CNCMachineConstants {
 	public static final int WA2_CNC_PROCESS				= 	2;
 	public static final int WA1_WA2_CNC_PROCESS			= 	3;
 	public static final int WA2_WA1_CNC_PROCESS			= 	4;
+	
+	public static final int OTHER = 14;
+	public static final int RESET_REQUEST				=	BIT0;
+	public static final int OPERATOR_REQUESTED			=	BIT1;
+	public static final int ALL_WP_PROCESSED			=	BIT2;
+	public static final int NC_RESET					=	BIT3;
+	public static final int SERV_REQ_FINISH				=	BIT4;
+	public static final int POWER_OFF					=	BIT5;
 	
 }

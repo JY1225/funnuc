@@ -208,6 +208,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	
 	private void setTeachMode(boolean enable) {
 		parent.setChangeContentEnabled(!enable);
+		logger.info("set teach mode: " + enable);
 		if (enable) {
 			teachStatusView.setProcessRunning();
 		} else {
@@ -219,6 +220,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	public void modeChanged(final ModeChangedEvent e) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
+				logger.info("mode changed: " + e.getMode());
 				switch (e.getMode()) {
 					case TEACH :
 						setTeachMode(true);

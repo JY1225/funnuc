@@ -448,7 +448,7 @@ public class BasicStackPlateLayout {
 		if (amount <= getMaxRawWorkPiecesAmount()) {
 			for (int i = 0; i < amount; i++) {
 				StackingPosition stackingPos = stackingPositions.get(i);
-				stackingPos.setWorkPiece(rawWorkPiece);
+				stackingPos.setWorkPiece(new WorkPiece(rawWorkPiece));
 				for (StudPosition studPos : stackingPos.getStuds()) {
 					studPositions[studPos.getRowIndex()][studPos.getColumnIndex()] = studPos;
 				}

@@ -3,7 +3,9 @@ package eu.robojob.irscw.ui.automate;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
@@ -38,6 +40,9 @@ public class AutomateThread extends Thread{
 				robot.restartProgram();
 				//robot.moveToHome();
 			}
+			for (AbstractDevice device: processFlow.getDevices()) {
+				device.prepareForProcess(processFlow);
+			}
 			while(processFlow.getFinishedAmount() < processFlow.getTotalAmount() && running) {
 				while (processFlow.hasStep() && running) {
 					AbstractProcessStep step = processFlow.getCurrentStep();
@@ -71,6 +76,12 @@ public class AutomateThread extends Thread{
 			}
 			if (running) {
 				processFlow.setMode(Mode.FINISHED);
+				for (AbstractDevice device: processFlow.getDevices()) {
+					if (device instanceof AbstractCNCMachine) {
+						AbstractCNCMachine cncMachine = (AbstractCNCMachine) device;
+						cncMachine.indicateAllProcessed();
+					}
+				}
 			} else {
 				processFlow.setMode(Mode.PAUSED);
 			}

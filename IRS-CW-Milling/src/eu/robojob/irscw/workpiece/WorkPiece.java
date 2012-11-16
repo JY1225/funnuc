@@ -13,6 +13,11 @@ public class WorkPiece {
 		this.type = type;
 		this.dimensions = dimensions;
 	}
+	
+	public WorkPiece(WorkPiece wp) {
+		this.type = wp.getType();
+		this.dimensions = new WorkPieceDimensions(wp.getDimensions().getLength(), wp.getDimensions().getWidth(), wp.getDimensions().getHeight());
+	}
 
 	public Type getType() {
 		return type;

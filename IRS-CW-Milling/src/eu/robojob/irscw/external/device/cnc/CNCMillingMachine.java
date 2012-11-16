@@ -13,6 +13,7 @@ import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachine extends AbstractCNCMachine {
@@ -119,6 +120,49 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if ((alarmReg2 & CNCMachineConstants.ALR_MULTIPLE_IPC_RQST)>0) {
 			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MULTIPLE_IPC_REQUESTS));
 		}
+	}
+	
+	@Override
+	public void nCReset() throws CommunicationException, InterruptedException {
+		int command = 0;
+		command = command | CNCMachineConstants.RESET_REQUEST;
+		int registers[] = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+		// TODO: no way of knowing this succeeded? 
+	}
+
+	@Override
+	public void powerOff() throws CommunicationException, InterruptedException {
+		int command = 0;
+		command = command | CNCMachineConstants.POWER_OFF;
+		int registers[] = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+	}
+
+	/*
+	 * This method will also take care of turning on the blue lamp
+	 */
+	@Override
+	public void indicateAllProcessed() throws CommunicationException, InterruptedException {
+		int command = 0;
+		command = command | CNCMachineConstants.ALL_WP_PROCESSED;
+		int registers[] = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+	}
+
+	@Override
+	public void operatorRequested(boolean requested) throws CommunicationException, InterruptedException {
+		int command = 0;
+		if (requested) {
+			command = command | CNCMachineConstants.OPERATOR_REQUESTED;
+		}
+		int registers[] = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+	}
+	
+	@Override
+	public void prepareForProcess(ProcessFlow process)  throws CommunicationException, InterruptedException {
+		nCReset();
 	}
 
 	@Override

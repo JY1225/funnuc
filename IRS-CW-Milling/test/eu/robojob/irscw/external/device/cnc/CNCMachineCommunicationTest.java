@@ -101,11 +101,35 @@ public class CNCMachineCommunicationTest {
 		}
 	}
 	
+	@Ignore
 	@Test
 	public void testStartCycle() {
 		try {
 			cncMillingMachine.startCyclus(startCyclusSettings);
 		} catch (CommunicationException | DeviceActionException | InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			cncMillingMachine.disconnect();
+		}
+	}
+	
+	@Ignore
+	@Test
+	public void testNCReset() {
+		try {
+			cncMillingMachine.nCReset();
+		} catch (CommunicationException | InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			cncMillingMachine.disconnect();
+		}
+	}
+	
+	@Test
+	public void testPowerOff() {
+		try {
+			cncMillingMachine.powerOff();
+		} catch (CommunicationException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			cncMillingMachine.disconnect();

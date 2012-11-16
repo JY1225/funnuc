@@ -14,6 +14,7 @@ import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.FanucRobotConstants;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class PrageDevice extends AbstractProcessingDevice {
@@ -167,5 +168,8 @@ public class PrageDevice extends AbstractProcessingDevice {
 		public PrageDeviceInterventionSettings(WorkArea workArea) {
 			super(workArea);
 		}
+	}
+	@Override
+	public void prepareForProcess(ProcessFlow process) throws CommunicationException, InterruptedException {		
 	}
 }

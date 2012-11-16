@@ -74,6 +74,7 @@ public class TeachThread extends Thread {
 			this.running = false;
 		} catch(CommunicationException | RobotActionException | DeviceActionException e) {
 			notifyException(e);
+			processFlow.setMode(Mode.STOPPED);
 		} catch(InterruptedException e) {
 			logger.info("Execution of one or more steps got interrupted, so let't just stop");
 			e.printStackTrace();

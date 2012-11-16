@@ -9,12 +9,15 @@ import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
+import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	protected List<Zone> zones;
+	
+	public abstract void prepareForProcess(ProcessFlow process) throws CommunicationException, InterruptedException;
 		
 	public abstract boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException;
 	public abstract boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException;

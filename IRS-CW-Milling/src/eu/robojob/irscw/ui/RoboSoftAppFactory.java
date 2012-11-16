@@ -329,11 +329,11 @@ public class RoboSoftAppFactory {
 			PutStep put2 = new PutStep(robot, stackPlate, stackPlatePutSettings, robotPutSettings2);
 			
 			
-			pick1.setTeachedOffset(new Coordinates(0, 0, -20.89f, 0, 0, 0));
+			/*pick1.setTeachedOffset(new Coordinates(0, 0, -20.89f, 0, 0, 0));
 			putAndWait1.setTeachedOffset(new Coordinates(0, 0.9f, -19.36f, 0, 0, 0));
 			put1.setTeachedOffset(new Coordinates(0, 0, -55.85f, 0, 0, 0));
 			pick2.setTeachedOffset(new Coordinates(0, -28.12f, -26.39f, 0, 0, 0));
-			put2.setTeachedOffset(new Coordinates(19.1f, 20.46f, -46.35f, 0, 0, 0));
+			put2.setTeachedOffset(new Coordinates(19.1f, 20.46f, -46.35f, 0, 0, 0));*/
 						
 			// creating process flow
 			processFlow.addStep(pick1);

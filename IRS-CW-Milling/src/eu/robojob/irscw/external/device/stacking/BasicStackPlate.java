@@ -10,6 +10,7 @@ import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.workpiece.WorkPiece;
 import eu.robojob.irscw.workpiece.WorkPiece.Type;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
@@ -298,6 +299,15 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public void stopCurrentAction() {
+	}
+
+	@Override
+	public void prepareForProcess(ProcessFlow process) throws CommunicationException, InterruptedException {
+		/*try {
+			layout.placeRawWorkPieces(rawWorkPiece, process.getTotalAmount());
+		} catch (IncorrectWorkPieceDataException e) {
+			e.printStackTrace();
+		}*/
 	}
 
 }
