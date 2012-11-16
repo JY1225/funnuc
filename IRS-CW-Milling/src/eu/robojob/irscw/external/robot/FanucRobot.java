@@ -156,6 +156,7 @@ public class FanucRobot extends AbstractRobot {
 				} catch (InterruptedException e) {
 					if (!statusChanged) {
 						if (stopAction) {
+							stopAction = false;
 							throw e;
 						} else {
 							e.printStackTrace();
@@ -164,7 +165,7 @@ public class FanucRobot extends AbstractRobot {
 				} 
 				if (stopAction) {
 					stopAction = false;
-					throw new InterruptedException();
+					//throw new InterruptedException();
 				}
 				if (!isConnected()) {
 					throw new FanucRobotDisconnectedException(this);

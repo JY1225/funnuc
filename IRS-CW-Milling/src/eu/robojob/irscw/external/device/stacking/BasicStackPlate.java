@@ -49,7 +49,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+	public synchronized boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == Type.RAW)) {
 				return true;
@@ -59,7 +59,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
+	public synchronized boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if (stackingPos.getWorkPiece() == null) {
 				return true;
@@ -69,7 +69,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	@Override
-	public Coordinates getPickLocation(WorkArea workArea) {
+	public synchronized Coordinates getPickLocation(WorkArea workArea) {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null)&&(stackingPos.getWorkPiece().getType() != Type.FINISHED)) {
 				currentPickLocation = stackingPos;
@@ -88,7 +88,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
+	public synchronized Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
 		logger.info("getting put location: " + workPieceDimensions);
 		finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, workPieceDimensions);
 		Coordinates c = new Coordinates(currentPickLocation.getPosition());
@@ -115,12 +115,12 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public void pickFinished(AbstractDevicePickSettings pickSettings) {
+	public synchronized void pickFinished(AbstractDevicePickSettings pickSettings) {
 		currentPickLocation.setWorkPiece(null);
 	}
 
 	@Override
-	public void putFinished(AbstractDevicePutSettings putSettings) {
+	public synchronized void putFinished(AbstractDevicePutSettings putSettings) {
 		//BasicStackPlatePutSettings spPutSettings = (BasicStackPlatePutSettings) putSettings;
 		currentPickLocation.setWorkPiece(finishedWorkPiece);
 		currentPickLocation = null;
@@ -222,7 +222,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {
+	public synchronized void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {
 		if (deviceSettings instanceof BasicStackPlateSettings) {
 			BasicStackPlateSettings settings = (BasicStackPlateSettings) deviceSettings;
 			try {

@@ -90,8 +90,7 @@ public class ProcessFlow {
 		loadAllDeviceSettings();
 		loadAllRobotSettings();
 		setFinishedAmount(0);
-		this.mode = Mode.READY;
-		processProcessFlowEvent(new ModeChangedEvent(this, Mode.READY));
+		//setMode(Mode.READY);
 		processProcessFlowEvent(new ActiveStepChangedEvent(this, null, ActiveStepChangedEvent.NONE_ACTIVE));
 	}
 	

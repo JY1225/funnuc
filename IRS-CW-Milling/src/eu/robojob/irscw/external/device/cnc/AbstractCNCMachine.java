@@ -141,6 +141,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 				} catch (InterruptedException e) {
 					if (!statusChanged) {
 						if (stopAction) {
+							stopAction = false;
 							throw e;
 						} else {
 							e.printStackTrace();
@@ -149,7 +150,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 				} 
 				if (stopAction) {
 					stopAction = false;
-					throw new InterruptedException();
+					//throw new InterruptedException();
 				}
 				if (!isConnected()) {
 					throw new DeviceDisconnectedException(this);
