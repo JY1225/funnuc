@@ -114,7 +114,7 @@ public class RoboSoftAppFactory {
 		if (configurePresenter == null) {
 			ConfigureView processConfigureView = new ConfigureView();
 			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNumericKeyboardPresenter(), getConfigureProcessFlowPresenter(), 
-					getProcessConfigurationMenuPresenter(), getDeviceMenuFactory(), getTransportMenuFactory());
+					getProcessConfigurationMenuPresenter(), getDeviceMenuFactory(), getTransportMenuFactory(), getDeviceManager());
 		}
 		return configurePresenter;
 	}
@@ -301,6 +301,9 @@ public class RoboSoftAppFactory {
 			// PROCESSING 1 
 			ProcessingStep processing1 = new ProcessingStep(cncMilling, cncStartCyclusSettings);
 			
+			// PROCESSING 2
+			ProcessingStep processing2 = new ProcessingStep(prageDevice, prageStartCyclusSettings);
+			
 			// Robot settings for pick from CNC Milling Machine and put in Basic Stacker
 			//pick
 			FanucRobotPickSettings robotPickSettings2 = new FanucRobot.FanucRobotPickSettings();
@@ -338,6 +341,7 @@ public class RoboSoftAppFactory {
 			// creating process flow
 			processFlow.addStep(pick1);
 			processFlow.addStep(putAndWait1);
+			processFlow.addStep(processing2);
 			processFlow.addStep(pickAfterWait1);
 			processFlow.addStep(put1);
 			processFlow.addStep(processing1);

@@ -1,5 +1,7 @@
 package eu.robojob.irscw.ui.main.model;
 
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.robot.AbstractRobot;
@@ -15,6 +17,8 @@ public class ProcessFlowAdapter {
 
 	private ProcessFlow processFlow;
 	private static final int maxDeviceCount = 4;
+	
+	private static final Logger logger = Logger.getLogger(ProcessFlowAdapter.class);
 	
 	public ProcessFlowAdapter(ProcessFlow processFlow) {
 		this.processFlow = processFlow;
@@ -157,17 +161,21 @@ public class ProcessFlowAdapter {
 		processFlow.removeStep(transportInfo.getInterventionAfterPut());
 	}
 	
-	public void addDeviceSteps(int transportIndex) {
-		if (getDeviceStepCount() < maxDeviceCount) {
-			DeviceInformation deviceInfo = getDeviceInformation(transportIndex);
-			TransportInformation transportInfo = getTransportInformation(transportIndex);
-			PutStep putStep = new PutStep(processFlow, deviceInfo.getPickStep().getRobot(), null, null, transportInfo.getPutStep().getRobotSettings());
-			ProcessingStep processingStep = new ProcessingStep(null, null);
-			PickStep pickStep = new PickStep(processFlow, deviceInfo.getPickStep().getRobot(), null, null, deviceInfo.getPickStep().getRobot().getDefaultPickSettings());
-			//transportInfo.getPutStep().setRobotSettings(putStep.getRobot().getDefaultPutSettings());
-			processFlow.addStepAfter(deviceInfo.getPickStep(), putStep);
-			processFlow.addStepAfter(putStep, processingStep);
-			processFlow.addStepAfter(processingStep, pickStep);
+	public void addDeviceSteps(int transportIndex, DeviceInformation deviceInfo) {
+		if ((getDeviceStepCount() < maxDeviceCount) && (transportIndex < getCNCMachineIndex()) ) {
+			
+			logger.info("About to add!!: " + transportIndex);
+			
+			DeviceInformation prevDeviceInfo = getDeviceInformation(transportIndex);
+			
+			processFlow.addStepAfter(prevDeviceInfo.getPickStep(), deviceInfo.getPutStep());
+			if (deviceInfo.hasProcessingStep()) {
+				processFlow.addStepAfter(deviceInfo.getPutStep(), deviceInfo.getProcessingStep());
+				processFlow.addStepAfter(deviceInfo.getProcessingStep(), deviceInfo.getPickStep());
+			} else {
+				processFlow.addStepAfter(prevDeviceInfo.getPutStep(), deviceInfo.getPickStep());
+			}
+					
 		} else {
 			throw new IllegalStateException("Amount of device-steps would be greater than maximum.");
 		}
@@ -175,9 +183,9 @@ public class ProcessFlowAdapter {
 	
 	public void removeDeviceSteps(int deviceIndex) {
 		DeviceInformation deviceInfo = getDeviceInformation(deviceIndex);
-		TransportInformation transportBefore = getTransportInformation(deviceIndex-1);
+		/*TransportInformation transportBefore = getTransportInformation(deviceIndex-1);
 		TransportInformation transportAfter = getTransportInformation(deviceIndex);
-		transportAfter.getPutStep().setRobotSettings(transportBefore.getPutStep().getRobotSettings());
+		transportAfter.getPutStep().setRobotSettings(transportBefore.getPutStep().getRobotSettings());*/
 		processFlow.removeSteps(deviceInfo.getSteps());
 	}
 	

@@ -5,7 +5,6 @@ import java.util.Locale;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import org.apache.log4j.Logger;
 

@@ -2,7 +2,19 @@
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.device.DeviceManager;
+import eu.robojob.irscw.external.device.pre.PrageDevice;
+import eu.robojob.irscw.external.device.pre.PrageDevice.PrageDevicePickSettings;
+import eu.robojob.irscw.external.device.pre.PrageDevice.PrageDevicePutSettings;
+import eu.robojob.irscw.external.device.pre.PrageDevice.PrageDeviceStartCyclusSettings;
+import eu.robojob.irscw.external.robot.FanucRobot;
+import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPickSettings;
+import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPutSettings;
+import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.ProcessingStep;
+import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.configure.device.DeviceMenuFactory;
@@ -16,7 +28,10 @@ import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
+import eu.robojob.irscw.ui.main.model.DeviceInformation;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
+import eu.robojob.irscw.workpiece.WorkPiece;
+import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class ConfigurePresenter implements TextFieldListener, MainContentPresenter {
 
@@ -46,10 +61,13 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	
 	private ProcessMenuPresenter processMenuPresenter;
 	
+	private DeviceManager deviceManager;
+	
 	private Mode mode;
 	
 	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
-			ConfigureProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processMenuPresenter, DeviceMenuFactory deviceMenuFactory, TransportMenuFactory transportMenuFactory) {
+			ConfigureProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processMenuPresenter, DeviceMenuFactory deviceMenuFactory, TransportMenuFactory transportMenuFactory,
+			 DeviceManager deviceManager) {
 		this.view = view;
 		this.keyboardPresenter = keyboardPresenter;
 		keyboardPresenter.setParent(this);
@@ -66,6 +84,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		numericKeyboardActive = false;
 		mode = Mode.NORMAL;
 		view.setTop(processFlowPresenter.getView());
+		this.deviceManager = deviceManager;
 		configureProcess();
 	}
 	
@@ -196,7 +215,15 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	public void setAddDeviceMode() {
 		view.setBottomLeftEnabled(false);
 		parent.setChangeContentEnabled(false);
-		processFlowPresenter.setAddDeviceMode();
+		boolean addPreProcessPossible = false;
+		if (deviceManager.getPreProcessingDevices().size() > 0) {
+			addPreProcessPossible = true;
+		}
+		boolean addPostProcessPossible = false;
+		if (deviceManager.getPostProcessingDevices().size() > 0) {
+			addPostProcessPossible = true;
+		}
+		processFlowPresenter.setAddDeviceMode(addPreProcessPossible, addPostProcessPossible);
 		mode = Mode.ADD_DEVICE;
 	}
 	
@@ -215,7 +242,42 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	}
 	
 	public void addDevice(int index) {
-		processFlowAdapter.addDeviceSteps(index);
+		
+		PrageDevice prageDevice = (PrageDevice) deviceManager.getPreProcessingDeviceById("Präge");
+		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
+		
+		PrageDevicePickSettings pragePickSettings = new PrageDevice.PrageDevicePickSettings(prageDevice.getWorkAreaById("Präge"));
+		PrageDeviceStartCyclusSettings prageStartCyclusSettings = new PrageDevice.PrageDeviceStartCyclusSettings(prageDevice.getWorkAreaById("Präge"));
+		PrageDevicePutSettings pragePutSettings = new PrageDevice.PrageDevicePutSettings(prageDevice.getWorkAreaById("Präge"));
+		
+		FanucRobotPutSettings robotPutSettings = new FanucRobot.FanucRobotPutSettings();
+		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobot().getGripperBody().getGripperHead("A"));
+		robotPutSettings.setGripper(deviceInfo.getPickStep().getRobot().getGripperBody().getGripper("2P clamp grip"));
+		robotPutSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getClampingById("Clamping 5").getSmoothToPoint()));
+		robotPutSettings.setClamping(prageDevice.getWorkAreaById("Präge").getClampingById("Clamping 5"));
+		robotPutSettings.setWorkArea(prageDevice.getWorkAreaById("Präge"));
+		robotPutSettings.setDoMachineAirblow(false);	
+		
+		FanucRobotPickSettings robotPickSettings = new FanucRobot.FanucRobotPickSettings();
+		robotPickSettings.setGripperHead(deviceInfo.getPickStep().getRobot().getGripperBody().getGripperHead("A"));
+		robotPickSettings.setGripper(deviceInfo.getPickStep().getRobot().getGripperBody().getGripper("2P clamp grip"));
+		robotPickSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getClampingById("Clamping 5").getSmoothFromPoint()));
+		robotPickSettings.setWorkArea(prageDevice.getWorkAreaById("Präge"));
+		robotPickSettings.setClamping(prageDevice.getWorkAreaById("Präge").getActiveClamping());
+		WorkPieceDimensions dimensions1 = new WorkPieceDimensions(125.8f, 64.9f, 40);
+		WorkPiece workPiece1 = new WorkPiece(WorkPiece.Type.RAW, dimensions1);
+		robotPickSettings.setWorkPiece(workPiece1);
+		
+		PutAndWaitStep putAndWait1 = new PutAndWaitStep(deviceInfo.getPickStep().getRobot(), prageDevice, pragePutSettings, robotPutSettings);
+		ProcessingStep processing2 = new ProcessingStep(prageDevice, prageStartCyclusSettings);
+		PickAfterWaitStep pickAfterWait1 = new PickAfterWaitStep(deviceInfo.getPickStep().getRobot(), prageDevice, pragePickSettings, robotPickSettings);
+		
+		DeviceInformation newDeviceInfo = new DeviceInformation((index + 1), processFlowAdapter);
+		newDeviceInfo.setPickStep(pickAfterWait1);
+		newDeviceInfo.setPutStep(putAndWait1);
+		newDeviceInfo.setProcessingStep(processing2);
+		
+		processFlowAdapter.addDeviceSteps(index, newDeviceInfo);
 		refresh();
 	}
 	

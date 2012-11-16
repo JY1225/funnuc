@@ -15,6 +15,7 @@ import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotSettings;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
@@ -268,12 +269,14 @@ public class ProcessFlow {
 	
 	public void removeStep (AbstractProcessStep step) {
 		processSteps.remove(step);
-		processProcessFlowEvent(new ProcessFlowEvent(this, ProcessFlowEvent.DATA_CHANGED));
+		processProcessFlowEvent(new DataChangedEvent(this, step, false));
 	}
 	
 	public void removeSteps(List<AbstractProcessStep> steps) {
 		processSteps.removeAll(steps);
-		processProcessFlowEvent(new ProcessFlowEvent(this, ProcessFlowEvent.DATA_CHANGED));
+		for (AbstractProcessStep step : steps) {
+			processProcessFlowEvent(new DataChangedEvent(this, step, false));
+		}
 	}
 	
 	public void addStepAfter(AbstractProcessStep step, AbstractProcessStep newStep) {
@@ -281,7 +284,7 @@ public class ProcessFlow {
 			throw new IllegalArgumentException("Could not find this step");
 		} else {
 			processSteps.add(processSteps.indexOf(step) + 1, newStep);
-			processProcessFlowEvent(new ProcessFlowEvent(this, ProcessFlowEvent.DATA_CHANGED));
+			processProcessFlowEvent(new DataChangedEvent(this, step, true));
 		}
 	}
 	
@@ -290,7 +293,7 @@ public class ProcessFlow {
 			throw new IllegalArgumentException("Could not find this step");
 		} else {
 			processSteps.add(processSteps.indexOf(step), newStep);
-			processProcessFlowEvent(new ProcessFlowEvent(this, ProcessFlowEvent.DATA_CHANGED));
+			processProcessFlowEvent(new DataChangedEvent(this, step, true));
 		}
 	}
 	

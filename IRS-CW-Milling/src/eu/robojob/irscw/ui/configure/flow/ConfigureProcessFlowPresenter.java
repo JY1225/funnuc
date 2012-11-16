@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui.configure.flow;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter.Mode;
@@ -16,7 +17,7 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 	
 	private int focussedDevice;
 	private int focussedTransport;
-	
+		
 	public ConfigureProcessFlowPresenter(ProcessFlowView view) {
 		super(view);
 		focussedDevice = -1;
@@ -84,8 +85,8 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 		focussedTransport = -1;
 	}
 	
-	public void setAddDeviceMode() {
-		view.setAddDeviceMode();
+	public void setAddDeviceMode(boolean addPreProcessPossible, boolean addPostProcessPossible) {
+		view.setAddDeviceMode(addPreProcessPossible, addPostProcessPossible);
 		focussedDevice = -1;
 		focussedTransport = -1;
 	}

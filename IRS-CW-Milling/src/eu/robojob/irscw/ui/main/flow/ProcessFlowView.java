@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui.main.flow;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,6 +13,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigureView;
@@ -28,6 +32,8 @@ public class ProcessFlowView extends GridPane  {
 	private Map<Integer, Region> progressDeviceRegions;
 	private Map<Integer, Region> progressTransportRegionsLeft;
 	private Map<Integer, Region> progressTransportRegionsRight;
+	
+	private static final Logger logger = Logger.getLogger(ProcessFlowView.class);
 			
 	private static final int maxDevicesFirstRow = 4;
 	
@@ -326,14 +332,25 @@ public class ProcessFlowView extends GridPane  {
 		}
 	}
 	
-	public void setAddDeviceMode() {
+	public void setAddDeviceMode(boolean addPreProcessPossible, boolean addPostProcessPossible) {
 		for (DeviceButton deviceButton : deviceButtons.values()) {
 			deviceButton.setFocussed(false);
 			deviceButton.setDisable(true);
 		}
-		for (TransportButton transportButton : transportButtons.values()) {
-			transportButton.setFocussed(true);
-			transportButton.setDisable(false);
+		for (Entry<Integer, TransportButton> entry : transportButtons.entrySet()) {
+			logger.info("hello: " + addPreProcessPossible + " - " + addPostProcessPossible);
+			if ((entry.getKey() < processFlowAdapter.getCNCMachineIndex() && addPreProcessPossible)) {
+				logger.info("1: " + entry.getKey() + " - " + processFlowAdapter.getCNCMachineIndex());
+				entry.getValue().setFocussed(true);
+				entry.getValue().setDisable(false);
+			} else if (addPostProcessPossible) {
+				logger.info("2: " + entry.getKey() + " - " + processFlowAdapter.getCNCMachineIndex());
+				entry.getValue().setFocussed(true);
+				entry.getValue().setDisable(false);
+			} else {
+				entry.getValue().setFocussed(false);
+				entry.getValue().setDisable(true);
+			}
 		}
 	}
 	
