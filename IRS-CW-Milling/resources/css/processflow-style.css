@@ -158,7 +158,7 @@
 
 .progressbar-piece {
 	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf;
-	-fx-background-insets: 0, 1 1 1 0, 1 2 1 1;
+	-fx-background-insets: 0, 1 1 1 1, 1 2 1 2;
 	-fx-effect: null;
 	-fx-opacity: 1;
 	/*-fx-effect: innershadow(two-pass-box, rgba(0, 0, 0, 0.18), 5, 0, 0, 2);*/
@@ -172,45 +172,41 @@
 
 .progressbar-last {
 	-fx-background-radius: 0 8 8 0, 0 7 7 0, 0 7 7 0;
-	-fx-background-insets: 0, 1 1 1 0, 1 1 1 1;
+	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1;
 	-fx-opacity: 1;
 }
 
 .progressbar-piece-green {
 	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
-	-fx-background-insets: 0, 1 1 1 0, 1 1 1 0, 3 1 3 0, 4 1 4 0;
+	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1, 3 1 3 1, 4 1 4 1;
 }
 
 .progressbar-piece-1of2 {
 	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf;
-	-fx-background-insets: 0, 1 1 1 0, 1 1 1 0, 3 1 3 0, 4 1 4 0;
+	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1, 3 1 3 1, 4 1 4 1;
 	-fx-opacity: 1;
 }
 
 .progressbar-piece-2of2 {
 	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf;
-	-fx-background-insets: 0, 1 2 1 0, 1 2 1 0, 3 2 3 0, 4 2 4 0;
+	-fx-background-insets: 0, 1 2 1 1, 1 2 1 1, 3 2 3 1, 4 2 4 1;
 	-fx-opacity: 1;
 }
 
 .progressbar-piece-1of2-green {
 	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
-	-fx-background-insets: 0, 1 1 1 0, 1 1 1 0, 3 1 3 0, 4 1 4 0;
 }
 
 .progressbar-piece-2of2-green {
 	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
-	-fx-background-insets: 0, 1 2 1 0, 1 2 1 0, 3 2 3 0, 4 2 4 0;
 }
 
 .progressbar-piece-1of2-yellow {
 	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#f6e20e 0%, #c6b20c 100%), linear-gradient(#ffec1e 0%, #fee300 100%);
-	-fx-background-insets: 0, 1 1 1 0, 1 1 1 0, 3 1 3 0, 4 1 4 0;
 }
 
 .progressbar-piece-2of2-yellow {
 	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#f6e20e 0%, #c6b20c 100%), linear-gradient(#ffec1e 0%, #fee300 100%);
-	-fx-background-insets: 0, 1 2 1 0, 1 2 1 0, 3 2 3 0, 4 2 4 0;
 }
 
 .progressbar-first-green {
@@ -221,13 +217,12 @@
 
 .progressbar-last-green {
 	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
-	-fx-background-insets: 0, 1 1 1 0, 1 1 1 0, 3 3 3 0, 4 4 4 0;
+	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1, 3 3 3 1, 4 4 4 1;
 	-fx-background-radius: 0 8 8 0, 0 8 8 0, 0 6 6 0, 0 5 5 0;
 }
 
 .progressbar-piece-yellow {
 	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#f6e20e 0%, #c6b20c 100%), linear-gradient(#ffec1e 0%, #fee300 100%);
-	-fx-background-insets: 0, 1 1 1 0, 1 1 1 0, 3 1 3 0, 4 1 4 0;
 	-fx-effect: null;
 	/*-fx-effect: innershadow(two-pass-box, rgba(0, 0, 0, 0.18), 5, 0, 0, 2);*/
 }
@@ -240,7 +235,7 @@
 
 .progressbar-last-yellow {
 	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#f6e20e 0%, #c6b20c 100%), linear-gradient(#ffec1e 0%, #fee300 100%);
-	-fx-background-insets: 0, 1 1 1 0, 1 1 1 0, 3 3 3 0, 4 4 4 0;
+	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1, 3 3 3 0, 4 4 4 1;
 	-fx-background-radius: 0 8 8 0, 0 8 8 0, 0 6 6 0, 0 5 5 0;
 }
 
