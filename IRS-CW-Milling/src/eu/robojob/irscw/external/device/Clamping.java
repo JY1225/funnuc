@@ -1,8 +1,15 @@
 package eu.robojob.irscw.external.device;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import eu.robojob.irscw.positioning.Coordinates;
 
 public class Clamping {
+	
+	enum Type {
+		CENTRUM, FIXED
+	}
 	
 	private String id;
 	private WorkArea correspondingWorkArea;
@@ -11,8 +18,11 @@ public class Clamping {
 	private Coordinates smoothFromPoint;
 	private float height;
 	private String imageURL;
+	private Type type;
 	
-	public Clamping(String id, float height, Coordinates relativePosition, Coordinates smoothToPoint,
+	private Set<Clamping> relatedClampings;
+	
+	public Clamping(Type type, String id, float height, Coordinates relativePosition, Coordinates smoothToPoint,
 				Coordinates smoothFromPoint, String imageURL) {
 		this.id = id;
 		this.height = height;
@@ -20,11 +30,24 @@ public class Clamping {
 		this.smoothToPoint = smoothToPoint;
 		this.smoothFromPoint = smoothFromPoint;
 		this.imageURL = imageURL;
+		this.relatedClampings = new HashSet<Clamping>();
+		this.type = type;
 	}
 	
-	public Clamping(String id, float height, Coordinates relativePosition, Coordinates smoothPoint,
-			String imageURL) {
-		this(id, height, relativePosition, smoothPoint, smoothPoint, imageURL);
+	public void addRelatedClamping(Clamping clamping) {
+		relatedClampings.add(clamping);
+	}
+	
+	public void removeRelatedClamping(Clamping clamping) {
+		relatedClampings.remove(clamping);
+	}
+	
+	public Set<Clamping> getRelatedClampings() {
+		return relatedClampings;
+	}
+	
+	public Clamping(Type type, String id, float height, Coordinates relativePosition, Coordinates smoothPoint, String imageURL) {
+		this(type, id, height, relativePosition, smoothPoint, smoothPoint, imageURL);
 	}
 
 	public String getId() {
