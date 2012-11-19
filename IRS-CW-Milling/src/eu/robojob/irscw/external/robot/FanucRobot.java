@@ -239,7 +239,7 @@ public class FanucRobot extends AbstractRobot {
 	public void initiatePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;		
 		// write service gripper set
-		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
+		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripperHead().getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
 		// write service handling set
 		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
 		if (fPickSettings.doMachineAirblow) {
@@ -250,7 +250,7 @@ public class FanucRobot extends AbstractRobot {
 		// write service point set
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
 		//pickLocation.offset(new Coordinates(0, 0, fPickSettings.getWorkPiece().getDimensions().getHeight(), 0, 0, 0));
-		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClamping());
+		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getWorkArea().getActiveClamping());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK);
 		// write start service
@@ -267,19 +267,19 @@ public class FanucRobot extends AbstractRobot {
 	public void initiatePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
 		// write service gripper set
-		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
+		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripperHead().getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
 		// write service handling set
 		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
 		if (fPutSettings.doMachineAirblow) {
 			ppMode = ppMode | FanucRobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 			logger.info("ALSO SENT: AIRBLOW!!");
 		}
-		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripper().getWorkPiece().getDimensions());
+		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
 		// write service point set
-		if (fPutSettings.getGripper().getWorkPiece() == null) {
+		if (fPutSettings.getGripperHead().getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
 		}
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClamping());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT);
 		//TODO in progress
@@ -304,7 +304,7 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
-		pickSettings.getGripper().setWorkPiece(pickSettings.getWorkPiece());
+		pickSettings.getGripperHead().getGripper().setWorkPiece(pickSettings.getWorkPiece());
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
 		boolean waitingForPickFinished = waitForStatus(FanucRobotConstants.STATUS_PICK_FINISHED, MOVE_FINISH_TIMEOUT);
 		if (waitingForPickFinished) {
@@ -318,14 +318,14 @@ public class FanucRobot extends AbstractRobot {
 	public void initiateTeachedPick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;		
 		// write service gripper set
-		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
+		writeServiceGripperSet(fPickSettings.getGripperHead(), fPickSettings.getGripperHead().getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
 		// write service handling set
 		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH | FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
 		writeServiceHandlingSet(pickSettings.isFreeAfter(), ppMode, pickSettings.getWorkPiece().getDimensions());
 		// write service point set
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
 		//pickLocation.offset(new Coordinates(0, 0, fPickSettings.getWorkPiece().getDimensions().getHeight(), 0, 0, 0));
-		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getClamping());
+		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getWorkArea().getActiveClamping());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PICK);
 		// write start service
@@ -357,15 +357,15 @@ public class FanucRobot extends AbstractRobot {
 	public void initiateTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
 		// write service gripper set
-		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
+		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripperHead().getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
 		// write service handling set
 		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH | FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
-		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripper().getWorkPiece().getDimensions());
+		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
 		// write service point set
-		if (fPutSettings.getGripper().getWorkPiece() == null) {
+		if (fPutSettings.getGripperHead().getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
 		}
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClamping());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT);
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
@@ -399,15 +399,15 @@ public class FanucRobot extends AbstractRobot {
 	public void moveToAndWait(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
 		// write service gripper set
-		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT);
+		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripperHead().getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT);
 		// write service handling set
 		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
-		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripper().getWorkPiece().getDimensions());
+		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
 		// write service point set
-		if (fPutSettings.getGripper().getWorkPiece() == null) {
+		if (fPutSettings.getGripperHead().getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing move-to-and-wait, the gripper should contain a workpiece");
 		}
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClamping());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
 		//TODO in progress
@@ -423,15 +423,15 @@ public class FanucRobot extends AbstractRobot {
 	public void teachedMoveToAndWait(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException {
 		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
 		// write service gripper set
-		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT);
+		writeServiceGripperSet(fPutSettings.getGripperHead(), fPutSettings.getGripperHead().getGripper(), FanucRobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT);
 		// write service handling set
 		int ppMode = FanucRobotConstants.SERVICE_HANDLING_PP_MODE_TEACH | FanucRobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
-		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripper().getWorkPiece().getDimensions());
+		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
 		// write service point set
-		if (fPutSettings.getGripper().getWorkPiece() == null) {
+		if (fPutSettings.getGripperHead().getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException("When executing put, the gripper should contain a workpiece");
 		}
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripper().getWorkPiece().getDimensions(), fPutSettings.getClamping());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
 		// write command
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
@@ -619,13 +619,13 @@ public class FanucRobot extends AbstractRobot {
 
 		protected boolean doMachineAirblow;
 
-		public FanucRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, Clamping clamping, WorkPiece workPiece) {
-			super(workArea, gripperHead, gripper, smoothPoint, location, clamping, workPiece);
+		public FanucRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Coordinates smoothPoint, Coordinates location, WorkPiece workPiece) {
+			super(workArea, gripperHead, smoothPoint, location, workPiece);
 			this.doMachineAirblow = false;
 		}
 		
 		public FanucRobotPickSettings() {
-			super(null, null, null, null, null, null, null);
+			super(null, null, null, null, null);
 			this.doMachineAirblow = false;
 		}
 		
@@ -642,8 +642,8 @@ public class FanucRobot extends AbstractRobot {
 
 		protected boolean doMachineAirblow;
 		
-		public FanucRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, Clamping clamping) {
-			super(workArea, gripperHead, gripper, smoothPoint, location, clamping);
+		public FanucRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Coordinates smoothPoint, Coordinates location) {
+			super(workArea, gripperHead, smoothPoint, location);
 			this.doMachineAirblow = false;
 		}
 		
@@ -656,7 +656,7 @@ public class FanucRobot extends AbstractRobot {
 		}
 
 		public FanucRobotPutSettings() {
-			super(null, null, null, null, null, null);
+			super(null, null, null, null);
 		}
 	}
 	
@@ -732,8 +732,7 @@ public class FanucRobot extends AbstractRobot {
 		FanucRobotPickSettings fanucPickSettings = (FanucRobotPickSettings) pickSettings;
 		if ( 
 				(fanucPickSettings.getGripperHead() != null) &&
-				(fanucPickSettings.getGripper() != null) && 
-				(getGripperBody().getActiveGripper(fanucPickSettings.getGripperHead()).equals(fanucPickSettings.getGripper())) &&
+				(getGripperBody().getActiveGripper(fanucPickSettings.getGripperHead()).equals(fanucPickSettings.getGripperHead().getGripper())) &&
 				(fanucPickSettings.getSmoothPoint() != null) &&
 				(fanucPickSettings.getWorkArea() != null) &&
 				(fanucPickSettings.getWorkPiece() != null)
@@ -750,8 +749,7 @@ public class FanucRobot extends AbstractRobot {
 		FanucRobotPutSettings fanucPutSettings = (FanucRobotPutSettings) putSettings;
 		if ( 
 				(fanucPutSettings.getGripperHead() != null) &&
-				(fanucPutSettings.getGripper() != null) && 
-				(getGripperBody().getActiveGripper(fanucPutSettings.getGripperHead()).equals(fanucPutSettings.getGripper())) &&
+				(getGripperBody().getActiveGripper(fanucPutSettings.getGripperHead()).equals(fanucPutSettings.getGripperHead().getGripper())) &&
 				(fanucPutSettings.getSmoothPoint() != null) &&
 				(fanucPutSettings.getWorkArea() != null)
 			) {

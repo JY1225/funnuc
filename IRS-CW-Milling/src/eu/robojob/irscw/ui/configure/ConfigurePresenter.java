@@ -252,18 +252,14 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		
 		FanucRobotPutSettings robotPutSettings = new FanucRobot.FanucRobotPutSettings();
 		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobot().getGripperBody().getGripperHead("A"));
-		robotPutSettings.setGripper(deviceInfo.getPickStep().getRobot().getGripperBody().getGripper("2P clamp grip"));
 		robotPutSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getClampingById("Clamping 5").getSmoothToPoint()));
-		robotPutSettings.setClamping(prageDevice.getWorkAreaById("Präge").getClampingById("Clamping 5"));
 		robotPutSettings.setWorkArea(prageDevice.getWorkAreaById("Präge"));
 		robotPutSettings.setDoMachineAirblow(false);	
 		
 		FanucRobotPickSettings robotPickSettings = new FanucRobot.FanucRobotPickSettings();
 		robotPickSettings.setGripperHead(deviceInfo.getPickStep().getRobot().getGripperBody().getGripperHead("A"));
-		robotPickSettings.setGripper(deviceInfo.getPickStep().getRobot().getGripperBody().getGripper("2P clamp grip"));
 		robotPickSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getClampingById("Clamping 5").getSmoothFromPoint()));
 		robotPickSettings.setWorkArea(prageDevice.getWorkAreaById("Präge"));
-		robotPickSettings.setClamping(prageDevice.getWorkAreaById("Präge").getActiveClamping());
 		WorkPieceDimensions dimensions1 = new WorkPieceDimensions(125.8f, 64.9f, 40);
 		WorkPiece workPiece1 = new WorkPiece(WorkPiece.Type.RAW, dimensions1);
 		robotPickSettings.setWorkPiece(workPiece1);
@@ -278,11 +274,14 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		newDeviceInfo.setProcessingStep(processing2);
 		
 		processFlowAdapter.addDeviceSteps(index, newDeviceInfo);
+		
+		deviceMenuFactory.reset();
 		refresh();
 	}
 	
 	public void removeDevice(int index) {
 		processFlowAdapter.removeDeviceSteps(index);
+		deviceMenuFactory.reset();
 		refresh();
 	}
 	
@@ -297,7 +296,8 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		
 		if (processFlowAdapter != null) {
 			for (int i = 0; i < processFlowAdapter.getDeviceStepCount(); i++) {
-				if ((deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)) != null) && (deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)).isConfigured())){
+				AbstractMenuPresenter<?> menu = deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i));
+				if ((menu != null) && (menu.isConfigured())){
 					processFlowPresenter.setDeviceConfigured(i, true);
 				} else {
 					if (deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)) != null) {

@@ -108,19 +108,15 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		
 		protected WorkArea workArea;
 		protected GripperHead gripperHead;
-		protected Gripper gripper;
 		protected Coordinates smoothPoint;
 		protected Coordinates location;
-		protected Clamping clamping; 
 		protected boolean freeAfter;
 		
-		public AbstractRobotActionSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, Clamping clamping) {
+		public AbstractRobotActionSettings(WorkArea workArea, GripperHead gripperHead, Coordinates smoothPoint, Coordinates location) {
 			this.workArea = workArea;
-			this.gripper = gripper;
 			this.gripperHead = gripperHead;
 			this.smoothPoint = smoothPoint;
 			this.location = location;
-			this.clamping = clamping;
 			this.freeAfter = false;
 		}
 		
@@ -134,9 +130,6 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 
 		public WorkArea getWorkArea() {
 			return workArea;
-		}
-		public Gripper getGripper() {
-			return gripper;
 		}
 		public GripperHead getGripperHead() {
 			return gripperHead;
@@ -159,23 +152,14 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		public void setWorkArea(WorkArea workArea) {
 			this.workArea = workArea;
 		}
-		public void setGripper(Gripper gripper) {
-			this.gripper = gripper;
-		}
-		public Clamping getClamping() {
-			return clamping;
-		}
-		public void setClamping(Clamping clamping) {
-			this.clamping = clamping;
-		}
 	}
 	
 	public static abstract class AbstractRobotPickSettings extends AbstractRobotActionSettings {
 		protected PickStep pickStep;
 		protected WorkPiece workPiece;
 
-		public AbstractRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, Clamping clamping, WorkPiece workPiece) {
-			super(workArea, gripperHead, gripper, smoothPoint, location, clamping);
+		public AbstractRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Coordinates smoothPoint, Coordinates location, WorkPiece workPiece) {
+			super(workArea, gripperHead, smoothPoint, location);
 			this.workPiece = workPiece;
 		}
 
@@ -202,8 +186,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		
 		protected PutStep putStep;
 		
-		public AbstractRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Gripper gripper, Coordinates smoothPoint, Coordinates location, Clamping clamping) {
-			super(workArea, gripperHead, gripper, smoothPoint, location, clamping);
+		public AbstractRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Coordinates smoothPoint, Coordinates location) {
+			super(workArea, gripperHead, smoothPoint, location);
 		}
 
 		public PutStep getPutStep() {

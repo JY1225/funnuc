@@ -42,7 +42,7 @@ public class FanucRobotCommunicationTest {
 		Gripper gripper = fanucRobot.getGripperBody().getGripper("Vacuum grip");
 		
 		WorkPiece wp = new WorkPiece(Type.RAW, new WorkPieceDimensions(100, 40, 100));
-		pickSettings = new FanucRobotPickSettings(wa, head, gripper, wa.getActiveClamping().getSmoothFromPoint(), new Coordinates(5, 5, 5, 0, 0, 0), wa.getActiveClamping(),wp);
+		pickSettings = new FanucRobotPickSettings(wa, head, wa.getActiveClamping().getSmoothFromPoint(), new Coordinates(5, 5, 5, 0, 0, 0),wp);
 		
 		this.cncMillingMachine = (CNCMillingMachine) deviceManager.getDeviceById("Mazak VRX J500");
 		WorkArea wa2 = cncMillingMachine.getWorkAreaById("Mazak VRX Main");
@@ -50,11 +50,11 @@ public class FanucRobotCommunicationTest {
 		Coordinates point = cncMillingMachine.getPickLocation(wa2);
 		System.out.println(point);
 		point.setR(-45);
-		putSettings = new FanucRobotPutSettings(wa2, head, gripper, wa2.getActiveClamping().getSmoothToPoint(), point, wa2.getActiveClamping());
+		putSettings = new FanucRobotPutSettings(wa2, head, wa2.getActiveClamping().getSmoothToPoint(), point);
 		
-		pickInMachineSettings = new FanucRobotPickSettings(wa2, head, gripper, wa2.getActiveClamping().getSmoothFromPoint(),cncMillingMachine.getPutLocation(wa2, wp.getDimensions()), wa2.getActiveClamping(), wp);
+		pickInMachineSettings = new FanucRobotPickSettings(wa2, head, wa2.getActiveClamping().getSmoothFromPoint(),cncMillingMachine.getPutLocation(wa2, wp.getDimensions()), wp);
 		
-		pickInMachineW2Settings = new FanucRobotPickSettings(wa2, head2, gripper, wa2.getActiveClamping().getSmoothFromPoint(),cncMillingMachine.getPutLocation(wa2, wp.getDimensions()), wa2.getActiveClamping(), wp);
+		pickInMachineW2Settings = new FanucRobotPickSettings(wa2, head2, wa2.getActiveClamping().getSmoothFromPoint(),cncMillingMachine.getPutLocation(wa2, wp.getDimensions()), wp);
 	}
 	
 	@Ignore

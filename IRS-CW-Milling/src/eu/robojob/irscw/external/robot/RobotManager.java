@@ -43,8 +43,9 @@ public class RobotManager {
 		Set<GripperBody> gripperBodies = new HashSet<GripperBody>();
 		gripperBodies.add(gripperBody);
 		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.200.9", 2001);
-		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "10.10.40.12", 2001);
-		SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.220.7", 2001);
+		SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "10.10.40.12", 2001);
+		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.220.7", 2001);
+		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.0.102", 2001);
 		FanucRobot fanucRobot = new FanucRobot("Fanuc M20iA", gripperBodies, gripperBody, connection);
 		addRobot(fanucRobot);
 	}

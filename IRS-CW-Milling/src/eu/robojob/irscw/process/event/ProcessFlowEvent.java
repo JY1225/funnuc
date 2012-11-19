@@ -31,4 +31,21 @@ public class ProcessFlowEvent {
 	public long getWhen() {
 		return when;
 	}
+	
+	@Override
+	public String toString() {
+		switch (id) {
+		case MODE_CHANGED:
+			return "ProcessFlowEvent: MODE CHANGED: ";
+		case ACTIVE_STEP_CHANGED:
+			return "ProcessFlowEvent: ACTIVE_STEP_CHANGED: ";
+		case EXCEPTION_OCCURED:
+			return "ProcessFlowEvent: EXCEPTION_OCCURED: ";
+		case DATA_CHANGED:
+			return "ProcessFlowEvent: DATA_CHANGED: ";
+		case FINISHED_AMOUNT_CHANGED:
+			return "ProcessFlowEvent: FINISHED_AMOUNT_CHANGED: ";
+		}
+		return "ProcessFlowEvent: ";
+	}
 }

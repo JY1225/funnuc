@@ -46,7 +46,7 @@ public class PickAfterWaitStep extends PickStep {
 				device.releasePiece(pickSettings);
 				logger.debug("Device released piece, about to move away");
 				robot.moveAway(robotPickSettings);
-				robotPickSettings.getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
+				robotPickSettings.getGripperHead().getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
 				device.pickFinished(pickSettings);
 				logger.debug("Pick finished");
 			}

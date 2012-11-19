@@ -37,8 +37,8 @@ public class ProcessFlow {
 	private Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> deviceSettings;
 	private Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> robotSettings;
 		
-	private int totalAmount;
-	private int finishedAmount;
+	private Integer totalAmount;
+	private Integer finishedAmount;
 	
 	private boolean needsTeaching;
 	
@@ -152,15 +152,15 @@ public class ProcessFlow {
 		this.listeners.remove(listener);
 	}
 	
-	public int getTotalAmount() {
+	public Integer getTotalAmount() {
 		return totalAmount;
 	}
 
-	public void setTotalAmount(int totalAmount) {
+	public void setTotalAmount(Integer totalAmount) {
 		this.totalAmount = totalAmount;
 	}
 
-	public int getFinishedAmount() {
+	public Integer getFinishedAmount() {
 		return finishedAmount;
 	}
 	
@@ -174,6 +174,7 @@ public class ProcessFlow {
 	}
 
 	public void processProcessFlowEvent(ProcessFlowEvent event) {
+		logger.info("processing event: " + event);
 		switch(event.getId()) {
 			case ProcessFlowEvent.MODE_CHANGED:
 				for (ProcessFlowListener listener : listeners) {
@@ -284,6 +285,7 @@ public class ProcessFlow {
 			throw new IllegalArgumentException("Could not find this step");
 		} else {
 			processSteps.add(processSteps.indexOf(step) + 1, newStep);
+			newStep.setProcessFlow(this);
 			processProcessFlowEvent(new DataChangedEvent(this, step, true));
 		}
 	}
@@ -293,6 +295,7 @@ public class ProcessFlow {
 			throw new IllegalArgumentException("Could not find this step");
 		} else {
 			processSteps.add(processSteps.indexOf(step), newStep);
+			newStep.setProcessFlow(this);
 			processProcessFlowEvent(new DataChangedEvent(this, step, true));
 		}
 	}

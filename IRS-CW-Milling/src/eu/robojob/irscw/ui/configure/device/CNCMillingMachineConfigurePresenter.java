@@ -103,8 +103,8 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		CNCMillingMachineSettings settings = (CNCMillingMachineSettings) deviceInfo.getDeviceSettings();
 		settings.setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
 		deviceInfo.getDevice().loadDeviceSettings(settings);
-		deviceInfo.getPickStep().getRobotSettings().setClamping(clamping);
-		deviceInfo.getPutStep().getRobotSettings().setClamping(clamping);
+		((CNCMillingMachineSettings) deviceInfo.getPickStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
+		((CNCMillingMachineSettings) deviceInfo.getPutStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), clamping);
 		deviceInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPutStep().getProcessFlow(), deviceInfo.getPutStep(), true));
 		deviceInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPickStep().getProcessFlow(), deviceInfo.getPickStep(), true));
 	}

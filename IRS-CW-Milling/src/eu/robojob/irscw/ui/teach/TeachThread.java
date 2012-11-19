@@ -70,8 +70,12 @@ public class TeachThread extends Thread {
 				processFlow.nextStep();
 			}
 			processFlow.restart();
-			processFlow.setMode(Mode.READY);
-			this.running = false;
+			if (running) {
+				processFlow.setMode(Mode.READY);
+				this.running = false;
+			} else {
+				processFlow.setMode(Mode.STOPPED);
+			}
 		} catch(CommunicationException | RobotActionException | DeviceActionException e) {
 			notifyException(e);
 			processFlow.setMode(Mode.STOPPED);
@@ -104,6 +108,7 @@ public class TeachThread extends Thread {
 			for (AbstractDevice device :processFlow.getDevices()) {
 				device.stopCurrentAction();
 			}
+			running = false;
 		}
 	}
 	

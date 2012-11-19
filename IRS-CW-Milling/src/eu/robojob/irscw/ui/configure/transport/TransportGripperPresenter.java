@@ -45,14 +45,10 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 			}
 		}
 		if (!found) {
-			if ((transportInfo.getPickStep().getRobotSettings().getGripper() != null) && transportInfo.getPickStep().getRobotSettings().getGripper().equals(gripper)) {
+			if ((transportInfo.getPickStep().getRobotSettings().getGripperHead().getGripper() != null) && transportInfo.getPickStep().getRobotSettings().getGripperHead().getGripper().equals(gripper)) {
 				// deselect gripper
-				transportInfo.getPickStep().getRobotSettings().setGripper(null);
-				transportInfo.getPutStep().getRobotSettings().setGripper(null);
 				robotSettings.setGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead(), null);
 			} else {
-				transportInfo.getPickStep().getRobotSettings().setGripper(gripper);
-				transportInfo.getPutStep().getRobotSettings().setGripper(gripper);
 				robotSettings.setGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead(), gripper);
 			}
 			transportInfo.getRobot().loadRobotSettings(robotSettings);
@@ -66,7 +62,7 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 
 	@Override
 	public boolean isConfigured() {
-		if ((transportInfo.getPickStep().getRobotSettings().getGripper() != null) && (transportInfo.getPutStep().getRobotSettings().getGripper() != null)) {
+		if (robotSettings.getGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead()) != null) {
 			return true;
 		} else {
 			return false;

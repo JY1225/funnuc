@@ -114,8 +114,8 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 	public void setSelectedGripper() {
 		ifsGrippers.deselectAll();
 		if (transportInfo.getPickStep().getRobotSettings() != null) {
-			if (transportInfo.getPickStep().getRobotSettings().getGripper() != null) {
-				ifsGrippers.setSelected(transportInfo.getPickStep().getRobotSettings().getGripper().getId());
+			if (transportInfo.getPickStep().getRobotSettings().getGripperHead().getGripper() != null) {
+				ifsGrippers.setSelected(transportInfo.getPickStep().getRobotSettings().getGripperHead().getGripper().getId());
 			} 
 		} 
 	}

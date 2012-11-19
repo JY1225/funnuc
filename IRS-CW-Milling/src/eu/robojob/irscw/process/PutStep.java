@@ -58,14 +58,14 @@ public class PutStep extends AbstractTransportStep {
 					if (teachedOffset == null) {
 						throw new IllegalStateException("Unknown teached position");
 					} else {
-						Coordinates position = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
+						Coordinates position = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions()));
 						logger.debug("Normal coordinates: " + position);
 						position.offset(teachedOffset);
 						logger.debug("Coordinates after adding teached offset: " + position);
 						robotPutSettings.setLocation(position);
 					}
 				} else {
-					Coordinates position = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
+					Coordinates position = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions()));
 					/*// no offset needed? sometimes there is! use offset of corresponding pick!
 					// getting pick step:
 					PickStep pickStep = (PickStep) processFlow.getStep(processFlow.getStepIndex(this) - 1);
@@ -101,7 +101,7 @@ public class PutStep extends AbstractTransportStep {
 				logger.debug("Preparing device...");
 				device.prepareForPut(putSettings);
 				logger.debug("Device prepared...");
-				Coordinates coordinates = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
+				Coordinates coordinates = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions()));
 				logger.info("Coordinates before teaching: " + coordinates);
 				robotPutSettings.setLocation(coordinates);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_EXECUTE_TEACHED));
@@ -122,10 +122,10 @@ public class PutStep extends AbstractTransportStep {
 			} else {
 				logger.debug("Teaching finished");
 				Coordinates coordinates = new Coordinates(robot.getPosition());
-				Coordinates oldCoordinates = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
+				Coordinates oldCoordinates = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions()));
 				this.teachedOffset = coordinates.calculateOffset(oldCoordinates);
 				logger.debug("The teached offset is: " + teachedOffset);
-				robotPutSettings.setLocation(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripper().getWorkPiece().getDimensions()));
+				robotPutSettings.setLocation(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions()));
 				logger.debug("About to ask device to grab piece");
 				device.grabPiece(putSettings);
 				logger.debug("Device grabbed piece, about to finalize put");

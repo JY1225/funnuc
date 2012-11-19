@@ -15,4 +15,9 @@ public class ModeChangedEvent extends ProcessFlowEvent {
 	public Mode getMode() {
 		return mode;
 	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + " - " + mode;
+	}
 }

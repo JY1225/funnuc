@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceType;
@@ -129,7 +130,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		c.offset(new Coordinates(0, workPieceDimensions.getWidth()/2, 0, 0, 0, 0));
-		c.offset(new Coordinates(0, workPieceDimensions.getLength()/2, 0, 0, 0, 90));
+		//c.offset(new Coordinates(0, workPieceDimensions.getLength()/2, 0, 0, 0, 90));
 		return c;
 	}
 	
@@ -142,6 +143,10 @@ public class PrageDevice extends AbstractProcessingDevice {
 	@Override
 	public DeviceType getType() {
 		return DeviceType.PRE_PROCESSING;
+	}
+	
+	public static class PrageDeviceSettings extends AbstractDevice.AbstractDeviceSettings {
+		
 	}
 	
 	public static class PrageDevicePickSettings extends AbstractProcessingDevice.AbstractProcessingDevicePickSettings {

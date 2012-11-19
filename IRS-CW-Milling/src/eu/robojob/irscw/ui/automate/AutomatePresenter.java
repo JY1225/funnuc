@@ -117,6 +117,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	
 	// we assume all devices are connected, so no extra check is done
 	private void enable() {
+		processFlowPresenter.refresh();
 		for (AbstractDevice device : processFlow.getDevices()) {
 			if (device instanceof AbstractCNCMachine) {
 				AbstractCNCMachine machine = (AbstractCNCMachine) device;

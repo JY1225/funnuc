@@ -175,19 +175,19 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 		private WorkPiece workPiece;
 		private WorkPieceOrientation orientation;
-		private int amount;
+		private Integer amount;
 		
-		public BasicStackPlateSettings(WorkPieceDimensions dimensions, WorkPieceOrientation orientation, int amount) {
+		public BasicStackPlateSettings(WorkPieceDimensions dimensions, WorkPieceOrientation orientation, Integer amount) {
 			this(new WorkPiece(WorkPiece.Type.RAW, dimensions), orientation, amount);
 		}
 		
-		public BasicStackPlateSettings(WorkPiece workPiece, WorkPieceOrientation orientation, int amount) {
+		public BasicStackPlateSettings(WorkPiece workPiece, WorkPieceOrientation orientation, Integer amount) {
 			this.amount = amount;
 			this.orientation = orientation;
 			this.workPiece = workPiece;
 		}
 
-		public int getAmount() {
+		public Integer getAmount() {
 			return amount;
 		}
 
@@ -203,7 +203,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			this.orientation = orientation;
 		}
 
-		public void setAmount(int amount) {
+		public void setAmount(Integer amount) {
 			this.amount = amount;
 		}
 		
