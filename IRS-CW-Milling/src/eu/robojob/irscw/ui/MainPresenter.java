@@ -2,12 +2,18 @@ package eu.robojob.irscw.ui;
 
 import javafx.application.Platform;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
+import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
+import eu.robojob.irscw.process.event.ModeChangedEvent;
+import eu.robojob.irscw.process.event.ProcessFlowEvent;
+import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.robot.RobotPopUpPresenter;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
 
-public class MainPresenter {
+public class MainPresenter implements ProcessFlowListener {
 
 	private MainView view;
 	
@@ -125,10 +131,14 @@ public class MainPresenter {
 	}
 	
 	public void loadProcessFlow(ProcessFlow process) {
+		if (this.process != null) {
+			this.process.removeListener(this);
+		}
 		this.process = process;
 		configurePresenter.loadProcessFlow(process);
 		teachPresenter.loadProcessFlow(process);
 		automatePresenter.loadProcessFlow(process);
+		this.process.addListener(this);
 	}
 	
 	public void showMessage(String message) {
@@ -146,4 +156,16 @@ public class MainPresenter {
 	public void exit() {
 		Platform.exit();
 	}
+
+	@Override public void modeChanged(ModeChangedEvent e) {}
+	@Override public void activeStepChanged(ActiveStepChangedEvent e) {}
+	@Override public void exceptionOccured(ExceptionOccuredEvent e) {}
+	@Override public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
+	
+	@Override
+	public void dataChanged(ProcessFlowEvent e) {
+		refreshStatus();
+	}
+
+	
 }

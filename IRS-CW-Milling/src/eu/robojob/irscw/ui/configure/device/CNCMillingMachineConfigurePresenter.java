@@ -10,8 +10,10 @@ import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineP
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
+import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
@@ -148,13 +150,29 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		DataChangedEvent de = (DataChangedEvent) e;
 		if (de.getStep() instanceof PickStep) {
 			int changedStepIndex = processFlow.getStepIndex(de.getStep());
-			int currentStepIndex = processFlow.getStepIndex(deviceInfo.getPickStep());
-			//TODO testen!
-			if ((changedStepIndex < currentStepIndex) && ((currentStepIndex-changedStepIndex == 3) && !(deviceInfo.hasInterventionStepAfterPut() || deviceInfo.hasInterventionStepBeforePick())) ||
-					((currentStepIndex-changedStepIndex < 5) && (deviceInfo.hasInterventionStepAfterPut() || deviceInfo.hasInterventionStepBeforePick()))) {
-				PickStep prevPickStep = (PickStep) de.getStep();
-				deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getDimensions().setLength(prevPickStep.getRobotSettings().getWorkPiece().getDimensions().getLength());
-				deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getDimensions().setWidth(prevPickStep.getRobotSettings().getWorkPiece().getDimensions().getWidth());
+			int currentStepIndex = processFlow.getStepIndex(deviceInfo.getPutStep());
+			//TODO NOT ALWAYS CORRECT!
+			if (changedStepIndex >= 0) {
+				if (changedStepIndex < currentStepIndex) {
+					boolean invasiveSteps = false;
+					for (int i = changedStepIndex; i < currentStepIndex; i++) {
+						AbstractProcessStep step = processFlow.getStep(i);
+						if (step instanceof ProcessingStep){
+							if (((ProcessingStep) step).getDevice().isInvasive()) {
+								invasiveSteps = true;
+							}
+								
+						}
+					}
+					if (!invasiveSteps) {
+						PickStep prevPickStep = (PickStep) de.getStep();
+						deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getDimensions().setLength(prevPickStep.getRobotSettings().getWorkPiece().getDimensions().getLength());
+						deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getDimensions().setWidth(prevPickStep.getRobotSettings().getWorkPiece().getDimensions().getWidth());
+						if (deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getDimensions().getHeight() > prevPickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight()) {
+							deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getDimensions().setHeight(prevPickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight());
+						}
+					}
+				}
 			}
 		}
 	}

@@ -270,13 +270,11 @@ public class ProcessFlow {
 	
 	public void removeStep (AbstractProcessStep step) {
 		processSteps.remove(step);
-		processProcessFlowEvent(new DataChangedEvent(this, step, false));
 	}
 	
 	public void removeSteps(List<AbstractProcessStep> steps) {
 		processSteps.removeAll(steps);
 		for (AbstractProcessStep step : steps) {
-			processProcessFlowEvent(new DataChangedEvent(this, step, false));
 		}
 	}
 	
@@ -286,7 +284,6 @@ public class ProcessFlow {
 		} else {
 			processSteps.add(processSteps.indexOf(step) + 1, newStep);
 			newStep.setProcessFlow(this);
-			processProcessFlowEvent(new DataChangedEvent(this, step, true));
 		}
 	}
 	
@@ -296,7 +293,6 @@ public class ProcessFlow {
 		} else {
 			processSteps.add(processSteps.indexOf(step), newStep);
 			newStep.setProcessFlow(this);
-			processProcessFlowEvent(new DataChangedEvent(this, step, true));
 		}
 	}
 	

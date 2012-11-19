@@ -51,21 +51,18 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 		logger.info("changed width");
 		dimensions.setWidth(width);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
-		pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	public void changedLength(float length) {
 		dimensions.setLength(length);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
-		pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	public void changedHeight(float height) {
 		dimensions.setHeight(height);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
-		pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
@@ -88,7 +85,7 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
 		if (
 				(dimensions != null) && (orientation != null) &&
-					(plate.getLayout().getStackingPositions() != null) && (plate.getLayout().getStackingPositions().size() > 0)
+					(plate.getLayout().getStackingPositions() != null) && (plate.getLayout().getStackingPositions().size() > 0) && (plate.getLayout().getStackingPositions().get(0).getWorkPiece() != null)
 			) {
 			return true;
 		} else {

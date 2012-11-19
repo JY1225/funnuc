@@ -82,7 +82,7 @@ public class MenuBarView extends ToolBar {
 		
 		btnAlarms = new Button();
 		btnAlarms.setGraphic(alarmsShape);
-		
+		btnAlarms.setDisable(true);
 		btnAlarms.setPrefSize(BTN_WIDTH_SMALL, BTN_HEIGHT);
 		btnAlarms.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
@@ -104,6 +104,7 @@ public class MenuBarView extends ToolBar {
 				presenter.clickedAdmin();
 			}
 		});
+		btnAdmin.setDisable(true);
 		btnAdmin.getStyleClass().add("header-button");
 		btnAdmin.setId("btnAdmin");
 		

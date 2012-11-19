@@ -19,12 +19,8 @@ public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicS
 		view.setPresenter(this);
 	}
 
-	public void notifyIncorrectWorkPieceDate() {
-		//TODO implement
-	}
-
 	@Override
 	public boolean isConfigured() {
-		return (basicStackPlate.getLayout().getStackingPositions().size() > 0);
+		return ((basicStackPlate.getLayout().getStackingPositions().size() > 0) && (basicStackPlate.getLayout().getStackingPositions().get(0).getWorkPiece() != null) );
 	}
 }

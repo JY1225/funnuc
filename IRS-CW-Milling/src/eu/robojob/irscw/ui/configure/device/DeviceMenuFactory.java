@@ -35,7 +35,6 @@ public class DeviceMenuFactory {
 	}
 	
 	public synchronized AbstractMenuPresenter<?> getDeviceMenu(DeviceInformation deviceInfo) {
-		logger.info("asked device menu for index: " + deviceInfo.getIndex());
 		AbstractMenuPresenter<?> menuPresenter = presentersBuffer.get(deviceInfo.getIndex());
 		if (menuPresenter == null) {
 			switch(deviceInfo.getType()) {

@@ -99,8 +99,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	}
 	
 	private void setMode(Mode mode) {
-		logger.info("setting mode: " + mode + " previous mode: " + this.mode);
-		if (this.mode != null) {
+		if ((this.mode != null) && this.mode != mode) {
 			if ((this.mode == Mode.RUNNING) && (mode == Mode.PAUSED)) {
 				if (startingTimeCurrentStep != -1) {
 					otherTimeCurrentStep += System.currentTimeMillis() - startingTimeCurrentStep;

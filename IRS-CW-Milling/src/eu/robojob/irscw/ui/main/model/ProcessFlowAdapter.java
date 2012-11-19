@@ -12,6 +12,7 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessStepType;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.process.event.DataChangedEvent;
 
 public class ProcessFlowAdapter {
 
@@ -175,7 +176,9 @@ public class ProcessFlowAdapter {
 			} else {
 				processFlow.addStepAfter(prevDeviceInfo.getPutStep(), deviceInfo.getPickStep());
 			}
-					
+			
+			processFlow.processProcessFlowEvent(new DataChangedEvent(processFlow, deviceInfo.getPickStep(), true));
+			
 		} else {
 			throw new IllegalStateException("Amount of device-steps would be greater than maximum.");
 		}
