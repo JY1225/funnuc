@@ -7,15 +7,23 @@ import eu.robojob.irscw.external.robot.FanucRobotEvent;
 import eu.robojob.irscw.external.robot.FanucRobotListener;
 import eu.robojob.irscw.external.robot.FanucRobotStatusChangedEvent;
 import eu.robojob.irscw.external.robot.RobotActionException;
+import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
+import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
+import eu.robojob.irscw.process.event.ModeChangedEvent;
+import eu.robojob.irscw.process.event.ProcessFlowEvent;
+import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.ui.AbstractPopUpPresenter;
 
-public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> implements FanucRobotListener {
+public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> implements FanucRobotListener, ProcessFlowListener {
 
 	private FanucRobot robot;
 	
-	public RobotPopUpPresenter(RobotPopUpView view, FanucRobot robot) {
+	public RobotPopUpPresenter(RobotPopUpView view, FanucRobot robot, ProcessFlow processFlow) {
 		super(view);
 		this.robot = robot;
+		processFlow.addListener(this);
 		robot.addListener(this);
 		if (robot.isConnected()) {
 			view.refreshSpeed(robot.getSpeed());
@@ -89,5 +97,25 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	@Override
 	public void robotAlarmsOccured(FanucRobotAlarmsOccuredEvent event) {
 	}
+
+	@Override
+	public void modeChanged(ModeChangedEvent e) {
+		switch (e.getMode()) {
+			case AUTO:
+				view.setProcessActive(true);
+				break;
+			case TEACH: 
+				view.setProcessActive(true);
+				break;
+			default:
+				view.setProcessActive(false);
+				break;
+		}
+	}
+
+	@Override public void activeStepChanged(ActiveStepChangedEvent e) {}
+	@Override public void exceptionOccured(ExceptionOccuredEvent e) {}
+	@Override public void dataChanged(ProcessFlowEvent e) {}
+	@Override public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
 	
 }

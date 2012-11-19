@@ -154,4 +154,10 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 			refreshSpeed(0);
 		}
 	}
+	
+	public void setProcessActive(boolean active) {
+		btnReset.setDisable(active);
+		btnToHome.setDisable(active);
+		btnToChange.setDisable(active);
+	}
 }
