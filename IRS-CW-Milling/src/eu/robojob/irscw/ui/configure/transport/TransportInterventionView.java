@@ -134,17 +134,11 @@ public class TransportInterventionView extends AbstractFormView<TransportInterve
 		if ((transportInfo.getPutStep() != null) && (transportInfo.getPutStep() instanceof PutAndWaitStep)) {
 			btnInterventionAfterPut.setDisable(true);
 			itfInterventionAfterPutFrequency.setDisable(true);
-		} else {
-			btnInterventionAfterPut.setDisable(false);
-			itfInterventionAfterPutFrequency.setDisable(false);
-		}
+		} 
 		if ((transportInfo.getPickStep() != null) && (transportInfo.getPickStep() instanceof PickAfterWaitStep)) {
 			btnInterventionBeforePick.setDisable(true);
 			itfInterventionBeforePickFrequency.setDisable(true);
-		} else {
-			btnInterventionBeforePick.setDisable(false);
-			itfInterventionBeforePickFrequency.setDisable(false);
-		}
+		} 
 	}
 
 }
