@@ -93,10 +93,8 @@ public class ProcessFlowView extends GridPane  {
 				Region progressTransportRegion2 = new Region();
 				HBox.setHgrow(progressTransportRegion2, Priority.ALWAYS);
 				progressTransportRegion2.setPrefHeight(20);
-				progressTransportRegion2.getStyleClass().add("red");
 				progressTransportRegion2.getStyleClass().addAll("progressbar-piece-2of2");
 				progressTransportHBox.getChildren().addAll(progressTransportRegion1, progressTransportRegion2);
-				progressTransportHBox.getStyleClass().add("yellow");
 				this.add(progressTransportHBox, column, row + 1);
 				progressTransportRegionsLeft.put(i, progressTransportRegion1);
 				progressTransportRegionsRight.put(i, progressTransportRegion2);
@@ -147,13 +145,19 @@ public class ProcessFlowView extends GridPane  {
 					deviceButtons.get(i).setFocussed(false);
 				}
 			}
-			for (Region progressRegion : progressTransportRegionsLeft.values()) {
-				progressRegion.setDisable(true);
-				System.out.println("disabling region");
+			for (Region region : progressTransportRegionsLeft.values()) {
+				region.getStyleClass().remove("unfocussed");
+				region.getStyleClass().add("unfocussed");
 			}
-			for (Region progressRegion : progressTransportRegionsRight.values()) {
-				progressRegion.setDisable(true);
-				System.out.println("disabling region");
+			for (Region region : progressTransportRegionsRight.values()) {
+				region.getStyleClass().remove("unfocussed");
+				region.getStyleClass().add("unfocussed");
+			}
+			for (Entry<Integer, Region> entry : progressDeviceRegions.entrySet()) {
+				entry.getValue().getStyleClass().remove("unfocussed");
+				if (entry.getKey() != index) {
+					entry.getValue().getStyleClass().add("unfocussed");
+				}
 			}
 		}
 	}
@@ -172,27 +176,41 @@ public class ProcessFlowView extends GridPane  {
 					transportButtons.get(i).setFocussed(false);
 				}
 			}
-			for (Region progressRegion : progressTransportRegionsLeft.values()) {
-				progressRegion.setDisable(true);
+			for (Region region : progressDeviceRegions.values()) {
+				region.getStyleClass().remove("unfocussed");
+				region.getStyleClass().add("unfocussed");
 			}
-			for (Region progressRegion : progressTransportRegionsRight.values()) {
-				progressRegion.setDisable(true);
+			for (Entry<Integer, Region> entry : progressTransportRegionsLeft.entrySet()) {
+				entry.getValue().getStyleClass().remove("unfocussed");
+				if (entry.getKey() != index) {
+					entry.getValue().getStyleClass().add("unfocussed");
+				}
+			}
+			for (Entry<Integer, Region> entry : progressTransportRegionsRight.entrySet()) {
+				entry.getValue().getStyleClass().remove("unfocussed");
+				if (entry.getKey() != index) {
+					entry.getValue().getStyleClass().add("unfocussed");
+				}
 			}
 		}
 	}
 	
 	public void focusAll() {
+		logger.info("focus all");
 		for (DeviceButton device : deviceButtons.values()) {
 			device.setFocussed(true);
 		}
 		for (TransportButton transport : transportButtons.values()) {
 			transport.setFocussed(true);
 		}
-		for (Region progressRegion : progressTransportRegionsLeft.values()) {
-			progressRegion.setDisable(false);
+		for (Region region : progressDeviceRegions.values()) {
+			region.getStyleClass().remove("unfocussed");
 		}
-		for (Region progressRegion : progressTransportRegionsRight.values()) {
-			progressRegion.setDisable(false);
+		for (Region region : progressTransportRegionsLeft.values()) {
+			region.getStyleClass().remove("unfocussed");
+		}
+		for (Region region : progressTransportRegionsRight.values()) {
+			region.getStyleClass().remove("unfocussed");
 		}
 	}
 	
