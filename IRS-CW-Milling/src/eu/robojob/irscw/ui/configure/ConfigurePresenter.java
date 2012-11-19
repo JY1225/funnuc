@@ -251,18 +251,16 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		PrageDevicePutSettings pragePutSettings = new PrageDevice.PrageDevicePutSettings(prageDevice.getWorkAreaById("Präge"));
 		
 		FanucRobotPutSettings robotPutSettings = new FanucRobot.FanucRobotPutSettings();
-		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobot().getGripperBody().getGripperHead("A"));
-		robotPutSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getClampingById("Clamping 5").getSmoothToPoint()));
+		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
+		robotPutSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getActiveClamping().getSmoothToPoint()));
 		robotPutSettings.setWorkArea(prageDevice.getWorkAreaById("Präge"));
 		robotPutSettings.setDoMachineAirblow(false);	
 		
 		FanucRobotPickSettings robotPickSettings = new FanucRobot.FanucRobotPickSettings();
-		robotPickSettings.setGripperHead(deviceInfo.getPickStep().getRobot().getGripperBody().getGripperHead("A"));
-		robotPickSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getClampingById("Clamping 5").getSmoothFromPoint()));
+		robotPickSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
+		robotPickSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getActiveClamping().getSmoothFromPoint()));
 		robotPickSettings.setWorkArea(prageDevice.getWorkAreaById("Präge"));
-		WorkPieceDimensions dimensions1 = new WorkPieceDimensions(125.8f, 64.9f, 40);
-		WorkPiece workPiece1 = new WorkPiece(WorkPiece.Type.RAW, dimensions1);
-		robotPickSettings.setWorkPiece(workPiece1);
+		robotPickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		
 		PutAndWaitStep putAndWait1 = new PutAndWaitStep(deviceInfo.getPickStep().getRobot(), prageDevice, pragePutSettings, robotPutSettings);
 		ProcessingStep processing2 = new ProcessingStep(prageDevice, prageStartCyclusSettings);

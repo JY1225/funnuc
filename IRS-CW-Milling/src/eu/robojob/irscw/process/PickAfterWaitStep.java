@@ -4,12 +4,11 @@ import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
+import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
-import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
 public class PickAfterWaitStep extends PickStep {

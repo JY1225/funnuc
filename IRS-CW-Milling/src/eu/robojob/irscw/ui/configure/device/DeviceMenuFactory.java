@@ -12,6 +12,9 @@ import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlate
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
+import eu.robojob.irscw.ui.configure.device.pre.PrageDeviceConfigurePresenter;
+import eu.robojob.irscw.ui.configure.device.pre.PrageDeviceConfigureView;
+import eu.robojob.irscw.ui.configure.device.pre.PrageDeviceMenuPresenter;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
 public class DeviceMenuFactory {
@@ -42,12 +45,28 @@ public class DeviceMenuFactory {
 				case BASIC_STACK_PLATE:
 					menuPresenter = getBasicStackPlateMenuPresenter(deviceInfo);
 					break;
+				case PRE_PROCESSING:
+					menuPresenter = getPrageDeviceMenuPresenter(deviceInfo);
+					break;
 				default:
 					menuPresenter = null;
 			}
 			presentersBuffer.put(deviceInfo.getIndex(), menuPresenter);
 		}
 		return menuPresenter;
+	}
+	
+	private PrageDeviceMenuPresenter getPrageDeviceMenuPresenter(DeviceInformation deviceInfo) {
+		DeviceMenuView view = new DeviceMenuView(false, false, true);
+		PrageDeviceMenuPresenter prageDeviceMenuPresenter = new PrageDeviceMenuPresenter(view, deviceInfo, getPrageDeviceConfiguerPresenter(deviceInfo));
+		return prageDeviceMenuPresenter;
+	}
+	
+	private PrageDeviceConfigurePresenter getPrageDeviceConfiguerPresenter(DeviceInformation deviceInfo) {
+		PrageDeviceConfigureView view = new PrageDeviceConfigureView(deviceInfo);
+		PrageDeviceConfigurePresenter presenter = new PrageDeviceConfigurePresenter(view, deviceInfo, deviceManager);
+		return presenter;
+		
 	}
 	
 	private CNCMillingMachineMenuPresenter getCncMillingMachineMenuPresenter(DeviceInformation deviceInfo) {

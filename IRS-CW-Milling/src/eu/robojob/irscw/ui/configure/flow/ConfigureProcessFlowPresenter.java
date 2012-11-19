@@ -2,7 +2,6 @@ package eu.robojob.irscw.ui.configure.flow;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter.Mode;
