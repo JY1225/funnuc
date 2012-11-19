@@ -1,11 +1,13 @@
 package eu.robojob.irscw.ui.main.flow;
 
 import javafx.application.Platform;
+
+import org.apache.log4j.Logger;
+
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
@@ -20,6 +22,8 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 
 	private boolean showQuestionMarks;
 	private ProcessFlowAdapter processFlowAdapter;
+	
+	private static Logger logger = Logger.getLogger(FixedProcessFlowPresenter.class);
 		
 	public FixedProcessFlowPresenter(ProcessFlowView view, boolean showQuestionMarks) {
 		super(view);
@@ -50,14 +54,19 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		processFlow.addListener(this);
 		view.setProcessFlow(processFlow);
-		if (showQuestionMarks) {
-			view.showQuestionMarks(true);
-		}
+		view.showQuestionMarks(showQuestionMarks);
 		view.disableClickable();
 	}
 	
 	public void setNoneActive() {
 		view.setAllProgressNone();
+	}
+	
+	@Override
+	public void refresh() {
+		super.refresh();
+		view.showQuestionMarks(showQuestionMarks);
+		view.disableClickable();
 	}
 	
 	public void setPickStepActive(int transportIndex) {
@@ -120,15 +129,6 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 
 	@Override
 	public void modeChanged(final ModeChangedEvent e) {
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
-				if (e.getMode() == Mode.TEACH) {
-					view.showQuestionMarks(true);
-				} else {
-					view.showQuestionMarks(false);
-				}
-			}
-		}); 
 	}
 	
 	private void showActiveStepChange(ActiveStepChangedEvent e) {

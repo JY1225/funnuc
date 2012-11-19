@@ -80,7 +80,9 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 
 	@Override
 	public void setActive(boolean active) {
+		logger.info("hello there");
 		if (active) {
+			processFlow.setMode(Mode.STOPPED);
 			enable();
 		} else {
 			if (teachThread.isRunning()) {
