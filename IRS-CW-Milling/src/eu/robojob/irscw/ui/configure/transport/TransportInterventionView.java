@@ -6,6 +6,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import eu.robojob.irscw.process.PickAfterWaitStep;
+import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
@@ -128,6 +130,20 @@ public class TransportInterventionView extends AbstractFormView<TransportInterve
 			itfInterventionAfterPutFrequency.setText(transportInfo.getInterventionAfterPut().getFrequency() + "");
 			itfInterventionAfterPutFrequency.setDisable(false);
 			lblIntervnetionAfterInterval.setDisable(false);
+		}
+		if ((transportInfo.getPutStep() != null) && (transportInfo.getPutStep() instanceof PutAndWaitStep)) {
+			btnInterventionAfterPut.setDisable(true);
+			itfInterventionAfterPutFrequency.setDisable(true);
+		} else {
+			btnInterventionAfterPut.setDisable(false);
+			itfInterventionAfterPutFrequency.setDisable(false);
+		}
+		if ((transportInfo.getPickStep() != null) && (transportInfo.getPickStep() instanceof PickAfterWaitStep)) {
+			btnInterventionBeforePick.setDisable(true);
+			itfInterventionBeforePickFrequency.setDisable(true);
+		} else {
+			btnInterventionBeforePick.setDisable(false);
+			itfInterventionBeforePickFrequency.setDisable(false);
 		}
 	}
 

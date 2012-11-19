@@ -69,6 +69,7 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 			dimensions.setHeight(height);
 			pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
 		}
+		pickStep.setTeachedOffset(null);
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 

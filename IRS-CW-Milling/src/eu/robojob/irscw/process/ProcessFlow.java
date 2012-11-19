@@ -87,6 +87,7 @@ public class ProcessFlow {
 	}
 	
 	public void initialize() {
+		logger.info("Process flow: initialize");
 		currentStepIndex = 0;
 		loadAllDeviceSettings();
 		loadAllRobotSettings();
@@ -138,8 +139,13 @@ public class ProcessFlow {
 	}
 
 	public void setMode(Mode mode) {
-		this.mode = mode;
-		processProcessFlowEvent(new ModeChangedEvent(this, mode));
+		if (mode != this.mode) { 
+			this.mode = mode;
+			if (mode == Mode.STOPPED) {
+				initialize();
+			}
+			processProcessFlowEvent(new ModeChangedEvent(this, mode));
+		}
 	}
 
 	public void addListener(ProcessFlowListener listener) {

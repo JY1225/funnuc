@@ -74,21 +74,17 @@ public class TeachThread extends Thread {
 				processFlow.setMode(Mode.READY);
 				this.running = false;
 			} else {
-				processFlow.initialize();
 				processFlow.setMode(Mode.STOPPED);
 			}
 		} catch(CommunicationException | RobotActionException | DeviceActionException e) {
 			notifyException(e);
-			processFlow.initialize();
 			processFlow.setMode(Mode.STOPPED);
 		} catch(InterruptedException e) {
 			logger.info("Execution of one or more steps got interrupted, so let't just stop");
 			e.printStackTrace();
-			processFlow.initialize();
 			processFlow.setMode(Mode.STOPPED);
 		} catch(Exception e) {
 			e.printStackTrace();
-			processFlow.initialize();
 			processFlow.setMode(Mode.STOPPED);
 		}
 		processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, null, ActiveStepChangedEvent.NONE_ACTIVE));

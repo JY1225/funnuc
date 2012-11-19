@@ -124,10 +124,10 @@ public class MainPresenter implements ProcessFlowListener {
 	}
 	
 	public void setChangeContentEnabled(boolean enabled) {
-		menuBarPresenter.setAutomateButtonEnabled(enabled);
+		//menuBarPresenter.setAutomateButtonEnabled(enabled);
 		menuBarPresenter.setConfigureButtonEnabled(enabled);
 		menuBarPresenter.setTeachButtonEnabled(enabled);
-		menuBarPresenter.setAdminButtonEnabled(enabled);
+		//menuBarPresenter.setAdminButtonEnabled(enabled);
 	}
 	
 	public void loadProcessFlow(ProcessFlow process) {
@@ -157,7 +157,9 @@ public class MainPresenter implements ProcessFlowListener {
 		Platform.exit();
 	}
 
-	@Override public void modeChanged(ModeChangedEvent e) {}
+	@Override public void modeChanged(ModeChangedEvent e) {
+		refreshStatus();
+	}
 	@Override public void activeStepChanged(ActiveStepChangedEvent e) {}
 	@Override public void exceptionOccured(ExceptionOccuredEvent e) {}
 	@Override public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
