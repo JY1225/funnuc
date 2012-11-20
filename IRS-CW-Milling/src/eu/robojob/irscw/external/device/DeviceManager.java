@@ -69,7 +69,7 @@ public class DeviceManager {
 		Zone zone1 = new Zone("zone 1", workAreas);
 		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.200.4", 2010);  // other: 6
 		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "10.10.40.12", 2010);  // other: 6
-		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "127.0.0.1", 2010);  // other: 6
+		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.200.1", 2010);  // other: 6
 		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.220.7", 2010);  // other: 6
 		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.0.102", 2010);  // other: 6
 		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak VRX J500", cncSocketCon);
