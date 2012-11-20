@@ -62,7 +62,7 @@ public class PutAndWaitStep extends PutStep {
 					robotPutSettings.setLocation(position);
 				}
 				logger.debug("Robot initiating put and wait action");
-				robot.moveToAndWait(robotPutSettings);
+				robot.moveToAndWait(robotPutSettings, true);
 				logger.debug("Robot action succeeded, about to ask device to grab piece");
 				device.grabPiece(putSettings);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_FINISHED));
@@ -89,7 +89,7 @@ public class PutAndWaitStep extends PutStep {
 				robotPutSettings.setLocation(coordinates);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PUT_EXECUTE_TEACHED));
 				logger.debug("Robot initiating put and wait action");
-				robot.teachedMoveToAndWait(robotPutSettings);
+				robot.teachedMoveToAndWait(robotPutSettings, true);
 				logger.debug("Robot action succeeded");
 			}
 		}

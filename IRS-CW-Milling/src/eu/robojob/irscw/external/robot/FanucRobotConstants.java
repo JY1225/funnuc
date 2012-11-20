@@ -119,6 +119,8 @@ public class FanucRobotConstants {
 	public static final int SERVICE_HANDLING_PP_MODE_ORDER_21		=	0;
 	public static final int SERVICE_HANDLING_PP_MODE_TEACH 			=	BIT5;
 	public static final int SERVICE_HANDLING_PP_MODE_AIRBLOW		=	BIT6;
+	public static final int SERVICE_HANDLING_PP_MODE_NO_WAIT		=	BIT7;
+	public static final int SERVICE_HANDLING_PP_MODE_PIECE			=	BIT8;
 	
 	// SERVICE POINT
 	public static final int SERVICE_POINT_XYZ_ALLOWED_XYZ			=	1;

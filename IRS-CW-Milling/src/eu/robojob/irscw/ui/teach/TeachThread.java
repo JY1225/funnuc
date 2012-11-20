@@ -20,9 +20,9 @@ import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 
 public class TeachThread extends Thread {
 
-	private ProcessFlow processFlow;
+	protected ProcessFlow processFlow;
 			
-	private boolean running;
+	protected boolean running;
 	
 	private static final Logger logger = Logger.getLogger(TeachThread.class);
 	
@@ -37,19 +37,6 @@ public class TeachThread extends Thread {
 		logger.info("started teach thread!");
 		processFlow.setMode(Mode.TEACH);
 		processFlow.initialize();
-		
-		
-		// if the device, corresponding to the first PICK step has a fixed Pick position (which for now, is the case) 
-		// then the relationship between the grippers and the pieces they take can be teached on this device, providing the dimensions (width / height) 
-		// of the workpiece don't change during the process (they can be placed on the same location on this first device, their center's are on the same location (except the height))
-		// (which for now, is the case)
-		
-		// when this has been done, all that's left to teach is the position of the put location of clampings where the put location is not fixed
-		// and when this is done for a certain clamping, related clampings are updated automatically. 
-		
-		// this last part is done by going through the process and when no teaching is needed in the future, the used should be able to switch to the automate view
-		
-		
 		
 		try {
 			for (AbstractRobot robot :processFlow.getRobots()) {
@@ -151,7 +138,7 @@ public class TeachThread extends Thread {
 		step.executeStep();
 	}
 	
-	private void notifyException(final Exception e) {
+	protected void notifyException(final Exception e) {
 		processFlow.processProcessFlowEvent(new ExceptionOccuredEvent(processFlow, e));
 	}
 }

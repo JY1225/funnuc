@@ -32,6 +32,10 @@ public class DeviceManager {
 	
 	private static Logger logger = Logger.getLogger(DeviceManager.class);
 	
+	public static final String IRS_M_BASIC = "IRS M Basic";
+	public static final String PRAGE_DEVICE = "Präge";
+	public static final String MAZAK_VRX = "Mazak VRX J500";
+	
 	private RobotManager robotManager;
 	
 	//TODO enforce unique ids

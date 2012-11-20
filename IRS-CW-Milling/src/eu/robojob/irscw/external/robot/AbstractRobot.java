@@ -72,10 +72,12 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException;
 	public abstract void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void moveToAndWait(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException;
-	public abstract void teachedMoveToAndWait(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException;
-	public abstract void moveAway(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException;
-	public abstract void teachedMoveAway(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void moveToAndWait(AbstractRobotPutSettings putSettings, boolean withPiece) throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void teachedMoveToAndWait(AbstractRobotPutSettings putSettings, boolean withPiece) throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void moveAway() throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void teachedMoveAway() throws CommunicationException, RobotActionException, InterruptedException;
+	
+	public abstract void teachedMoveNoWait(AbstractRobotPutSettings putSettings, boolean withPiece) throws CommunicationException, RobotActionException, InterruptedException;
 	
 	public abstract void moveToHome() throws CommunicationException, RobotActionException;
 	public abstract void moveToChangePoint() throws CommunicationException, RobotActionException;

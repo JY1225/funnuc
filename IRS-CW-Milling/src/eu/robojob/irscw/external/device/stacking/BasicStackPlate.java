@@ -86,6 +86,24 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		}
 		return null;
 	}
+	
+	@Override 
+	public synchronized Coordinates getLocation(WorkArea workArea, Type type) {
+		for (StackingPosition stackingPos : layout.getStackingPositions()) {
+			if ((stackingPos.getWorkPiece() != null)&&(stackingPos.getWorkPiece().getType()==type)) {
+				Coordinates c = new Coordinates(stackingPos.getPosition());
+				float rotation = 0;
+				if (stackingPos.getOrientation() == WorkPieceOrientation.TILTED) {
+					rotation = 0;
+				} else {
+					rotation = 90;
+				}
+				c.offset(new Coordinates(0, 0, 0, 0, 0, rotation));
+				return c;
+			}
+		}
+		return null;
+	}
 
 	@Override
 	public synchronized Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {

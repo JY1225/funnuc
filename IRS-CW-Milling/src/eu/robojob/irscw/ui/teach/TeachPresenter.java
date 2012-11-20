@@ -67,7 +67,8 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		this.processFlowPresenter = processFlowPresenter;
 		view.setTop(processFlowPresenter.getView());
 		this.processFlow = processFlow;
-		this.teachThread = new TeachThread(processFlow);
+		//this.teachThread = new TeachThread(processFlow);
+		this.teachThread = new OptimizedTeachThread(processFlow);
 		this.teachDisconnectedDevicesView = teachDisconnectedDevicesView;
 		this.teachGeneralInfoView = teachGeneralInfoView;
 		teachGeneralInfoView.setPresenter(this);
@@ -189,7 +190,8 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		logger.info("starten proces!");
 		setStatus("Starten proces...");
 		processFlow.initialize();
-		this.teachThread = new TeachThread(processFlow);
+		//this.teachThread = new TeachThread(processFlow);
+		this.teachThread = new OptimizedTeachThread(processFlow);
 		ThreadManager.getInstance().submit(teachThread);
 	}
 	

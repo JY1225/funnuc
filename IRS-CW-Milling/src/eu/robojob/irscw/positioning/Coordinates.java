@@ -80,6 +80,24 @@ public class Coordinates {
 		this.r = r;
 	}
 	
+	public void minus(Coordinates c) {
+		setX(getX() - c.getX());
+		setY(getY() - c.getY());
+		setZ(getZ() - c.getZ());
+		setW(getW() - c.getW());
+		setP(getP() - c.getP());
+		setR(getR() - c.getR());
+	}
+	
+	public void plus(Coordinates c) {
+		setX(getX() + c.getX());
+		setY(getY() + c.getY());
+		setZ(getZ() + c.getZ());
+		setW(getW() + c.getW());
+		setP(getP() + c.getP());
+		setR(getR() + c.getR());
+	}
+	
 	public Coordinates calculateOffset(Coordinates coordinates) {
 		return new Coordinates(getX()-coordinates.getX(), getY()-coordinates.getY(), getZ()-coordinates.getZ(), getW()-coordinates.getW(), getP()-coordinates.getP(), getR()-coordinates.getR());
 	}

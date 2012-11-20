@@ -6,6 +6,8 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
+import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.workpiece.WorkPiece.Type;
 
 public abstract class AbstractStackingDevice extends AbstractDevice {
 
@@ -16,6 +18,8 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 	public AbstractStackingDevice(String id) {
 		super(id);
 	}
+	
+	public abstract Coordinates getLocation(WorkArea workArea, Type type);
 	
 	public static abstract class AbstractStackingDevicePickSettings extends AbstractDevicePickSettings {
 		public AbstractStackingDevicePickSettings(WorkArea workArea) {
