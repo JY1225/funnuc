@@ -16,8 +16,8 @@ import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.workpiece.WorkPiece;
-import eu.robojob.irscw.workpiece.WorkPiece.Type;
 
 public class OptimizedTeachThread extends TeachThread {
 	
@@ -51,6 +51,7 @@ public class OptimizedTeachThread extends TeachThread {
 		try {
 			
 			processFlow.initialize();
+			processFlow.setMode(Mode.TEACH);
 
 			// In each case: we will start with teaching the finished workPiece
 			PickStep pickFromStackerStep = null;
@@ -128,9 +129,12 @@ public class OptimizedTeachThread extends TeachThread {
 			pickFromMachineStep.setTeachedOffset(pickFromMachineOffset);
 			putOnStackerStep.setTeachedOffset(teachedOffsetFinishedWp);
 			logger.info("ended optimized teach thread!");
+			
+			processFlow.setMode(Mode.READY);
 		} catch (CommunicationException | RobotActionException | InterruptedException | DeviceActionException e) {
 			e.printStackTrace();
 			notifyException(e);
+			processFlow.setMode(Mode.STOPPED);
 		}
 	}
 	

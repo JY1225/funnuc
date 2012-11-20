@@ -81,7 +81,6 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 
 	@Override
 	public void setActive(boolean active) {
-		logger.info("hello there");
 		if (active) {
 			processFlow.setMode(Mode.STOPPED);
 			enable();
@@ -89,7 +88,6 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 			if (teachThread.isRunning()) {
 				ThreadManager.getInstance().stopRunning(teachThread);
 			}
-			processFlow.setMode(Mode.STOPPED);
 			for (AbstractCNCMachine machine : machines.keySet()) {
 				machine.removeListener(this);
 			}

@@ -15,7 +15,6 @@ import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotSettings;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
-import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
@@ -142,6 +141,7 @@ public class ProcessFlow {
 		if (mode != this.mode) { 
 			this.mode = mode;
 			if (mode == Mode.STOPPED) {
+				logger.info("ProcessFlow mode is now stopped");
 				initialize();
 			}
 			processProcessFlowEvent(new ModeChangedEvent(this, mode));
