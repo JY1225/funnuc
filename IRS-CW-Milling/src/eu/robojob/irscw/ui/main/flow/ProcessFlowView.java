@@ -330,6 +330,18 @@ public class ProcessFlowView extends GridPane  {
 			transportButton.setFocussed(false);
 			transportButton.setDisable(true);
 		}
+		for (Region region : progressDeviceRegions.values()) {
+			region.getStyleClass().remove("progressbar-piece-unfocussed");
+			region.getStyleClass().add("progressbar-piece-unfocussed");
+		}
+		for (Entry<Integer, Region> entry : progressTransportRegionsLeft.entrySet()) {
+			entry.getValue().getStyleClass().remove("progressbar-piece-unfocussed");
+			entry.getValue().getStyleClass().add("progressbar-piece-unfocussed");
+		}
+		for (Entry<Integer, Region> entry : progressTransportRegionsRight.entrySet()) {
+			entry.getValue().getStyleClass().remove("progressbar-piece-unfocussed");
+			entry.getValue().getStyleClass().add("progressbar-piece-unfocussed");
+		}
 	}
 	
 	public void setAddDeviceMode(boolean addPreProcessPossible, boolean addPostProcessPossible) {
@@ -352,6 +364,18 @@ public class ProcessFlowView extends GridPane  {
 				entry.getValue().setDisable(true);
 			}
 		}
+		for (Region region : progressDeviceRegions.values()) {
+			region.getStyleClass().remove("progressbar-piece-unfocussed");
+			region.getStyleClass().add("progressbar-piece-unfocussed");
+		}
+		for (Entry<Integer, Region> entry : progressTransportRegionsLeft.entrySet()) {
+			entry.getValue().getStyleClass().remove("progressbar-piece-unfocussed");
+			entry.getValue().getStyleClass().add("progressbar-piece-unfocussed");
+		}
+		for (Entry<Integer, Region> entry : progressTransportRegionsRight.entrySet()) {
+			entry.getValue().getStyleClass().remove("progressbar-piece-unfocussed");
+			entry.getValue().getStyleClass().add("progressbar-piece-unfocussed");
+		}
 	}
 	
 	public void setNormalMode() {
@@ -362,6 +386,15 @@ public class ProcessFlowView extends GridPane  {
 		for (TransportButton transportButton : transportButtons.values()) {
 			transportButton.setFocussed(true);
 			transportButton.setDisable(false);
+		}
+		for (Region region : progressDeviceRegions.values()) {
+			region.getStyleClass().remove("progressbar-piece-unfocussed");
+		}
+		for (Entry<Integer, Region> entry : progressTransportRegionsLeft.entrySet()) {
+			entry.getValue().getStyleClass().remove("progressbar-piece-unfocussed");
+		}
+		for (Entry<Integer, Region> entry : progressTransportRegionsRight.entrySet()) {
+			entry.getValue().getStyleClass().remove("progressbar-piece-unfocussed");
 		}
 	}
 	

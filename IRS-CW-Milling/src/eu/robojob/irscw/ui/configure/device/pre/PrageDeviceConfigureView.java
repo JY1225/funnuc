@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
+import eu.robojob.irscw.util.UIConstants;
 
 public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfigurePresenter> {
 
@@ -21,7 +22,7 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	private Set<String> preProcessingDeviceIds;
 	
 	private static final int COMBO_WIDTH = 200;
-	private static final int COMBO_HEIGHT = 30;
+	private static final int COMBO_HEIGHT = UIConstants.COMBO_HEIGHT;
 	
 	public PrageDeviceConfigureView(DeviceInformation deviceInfo) {
 		this.deviceInfo = deviceInfo;

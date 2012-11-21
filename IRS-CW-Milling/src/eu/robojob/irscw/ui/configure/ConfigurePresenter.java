@@ -30,8 +30,6 @@ import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
 import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
-import eu.robojob.irscw.workpiece.WorkPiece;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class ConfigurePresenter implements TextFieldListener, MainContentPresenter {
 

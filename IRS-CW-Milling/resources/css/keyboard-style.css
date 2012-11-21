@@ -1,14 +1,10 @@
 .keyboard-background {
-	/*-fx-background-color: linear-gradient(rgba(162,162,162,0.6) 0%, rgba(113,113,113,0.7) 100%);*/
-	-fx-background-color: linear-gradient(rgba(101, 97, 97, 0.8) 0%, rgba(97, 98, 100, 0.8) 100%);
+	-fx-background-color: rgba(109, 109, 109, 0.9);
 }
 
 .keyboard-button {
-	-fx-background-color: 
-		#525252,
-		linear-gradient(white 0%, #d2d3d9 100%),
-		linear-gradient(#f6f6f6 0%, #c9cdd0 100%);
-	-fx-background-insets: 0, 1, 2;
+	-fx-background-color: #807878, #222222, #807878, linear-gradient(#656161 0%, #4e4a4a 100%);
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 	-fx-font-size: 18px;
 	-fx-text-alignment: center;
 	
@@ -17,47 +13,28 @@
 	-fx-padding: 0;
 	
 	-fx-border-radius: 5, 4, 3;
-	
-	-fx-effect: dropshadow(gaussian, #434343, 2, 0, 0, 1);
 }
 
 .keyboard-button Text {
-    -fx-fill: black;
-    -fx-effect: dropshadow( one-pass-box , white , 1, 0.0 , 0 , 1 );
+    -fx-fill: white;
 }
 
 .keyboard-button:pressed {
-		-fx-background-color: 
-		#5c5c5c,
-		linear-gradient(#cecece 0%, #969696 100%),
-		linear-gradient(#cecece 0%, #969696 100%);
-		-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);
+	-fx-background-color: #807878, #222222, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
 }
 
 .keyboard-button:pressed Text {
-    -fx-fill: black;
-    -fx-effect: dropshadow( one-pass-box , white , 1, 0.0 , 0 , 0 );
 }
 
 #key-OK {
-	-fx-background-color: 
-		#5c5c5c,
-		linear-gradient(#d3ff7d 0%, #6e9f0e 100%),
-		linear-gradient(#c0ff46 0%, #6e9f0e 100%);
+	-fx-background-color: #807878, #222222, #a3f08c, linear-gradient(#6fc955 0%, #409228 100%);
 }
 
 #key-OK Text {
-	-fx-effect: dropshadow( one-pass-box , #92d214 , 1, 0.0 , 0 , 1 );
 }
 
 #key-OK:pressed {
-	-fx-background-color: 
-		#5c5c5c,
-		linear-gradient(#9dd72a 0%, #59800e 100%),
-		linear-gradient(#9dd72a 0%, #59800e 100%);
-	-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);
 }
 
 #key-OK:pressed Text {
-	-fx-effect: dropshadow( one-pass-box , #92d214 , 1, 0.0 , 0 , 0 );
 }

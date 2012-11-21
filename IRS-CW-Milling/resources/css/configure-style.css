@@ -33,6 +33,7 @@
 
 .form-button-icon {
 	-fx-opacity: 1;
+	-fx-fill: white;
 }
 
 .form-button-icon:disabled  {
@@ -49,6 +50,7 @@
 
 .form-button-label {
 	-fx-text-fill: white;
+	-fx-fill: white;
 	-fx-font-size: 13px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
@@ -56,11 +58,12 @@
 }
 
 .form-button-bar-left {
-	-fx-background-radius: 5 0 0 5, 4 0 0 3;
+	-fx-background-radius: 6 0 0 6, 6 0 0 6, 5 0 0 5, 5 0 0 5;
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 2 0 2 1;
 }
 
 .form-button-bar-right {
-	-fx-background-radius: 0 5 5 0, 0 4 3 0;
+	-fx-background-radius: 0 6 6 0, 0 6 6 0, 0 5 5 0, 0 5 5 0;
 }
 
 .form-full-textfield, .text-field {
@@ -72,6 +75,11 @@
 	-fx-padding: 0 0 0 10;
 	-fx-background-color: #8c8888, #222222, #f0f0f0;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1;
+}
+
+.form-full-textfield:disabled, .text-field:disabled {
+	-fx-text-fill: white;
+	-fx-background-color: #8c8888, #3d3d3d, #7b7b7b;
 }
 
 .form-full-textfield:focused, .text-field:focused {
@@ -144,27 +152,12 @@
 	-fx-padding: 10 5 10 5;
 }
 
-.list-cell .selected {
-	-fx-background-color: #343c48, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
-}
-
-.numeric-text-field Text {
-	-fx-text-alignment: right;
-}
-
 .form-icon {
-	-fx-fill: #737373;
+	-fx-fill: #4e4a4a;
 }
-
-.stackplate-steel {
-	}
 
 .stackplate {
-	-fx-fill: linear-gradient( #c2c2c2 0%, #acacac 100%);
-	-fx-effect: innershadow(gaussian, #676767, 1, 0, -1, 1);
-	-fx-stroke-type: inside;
-	-fx-stroke-width: 2px;
-	-fx-stroke: rgba(255, 255, 255, 0.3);
+	-fx-fill: #b4b4b4;
 }
 
 .stacker-text {
@@ -173,79 +166,60 @@
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
 	-fx-fill: #e9441e;
-	-fx-effect: innershadow(gaussian, #565656, 1, 0, 0, 1);
 }
 
 .hole {
-	-fx-fill: #818181;
-	-fx-effect: innershadow(gaussian, #404040, 5, 0, 0, 5);
+	-fx-fill: #484848;
 }
 
 .normal-stud {
-	-fx-fill: yellow;
-	-fx-effect: dropshadow(gaussian, #999900, 5, 0, 0, 2);
-	-fx-stroke: rgba(0, 0, 0, 0.4);
+	-fx-fill: #00eaff;
+	-fx-stroke: #10a0ad;
 	-fx-stroke-width: 1px;
 }
 
 .horizontal-stud {
-	-fx-fill: red;
-	-fx-effect: dropshadow(gaussian, #660000, 5, 0, 0, 2);
+	-fx-fill: #f6ff00;
+	-fx-stroke: #a3a80e;
+	-fx-stroke-width: 1px;
 }
 
 .corner-shape {
-	-fx-fill: orange;
-	-fx-effect: dropshadow(gaussian, #994c00, 5, 0, 0, 2);
-	-fx-stroke: rgba(0, 0, 0, 0.4);
+	-fx-fill: #8754cf;
+	-fx-stroke: #614c87;
 	-fx-stroke-width: 1px;
 }
 
 .workpiece {
-	-fx-fill: linear-gradient(#ececec 0%, #dddddd 95%, #b9b9b9 100%);
+	-fx-fill: linear-gradient(#ffb327 0%, #ffb327 2%, #fb8e05 4%, #e07d01 100%);
 	-fx-stroke-width: 1px;
-	-fx-stroke: rgba(120, 120, 120, 1);
-	-fx-effect: dropshadow(gaussian, #8f8f8f, 10, 0, 0, 5);
+	-fx-stroke: #a55015;
 }
 
 .finished {
-	-fx-fill: linear-gradient(#87d715 0%, #70d60c 95%, #64bd04 100%);
-	-fx-stroke: #3c7703;
+	-fx-fill: linear-gradient(#a3f08c 0%, #a3f08c 2%, #6fc955 4%, #409228 100%);
+	-fx-stroke-width: 1px;
+	-fx-stroke: #205c0f;
 }
 
 .root {
 	-fx-fill: null;
-	-fx-background-color: rgba(0, 0, 0, 0);
 }
 
 .line {
-	-fx-stroke-width: 3px;
-	-fx-stroke: rgba(0, 0, 0, 0.1);
+	-fx-stroke-width: 2px;
+	-fx-stroke: #9e9e9e;
 }
 
 .corner-stud-lines {
 	-fx-stroke: red;
 	-fx-stroke-line-cap: butt;
-	/*-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 0, 2);*/
 }
 
 .iconflow-selector {
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.3), 2, 0, 0, 1);
-	-fx-border-width: 1px;
-	-fx-border-color: rgba(0, 0, 0, 0.15);
-	-fx-border-radius: 5px;
-	-fx-background-color: #eeeeee;
-	-fx-background-radius: 5px;
-	-fx-padding: 0;
-}
-
-.iconflow-selector:focused {
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.3), 2, 0, 0, 1);
-	-fx-border-width: 1px;
-	-fx-border-color: rgba(0, 0, 0, 0.15);
-	-fx-border-radius: 5px;
-	-fx-background-radius: 5px;
-	-fx-padding: 0;
-	-fx-background-insets: 0;
+	-fx-background-color: #8c8888, #222222, #d1d1d1;
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1;
+	-fx-background-radius: 3px;
 }
 
 .iconflow-item {	
@@ -266,17 +240,14 @@
 	-fx-font-size: 13px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	-fx-font-smoothing-type: lcd;
 	-fx-font-family: "Helvetica";
 	-fx-alignment: center;
-	
 	-fx-padding: 5 0 0 0;
-	
 }
 
 .iconflow-item-icon {
 	-fx-border-width: 0px;
-	-fx-opacity: 0.75;
+	-fx-opacity: 0.5;
 }
 
 .iconflow-item-icon-selected {

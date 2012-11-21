@@ -21,8 +21,8 @@ public class IconFlowSelector extends ScrollPane {
 		box = new HBox();
 		box.setPadding(new Insets(10, 10, 10, 10));
 		items = new HashMap<Integer, IconFlowSelectorItem>();
-		setPrefHeight(160);
-		box.setSpacing(10);
+		setPrefHeight(145);
+		box.setSpacing(0);
 		setContent(box);
 		clearItems();
 	}
