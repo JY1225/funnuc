@@ -49,6 +49,10 @@
 	-fx-background-color: #807878, #222222, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
 }
 
+.header-button-exit:pressed, header-button-exit.selected {
+	-fx-background-color: #807878, #222222, #ff7b77, linear-gradient(#ff4c47 0%, #db423c 100%);
+}
+
 .header-button:disabled {
 	-fx-background-color: #807c7c, #515151, #807c7c, #6d6c6c;
 	-fx-opacity: 1;

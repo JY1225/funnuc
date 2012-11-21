@@ -121,6 +121,7 @@ public class MenuBarView extends ToolBar {
 			}
 		});
 		btnExit.getStyleClass().add("header-button");
+		btnExit.getStyleClass().add("header-button-exit");
 		btnExit.setId("btnExit");
 		
 		hBoxProcessMenuItems = new HBox();

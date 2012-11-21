@@ -3,7 +3,7 @@
 }
 
 .keyboard-button {
-	-fx-background-color: #807878, #222222, #807878, linear-gradient(#656161 0%, #4e4a4a 100%);
+	-fx-background-color: #8a8484, #222222, #807878, linear-gradient(#656161 0%, #4e4a4a 100%);
 	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 	-fx-font-size: 18px;
 	-fx-text-alignment: center;

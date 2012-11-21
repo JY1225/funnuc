@@ -217,7 +217,7 @@
 }
 
 .iconflow-selector {
-	-fx-background-color: #8c8888, #222222, #d1d1d1;
+	-fx-background-color: #8c8888, #222222, #6d6c6c;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1;
 	-fx-background-radius: 3px;
 }
@@ -235,7 +235,7 @@
 }
 
 .iconflow-item-lbl {
-	-fx-text-fill: rgba(0, 0, 0, 0.8);
+	-fx-text-fill: white;
 	-fx-border-width: 0px;
 	-fx-font-size: 13px;
 	-fx-font-weight: bold;
