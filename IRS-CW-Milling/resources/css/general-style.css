@@ -4,8 +4,7 @@
 }
 
 .bottom-right {
-	-fx-effect: null;
-	-fx-background-color: #a4a4a4, white, linear-gradient(#fafafa 0%, #f5f5f5 100%);
+	-fx-background-color: #4c4c4c, #807c7c, #7b7b7b;
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
 }
 

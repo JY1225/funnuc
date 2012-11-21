@@ -54,6 +54,10 @@
 	-fx-opacity: 1;
 }
 
+.header-button.selected:disabled {
+	-fx-opacity: 0.5;
+}
+
 .header-button-shape:disabled  {
 	-fx-fill: #abaaaa;
     -fx-text-alignment: center;
