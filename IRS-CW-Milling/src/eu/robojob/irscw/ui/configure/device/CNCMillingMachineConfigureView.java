@@ -28,7 +28,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	private static final int VGAP = 15;
 	
 	private static final int COMBO_WIDTH = 200;
-	private static final int COMBO_HEIGHT = 30;
+	private static final int COMBO_HEIGHT = 40;
 
 	public void setDeviceInfo(DeviceInformation deviceInfo) {
 		this.deviceInfo = deviceInfo;

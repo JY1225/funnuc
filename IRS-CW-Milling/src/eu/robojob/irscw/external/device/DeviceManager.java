@@ -59,7 +59,7 @@ public class DeviceManager {
 		List<WorkArea> workAreas = new ArrayList<WorkArea>();
 		WorkArea workArea1 = new WorkArea("Mazak VRX Main", uf3);
 		workArea1.addClamping(clamping1);
-		//workArea1.addClamping(clamping2);
+		workArea1.addClamping(clamping2);
 		//workArea1.addClamping(clamping3);
 		workArea1.setActiveClamping(clamping1);
 		/*WorkArea workArea2 = new WorkArea("Mazak VRX Second", uf2);
