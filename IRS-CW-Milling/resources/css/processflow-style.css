@@ -125,6 +125,11 @@
 	-fx-background-insets: 0, 1 0 1 0, 2 0 1 0;
 }
 
+.progressbar-yellow {
+	-fx-background-color: #b09d00, #dbc400, #ffe400;
+	-fx-background-insets: 0, 1 0 1 0, 2 0 1 0;
+}
+
 .hide {
 	visibility: hidden;
 }

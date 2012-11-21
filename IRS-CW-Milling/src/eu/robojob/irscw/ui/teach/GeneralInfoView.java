@@ -9,7 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.SVGPath;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 
@@ -20,14 +19,11 @@ public class GeneralInfoView extends VBox {
 	private Label lblStart;
 	
 	private Translator translator;
-	
-	private SVGPath arrowRight;
-	
-	private static final String arrowRightPath = "M 7.53125 -0.03125 L 7.53125 5.5625 L 0 5.5625 L 0 9.3125 L 7.53125 9.3125 L 7.53125 14.9375 L 15 7.4375 L 7.53125 -0.03125 z";
-	
+			
 	private TeachPresenter presenter;
 	
 	private static final double BUTTON_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
+	private static final double BUTTON_HEIGHT = 40;
 	
 	public GeneralInfoView() {
 		translator = Translator.getInstance();
@@ -50,16 +46,13 @@ public class GeneralInfoView extends VBox {
 		setMargin(lblInfoMessage, new Insets(50, 0, 0, 0));
 		
 		btnStart = new Button();
-		arrowRight = new SVGPath();
-		arrowRight.setContent(arrowRightPath);
-		arrowRight.getStyleClass().add("btn-start-icon");
 		HBox hboxStart = new HBox();
 		lblStart = new Label(translator.getTranslation("start"));
 		lblStart.getStyleClass().add("btn-start-label");
 		hboxStart.getChildren().add(lblStart);
-		lblStart.setPrefSize(BUTTON_WIDTH - 40, UIConstants.BUTTON_HEIGHT);
+		lblStart.setPrefSize(BUTTON_WIDTH - 40, BUTTON_HEIGHT);
 		//hboxStart.getChildren().add(arrowRight);
-		hboxStart.setPrefSize(BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT);
+		hboxStart.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		hboxStart.setAlignment(Pos.CENTER);
 		HBox.setHgrow(lblStart, Priority.ALWAYS);
 		btnStart.setGraphic(hboxStart);
@@ -69,7 +62,7 @@ public class GeneralInfoView extends VBox {
 				presenter.startFlow();
 			}
 		});
-		btnStart.setPrefSize(BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT);
+		btnStart.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		btnStart.getStyleClass().add("btn-start");
 		
 		getChildren().add(lblInfoMessage);

@@ -19,13 +19,16 @@ import eu.robojob.irscw.ui.AbstractPopUpPresenter;
 public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> implements FanucRobotListener, ProcessFlowListener {
 
 	private FanucRobot robot;
+	private boolean connected;
 	
 	public RobotPopUpPresenter(RobotPopUpView view, FanucRobot robot, ProcessFlow processFlow) {
 		super(view);
 		this.robot = robot;
+		connected = false;
 		processFlow.addListener(this);
 		robot.addListener(this);
 		if (robot.isConnected()) {
+			connected = true;
 			view.refreshSpeed(robot.getSpeed());
 		} else {
 			view.refreshSpeed(0);
@@ -82,11 +85,13 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	@Override
 	public void robotConnected(FanucRobotEvent event) {
 		view.setRobotConnected(true);
+		connected = true;
 	}
 
 	@Override
 	public void robotDisconnected(FanucRobotEvent event) {
 		view.setRobotConnected(false);
+		connected = false;
 	}
 
 	@Override
@@ -102,13 +107,19 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	public void modeChanged(ModeChangedEvent e) {
 		switch (e.getMode()) {
 			case AUTO:
-				view.setProcessActive(true);
+				if (connected) {
+					view.setProcessActive(true);
+				}
 				break;
 			case TEACH: 
-				view.setProcessActive(true);
+				if (connected) {
+					view.setProcessActive(true);
+				}
 				break;
 			default:
-				view.setProcessActive(false);
+				if (connected) {
+					view.setProcessActive(false);
+				}
 				break;
 		}
 	}

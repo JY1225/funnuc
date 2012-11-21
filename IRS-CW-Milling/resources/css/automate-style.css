@@ -6,7 +6,7 @@
 
 .automate-icon {
 	-fx-fill: #dfdfdf;
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
+	-fx-effect: dropshadow(one-pass-box, #205c0f, 1, 0, 0, 1);
 }
 
 .circle-front {
