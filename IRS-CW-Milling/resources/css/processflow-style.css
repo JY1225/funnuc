@@ -76,12 +76,12 @@
 
 .question-mark-shape {
 	-fx-fill: linear-gradient(white 0%, #e6e6e6 100%);
-	-fx-effect: dropshadow(gaussian, #848484, 8, 0, 0, 0);
+	-fx-effect: dropshadow(one-pass-box, #204b7a, 1, 0, 0, 1);
 }
 
 .pause-shape {
 	-fx-fill: linear-gradient(white 0%, #e6e6e6 100%);
-	-fx-effect: dropshadow(gaussian, #848484, 8, 0, 0, 0);
+	-fx-effect: dropshadow(one-pass-box, #204b7a, 1, 0, 0, 1);
 }
 
 .transport-label {
@@ -91,104 +91,38 @@
 	
 	-fx-font-family: "Helvetica";
 	-fx-alignment: center;
-	-fx-text-fill: rgba(0, 0, 0, 0.8);
+	-fx-text-fill: black;
 	-fx-padding: 0;
-}
-
-.transport-label-disabled {
-	-fx-text-fill: rgba(0, 0, 0, 0.5);
 }
 
 .process-flow-view {
 	-fx-background-color: #ededed;
 }
 
+
+/* ----------PROGRESSBAR---------- */
+
 .progressbar-piece {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf;
-	-fx-background-insets: 0, 1 1 1 1, 1 2 1 2;
-	-fx-effect: null;
+	-fx-background-color: #a9a9a9, #bfbfbf, #dadada;
+	-fx-background-insets: 0, 1 0 1 0, 2 0 1 0;
 	-fx-opacity: 1;
-	/*-fx-effect: innershadow(two-pass-box, rgba(0, 0, 0, 0.18), 5, 0, 0, 2);*/
+}
+
+.progressbar-piece-unfocussed {
+	-fx-opacity: 0.2;	
 }
 
 .progressbar-first {
-	-fx-background-insets: 0, 1 1 1 1, 1 2 1 1;
-	-fx-background-radius: 8 0 0 8, 7 0 0 7, 7 0 0 7;
-	-fx-opacity: 1;
+	-fx-background-radius: 6 0 0 6, 5 0 0 5, 4 0 0 4;
 }
 
 .progressbar-last {
-	-fx-background-radius: 0 8 8 0, 0 7 7 0, 0 7 7 0;
-	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1;
-	-fx-opacity: 1;
+	-fx-background-radius: 0 6 6 0, 0 5 5 0, 0 4 4 0;
 }
 
-.progressbar-piece-green {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
-	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1, 3 1 3 1, 4 1 4 1;
-}
-
-.progressbar-piece-1of2 {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf;
-	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1, 3 1 3 1, 4 1 4 1;
-	-fx-opacity: 1;
-}
-
-.progressbar-piece-2of2 {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf;
-	-fx-background-insets: 0, 1 2 1 1, 1 2 1 1, 3 2 3 1, 4 2 4 1;
-	-fx-opacity: 1;
-}
-
-.progressbar-piece-1of2-green {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
-}
-
-.progressbar-piece-2of2-green {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
-}
-
-.progressbar-piece-1of2-yellow {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#f6e20e 0%, #c6b20c 100%), linear-gradient(#ffec1e 0%, #fee300 100%);
-}
-
-.progressbar-piece-2of2-yellow {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#f6e20e 0%, #c6b20c 100%), linear-gradient(#ffec1e 0%, #fee300 100%);
-}
-
-.progressbar-first-green {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
-	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1, 3 1 3 3, 4 1 4 4;
-	-fx-background-radius: 8 0 0 8, 8 0 0 8, 6 0 0 6, 5 0 0 5;
-}
-
-.progressbar-last-green {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#75d800 0%, #3e7300 100%), linear-gradient(#67be00 0%, #5caa00 100%);
-	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1, 3 3 3 1, 4 4 4 1;
-	-fx-background-radius: 0 8 8 0, 0 8 8 0, 0 6 6 0, 0 5 5 0;
-}
-
-.progressbar-piece-yellow {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#f6e20e 0%, #c6b20c 100%), linear-gradient(#ffec1e 0%, #fee300 100%);
-	-fx-effect: null;
-	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1, 3 1 3 1, 4 1 4 1;
-	/*-fx-effect: innershadow(two-pass-box, rgba(0, 0, 0, 0.18), 5, 0, 0, 2);*/
-}
-
-.progressbar-first-yellow {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#f6e20e 0%, #c6b20c 100%), linear-gradient(#ffec1e 0%, #fee300 100%);
-	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1, 3 1 3 3, 4 1 4 4;
-	-fx-background-radius: 8 0 0 8, 8 0 0 8, 6 0 0 6, 5 0 0 5;
-}
-
-.progressbar-last-yellow {
-	-fx-background-color: linear-gradient(#a0a0a0 0%, #a9a9a9 100%), #dadada, #cfcfcf, linear-gradient(#f6e20e 0%, #c6b20c 100%), linear-gradient(#ffec1e 0%, #fee300 100%);
-	-fx-background-insets: 0, 1 1 1 1, 1 1 1 1, 3 3 3 0, 4 4 4 1;
-	-fx-background-radius: 0 8 8 0, 0 8 8 0, 0 6 6 0, 0 5 5 0;
-}
-
-.unfocussed {
-	-fx-opacity: 0.3;
+.progressbar-green {
+	-fx-background-color: #296218, #388122, #60b847;
+	-fx-background-insets: 0, 1 0 1 0, 2 0 1 0;
 }
 
 .hide {
