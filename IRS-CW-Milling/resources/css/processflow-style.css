@@ -1,49 +1,77 @@
-.arrow-background {
-	-fx-fill:  linear-gradient(#76b9ff 0%, #619bff 100%);
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0), 15, 0, 0, 5), innershadow(gaussian, #1f1f1f, 3, 0, 0, 2);	
-	-fx-stroke: #0088cd;
+/* ---------- DEVICE BUTTON ---------- */
+
+.device-button {
+	-fx-background-insets: 0, 1, 2 1 1 1;
+	-fx-background-radius: 5, 4, 4;
+}
+
+.btn-pre {
+	-fx-background-color: #a55015, #ffb327, linear-gradient(#fb8e05 0%, #e07d01 100%);
+}
+
+.pre-process {
+	-fx-effect: dropshadow(one-pass-box, #a55015, 1, 0, 0, 1);
+}
+
+.btn-cnc {
+	-fx-background-color: #2b0e60, #b789f6, linear-gradient(#935ddc 0%, #4b278d 100%);
+}
+
+.cnc-machine {
+	-fx-effect: dropshadow(one-pass-box, #2b0e60, 1, 0, 0, 1);
+}
+
+.btn-post {
+	-fx-background-color: #205c0f, #a3f08c, linear-gradient(#6fc955 0%, #409228 100%);
+}
+
+.post-process {
+	-fx-effect: dropshadow(one-pass-box, #205c0f, 1, 0, 0, 1);
+}
+
+.button-shape {
+	-fx-fill: white;
+}
+
+.device-button-wrapper {
+	-fx-opacity: 1;
+}
+
+.device-unfocussed {
+	-fx-opacity: 0.2;
+}
+
+.device-label {
+	-fx-font-size: 13px;
+	-fx-text-alignment: center;
+	-fx-font-family: "Helvetica";
+	-fx-font-weight: bold;
+	-fx-text-fill: black;
+}
+
+.unknown-device {
+	-fx-text-fill: red;	
+}
+
+
+/* ---------- TRANSPORT BUTTON ---------- */
+
+.arrow-shine {
+	-fx-fill: #9ecdff;
+}
+
+.arrow-shape {
+	-fx-fill: linear-gradient(#4b9bff 0%, #2a89d2 100%);
 	-fx-stroke-width: 1px;
+	-fx-stroke: #204b7a;
 }
 
-.arrow-background-disabled {
-	-fx-fill: linear-gradient(#e7e7e7 0%, #d5d5d5 100%);
-	-fx-stroke: #b1b1b1;
+.transport-button {
+	-fx-opacity: 1;
 }
 
-.arrow-effect {
-	-fx-fill:  linear-gradient(#76b9ff 0%, #397ef5 100%);
-	-fx-stroke: #0088cd;
-	-fx-stroke-width: 1px;
-	-fx-effect: null;
-}
-
-.arrowp {
-	-fx-shape: "M122.756-0.001c-9.793,0-17.878,7.286-19.144,16.732H81.748L72.14,7.949h-9.557l9.608,8.783H38.462 C37.197,7.285,29.112-0.001,19.32-0.001C8.649-0.001,0,8.648,0,19.318c0,10.67,8.649,19.319,19.32,19.319 c9.792,0,17.877-7.286,19.142-16.732h33.885l-9.764,8.926h9.557l9.764-8.926h21.709c1.266,9.446,9.351,16.732,19.144,16.732 c10.669,0,19.318-8.648,19.318-19.319C142.074,8.648,133.425-0.001,122.756-0.001z";
-	-fx-position-shape: true;
-	-fx-scale-shape: true;
-	-fx-background-color: linear-gradient(#76b9ff 0%, #397ef5 100%);
-	-fx-border-color: #0079b7;
-	-fx-effect:  innershadow(gaussian, #005682, 2, 0, 0, -1);
-	-fx-border-width: 1;
-}
-
-.arrow-disabled {
-	-fx-background-color: linear-gradient(#e7e7e7 0%, #d5d5d5 100%);
-	-fx-border-color: #c6c6c6;
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0, 0, -1);
-}
-
-.arrow-noclick {
-}
-
-.arrow-clicked {
-	-fx-background-color: #486aa5;
-	-fx-border-color: #486aa5;
-	-fx-effect: null;
-}
-
-.arrow-background-noclick {
-	-fx-effect: null;
+.transport-unfocussed {
+	-fx-opacity: 0.2;
 }
 
 .question-mark-shape {
@@ -69,87 +97,6 @@
 
 .transport-label-disabled {
 	-fx-text-fill: rgba(0, 0, 0, 0.5);
-}
-
-.transport-button {
-}
-
-.device-button {
-	-fx-background-color: 
-		linear-gradient(#c0c0c0 0%, #8d8d8d 100%),
-		linear-gradient(white 0%, #d8d8d8 100%);
-	-fx-background-insets: 0, 1 1 2 1;
-	-fx-background-radius: 5, 4, 4;
-	-fx-padding: 0 0 0 0;
-}
-
-.device-button-wrapper {
-}
-
-.device-button Pane.effect {
-	-fx-background-color: rgba(0, 0, 0, 0);
-}
-
-.device-button:pressed Pane.effect {
-	-fx-background-color: rgba(0, 0, 0, 0.3);
-	-fx-background-insets: 1 1 2 1;
-	-fx-background-radius: 4;
-}
-
-.device-button-noclick {
-	-fx-background-color: 
-		linear-gradient(#c0c0c0 0%, #8d8d8d 100%),
-		linear-gradient(white 0%, #d8d8d8 100%);
-	-fx-background-insets: 0, 1 1 2 1;
-	-fx-background-radius: 5, 4, 4;
-	-fx-padding: 0 0 0 0;
-}
-
-.clicked {
-	-fx-fill: rgba(0, 0, 0, 0.4);
-	-fx-stroke: rgba(0, 0, 0, 0.4);
-}
-
-.pre-process {
-	-fx-fill: radial-gradient(center 50% 50%, radius 30%, #f39500, #f37200);
-}
-
-.post-process {
-	-fx-fill: radial-gradient(center 50% 50%, radius 30%, #67be00, #5caa00);
-}
-
-.cnc-machine {
-	-fx-fill: radial-gradient(center 50% 50%, radius 50%, #ba83ff, #6300dd);
-}
-
-.device-button-inactive {
-	-fx-background-color: 
-		linear-gradient(#d1d1d1 0%, #a3a3a3 100%),
-		linear-gradient(white 0%, #d1d1d1 80%, #cccccc 100%);
-}
-
-.button-shape-inactive {
-	-fx-fill: radial-gradient(center 50% 50%, radius 50%, #c4c4c4, #a2a2a2);
-}
-
-.device-label {
-	-fx-font-size: 13px;
-	-fx-text-alignment: center;
-	
-	-fx-font-family: "Helvetica";
-	-fx-font-weight: bold;
-	
-	-fx-text-fill: black;
-	
-	/*-fx-effect: dropshadow(gaussian,rgb(0, 0, 0, 0.1), 5, 0, 0, 5);*/
-}
-
-.unknown-device {
-	-fx-text-fill: red;	
-}
-
-.button-label-inactive {
-	-fx-text-fill: #B8B8B8;
 }
 
 .process-flow-view {

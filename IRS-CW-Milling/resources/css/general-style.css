@@ -31,7 +31,6 @@
 	-fx-font-size: 14px;
 	-fx-font-weight: bold;
 	-fx-font-family: "Helvetica";
-	-fx-font-smoothing-type: lcd;
 }
 
 .left-menu-button:disabled {
@@ -60,45 +59,25 @@
 	-fx-background-radius: 5;
 }
 
-.popup-top {
-	-fx-background-color: red;
-}
-
-.popup-content {
-	-fx-background-color: yellow;
-}
-
-.popup-buttom {
-	-fx-background-color: red;
-}
-
 .popup {
-	-fx-effect: dropshadow(gaussian, #4c4c4c, 10, 0, 0, 1);
-	-fx-background-color: 
-		#343434, linear-gradient(#666363 0%, #5a5858 100%), 
-		linear-gradient(#5f5d5d 0%, #575454 100%);
+	-fx-effect: dropshadow(gaussian, #4c4c4c, 10, 0, 0, 5);
+	-fx-background-color: #4c4c4c, #807c7c, #6d6c6c;
 	-fx-background-insets: 0, 0 1 1 1, 0 2 2 2;
 	-fx-background-radius: 0 0 5 5, 0 0 4 4, 0 0 3 3;
 }
 
 .pop-up-btn {
-	-fx-background-color: #423f3f, #5d5a5a, #545050;
-	-fx-background-insets: 0, 0 1 1 1, 1 2 2 2;
+	-fx-background-color: #343434, #807878, #5e5a5a;
+	-fx-background-insets: 0, 0 1 1 1, 1 1 1 1;
 	-fx-background-radius: 0;
-	-fx-text-alignment: left;
 }
 
 .pop-up-btn Text {
 	-fx-fill: white;
-	-fx-text-alignment: left;
 	-fx-font-size: 14px;
 	-fx-font-weight: bold;
 	-fx-font-family: "Helvetica";
-	-fx-font-smoothing-type: lcd;
 	-fx-padding: 0 0 0 5;
-	-fx-alignment: left;
-	-fx-text-fill: white;
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
 }
 
 .pop-up-btn-bottom {
@@ -106,5 +85,5 @@
 }
 
 .pop-up-btn-pressed, .pop-up-btn:pressed {
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.5), 50, 0, 0, 0);
+	-fx-background-color: #343c48, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
 }
