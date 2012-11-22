@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -36,16 +37,22 @@ public class DeviceManager {
 	public static final String PRAGE_DEVICE = "Präge";
 	public static final String MAZAK_VRX = "Mazak VRX J500";
 	
+	private static final String CNC_IP = "cnc-ip";
+	private static final String CNC_PORT = "cnc-port";
+	
 	private RobotManager robotManager;
 	
+	Properties properties;
+	
 	//TODO enforce unique ids
-	public DeviceManager(RobotManager robotManager) {
+	public DeviceManager(RobotManager robotManager, Properties properties) {
 		cncMachines = new HashMap<String, AbstractCNCMachine>();
 		preProcessingDevices = new HashMap<String, AbstractProcessingDevice>();
 		postProcessingDevices = new HashMap<String, AbstractProcessingDevice>();
 		stackingFromDevices = new HashMap<String, AbstractStackingDevice>();
 		stackingToDevices = new HashMap<String, AbstractStackingDevice>();
 		this.robotManager = robotManager;
+		this.properties = properties;
 		initialize();
 	}
 	
@@ -69,7 +76,7 @@ public class DeviceManager {
 		Zone zone1 = new Zone("zone 1", workAreas);
 		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.200.4", 2010);  // other: 6
 		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "10.10.40.12", 2010);  // other: 6
-		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.220.7", 2010);  // other: 6
+		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", properties.getProperty(CNC_IP), Integer.parseInt(properties.getProperty(CNC_PORT)));  // other: 6
 		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.220.7", 2010);  // other: 6
 		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.0.102", 2010);  // other: 6
 		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak VRX J500", cncSocketCon);

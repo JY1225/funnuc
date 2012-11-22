@@ -119,7 +119,7 @@
 	-fx-alignment: center-left;
 	-fx-font-family: "Helvetica";
 	-fx-text-fill: white;
-	-fx-padding: 10 5 10 5;
+	-fx-padding: 10 10 10 10;
 }
 
 .combo-box-base {
@@ -149,7 +149,7 @@
 	-fx-text-alignment: center;
 	-fx-font-family: "Helvetica";
 	-fx-text-fill: white;
-	-fx-padding: 10 5 10 5;
+	-fx-padding: 10 10 10 10;
 }
 
 .form-icon {

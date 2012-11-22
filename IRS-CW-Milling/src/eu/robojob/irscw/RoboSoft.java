@@ -1,6 +1,9 @@
 package eu.robojob.irscw;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Locale;
+import java.util.Properties;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -23,7 +26,9 @@ public class RoboSoft extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		RoboSoftAppFactory factory = new RoboSoftAppFactory();
+		Properties properties = new Properties();
+		properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
+		RoboSoftAppFactory factory = new RoboSoftAppFactory(properties);
 		MainPresenter mainPresenter = factory.getMainPresenter();
 		mainPresenter.showConfigure();
 		Scene scene = new Scene(mainPresenter.getView(), 800, 600);

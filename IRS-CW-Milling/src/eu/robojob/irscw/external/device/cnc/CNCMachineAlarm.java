@@ -37,9 +37,9 @@ public class CNCMachineAlarm {
 		this.translator = Translator.getInstance();
 	}
 	
-	public String getMessage() {
+/*	public String getMessage() {
 		return translator.getTranslation("CNCMachineAlarm." + id);
-	}
+	}*/
 	
 	public int getPriority() {
 		return 0;
@@ -47,6 +47,41 @@ public class CNCMachineAlarm {
 	
 	public int getId() {
 		return id;
+	}
+	
+	public String getMessage() {
+		switch (id) {
+			case MACHINE:
+				return "Machine alarm";
+			case FEED_HOLD:
+				return "Feed hold";
+			case MAIN_PRESSURE:
+				return "Main pressure";
+			case OIL_TEMP_HIGH:
+				return "Oil temp high";
+			case OIL_LEVEL_LOW:
+				return "Oil level low";
+			case DOOR1_NOT_OPEN:
+				return "Door 1 not open";
+			case DOOR2_NOT_OPEN:
+				return "Door 2 not open";
+			case DOOR1_NOT_CLOSED:
+				return "Door 1 not closed";
+			case DOOR2_NOT_CLOSED:
+				return "Door 2 not closed";
+			case CLAMP1_NOT_OPEN:
+				return "Clamp 1 not open";
+			case CLAMP2_NOT_OPEN:
+				return "Clamp 2 not open";
+			case CLAMP1_NOT_CLOSED:
+				return "Clamp 1 not closed";
+			case CLAMP2_NOT_CLOSED:
+				return "Clamp 2 not closed";
+			case MULTIPLE_IPC_REQUESTS:
+				return "Multiple IPC requests";
+			default:
+				return "Other: " + id;
+		}
 	}
 	
 	@Override
@@ -64,6 +99,6 @@ public class CNCMachineAlarm {
 	}
 	
 	public String toString() {
-		return id + "";
+		return getMessage();
 	}
 }

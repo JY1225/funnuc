@@ -37,7 +37,7 @@ public class FanucRobot extends AbstractRobot {
 	private static final int TO_HOME_TIMEOUT = 5*60*1000;
 	private static final int TO_JAW_CHANGE_TIMEOUT = 5*60*1000;
 	
-	private static final int WRITE_REGISTER_TIMEOUT = 2*60*1000;
+	private static final int WRITE_REGISTER_TIMEOUT = 10000;
 	private static final int PRAGE_TIMEOUT = 2*60*1000;
 	
 	private boolean stopAction;
@@ -135,7 +135,7 @@ public class FanucRobot extends AbstractRobot {
 	public void stopCurrentAction() {
 		stopAction = true;
 		try {
-			fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_ABORT, FanucRobotConstants.RESPONSE_ABORT, WRITE_REGISTER_TIMEOUT);
+			fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_ABORT, FanucRobotConstants.RESPONSE_ABORT, WRITE_VALUES_TIMEOUT);
 		} catch (DisconnectedException | ResponseTimedOutException e) {
 			e.printStackTrace();
 		}

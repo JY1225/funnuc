@@ -1,5 +1,7 @@
 package eu.robojob.irscw.ui;
 
+import java.util.Properties;
+
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine;
@@ -84,6 +86,12 @@ public class RoboSoftAppFactory {
 	private TransportMenuFactory transportMenuFactory;
 	
 	private ProcessFlowTimer processFlowTimer;
+	
+	Properties properties;
+	
+	public RoboSoftAppFactory(Properties properties) {
+		this.properties = properties;
+	}
 	
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
@@ -377,14 +385,14 @@ public class RoboSoftAppFactory {
 	
 	private DeviceManager getDeviceManager() {
 		if (deviceManager == null) {
-			deviceManager = new DeviceManager(getRobotManager());
+			deviceManager = new DeviceManager(getRobotManager(), properties);
 		}
 		return deviceManager;
 	}
 	
 	private RobotManager getRobotManager() {
 		if (robotManager == null) {
-			robotManager = new RobotManager();
+			robotManager = new RobotManager(properties);
 		}
 		return robotManager;
 	}

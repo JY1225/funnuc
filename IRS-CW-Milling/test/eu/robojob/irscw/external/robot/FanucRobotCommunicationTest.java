@@ -1,5 +1,11 @@
 package eu.robojob.irscw.external.robot;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -30,9 +36,11 @@ public class FanucRobotCommunicationTest {
 	private DeviceManager deviceManager;
 	
 	@Before
-	public void setup() {
-		this.robotManager = new RobotManager();
-		this.deviceManager = new DeviceManager(robotManager);
+	public void setup() throws FileNotFoundException, IOException {
+		Properties properties = new Properties();
+		properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
+		this.robotManager = new RobotManager(properties);
+		this.deviceManager = new DeviceManager(robotManager, properties);
 		this.basicStackPlate = (BasicStackPlate) deviceManager.getDeviceById("IRS M Basic");
 		WorkArea wa = basicStackPlate.getWorkAreaById("IRS M Basic");
 		

@@ -21,13 +21,13 @@ public class DisconnectedDevicesView extends VBox {
 	
 	private void build() {
 		lblDisconnectedDevices = new Label(translator.getTranslation("disconnected-devices"));
-		lblDisconnectedDevices.getStyleClass().addAll("info-msg", "lbl-disconnected");
+		lblDisconnectedDevices.getStyleClass().addAll("teach-msg", "lbl-disconnected");
 		setMargin(lblDisconnectedDevices, new Insets(50, 0, 0, 0));
 		lblDisconnectedDevices.setPrefSize(520, 100);
 		lblDisconnectedDevices.setWrapText(true);
 		
 		lblDisconnectedList = new Label("");
-		lblDisconnectedList.getStyleClass().addAll("info-msg", "lbl-disconnected-list");
+		lblDisconnectedList.getStyleClass().addAll("teach-msg", "lbl-disconnected-list");
 		lblDisconnectedList.setPrefWidth(520);
 		
 		this.getChildren().add(lblDisconnectedDevices);

@@ -1,5 +1,11 @@
 package eu.robojob.irscw.external.device.cnc;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -28,9 +34,11 @@ public class CNCMachineCommunicationTest {
 	private static Logger logger = Logger.getLogger(CNCMachineCommunicationTest.class);
 	
 	@Before
-	public void setup() {
-		this.robotManager = new RobotManager();
-		this.deviceManager = new DeviceManager(robotManager);
+	public void setup() throws FileNotFoundException, IOException {
+		Properties properties = new Properties();
+		properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
+		this.robotManager = new RobotManager(properties);
+		this.deviceManager = new DeviceManager(robotManager, properties);
 		cncMillingMachine = (CNCMillingMachine) deviceManager.getCNCMachineById("Mazak VRX J500");
 		putSettings = new CNCMillingMachine.CNCMillingMachinePutSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
 		pickSettings = new CNCMillingMachinePickSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));

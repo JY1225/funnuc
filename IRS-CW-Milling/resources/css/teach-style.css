@@ -10,7 +10,22 @@
 	-fx-text-fill: white;
 	-fx-font-family: "Helvetica";
 	-fx-font-size: 16px;
+	-fx-background-color: transparent;
 } 
+
+.message-normal {
+	-fx-font-size: 15px;
+	-fx-background-color: #8c8888, #222222, #454545, #4a4a4a;
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
+	-fx-background-radius: 5;
+}
+
+.message-error {
+	-fx-font-size: 15px;
+	-fx-background-color: #8c8888, #222222, #dc341d, #e33d27;
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
+	-fx-background-radius: 5;
+}
 
 .btn-start, .teach-btn {
 	-fx-background-color: #807878, #222222, #807878, linear-gradient(#656161 0%, #4e4a4a 100%);
@@ -49,6 +64,7 @@
 
 .lbl-disconnected-list {
 	-fx-text-size: 18px;
+	-fx-text-alignment: center;
 }
 
 .loading {

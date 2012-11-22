@@ -134,9 +134,12 @@ public class OptimizedTeachThread extends TeachThread {
 			this.running = false;
 
 			processFlow.setMode(Mode.READY);
-		} catch (CommunicationException | RobotActionException | InterruptedException | DeviceActionException e) {
+		} catch (CommunicationException | RobotActionException | DeviceActionException e) {
 			e.printStackTrace();
 			notifyException(e);
+			processFlow.setMode(Mode.STOPPED);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 			processFlow.setMode(Mode.STOPPED);
 		}
 	}

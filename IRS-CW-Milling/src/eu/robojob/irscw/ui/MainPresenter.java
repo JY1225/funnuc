@@ -36,7 +36,6 @@ public class MainPresenter implements ProcessFlowListener {
 		this.configurePresenter = configurePresenter;
 		configurePresenter.setParent(this);
 		this.teachPresenter = teachPresenter;
-		teachPresenter.setParent(this);
 		this.automatePresenter = automatePresenter;
 		automatePresenter.setParent(this);
 		this.robotPopUpPresenter = robotPopUpPresenter;
@@ -124,9 +123,11 @@ public class MainPresenter implements ProcessFlowListener {
 	}
 	
 	public void setChangeContentEnabled(boolean enabled) {
-		//menuBarPresenter.setAutomateButtonEnabled(enabled);
-		menuBarPresenter.setConfigureButtonEnabled(enabled);
-		menuBarPresenter.setTeachButtonEnabled(enabled);
+		if (!enabled) {
+			menuBarPresenter.setAutomateButtonEnabled(enabled);
+			menuBarPresenter.setConfigureButtonEnabled(enabled);
+			menuBarPresenter.setTeachButtonEnabled(enabled);
+		}
 		//menuBarPresenter.setAdminButtonEnabled(enabled);
 	}
 	
@@ -159,6 +160,14 @@ public class MainPresenter implements ProcessFlowListener {
 
 	@Override public void modeChanged(ModeChangedEvent e) {
 		refreshStatus();
+		switch(e.getMode()) {
+			case AUTO:
+			case TEACH:
+				setChangeContentEnabled(false);
+				break;
+			default:
+				break;
+		}
 	}
 	@Override public void activeStepChanged(ActiveStepChangedEvent e) {}
 	@Override public void exceptionOccured(ExceptionOccuredEvent e) {}

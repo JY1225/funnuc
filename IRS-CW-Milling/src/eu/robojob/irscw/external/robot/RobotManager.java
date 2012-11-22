@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
@@ -14,9 +15,14 @@ import eu.robojob.irscw.external.communication.SocketConnection.Type;
 public class RobotManager {
 	
 	private Map<String, AbstractRobot> robots;
+	private Properties properties;
 	
-	public RobotManager() {
+	private static final String ROBOT_IP = "robot-ip";
+	private static final String ROBOT_PORT = "robot-port";
+	
+	public RobotManager(Properties properties) {
 		robots = new HashMap<String, AbstractRobot>();
+		this.properties = properties;
 		initialize();
 	}
 	
@@ -45,7 +51,7 @@ public class RobotManager {
 		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.200.9", 2001);
 		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "10.10.40.12", 2001);
 		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.200.1", 2001);
-		SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "127.0.0.1", 2001);
+		SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", properties.getProperty(ROBOT_IP), Integer.parseInt(properties.getProperty(ROBOT_PORT)));
 		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.220.7", 2001);
 		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.0.102", 2001);
 		FanucRobot fanucRobot = new FanucRobot("Fanuc M20iA", gripperBodies, gripperBody, connection);

@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import eu.robojob.irscw.util.Translator;
@@ -27,6 +28,7 @@ public class StatusView extends VBox {
 	private Label lblZRestValue;
 	
 	private Label lblMessage;
+	private Label lblAlarmMessage;
 	
 	private Button btnRestart;
 	
@@ -78,15 +80,28 @@ public class StatusView extends VBox {
 		hboxRobotStatus.getChildren().add(loading);
 		hboxRobotStatus.getChildren().add(lblZRestValue);
 		
+		lblZRestValue.setVisible(false);
+		lblZRest.setVisible(false);
+		
 		setMargin(hboxRobotStatus, new Insets(30, 0, 30, 0));
 		
 		setProcessStopped();
 		
 		lblMessage = new Label();
-		lblMessage.getStyleClass().add("teach-msg");
-		lblMessage.setPrefSize(500, 60);
+		lblMessage.getStyleClass().addAll("teach-msg", "message-normal");
+		lblMessage.setPrefSize(500, 80);
 		lblMessage.setWrapText(true);
-		setMargin(lblMessage, new Insets(0, 0, 30, 0));
+		lblAlarmMessage = new Label();
+		lblAlarmMessage.getStyleClass().addAll("teach-msg", "message-error");
+		lblAlarmMessage.setPrefSize(500, 80);
+		lblAlarmMessage.setWrapText(true);
+		
+		StackPane spMessages = new StackPane();
+		spMessages.getChildren().add(lblMessage);
+		spMessages.getChildren().add(lblAlarmMessage);
+		lblAlarmMessage.setVisible(false);
+		
+		setMargin(spMessages, new Insets(0, 0, 30, 0));
 		
 		btnRestart = new Button();
 		btnRestart.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
@@ -103,12 +118,21 @@ public class StatusView extends VBox {
 		setMargin(btnRestart, new Insets(0, 0, 30, 0));
 
 		this.getChildren().add(hboxRobotStatus);
-		this.getChildren().add(lblMessage);
+		this.getChildren().add(spMessages);
 		this.getChildren().add(btnRestart);
 	}
 	
-	public void setMessage(Status status, String message) {
+	public void setMessage(String message) {
 		lblMessage.setText(message);
+	}
+	
+	public void setAlarmMessage(String message) {
+		lblAlarmMessage.setText(message);
+		lblAlarmMessage.setVisible(true);
+	}
+	
+	public void hideAlarmMessage() {
+		lblAlarmMessage.setVisible(false);
 	}
 	
 	public void setProcessPaused() {
