@@ -73,11 +73,12 @@ public class AutomateView extends VBox {
 	
 	private SVGPath pauseIconShape;
 	private SVGPath playIconShape;
-	private RotateTransition rotation;
-	private SVGPath loading;
+
+	private Region loading;
 	
 	private Label lblZRest;
-	
+	private Label lblZRestValue;
+
 	private Label lblCycleTimeMessage;
 	private Label lblCycleTimePassedMessage;
 	private Label lblTimeTillPauseMessage;
@@ -95,14 +96,14 @@ public class AutomateView extends VBox {
 	
 	private Path piePiecePath;
 	
-	private Label lblStatus;
+	private Label lblMessage;
+	private Label lblAlarmMessage;
 	
 	private Button btnPause;
 	private Button btnStart;
 	private Button btnRestart;
 	
 	private StackPane btnPane;
-	private VBox lblPane;
 	
 	private AutomatePresenter presenter;
 		
@@ -138,55 +139,48 @@ public class AutomateView extends VBox {
 		bottomBottom = new HBox();
 		bottom.getChildren().add(bottomBottom);
 		
-		loading = new SVGPath();
-		loading.setContent(loadingPath);
-				
-		rotation = new RotateTransition(Duration.millis(2000), loading);
-		rotation.setFromAngle(0);
-		rotation.setToAngle(360);
-		rotation.setInterpolator(Interpolator.LINEAR);
-		rotation.setCycleCount(Timeline.INDEFINITE);
-				
+		loading = new Region();
+		loading.setPrefSize(40, 40);
+		loading.setMaxSize(40, 40);
+		
 		lblZRest = new Label();
-		lblZRest.getStyleClass().add("lbl-z-rest-auto");
-		lblZRest.setPrefSize(180, 20);
-		lblZRest.setWrapText(true);
+		lblZRest.getStyleClass().add("lbl-z-rest");
+		lblZRest.setPrefSize(100, 40);
+		lblZRest.setMaxSize(100, 40);
+		lblZRest.setMinSize(100, 40);
+		lblZRest.setText("zakt nog");
 		
-		HBox loadingPane = new HBox();
-		loadingPane.setAlignment(Pos.CENTER_LEFT);
-		loadingPane.setPrefSize(200, 50);
-		loadingPane.setMaxSize(200, 50);
-		loadingPane.getChildren().add(loading);
-		loadingPane.getChildren().add(lblZRest);
+		lblZRestValue = new Label();
+		lblZRestValue.getStyleClass().add("lbl-z-rest");
+		lblZRestValue.getStyleClass().add("lbl-z-rest-val");
+		lblZRestValue.setPrefSize(100, 40);
+		lblZRestValue.setMaxSize(100, 40);
+		lblZRestValue.setMinSize(100, 40);
 		
-		lblStatus = new Label();
-		lblStatus.getStyleClass().add("status-msg");
-		lblStatus.setPrefSize(200, 100);
+		lblMessage = new Label();
+		lblMessage.getStyleClass().addAll("teach-msg", "message-normal");
+		lblMessage.setPrefSize(200, 125);
+		lblMessage.setWrapText(true);
+		lblAlarmMessage = new Label();
+		lblAlarmMessage.getStyleClass().addAll("teach-msg", "message-error");
+		lblAlarmMessage.setPrefSize(200, 125);
+		lblAlarmMessage.setWrapText(true);
 		
-		lblPane = new VBox();
-		lblPane.setAlignment(Pos.CENTER);
-		lblPane.setPrefWidth(300);
+		StackPane spMessages = new StackPane();
+		spMessages.setPrefWidth(300);
+		spMessages.getChildren().add(lblMessage);
+		spMessages.getChildren().add(lblAlarmMessage);
+		lblAlarmMessage.setVisible(false);
 		
-		lblPane.getChildren().add(loadingPane);
-		lblPane.getChildren().add(lblStatus);
+		
+		
 		
 		btnPause = new Button();
 		btnPause.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
-		HBox hboxBtnPause = new HBox();
-		pauseIconShape = new SVGPath();
-		pauseIconShape.setContent(pauseIconPath);
-		pauseIconShape.getStyleClass().addAll("automate-icon", "automate-btn-icon");
 		btnPause.getStyleClass().add("automate-btn");
 		Text txtPause = new Text(translator.getTranslation("pause"));
-		StackPane txtPausePane = new StackPane();
-		txtPausePane.getChildren().add(txtPause);
-		txtPausePane.setPrefWidth(150);
-		txtPausePane.setAlignment(Pos.CENTER);
 		txtPause.getStyleClass().add("automate-btn-text");
-		//hboxBtnPause.getChildren().add(pauseIconShape);
-		hboxBtnPause.getChildren().add(txtPausePane);
-		hboxBtnPause.setAlignment(Pos.CENTER_LEFT);
-		btnPause.setGraphic(hboxBtnPause);
+		btnPause.setGraphic(txtPause);
 		btnPause.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
@@ -195,42 +189,22 @@ public class AutomateView extends VBox {
 		});
 		btnStart = new Button();
 		btnStart.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
-		HBox hboxBtnStart = new HBox();
-		playIconShape = new SVGPath();
-		playIconShape.setContent(playIconPath);
-		playIconShape.getStyleClass().addAll("automate-icon", "automate-btn-icon");
 		btnStart.getStyleClass().add("automate-btn");
 		Text txtStart = new Text(translator.getTranslation("play"));
-		StackPane txtStartPane = new StackPane();
-		txtStartPane.getChildren().add(txtStart);
-		txtStartPane.setPrefWidth(150);
-		txtStartPane.setAlignment(Pos.CENTER);
 		txtStart.getStyleClass().add("automate-btn-text");
-		//hboxBtnStart.getChildren().add(playIconShape);
-		hboxBtnStart.getChildren().add(txtStartPane);
-		hboxBtnStart.setAlignment(Pos.CENTER_LEFT);
-		btnStart.setGraphic(hboxBtnStart);
+		btnStart.setGraphic(txtStart);
 		btnStart.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
 				presenter.clickedStart();
 			}
 		});
-		
 		btnRestart = new Button();
 		btnRestart.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
 		btnRestart.getStyleClass().add("automate-btn");
-		HBox hboxBtnReStart = new HBox();
 		Text txtRestart = new Text(translator.getTranslation("restart"));
-		StackPane txtRestartPane = new StackPane();
-		txtRestartPane.getChildren().add(txtRestart);
-		txtRestartPane.setPrefWidth(150);
-		txtRestartPane.setAlignment(Pos.CENTER);
 		txtRestart.getStyleClass().add("automate-btn-text");
-		//hboxBtnStart.getChildren().add(playIconShape);
-		hboxBtnReStart.getChildren().add(txtRestartPane);
-		hboxBtnReStart.setAlignment(Pos.CENTER_LEFT);
-		btnRestart.setGraphic(hboxBtnReStart);
+		btnRestart.setGraphic(txtRestart);
 		btnRestart.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
@@ -238,9 +212,28 @@ public class AutomateView extends VBox {
 			}
 		});
 		
+
+		HBox hboxRobotStatus = new HBox();
+		hboxRobotStatus.setPrefSize(280, 40);
+		hboxRobotStatus.setMaxSize(280, 40);
+		hboxRobotStatus.setMinSize(280, 40);
+		hboxRobotStatus.setAlignment(Pos.CENTER);
+		
+		hboxRobotStatus.getChildren().add(lblZRest);
+		hboxRobotStatus.getChildren().add(loading);
+		hboxRobotStatus.getChildren().add(lblZRestValue);
+		
+		setMargin(hboxRobotStatus, new Insets(20, 0, 20, 0));
+		
+		lblZRestValue.setVisible(false);
+		lblZRest.setVisible(false);
+		
+		VBox rightVBox = new VBox();
 		btnPane = new StackPane();
 		btnPane.setPrefWidth(300);
 		btnPane.setAlignment(Pos.CENTER);
+		rightVBox.getChildren().add(hboxRobotStatus);
+		rightVBox.getChildren().add(btnPane);
 		showStartButton();
 		//showPauseButton();
 		
@@ -286,9 +279,9 @@ public class AutomateView extends VBox {
 		pane.getChildren().add(lblTotalAmount);
 		StackPane.setMargin(lblTotalAmount, new Insets(80, 0, 0, 40));
 		
-		bottomTop.add(lblPane, 0, 0);
+		bottomTop.add(spMessages, 0, 0);
 		bottomTop.add(pane, 1, 0);
-		bottomTop.add(btnPane, 2, 0);
+		bottomTop.add(rightVBox, 2, 0);
 		
 		VBox vboxCycleTime = new VBox();
 		vboxCycleTime.getStyleClass().add("time-vbox");
@@ -371,7 +364,7 @@ public class AutomateView extends VBox {
 		bottomBottom.getChildren().add(vboxTimeTillFinished);
 		
 		setStatus(Status.OK, translator.getTranslation("status-first"));
-		
+		piePiecePath.getStyleClass().add("automate-progress-green");
 		setProcessStopped();
 		
 		pane.toFront();
@@ -386,23 +379,7 @@ public class AutomateView extends VBox {
 	}
 	
 	public void setStatus(Status type, String message) {
-		lblStatus.setText(message);
-		lblStatus.getStyleClass().removeAll("status-msg-green", "status-msg-orange", "status-msg-red");
-		piePiecePath.getStyleClass().removeAll("automate-progress-green", "automate-progress-orange", "automate-progress-red");
-		switch (type) {
-		case OK:
-			piePiecePath.getStyleClass().add("automate-progress-green");
-			lblStatus.getStyleClass().add("status-msg-green");
-			break;
-		case WARNING:
-			piePiecePath.getStyleClass().add("automate-progress-orange");
-			lblStatus.getStyleClass().add("status-msg-orange");
-			break;
-		case ERROR:
-			piePiecePath.getStyleClass().add("automate-progress-red");
-			lblStatus.getStyleClass().add("status-msg-red");
-			break;
-		}
+		
 	}
 	
 	public void showStartButton() {
@@ -547,29 +524,28 @@ public class AutomateView extends VBox {
 	public void setProcessPaused() {
 		loading.getStyleClass().remove("loading");
 		loading.getStyleClass().remove("loading-inactive");
-		rotation.pause();
 		loading.getStyleClass().add("loading");
 	}
 	
 	public void setProcessRunning() {
 		loading.getStyleClass().remove("loading");
 		loading.getStyleClass().remove("loading-inactive");
-		rotation.play();
 		loading.getStyleClass().add("loading");
 	}
 	
 	public void setProcessStopped() {
 		loading.getStyleClass().remove("loading");
 		loading.getStyleClass().remove("loading-inactive");
-		rotation.pause();
 		loading.getStyleClass().add("loading-inactive");
 	}
 	
 	public void setZRest(double zrest) {
 		if (zrest > 0) {
-			lblZRest.setText("Z resterend: " + zrest);
+			lblZRestValue.setText(zrest + " mm");
+			lblZRestValue.setVisible(true);
 			lblZRest.setVisible(true);
 		} else {
+			lblZRestValue.setVisible(false);
 			lblZRest.setVisible(false);
 		}
 	}

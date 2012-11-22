@@ -1,5 +1,5 @@
 .automate-bottom {
-	-fx-background-color: #4c4c4c, #807c7c, #6d6c6c;
+	-fx-background-color: #4c4c4c, #807c7c, #7b7b7b;
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
 }
 
@@ -11,7 +11,7 @@
 .circle-back {
 	-fx-smooth: true; 
 	-fx-shape: "M 39.75 -0.03125 C 18.043861 -0.03125 0.40625 17.606358 0.40625 39.3125 C 0.40625 61.01864 18.043861 78.53125 39.75 78.53125 C 61.456141 78.53125 79 61.01864 79 39.3125 C 79 17.606358 61.456141 -0.03125 39.75 -0.03125 z";
-	-fx-background-color: linear-gradient(#6d6c6c 0%, #6d6c6c 50%, #8c8888 80%, #8c8888 100%), #222222, linear-gradient(#454545 0%, #454545 20%, #4a4a4a 50%, #4a4a4a 100%), #575757;
+	-fx-background-color: linear-gradient(#7b7b7b 0%, #7b7b7b 50%, #8c8888 80%, #8c8888 100%), #4c4c4c, linear-gradient(#545454 0%, #545454 20%, #6d6c6c 50%, #6d6c6c 100%), #6d6c6c;
 	-fx-background-insets: 0, 1, 2, 3;
 }
 
@@ -80,7 +80,7 @@
 }
 
 .time-vbox {
-	-fx-background-color: #222222, #454545, #575757;
+	-fx-background-color: #4c4c4c, #807c7c, #6d6c6c;
 	-fx-background-insets: 0, 1 0 0 0, 2 0 0 0;
 }
 
@@ -105,24 +105,8 @@
 }
 
 .status-msg {
-	-fx-font-size: 20px;
-	-fx-font-weight: bold;
-	-fx-text-alignment: left;
-	-fx-font-smoothing-type: lcd;
-	-fx-font-family: "Helvetica";
-	-fx-text-fill: white;
-	-fx-wrap-text: true;
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
-}
-
-.status-msg-green {
-	-fx-text-fill: white;
-}
-
-.status-msg-orange {
-	-fx-text-fill: #f3d400;
-}
-
-.status-msg-red {
-	-fx-text-fill: #ff4b2d;
+	-fx-font-size: 15px;
+	-fx-background-color: #8c8888, #222222, #454545, #575757;
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
+	-fx-background-radius: 5;
 }
