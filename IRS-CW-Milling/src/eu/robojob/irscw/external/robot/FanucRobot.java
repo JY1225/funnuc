@@ -134,6 +134,11 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public void stopCurrentAction() {
 		stopAction = true;
+		try {
+			fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_ABORT, FanucRobotConstants.RESPONSE_ABORT, WRITE_REGISTER_TIMEOUT);
+		} catch (DisconnectedException | ResponseTimedOutException e) {
+			e.printStackTrace();
+		}
 		synchronized(syncObject) {
 			syncObject.notifyAll();
 		}
@@ -165,7 +170,7 @@ public class FanucRobot extends AbstractRobot {
 				} 
 				if (stopAction) {
 					stopAction = false;
-					//throw new InterruptedException();
+					throw new InterruptedException();
 				}
 				if (!isConnected()) {
 					throw new FanucRobotDisconnectedException(this);

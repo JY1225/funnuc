@@ -38,6 +38,7 @@ import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
+import eu.robojob.irscw.ui.teach.StatusView.Status;
 import eu.robojob.irscw.util.Translator;
 
 public class TeachPresenter implements CNCMachineListener, FanucRobotListener, ProcessFlowListener, MainContentPresenter {
@@ -78,41 +79,35 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		robots = new HashMap<FanucRobot, Boolean>();
 		this.translator = Translator.getInstance();
 	}
-
+	
+	/**
+	 * This method is called when the teach-screen is opened (active) or closed (not active)
+	 * @param active
+	 */
 	@Override
 	public void setActive(boolean active) {
 		if (active) {
-			processFlow.setMode(Mode.STOPPED);
 			enable();
 		} else {
+			// disable this view, we don't want to listen anymore to the robots, devices, process 
+			// and the teach thread can be stopped (if still running)
 			if (teachThread.isRunning()) {
 				ThreadManager.getInstance().stopRunning(teachThread);
 			}
-			for (AbstractCNCMachine machine : machines.keySet()) {
-				machine.removeListener(this);
-			}
-			for (FanucRobot robot: robots.keySet()) {
-				robot.removeListener(this);
-			}
-			machines.clear();
-			robots.clear();
-			processFlow.removeListener(this);
+			stopListening();
 		}
 	}
 	
+	/**
+	 * Helper method, executed when the teach-screen is opened
+	 */
 	private void enable() {
+		// always check if all devices are connected before continuing
 		view.setBottom(teachDisconnectedDevicesView);
+		// listen to the process and refresh the process flow view
 		processFlow.addListener(this);
 		processFlowPresenter.refresh();
-		for (AbstractCNCMachine machine : machines.keySet()) {
-			machine.removeListener(this);
-		}
-		for (FanucRobot robot : robots.keySet()) {
-			robot.removeListener(this);
-		}
-		machines.clear();
-		robots.clear();
-		//TODO for now we assume the devices/robots of the processflow will not change, so we register as a listener to all the devices/robots contained in the processflow
+		// check status of all devices and start listening to them
 		for (AbstractDevice device : processFlow.getDevices()) {
 			if (device instanceof AbstractCNCMachine) {
 				AbstractCNCMachine machine = (AbstractCNCMachine) device;
@@ -160,45 +155,65 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		}
 	}
 	
+	/**
+	 * Enable the DisconnectedDevicesView, showing all devices that are not yet connected
+	 * @param deviceNames
+	 */
 	public void showDisconnectedDevices(Set<String> deviceNames) {
 		logger.info("about to show " + deviceNames.size() + " disconnected devices");
-		view.setBottom(teachDisconnectedDevicesView);
 		teachDisconnectedDevicesView.setDisconnectedDevices(deviceNames);
+		view.setBottom(teachDisconnectedDevicesView);
 	}
 	
-	@Override
-	public TeachView getView() {
-		return view;
-	}
-	
-	public void setParent(MainPresenter parent) {
-		this.parent = parent;
-	}
-	
-	public void loadProcessFlow(ProcessFlow processFlow) {
-		processFlowPresenter.loadProcessFlow(processFlow);
-	}
-	
+	/**
+	 * Show the general info message when everything is set so the teaching can begin
+	 */
 	public void showInfoMessage() {
 		view.setBottom(teachGeneralInfoView);
 	}
 	
+	private void stopListening() {
+		for (AbstractCNCMachine machine : machines.keySet()) {
+			machine.removeListener(this);
+		}
+		for (FanucRobot robot : robots.keySet()) {
+			robot.removeListener(this);
+		}
+		machines.clear();
+		robots.clear();
+		processFlow.removeListener(this);
+	}
+
+	/**
+	 * When start-button is clicked on GeneralInfoView
+	 */
 	public void startFlow() {
 		view.setBottom(teachStatusView);
 		logger.info("starten proces!");
 		setStatus("Starten proces...");
 		processFlow.initialize();
+		if (this.teachThread.isRunning()) {
+			throw new IllegalStateException("Shouldn't be possible!");
+		}
 		//this.teachThread = new TeachThread(processFlow);
 		this.teachThread = new OptimizedTeachThread(processFlow);
 		ThreadManager.getInstance().submit(teachThread);
 	}
 	
+	public void stopTeaching() {
+		if (teachThread.isRunning()) {
+			ThreadManager.getInstance().stopRunning(teachThread);
+		}
+		stopListening();
+		enable();
+	}
+	
 	public void setStatus(String status) {
-		teachStatusView.setMessage(status);
+		teachStatusView.setMessage(Status.OK, status);
 	}
 	
 	public void setAlarmStatus(String alarmStatus) {
-		teachStatusView.setAlarmMessage(alarmStatus);
+		teachStatusView.setMessage(Status.ERROR, alarmStatus);
 	}
 	
 	public void exceptionOccured(Exception e){
@@ -406,5 +421,18 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	public void dataChanged(ProcessFlowEvent e) {}
 	@Override
 	public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
+	
+	@Override
+	public TeachView getView() {
+		return view;
+	}
+	
+	public void setParent(MainPresenter parent) {
+		this.parent = parent;
+	}
+	
+	public void loadProcessFlow(ProcessFlow processFlow) {
+		processFlowPresenter.loadProcessFlow(processFlow);
+	}
 	
 }

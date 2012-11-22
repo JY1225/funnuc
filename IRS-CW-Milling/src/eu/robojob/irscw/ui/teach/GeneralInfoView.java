@@ -37,13 +37,13 @@ public class GeneralInfoView extends VBox {
 	private void build() {
 		this.setFillWidth(true);
 		this.setAlignment(Pos.CENTER);
-		
+		this.setPrefSize(520, 300);
 		lblInfoMessage = new Label(translator.getTranslation("teach-info"));
-		lblInfoMessage.getStyleClass().add("info-msg");
-		lblInfoMessage.setPrefSize(520, 130);
+		lblInfoMessage.getStyleClass().add("teach-msg");
+		lblInfoMessage.setPrefSize(500, 100);
 		lblInfoMessage.setWrapText(true);
 		
-		setMargin(lblInfoMessage, new Insets(50, 0, 0, 0));
+		setMargin(lblInfoMessage, new Insets(0, 0, 30, 0));
 		
 		btnStart = new Button();
 		HBox hboxStart = new HBox();

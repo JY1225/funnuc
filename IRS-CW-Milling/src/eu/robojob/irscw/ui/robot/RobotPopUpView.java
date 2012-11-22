@@ -21,8 +21,9 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	private Button btn50;
 	private Button btn100;
 	
-	private static final int width = UIConstants.BUTTON_HEIGHT*4;
-	private static final int height = 7* UIConstants.BUTTON_HEIGHT;
+	private static final int BUTTON_HEIGHT = 40;
+	private static final int width = BUTTON_HEIGHT*4;
+	private static final int height = 7* 40;
 	
 	private int speed;
 	
@@ -38,7 +39,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		
 		btnReset = new Button();
 		btnReset.setGraphic(new Text(translator.getTranslation("reset")));
-		btnReset.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		btnReset.setPrefSize(width, BUTTON_HEIGHT);
 		btnReset.getStyleClass().add("pop-up-btn");
 		btnReset.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -50,7 +51,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		
 		btnToHome = new Button();
 		btnToHome.setGraphic(new Text(translator.getTranslation("to-home")));
-		btnToHome.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		btnToHome.setPrefSize(width, BUTTON_HEIGHT);
 		btnToHome.getStyleClass().add("pop-up-btn");
 		btnToHome.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -62,7 +63,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		
 		btnToChange = new Button();
 		btnToChange.setGraphic(new Text(translator.getTranslation("to-change")));
-		btnToChange.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		btnToChange.setPrefSize(width, BUTTON_HEIGHT);
 		btnToChange.getStyleClass().add("pop-up-btn");
 		btnToChange.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -74,7 +75,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		
 		btn10 = new Button();
 		btn10.setGraphic(new Text("10%"));
-		btn10.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		btn10.setPrefSize(width, BUTTON_HEIGHT);
 		btn10.getStyleClass().add("pop-up-btn");
 		btn10.getStyleClass().add("pop-up-btn-pressed");
 		btn10.setOnAction(new EventHandler<ActionEvent>() {
@@ -87,7 +88,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		
 		btn25 = new Button();
 		btn25.setGraphic(new Text("25%"));
-		btn25.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		btn25.setPrefSize(width, BUTTON_HEIGHT);
 		btn25.getStyleClass().add("pop-up-btn");
 		btn25.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -99,7 +100,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		
 		btn50 = new Button();
 		btn50.setGraphic(new Text("50%"));
-		btn50.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		btn50.setPrefSize(width, BUTTON_HEIGHT);
 		btn50.getStyleClass().add("pop-up-btn");
 		btn50.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -111,7 +112,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		
 		btn100 = new Button();
 		btn100.setGraphic(new Text("100%"));
-		btn100.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		btn100.setPrefSize(width, BUTTON_HEIGHT);
 		btn100.getStyleClass().add("pop-up-btn");
 		btn100.getStyleClass().add("pop-up-btn-bottom");
 		btn100.setOnAction(new EventHandler<ActionEvent>() {

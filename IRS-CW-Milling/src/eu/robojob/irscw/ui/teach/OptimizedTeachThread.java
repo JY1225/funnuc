@@ -49,6 +49,7 @@ public class OptimizedTeachThread extends TeachThread {
 		
 		
 		try {
+			this.running = true;
 			
 			processFlow.initialize();
 			processFlow.setMode(Mode.TEACH);
@@ -130,6 +131,8 @@ public class OptimizedTeachThread extends TeachThread {
 			putOnStackerStep.setTeachedOffset(teachedOffsetFinishedWp);
 			logger.info("ended optimized teach thread!");
 			
+			this.running = false;
+
 			processFlow.setMode(Mode.READY);
 		} catch (CommunicationException | RobotActionException | InterruptedException | DeviceActionException e) {
 			e.printStackTrace();

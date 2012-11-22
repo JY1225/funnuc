@@ -3,23 +3,13 @@
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
 }
 
-.info-msg {
+.teach-msg {
 	-fx-text-alignment: center;
 	-fx-alignment: center;
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
 	-fx-font-family: "Helvetica";
 	-fx-font-size: 16px;
-} 
-
-.alarm-msg {
-	-fx-text-alignment: center;
-	-fx-alignment: center;
-	-fx-text-wrap: true;
-	-fx-text-fill: orange;
-	-fx-font-family: "Helvetica";
-	-fx-font-size: 16px;
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
 } 
 
 .btn-start, .teach-btn {
@@ -43,12 +33,18 @@
 }
 
 .lbl-z-rest {
-	-fx-text-alignment: center;
-	-fx-alignment: center;
+	-fx-text-alignment: right;
+	-fx-alignment: center-right;
 	-fx-text-wrap: true;
-	-fx-text-fill: #ffe328;
+	-fx-text-fill: #fec047;
 	-fx-font-family: "Helvetica";
 	-fx-font-size: 16px;
+	-fx-padding: 0 10 0 10;
+}
+
+.lbl-z-rest-val {
+	-fx-text-alignment: left;
+	-fx-alignment: center-left;
 }
 
 .lbl-disconnected-list {
@@ -56,10 +52,13 @@
 }
 
 .loading {
-	-fx-fill: #ffe400;
-	-fx-effect: dropshadow(one-pass-box, #565100, 2, 0, 0, 1);
+	-fx-shape: "M 20.1875,0 C 9.2010752,0 0.28125,8.9198246 0.28125,19.90625 c 0,10.986425 8.9198252,19.875 19.90625,19.875 10.986425,0 19.875,-8.888575 19.875,-19.875 C 40.0625,8.9198246 31.173925,0 20.1875,0 z";
+	-fx-background-color: linear-gradient(#6d6c6c 0%, #6d6c6c 50%, #8c8888 100%), #222222, #4a4a4a, #3a2c00, radial-gradient(center 50% 10%, radius 70%, #ffd154, #fec047, #ffbc2c);
+	-fx-background-insets: 0, 1, 2, 5, 6;
 }
 
 .loading-inactive {
-	-fx-fill: radial-gradient(center 50% 50%, radius 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 100%);
+	-fx-shape: "M 20.1875,0 C 9.2010752,0 0.28125,8.9198246 0.28125,19.90625 c 0,10.986425 8.9198252,19.875 19.90625,19.875 10.986425,0 19.875,-8.888575 19.875,-19.875 C 40.0625,8.9198246 31.173925,0 20.1875,0 z";
+	-fx-background-color: linear-gradient(#6d6c6c 0%, #6d6c6c 50%, #8c8888 100%), #222222, #4a4a4a, #353535, radial-gradient(center 50% 10%, radius 70%, #a2a2a2, #929292, #888888);
+	-fx-background-insets: 0, 1, 2, 5, 6;
 }
