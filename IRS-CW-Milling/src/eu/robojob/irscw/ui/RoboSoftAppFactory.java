@@ -349,6 +349,11 @@ public class RoboSoftAppFactory {
 			robotPutSettings3.setWorkArea(stackPlate.getWorkAreaById("IRS M Basic"));			
 			PutStep put2 = new PutStep(robot, stackPlate, stackPlatePutSettings, robotPutSettings3);
 			
+			pick1.setTeachedOffset(new Coordinates());
+			putAndWait1.setTeachedOffset(new Coordinates());
+			put1.setTeachedOffset(new Coordinates());
+			pick2.setTeachedOffset(new Coordinates());
+			put2.setTeachedOffset(new Coordinates());
 			
 			// create process flow:
 			processFlow.addStep(pick1);
@@ -361,6 +366,8 @@ public class RoboSoftAppFactory {
 			processFlow.addStep(put2);
 			
 			processFlow.loadAllSettings();
+			
+			processFlow.setFinishedAmount(5);
 			
 			processFlowTimer = new ProcessFlowTimer(processFlow);
 

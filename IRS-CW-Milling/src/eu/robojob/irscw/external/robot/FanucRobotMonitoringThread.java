@@ -7,7 +7,7 @@ import eu.robojob.irscw.threading.MonitoringThread;
 
 public class FanucRobotMonitoringThread extends Thread implements MonitoringThread{
 
-	private static final int REFRESH_TIME = 50;
+	private static final int REFRESH_TIME = 150;
 	private FanucRobot fanucRobot;
 	private boolean alive;
 	private FanucRobotStatus previousStatus;

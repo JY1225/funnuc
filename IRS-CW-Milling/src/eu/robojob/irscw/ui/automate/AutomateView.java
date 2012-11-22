@@ -14,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.ArcTo;
@@ -39,14 +40,14 @@ public class AutomateView extends VBox {
 	public static final int HEIGHT_BOTTOM = 300;
 	public static final int WIDTH = 800;
 	
-	public static final int PROGRESS_RADIUS = 75;
-	public static final int PROGRESS_RADIUS_INNER = 60;
+	public static final int PROGRESS_RADIUS = 70;
+	public static final int PROGRESS_RADIUS_INNER = 0;
 	
 	public static final double ICON_WIDTH = 49.5;
 	public static final double ICON_HEIGHT = 55.813;
 	
 	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
-	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
+	private static final double BTN_HEIGHT = 40;
 	
 	private int totalAmount;
 	private int finishedAmount;
@@ -198,7 +199,7 @@ public class AutomateView extends VBox {
 		playIconShape = new SVGPath();
 		playIconShape.setContent(playIconPath);
 		playIconShape.getStyleClass().addAll("automate-icon", "automate-btn-icon");
-		btnStart.getStyleClass().add("automate-btn-start");
+		btnStart.getStyleClass().add("automate-btn");
 		Text txtStart = new Text(translator.getTranslation("play"));
 		StackPane txtStartPane = new StackPane();
 		txtStartPane.getChildren().add(txtStart);
@@ -218,7 +219,7 @@ public class AutomateView extends VBox {
 		
 		btnRestart = new Button();
 		btnRestart.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
-		btnRestart.getStyleClass().add("automate-btn-start");
+		btnRestart.getStyleClass().add("automate-btn");
 		HBox hboxBtnReStart = new HBox();
 		Text txtRestart = new Text(translator.getTranslation("restart"));
 		StackPane txtRestartPane = new StackPane();
@@ -252,20 +253,27 @@ public class AutomateView extends VBox {
 		StackPane pane = new StackPane();
 		pane.setPrefSize(PROGRESS_RADIUS*2, PROGRESS_RADIUS*2);
 		
-		Circle circleBack = new Circle(0, 0, PROGRESS_RADIUS);
+		Region circleBack = new Region();
+		double circleBackR = PROGRESS_RADIUS*2 + 14;
+		circleBack.setPrefSize(circleBackR, circleBackR);
 		circleBack.getStyleClass().add("circle-back");
 		circleBack.toBack();
 		
-		Circle circleFront = new Circle(0, 0, PROGRESS_RADIUS_INNER);
+		Region circleFront = new Region();
+		circleFront.setPrefSize(PROGRESS_RADIUS_INNER*2, PROGRESS_RADIUS_INNER*2);
 		circleFront.getStyleClass().add("circle-front");
 		
 		Pane pane2 = new Pane();
-		pane2.getChildren().add(circleBack);
-		pane2.getChildren().add(circleFront);
 		pane2.getChildren().add(piePiecePath);
 		pane2.setPrefSize(PROGRESS_RADIUS*2, PROGRESS_RADIUS*2);
-		
+		pane2.setMaxSize(PROGRESS_RADIUS*2, PROGRESS_RADIUS*2);
+		pane2.setMinSize(PROGRESS_RADIUS*2, PROGRESS_RADIUS*2);
+		StackPane.setMargin(pane2, new Insets(8, 7, 8, 7));
+		pane.getChildren().add(circleBack);
+		//pane.getChildren().add(circleFront);
 		pane.getChildren().add(pane2);
+
+		StackPane.setMargin(circleFront, new Insets(12,12,12,12));
 		pane.setAlignment(Pos.CENTER);
 		pane2.setTranslateX(PROGRESS_RADIUS);
 		pane2.setTranslateY(PROGRESS_RADIUS);

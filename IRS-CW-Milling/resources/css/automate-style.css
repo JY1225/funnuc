@@ -1,90 +1,38 @@
 .automate-bottom {
-	-fx-background-color: #5a5757, #807c7c, linear-gradient(#6a6767 100%, #5f5b5b 0%);
+	-fx-background-color: #4c4c4c, #807c7c, #6d6c6c;
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
-	-fx-effect: dropshadow(gaussian, rgba(76, 76, 76, 0.3), 25, 0, 0, -1);
 }
 
 .automate-icon {
-	-fx-fill: #dfdfdf;
-	-fx-effect: dropshadow(one-pass-box, #205c0f, 1, 0, 0, 1);
-}
-
-.circle-front {
-	-fx-fill: #656161;
-	-fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.5), 2, 0.0, 0, 1);
+	-fx-fill: white;
+	-fx-effect: dropshadow(one-pass-box, #414141, 1, 0, 0, 1);
 }
 
 .circle-back {
-	-fx-fill: #534f4f;
-	-fx-effect: innershadow(one-pass-box, rgba(0, 0, 0, 0.5), 2, 0.0, 0, 1);
-}
-
-.automate-info-lbl {
-	-fx-text-alignment: center;
-	-fx-alignment: center;
-	-fx-text-wrap: true;
-	-fx-text-fill: #dfdfdf;
-	-fx-font-family: "Helvetica";
-	-fx-font-size: 14px;
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
-}
-
-.lbl-z-rest-auto {
-	-fx-text-alignment: left;
-	-fx-padding: 0 0 0 15;
-	-fx-text-wrap: true;
-	-fx-text-fill: #ffe328;
-	-fx-font-family: "Helvetica";
-	-fx-font-size: 16px;
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 1, 0.0 , 0 , 0 ); 
-}
-
-.automate-time-lbl {
-	-fx-text-alignment: center;
-	-fx-alignment: center;
-	-fx-text-wrap: true;
-	-fx-text-fill: white;
-	-fx-font-family: "Helvetica";
-	-fx-font-size: 20px;
-	-fx-font-width: bold;
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
-	-fx-padding: 7 0 7 0;
-}
-
-.automate-time-hl-lbl {
-	-fx-text-fill: white;
+	-fx-smooth: true; 
+	-fx-shape: "M 39.75 -0.03125 C 18.043861 -0.03125 0.40625 17.606358 0.40625 39.3125 C 0.40625 61.01864 18.043861 78.53125 39.75 78.53125 C 61.456141 78.53125 79 61.01864 79 39.3125 C 79 17.606358 61.456141 -0.03125 39.75 -0.03125 z";
+	-fx-background-color: linear-gradient(#6d6c6c 0%, #6d6c6c 50%, #8c8888 80%, #8c8888 100%), #222222, linear-gradient(#454545 0%, #454545 20%, #4a4a4a 50%, #4a4a4a 100%), #575757;
+	-fx-background-insets: 0, 1, 2, 3;
 }
 
 .automate-progress {
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.6), 2, 0.0, 0, -1);
 	-fx-smooth: true; 
 	-fx-stroke: null;
 }
 
 .automate-progress-green {
-	-fx-fill: radial-gradient(center 50% 50%, radius 100%, #67be00, #5caa00);
+	-fx-stroke: #0c2904;
+	-fx-fill: radial-gradient(center 0px -120px, radius 100px, #6fc955, #409228);
 }
 
-.automate-progress-orange {
-	-fx-fill: radial-gradient(center 50% 50%, radius 100%, #f3df00, #f3d400);
+.automate-progress-gray {
+	-fx-fill: #dadada;
+	-fx-fill: radial-gradient(center 0px -120px, radius 100px, #c5c5c5, #8b8b8b);
 }
 
 .automate-progress-red {
-	-fx-fill: radial-gradient(center 50% 50%, radius 100%, #da5a3f, #a42f1b);
-}
-
-.invisible {
-	visibility: hidden;
-}
-
-.lbl-total {
-	-fx-text-alignment: center;
-	-fx-alignment: center;
-	-fx-text-wrap: true;
-	-fx-text-fill: #dfdfdf;
-	-fx-font-family: "Helvetica";
-	-fx-font-size: 12px;
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
+	-fx-fill: #e33d27;
+	-fx-fill: radial-gradient(center 0px -120px, radius 100px, #e33d27, #dc341d);
 }
 
 .finished-amount {
@@ -95,52 +43,65 @@
 	-fx-font-family: "Helvetica";
 	-fx-font-size: 80px;
 	-fx-font-width: bold;
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
+	-fx-effect: dropshadow(one-pass-box, #565656, 1, 0, 0, 1);
+}
+
+.automate-info-lbl {
+	-fx-text-alignment: center;
+	-fx-alignment: center;
+	-fx-text-wrap: true;
+	-fx-text-fill: white;
+	-fx-font-family: "Helvetica";
+	-fx-font-size: 13px;
+}
+
+.automate-time-lbl {
+	-fx-text-alignment: center;
+	-fx-alignment: center;
+	-fx-text-wrap: true;
+	-fx-text-fill: white;
+	-fx-font-family: "Helvetica";
+	-fx-font-size: 20px;
+	-fx-font-width: bold;
+	-fx-padding: 7 0 7 0;
+}
+
+.invisible {
+	visibility: hidden;
+}
+
+.lbl-total {
+	-fx-text-alignment: center;
+	-fx-alignment: center;
+	-fx-text-wrap: true;
+	-fx-text-fill: white;
+	-fx-font-family: "Helvetica";
+	-fx-font-size: 14px;
 }
 
 .time-vbox {
-	-fx-background-color: linear-gradient( #423f3f 0%, #423f3f 100%), linear-gradient(#666363 0%, #666363 100%), linear-gradient(#5f5d5d 0%, #575454 100%);
-	-fx-background-insets: 0, 1 0 0 1, 2 1 0 2;
-}
-
-.blue-time {
-}
-
-.yellow {
-	-fx-background-color: yellow;
-}
-
-.automate-btn-icon {
-	-fx-fill: white;
-	-fx-padding: 0 10 0 10;
-	-fx-effect: innershadow(gaussian, rgba(0,0,0,0.8) , 1, 0.0 , 0 , 1 ); 
+	-fx-background-color: #222222, #454545, #575757;
+	-fx-background-insets: 0, 1 0 0 0, 2 0 0 0;
 }
 
 .automate-btn {
-	
-	-fx-background-color: 
-		linear-gradient(#616264 0%, #7b7b7b 100%),
-		#4f4f4f,
-		linear-gradient(#a7a7a7 0%, #535353 100%), 
-		linear-gradient(#929292 0%, #818181 100%);
-	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 2 3 2;
-	-fx-background-radius: 5, 4, 3, 2;
-	-fx-padding: 0;
+	-fx-background-color: #807878, #222222, #807878, linear-gradient(#656161 0%, #4e4a4a 100%);
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
+	-fx-border-radius: 6, 6, 5, 5;
 }
 
 .automate-btn:pressed {
-	-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);
+	-fx-background-color: #807878, #222222, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
 }
 
 .automate-btn-text {
-	-fx-font-size: 20px;
+	-fx-text-fill: white;
+	-fx-fill: white;
+	-fx-font-size: 16px;
 	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	-fx-font-smoothing-type: lcd;
 	-fx-font-family: "Helvetica";
-	-fx-fill: white;
-	-fx-padding: 0 10 0 10;
-	-fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.5) , 2, 0.0 , 0 , 0 ); 
+	-fx-alignment: center;
 }
 
 .status-msg {
@@ -164,20 +125,4 @@
 
 .status-msg-red {
 	-fx-text-fill: #ff4b2d;
-}
-
-.automate-btn-start {
-	-fx-background-color: 
-		linear-gradient(#616264 0%, #7b7b7b 100%),
-		#2e5500,
-		linear-gradient(#75d800 0%, #3e7300 100%), 
-		linear-gradient(#67be00 0%, #5caa00 100%);
-	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 2 3 2;
-	-fx-background-radius: 5, 4, 3, 2;
-	-fx-padding: 0;
-	-fx-effect: null;
-}
-
-.automate-btn-start:pressed {
-	-fx-effect: innershadow(gaussian, #262626, 7, 0, 0, 2);
 }

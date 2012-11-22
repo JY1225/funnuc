@@ -15,7 +15,7 @@
 
 .message-normal {
 	-fx-font-size: 15px;
-	-fx-background-color: #8c8888, #222222, #454545, #4a4a4a;
+	-fx-background-color: #8c8888, #222222, #454545, #575757;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 	-fx-background-radius: 5;
 }

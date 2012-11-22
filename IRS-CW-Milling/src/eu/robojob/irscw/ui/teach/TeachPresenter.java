@@ -386,6 +386,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				if (event.getAlarms().size() > 0) {
+					logger.info("Alarm!!");
 					setAlarmStatus("De robot geeft aan dat zich een alarm heeft voorgedaan!");
 					alarms = true;
 				} else {
