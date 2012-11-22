@@ -239,6 +239,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		mode = Mode.NORMAL;
 	}
 	
+	//TODO review, for now this is hard coded
 	public void addDevice(int index) {
 		
 		PrageDevice prageDevice = (PrageDevice) deviceManager.getPreProcessingDeviceById("Präge");
@@ -329,8 +330,6 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 
 	@Override
 	public void setActive(boolean active) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

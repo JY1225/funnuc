@@ -36,7 +36,7 @@ public class IconFlowSelectorItem extends VBox {
 	private void build() {
 		this.getStyleClass().add("iconflow-item");
 		if (iconUrl != null) {
-			imgIcon = new Image(iconUrl, IMG_WIDTH, 83, true, true);
+			imgIcon = new Image(iconUrl, IMG_WIDTH, 90, true, true);
 			imgvwIconVw = new ImageView(imgIcon);
 			imgvwIconVw.getStyleClass().add("iconflow-item-icon");
 			this.getChildren().add(imgvwIconVw);
