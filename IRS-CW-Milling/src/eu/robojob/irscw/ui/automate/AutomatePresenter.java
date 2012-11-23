@@ -30,8 +30,6 @@ import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
-import eu.robojob.irscw.ui.MainPresenter;
-import eu.robojob.irscw.ui.automate.AutomateView.Status;
 import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.util.Translator;
 
@@ -41,7 +39,6 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	private AutomateView view;
 	private FixedProcessFlowPresenter processFlowPresenter;
 	private ProcessFlow processFlow;
-	private MainPresenter parent;
 	
 	private Set<AbstractCNCMachine> machines;
 	private Set<FanucRobot> robots;
@@ -51,6 +48,8 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	private Translator translator;
 	private ProcessFlowTimer processFlowTimer;
 	private AutomateTimingThread automateTimingThread;
+	
+	private boolean alarms;
 	
 	private static final Logger logger = Logger.getLogger(AutomatePresenter.class);
 	
@@ -66,10 +65,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		this.automateThread = new AutomateThread(processFlow);
 		this.translator = Translator.getInstance();
 		this.automateTimingThread = new AutomateTimingThread(this, processFlowTimer);
-	}
-	
-	public void setParent(MainPresenter parent) {
-		this.parent = parent;
+		this.alarms = false;
 	}
 	
 	@Override
@@ -90,18 +86,22 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		} else {
 			ThreadManager.getInstance().stopRunning(automateThread);
 			ThreadManager.getInstance().stopRunning(automateTimingThread);
-			for (AbstractCNCMachine machine : machines) {
-				machine.removeListener(this);
-			}
-			for (FanucRobot robot: robots) {
-				robot.removeListener(this);
-			}
-			machines.clear();
-			robots.clear();
-			processFlow.removeListener(this);
+			stopListening();
 			view.setTotalAmount(processFlow.getTotalAmount());
 			view.setFinishedAmount(processFlow.getFinishedAmount());
 		}
+	}
+	
+	private void stopListening() {
+		for (AbstractCNCMachine machine : machines) {
+			machine.removeListener(this);
+		}
+		for (FanucRobot robot : robots) {
+			robot.removeListener(this);
+		}
+		machines.clear();
+		robots.clear();
+		processFlow.removeListener(this);
 	}
 	
 	public void setTimers(final String cycleTime, final String cycleTimePassed, final String timeTillPause, final String timeTillFinished) {
@@ -153,49 +153,54 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	
 	public void clickedStart() {
 		logger.info("clicked start thread");
+		if (!alarms) {
+			view.hideAlarmMessage();
+		}
 		automateThread = new AutomateThread(processFlow);
 		ThreadManager.getInstance().submit(automateThread);
 	}
 	
-	public void clickedRestart() {
+	public void clickedReset() {
+		if (!alarms) {
+			view.hideAlarmMessage();
+		}
 		processFlow.initialize();
-		automateThread = new AutomateThread(processFlow);
-		ThreadManager.getInstance().submit(automateThread);
+		processFlowPresenter.refresh();
 	}
 	
 	public void clickedPause() {
+		view.setStatus("Het proces wordt gepauzeerd na afloop van de huidige actie.");
 		automateThread.stopRunning();
 	}
 	
 	public void setAlarmStatus(String alarmStatus) {
-		view.setStatus(Status.ERROR, alarmStatus);
+		view.setAlarmStatus(alarmStatus);
 	}
 	
-	private void setAutoMode(boolean autoMode) {
-		parent.setChangeContentEnabled(!autoMode);
-		if (autoMode) {
-			view.setProcessRunning();
-			view.showPauseButton();
-		} else {
-			view.setProcessStopped();
-			view.showStartButton();
-		}
+	public void clickedStop() {
+		ThreadManager.getInstance().stopRunning(automateThread);
+		stopListening();
+		enable();		
 	}
 
 	@Override
 	public void modeChanged(final ModeChangedEvent e) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
+				logger.info("mode changed: " + e.getMode());
 				switch (e.getMode()) {
 					case AUTO :
-						setAutoMode(true);
+						view.setProcessRunning();
+						view.setRunningButtons();
 						break;
 					case FINISHED :
-						setAutoMode(false);
-						view.showRestartButton();
+						view.setProcessStopped();
+						view.setNotRunningButtons();
+						view.setStatus(translator.getTranslation("process-finished"));
 						break;
 					default:
-						setAutoMode(false);
+						view.setProcessStopped();
+						view.setNotRunningButtons();
 						break;
 				}
 			}
@@ -204,9 +209,10 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	
 	public void exceptionOccured(Exception e){
 		logger.error(e);
+		e.printStackTrace();
 		processFlowPresenter.refresh();
-		view.setStatus(Status.ERROR, "FOUT: " + e);
-		setAutoMode(false);
+		setAlarmStatus("Fout opgetreden: " + e.getMessage() + ". Het proces dient opnieuw doorlopen te worden.");
+		ThreadManager.getInstance().stopRunning(automateThread);
 	}
 
 	@Override
@@ -215,46 +221,55 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 			@Override public void run() {
 			switch (e.getStatusId()) {
 				case ActiveStepChangedEvent.NONE_ACTIVE:
-					view.setStatus(Status.OK, translator.getTranslation("none-active"));
+					view.setStatus(translator.getTranslation("none-active"));
 					break;
 				case ActiveStepChangedEvent.PICK_PREPARE_DEVICE:
-					view.setStatus(Status.OK, translator.getTranslation("pick-prepare-device"));
+					view.setStatus(translator.getTranslation("pick-prepare-device"));
 					break;
 				case ActiveStepChangedEvent.PICK_EXECUTE_TEACHED:
-					view.setStatus(Status.OK, translator.getTranslation("pick-execute-teached"));
+					view.setStatus(translator.getTranslation("pick-execute-teached"));
 					break;
 				case ActiveStepChangedEvent.PICK_EXECUTE_NORMAL:
-					view.setStatus(Status.OK, translator.getTranslation("pick-execute-normal"));
+					view.setStatus(translator.getTranslation("pick-execute-normal"));
 					break;
 				case ActiveStepChangedEvent.PICK_FINISHED:
 					//setStatus(translator.getTranslation("pick-finished"));
 					break;
 				case ActiveStepChangedEvent.PUT_PREPARE_DEVICE:
-					view.setStatus(Status.OK, translator.getTranslation("put-prepare-device"));
+					view.setStatus(translator.getTranslation("put-prepare-device"));
 					break;
 				case ActiveStepChangedEvent.PUT_EXECUTE_TEACHED:
-					view.setStatus(Status.OK, translator.getTranslation("put-execute-teached"));
+					view.setStatus(translator.getTranslation("put-execute-teached"));
 					break;
 				case ActiveStepChangedEvent.PUT_EXECUTE_NORMAL:
-					view.setStatus(Status.OK, translator.getTranslation("put-execute-normal"));
+					view.setStatus(translator.getTranslation("put-execute-normal"));
 					break;
 				case ActiveStepChangedEvent.PUT_FINISHED:
 					if (processFlow.getProcessSteps().get(processFlow.getProcessSteps().size() - 1).equals(e.getActiveStep())) {
-						view.setStatus(Status.WARNING, translator.getTranslation("auto-finished"));
+						view.setStatus(translator.getTranslation("auto-finished"));
 					} else {
-						view.setStatus(Status.OK, translator.getTranslation("put-finished"));
+						view.setStatus(translator.getTranslation("put-finished"));
 					}
 					break;
 				case ActiveStepChangedEvent.PROCESSING_PREPARE_DEVICE:
-					view.setStatus(Status.OK, translator.getTranslation("processing-prepare-device"));
+					view.setStatus(translator.getTranslation("processing-prepare-device"));
 					break;
 				case ActiveStepChangedEvent.PROCESSING_IN_PROGRESS:
 					view.setProcessPaused();
-					view.setStatus(Status.OK, translator.getTranslation("processing-in-progress"));
+					view.setStatus(translator.getTranslation("processing-in-progress"));
 					break;
 				case ActiveStepChangedEvent.PROCESSING_FINISHED:
 					view.setProcessRunning();
-					view.setStatus(Status.OK, translator.getTranslation("processing-finished"));
+					view.setStatus(translator.getTranslation("processing-finished"));
+					break;
+				case ActiveStepChangedEvent.INTERVENTION_PREPARE_DEVICE:
+					view.setStatus(translator.getTranslation("intervention-prepare-device"));
+					break;
+				case ActiveStepChangedEvent.INTERVENTION_READY:
+					view.setStatus(translator.getTranslation("intervention-ready"));
+					break;
+				case ActiveStepChangedEvent.INTERVENTION_ROBOT_TO_HOME:
+					view.setStatus(translator.getTranslation("intervention-robot-home"));
 					break;
 				case ActiveStepChangedEvent.TEACHING_NEEDED:
 					throw new IllegalStateException("Teaching not possible when in auto-mode");
@@ -305,15 +320,16 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				if (event.getAlarms().size() > 0) {
+					logger.info("Alarm!!");
 					setAlarmStatus("De robot geeft aan dat zich een alarm heeft voorgedaan!");
+					alarms = true;
 				} else {
-					setAlarmStatus("");
-					if (automateThread.isRunning()) {
-						try {
-							event.getSource().continueProgram();
-						} catch (CommunicationException e) {
-							exceptionOccured(e);
-						}
+					alarms = false;
+					try {
+						event.getSource().continueProgram();
+						view.hideAlarmMessage();
+					} catch (CommunicationException e) {
+						exceptionOccured(e);
 					}
 				}
 			}});
@@ -329,5 +345,16 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	public void cNCMachineStatusChanged(CNCMachineStatusChangedEvent event) {}
 
 	@Override
-	public void cNCMachineAlarmsOccured(CNCMachineAlarmsOccuredEvent event) {}
+	public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) {
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				if (event.getAlarms().size() > 0) {
+					alarms = true;
+					setAlarmStatus("De cnc-machine dat zich een of meerdere alarmen hebben voorgedaan: " + event.getAlarms());
+				} else {
+					alarms = false;
+					view.hideAlarmMessage();
+				}
+			}});
+	}
 }

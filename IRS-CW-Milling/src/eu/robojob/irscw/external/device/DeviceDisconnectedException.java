@@ -14,4 +14,9 @@ public class DeviceDisconnectedException extends CommunicationException {
 	public AbstractDevice getDevice() {
 		return device;
 	}
+	
+	@Override
+	public String getMessage() {
+		return "Verbinding verbroken met " + device.getId();
+	}
 }

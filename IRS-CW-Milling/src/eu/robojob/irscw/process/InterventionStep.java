@@ -17,18 +17,13 @@ public class InterventionStep extends AbstractProcessStep {
 	
 	private AbstractDevice.AbstractDeviceInterventionSettings interventionSettings;
 	
-	private Object interventionOver;
 	private AbstractRobot robot;
-	
-	private boolean canContinue;
-	
+		
 	public InterventionStep(ProcessFlow processFlow, AbstractDevice device, AbstractRobot robot, AbstractDevice.AbstractDeviceInterventionSettings interventionSettings, int frequency) {
 		super(processFlow, device);
 		this.robot = robot;
 		this.frequency = frequency;
 		setInterventionSettings(interventionSettings);
-		this.canContinue = false;
-		interventionOver = new Object();
 	}
 	
 	public InterventionStep(AbstractDevice device, AbstractRobot robot, AbstractDevice.AbstractDeviceInterventionSettings interventionSettings, int frequency) {
@@ -48,21 +43,7 @@ public class InterventionStep extends AbstractProcessStep {
 				robot.moveToHome();
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.INTERVENTION_PREPARE_DEVICE));
 				device.prepareForIntervention(interventionSettings);
-				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.INTERVENTION_WAITING_FOR_FINISH));
-				canContinue = false;
-				try {
-					interventionOver.wait();
-				} catch (InterruptedException e) {
-					if (canContinue) {
-						canContinue = false;
-						device.interventionFinished(interventionSettings);
-					} else {
-						throw new IllegalStateException("Waiting for intervention to be finished interrupted, but intervention is not signalled as being over");
-					}
-				} finally {
-					device.release(processFlow);
-				}
-				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.INTERVENTION_FINISHED));
+				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.INTERVENTION_READY));
 			}
 		}
 	}
@@ -84,11 +65,6 @@ public class InterventionStep extends AbstractProcessStep {
 
 	public void setFrequency(int frequency) {
 		this.frequency = frequency;
-	}
-	
-	public void continueExecution() {
-		canContinue = true;
-		interventionOver.notify();
 	}
 
 	@Override

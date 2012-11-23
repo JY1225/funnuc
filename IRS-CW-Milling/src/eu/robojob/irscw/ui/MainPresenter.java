@@ -37,7 +37,6 @@ public class MainPresenter implements ProcessFlowListener {
 		configurePresenter.setParent(this);
 		this.teachPresenter = teachPresenter;
 		this.automatePresenter = automatePresenter;
-		automatePresenter.setParent(this);
 		this.robotPopUpPresenter = robotPopUpPresenter;
 		robotPopUpPresenter.setParent(this);
 		this.process = null;

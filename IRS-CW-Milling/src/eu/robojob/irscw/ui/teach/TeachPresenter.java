@@ -14,7 +14,6 @@ import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.cnc.CNCMachineAlarmsOccuredEvent;
-import eu.robojob.irscw.external.device.cnc.CNCMachineAlarmsOccuredException;
 import eu.robojob.irscw.external.device.cnc.CNCMachineEvent;
 import eu.robojob.irscw.external.device.cnc.CNCMachineListener;
 import eu.robojob.irscw.external.device.cnc.CNCMachineStatusChangedEvent;
@@ -37,7 +36,6 @@ import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
-import eu.robojob.irscw.ui.teach.StatusView.Status;
 import eu.robojob.irscw.util.Translator;
 
 public class TeachPresenter implements CNCMachineListener, FanucRobotListener, ProcessFlowListener, MainContentPresenter {

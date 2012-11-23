@@ -67,6 +67,14 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 		super.refresh();
 		view.showQuestionMarks(showQuestionMarks);
 		view.disableClickable();
+		AbstractProcessStep step = processFlowAdapter.getProcessFlow().getCurrentStep();
+		if (step instanceof PickStep) {
+			setPickStepActive(processFlowAdapter.getTransportIndex((PickStep) step));
+		} else if (step instanceof PutStep) {
+			setPutStepActive(processFlowAdapter.getTransportIndex((PutStep) step));
+		} else if (step instanceof ProcessingStep) {
+				setProcessingStepActive(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
+		}
 	}
 	
 	public void setPickStepActive(int transportIndex) {

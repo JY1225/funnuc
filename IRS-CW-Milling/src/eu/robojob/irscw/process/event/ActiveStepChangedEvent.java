@@ -25,8 +25,7 @@ public class ActiveStepChangedEvent extends ProcessFlowEvent {
 	
 	public static final int INTERVENTION_ROBOT_TO_HOME = 61;
 	public static final int INTERVENTION_PREPARE_DEVICE = 62;
-	public static final int INTERVENTION_WAITING_FOR_FINISH = 63;
-	public static final int INTERVENTION_FINISHED = 64;
+	public static final int INTERVENTION_READY = 63;
 	
 	public static final int TEACHING_NEEDED = 81;
 	public static final int TEACHING_FINISHED = 82;

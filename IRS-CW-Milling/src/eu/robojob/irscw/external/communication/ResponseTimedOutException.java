@@ -13,4 +13,8 @@ public class ResponseTimedOutException extends CommunicationException {
 	public ExternalCommunication getExternalCommunication() {
 		return extComm;
 	}
+	
+	public String getMessage() {
+		return "Het duurde te lang voordat een antwoord kwam van " + extComm;
+	}
 }

@@ -29,17 +29,14 @@ public class AutomateThread extends Thread{
 	
 	public AutomateThread(ProcessFlow processFlow) {
 		this.processFlow = processFlow;
-		this.running = true;
 	}
 	
 	@Override
 	public void run() {
 		processFlow.setMode(Mode.AUTO);
+		logger.info("started automate thread!");
+		this.running = true;
 		try {
-			for (AbstractRobot robot :processFlow.getRobots()) {
-				robot.restartProgram();
-				//robot.moveToHome();
-			}
 			for (AbstractDevice device: processFlow.getDevices()) {
 				device.prepareForProcess(processFlow);
 			}
@@ -59,13 +56,17 @@ public class AutomateThread extends Thread{
 					}
 					
 					// intervention steps can be skipped
-					if (!(step instanceof InterventionStep)) {
-						if (step instanceof PickStep) {
-							handlePick((PickStep) step);
-						} else if (step instanceof PutStep) {
-							handlePut((PutStep) step);
-						} else if (step instanceof ProcessingStep) {
-							handleProcessing((ProcessingStep) step);
+					if (step instanceof PickStep) {
+						handlePick((PickStep) step);
+					} else if (step instanceof PutStep) {
+						handlePut((PutStep) step);
+					} else if (step instanceof ProcessingStep) {
+						handleProcessing((ProcessingStep) step);
+					} else if (step instanceof InterventionStep) {
+						if (processFlow.getFinishedAmount() % ((InterventionStep) step).getFrequency() == 0) {
+							step.executeStep();
+							logger.info("Waiting because intervention!");
+							running = false;
 						}
 					}
 					processFlow.nextStep();
@@ -85,15 +86,20 @@ public class AutomateThread extends Thread{
 			} else {
 				processFlow.setMode(Mode.PAUSED);
 			}
-		} catch(Exception e) {
-			running = false;
+		} catch(CommunicationException | RobotActionException | DeviceActionException e) {
 			notifyException(e);
+			processFlow.setMode(Mode.STOPPED);
+		} catch(InterruptedException e) {
+			logger.info("Execution of one or more steps got interrupted, so let't just stop");
 			e.printStackTrace();
 			processFlow.setMode(Mode.STOPPED);
-			logger.error(e);
+		} catch(Exception e) {
+			e.printStackTrace();
+			processFlow.setMode(Mode.STOPPED);
 		}
 		processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, null, ActiveStepChangedEvent.NONE_ACTIVE));
 		logger.info("Thread ended: " + toString());
+		this.running = false;
 	}
 	
 	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
@@ -124,4 +130,24 @@ public class AutomateThread extends Thread{
 	public boolean isRunning() {
 		return running;
 	}
+	
+	@Override
+	public void interrupt() {
+		logger.info("about to interrupt teach thread");
+		if (running) {
+			for (AbstractRobot robot :processFlow.getRobots()) {
+				robot.stopCurrentAction();
+				try {
+					robot.abort();
+				} catch (CommunicationException e) {
+					notifyException(e);
+				}
+			}
+			for (AbstractDevice device :processFlow.getDevices()) {
+				device.stopCurrentAction();
+			}
+			running = false;
+		}
+	}
+	
 }

@@ -13,4 +13,8 @@ public class DisconnectedException extends CommunicationException {
 	public SocketConnection getConnection() {
 		return connection;
 	}
+	
+	public String getMessage() {
+		return "Geen verbinding meer met: " + connection.getName();
+	}
 }

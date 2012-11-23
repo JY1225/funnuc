@@ -175,8 +175,8 @@ public class FanucRobot extends AbstractRobot {
 				if (!isConnected()) {
 					throw new FanucRobotDisconnectedException(this);
 				}
+				waitedTime += (System.currentTimeMillis() - lastTime);
 				if (statusChanged == true) {
-					waitedTime += System.currentTimeMillis() - lastTime;
 					if ((getStatus().getControllerString() & status) > 0) {
 						return true;
 					}
@@ -220,6 +220,7 @@ public class FanucRobot extends AbstractRobot {
 		// write start service
 		fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_RESET, FanucRobotConstants.RESPONSE_RESET, WRITE_VALUES_TIMEOUT);
 		fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_RESTART_PROGRAM, FanucRobotConstants.RESPONSE_RESTART_PROGRAM, WRITE_VALUES_TIMEOUT);
+		setSpeed(25);
 	}
 
 	@Override

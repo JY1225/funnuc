@@ -52,12 +52,13 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 				break;
 			case STOPPED:
 				reset();
+				setMode(Mode.STOPPED);
 				break;
 			case TEACH:
 				setMode(Mode.RUNNING);
 				break;
 			case READY:
-				setMode(Mode.PAUSED);
+				setMode(Mode.STOPPED);
 				break;
 			default:
 				setMode(Mode.STOPPED);
@@ -66,14 +67,15 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	}
 	
 	private void reset() {
+		logger.info("reset!");
 		startingTimeCurrentStep = -1;
 		otherTimeCurrentStep = 0;
 		currentStep = null;
-		setMode(Mode.STOPPED);
 	}
 
 	@Override
 	public void activeStepChanged(ActiveStepChangedEvent e) {
+		logger.info("active step changed: " + e.getId() + " - " + e.getActiveStep());
 		switch(e.getStatusId()) {
 			case ActiveStepChangedEvent.NONE_ACTIVE:
 				currentStepEnded();
@@ -88,28 +90,37 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 			default:
 				if (!e.getActiveStep().equals(currentStep)) {
 					if (mode == Mode.PAUSED) {
+						logger.error("FOUT 1!");
 						throw new IllegalStateException("Paused and yet the active step changes?");
 					}
-					currentStepEnded();
 					currentStep = e.getActiveStep();
+					currentStepEnded();
 					startingTimeCurrentStep = System.currentTimeMillis();
+				} else {
+					logger.error("FOUT 2!");
 				}
 				break;
 		}
 	}
 	
 	private void setMode(Mode mode) {
+		logger.info("set mode to: " + mode +  ", previous mode: " + this.mode);
 		if ((this.mode != null) && this.mode != mode) {
 			if ((this.mode == Mode.RUNNING) && (mode == Mode.PAUSED)) {
 				if (startingTimeCurrentStep != -1) {
 					otherTimeCurrentStep += System.currentTimeMillis() - startingTimeCurrentStep;
 					startingTimeCurrentStep = -1;
 				}
-			} else if ((this.mode == Mode.PAUSED) && (mode == Mode.RUNNING)) {
+			} else if (((this.mode == Mode.PAUSED) && (mode == Mode.RUNNING)) || ((this.mode == Mode.STOPPED) && (mode == Mode.RUNNING))){
+				logger.info("set starting time current step!");
 				startingTimeCurrentStep = System.currentTimeMillis();
 			} else if (mode == Mode.STOPPED) {
 				otherTimeCurrentStep = 0;
 				startingTimeCurrentStep = -1;
+			}
+		} else {
+			if ((this.mode == null) && (mode != null)) {
+				startingTimeCurrentStep = System.currentTimeMillis();
 			}
 		}
 		this.mode = mode;
@@ -121,10 +132,9 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 			long stepTime = otherTimeCurrentStep;
 			if (startingTimeCurrentStep != -1) {
 				stepTime += currentTime - startingTimeCurrentStep;
-				stepDurations.put(currentStep, stepTime);
 			} else {
-				// must have been interrupted!
 			}
+			stepDurations.put(currentStep, stepTime);
 		}
 		startingTimeCurrentStep = -1;
 		otherTimeCurrentStep = 0;

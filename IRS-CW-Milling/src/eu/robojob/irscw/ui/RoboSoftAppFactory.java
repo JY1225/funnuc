@@ -366,9 +366,7 @@ public class RoboSoftAppFactory {
 			processFlow.addStep(put2);
 			
 			processFlow.loadAllSettings();
-			
-			processFlow.setFinishedAmount(5);
-			
+						
 			processFlowTimer = new ProcessFlowTimer(processFlow);
 
 		}

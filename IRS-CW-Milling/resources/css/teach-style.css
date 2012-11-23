@@ -15,14 +15,14 @@
 
 .message-normal {
 	-fx-font-size: 15px;
-	-fx-background-color: #8c8888, #4c4c4c, #545454, #6d6c6c;
+	-fx-background-color: #8c8888, #3d3d3d, #6d6c6c, #6d6c6c;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 	-fx-background-radius: 5;
 }
 
 .message-error {
 	-fx-font-size: 15px;
-	-fx-background-color: #8c8888, #4c4c4c, #dc341d, #e33d27;
+	-fx-background-color: #8c8888, #3d3d3d, #e33d27, #e33d27;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 	-fx-background-radius: 5;
 }
@@ -69,12 +69,12 @@
 
 .loading {
 	-fx-shape: "M 20.1875,0 C 9.2010752,0 0.28125,8.9198246 0.28125,19.90625 c 0,10.986425 8.9198252,19.875 19.90625,19.875 10.986425,0 19.875,-8.888575 19.875,-19.875 C 40.0625,8.9198246 31.173925,0 20.1875,0 z";
-	-fx-background-color: linear-gradient(#6d6c6c 0%, #6d6c6c 50%, #8c8888 100%), #4c4c4c, #6d6c6c, #3a2c00, radial-gradient(center 50% 10%, radius 70%, #ffd154, #fec047, #ffbc2c);
+	-fx-background-color: linear-gradient(#6d6c6c 0%, #6d6c6c 50%, #8c8888 100%), #3d3d3d, #6d6c6c, #3a2c00, radial-gradient(center 50% 10%, radius 70%, #ffd154, #fec047, #ffbc2c);
 	-fx-background-insets: 0, 1, 2, 5, 6;
 }
 
 .loading-inactive {
 	-fx-shape: "M 20.1875,0 C 9.2010752,0 0.28125,8.9198246 0.28125,19.90625 c 0,10.986425 8.9198252,19.875 19.90625,19.875 10.986425,0 19.875,-8.888575 19.875,-19.875 C 40.0625,8.9198246 31.173925,0 20.1875,0 z";
-	-fx-background-color: linear-gradient(#6d6c6c 0%, #6d6c6c 50%, #8c8888 100%), #4c4c4c, #6d6c6c, #353535, radial-gradient(center 50% 10%, radius 70%, #a2a2a2, #929292, #888888);
+	-fx-background-color: linear-gradient(#6d6c6c 0%, #6d6c6c 50%, #8c8888 100%), #3d3d3d, #6d6c6c, #353535, radial-gradient(center 50% 10%, radius 70%, #a2a2a2, #929292, #888888);
 	-fx-background-insets: 0, 1, 2, 5, 6;
 }

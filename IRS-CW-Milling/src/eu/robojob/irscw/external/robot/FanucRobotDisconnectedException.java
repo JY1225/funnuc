@@ -14,5 +14,10 @@ public class FanucRobotDisconnectedException extends CommunicationException {
 	public FanucRobot getRobot() {
 		return robot;
 	}
+	
+	@Override
+	public String getMessage() {
+		return "Geen verbinding meer met " + robot.getId();
+	}
 
 }
