@@ -330,7 +330,8 @@ public class RoboSoftAppFactory {
 			CNCMillingMachinePickSettings cncPickSettings = new CNCMillingMachinePickSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
 			// Robot: Fanuc Robot
 			FanucRobotPickSettings robotPickSettings3 = new FanucRobot.FanucRobotPickSettings();
-			robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead("B"));
+			//robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead("B"));
+			robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead("A"));
 			robotPickSettings3.setSmoothPoint(new Coordinates(cncMilling.getWorkAreaById("Mazak VRX Main").getClampingById("Clamping 1").getSmoothFromPoint()));
 			robotPickSettings3.setWorkArea(mainWorkArea);
 			robotPickSettings3.setDoMachineAirblow(true);
@@ -344,16 +345,17 @@ public class RoboSoftAppFactory {
 			BasicStackPlatePutSettings stackPlatePutSettings = new BasicStackPlate.BasicStackPlatePutSettings(stackPlate.getWorkAreaById("IRS M Basic"));
 			// Robot: Fanuc Robot
 			FanucRobotPutSettings robotPutSettings3 = new FanucRobot.FanucRobotPutSettings();
-			robotPutSettings3.setGripperHead(robot.getGripperBody().getGripperHead("B"));
+			//robotPutSettings3.setGripperHead(robot.getGripperBody().getGripperHead("B"));
+			robotPutSettings3.setGripperHead(robot.getGripperBody().getGripperHead("A"));
 			robotPutSettings3.setSmoothPoint(new Coordinates(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getSmoothToPoint()));
 			robotPutSettings3.setWorkArea(stackPlate.getWorkAreaById("IRS M Basic"));			
 			PutStep put2 = new PutStep(robot, stackPlate, stackPlatePutSettings, robotPutSettings3);
 			
-			pick1.setTeachedOffset(new Coordinates());
+			/*pick1.setTeachedOffset(new Coordinates());
 			putAndWait1.setTeachedOffset(new Coordinates());
 			put1.setTeachedOffset(new Coordinates());
 			pick2.setTeachedOffset(new Coordinates());
-			put2.setTeachedOffset(new Coordinates());
+			put2.setTeachedOffset(new Coordinates());*/
 			
 			// create process flow:
 			processFlow.addStep(pick1);

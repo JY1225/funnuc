@@ -48,10 +48,13 @@ public class ProcessFlow {
 	
 	private static final Logger logger = Logger.getLogger(ProcessFlow.class);
 	
+	private boolean clampLength;
+	
 	private int currentStepIndex;
 	
 	//TODO refactor constructors so there is one constructor, called by the others
 	public ProcessFlow(String name) {
+		this.clampLength = true;
 		this.name = name;
 		this.processSteps = new ArrayList<AbstractProcessStep>();
 		this.deviceSettings = new HashMap<AbstractDevice, AbstractDevice.AbstractDeviceSettings>();
@@ -67,6 +70,7 @@ public class ProcessFlow {
 	public ProcessFlow(String name, List<AbstractProcessStep>processSteps, Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> deviceSettings,
 			Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> robotSettings) {
 		this.name = name;
+		this.clampLength = true;
 		needsTeaching = true;
 		this.deviceSettings = deviceSettings;
 		this.robotSettings = robotSettings;
@@ -399,4 +403,13 @@ public class ProcessFlow {
 		}
 		return robots;
 	}
+
+	public boolean isClampLength() {
+		return clampLength;
+	}
+
+	public void setClampLength(boolean clampLength) {
+		this.clampLength = clampLength;
+	}
+	
 }

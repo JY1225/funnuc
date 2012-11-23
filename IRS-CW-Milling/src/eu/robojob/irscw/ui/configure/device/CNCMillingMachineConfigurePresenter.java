@@ -82,6 +82,11 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			}
 		}
 	}
+	
+	public void changedClampingType(boolean length) {
+		deviceInfo.getProcessingStep().getProcessFlow().setClampLength(length);
+		view.refreshClampType();
+	}
 
 	// these methods should only be called when a combo-box value is changed, into a real value
 	private void setWorkArea(WorkArea workArea) {

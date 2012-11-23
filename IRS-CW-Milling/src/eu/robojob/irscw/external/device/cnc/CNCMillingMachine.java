@@ -472,9 +472,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			WorkPieceDimensions workPieceDimensions) {
 		Coordinates c = workArea.getActiveClamping().getRelativePosition();
 		Coordinates d = new Coordinates(c);
-		d.offset(new Coordinates(0, 0, workArea.getActiveClamping().getHeight(), 0, 0, 0));
-		//d.offset(new Coordinates(0, 0, workArea.getActiveClamping().getHeight(), 0, 0, 90));
-		//	d.offset(new Coordinates(workPieceDimensions.getLength()/2, workPieceDimensions.getWidth()/2, 0, 0, 0, 0));
 		return d;
 	}
 

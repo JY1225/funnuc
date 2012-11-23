@@ -230,27 +230,39 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength()/2, 
 							width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
 							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
+					Rectangle rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength()/2 + 5, 
+							width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
+							5, stackingPosition.getWorkPiece().getDimensions().getWidth());
 					rp.getStyleClass().add("workpiece");
+					rp2.getStyleClass().add("workpiece-mark");
 					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
 						rp.getStyleClass().add("finished");
+						rp2.getStyleClass().add("workpiece-finished-mark");
 					}
 					rp.setArcHeight(0);
 					rp.setArcWidth(0);
 					group.getChildren().add(rp);
+					group.getChildren().add(rp2);
 				} else if (stackingPosition.getOrientation() == WorkPieceOrientation.TILTED){
 					// TILTED
 					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength()/2, 
 							width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
 							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
+					Rectangle rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength()/2 + 5, 
+							width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
+							5, stackingPosition.getWorkPiece().getDimensions().getWidth());
 					Rotate rotate = new Rotate(-45, stackingPosition.getPosition().getX(), width - stackingPosition.getPosition().getY());
 					rp.getTransforms().add(rotate);
 					rp.getStyleClass().add("workpiece");
+					rp2.getTransforms().add(rotate);
+					rp2.getStyleClass().add("workpiece-mark");
 					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
 						rp.getStyleClass().add("finished");
 					}
 					rp.setArcHeight(0);
 					rp.setArcWidth(0);
 					group.getChildren().add(rp);
+					group.getChildren().add(rp2);
 				} else {
 					throw new IllegalArgumentException("Unknown orientation");
 				}

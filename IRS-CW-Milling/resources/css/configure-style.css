@@ -196,6 +196,14 @@
 	-fx-stroke: #a55015;
 }
 
+.workpiece-mark {
+	-fx-fill: #a55015;
+}
+
+.workpiece-finished-mark {
+	-fx-fill: #205c0f;
+}
+
 .finished {
 	-fx-fill: linear-gradient(#a3f08c 0%, #a3f08c 2%, #6fc955 4%, #409228 100%);
 	-fx-stroke-width: 1px;
