@@ -6,16 +6,19 @@ import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.positioning.TeachedCoordinatesCalculator;
 
 public abstract class AbstractTransportStep extends AbstractProcessStep {
 
 	protected AbstractRobot robot;
-	protected Coordinates teachedOffset;
+	protected Coordinates relativeTeachedOffset;
+	protected TeachedCoordinatesCalculator calculator;
 	
 	public AbstractTransportStep(ProcessFlow processFlow, AbstractDevice device, AbstractRobot robot) {
 		super(processFlow, device);
 		this.robot = robot;
-		teachedOffset = null;
+		relativeTeachedOffset = null;
+		this.calculator = new TeachedCoordinatesCalculator();
 	}
 	
 	public AbstractTransportStep(AbstractDevice device, AbstractRobot robot) {
@@ -31,12 +34,12 @@ public abstract class AbstractTransportStep extends AbstractProcessStep {
 		return robot;
 	}
 	
-	public void setTeachedOffset(Coordinates teachedOffset) {
-		this.teachedOffset = teachedOffset;
+	public void setRelativeTeachedOffset(Coordinates teachedOffset) {
+		this.relativeTeachedOffset = teachedOffset;
 	}
 	
-	public Coordinates getTeachedOffset() {
-		return teachedOffset;
+	public Coordinates getRelativeTeachedOffset() {
+		return relativeTeachedOffset;
 	}
 
 	public abstract boolean needsTeaching();

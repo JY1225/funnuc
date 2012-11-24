@@ -11,6 +11,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.device.ClampingType;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine;
@@ -55,14 +56,14 @@ public class FanucRobotCommunicationTest {
 		this.cncMillingMachine = (CNCMillingMachine) deviceManager.getDeviceById("Mazak VRX J500");
 		WorkArea wa2 = cncMillingMachine.getWorkAreaById("Mazak VRX Main");
 		
-		Coordinates point = cncMillingMachine.getPickLocation(wa2);
+		Coordinates point = cncMillingMachine.getPickLocation(wa2, new ClampingType());
 		System.out.println(point);
 		point.setR(-45);
 		putSettings = new FanucRobotPutSettings(wa2, head, wa2.getActiveClamping().getSmoothToPoint(), point);
 		
-		pickInMachineSettings = new FanucRobotPickSettings(wa2, head, wa2.getActiveClamping().getSmoothFromPoint(),cncMillingMachine.getPutLocation(wa2, wp.getDimensions()), wp);
+		pickInMachineSettings = new FanucRobotPickSettings(wa2, head, wa2.getActiveClamping().getSmoothFromPoint(),cncMillingMachine.getPutLocation(wa2, wp.getDimensions(), new ClampingType()), wp);
 		
-		pickInMachineW2Settings = new FanucRobotPickSettings(wa2, head2, wa2.getActiveClamping().getSmoothFromPoint(),cncMillingMachine.getPutLocation(wa2, wp.getDimensions()), wp);
+		pickInMachineW2Settings = new FanucRobotPickSettings(wa2, head2, wa2.getActiveClamping().getSmoothFromPoint(),cncMillingMachine.getPutLocation(wa2, wp.getDimensions(), new ClampingType()), wp);
 	}
 	
 	@Ignore

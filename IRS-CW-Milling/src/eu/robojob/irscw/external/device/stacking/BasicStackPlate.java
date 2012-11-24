@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.device.ClampingType;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
@@ -69,18 +70,11 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	@Override
-	public synchronized Coordinates getPickLocation(WorkArea workArea) {
+	public synchronized Coordinates getPickLocation(WorkArea workArea, ClampingType clampType) {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null)&&(stackingPos.getWorkPiece().getType() != Type.FINISHED)) {
 				currentPickLocation = stackingPos;
 				Coordinates c = new Coordinates(stackingPos.getPosition());
-				float rotation = 0;
-				if (stackingPos.getOrientation() == WorkPieceOrientation.TILTED) {
-					rotation = 0;
-				} else {
-					rotation = 90;
-				}
-				c.offset(new Coordinates(0, 0, 0, 0, 0, rotation));
 				return c;
 			}
 		}
@@ -88,17 +82,10 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	@Override 
-	public synchronized Coordinates getLocation(WorkArea workArea, Type type) {
+	public synchronized Coordinates getLocation(WorkArea workArea, Type type, ClampingType clampType) {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null)&&(stackingPos.getWorkPiece().getType()==type)) {
 				Coordinates c = new Coordinates(stackingPos.getPosition());
-				float rotation = 0;
-				if (stackingPos.getOrientation() == WorkPieceOrientation.TILTED) {
-					rotation = 0;
-				} else {
-					rotation = 90;
-				}
-				c.offset(new Coordinates(0, 0, 0, 0, 0, rotation));
 				return c;
 			}
 		}
@@ -106,17 +93,10 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public synchronized Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
+	public synchronized Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingType clampType) {
 		logger.info("getting put location: " + workPieceDimensions);
 		finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, workPieceDimensions);
 		Coordinates c = new Coordinates(currentPickLocation.getPosition());
-		float rotation = 0;
-		if (currentPickLocation.getOrientation() == WorkPieceOrientation.TILTED) {
-			rotation = 0;
-		} else {
-			rotation = 90;
-		}
-		c.offset(new Coordinates(0, 0, 0, 0, 0, rotation));
 		return c;
 	}
 

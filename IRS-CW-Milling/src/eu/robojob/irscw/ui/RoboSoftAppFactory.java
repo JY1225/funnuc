@@ -241,7 +241,7 @@ public class RoboSoftAppFactory {
 			// Fanuc M20iA
 			FanucRobot robot = (FanucRobot) robotMgr.getRobotById("Fanuc M20iA");
 			FanucRobotSettings robotSettings = (FanucRobotSettings) robot.getRobotSettings();
-			robotSettings.setGripper(robot.getGripperBody().getGripperHead("A"), robot.getGripperBody().getGripper("2P clamp grip"));
+			robotSettings.setGripper(robot.getGripperBody().getGripperHead("A"), robot.getGripperBody().getGripper("2P clamp grip A"));
 			robotSettings.setGripper(robot.getGripperBody().getGripperHead("B"), robot.getGripperBody().getGripper("Vacuum grip"));
 			processFlow.setRobotSettings(robot, robotSettings);
 			
@@ -330,8 +330,8 @@ public class RoboSoftAppFactory {
 			CNCMillingMachinePickSettings cncPickSettings = new CNCMillingMachinePickSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
 			// Robot: Fanuc Robot
 			FanucRobotPickSettings robotPickSettings3 = new FanucRobot.FanucRobotPickSettings();
-			//robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead("B"));
-			robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead("A"));
+			robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead("B"));
+			//robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead("A"));
 			robotPickSettings3.setSmoothPoint(new Coordinates(cncMilling.getWorkAreaById("Mazak VRX Main").getClampingById("Clamping 1").getSmoothFromPoint()));
 			robotPickSettings3.setWorkArea(mainWorkArea);
 			robotPickSettings3.setDoMachineAirblow(true);
@@ -345,8 +345,8 @@ public class RoboSoftAppFactory {
 			BasicStackPlatePutSettings stackPlatePutSettings = new BasicStackPlate.BasicStackPlatePutSettings(stackPlate.getWorkAreaById("IRS M Basic"));
 			// Robot: Fanuc Robot
 			FanucRobotPutSettings robotPutSettings3 = new FanucRobot.FanucRobotPutSettings();
-			//robotPutSettings3.setGripperHead(robot.getGripperBody().getGripperHead("B"));
-			robotPutSettings3.setGripperHead(robot.getGripperBody().getGripperHead("A"));
+			robotPutSettings3.setGripperHead(robot.getGripperBody().getGripperHead("B"));
+			//robotPutSettings3.setGripperHead(robot.getGripperBody().getGripperHead("A"));
 			robotPutSettings3.setSmoothPoint(new Coordinates(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getSmoothToPoint()));
 			robotPutSettings3.setWorkArea(stackPlate.getWorkAreaById("IRS M Basic"));			
 			PutStep put2 = new PutStep(robot, stackPlate, stackPlatePutSettings, robotPutSettings3);

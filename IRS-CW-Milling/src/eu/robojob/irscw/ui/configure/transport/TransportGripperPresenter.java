@@ -52,8 +52,8 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 				robotSettings.setGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead(), gripper);
 			}
 			transportInfo.getRobot().loadRobotSettings(robotSettings);
-			transportInfo.getPickStep().setTeachedOffset(null);
-			transportInfo.getPutStep().setTeachedOffset(null);
+			transportInfo.getPickStep().setRelativeTeachedOffset(null);
+			transportInfo.getPutStep().setRelativeTeachedOffset(null);
 			transportInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(transportInfo.getPickStep().getProcessFlow(), transportInfo.getPickStep(), true));
 			transportInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(transportInfo.getPutStep().getProcessFlow(), transportInfo.getPutStep(), true));
 			view.setSelectedGripper();

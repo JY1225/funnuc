@@ -76,6 +76,7 @@ public class FanucRobotConstants {
 	public static final int COMMAND_RESET						=	61;
 	public static final int COMMAND_ABORT						=	62;
 	public static final int COMMAND_CONTINUE					=	63;
+	public static final int COMMAND_RECALC_TCPS					=	64;
 	public static final int COMMAND_TO_HOME						=	65;
 	public static final int COMMAND_TO_JAW_CHANGE				=	66;
 	public static final int COMMAND_SET_SPEED					=	67;
@@ -96,6 +97,7 @@ public class FanucRobotConstants {
 	public static final int RESPONSE_RESET						=	161;
 	public static final int RESPONSE_ABORT						=	162;
 	public static final int RESPONSE_CONTINUE					=	163;
+	public static final int RESPONSE_RECALC_TCPS				=	164;
 	public static final int RESPONSE_TO_HOME					=	165;
 	public static final int RESPONSE_TO_JAW_CHANGE				=	166;
 	public static final int RESPONSE_SET_SPEED					=	167;

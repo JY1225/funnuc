@@ -97,6 +97,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void continueProgram() throws CommunicationException;
 	public abstract void abort() throws CommunicationException;
 	
+	public abstract void recalculateTCPs() throws CommunicationException;
+	
 	public abstract void stopCurrentAction();
 	
 	public abstract boolean isConnected();

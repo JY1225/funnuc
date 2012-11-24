@@ -15,6 +15,10 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
+
+import org.apache.log4j.Logger;
+
+import eu.robojob.irscw.external.device.ClampingType;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateLayout;
@@ -33,6 +37,8 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	private Rectangle stackPlate;
 	private Pane root;
 	
+	private ClampingType clampingType;
+	
 	private List<Circle> holes;
 	private List<Circle> studs;
 	private List<Text> horizontalLabels;
@@ -40,6 +46,8 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	
 	private static final float TXT_WIDTH = 40;
 	private static final float TXT_HEIGHT = 15;
+	
+	private static final Logger logger = Logger.getLogger(BasicStackPlateLayoutView.class);
 	
 	private float width;
 	
@@ -56,6 +64,10 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	public void setBasicStackPlate(BasicStackPlate basicStackPlate) {
 		this.basicStackPlateLayout = basicStackPlate.getLayout();
 		this.width = basicStackPlateLayout.getWidth();
+	}
+	
+	public void setClampingType(ClampingType clampingType) {
+		this.clampingType = clampingType;
 	}
 	
 	@Override
@@ -224,6 +236,7 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	}
 	
 	private void configureWorkPieces() {
+		logger.info("**CLAMPING TYPE: **" + clampingType.getType());
 		for (StackingPosition stackingPosition : basicStackPlateLayout.getStackingPositions()) {
 			if (stackingPosition.getWorkPiece() != null) {
 				if (stackingPosition.getOrientation() == WorkPieceOrientation.HORIZONTAL) {
@@ -233,6 +246,11 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 					Rectangle rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength()/2 + 5, 
 							width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
 							5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+					if (clampingType.getType() == eu.robojob.irscw.external.device.ClampingType.Type.WIDTH) {
+						rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength()/2 - 10, 
+								width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
+								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+					}
 					rp.getStyleClass().add("workpiece");
 					rp2.getStyleClass().add("workpiece-mark");
 					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
@@ -251,6 +269,11 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 					Rectangle rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength()/2 + 5, 
 							width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
 							5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+					if (clampingType.getType() == eu.robojob.irscw.external.device.ClampingType.Type.WIDTH) {
+						rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength()/2 - 10, 
+								width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
+								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+					}
 					Rotate rotate = new Rotate(-45, stackingPosition.getPosition().getX(), width - stackingPosition.getPosition().getY());
 					rp.getTransforms().add(rotate);
 					rp.getStyleClass().add("workpiece");

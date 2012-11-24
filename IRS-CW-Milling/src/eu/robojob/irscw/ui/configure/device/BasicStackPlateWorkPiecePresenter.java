@@ -51,21 +51,21 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 		logger.info("changed width");
 		dimensions.setWidth(width);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
-		pickStep.setTeachedOffset(null);
+		pickStep.setRelativeTeachedOffset(null);
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	public void changedLength(float length) {
 		dimensions.setLength(length);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
-		pickStep.setTeachedOffset(null);
+		pickStep.setRelativeTeachedOffset(null);
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	public void changedHeight(float height) {
 		dimensions.setHeight(height);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
-		pickStep.setTeachedOffset(null);
+		pickStep.setRelativeTeachedOffset(null);
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
@@ -79,7 +79,7 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 	public void changedOrientation(WorkPieceOrientation orientation) {
 		deviceSettings.setOrientation(orientation);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
-		pickStep.setTeachedOffset(null);
+		pickStep.setRelativeTeachedOffset(null);
 		view.refresh();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}

@@ -23,7 +23,7 @@ public class StackingPosition {
 		if (orientation == WorkPieceOrientation.TILTED) {
 			position.setR(135);
 		} else if (orientation == WorkPieceOrientation.HORIZONTAL) {
-			position.setR(0);
+			position.setR(90);
 		} else {
 			throw new IllegalArgumentException("Unkown orientation");
 		}

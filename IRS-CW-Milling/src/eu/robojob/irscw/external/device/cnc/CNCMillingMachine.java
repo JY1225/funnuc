@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.Clamping;
+import eu.robojob.irscw.external.device.ClampingType;
+import eu.robojob.irscw.external.device.ClampingType.Type;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
@@ -461,18 +463,25 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public Coordinates getPickLocation(WorkArea workArea) {
+	public Coordinates getPickLocation(WorkArea workArea, ClampingType clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
-		//c.offset(new Coordinates(0, 0, 0, 0, 0, 90));
+		if (clampType.getType() == Type.LENGTH) {
+			c.setR(0);
+		} else {
+			c.setR(-90);
+		}
 		return c;
 	}
 
 	@Override
-	public Coordinates getPutLocation(WorkArea workArea,
-			WorkPieceDimensions workPieceDimensions) {
-		Coordinates c = workArea.getActiveClamping().getRelativePosition();
-		Coordinates d = new Coordinates(c);
-		return d;
+	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingType clampType) {
+		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		if (clampType.getType() == Type.LENGTH) {
+			c.setR(0);
+		} else {
+			c.setR(-90);
+		}
+		return c;
 	}
 
 	@Override

@@ -97,7 +97,6 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 					currentStepEnded();
 					startingTimeCurrentStep = System.currentTimeMillis();
 				} else {
-					logger.error("FOUT 2!");
 				}
 				break;
 		}

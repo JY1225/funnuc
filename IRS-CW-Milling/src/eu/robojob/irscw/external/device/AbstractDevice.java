@@ -43,8 +43,8 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	public abstract AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePickSettings pickSettings);
 	public abstract AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePutSettings putSettings);
 	
-	public abstract Coordinates getPickLocation(WorkArea workArea);
-	public abstract Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions);
+	public abstract Coordinates getPickLocation(WorkArea workArea, ClampingType clampType);
+	public abstract Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingType clampType);
 	
 	public abstract void stopCurrentAction();
 	

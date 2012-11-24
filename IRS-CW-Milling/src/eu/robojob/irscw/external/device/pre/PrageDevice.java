@@ -7,10 +7,12 @@ import org.apache.log4j.Logger;
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
+import eu.robojob.irscw.external.device.ClampingType;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
+import eu.robojob.irscw.external.device.ClampingType.Type;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.positioning.Coordinates;
@@ -67,12 +69,6 @@ public class PrageDevice extends AbstractProcessingDevice {
 
 	@Override
 	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
-		// make sure Präge clamps are open
-		/*try {
-			robot.writeRegister(FanucRobotConstants.REGISTER_IPC_TO_ROBOT, ""+FanucRobotConstants.REGISTER_IPC_TO_ROBOT_PRAGE_UNCLAMP);
-		} catch (RobotActionException e) {
-			throw new DeviceActionException(e.getMessage());
-		}*/
 	}
 
 	@Override
@@ -121,16 +117,24 @@ public class PrageDevice extends AbstractProcessingDevice {
 		return null;
 	}
 	@Override
-	public Coordinates getPickLocation(WorkArea workArea) {
+	public Coordinates getPickLocation(WorkArea workArea, ClampingType clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
-		// TODO add offset!
+		if (clampType.getType() == Type.LENGTH) {
+			c.setR(90);
+		} else {
+			c.setR(0);
+		}
 		return c;
 	}
 	@Override
-	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions) {
+	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingType clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		c.offset(new Coordinates(0, workPieceDimensions.getWidth()/2, 0, 0, 0, 0));
-		//c.offset(new Coordinates(0, workPieceDimensions.getLength()/2, 0, 0, 0, 90));
+		if (clampType.getType() == Type.LENGTH) {
+			c.setR(90);
+		} else {
+			c.setR(0);
+		}
 		return c;
 	}
 	

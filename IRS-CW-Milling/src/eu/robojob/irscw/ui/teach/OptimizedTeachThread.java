@@ -3,13 +3,16 @@ package eu.robojob.irscw.ui.teach;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
+import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.FanucRobot;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPutSettings;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.positioning.TeachedCoordinatesCalculator;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.PickStep;
@@ -22,9 +25,11 @@ import eu.robojob.irscw.workpiece.WorkPiece;
 public class OptimizedTeachThread extends TeachThread {
 	
 	private static final Logger logger = Logger.getLogger(OptimizedTeachThread.class);
+	private TeachedCoordinatesCalculator calculator;
 
 	public OptimizedTeachThread(ProcessFlow processFlow) {
 		super(processFlow);
+		this.calculator = new TeachedCoordinatesCalculator();
 	}
 
 	@Override
@@ -54,6 +59,15 @@ public class OptimizedTeachThread extends TeachThread {
 			processFlow.initialize();
 			processFlow.setMode(Mode.TEACH);
 
+			for (AbstractRobot robot :processFlow.getRobots()) {
+				robot.restartProgram();
+				robot.setSpeed(10);
+				robot.recalculateTCPs();
+			}
+			for (AbstractDevice device: processFlow.getDevices()) {
+				device.prepareForProcess(processFlow);
+			}
+			
 			// In each case: we will start with teaching the finished workPiece
 			PickStep pickFromStackerStep = null;
 			PutAndWaitStep putAndWaitOnPrageStep = null;
@@ -62,7 +76,7 @@ public class OptimizedTeachThread extends TeachThread {
 			PickStep pickFromMachineStep = null;
 			PutStep putOnStackerStep = null;
 			
-			Coordinates teachedOffsetFinishedWp = null;
+			Coordinates relTeachedOffsetFinishedWp = null;
 	
 			for(AbstractProcessStep step : processFlow.getProcessSteps()) {
 				if ((step instanceof PickStep) && ((PickStep) step).getDevice().getId().equals(DeviceManager.IRS_M_BASIC)) {
@@ -88,10 +102,13 @@ public class OptimizedTeachThread extends TeachThread {
 			
 			// before doing this, we fake the gripper holding a workpiece
 			putOnStackerStep.getRobotSettings().getGripperHead().getGripper().setWorkPiece(pickFromMachineStep.getRobotSettings().getWorkPiece());
-			teachedOffsetFinishedWp = getFinishedWorkPieceTeachedOffset(putOnStackerStep);
+			relTeachedOffsetFinishedWp = getFinishedWorkPieceTeachedOffset(putOnStackerStep);
 			
-			Coordinates teachedOffsetRawWp = null;
-			Coordinates teachedOffsetMachineClamping = null;
+			pickFromMachineStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
+			putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
+			
+			Coordinates relTeachedOffsetRawWp = null;
+			Coordinates relTeachedOffsetMachineClamping = null;
 			
 			// we now execute the first step: pick from basic stack plate
 			boolean knowEnough = false;
@@ -101,20 +118,25 @@ public class OptimizedTeachThread extends TeachThread {
 				if (step.equals(pickFromStackerStep)) {
 					pickFromStackerStep.prepareForTeaching();
 					pickFromStackerStep.teachingFinished();
-					teachedOffsetRawWp = pickFromStackerStep.getTeachedOffset();
+					relTeachedOffsetRawWp = pickFromStackerStep.getRelativeTeachedOffset();
+					if (putAndWaitOnPrageStep != null) {
+						// preset the teached offset of the präge and cnc so teaching will go easier here!
+						putAndWaitOnPrageStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
+					}
+					putInMachineStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
 				} else if (step.equals(putAndWaitOnPrageStep)) {
 					putAndWaitOnPrageStep.prepareForTeaching();
 					putAndWaitOnPrageStep.teachingFinished();
-					teachedOffsetMachineClamping = putAndWaitOnPrageStep.getTeachedOffset();
-					Coordinates offsetInMachine = new Coordinates(teachedOffsetMachineClamping);
-					putInMachineStep.setTeachedOffset(offsetInMachine);
+					relTeachedOffsetMachineClamping = putAndWaitOnPrageStep.getRelativeTeachedOffset();
+					Coordinates offsetInMachine = new Coordinates(relTeachedOffsetMachineClamping);
+					putInMachineStep.setRelativeTeachedOffset(offsetInMachine);
 					// note that when teached on the Präge-Device the teached Y-offset should not be used
 					// for now we take it and assume it's nearly zero
 					//TODO think about this (in the machine we want to be sure the piece is clamped in the center)
 				} else if (step.equals(putInMachineStep)) {
 					putInMachineStep.prepareForTeaching();
 					putInMachineStep.teachingFinished();
-					teachedOffsetMachineClamping = putInMachineStep.getTeachedOffset();
+					relTeachedOffsetMachineClamping = putInMachineStep.getRelativeTeachedOffset();
 					knowEnough = true;
 				} else if (step.equals(pickAfterWaitOnPrageStep)) {
 					pickAfterWaitOnPrageStep.executeStep();
@@ -124,11 +146,11 @@ public class OptimizedTeachThread extends TeachThread {
 				}
 				processFlow.nextStep();
 			}
-			Coordinates pickFromMachineOffset = new Coordinates(teachedOffsetMachineClamping);
-			pickFromMachineOffset.minus(teachedOffsetRawWp);
-			pickFromMachineOffset.plus(teachedOffsetFinishedWp);
-			pickFromMachineStep.setTeachedOffset(pickFromMachineOffset);
-			putOnStackerStep.setTeachedOffset(teachedOffsetFinishedWp);
+			Coordinates pickFromMachineOffset = new Coordinates(relTeachedOffsetMachineClamping);
+			pickFromMachineOffset.minus(relTeachedOffsetRawWp);
+			pickFromMachineOffset.plus(relTeachedOffsetFinishedWp);
+			pickFromMachineStep.setRelativeTeachedOffset(pickFromMachineOffset);
+			putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
 			logger.info("ended optimized teach thread!");
 			
 			this.running = false;
@@ -154,15 +176,16 @@ public class OptimizedTeachThread extends TeachThread {
 		stackPlate.getLayout().getStackingPositions().get(0).getWorkPiece().setType(WorkPiece.Type.FINISHED);
 		processFlow.setFinishedAmount(1);
 		logger.info("First taking care of setting first stacking position to finished workpiece and amount of finished workpieces to one");
-		Coordinates originalCoordinates = stackPlate.getLocation(putOnStackerStep.getRobotSettings().getWorkArea(), WorkPiece.Type.FINISHED);
+		Coordinates originalCoordinates = stackPlate.getLocation(putOnStackerStep.getRobotSettings().getWorkArea(), WorkPiece.Type.FINISHED, processFlow.getClampingType());
 		putSettings.setLocation(originalCoordinates);
 		logger.info("Original coordinates: " + originalCoordinates);
 		fRobot.teachedMoveNoWait(putSettings, false);
 		Coordinates coordinates = new Coordinates(fRobot.getPosition());
 		teachedOffsetFinishedWp = coordinates.calculateOffset(originalCoordinates);
-		logger.info("Teached offset: " + teachedOffsetFinishedWp);
+		Coordinates relTeachedOffsetFinishedWp = calculator.calculateRelativeTeachedOffset(originalCoordinates, teachedOffsetFinishedWp);
+		logger.info("Teached offset (relative): " + relTeachedOffsetFinishedWp);
 		fRobot.moveAway();
-		return teachedOffsetFinishedWp;
+		return relTeachedOffsetFinishedWp;
 	}
 	
 }

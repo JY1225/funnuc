@@ -119,9 +119,9 @@ public class BasicStackPlateLayout {
 	
 	private void configureHorizontalStackingPositions(WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
 		
-		/*if (dimensions.getLength() < dimensions.getWidth()) {
+		if (dimensions.getLength() < dimensions.getWidth()) {
 			throw new IncorrectWorkPieceDataException("Length should be larger than height.");
-		}*/
+		}
 		
 		// STARTING WITH HORIZONTAL CALCULATIONS
 		float remainingLength = dimensions.getLength();

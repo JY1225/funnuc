@@ -3,6 +3,7 @@ package eu.robojob.irscw.ui.configure.device;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.device.Clamping;
+import eu.robojob.irscw.external.device.ClampingType.Type;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePickSettings;
@@ -83,8 +84,13 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		}
 	}
 	
-	public void changedClampingType(boolean length) {
-		deviceInfo.getProcessingStep().getProcessFlow().setClampLength(length);
+	public void changedClampingTypeLength() {
+		deviceInfo.getProcessingStep().getProcessFlow().getClampingType().setType(Type.LENGTH);
+		view.refreshClampType();
+	}
+	
+	public void changedClampingTypeWidth() {
+		deviceInfo.getProcessingStep().getProcessFlow().getClampingType().setType(Type.WIDTH);
 		view.refreshClampType();
 	}
 
@@ -112,8 +118,8 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		deviceInfo.getDevice().loadDeviceSettings(settings);
 		((CNCMillingMachineSettings) deviceInfo.getPickStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
 		((CNCMillingMachineSettings) deviceInfo.getPutStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), clamping);
-		deviceInfo.getPutStep().setTeachedOffset(null);
-		deviceInfo.getPickStep().setTeachedOffset(null);
+		deviceInfo.getPutStep().setRelativeTeachedOffset(null);
+		deviceInfo.getPickStep().setRelativeTeachedOffset(null);
 		deviceInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPutStep().getProcessFlow(), deviceInfo.getPutStep(), true));
 		deviceInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPickStep().getProcessFlow(), deviceInfo.getPickStep(), true));
 	}

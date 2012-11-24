@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.device.ClampingType;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
@@ -119,7 +120,13 @@ public class DeviceMenuFactory {
 	
 	public BasicStackPlateLayoutPresenter getBasicStackPlateLayoutPresenter(DeviceInformation deviceInfo) {
 		BasicStackPlateLayoutView view = new BasicStackPlateLayoutView();
-		BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter = new BasicStackPlateLayoutPresenter(view, (BasicStackPlate) deviceInfo.getDevice());
+		ClampingType clampingType = null;
+		if (deviceInfo.getPickStep() != null) {
+			clampingType = deviceInfo.getPickStep().getProcessFlow().getClampingType();
+		} else if (deviceInfo.getPutStep() != null) {
+			clampingType = deviceInfo.getPutStep().getProcessFlow().getClampingType();
+		}
+		BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter = new BasicStackPlateLayoutPresenter(view, (BasicStackPlate) deviceInfo.getDevice(), clampingType);
 		return basicStackPlateLayoutPresenter;
 	}
 }

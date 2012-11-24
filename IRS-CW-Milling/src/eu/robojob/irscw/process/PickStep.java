@@ -22,7 +22,7 @@ public class PickStep extends AbstractTransportStep {
 	
 	protected AbstractDevice.AbstractDevicePickSettings pickSettings;
 	protected AbstractRobot.AbstractRobotPickSettings robotPickSettings;
-		
+			
 	public PickStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
 			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
 		super(processFlow, deviceFrom, robot);
@@ -54,18 +54,19 @@ public class PickStep extends AbstractTransportStep {
 				logger.debug("Device prepared.");
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_EXECUTE_NORMAL));
 				if (needsTeaching()) {
-					logger.debug("The exact pick location should have been teached: " + teachedOffset);
-					if (teachedOffset == null) {
+					logger.debug("The exact pick location should have been teached: " + relativeTeachedOffset);
+					if (relativeTeachedOffset == null) {
 						throw new IllegalStateException("Unknown teached position");
 					} else {
-						Coordinates position = new Coordinates(device.getPickLocation(pickSettings.getWorkArea()));
+						Coordinates position = new Coordinates(device.getPickLocation(pickSettings.getWorkArea(), processFlow.getClampingType()));
 						logger.debug("Normal coordinates: " + position);
-						position.offset(teachedOffset);
+						Coordinates absoluteOffset = calculator.calculateAbsoluteOffset(position, relativeTeachedOffset);
+						position.offset(absoluteOffset);
 						logger.debug("Coordinates after adding teached offset: " + position);
 						robotPickSettings.setLocation(position);
 					}
 				} else {
-					Coordinates position = new Coordinates(device.getPickLocation(pickSettings.getWorkArea()));
+					Coordinates position = new Coordinates(device.getPickLocation(pickSettings.getWorkArea(), processFlow.getClampingType()));
 					logger.debug("The location of this pick was calculated (no teaching): " + position);
 					robotPickSettings.setLocation(position);
 				}
@@ -96,8 +97,13 @@ public class PickStep extends AbstractTransportStep {
 				logger.debug("Preparing device...");
 				device.prepareForPick(pickSettings);
 				logger.debug("Device prepared...");
-				Coordinates coordinates = new Coordinates(device.getPickLocation(pickSettings.getWorkArea()));
+				Coordinates coordinates = new Coordinates(device.getPickLocation(pickSettings.getWorkArea(), processFlow.getClampingType()));
 				logger.info("Coordinates before teaching: " + coordinates);
+				if (relativeTeachedOffset != null) {
+					Coordinates c = calculator.calculateAbsoluteOffset(coordinates, relativeTeachedOffset);
+					coordinates.offset(c);
+					logger.info("Coordinates before teaching (added teached offset): " + coordinates);
+				}
 				robotPickSettings.setLocation(coordinates);
 				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_EXECUTE_TEACHED));
 				logger.debug("Robot initiating pick action");
@@ -117,10 +123,11 @@ public class PickStep extends AbstractTransportStep {
 			} else {
 				logger.debug("Teaching finished");
 				Coordinates coordinates = new Coordinates(robot.getPosition());
-				Coordinates oldCoordinates = new Coordinates(device.getPickLocation(pickSettings.getWorkArea()));
-				this.teachedOffset = coordinates.calculateOffset(oldCoordinates);
-				logger.debug("The teached offset is: " + teachedOffset);
-				robotPickSettings.setLocation(device.getPickLocation(pickSettings.getWorkArea()));
+				Coordinates oldCoordinates = new Coordinates(device.getPickLocation(pickSettings.getWorkArea(), processFlow.getClampingType()));
+				this.relativeTeachedOffset = coordinates.calculateOffset(oldCoordinates);
+				this.relativeTeachedOffset = calculator.calculateRelativeTeachedOffset(oldCoordinates, relativeTeachedOffset);
+				logger.debug("The teached offset is: " + relativeTeachedOffset);
+				robotPickSettings.setLocation(device.getPickLocation(pickSettings.getWorkArea(), processFlow.getClampingType()));
 				logger.debug("About to ask device to release piece");
 				device.releasePiece(pickSettings);
 				logger.debug("Device released piece, about to finalize pick");
@@ -195,7 +202,7 @@ public class PickStep extends AbstractTransportStep {
 		return true;
 	}
 
-	public Coordinates getTeachedOffset() {
-		return teachedOffset;
+	public Coordinates getRelativeTeachedOffset() {
+		return relativeTeachedOffset;
 	}
 }

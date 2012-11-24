@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
+import eu.robojob.irscw.external.device.ClampingType;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotSettings;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
@@ -48,13 +49,13 @@ public class ProcessFlow {
 	
 	private static final Logger logger = Logger.getLogger(ProcessFlow.class);
 	
-	private boolean clampLength;
+	private ClampingType clampingType;
 	
 	private int currentStepIndex;
 	
 	//TODO refactor constructors so there is one constructor, called by the others
 	public ProcessFlow(String name) {
-		this.clampLength = true;
+		this.clampingType = new ClampingType();
 		this.name = name;
 		this.processSteps = new ArrayList<AbstractProcessStep>();
 		this.deviceSettings = new HashMap<AbstractDevice, AbstractDevice.AbstractDeviceSettings>();
@@ -70,7 +71,7 @@ public class ProcessFlow {
 	public ProcessFlow(String name, List<AbstractProcessStep>processSteps, Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> deviceSettings,
 			Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> robotSettings) {
 		this.name = name;
-		this.clampLength = true;
+		this.clampingType = new ClampingType();
 		needsTeaching = true;
 		this.deviceSettings = deviceSettings;
 		this.robotSettings = robotSettings;
@@ -284,8 +285,6 @@ public class ProcessFlow {
 	
 	public void removeSteps(List<AbstractProcessStep> steps) {
 		processSteps.removeAll(steps);
-		for (AbstractProcessStep step : steps) {
-		}
 	}
 	
 	public void addStepAfter(AbstractProcessStep step, AbstractProcessStep newStep) {
@@ -372,12 +371,12 @@ public class ProcessFlow {
 		for (AbstractProcessStep step : processSteps) {
 			if (step instanceof PickStep) {
 				PickStep pickStep = (PickStep) step;
-				if (pickStep.needsTeaching() && pickStep.getTeachedOffset() == null) {
+				if (pickStep.needsTeaching() && pickStep.getRelativeTeachedOffset() == null) {
 					return false;
 				}
 			} else if (step instanceof PutStep) {
 				PutStep putStep = (PutStep) step;
-				if (putStep.needsTeaching() && putStep.getTeachedOffset() == null) {
+				if (putStep.needsTeaching() && putStep.getRelativeTeachedOffset() == null) {
 					return false;
 				}
 			}
@@ -404,12 +403,12 @@ public class ProcessFlow {
 		return robots;
 	}
 
-	public boolean isClampLength() {
-		return clampLength;
+	public ClampingType getClampingType() {
+		return clampingType;
 	}
 
-	public void setClampLength(boolean clampLength) {
-		this.clampLength = clampLength;
+	public void setClampingType(ClampingType clampingType) {
+		this.clampingType = clampingType;
 	}
 	
 }

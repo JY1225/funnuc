@@ -11,8 +11,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import eu.robojob.irscw.external.device.Clamping;
+import eu.robojob.irscw.external.device.ClampingType.Type;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
@@ -117,14 +117,14 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		btnLength = createButton(iconClampLength, "btn-clamping", translator.getTranslation("CNCMillingMachineConfigureView.length"), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				presenter.changedClampingType(true);
+				presenter.changedClampingTypeLength();
 			}
 		});
 		btnLength.getStyleClass().add("form-button-bar-left");
 		btnWidth = createButton(iconClampWidth, "btn-clamping", translator.getTranslation("CNCMillingMachineConfigureView.width"), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				presenter.changedClampingType(false);
+				presenter.changedClampingTypeWidth();
 			}
 		});
 		btnWidth.getStyleClass().add("form-button-bar-right");
@@ -190,7 +190,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		btnLength.getStyleClass().remove("form-button-active");
 		btnWidth.getStyleClass().remove("form-button-active");
 		if (deviceInfo.getProcessingStep() != null) {
-			if (deviceInfo.getProcessingStep().getProcessFlow().isClampLength()) {
+			if (deviceInfo.getProcessingStep().getProcessFlow().getClampingType().getType() == Type.LENGTH) {
 				btnLength.getStyleClass().add("form-button-active");
 			} else {
 				btnWidth.getStyleClass().add("form-button-active");
