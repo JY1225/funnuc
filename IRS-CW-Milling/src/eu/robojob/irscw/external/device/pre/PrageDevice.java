@@ -122,18 +122,19 @@ public class PrageDevice extends AbstractProcessingDevice {
 		if (clampType.getType() == Type.LENGTH) {
 			c.setR(90);
 		} else {
-			c.setR(0);
+			c.setR(180);
 		}
 		return c;
 	}
 	@Override
 	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingType clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
-		c.offset(new Coordinates(0, workPieceDimensions.getWidth()/2, 0, 0, 0, 0));
 		if (clampType.getType() == Type.LENGTH) {
+			c.offset(new Coordinates(0, workPieceDimensions.getWidth()/2, 0, 0, 0, 0));
 			c.setR(90);
 		} else {
-			c.setR(0);
+			c.offset(new Coordinates(0, workPieceDimensions.getLength()/2, 0, 0, 0, 0));
+			c.setR(180);
 		}
 		return c;
 	}

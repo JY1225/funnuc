@@ -192,5 +192,6 @@ public class CNCMachineCommunication extends ExternalCommunication {
 	public void iOExceptionOccured(IOException e) {
 		// we just log the error here
 		logger.error(e);
+		e.printStackTrace();
 	}
 }

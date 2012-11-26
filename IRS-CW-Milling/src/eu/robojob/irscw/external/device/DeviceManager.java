@@ -59,9 +59,9 @@ public class DeviceManager {
 	private void initialize() {
 		
 		// add CNC Milling machine
-		Clamping clamping1 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 1", 52.7f, new Coordinates(0, 0, 90.5f, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
-		Clamping clamping2 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 2", 52.7f, new Coordinates(0, 0, 90.5f, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
-		Clamping clamping3 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 3", 52.7f, new Coordinates(0, 0, 90.5f, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
+		Clamping clamping1 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 1", 10, new Coordinates(0, 0, 106.04f, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
+		Clamping clamping2 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 2", 10, new Coordinates(0, 0, 106.04f, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
+		Clamping clamping3 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 3", 10, new Coordinates(0, 0, 106.04f, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
 		UserFrame uf3 = new UserFrame(3, 20);
 		List<WorkArea> workAreas = new ArrayList<WorkArea>();
 		WorkArea workArea1 = new WorkArea("Mazak VRX Main", uf3);
@@ -84,7 +84,8 @@ public class DeviceManager {
 		cncMachines.put(cncMillingMachine.getId(), cncMillingMachine);
 		
 		// add Basic Stacker
-		UserFrame uf1 = new UserFrame(1, 20);
+		//UserFrame uf1 = new UserFrame(1, 20);
+		UserFrame uf1 = new UserFrame(1, 100);
 		List<WorkArea> workAreas4 = new ArrayList<WorkArea>();
 		Clamping clamping4 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 4", 25, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
 		WorkArea workArea5 = new WorkArea("IRS M Basic", uf1);
@@ -103,7 +104,7 @@ public class DeviceManager {
 		List<WorkArea> workAreas3 = new ArrayList<WorkArea>();
 		WorkArea workArea4 = new WorkArea("Präge", uf1);
 		workAreas3.add(workArea4);
-		Clamping clamping5 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 5", 25, new Coordinates(1123.5f, 132.5f, 4.2f, 0, 0, 90), new Coordinates(0, 2, 10, 0, 0, 0), null);
+		Clamping clamping5 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 5", 25, new Coordinates(1123.5f, 132.5f, 4.2f, 0, 0, 90), new Coordinates(0, 2, 5, 0, 0, 0), null);
 		clamping5.addRelatedClamping(clamping1);
 		clamping1.addRelatedClamping(clamping5);
 		clamping5.addRelatedClamping(clamping2);

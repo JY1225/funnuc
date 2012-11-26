@@ -14,6 +14,7 @@ import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.TeachedCoordinatesCalculator;
 import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
@@ -58,6 +59,12 @@ public class OptimizedTeachThread extends TeachThread {
 			
 			processFlow.initialize();
 			processFlow.setMode(Mode.TEACH);
+			
+			for (AbstractProcessStep step: processFlow.getProcessSteps()) {
+				if (step instanceof AbstractTransportStep) {
+					((AbstractTransportStep) step).setRelativeTeachedOffset(null);
+				}
+			}
 
 			for (AbstractRobot robot :processFlow.getRobots()) {
 				robot.restartProgram();

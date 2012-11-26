@@ -236,7 +236,6 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	}
 	
 	private void configureWorkPieces() {
-		logger.info("**CLAMPING TYPE: **" + clampingType.getType());
 		for (StackingPosition stackingPosition : basicStackPlateLayout.getStackingPositions()) {
 			if (stackingPosition.getWorkPiece() != null) {
 				if (stackingPosition.getOrientation() == WorkPieceOrientation.HORIZONTAL) {
@@ -246,11 +245,11 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 					Rectangle rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength()/2 + 5, 
 							width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
 							5, stackingPosition.getWorkPiece().getDimensions().getWidth());
-					if (clampingType.getType() == eu.robojob.irscw.external.device.ClampingType.Type.WIDTH) {
+					/*if (clampingType.getType() == eu.robojob.irscw.external.device.ClampingType.Type.WIDTH) {
 						rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength()/2 - 10, 
 								width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
 								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
-					}
+					}*/
 					rp.getStyleClass().add("workpiece");
 					rp2.getStyleClass().add("workpiece-mark");
 					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
@@ -269,11 +268,11 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 					Rectangle rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength()/2 + 5, 
 							width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
 							5, stackingPosition.getWorkPiece().getDimensions().getWidth());
-					if (clampingType.getType() == eu.robojob.irscw.external.device.ClampingType.Type.WIDTH) {
+					/*if (clampingType.getType() == eu.robojob.irscw.external.device.ClampingType.Type.WIDTH) {
 						rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength()/2 - 10, 
 								width - stackingPosition.getPosition().getY()- stackingPosition.getWorkPiece().getDimensions().getWidth()/2, 
 								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
-					}
+					}*/
 					Rotate rotate = new Rotate(-45, stackingPosition.getPosition().getX(), width - stackingPosition.getPosition().getY());
 					rp.getTransforms().add(rotate);
 					rp.getStyleClass().add("workpiece");

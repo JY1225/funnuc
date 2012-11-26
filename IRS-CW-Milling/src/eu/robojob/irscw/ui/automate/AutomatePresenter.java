@@ -152,7 +152,9 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	}
 	
 	public void clickedStart() {
-		ThreadManager.getInstance().stopRunning(automateThread);
+		if (automateThread != null) {
+			ThreadManager.getInstance().stopRunning(automateThread);
+		}
 		logger.info("clicked start thread");
 		if (!alarms) {
 			view.hideAlarmMessage();

@@ -233,7 +233,7 @@ public class RoboSoftAppFactory {
 			
 			WorkPieceDimensions rawDimensions = new WorkPieceDimensions(125.8f, 64.9f, 40);
 			WorkPiece rawWorkPiece = new WorkPiece(WorkPiece.Type.RAW, rawDimensions);
-			WorkPieceDimensions finishedDimensions = new WorkPieceDimensions(125.8f, 64.9f, 30);
+			WorkPieceDimensions finishedDimensions = new WorkPieceDimensions(125.8f, 64.9f, 40);
 			WorkPiece finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, finishedDimensions);
 			
 			//----------ROBOT----------

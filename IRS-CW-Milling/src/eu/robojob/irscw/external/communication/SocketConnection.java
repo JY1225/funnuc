@@ -199,7 +199,7 @@ public class SocketConnection {
 		      int b = in.read();
 		      if (b < 0) {
 		    	  disconnect();
-		    	  throw new IOException("Data truncated");
+		    	  throw new IOException("Data truncated (end of stream reached)");
 			   } else {
 					logger.info("read character: " + b);
 			   }

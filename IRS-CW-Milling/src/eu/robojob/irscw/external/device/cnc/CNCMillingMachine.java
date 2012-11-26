@@ -468,7 +468,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (clampType.getType() == Type.LENGTH) {
 			c.setR(0);
 		} else {
-			c.setR(-90);
+			c.setR(90);
 		}
 		return c;
 	}
@@ -479,7 +479,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (clampType.getType() == Type.LENGTH) {
 			c.setR(0);
 		} else {
-			c.setR(-90);
+			c.setR(90);
 		}
 		return c;
 	}
