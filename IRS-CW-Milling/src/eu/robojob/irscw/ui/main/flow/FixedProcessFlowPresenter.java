@@ -68,12 +68,16 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 		view.showQuestionMarks(showQuestionMarks);
 		view.disableClickable();
 		AbstractProcessStep step = processFlowAdapter.getProcessFlow().getCurrentStep();
-		if (step instanceof PickStep) {
-			setPickStepActive(processFlowAdapter.getTransportIndex((PickStep) step));
-		} else if (step instanceof PutStep) {
-			setPutStepActive(processFlowAdapter.getTransportIndex((PutStep) step));
-		} else if (step instanceof ProcessingStep) {
-				setProcessingStepActive(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
+		if (step != null) {
+			if (step instanceof PickStep) {
+				setPickStepActive(processFlowAdapter.getTransportIndex((PickStep) step));
+			} else if (step instanceof PutStep) {
+				setPutStepActive(processFlowAdapter.getTransportIndex((PutStep) step));
+			} else if (step instanceof ProcessingStep) {
+					setProcessingStepActive(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
+			}
+		} else {
+			setNoneActive();
 		}
 	}
 	

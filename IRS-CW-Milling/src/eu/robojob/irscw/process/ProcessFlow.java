@@ -121,7 +121,11 @@ public class ProcessFlow {
 	}
 	
 	public AbstractProcessStep getCurrentStep() {
-		return getStep(currentStepIndex);
+		if (hasStep()) {
+			return getStep(currentStepIndex);
+		} else {
+			return null;
+		}
 	}
 	
 	public AbstractProcessStep getNextStep() {

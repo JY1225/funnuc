@@ -12,6 +12,7 @@ import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineS
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
 import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessingStep;
@@ -87,11 +88,23 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	public void changedClampingTypeLength() {
 		deviceInfo.getProcessingStep().getProcessFlow().getClampingType().setType(Type.LENGTH);
 		view.refreshClampType();
+		for (AbstractProcessStep step : deviceInfo.getPickStep().getProcessFlow().getProcessSteps()) {
+			if (step instanceof AbstractTransportStep) {
+				((AbstractTransportStep) step).setRelativeTeachedOffset(null);
+			}
+		}
+		deviceInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPickStep().getProcessFlow(), deviceInfo.getPickStep(), true));
 	}
 	
 	public void changedClampingTypeWidth() {
 		deviceInfo.getProcessingStep().getProcessFlow().getClampingType().setType(Type.WIDTH);
 		view.refreshClampType();
+		for (AbstractProcessStep step : deviceInfo.getPickStep().getProcessFlow().getProcessSteps()) {
+			if (step instanceof AbstractTransportStep) {
+				((AbstractTransportStep) step).setRelativeTeachedOffset(null);
+			}
+		}
+		deviceInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPickStep().getProcessFlow(), deviceInfo.getPickStep(), true));
 	}
 
 	// these methods should only be called when a combo-box value is changed, into a real value
