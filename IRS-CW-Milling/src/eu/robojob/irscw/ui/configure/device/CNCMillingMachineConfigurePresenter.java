@@ -88,6 +88,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	public void changedClampingTypeLength() {
 		deviceInfo.getProcessingStep().getProcessFlow().getClampingType().setType(Type.LENGTH);
 		view.refreshClampType();
+		// TODO: change, let all Configure presenters listen for changes and update their own data!
 		for (AbstractProcessStep step : deviceInfo.getPickStep().getProcessFlow().getProcessSteps()) {
 			if (step instanceof AbstractTransportStep) {
 				((AbstractTransportStep) step).setRelativeTeachedOffset(null);
@@ -99,6 +100,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	public void changedClampingTypeWidth() {
 		deviceInfo.getProcessingStep().getProcessFlow().getClampingType().setType(Type.WIDTH);
 		view.refreshClampType();
+		// TODO: change, let all Configure presenters listen for changes and update their own data!
 		for (AbstractProcessStep step : deviceInfo.getPickStep().getProcessFlow().getProcessSteps()) {
 			if (step instanceof AbstractTransportStep) {
 				((AbstractTransportStep) step).setRelativeTeachedOffset(null);
