@@ -108,6 +108,7 @@ public class BasicStackPlateLayout {
 				break;
 			case TILTED:
 				configureTiltedStackingPositions(dimensions);
+				//configureTiltedStackingPositionsAlt(dimensions);
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown work piece orientation");
@@ -274,7 +275,7 @@ public class BasicStackPlateLayout {
 	}
 	
 	private void configureTiltedStackingPositions(WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
-		
+				
 		if (dimensions.getLength() < dimensions.getWidth()) {
 			logger.error("incorrect data!!!");
 			throw new IncorrectWorkPieceDataException("Length should be larger than height.");
@@ -441,6 +442,126 @@ public class BasicStackPlateLayout {
 				horizontalIndex += amountOfHorizontalStudsToTheRight;
 			}
 			verticalIndex += amountOfVerticalStudsOnePiece;
+		}
+	}
+	
+	private void configureTiltedStackingPositionsAlt(WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
+		//TODO take int account strategy
+		//TODO take int account edge-overlap
+		double interference = interferenceDistance;
+		double minimumStudOverlap = 5;
+		
+		double A = Math.sqrt(2) * (horizontalHoleDistance/2);
+		logger.info("A: " + A);
+		double B = studDiameter/2 + Math.sqrt(2) * (horizontalHoleDistance/2 - Math.sqrt(2)*(studDiameter/2));
+		logger.info("B: " + B);
+		
+		boolean needsCorners = false;
+		if(dimensions.getWidth() < B + minimumStudOverlap) {
+			needsCorners = true;
+		}
+		if (dimensions.getLength() - B < 2*A + minimumStudOverlap) {
+			needsCorners = true;
+		}
+		
+		int studsBetweenRight = 1;
+		int studsNeededLeft = 1;
+		int studsTotalRight = 1;
+		int studsTotalLeft = 1;
+		int studsNeededVertical = 1;
+		
+		double width = dimensions.getWidth();
+		width -= B;
+		while (width > A - studDiameter/2) {
+			studsNeededLeft++;
+			width -= A;
+		}
+		if (width > A - studDiameter/2 + interference) {
+			studsNeededLeft++;
+		}
+		double length = dimensions.getLength();
+		length -= B;
+		while (length > A) {
+			studsTotalRight++;
+			length -= A;
+		}
+		width = dimensions.getWidth();
+		width -= B;
+		while (width > A) {
+			studsTotalLeft++;
+			width -= A;
+		}
+		double totalHeight = (dimensions.getLength() + dimensions.getHeight()) * Math.sin(Math.PI/4);
+		studsNeededVertical += Math.floor(totalHeight/verticalHoleDistance);
+		//TODO take into account corners! 
+		logger.info("Studs between right: " + studsBetweenRight);
+		logger.info("Studs needed left: " + studsNeededLeft);
+		logger.info("Studs total right: " + studsTotalRight);
+		logger.info("Studs total left: " + studsTotalLeft);
+		logger.info("Studs total height: " + studsNeededVertical);
+		logger.info("Width: " + dimensions.getWidth());
+		logger.info("Height: " + dimensions.getHeight());
+		
+		initializeRawWorkPiecePositionsTilted(dimensions, studsNeededLeft, studsBetweenRight, studsTotalLeft, studsTotalRight, studsNeededVertical, needsCorners);
+		
+	}
+	
+	private void initializeRawWorkPiecePositionsTilted(WorkPieceDimensions dimensions, int studsNeededLeft, int studsNeededRight, int studsTotalLeft, int studsTotalRight, int studsNeededVertical,
+			boolean needsCorners) {		
+		float a = (float) (horizontalHoleDistance/2 - Math.sqrt(2)*(studDiameter/2));
+		
+		float h = (float) (horizontalHoleDistance/2 + ( dimensions.getLength()/(Math.sqrt(2)) - dimensions.getWidth()/(Math.sqrt(2)) )/2);
+		float v = (float) ( (dimensions.getLength()/(Math.sqrt(2)) + dimensions.getWidth()/(Math.sqrt(2)))/2 - a);
+		
+		boolean finished = false;
+		int firstHorizontalPositionLeftStudIndex = studsTotalLeft - 1;
+		
+		int horizontalIndex = firstHorizontalPositionLeftStudIndex;
+		int verticalIndex = 0;
+		
+		while (!finished) {
+			
+			if (horizontalHoleAmount - horizontalIndex - 1 - studsTotalRight < 0) {
+				horizontalIndex = firstHorizontalPositionLeftStudIndex;
+				verticalIndex += studsNeededVertical;
+			}
+			if (verticalHoleAmount - verticalIndex - 1 - studsNeededVertical < 0) {
+				finished = true;
+			} else {
+			
+				float x = horizontalPadding + (horizontalIndex * horizontalHoleDistance) + h;
+				float y = verticalPaddingBottom + (verticalIndex * verticalHoleDistance) + v;
+				
+				StackingPosition position = new StackingPosition(x, y, null, WorkPieceOrientation.TILTED);
+				
+				if (needsCorners) {
+					StudPosition studPos = new StudPosition(horizontalIndex, verticalIndex, studPositions[verticalIndex][horizontalIndex].getCenterPosition(), StudType.TILTED_CORNER);
+					if (studsTotalRight > 2) {
+						int extraHorizontal = (int) Math.floor(studsTotalRight/2);
+						int extraVertical = extraHorizontal/2;
+						logger.info("extra hor: " + extraHorizontal);
+						logger.info("extra ver: " + extraVertical);
+						StudPosition studPos2 = new StudPosition(horizontalIndex + extraHorizontal, verticalIndex + extraVertical, studPositions[verticalIndex + extraVertical][horizontalIndex + extraHorizontal].getCenterPosition(), StudType.NORMAL);
+						position.addstud(studPos2);
+					}
+					position.addstud(studPos);
+				} else {
+					StudPosition studPos = new StudPosition(horizontalIndex, verticalIndex, studPositions[verticalIndex][horizontalIndex].getCenterPosition(), StudType.NORMAL);
+					StudPosition studPos2 = new StudPosition(horizontalIndex+1, verticalIndex, studPositions[verticalIndex][horizontalIndex+1].getCenterPosition(), StudType.NORMAL);
+					int extraHorizontal = (int) Math.floor(studsTotalRight/2);
+					int extraVertical = extraHorizontal/2;
+					logger.info("extra hor: " + extraHorizontal);
+					logger.info("extra ver: " + extraVertical);
+					StudPosition studPos3 = new StudPosition(horizontalIndex +1+ extraHorizontal, verticalIndex + extraVertical, studPositions[verticalIndex + extraVertical][horizontalIndex+1 + extraHorizontal].getCenterPosition(), StudType.NORMAL);
+					position.addstud(studPos);
+					position.addstud(studPos2);
+					position.addstud(studPos3);
+				}
+				
+				stackingPositions.add(position);
+				horizontalIndex = horizontalIndex + studsNeededRight + studsNeededLeft;
+			}
+			
 		}
 	}
 
