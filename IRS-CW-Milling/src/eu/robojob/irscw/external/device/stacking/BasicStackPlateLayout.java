@@ -107,8 +107,8 @@ public class BasicStackPlateLayout {
 				configureHorizontalStackingPositions(dimensions);
 				break;
 			case TILTED:
-				configureTiltedStackingPositions(dimensions);
-				//configureTiltedStackingPositionsAlt(dimensions);
+				//configureTiltedStackingPositions(dimensions);
+				configureTiltedStackingPositionsAlt(dimensions);
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown work piece orientation");
@@ -455,12 +455,15 @@ public class BasicStackPlateLayout {
 		logger.info("A: " + A);
 		double B = studDiameter/2 + Math.sqrt(2) * (horizontalHoleDistance/2 - Math.sqrt(2)*(studDiameter/2));
 		logger.info("B: " + B);
+		double C = horizontalHoleDistance/2 - Math.sqrt(2)*studDiameter/2;
+		logger.info("C: " + C);
+		double D = horizontalHoleDistance/2;
 		
 		boolean needsCorners = false;
 		if(dimensions.getWidth() < B + minimumStudOverlap) {
 			needsCorners = true;
 		}
-		if (dimensions.getLength() - B < 2*A + minimumStudOverlap) {
+		if (dimensions.getLength() - B < 4*A + minimumStudOverlap) {
 			needsCorners = true;
 		}
 		
@@ -480,19 +483,33 @@ public class BasicStackPlateLayout {
 			studsNeededLeft++;
 		}
 		double length = dimensions.getLength();
-		length -= B;
-		while (length > A) {
+		length -= D;
+		double lengthProj = length*Math.cos(Math.PI/4);
+		while (lengthProj > horizontalHoleDistance - studDiameter/2) {
 			studsTotalRight++;
-			length -= A;
+			lengthProj -= horizontalHoleDistance;
 		}
 		width = dimensions.getWidth();
-		width -= B;
-		while (width > A) {
+		width -= D;
+		double widthProj = width*Math.cos(Math.PI/4);
+		while (widthProj > horizontalHoleDistance - studDiameter/2) {
 			studsTotalLeft++;
-			width -= A;
+			widthProj -= horizontalHoleDistance;
 		}
-		double totalHeight = (dimensions.getLength() + dimensions.getHeight()) * Math.sin(Math.PI/4);
+		double totalHeight = (dimensions.getLength() + dimensions.getWidth()) * Math.sin(Math.PI/4);
+		logger.info("total height: " + totalHeight);
+		totalHeight = totalHeight - C;
+		logger.info("total height - C: " + totalHeight);
 		studsNeededVertical += Math.floor(totalHeight/verticalHoleDistance);
+		double restHeight = totalHeight - (studsNeededVertical-1) * verticalHoleDistance;
+		double extraMargin = 0;
+		if (needsCorners) {
+			extraMargin = holeDiameter/2 + Math.sqrt(2)*studDiameter/2;
+		}
+		logger.info("rest height: " + restHeight);
+		if (restHeight > verticalHoleDistance - studDiameter - interference - extraMargin) {
+			studsNeededVertical++;
+		}
 		//TODO take into account corners! 
 		logger.info("Studs between right: " + studsBetweenRight);
 		logger.info("Studs needed left: " + studsNeededLeft);
@@ -539,8 +556,6 @@ public class BasicStackPlateLayout {
 					if (studsTotalRight > 2) {
 						int extraHorizontal = (int) Math.floor(studsTotalRight/2);
 						int extraVertical = extraHorizontal/2;
-						logger.info("extra hor: " + extraHorizontal);
-						logger.info("extra ver: " + extraVertical);
 						StudPosition studPos2 = new StudPosition(horizontalIndex + extraHorizontal, verticalIndex + extraVertical, studPositions[verticalIndex + extraVertical][horizontalIndex + extraHorizontal].getCenterPosition(), StudType.NORMAL);
 						position.addstud(studPos2);
 					}
@@ -548,10 +563,11 @@ public class BasicStackPlateLayout {
 				} else {
 					StudPosition studPos = new StudPosition(horizontalIndex, verticalIndex, studPositions[verticalIndex][horizontalIndex].getCenterPosition(), StudType.NORMAL);
 					StudPosition studPos2 = new StudPosition(horizontalIndex+1, verticalIndex, studPositions[verticalIndex][horizontalIndex+1].getCenterPosition(), StudType.NORMAL);
-					int extraHorizontal = (int) Math.floor(studsTotalRight/2);
+					int extraHorizontal = (int) Math.floor(studsTotalRight-1);
+					if (extraHorizontal % 2 != 0){
+						extraHorizontal--;
+					}
 					int extraVertical = extraHorizontal/2;
-					logger.info("extra hor: " + extraHorizontal);
-					logger.info("extra ver: " + extraVertical);
 					StudPosition studPos3 = new StudPosition(horizontalIndex +1+ extraHorizontal, verticalIndex + extraVertical, studPositions[verticalIndex + extraVertical][horizontalIndex+1 + extraHorizontal].getCenterPosition(), StudType.NORMAL);
 					position.addstud(studPos);
 					position.addstud(studPos2);

@@ -122,7 +122,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 		if (clampType.getType() == Type.LENGTH) {
 			c.setR(90);
 		} else {
-			c.setR(180);
+			c.setR(0);
 		}
 		return c;
 	}
@@ -134,7 +134,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 			c.setR(90);
 		} else {
 			c.offset(new Coordinates(0, workPieceDimensions.getLength()/2, 0, 0, 0, 0));
-			c.setR(180);
+			c.setR(0);
 		}
 		return c;
 	}

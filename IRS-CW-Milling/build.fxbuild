@@ -1,4 +1,4 @@
-jfx.build.stagingdir = ${workspace}/IRS-CW-Milling/build
+jfx.build.stagingdir = ${workspace}/IRS-CW-Milling2/build
 jfx.build.apptitle = IRS-CW-Milling
 jfx.build.vendorname = RoboJob
 jfx.build.appversion = 1.0

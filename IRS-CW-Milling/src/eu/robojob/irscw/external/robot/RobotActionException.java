@@ -6,6 +6,6 @@ public class RobotActionException extends Exception {
 
 	@Override
 	public String getMessage() {
-		return "Fout tijdens uitvoeren actie van robot: " + super.getMessage();
+		return "Fout tijdens uitvoeren actie van robot.";
 	}
 }
