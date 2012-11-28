@@ -43,7 +43,7 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 	public void setNormalMode() {
 		addDeviceActive = false;
 		removeDeviceActive = false;
-		view.build();
+		view.refresh();
 		updateActiveParts();
 	}
 	

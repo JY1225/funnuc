@@ -448,7 +448,7 @@ public class BasicStackPlateLayout {
 	private void configureTiltedStackingPositionsAlt(WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
 		//TODO take int account strategy
 		//TODO take int account edge-overlap
-		double interference = interferenceDistance;
+		double interference = 5;
 		double minimumStudOverlap = 5;
 		
 		double A = Math.sqrt(2) * (horizontalHoleDistance/2);
@@ -479,7 +479,7 @@ public class BasicStackPlateLayout {
 			studsNeededLeft++;
 			width -= A;
 		}
-		if (width > A - studDiameter/2 + interference) {
+		if (width > A - studDiameter/2 - interference) {
 			studsNeededLeft++;
 		}
 		double length = dimensions.getLength();
@@ -507,7 +507,7 @@ public class BasicStackPlateLayout {
 			extraMargin = holeDiameter/2 + Math.sqrt(2)*studDiameter/2;
 		}
 		logger.info("rest height: " + restHeight);
-		if (restHeight > verticalHoleDistance - studDiameter - interference - extraMargin) {
+		if (restHeight > verticalHoleDistance - studDiameter/2 - interference - extraMargin) {
 			studsNeededVertical++;
 		}
 		//TODO take into account corners! 

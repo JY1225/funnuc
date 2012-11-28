@@ -122,10 +122,11 @@ public class MainPresenter implements ProcessFlowListener {
 	}
 	
 	public void setChangeContentEnabled(boolean enabled) {
-		if (!enabled) {
-			menuBarPresenter.setAutomateButtonEnabled(enabled);
-			menuBarPresenter.setConfigureButtonEnabled(enabled);
-			menuBarPresenter.setTeachButtonEnabled(enabled);
+		menuBarPresenter.setAutomateButtonEnabled(enabled);
+		menuBarPresenter.setConfigureButtonEnabled(enabled);
+		menuBarPresenter.setTeachButtonEnabled(enabled);
+		if (enabled) {
+			refreshStatus();
 		}
 		//menuBarPresenter.setAdminButtonEnabled(enabled);
 	}

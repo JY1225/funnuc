@@ -116,7 +116,16 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 
 	@Override
 	public void refresh() {
-		
+		if (!processFlowAdapter.canAddDevice()) {
+			btnAddDeviceStep.setDisable(true);
+		} else {
+			btnAddDeviceStep.setDisable(false);
+		}
+		if (!processFlowAdapter.canRemoveDevice()) {
+			btnRemoveDeviceStep.setDisable(true);
+		} else {
+			btnRemoveDeviceStep.setDisable(false);
+		}
 	}
 
 }
