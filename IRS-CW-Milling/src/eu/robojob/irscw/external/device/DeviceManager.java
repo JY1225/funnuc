@@ -104,7 +104,11 @@ public class DeviceManager {
 		List<WorkArea> workAreas3 = new ArrayList<WorkArea>();
 		WorkArea workArea4 = new WorkArea("Präge", uf1);
 		workAreas3.add(workArea4);
-		Clamping clamping5 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 5", 25, new Coordinates(1123.5f, 132.5f, 4.2f, 0, 0, 90), new Coordinates(0, 2, 5, 0, 0, 0), null);
+		float x = Float.parseFloat(properties.getProperty("prage-x"));
+		float y = Float.parseFloat(properties.getProperty("prage-y"));
+		float z = Float.parseFloat(properties.getProperty("prage-z"));
+		logger.info("X: " + x + ", Y: " + y + ", Z: " + z);
+		Clamping clamping5 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 5", 25, new Coordinates(x, y, z, 0, 0, 90), new Coordinates(0, 2, 5, 0, 0, 0), null);
 		clamping5.addRelatedClamping(clamping1);
 		clamping1.addRelatedClamping(clamping5);
 		clamping5.addRelatedClamping(clamping2);

@@ -452,11 +452,8 @@ public class BasicStackPlateLayout {
 		double minimumStudOverlap = 5;
 		
 		double A = Math.sqrt(2) * (horizontalHoleDistance/2);
-		logger.info("A: " + A);
 		double B = studDiameter/2 + Math.sqrt(2) * (horizontalHoleDistance/2 - Math.sqrt(2)*(studDiameter/2));
-		logger.info("B: " + B);
 		double C = horizontalHoleDistance/2 - Math.sqrt(2)*studDiameter/2;
-		logger.info("C: " + C);
 		double D = horizontalHoleDistance/2;
 		
 		boolean needsCorners = false;
@@ -497,27 +494,16 @@ public class BasicStackPlateLayout {
 			widthProj -= horizontalHoleDistance;
 		}
 		double totalHeight = (dimensions.getLength() + dimensions.getWidth()) * Math.sin(Math.PI/4);
-		logger.info("total height: " + totalHeight);
 		totalHeight = totalHeight - C;
-		logger.info("total height - C: " + totalHeight);
 		studsNeededVertical += Math.floor(totalHeight/verticalHoleDistance);
 		double restHeight = totalHeight - (studsNeededVertical-1) * verticalHoleDistance;
 		double extraMargin = 0;
 		if (needsCorners) {
 			extraMargin = holeDiameter/2 + Math.sqrt(2)*studDiameter/2;
 		}
-		logger.info("rest height: " + restHeight);
 		if (restHeight > verticalHoleDistance - studDiameter/2 - interference - extraMargin) {
 			studsNeededVertical++;
 		}
-		//TODO take into account corners! 
-		logger.info("Studs between right: " + studsBetweenRight);
-		logger.info("Studs needed left: " + studsNeededLeft);
-		logger.info("Studs total right: " + studsTotalRight);
-		logger.info("Studs total left: " + studsTotalLeft);
-		logger.info("Studs total height: " + studsNeededVertical);
-		logger.info("Width: " + dimensions.getWidth());
-		logger.info("Height: " + dimensions.getHeight());
 		
 		initializeRawWorkPiecePositionsTilted(dimensions, studsNeededLeft, studsBetweenRight, studsTotalLeft, studsTotalRight, studsNeededVertical, needsCorners);
 		
