@@ -21,11 +21,11 @@ import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 
 public class AutomateThread extends Thread{
 
-	private ProcessFlow processFlow;
+	protected ProcessFlow processFlow;
 	
 	private static final Logger logger = Logger.getLogger(AutomateThread.class);
 	
-	private boolean running;
+	protected boolean running;
 	
 	public AutomateThread(ProcessFlow processFlow) {
 		this.processFlow = processFlow;
@@ -114,7 +114,7 @@ public class AutomateThread extends Thread{
 		step.executeStep();
 	}
 	
-	private void notifyException(final Exception e) {
+	protected void notifyException(final Exception e) {
 		processFlow.processProcessFlowEvent(new ExceptionOccuredEvent(processFlow, e));
 	}
 	

@@ -446,6 +446,11 @@ public class BasicStackPlateLayout {
 	}
 	
 	private void configureTiltedStackingPositionsAlt(WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
+		if (dimensions.getLength() < dimensions.getWidth()) {
+			logger.error("incorrect data!!!");
+			throw new IncorrectWorkPieceDataException("Length should be larger than height.");
+		}
+		
 		//TODO take int account strategy
 		//TODO take int account edge-overlap
 		double interference = 5;
@@ -528,7 +533,7 @@ public class BasicStackPlateLayout {
 				horizontalIndex = firstHorizontalPositionLeftStudIndex;
 				verticalIndex += studsNeededVertical;
 			}
-			if (verticalHoleAmount - verticalIndex - 1 - studsNeededVertical < 0) {
+			if (verticalHoleAmount - verticalIndex - studsNeededVertical < 0) {
 				finished = true;
 			} else {
 			
@@ -540,8 +545,19 @@ public class BasicStackPlateLayout {
 				if (needsCorners) {
 					StudPosition studPos = new StudPosition(horizontalIndex, verticalIndex, studPositions[verticalIndex][horizontalIndex].getCenterPosition(), StudType.TILTED_CORNER);
 					if (studsTotalRight > 2) {
-						int extraHorizontal = (int) Math.floor(studsTotalRight/2);
+						//int extraHorizontal = (int) Math.floor(studsTotalRight/2);
+						//int extraVertical = extraHorizontal/2;
+						logger.info("studsTotalRight: " + studsTotalRight);
+						int extraHorizontal = studsTotalRight -1;
+						if (extraHorizontal % 2 != 0) {
+							extraHorizontal = extraHorizontal -1;
+						}
 						int extraVertical = extraHorizontal/2;
+						extraHorizontal++;
+						if (extraHorizontal > 4) {
+							extraHorizontal = extraHorizontal-2;
+							extraVertical = extraVertical-1;
+						}
 						StudPosition studPos2 = new StudPosition(horizontalIndex + extraHorizontal, verticalIndex + extraVertical, studPositions[verticalIndex + extraVertical][horizontalIndex + extraHorizontal].getCenterPosition(), StudType.NORMAL);
 						position.addstud(studPos2);
 					}
