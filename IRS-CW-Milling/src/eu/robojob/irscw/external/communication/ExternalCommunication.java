@@ -7,7 +7,7 @@ import eu.robojob.irscw.threading.ThreadManager;
 public abstract class ExternalCommunication {
 
 	public static final int READ_RETRY_INTERVAL = 50;
-	public static final int DEFAULT_WAIT_TIMEOUT = 30000;
+	public static final int DEFAULT_WAIT_TIMEOUT = 10000;
 	
 	private int defaultWaitTimeout;
 	

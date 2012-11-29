@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.device.ClampingType.Type;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePickSettings;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePutSettings;
@@ -226,14 +227,14 @@ public class RoboSoftAppFactory {
 			
 			//---------GENERAL---------
 			
-			Integer totalAmount = 12;
+			Integer totalAmount = 4;
 			
 			processFlow = new ProcessFlow("MAZAK OPEN HOUSE");
 			processFlow.setTotalAmount(totalAmount);
 			
-			WorkPieceDimensions rawDimensions = new WorkPieceDimensions(125.8f, 64.9f, 40);
+			WorkPieceDimensions rawDimensions = new WorkPieceDimensions(80f, 40f, 40);
 			WorkPiece rawWorkPiece = new WorkPiece(WorkPiece.Type.RAW, rawDimensions);
-			WorkPieceDimensions finishedDimensions = new WorkPieceDimensions(125.8f, 64.9f, 40);
+			WorkPieceDimensions finishedDimensions = new WorkPieceDimensions(80f, 40f, 40);
 			WorkPiece finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, finishedDimensions);
 			
 			//----------ROBOT----------
@@ -242,7 +243,7 @@ public class RoboSoftAppFactory {
 			FanucRobot robot = (FanucRobot) robotMgr.getRobotById("Fanuc M20iA");
 			FanucRobotSettings robotSettings = (FanucRobotSettings) robot.getRobotSettings();
 			robotSettings.setGripper(robot.getGripperBody().getGripperHead("A"), robot.getGripperBody().getGripper("2P clamp grip A"));
-			robotSettings.setGripper(robot.getGripperBody().getGripperHead("B"), robot.getGripperBody().getGripper("Vacuum grip"));
+			robotSettings.setGripper(robot.getGripperBody().getGripperHead("B"), robot.getGripperBody().getGripper("2P clamp grip B"));
 			processFlow.setRobotSettings(robot, robotSettings);
 			
 			
@@ -268,6 +269,7 @@ public class RoboSoftAppFactory {
 			cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingById("Clamping 1"));
 			processFlow.setDeviceSettings(cncMilling, cncMillingSetting);
 			
+			processFlow.getClampingType().setType(Type.WIDTH);
 			
 			//---------STEPS----------
 			
@@ -356,6 +358,18 @@ public class RoboSoftAppFactory {
 			put1.setTeachedOffset(new Coordinates());
 			pick2.setTeachedOffset(new Coordinates());
 			put2.setTeachedOffset(new Coordinates());*/
+			Coordinates teachedFinishedOnstacker = new Coordinates(1.788f, 2.853f, -8.03f, 0, 0, 0);
+			Coordinates teachedRawOnstacker = new Coordinates(0.0551f, 1.291f, -6.76f, 0, 0, 0);
+			Coordinates teachedOnPrage = new Coordinates(0.55f, -1.3f, -13.76f, 0, 0, -360);
+			
+			Coordinates pickFromMachineOffset = new Coordinates(teachedOnPrage);
+			pickFromMachineOffset.minus(teachedRawOnstacker);
+			pickFromMachineOffset.plus(teachedFinishedOnstacker);
+			pick1.setRelativeTeachedOffset(teachedRawOnstacker);
+			putAndWait1.setRelativeTeachedOffset(teachedOnPrage);
+			put1.setRelativeTeachedOffset(teachedOnPrage);
+			pick2.setRelativeTeachedOffset(pickFromMachineOffset);
+			put2.setRelativeTeachedOffset(teachedFinishedOnstacker);
 			
 			// create process flow:
 			processFlow.addStep(pick1);

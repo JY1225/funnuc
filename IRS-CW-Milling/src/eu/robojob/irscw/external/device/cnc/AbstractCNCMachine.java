@@ -12,6 +12,7 @@ import eu.robojob.irscw.external.device.DeviceDisconnectedException;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
+import eu.robojob.irscw.external.robot.FanucRobotDisconnectedException;
 import eu.robojob.irscw.threading.ThreadManager;
 
 
@@ -131,6 +132,9 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 			if ((getStatus().getStatus() & status) > 0) {
 				return true;
 			} else {
+				if (!isConnected()) {
+					throw new DeviceDisconnectedException(this);
+				}
 				try {
 					statusChanged = false;
 					if (timeout > waitedTime) {

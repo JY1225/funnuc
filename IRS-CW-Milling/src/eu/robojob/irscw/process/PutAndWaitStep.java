@@ -107,8 +107,11 @@ public class PutAndWaitStep extends PutStep {
 				Coordinates coordinates = new Coordinates(robot.getPosition());
 				Coordinates oldCoordinates = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), processFlow.getClampingType()));
 				this.relativeTeachedOffset = coordinates.calculateOffset(oldCoordinates);
-				this.relativeTeachedOffset = calculator.calculateRelativeTeachedOffset(oldCoordinates, relativeTeachedOffset);
+				logger.debug("original coordinates: " + oldCoordinates);
+				logger.debug("the new position is: " + coordinates);
 				logger.debug("The teached offset is: " + relativeTeachedOffset);
+				this.relativeTeachedOffset = calculator.calculateRelativeTeachedOffset(oldCoordinates, relativeTeachedOffset);
+				logger.debug("The teached offset is (absolute): " + relativeTeachedOffset);
 				robotPutSettings.setLocation(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), processFlow.getClampingType()));
 				logger.debug("About to ask device to grab piece");
 				device.grabPiece(putSettings);

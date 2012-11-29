@@ -59,10 +59,10 @@ public class DeviceManager {
 	private void initialize() {
 		
 		// add CNC Milling machine
-		Clamping clamping1 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 1", 10, new Coordinates(0, 0, 106.04f, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
-		Clamping clamping2 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 2", 10, new Coordinates(0, 0, 106.04f, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
-		Clamping clamping3 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 3", 10, new Coordinates(0, 0, 106.04f, 0, 0, 0), new Coordinates(0, 0, 50, 0, 0, 0), null);
-		UserFrame uf3 = new UserFrame(3, 20);
+		Clamping clamping1 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 1", 0, new Coordinates(0, 0, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
+		Clamping clamping2 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 2", 0, new Coordinates(0, 0, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
+		Clamping clamping3 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 3", 0, new Coordinates(0, 0, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
+		UserFrame uf3 = new UserFrame(3, 5);
 		List<WorkArea> workAreas = new ArrayList<WorkArea>();
 		WorkArea workArea1 = new WorkArea("Mazak VRX Main", uf3);
 		workArea1.addClamping(clamping1);
@@ -108,7 +108,7 @@ public class DeviceManager {
 		float y = Float.parseFloat(properties.getProperty("prage-y"));
 		float z = Float.parseFloat(properties.getProperty("prage-z"));
 		logger.info("X: " + x + ", Y: " + y + ", Z: " + z);
-		Clamping clamping5 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 5", 25, new Coordinates(x, y, z, 0, 0, 90), new Coordinates(0, 2, 5, 0, 0, 0), null);
+		Clamping clamping5 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 5", 25, new Coordinates(x, y, z, 0, 0, 90), new Coordinates(0, 5, 5, 0, 0, 0), null);
 		clamping5.addRelatedClamping(clamping1);
 		clamping1.addRelatedClamping(clamping5);
 		clamping5.addRelatedClamping(clamping2);

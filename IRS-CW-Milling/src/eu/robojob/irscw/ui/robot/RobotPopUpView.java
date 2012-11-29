@@ -121,6 +121,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 				presenter.setSpeedClicked(100);
 			}
 		});
+		btn100.setDisable(true);
 		vBoxMenuItems.getChildren().add(btn100);
 	}
 	
@@ -147,7 +148,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btn25.setDisable(!connected);
 		btn50.setDisable(!connected);
 		btn10.setDisable(!connected);
-		btn100.setDisable(!connected);
+		//btn100.setDisable(!connected);
 		btnReset.setDisable(!connected);
 		btnToChange.setDisable(!connected);
 		btnToHome.setDisable(!connected);

@@ -151,6 +151,9 @@ public class FanucRobot extends AbstractRobot {
 			if ((getStatus().getControllerString() & status) > 0) {
 				return true;
 			} else {
+				if (!isConnected()) {
+					throw new FanucRobotDisconnectedException(this);
+				}
 				try {
 					statusChanged = false;
 					if (timeout > waitedTime) {
@@ -607,11 +610,11 @@ public class FanucRobot extends AbstractRobot {
 		values.add("" + location.getZ());
 		values.add("" + location.getR());
 		values.add("" + (dimensions.getHeight() + location.getZ()));
-		// TODO we take 20 as safety add z for now
-		if (smoothPoint.getZ() > 40) {
+		// TODO we take 10 as safety add z for now
+		if (smoothPoint.getZ() > 10) {
 			values.add("" + smoothPoint.getZ());
 		} else {
-			values.add("40");
+			values.add("10");
 		}
 		values.add("" + smoothPoint.getX());
 		values.add("" + smoothPoint.getY());
