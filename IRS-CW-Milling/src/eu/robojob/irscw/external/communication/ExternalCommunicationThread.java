@@ -42,6 +42,7 @@ public class ExternalCommunicationThread extends Thread {
 			if (!socketConnection.isConnected()) {
 				if (wasConnected) {
 					wasConnected = false;
+					logger.info("DISCONNECTED!");
 					externalCommunication.disconnected();
 				}
 				try {
@@ -128,6 +129,12 @@ public class ExternalCommunicationThread extends Thread {
 	public synchronized void disconnectAndStop() {
 		if (socketConnection.isConnected()) {
 			alive = false;
+			socketConnection.disconnect();
+		}
+	}
+	
+	public synchronized void justDisconnect() {
+		if (socketConnection.isConnected()) {
 			socketConnection.disconnect();
 		}
 	}

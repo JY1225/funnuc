@@ -492,6 +492,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		return false;
 	}
 	
+	@Override
 	public void disconnect() {
 		cncMachineCommunication.disconnect();
 	}

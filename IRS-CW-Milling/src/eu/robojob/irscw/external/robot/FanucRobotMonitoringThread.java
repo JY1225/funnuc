@@ -35,6 +35,7 @@ public class FanucRobotMonitoringThread extends Thread implements MonitoringThre
 					}
 					this.previousStatus = status;
 				} catch (CommunicationException e) {
+					fanucRobot.disconnect();
 					logger.error(e);
 				}
 			}

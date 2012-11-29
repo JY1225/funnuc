@@ -32,12 +32,9 @@ public class FanucRobot extends AbstractRobot {
 	private static final int ASK_POSITION_TIMEOUT = 50000;
 	private static final int PICK_TEACH_TIMEOUT = 10*60*1000;
 	private static final int PUT_TEACH_TIMEOUT = 10*60*1000;
-	private static final int ASK_STATUS_TIMEOUT = 1*60*1000;
+	private static final int ASK_STATUS_TIMEOUT = 5*1000;
 	
-	private static final int TO_HOME_TIMEOUT = 5*60*1000;
-	private static final int TO_JAW_CHANGE_TIMEOUT = 5*60*1000;
-	
-	private static final int WRITE_REGISTER_TIMEOUT = 10000;
+	private static final int WRITE_REGISTER_TIMEOUT = 5000;
 	private static final int PRAGE_TIMEOUT = 2*60*1000;
 	
 	private boolean stopAction;
@@ -145,6 +142,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	private boolean waitForStatus(int status, long timeout) throws CommunicationException, InterruptedException {
+		logger.info("waiting for status: " + status + " with timeout: " + timeout);
 		long waitedTime = 0;
 		do {
 			long lastTime = System.currentTimeMillis();
@@ -158,6 +156,7 @@ public class FanucRobot extends AbstractRobot {
 					statusChanged = false;
 					if (timeout > waitedTime) {
 						synchronized(syncObject) {
+							logger.info("about to wait: " + (timeout - waitedTime));
 							syncObject.wait(timeout - waitedTime);
 						}
 					}
@@ -656,7 +655,7 @@ public class FanucRobot extends AbstractRobot {
 		if ((getSpeed() < 10) || (getSpeed() > 100)) {
 			setSpeed(50);
 		}
-		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_TO_HOME, FanucRobotConstants.RESPONSE_TO_HOME, TO_HOME_TIMEOUT, "" + getSpeed());
+		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_TO_HOME, FanucRobotConstants.RESPONSE_TO_HOME, WRITE_VALUES_TIMEOUT, "" + getSpeed());
 		//TODO there's no way of knowing the robot is in its home point, so for now, we just leave him there
 	}
 
@@ -665,7 +664,7 @@ public class FanucRobot extends AbstractRobot {
 		if ((getSpeed() < 10) || (getSpeed() > 100)) {
 			setSpeed(50);
 		}
-		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_TO_JAW_CHANGE, FanucRobotConstants.RESPONSE_TO_JAW_CHANGE, TO_JAW_CHANGE_TIMEOUT, "" + getSpeed());
+		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_TO_JAW_CHANGE, FanucRobotConstants.RESPONSE_TO_JAW_CHANGE, WRITE_VALUES_TIMEOUT, "" + getSpeed());
 	}
 
 	public static class FanucRobotPickSettings extends AbstractRobotPickSettings {

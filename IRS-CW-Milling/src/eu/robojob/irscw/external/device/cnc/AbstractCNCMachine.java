@@ -77,6 +77,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	}
 	
 	public abstract void updateStatusAndAlarms() throws CommunicationException;
+	public abstract void disconnect();
 	
 	public Set<CNCMachineAlarm> getAlarms() {
 		return alarms;

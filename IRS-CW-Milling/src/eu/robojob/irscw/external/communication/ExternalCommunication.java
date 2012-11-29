@@ -24,7 +24,7 @@ public abstract class ExternalCommunication {
 	}
 	
 	public synchronized void disconnect() {
-		extCommThread.disconnectAndStop();
+		extCommThread.justDisconnect();
 	}
 	
 	public synchronized boolean hasMessage() {

@@ -42,6 +42,7 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 					}
 					this.previousAlarms = alarms;
 				} catch (CommunicationException e) {
+					cncMachine.disconnect();
 					logger.error(e);
 				}
 			}
