@@ -39,9 +39,15 @@ public class TeachThread extends Thread {
 		processFlow.initialize();
 		
 		try {
+			for (AbstractProcessStep step: processFlow.getProcessSteps()) {
+				if (step instanceof AbstractTransportStep) {
+					((AbstractTransportStep) step).setRelativeTeachedOffset(null);
+				}
+			}
 			for (AbstractRobot robot :processFlow.getRobots()) {
 				robot.restartProgram();
 				robot.setSpeed(10);
+				robot.recalculateTCPs();
 			}
 			for (AbstractDevice device: processFlow.getDevices()) {
 				device.prepareForProcess(processFlow);

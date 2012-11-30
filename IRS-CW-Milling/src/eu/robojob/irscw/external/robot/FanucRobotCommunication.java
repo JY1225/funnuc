@@ -28,7 +28,6 @@ public class FanucRobotCommunication extends ExternalCommunication {
 	}
 
 	public synchronized void writeValues(int commandId, int ackId, int timeout, List<String> values) throws DisconnectedException, ResponseTimedOutException {
-		logger.info("about to write values: " + values + " with command: " + commandId);
 		command = new StringBuffer();
 		command.append(commandId);
 		command.append(";");
@@ -38,10 +37,8 @@ public class FanucRobotCommunication extends ExternalCommunication {
 		}
 		int waitedTime = 0;
 		extCommThread.writeString(command.toString());
-		logger.info("write succeeded!, waiting for messages: " + timeout);
 		do {
 			if (extCommThread.hasNextMessage()) {
-				logger.info("has message!");
 				String message = extCommThread.getNextMessage();
 				message = message.replaceAll(" ", "");
 				message = message.substring(0, message.length()-1);
@@ -59,14 +56,12 @@ public class FanucRobotCommunication extends ExternalCommunication {
 				break;
 			}
 			try {
-				logger.info("about to sleep:  " + timeToWait);
 				Thread.sleep(timeToWait);
 			} catch(InterruptedException e) {
 				break;
 			}
 			waitedTime += timeToWait;
 		} while (waitedTime < timeout);
-		logger.info("response timed out!");
 		throw new ResponseTimedOutException(this);
 	}
 

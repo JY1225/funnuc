@@ -142,7 +142,6 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	private boolean waitForStatus(int status, long timeout) throws CommunicationException, InterruptedException {
-		logger.info("waiting for status: " + status + " with timeout: " + timeout);
 		long waitedTime = 0;
 		do {
 			long lastTime = System.currentTimeMillis();
@@ -156,7 +155,6 @@ public class FanucRobot extends AbstractRobot {
 					statusChanged = false;
 					if (timeout > waitedTime) {
 						synchronized(syncObject) {
-							logger.info("about to wait: " + (timeout - waitedTime));
 							syncObject.wait(timeout - waitedTime);
 						}
 					}

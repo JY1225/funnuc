@@ -14,15 +14,18 @@ import eu.robojob.irscw.util.UIConstants;
 
 public class GeneralInfoView extends VBox {
 
-	private Label lblInfoMessage;
+	private Label lblInfoMessageTeachStacker;
+	private Label lblInfoMessageTeachAll;
 	private Button btnStart;
 	private Label lblStart;
+	private Button btnStartTeachAll;
+	private Label lblStartTeachAll;
 	
 	private Translator translator;
 			
 	private TeachPresenter presenter;
 	
-	private static final double BUTTON_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
+	private static final double BUTTON_WIDTH = UIConstants.BUTTON_HEIGHT * 5;
 	private static final double BUTTON_HEIGHT = 40;
 	
 	public GeneralInfoView() {
@@ -38,19 +41,19 @@ public class GeneralInfoView extends VBox {
 		this.setFillWidth(true);
 		this.setAlignment(Pos.CENTER);
 		this.setPrefSize(520, 300);
-		lblInfoMessage = new Label(translator.getTranslation("teach-info"));
-		lblInfoMessage.getStyleClass().add("teach-msg");
-		lblInfoMessage.setPrefSize(500, 100);
-		lblInfoMessage.setWrapText(true);
+		lblInfoMessageTeachStacker = new Label(translator.getTranslation("teach-info"));
+		lblInfoMessageTeachStacker.getStyleClass().add("teach-msg");
+		lblInfoMessageTeachStacker.setPrefSize(600, 50);
+		lblInfoMessageTeachStacker.setWrapText(true);
 		
-		setMargin(lblInfoMessage, new Insets(0, 0, 30, 0));
+		setMargin(lblInfoMessageTeachStacker, new Insets(0, 0, 10, 0));
 		
 		btnStart = new Button();
 		HBox hboxStart = new HBox();
 		lblStart = new Label(translator.getTranslation("start"));
 		lblStart.getStyleClass().add("btn-start-label");
 		hboxStart.getChildren().add(lblStart);
-		lblStart.setPrefSize(BUTTON_WIDTH - 40, BUTTON_HEIGHT);
+		lblStart.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		//hboxStart.getChildren().add(arrowRight);
 		hboxStart.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		hboxStart.setAlignment(Pos.CENTER);
@@ -65,7 +68,35 @@ public class GeneralInfoView extends VBox {
 		btnStart.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		btnStart.getStyleClass().add("btn-start");
 		
-		getChildren().add(lblInfoMessage);
+		lblInfoMessageTeachAll= new Label(translator.getTranslation("teach-info-all"));
+		lblInfoMessageTeachAll.getStyleClass().add("teach-msg");
+		lblInfoMessageTeachAll.setPrefSize(600, 50);
+		lblInfoMessageTeachAll.setWrapText(true);
+		
+		setMargin(lblInfoMessageTeachAll, new Insets(30, 0, 10, 0));
+		
+		btnStartTeachAll = new Button();
+		HBox hboxStartTeachAll = new HBox();
+		lblStartTeachAll = new Label(translator.getTranslation("start-teach-all"));
+		lblStartTeachAll.getStyleClass().add("btn-start-label");
+		hboxStartTeachAll.getChildren().add(lblStartTeachAll);
+		lblStartTeachAll.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		hboxStartTeachAll.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		hboxStartTeachAll.setAlignment(Pos.CENTER);
+		HBox.setHgrow(lblStartTeachAll, Priority.ALWAYS);
+		btnStartTeachAll.setGraphic(hboxStartTeachAll);
+		btnStartTeachAll.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				presenter.startFlowTeachAll();
+			}
+		});
+		btnStartTeachAll.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		btnStartTeachAll.getStyleClass().add("btn-start");
+		
+		getChildren().add(lblInfoMessageTeachStacker);
 		getChildren().add(btnStart);
+		getChildren().add(lblInfoMessageTeachAll);
+		getChildren().add(btnStartTeachAll);
 	}
 }
