@@ -108,7 +108,7 @@ public class DeviceManager {
 		float y = Float.parseFloat(properties.getProperty("prage-y"));
 		float z = Float.parseFloat(properties.getProperty("prage-z"));
 		logger.info("X: " + x + ", Y: " + y + ", Z: " + z);
-		Clamping clamping5 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 5", 25, new Coordinates(x, y, z, 0, 0, 90), new Coordinates(0, 5, 5, 0, 0, 0), null);
+		Clamping clamping5 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 5", 25, new Coordinates(x, y, z, 0, 0, 90), new Coordinates(0, 2, 5, 0, 0, 0), null);
 		clamping5.addRelatedClamping(clamping1);
 		clamping1.addRelatedClamping(clamping5);
 		clamping5.addRelatedClamping(clamping2);

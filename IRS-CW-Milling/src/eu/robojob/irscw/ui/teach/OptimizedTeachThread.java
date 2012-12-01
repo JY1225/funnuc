@@ -130,7 +130,7 @@ public class OptimizedTeachThread extends TeachThread {
 						// preset the teached offset of the präge and cnc so teaching will go easier here!
 						putAndWaitOnPrageStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
 					}
-					putInMachineStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
+					putInMachineStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
 				} else if (step.equals(putAndWaitOnPrageStep)) {
 					putAndWaitOnPrageStep.prepareForTeaching();
 					putAndWaitOnPrageStep.teachingFinished();

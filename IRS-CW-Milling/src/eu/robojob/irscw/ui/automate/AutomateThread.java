@@ -38,7 +38,7 @@ public class AutomateThread extends Thread{
 		this.running = true;
 		try {
 			for (AbstractDevice device: processFlow.getDevices()) {
-				device.prepareForProcess(processFlow);
+				//device.prepareForProcess(processFlow);
 			}
 			while(processFlow.getFinishedAmount() < processFlow.getTotalAmount() && running) {
 				while (processFlow.hasStep() && running) {
@@ -73,6 +73,9 @@ public class AutomateThread extends Thread{
 				}
 				if (running) {
 					processFlow.restart();
+					for (AbstractDevice device: processFlow.getDevices()) {
+						device.prepareForProcess(processFlow);
+					}
 				}
 			}
 			if (running) {

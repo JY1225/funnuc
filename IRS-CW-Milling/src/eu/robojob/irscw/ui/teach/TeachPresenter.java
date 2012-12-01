@@ -46,6 +46,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	private GeneralInfoView teachGeneralInfoView;
 	private DisconnectedDevicesView teachDisconnectedDevicesView;
 	private StatusView teachStatusView;
+	private OffsetPresenter offsetPresenter;
 	
 	private TeachThread teachThread;
 	
@@ -61,7 +62,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	private boolean alarms;
 	
 	public TeachPresenter(TeachView view, FixedProcessFlowPresenter processFlowPresenter, ProcessFlow processFlow, DisconnectedDevicesView teachDisconnectedDevicesView,
-			GeneralInfoView teachGeneralInfoView, StatusView teachStatusView) {
+			GeneralInfoView teachGeneralInfoView, StatusView teachStatusView, OffsetPresenter offsetPresenter) {
 		this.view = view;
 		this.processFlowPresenter = processFlowPresenter;
 		view.setTop(processFlowPresenter.getView());
@@ -73,6 +74,8 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		teachGeneralInfoView.setPresenter(this);
 		this.teachStatusView = teachStatusView;
 		teachStatusView.setPresenter(this);
+		this.offsetPresenter = offsetPresenter;
+		offsetPresenter.setParent(this);
 		machines = new HashMap<AbstractCNCMachine, Boolean>();
 		robots = new HashMap<FanucRobot, Boolean>();
 		this.translator = Translator.getInstance();
@@ -181,6 +184,10 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		machines.clear();
 		robots.clear();
 		processFlow.removeListener(this);
+	}
+	
+	public void startOptimized() {
+		view.setBottom(offsetPresenter.getView());
 	}
 
 	/**

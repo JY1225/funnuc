@@ -2,9 +2,9 @@ package eu.robojob.irscw.ui;
 
 import java.util.Properties;
 
+import eu.robojob.irscw.external.device.ClampingType.Type;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.ClampingType.Type;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePickSettings;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePutSettings;
@@ -57,6 +57,8 @@ import eu.robojob.irscw.ui.robot.RobotPopUpPresenter;
 import eu.robojob.irscw.ui.robot.RobotPopUpView;
 import eu.robojob.irscw.ui.teach.DisconnectedDevicesView;
 import eu.robojob.irscw.ui.teach.GeneralInfoView;
+import eu.robojob.irscw.ui.teach.OffsetPresenter;
+import eu.robojob.irscw.ui.teach.OffsetView;
 import eu.robojob.irscw.ui.teach.StatusView;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
 import eu.robojob.irscw.ui.teach.TeachView;
@@ -133,7 +135,8 @@ public class RoboSoftAppFactory {
 			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
 			GeneralInfoView generalInfoView = new GeneralInfoView();
 			StatusView statusView = new StatusView();
-			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, generalInfoView, statusView);
+			OffsetPresenter offsetPresenter = new OffsetPresenter(getNumericKeyboardPresenter());
+			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, generalInfoView, statusView, offsetPresenter);
 		}
 		return teachPresenter;
 	}

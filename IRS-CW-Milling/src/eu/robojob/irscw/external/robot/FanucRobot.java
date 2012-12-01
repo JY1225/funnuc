@@ -606,12 +606,16 @@ public class FanucRobot extends AbstractRobot {
 		values.add("" + location.getY());
 		values.add("" + location.getZ());
 		values.add("" + location.getR());
-		values.add("" + (dimensions.getHeight() + location.getZ()));
+		if (location.getZ() > 0) {
+			values.add("" + (dimensions.getHeight() + location.getZ()));
+		} else {
+			values.add("" + dimensions.getHeight());
+		}
 		// TODO we take 10 as safety add z for now
-		if (smoothPoint.getZ() > 10) {
+		if (smoothPoint.getZ() > 20) {
 			values.add("" + smoothPoint.getZ());
 		} else {
-			values.add("10");
+			values.add("20");
 		}
 		values.add("" + smoothPoint.getX());
 		values.add("" + smoothPoint.getY());

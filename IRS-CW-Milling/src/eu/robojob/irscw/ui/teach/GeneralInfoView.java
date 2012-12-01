@@ -63,6 +63,7 @@ public class GeneralInfoView extends VBox {
 			@Override
 			public void handle(ActionEvent arg0) {
 				presenter.startFlow();
+				//presenter.startOptimized();
 			}
 		});
 		btnStart.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -70,7 +71,7 @@ public class GeneralInfoView extends VBox {
 		
 		lblInfoMessageTeachAll= new Label(translator.getTranslation("teach-info-all"));
 		lblInfoMessageTeachAll.getStyleClass().add("teach-msg");
-		lblInfoMessageTeachAll.setPrefSize(600, 50);
+		lblInfoMessageTeachAll.setPrefSize(600, 60);
 		lblInfoMessageTeachAll.setWrapText(true);
 		
 		setMargin(lblInfoMessageTeachAll, new Insets(30, 0, 10, 0));
