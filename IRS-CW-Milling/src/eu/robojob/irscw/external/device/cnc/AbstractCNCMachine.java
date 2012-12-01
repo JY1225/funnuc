@@ -125,6 +125,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	public abstract void powerOff() throws CommunicationException, InterruptedException;
 	public abstract void indicateAllProcessed() throws CommunicationException, InterruptedException;
 	public abstract void operatorRequested(boolean requested) throws CommunicationException, InterruptedException;
+	public abstract void stopIndications() throws CommunicationException, InterruptedException;
 	
 	protected boolean waitForStatus(int status, long timeout) throws CommunicationException, InterruptedException {
 		long waitedTime = 0;

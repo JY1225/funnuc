@@ -166,6 +166,13 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
+	public void stopIndications() throws CommunicationException, InterruptedException {
+		int command = 0;
+		int registers[] = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+	}
+	
+	@Override
 	public void prepareForProcess(ProcessFlow process)  throws CommunicationException, InterruptedException {
 		nCReset();
 	}
@@ -246,8 +253,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
 			if (!putReady) {
 				throw new DeviceActionException("Machine could not prepare for put");
-			} else {
-			}
+			} 
 					
 		} else {
 			throw new IllegalArgumentException("Wrong workarea, should be: " + getWorkAreas().get(0).getId() + " but got: " + putSettings.getWorkArea().getId());

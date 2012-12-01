@@ -93,8 +93,8 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 						logger.error("FOUT 1!");
 						throw new IllegalStateException("Paused and yet the active step changes?");
 					}
-					currentStep = e.getActiveStep();
 					currentStepEnded();
+					currentStep = e.getActiveStep();
 					startingTimeCurrentStep = System.currentTimeMillis();
 				} else {
 				}
@@ -111,7 +111,6 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 					startingTimeCurrentStep = -1;
 				}
 			} else if (((this.mode == Mode.PAUSED) && (mode == Mode.RUNNING)) || ((this.mode == Mode.STOPPED) && (mode == Mode.RUNNING))){
-				logger.info("set starting time current step!");
 				startingTimeCurrentStep = System.currentTimeMillis();
 			} else if (mode == Mode.STOPPED) {
 				otherTimeCurrentStep = 0;

@@ -10,12 +10,17 @@ public class OffsetPresenter implements TextFieldListener, KeyboardParentPresent
 	private OffsetView view;
 	private NumericKeyboardPresenter keyboardPresenter;
 	private TeachPresenter parent;
+	
+	private double offsetLength;
+	private double offsetWidth;
 
 	public OffsetPresenter(NumericKeyboardPresenter keyboardPresenter) {
 		this.view = new OffsetView();
 		view.setTextFieldListener(this);
 		this.keyboardPresenter = keyboardPresenter;
 		keyboardPresenter.setParent(this);
+		this.offsetLength = 0;
+		this.offsetWidth = 0;
 	}
 
 	public void setParent(TeachPresenter parent) {
@@ -41,5 +46,17 @@ public class OffsetPresenter implements TextFieldListener, KeyboardParentPresent
 	
 	public OffsetView getView() {
 		return view;
+	}
+	
+	public void clickedOk() {
+		
+	}
+	
+	public void setOffsetLength(float offsetLength) {
+		this.offsetLength = offsetLength;
+	}
+	
+	public void setOffsetWidth(float offsetWidth) {
+		this.offsetWidth = offsetWidth;
 	}
 }

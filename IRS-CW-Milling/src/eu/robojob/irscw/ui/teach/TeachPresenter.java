@@ -244,8 +244,8 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		logger.error(e);
 		e.printStackTrace();
 		processFlowPresenter.refresh();
-		setAlarmStatus("Fout opgetreden: " + e.getMessage() + "\n. Het proces dient opnieuw doorlopen te worden.");
 		ThreadManager.getInstance().stopRunning(teachThread);
+		setAlarmStatus("Fout opgetreden: " + e.getMessage() + "\n. Het proces dient opnieuw doorlopen te worden.");
 	}
 	
 	@Override

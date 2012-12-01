@@ -89,6 +89,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 			stopListening();
 			view.setTotalAmount(processFlow.getTotalAmount());
 			view.setFinishedAmount(processFlow.getFinishedAmount());
+			stopIndications();
 		}
 	}
 	
@@ -196,13 +197,21 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 					case AUTO :
 						view.setProcessRunning();
 						view.setRunningButtons();
+						stopIndications();
 						break;
 					case FINISHED :
 						view.setProcessStopped();
 						view.setNotRunningButtons();
 						view.setStatus(translator.getTranslation("process-finished"));
+						indicateFinished();
+						break;
+					case PAUSED :
+						indicatePaused();
+						view.setProcessStopped();
+						view.setNotRunningButtons();
 						break;
 					default:
+						stopIndications();
 						view.setProcessStopped();
 						view.setNotRunningButtons();
 						break;
@@ -211,12 +220,57 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		});
 	}
 	
+	public void indicateFinished() {
+		for (AbstractDevice device : processFlow.getDevices()) {
+			if (device instanceof AbstractCNCMachine) {
+				try {
+					((AbstractCNCMachine) device).indicateAllProcessed();
+				} catch (CommunicationException e) {
+					e.printStackTrace();
+					exceptionOccured(e);
+				} catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public void stopIndications() {
+		for (AbstractDevice device : processFlow.getDevices()) {
+			if (device instanceof AbstractCNCMachine) {
+				try {
+					((AbstractCNCMachine) device).stopIndications();
+				} catch (CommunicationException e) {
+					e.printStackTrace();
+					exceptionOccured(e);
+				} catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public void indicatePaused() {
+		for (AbstractDevice device : processFlow.getDevices()) {
+			if (device instanceof AbstractCNCMachine) {
+				try {
+					((AbstractCNCMachine) device).operatorRequested(true);
+				} catch (CommunicationException e) {
+					e.printStackTrace();
+					exceptionOccured(e);
+				} catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	public void exceptionOccured(Exception e){
 		logger.error(e);
 		e.printStackTrace();
 		processFlowPresenter.refresh();
-		setAlarmStatus("Fout opgetreden: " + e.getMessage() + ". Het proces dient opnieuw doorlopen te worden.");
 		ThreadManager.getInstance().stopRunning(automateThread);
+		setAlarmStatus("Fout opgetreden: " + e.getMessage() + ". Het proces dient opnieuw doorlopen te worden.");
 	}
 
 	@Override

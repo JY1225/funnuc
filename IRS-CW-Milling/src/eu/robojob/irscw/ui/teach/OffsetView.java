@@ -1,5 +1,7 @@
 package eu.robojob.irscw.ui.teach;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -31,21 +33,19 @@ public class OffsetView extends HBox {
 	private Button btnOk;
 	
 	private static final int MAX_LENGTH = 5;
-	
-	private static final int LABEL_WIDTH = 300;
-	
+		
 	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
 	private static final double BTN_HEIGHT = 40;
 	
 	private Translator translator = Translator.getInstance();
 	
-	private TeachPresenter presenter;
+	private OffsetPresenter presenter;
 	
 	public OffsetView() {
 		build();
 	}
 	
-	public void setPresenter(TeachPresenter presenter) {
+	public void setPresenter(OffsetPresenter presenter) {
 		this.presenter = presenter;
 	}
 	
@@ -62,26 +62,47 @@ public class OffsetView extends HBox {
 		setMargin(formPane, new Insets(0, 200, 0, 0));
 		
 		lblGeneralInfo = new Label();
+		lblGeneralInfo.getStyleClass().add("teach-msg");
 		lblGeneralInfo.setText(translator.getTranslation("offset-general-info"));
 		
 		lblOffsetLength = new Label();
-		lblGeneralInfo.setText(translator.getTranslation("offset-length"));
+		lblOffsetLength.getStyleClass().add("teach-msg");
+		lblOffsetLength.setText(translator.getTranslation("offset-length"));
 		
 		lblOffsetWidth = new Label();
-		lblGeneralInfo.setText(translator.getTranslation("offset-width"));
+		lblOffsetWidth.getStyleClass().add("teach-msg");
+		lblOffsetWidth.setText(translator.getTranslation("offset-width"));
 		
 		ntxtOffsetLength = new NumericTextField(MAX_LENGTH);
+		ntxtOffsetLength.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtOffsetLength.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtOffsetLength.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(ObservableValue<? extends Float> arg0, Float arg1, Float arg2) {
+				presenter.setOffsetLength(arg1);
+			}
+		});
 		
 		ntxtOffsetWidth = new NumericTextField(MAX_LENGTH);
+		ntxtOffsetWidth.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtOffsetWidth.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtOffsetWidth.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(ObservableValue<? extends Float> arg0, Float arg1, Float arg2) {
+				presenter.setOffsetWidth(arg1);
+			}
+		});
 		
-		txtBtnOk = new Text(translator.getTranslation("continue"));
+		txtBtnOk = new Text();
+		txtBtnOk.setText(translator.getTranslation("continue"));
+		txtBtnOk.getStyleClass().add("teach-btn-text");
 		btnOk = new Button();
 		btnOk.getStyleClass().add("teach-btn");
 		btnOk.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
 		btnOk.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				presenter.startFlow();
+				presenter.clickedOk();
 			}
 			
 		});

@@ -68,6 +68,8 @@ public class CNCMachineCommunication extends ExternalCommunication {
 			try {
 				Thread.sleep(timeToWait);
 			} catch(InterruptedException e) {
+				e.printStackTrace();
+				logger.error(e);
 				break;
 			}
 			waitedTime += timeToWait;
@@ -116,6 +118,8 @@ public class CNCMachineCommunication extends ExternalCommunication {
 			try {
 				Thread.sleep(timeToWait);
 			} catch(InterruptedException e) {
+				e.printStackTrace();
+				logger.error(e);
 				break;
 			}
 			waitedTime += timeToWait;

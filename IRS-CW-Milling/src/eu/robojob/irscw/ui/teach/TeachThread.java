@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import eu.robojob.irscw.external.communication.CommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
@@ -51,6 +52,9 @@ public class TeachThread extends Thread {
 			}
 			for (AbstractDevice device: processFlow.getDevices()) {
 				device.prepareForProcess(processFlow);
+				if (device instanceof AbstractCNCMachine) {
+					((AbstractCNCMachine) device).stopIndications();
+				}
 			}
 			while (processFlow.hasStep()) {
 				AbstractProcessStep step = processFlow.getCurrentStep();

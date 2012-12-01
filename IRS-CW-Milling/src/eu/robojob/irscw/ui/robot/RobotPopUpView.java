@@ -71,6 +71,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 				presenter.toChangePointClicked();
 			}
 		});
+		btnToChange.setDisable(true);
 		vBoxMenuItems.getChildren().add(btnToChange);
 		
 		btn10 = new Button();
@@ -150,7 +151,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btn10.setDisable(!connected);
 		//btn100.setDisable(!connected);
 		btnReset.setDisable(!connected);
-		btnToChange.setDisable(!connected);
+		//btnToChange.setDisable(!connected);
 		btnToHome.setDisable(!connected);
 		if (!connected) {
 			refreshSpeed(0);
@@ -160,6 +161,6 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	public void setProcessActive(boolean active) {
 		btnReset.setDisable(active);
 		btnToHome.setDisable(active);
-		btnToChange.setDisable(active);
+		//btnToChange.setDisable(active);
 	}
 }

@@ -12,6 +12,8 @@ import javafx.stage.StageStyle;
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.RoboSoftAppFactory;

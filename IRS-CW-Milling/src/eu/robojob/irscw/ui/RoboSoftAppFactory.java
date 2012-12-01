@@ -74,7 +74,6 @@ public class RoboSoftAppFactory {
 	private ProcessConfigurePresenter processConfigurationPresenter;
 	private TeachPresenter teachPresenter;
 	private AutomatePresenter automatePresenter;
-	private NumericKeyboardPresenter numericKeyboardPresenter;
 	private ConfigureProcessFlowPresenter configureProcessFlowPresenter;
 	private FixedProcessFlowPresenter teachProcessFlowPresenter;
 	private FixedProcessFlowPresenter automateProcessFlowPresenter;
@@ -167,6 +166,7 @@ public class RoboSoftAppFactory {
 	}
 	
 	public NumericKeyboardPresenter getNumericKeyboardPresenter() {
+		NumericKeyboardPresenter numericKeyboardPresenter = null;
 		if (numericKeyboardPresenter == null) {
 			NumericKeyboardView numericKeyboardView = new NumericKeyboardView();
 			numericKeyboardPresenter = new NumericKeyboardPresenter(numericKeyboardView);
@@ -235,9 +235,9 @@ public class RoboSoftAppFactory {
 			processFlow = new ProcessFlow("MAZAK OPEN HOUSE");
 			processFlow.setTotalAmount(totalAmount);
 			
-			WorkPieceDimensions rawDimensions = new WorkPieceDimensions(80f, 40f, 40);
+			WorkPieceDimensions rawDimensions = new WorkPieceDimensions(140f, 100f, 40);
 			WorkPiece rawWorkPiece = new WorkPiece(WorkPiece.Type.RAW, rawDimensions);
-			WorkPieceDimensions finishedDimensions = new WorkPieceDimensions(80f, 40f, 40);
+			WorkPieceDimensions finishedDimensions = new WorkPieceDimensions(140f, 100f, 40);
 			WorkPiece finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, finishedDimensions);
 			
 			//----------ROBOT----------
@@ -272,7 +272,7 @@ public class RoboSoftAppFactory {
 			cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingById("Clamping 1"));
 			processFlow.setDeviceSettings(cncMilling, cncMillingSetting);
 			
-			processFlow.getClampingType().setType(Type.WIDTH);
+			processFlow.getClampingType().setType(Type.LENGTH);
 			
 			//---------STEPS----------
 			

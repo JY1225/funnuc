@@ -101,6 +101,7 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
 		deviceSettings.setAmount(plate.getLayout().getStackingPositions().size());
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		pickStep.getProcessFlow().setTotalAmount(plate.getLayout().getStackingPositions().size());
 		view.refresh();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
