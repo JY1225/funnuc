@@ -1,6 +1,5 @@
 package eu.robojob.irscw.external.device.cnc;
 
-import eu.robojob.irscw.util.Translator;
 
 public class CNCMachineAlarm {
 
@@ -30,11 +29,9 @@ public class CNCMachineAlarm {
 	public static final int MULTIPLE_IPC_REQUESTS = 23;
 	
 	private int id;
-	private Translator translator;
 	
 	public CNCMachineAlarm(int id) {
 		this.id = id;
-		this.translator = Translator.getInstance();
 	}
 	
 /*	public String getMessage() {

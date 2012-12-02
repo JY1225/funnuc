@@ -1,9 +1,6 @@
 package eu.robojob.irscw.ui.main.flow;
 
 import javafx.application.Platform;
-
-import org.apache.log4j.Logger;
-
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
@@ -22,9 +19,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 
 	private boolean showQuestionMarks;
 	private ProcessFlowAdapter processFlowAdapter;
-	
-	private static Logger logger = Logger.getLogger(FixedProcessFlowPresenter.class);
-		
+			
 	public FixedProcessFlowPresenter(ProcessFlowView view, boolean showQuestionMarks) {
 		super(view);
 		view.setPresenter(this);

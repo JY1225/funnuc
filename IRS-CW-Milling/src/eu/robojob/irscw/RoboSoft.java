@@ -44,13 +44,11 @@ public class RoboSoft extends Application {
 		scene.getStylesheets().add("css/processflow-style.css");
 		scene.getStylesheets().add("css/teach-style.css");
 		scene.getStylesheets().add("css/automate-style.css");
-		//scene.getStylesheets().addAll("css/general-style.css", "css/header-style.css", "css/keyboard-style.css", "css/configure-style.css", "css/processflow-style.css", "css/teach-style.css");
 		stage.setScene(scene);
 		stage.setTitle("RoboSoft");
 		stage.centerOnScreen();
 		stage.setResizable(false);
 		stage.initStyle(StageStyle.UNDECORATED);
-		//stage.setFullScreen(true);
 		stage.show();
 	}
 	

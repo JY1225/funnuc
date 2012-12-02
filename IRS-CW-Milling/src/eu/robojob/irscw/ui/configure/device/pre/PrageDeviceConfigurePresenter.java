@@ -5,12 +5,9 @@ import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
 public class PrageDeviceConfigurePresenter extends AbstractFormPresenter<PrageDeviceConfigureView, PrageDeviceMenuPresenter> {
-
-	private DeviceInformation deviceInfo;
 	
 	public PrageDeviceConfigurePresenter(PrageDeviceConfigureView view, DeviceInformation deviceInfo, DeviceManager deviceManager) {
 		super(view);
-		this.deviceInfo = deviceInfo;
 		view.setPreProcessingDeviceIds(deviceManager.getPreProcessingDeviceIds());
 		view.build();
 	}

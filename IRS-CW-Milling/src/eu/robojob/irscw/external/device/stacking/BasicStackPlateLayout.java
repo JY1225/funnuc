@@ -274,6 +274,7 @@ public class BasicStackPlateLayout {
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void configureTiltedStackingPositions(WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
 				
 		if (dimensions.getLength() < dimensions.getWidth()) {

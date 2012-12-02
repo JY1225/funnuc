@@ -3,8 +3,6 @@ package eu.robojob.irscw.ui.configure.device;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import eu.robojob.irscw.external.device.ClampingType;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
@@ -23,9 +21,7 @@ public class DeviceMenuFactory {
 	private DeviceManager deviceManager;
 	
 	private Map<Integer, AbstractMenuPresenter<?>> presentersBuffer;
-	
-	private static final Logger logger = Logger.getLogger(DeviceMenuFactory.class);
-		
+			
 	public DeviceMenuFactory(DeviceManager deviceManager) {
 		this.deviceManager = deviceManager;
 		presentersBuffer = new HashMap<Integer, AbstractMenuPresenter<?>>();

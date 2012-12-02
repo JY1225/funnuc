@@ -58,7 +58,6 @@ import eu.robojob.irscw.ui.robot.RobotPopUpView;
 import eu.robojob.irscw.ui.teach.DisconnectedDevicesView;
 import eu.robojob.irscw.ui.teach.GeneralInfoView;
 import eu.robojob.irscw.ui.teach.OffsetPresenter;
-import eu.robojob.irscw.ui.teach.OffsetView;
 import eu.robojob.irscw.ui.teach.StatusView;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
 import eu.robojob.irscw.ui.teach.TeachView;
