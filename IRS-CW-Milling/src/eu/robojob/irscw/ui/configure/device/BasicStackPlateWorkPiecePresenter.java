@@ -79,9 +79,9 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 	public void changedOrientation(WorkPieceOrientation orientation) {
 		deviceSettings.setOrientation(orientation);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
-		pickStep.setRelativeTeachedOffset(null);
+		//pickStep.setRelativeTeachedOffset(null);
 		view.refresh();
-		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 	}
 
 	@Override

@@ -367,6 +367,7 @@ public class RoboSoftAppFactory {
 			Coordinates pickFromMachineOffset = new Coordinates(teachedOnPrage);
 			pickFromMachineOffset.minus(teachedRawOnstacker);
 			pickFromMachineOffset.plus(teachedFinishedOnstacker);
+			
 			pick1.setRelativeTeachedOffset(teachedRawOnstacker);
 			putAndWait1.setRelativeTeachedOffset(teachedOnPrage);
 			put1.setRelativeTeachedOffset(teachedOnPrage);
