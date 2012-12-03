@@ -59,9 +59,9 @@ public class DeviceManager {
 	private void initialize() {
 		
 		// add CNC Milling machine
-		Clamping clamping1 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 1", 0, new Coordinates(0, 0, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
-		Clamping clamping2 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 2", 0, new Coordinates(0, 0, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
-		Clamping clamping3 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 3", 0, new Coordinates(0, 0, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
+		Clamping clamping1 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 1", 0, new Coordinates(0, -2.75f, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
+		Clamping clamping2 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 2", 0, new Coordinates(0, -2.75f, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
+		Clamping clamping3 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 3", 0, new Coordinates(0, -2.75f, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
 		UserFrame uf3 = new UserFrame(3, 5);
 		List<WorkArea> workAreas = new ArrayList<WorkArea>();
 		WorkArea workArea1 = new WorkArea("Mazak VRX Main", uf3);
