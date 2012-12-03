@@ -1,5 +1,7 @@
 package eu.robojob.irscw.ui.configure.process;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -34,14 +36,24 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		lvProcesses = new ListView<String>();
 		lvProcesses.setPrefSize(LIST_VIEW_WIDTH, LIST_VIEW_HEIGHT);
 		lvProcesses.getStyleClass().add("processes-list-view");
+		lvProcesses.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+				if (arg2 != null) {
+					btnLoad.setDisable(false);
+				} else {
+					btnLoad.setDisable(true);
+				}
+			}
+		});
 		HBox btnHBox = new HBox();
 		btnLoad = createButton(openIconPath, "btn-load", translator.getTranslation("load"), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				
+				presenter.openProcess(lvProcesses.getSelectionModel().selectedItemProperty().get());
 			}
 		});
+		btnLoad.setDisable(true);
 		btnHBox.getChildren().add(btnLoad);
 		btnHBox.setAlignment(Pos.CENTER_RIGHT);
 		HBox.setMargin(btnLoad, new Insets(20, 0, 0, 0));
@@ -51,7 +63,7 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		column = 0;
 		row++;
 		add(btnHBox, column++, row);
-		ObservableList<String> listItems = FXCollections.observableArrayList("Mazak Private Show Demo 1", "Mazak Private Show Demo 2 (onder)", "Mazak Private Show Demo 2 (boven)");
+		ObservableList<String> listItems = FXCollections.observableArrayList("Mazak Private Show Demo 1", "Mazak Private Show Demo 2 (onder)", "Mazak Private Show Demo 2 (boven)", "test");
 		lvProcesses.setItems(listItems);
 	}
 
