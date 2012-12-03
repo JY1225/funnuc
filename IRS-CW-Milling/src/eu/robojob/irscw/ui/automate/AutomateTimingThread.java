@@ -21,6 +21,7 @@ public class AutomateTimingThread extends Thread {
 	@Override
 	public void run() {
 		try {
+			running = true;
 			while (running) {
 				long cycleTime = processFlowTimer.getCycleTime();
 				long cycleTimePassed = processFlowTimer.getTimeInCurrentCycle();
@@ -74,6 +75,7 @@ public class AutomateTimingThread extends Thread {
 	
 	@Override
 	public void interrupt() {
+		logger.info("should interrupt timing thread");
 		this.running = false;
 	}
 }

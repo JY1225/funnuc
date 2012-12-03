@@ -82,6 +82,7 @@ public class AutomateThread extends Thread{
 			}
 			if (running) {
 				processFlow.setMode(Mode.FINISHED);
+				logger.info("finished");
 				for (AbstractDevice device: processFlow.getDevices()) {
 					if (device instanceof AbstractCNCMachine) {
 						AbstractCNCMachine cncMachine = (AbstractCNCMachine) device;
@@ -108,7 +109,7 @@ public class AutomateThread extends Thread{
 			processFlow.setMode(Mode.STOPPED);
 		}
 		processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, null, ActiveStepChangedEvent.NONE_ACTIVE));
-		logger.info("Thread ended: " + toString());
+		logger.info("Automate Thread ended: " + toString());
 		this.running = false;
 	}
 	

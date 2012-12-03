@@ -62,8 +62,8 @@ public class GeneralInfoView extends VBox {
 		btnStart.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				presenter.startFlow();
-				//presenter.startOptimized();
+				//presenter.startFlow();
+				presenter.startOptimized();
 			}
 		});
 		btnStart.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);

@@ -27,10 +27,12 @@ public class OptimizedTeachThread extends TeachThread {
 	
 	private static final Logger logger = Logger.getLogger(OptimizedTeachThread.class);
 	private TeachedCoordinatesCalculator calculator;
+	private Coordinates extraFinishedOffset;
 
-	public OptimizedTeachThread(ProcessFlow processFlow) {
+	public OptimizedTeachThread(ProcessFlow processFlow, Coordinates extraFinishedOffset) {
 		super(processFlow);
 		this.calculator = new TeachedCoordinatesCalculator();
+		this.extraFinishedOffset = extraFinishedOffset;
 	}
 
 	@Override
@@ -110,7 +112,8 @@ public class OptimizedTeachThread extends TeachThread {
 			// before doing this, we fake the gripper holding a workpiece
 			putOnStackerStep.getRobotSettings().getGripperHead().getGripper().setWorkPiece(pickFromMachineStep.getRobotSettings().getWorkPiece());
 			relTeachedOffsetFinishedWp = getFinishedWorkPieceTeachedOffset(putOnStackerStep);
-			
+			relTeachedOffsetFinishedWp.offset(extraFinishedOffset);
+			logger.info("after correction: " + relTeachedOffsetFinishedWp);
 			pickFromMachineStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
 			putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
 			

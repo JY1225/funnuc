@@ -60,6 +60,10 @@ public class TeachThread extends Thread {
 				AbstractProcessStep step = processFlow.getCurrentStep();
 				// intervention steps can be skipped
 				
+				if (step instanceof AbstractTransportStep) {
+					((AbstractTransportStep) step).getRobotSettings().setFreeAfter(true);
+				}
+				
 				AbstractProcessStep nextStep = processFlow.getNextStep();
 				if ((nextStep != null) && (nextStep instanceof AbstractTransportStep) && (step instanceof AbstractTransportStep)) {
 					AbstractTransportStep trStep = (AbstractTransportStep) step;

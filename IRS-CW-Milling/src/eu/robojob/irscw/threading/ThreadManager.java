@@ -13,7 +13,7 @@ import eu.robojob.irscw.external.communication.ExternalCommunicationThread;
 public class ThreadManager {
 
 	private ExecutorService executorService;
-	private static final int amountOfThreads = 7;
+	private static final int amountOfThreads = 8;
 	private static ThreadManager instance;
 	
 	private static final Logger logger = Logger.getLogger(ThreadManager.class);

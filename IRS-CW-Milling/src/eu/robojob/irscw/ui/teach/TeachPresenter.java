@@ -23,6 +23,7 @@ import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredEvent;
 import eu.robojob.irscw.external.robot.FanucRobotEvent;
 import eu.robojob.irscw.external.robot.FanucRobotListener;
 import eu.robojob.irscw.external.robot.FanucRobotStatusChangedEvent;
+import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
@@ -68,7 +69,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		view.setTop(processFlowPresenter.getView());
 		this.processFlow = processFlow;
 		//this.teachThread = new TeachThread(processFlow);
-		this.teachThread = new OptimizedTeachThread(processFlow);
+		this.teachThread = new OptimizedTeachThread(processFlow, new Coordinates());
 		this.teachDisconnectedDevicesView = teachDisconnectedDevicesView;
 		this.teachGeneralInfoView = teachGeneralInfoView;
 		teachGeneralInfoView.setPresenter(this);
@@ -193,7 +194,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	/**
 	 * When start-button is clicked on GeneralInfoView
 	 */
-	public void startFlow() {
+	public void startFlow(Coordinates extraFinishedOffset) {
 		view.setBottom(teachStatusView);
 		if (!alarms) {
 			teachStatusView.hideAlarmMessage();
@@ -205,7 +206,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 			throw new IllegalStateException("Shouldn't be possible!");
 		}
 		//this.teachThread = new TeachThread(processFlow);
-		this.teachThread = new OptimizedTeachThread(processFlow);
+		this.teachThread = new OptimizedTeachThread(processFlow, extraFinishedOffset);
 		ThreadManager.getInstance().submit(teachThread);
 	}
 	

@@ -1,5 +1,7 @@
 package eu.robojob.irscw.external.robot;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -604,24 +606,29 @@ public class FanucRobot extends AbstractRobot {
 			values.add("" + userFrameId);
 		}
 		//TODO check the offsets, for now we take 0
-		values.add("" + location.getX());
-		values.add("" + location.getY());
-		values.add("" + location.getZ());
-		values.add("" + location.getR());
+		DecimalFormat df = new DecimalFormat("#.##");
+		df.setDecimalSeparatorAlwaysShown(false);
+		DecimalFormatSymbols custom = new DecimalFormatSymbols();
+		custom.setDecimalSeparator('.');
+		df.setDecimalFormatSymbols(custom);
+		values.add("" + df.format(location.getX()));
+		values.add("" + df.format(location.getY()));
+		values.add("" + df.format(location.getZ()));
+		values.add("" + df.format(location.getR()));
 		if (location.getZ() > 0) {
-			values.add("" + (dimensions.getHeight() + location.getZ()));
+			values.add("" + (df.format(dimensions.getHeight()) + df.format(location.getZ())));
 		} else {
-			values.add("" + dimensions.getHeight());
+			values.add("" + df.format(dimensions.getHeight()));
 		}
 		// TODO we take 10 as safety add z for now
 		if (smoothPoint.getZ() > 20) {
-			values.add("" + smoothPoint.getZ());
+			values.add("" + df.format(smoothPoint.getZ()));
 		} else {
 			values.add("20");
 		}
-		values.add("" + smoothPoint.getX());
-		values.add("" + smoothPoint.getY());
-		values.add("" + smoothPoint.getZ());
+		values.add("" + df.format(smoothPoint.getX()));
+		values.add("" + df.format(smoothPoint.getY()));
+		values.add("" + df.format(smoothPoint.getZ()));
 		// we take 1 as tangent
 		values.add("1");
 		// we take xyz allowed as xyz for stacker and xy for machine
@@ -634,7 +641,7 @@ public class FanucRobot extends AbstractRobot {
 			throw new IllegalStateException("Should not be here! Illegal Userframe id");
 		}
 		if (clamping != null) {
-			values.add("" + (clamping.getHeight() + clamping.getRelativePosition().getZ()));
+			values.add("" + df.format((clamping.getHeight() + clamping.getRelativePosition().getZ())));
 		} else {
 			throw new IllegalArgumentException("Invalid clamp height!");
 		}

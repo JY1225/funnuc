@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Properties;
 
 import javafx.application.Application;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -34,7 +35,11 @@ public class RoboSoft extends Application {
 		mainPresenter.showConfigure();
 		Scene scene = new Scene(mainPresenter.getView(), 800, 600);
 		Locale.setDefault(new Locale("nl"));
-		//scene.setCursor(Cursor.NONE);
+		if (Boolean.parseBoolean(properties.getProperty("mouse-visible"))) {
+			
+		} else {
+			scene.setCursor(Cursor.NONE);
+		}
 		scene.getStylesheets().add("css/general-style.css");
 		scene.getStylesheets().add("css/header-style.css");
 		scene.getStylesheets().add("css/keyboard-style.css");
