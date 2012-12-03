@@ -42,15 +42,7 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 	
 	public void openProcess(final String processId) {
 		logger.info("loading process: " + processId);
-		if (processId.equals(ProcessOpenView.DEMO_1)) {
-			Properties properties = new Properties();
-			try {
-				properties.load(new FileInputStream(new File(DEMO_1_URL)));
-				processFlow.loadFromOtherProcessFlow(propertiesProcessFlowFactory.loadProcessFlow(properties));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else if (processId.equals(ProcessOpenView.DEMO_2_A)) {
+		if (processId.equals(ProcessOpenView.DEMO_2_A)) {
 			Properties properties = new Properties();
 			try {
 				properties.load(new FileInputStream(new File(DEMO_2A_URL)));

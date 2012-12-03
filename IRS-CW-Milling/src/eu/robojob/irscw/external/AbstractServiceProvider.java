@@ -19,7 +19,7 @@ public abstract class AbstractServiceProvider {
 	
 	//TODO: add timer to auto-expire the lock after a certain delay
 	public synchronized boolean lock(ProcessFlow ownerProcess) {
-		if (isLocked) {
+		/*if (isLocked) {
 			if (this.ownerProcess.equals(ownerProcess)) {
 				return true;
 			} else {
@@ -29,17 +29,19 @@ public abstract class AbstractServiceProvider {
 			isLocked = true;
 			this.ownerProcess = ownerProcess;
 			return true;
-		}
+		}*/
+		return true;
 	}
 	
 	public synchronized boolean release(ProcessFlow ownerProcess) {
-		if (this.ownerProcess.equals(ownerProcess)) {
+		/*if (this.ownerProcess.equals(ownerProcess)) {
 			isLocked = false;
 			ownerProcess = null;
 			return true;
 		} else {
 			return false;
-		}
+		}*/
+		return true;
 	}
 	
 	public synchronized boolean isLocked() {
@@ -47,11 +49,12 @@ public abstract class AbstractServiceProvider {
 	}
 		
 	public synchronized boolean hasLock(ProcessFlow parentProcess) {
-		if (this.ownerProcess.equals(parentProcess)) {
+		/*if (this.ownerProcess.equals(parentProcess)) {
 			return true;
 		} else {
 			return false;
-		}
+		}*/
+		return false;
 	}
 	
 	public synchronized ProcessFlow getLockingProcess() {

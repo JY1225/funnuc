@@ -48,6 +48,17 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public BasicStackPlate(String id, BasicStackPlateLayout layout) {
 		this(id, new ArrayList<Zone>(), layout);
 	}
+	
+	public void setFinishedAmount(int finishedAmount) {
+		for (int i = 0; i < layout.getStackingPositions().size(); i++) {
+			if (i < finishedAmount) {
+				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, rawWorkPiece.getDimensions());
+				layout.getStackingPositions().get(i).setWorkPiece(finishedWorkPiece);
+			} else {
+				layout.getStackingPositions().get(i).setWorkPiece(rawWorkPiece);
+			}
+		}
+	}
 
 	@Override
 	public synchronized boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {

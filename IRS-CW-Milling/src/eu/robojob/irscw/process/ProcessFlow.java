@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
 import eu.robojob.irscw.external.device.ClampingType;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotSettings;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
@@ -98,9 +99,21 @@ public class ProcessFlow {
 	
 	public void loadFromOtherProcessFlow(ProcessFlow processFlow) {
 		this.processSteps = processFlow.getProcessSteps();
+		for (AbstractProcessStep step : this.processSteps) {
+			step.setProcessFlow(this);
+		}
 		this.deviceSettings = processFlow.getDeviceSettings();
 		this.robotSettings = processFlow.getRobotSettings();
 		initialize();
+		this.totalAmount = processFlow.getTotalAmount();
+		this.finishedAmount = processFlow.getFinishedAmount();
+		logger.info("**TYPE: " + processFlow.getClampingType().getType());
+		this.clampingType.setType(processFlow.getClampingType().getType());
+		for(AbstractDevice device : getDevices()) {
+			if (device instanceof BasicStackPlate) {
+				((BasicStackPlate) device).setFinishedAmount(processFlow.getFinishedAmount());
+			}
+		}
 	}
 	
 	public Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> getDeviceSettings() {

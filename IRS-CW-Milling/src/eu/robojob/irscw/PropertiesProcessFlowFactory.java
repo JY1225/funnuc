@@ -3,6 +3,7 @@ package eu.robojob.irscw;
 import java.util.Properties;
 
 import eu.robojob.irscw.external.device.ClampingType.Type;
+import eu.robojob.irscw.external.device.ClampingType;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.cnc.CNCMillingMachine;
@@ -60,7 +61,7 @@ public class PropertiesProcessFlowFactory {
 		float finishedWpHeight = Float.parseFloat(properties.getProperty("workpiece.finished.height"));
 		WorkPieceDimensions finishedWorkPieceDimensions = new WorkPieceDimensions(finishedWpLength, finishedWpWidth, finishedWpHeight);
 		String clampingId = properties.getProperty("cncmachine.clampingid");
-		boolean clampLength = Boolean.parseBoolean("cncmachine.clamping.length");
+		boolean clampLength = Boolean.parseBoolean(properties.getProperty("cncmachine.clamping.length"));
 		String robotHeadBeforeMachineId = properties.getProperty("robot.head.before");
 		String robotHeadAfterMachineId = properties.getProperty("robot.head.after");
 		String gripperHeadAId = properties.getProperty("robot.head.a.gripper");
@@ -101,10 +102,12 @@ public class PropertiesProcessFlowFactory {
 		float teachedPutStackerR = Float.parseFloat(properties.getProperty("teachedoffset.stacker.put.r"));
 		Coordinates relativeTeachedPutStacker = new Coordinates(teachedPutStackerX, teachedPutStackerY, teachedPutStackerZ, 0, 0, teachedPutStackerR);
 		
-		return createProcessFlow(processFlowId, processFlowAmount, rawWorkPieceDimensions, finishedWorkPieceDimensions, tilted, hasPrageStep, clampingId, clampLength, robotHeadBeforeMachineId, robotHeadAfterMachineId, gripperHeadAId, gripperHeadBId, relativeTeachedPickStacker, relativeTeachedPutPrage, relativeTeachedPutMachine, relativeTeachedPickMachine, relativeTeachedPutStacker);
+		int finishedAmount = Integer.parseInt(properties.getProperty("processflow.finishedamount"));
+		
+		return createProcessFlow(processFlowId, processFlowAmount, finishedAmount, rawWorkPieceDimensions, finishedWorkPieceDimensions, tilted, hasPrageStep, clampingId, clampLength, robotHeadBeforeMachineId, robotHeadAfterMachineId, gripperHeadAId, gripperHeadBId, relativeTeachedPickStacker, relativeTeachedPutPrage, relativeTeachedPutMachine, relativeTeachedPickMachine, relativeTeachedPutStacker);
 	}
 	
-	private ProcessFlow createProcessFlow(String processFlowId, int amount, WorkPieceDimensions rawDimensions, WorkPieceDimensions finishedDimensions, boolean tilted, boolean hasPrage, 
+	private ProcessFlow createProcessFlow(String processFlowId, int amount, int finishedAmount, WorkPieceDimensions rawDimensions, WorkPieceDimensions finishedDimensions, boolean tilted, boolean hasPrage, 
 			String clampingId, boolean clampLength, String robotHeadIdBefore,
 			String robotHeadIdAfter, String gripperHeadAId, String gripperHeadBId, Coordinates relativeTeachedPickStacker, Coordinates relativeTeachedPutPrage, 
 				Coordinates relativeTeachedPutMachine, Coordinates relativeTeachedPickMachine, Coordinates relativeTeachedPutStacker) {
@@ -145,6 +148,7 @@ public class PropertiesProcessFlowFactory {
 		WorkArea mainWorkArea = cncMilling.getWorkAreaById("Mazak VRX Main");
 		cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingById(clampingId));
 		processFlow.setDeviceSettings(cncMilling, cncMillingSetting);
+		processFlow.setClampingType(new ClampingType());
 		if (clampLength) {
 			processFlow.getClampingType().setType(Type.LENGTH);
 		} else {
@@ -251,6 +255,8 @@ public class PropertiesProcessFlowFactory {
 		processFlow.addStep(put2);
 		
 		processFlow.loadAllSettings();
+		
+		processFlow.setFinishedAmount(finishedAmount);
 					
 		processFlowTimer = new ProcessFlowTimer(processFlow);
 		
