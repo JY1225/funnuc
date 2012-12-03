@@ -42,6 +42,11 @@ public class AutomateThread extends Thread{
 					AbstractProcessStep step = processFlow.getCurrentStep();
 					
 					AbstractProcessStep nextStep = processFlow.getNextStep();
+					
+					if (step instanceof AbstractTransportStep) {
+						((AbstractTransportStep) step).getRobotSettings().setFreeAfter(true);
+					}
+					
 					if ((nextStep != null) && (nextStep instanceof AbstractTransportStep) && (step instanceof AbstractTransportStep)) {
 						AbstractTransportStep trStep = (AbstractTransportStep) step;
 						AbstractTransportStep trNextStep = (AbstractTransportStep) nextStep;
@@ -60,7 +65,7 @@ public class AutomateThread extends Thread{
 					} else if (step instanceof ProcessingStep) {
 						handleProcessing((ProcessingStep) step);
 					} else if (step instanceof InterventionStep) {
-						if (processFlow.getFinishedAmount() % ((InterventionStep) step).getFrequency() == 0) {
+						if ((processFlow.getFinishedAmount()+1) % ((InterventionStep) step).getFrequency() == 0) {
 							step.executeStep();
 							logger.info("Waiting because intervention!");
 							running = false;
@@ -90,8 +95,12 @@ public class AutomateThread extends Thread{
 			notifyException(e);
 			processFlow.setMode(Mode.STOPPED);
 		} catch(InterruptedException e) {
-			logger.info("Execution of one or more steps got interrupted, so let't just stop");
-			e.printStackTrace();
+			if (!running) {
+				logger.info("Execution of one or more steps got interrupted, so let't just stop");
+			} else {
+				e.printStackTrace();
+				notifyException(e);
+			}
 			processFlow.setMode(Mode.STOPPED);
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -133,7 +142,7 @@ public class AutomateThread extends Thread{
 	
 	@Override
 	public void interrupt() {
-		logger.info("about to interrupt teach thread");
+		logger.info("about to interrupt automate thread");
 		if (running) {
 			for (AbstractRobot robot :processFlow.getRobots()) {
 				robot.stopCurrentAction();

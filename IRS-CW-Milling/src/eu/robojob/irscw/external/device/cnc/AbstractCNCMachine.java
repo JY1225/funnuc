@@ -55,6 +55,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	@Override
 	public void stopCurrentAction() {
+		logger.info("stopping current machine action");
 		stopAction = true;
 		synchronized(syncObject) {
 			syncObject.notifyAll();

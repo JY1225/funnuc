@@ -25,12 +25,14 @@ public class AutomateTimingThread extends Thread {
 				long cycleTime = processFlowTimer.getCycleTime();
 				long cycleTimePassed = processFlowTimer.getTimeInCurrentCycle();
 				long timeTillFinished = -1;
+				long timeTillIntervention = -1;
 				if ((cycleTime != -1) && (cycleTimePassed != -1)) {
 					int amountFinished = processFlowTimer.getProcessFlow().getFinishedAmount();
 					int totalAmount = processFlowTimer.getProcessFlow().getTotalAmount();
 					timeTillFinished = (totalAmount-amountFinished) * cycleTime - cycleTimePassed;
+					timeTillIntervention = processFlowTimer.getTimeTillNextIntervention();
 				}
-				automatePresenter.setTimers(toTimeString(cycleTime), toTimeString(cycleTimePassed), null, toTimeString(timeTillFinished));
+				automatePresenter.setTimers(toTimeString(cycleTime), toTimeString(cycleTimePassed), toTimeString(timeTillIntervention), toTimeString(timeTillFinished));
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {

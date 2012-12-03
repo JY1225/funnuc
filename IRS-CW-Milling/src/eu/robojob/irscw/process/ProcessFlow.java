@@ -296,10 +296,12 @@ public class ProcessFlow {
 	
 	public void removeStep (AbstractProcessStep step) {
 		processSteps.remove(step);
+		initialize();
 	}
 	
 	public void removeSteps(List<AbstractProcessStep> steps) {
 		processSteps.removeAll(steps);
+		initialize();
 	}
 	
 	public void addStepAfter(AbstractProcessStep step, AbstractProcessStep newStep) {
@@ -309,6 +311,7 @@ public class ProcessFlow {
 			processSteps.add(processSteps.indexOf(step) + 1, newStep);
 			newStep.setProcessFlow(this);
 		}
+		initialize();
 	}
 	
 	public void addStepBefore(AbstractProcessStep step, AbstractProcessStep newStep) {
@@ -318,6 +321,7 @@ public class ProcessFlow {
 			processSteps.add(processSteps.indexOf(step), newStep);
 			newStep.setProcessFlow(this);
 		}
+		initialize();
 	}
 	
 	public AbstractDeviceSettings getDeviceSettings(AbstractDevice device) {

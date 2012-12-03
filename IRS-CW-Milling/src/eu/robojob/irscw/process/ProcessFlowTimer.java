@@ -1,6 +1,8 @@
 package eu.robojob.irscw.process;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -140,7 +142,16 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 
 	
 	public long getCycleTime() {
-		if (stepDurations.keySet().containsAll(processFlow.getProcessSteps())) {
+		List<AbstractProcessStep> steps = processFlow.getProcessSteps();
+		List<AbstractProcessStep> stepsWithoutIntervention = new ArrayList<AbstractProcessStep>();
+		for (AbstractProcessStep step : steps) {
+			if (step instanceof InterventionStep) {
+				
+			} else {
+				stepsWithoutIntervention.add(step);
+			}
+		}
+		if (stepDurations.keySet().containsAll(stepsWithoutIntervention)) {
 			long cycleTime = 0;
 			for (long stepTime: stepDurations.values()) {
 				cycleTime += stepTime;
@@ -168,6 +179,34 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 			timeInCycle = -1;
 		}
 		return timeInCycle;
+	}
+	
+	public long getTimeTillNextIntervention() {
+		long timeTillIntervention = 0;
+		boolean finished = false;
+		int currentWorkPiece = processFlow.getFinishedAmount() + 1;
+		while (!finished) {
+			for (int i = processFlow.getCurrentStepIndex(); i < processFlow.getProcessSteps().size(); i++) {
+				if (processFlow.getProcessSteps().get(i) instanceof InterventionStep) {
+					if (currentWorkPiece % ((InterventionStep) processFlow.getProcessSteps().get(i)).getFrequency() == 0) {
+						finished = true;
+						break;
+					}
+				} else if (stepDurations.containsKey(processFlow.getProcessSteps().get(i))) {
+					timeTillIntervention += stepDurations.get(processFlow.getProcessSteps().get(i)); 
+				} else {
+					return -1;
+				}
+			}
+			currentWorkPiece++;
+			if (currentWorkPiece > processFlow.getTotalAmount()) {
+				finished = true;
+			}
+		}
+		if (startingTimeCurrentStep != -1) {
+			timeTillIntervention = timeTillIntervention - (System.currentTimeMillis() - startingTimeCurrentStep);
+		}
+		return timeTillIntervention;
 	}
 	
 	public ProcessFlow getProcessFlow() {

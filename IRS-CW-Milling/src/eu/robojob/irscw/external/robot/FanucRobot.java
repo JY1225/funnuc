@@ -130,6 +130,7 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void stopCurrentAction() {
+		logger.info("stopping Fanuc Robot action");
 		stopAction = true;
 		try {
 			fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_ABORT, FanucRobotConstants.RESPONSE_ABORT, WRITE_VALUES_TIMEOUT);
