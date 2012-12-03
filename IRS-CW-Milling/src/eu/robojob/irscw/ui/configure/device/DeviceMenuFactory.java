@@ -125,4 +125,8 @@ public class DeviceMenuFactory {
 		BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter = new BasicStackPlateLayoutPresenter(view, (BasicStackPlate) deviceInfo.getDevice(), clampingType);
 		return basicStackPlateLayoutPresenter;
 	}
+	
+	public void clearBuffer() {
+		presentersBuffer.clear();
+	}
 }

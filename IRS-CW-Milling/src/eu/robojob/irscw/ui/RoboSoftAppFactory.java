@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui;
 
 import java.util.Properties;
 
+import eu.robojob.irscw.PropertiesProcessFlowFactory;
 import eu.robojob.irscw.external.device.ClampingType.Type;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
@@ -85,6 +86,8 @@ public class RoboSoftAppFactory {
 	private RobotManager robotManager;
 	private DeviceMenuFactory deviceMenuFactory;
 	private TransportMenuFactory transportMenuFactory;
+	
+	private PropertiesProcessFlowFactory propertiesProcessFlowFactory;
 	
 	private ProcessFlowTimer processFlowTimer;
 	
@@ -216,7 +219,7 @@ public class RoboSoftAppFactory {
 	public ProcessOpenPresenter getProcessOpenPresenter() {
 		if (processOpenPresenter == null) {
 			ProcessOpenView processOpenView = new ProcessOpenView();
-			processOpenPresenter = new ProcessOpenPresenter(processOpenView);
+			processOpenPresenter = new ProcessOpenPresenter(processOpenView, getProcessFlow(), getPropertiesProcessFlowFactory());
 		}
 		return processOpenPresenter;
 	}
@@ -419,5 +422,12 @@ public class RoboSoftAppFactory {
 			robotManager = new RobotManager(properties);
 		}
 		return robotManager;
+	}
+	
+	private PropertiesProcessFlowFactory getPropertiesProcessFlowFactory() {
+		if (propertiesProcessFlowFactory == null) {
+			propertiesProcessFlowFactory = new PropertiesProcessFlowFactory(getDeviceManager(), getRobotManager());
+		}
+		return propertiesProcessFlowFactory;
 	}
 }

@@ -49,7 +49,7 @@ public class GripperBody {
 	
 	public GripperHead getGripperHead(String id) {
 		for (GripperHead gripperHead : gripperHeads) {
-			if (gripperHead.getId() == id) {
+			if (gripperHead.getId().equals(id)) {
 				return gripperHead;
 			}
 		}

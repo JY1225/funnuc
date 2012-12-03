@@ -327,6 +327,13 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 			isConfigured();
 		}
 	}
+	
+	public void processOpened() {
+		transportMenuFactory.clearBuffer();
+		deviceMenuFactory.clearBuffer();
+		processFlowPresenter.refresh();
+		parent.refreshStatus();
+	}
 
 	@Override
 	public void setActive(boolean active) {

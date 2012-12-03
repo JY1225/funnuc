@@ -45,4 +45,8 @@ public class TransportMenuFactory {
 		TransportInterventionPresenter transportInterventionPresenter = new TransportInterventionPresenter(view, transportInfo, processFlowAdapter);
 		return transportInterventionPresenter;
 	}
+	
+	public void clearBuffer() {
+		presentersBuffer.clear();
+	}
 }

@@ -22,7 +22,11 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 	
 	private static String openIconPath = "M 10 0 C 4.4775 0 0 4.4762499 0 10 C 0 15.52125 4.4775 20 10 20 C 15.5225 20 20 15.52125 20 10 C 20 4.4762499 15.5225 0 10 0 z M 10 5 L 14.96875 9.96875 L 11.25 9.96875 L 11.25 15 L 8.75 15 L 8.75 9.96875 L 5 9.96875 L 10 5 z ";
 
-	private static final double LIST_VIEW_WIDTH = 350;
+	public static final String DEMO_1 = "Mazak Private Show Demo 1";
+	public static final String DEMO_2_A = "Mazak Private Show Demo 2 (onder)";
+	public static final String DEMO_2_B = "Mazak Private Show Demo 2 (boven)";
+	
+	private static final double LIST_VIEW_WIDTH = 400;
 	private static final double LIST_VIEW_HEIGHT = 175;
 	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
 	private static final double BTN_WIDTH = BTN_HEIGHT * 3.5;
@@ -63,7 +67,7 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		column = 0;
 		row++;
 		add(btnHBox, column++, row);
-		ObservableList<String> listItems = FXCollections.observableArrayList("Mazak Private Show Demo 1", "Mazak Private Show Demo 2 (onder)", "Mazak Private Show Demo 2 (boven)", "test");
+		ObservableList<String> listItems = FXCollections.observableArrayList(DEMO_1, DEMO_2_A, DEMO_2_B);
 		lvProcesses.setItems(listItems);
 	}
 

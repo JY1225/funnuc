@@ -48,6 +48,10 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	public void newProcess() {
 		
 	}
+	
+	public void processOpened() {
+		parent.processOpened();
+	}
 
 	@Override
 	public void openFirst() {

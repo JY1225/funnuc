@@ -90,13 +90,13 @@ public class MainPresenter implements ProcessFlowListener {
 		if (configurePresenter.isConfigured()) {
 			if (process.isConfigured()) {
 				menuBarPresenter.setTeachButtonEnabled(true);
+				if (process.isTeached()) {
+					menuBarPresenter.setAutomateButtonEnabled(true);
+				}
 			} else {
 				throw new IllegalStateException("Configuration UI says ok, but there is still data missing");
 			}
 		} 
-		if (process.isTeached()) {
-			menuBarPresenter.setAutomateButtonEnabled(true);
-		}
 	}
 	
 	public void showRobot() {
