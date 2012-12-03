@@ -99,7 +99,8 @@ public class AutomateThread extends Thread{
 				logger.info("Execution of one or more steps got interrupted, so let't just stop");
 			} else {
 				e.printStackTrace();
-				notifyException(e);
+				//notifyException(e);
+				logger.error(e);
 			}
 			processFlow.setMode(Mode.STOPPED);
 		} catch(Exception e) {
@@ -144,7 +145,9 @@ public class AutomateThread extends Thread{
 	public void interrupt() {
 		logger.info("about to interrupt automate thread");
 		if (running) {
+			running = false;
 			for (AbstractRobot robot :processFlow.getRobots()) {
+				logger.info("stopping robot: " + robot.getId());
 				robot.stopCurrentAction();
 				try {
 					robot.abort();
@@ -155,7 +158,6 @@ public class AutomateThread extends Thread{
 			for (AbstractDevice device :processFlow.getDevices()) {
 				device.stopCurrentAction();
 			}
-			running = false;
 		}
 	}
 	

@@ -129,6 +129,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	protected boolean waitForStatus(int status, long timeout) throws CommunicationException, InterruptedException {
 		long waitedTime = 0;
+		stopAction = false;
 		do {
 			long lastTime = System.currentTimeMillis();
 			if ((getStatus().getStatus() & status) > 0) {
