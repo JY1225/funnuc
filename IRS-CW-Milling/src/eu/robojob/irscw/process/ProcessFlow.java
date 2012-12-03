@@ -24,10 +24,6 @@ import eu.robojob.irscw.process.event.ProcessFlowListener;
 
 public class ProcessFlow {
 	
-	enum ProcessFlowType  {
-		CNC_MILLING, CNC_TURNING;
-	}
-	
 	public enum Mode {
 		TEACH, READY, AUTO, PAUSED, STOPPED, CONFIG, FINISHED
 	}
@@ -98,6 +94,21 @@ public class ProcessFlow {
 		setFinishedAmount(0);
 		//setMode(Mode.READY);
 		processProcessFlowEvent(new ActiveStepChangedEvent(this, null, ActiveStepChangedEvent.NONE_ACTIVE));
+	}
+	
+	public void loadFromOtherProcessFlow(ProcessFlow processFlow) {
+		this.processSteps = processFlow.getProcessSteps();
+		this.deviceSettings = processFlow.getDeviceSettings();
+		this.robotSettings = processFlow.getRobotSettings();
+		initialize();
+	}
+	
+	public Map<AbstractDevice, AbstractDevice.AbstractDeviceSettings> getDeviceSettings() {
+		return deviceSettings;
+	}
+	
+	public Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> getRobotSettings() {
+		return robotSettings;
 	}
 	
 	public boolean hasNextStep() {

@@ -327,3 +327,39 @@
 .hidden {
 	visibility: hidden;
 }
+
+.processes-list-view {
+	-fx-border-width: 0px;
+	-fx-background-color: #8c8888, #222222, #6d6c6c;
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1;
+	-fx-padding: 1 1 2 1;
+}
+
+.processes-list-view .cell {
+	-fx-font-size: 15px;
+	-fx-font-family: "Helvetica";
+	-fx-font-weight: bold;
+	-fx-padding: 10px;
+	-fx-background-color: transparent;
+	-fx-background-insets: 0;
+	-fx-border-width: 0px;
+}
+
+.processes-list-view .cell:empty {
+}
+
+.processes-list-view .cell:filled {
+}
+
+.processes-list-view .cell:filled:even {
+	-fx-background-color: #c2c2c2;
+	-fx-background-insets: 0, 0 0 1 0;
+}
+
+.processes-list-view .cell:filled:odd {
+	-fx-background-color: #6d6c6c, #b2b2b2;
+	-fx-background-insets: 0, 0 0 1 0;
+}
+
+.processes-list-view .cell:selected {
+}

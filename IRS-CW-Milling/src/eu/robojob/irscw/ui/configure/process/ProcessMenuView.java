@@ -47,16 +47,16 @@ public class ProcessMenuView extends AbstractMenuView<ProcessMenuPresenter> {
 			}
 		});
 		
-		getMenuItem(2).setDisable(true);
+		getMenuItem(2).setDisable(false);
 		
-		addMenuItem(3, newPath, translator.getTranslation("NewProcess"), false, new EventHandler<ActionEvent>() {
+		/*addMenuItem(3, newPath, translator.getTranslation("NewProcess"), false, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				presenter.newProcess();
 			}
 		});
 		
-		getMenuItem(3).setDisable(true);
+		getMenuItem(3).setDisable(true);*/
 	}
 	
 	public void setConfigureActive() {
