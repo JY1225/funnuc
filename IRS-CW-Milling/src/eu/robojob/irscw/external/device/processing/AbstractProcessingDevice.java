@@ -4,14 +4,8 @@ import java.util.List;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.AbstractDeviceActionSettings;
-import eu.robojob.irscw.external.device.DeviceInterventionSettings;
-import eu.robojob.irscw.external.device.DevicePickSettings;
-import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
-import eu.robojob.irscw.process.ProcessingStep;
 
 public abstract class AbstractProcessingDevice extends AbstractDevice {
 	
