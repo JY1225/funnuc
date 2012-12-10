@@ -7,23 +7,24 @@ import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
+import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
 public class ProcessingStep extends AbstractProcessStep {
 
-	private AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings startCyclusSettings;
+	private ProcessingDeviceStartCyclusSettings startCyclusSettings;
 	
 	private static final Logger logger = Logger.getLogger(ProcessingStep.class);
 	
 	public ProcessingStep(ProcessFlow processFlow, AbstractProcessingDevice processingDevice,
-			AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings startCyclusSettings) {
+			ProcessingDeviceStartCyclusSettings startCyclusSettings) {
 		super(processFlow, processingDevice);
 		setStartCyclusSettings(startCyclusSettings);
 	}
 	
-	public ProcessingStep(AbstractProcessingDevice processingDevice, AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings startCyclusSettings) {
+	public ProcessingStep(AbstractProcessingDevice processingDevice, ProcessingDeviceStartCyclusSettings startCyclusSettings) {
 		this(null, processingDevice, startCyclusSettings);
 	}
 	
@@ -46,12 +47,11 @@ public class ProcessingStep extends AbstractProcessStep {
 		}
 	}
 
-	public AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings getStartCyclusSettings() {
+	public ProcessingDeviceStartCyclusSettings getStartCyclusSettings() {
 		return startCyclusSettings;
 	}
 
-	public void setStartCyclusSettings(
-			AbstractProcessingDevice.AbstractProcessingDeviceStartCyclusSettings startCyclusSettings) {
+	public void setStartCyclusSettings(ProcessingDeviceStartCyclusSettings startCyclusSettings) {
 		this.startCyclusSettings = startCyclusSettings;
 		if (startCyclusSettings!= null)
 			startCyclusSettings.setStep(this);

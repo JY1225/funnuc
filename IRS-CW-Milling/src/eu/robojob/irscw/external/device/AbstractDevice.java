@@ -6,11 +6,7 @@ import java.util.List;
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.InterventionStep;
-import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractDevice extends AbstractServiceProvider {
@@ -19,29 +15,27 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public abstract void prepareForProcess(ProcessFlow process) throws AbstractCommunicationException, InterruptedException;
 		
-	public abstract boolean canPick(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException;
-	public abstract boolean canPut(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
+	public abstract boolean canPick(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException;
+	public abstract boolean canPut(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
+	public abstract boolean canIntervention(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException;
 	
-	public abstract void prepareForPick(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
-	public abstract void prepareForPut(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
-	public abstract void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException;
+	public abstract void prepareForPick(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
+	public abstract void prepareForPut(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
+	public abstract void prepareForIntervention(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException;
 	
-	public abstract void pickFinished(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException;
-	public abstract void putFinished(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException;
-	public abstract void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException;
+	public abstract void pickFinished(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException;
+	public abstract void putFinished(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException;
+	public abstract void interventionFinished(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException;
 	
-	public abstract void releasePiece(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
-	public abstract void grabPiece(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
+	public abstract void releasePiece(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
+	public abstract void grabPiece(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
 	
-	public abstract void loadDeviceSettings(AbstractDeviceSettings deviceSettings);
-	public abstract AbstractDeviceSettings getDeviceSettings();
+	public abstract void loadDeviceSettings(DeviceSettings deviceSettings);
+	public abstract DeviceSettings getDeviceSettings();
 	
-	public abstract boolean validatePickSettings(AbstractDevicePickSettings pickSettings);
-	public abstract boolean validatePutSettings(AbstractDevicePutSettings putSettings);
-	public abstract boolean validateInterventionSettings(AbstractDeviceInterventionSettings interventionSettings);
-	
-	public abstract AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePickSettings pickSettings);
-	public abstract AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePutSettings putSettings);
+	public abstract boolean validatePickSettings(DevicePickSettings pickSettings);
+	public abstract boolean validatePutSettings(DevicePutSettings putSettings);
+	public abstract boolean validateInterventionSettings(DeviceInterventionSettings interventionSettings);
 	
 	public abstract Coordinates getPickLocation(WorkArea workArea, ClampingType clampType);
 	public abstract Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingType clampType);
@@ -109,55 +103,6 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public String toString() {
 		return "Device: " + id;
-	}
-	
-	public static abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep> {
-		protected WorkArea workArea;
-		protected T step;
-		
-		public AbstractDeviceActionSettings(WorkArea workArea) {
-			setWorkArea(workArea);
-		}
-		
-		public void setStep(T step) {
-			this.step = step;
-		}
-
-		public WorkArea getWorkArea() {
-			return workArea;
-		}
-		
-		public void setWorkArea(WorkArea workArea) {
-			this.workArea = workArea;
-		}
-	}
-	
-	public static abstract class AbstractDevicePickSettings extends AbstractDeviceActionSettings<PickStep> {
-				
-		public AbstractDevicePickSettings(WorkArea workArea) {
-			super(workArea);
-		}
-		
-	}
-	
-	public static abstract class AbstractDevicePutSettings extends AbstractDeviceActionSettings<PutStep> {
-				
-		public AbstractDevicePutSettings(WorkArea workArea) {
-			super(workArea);
-		}
-
-		public abstract boolean isPutPositionFixed();
-		
-	}
-	
-	public static abstract class AbstractDeviceInterventionSettings extends AbstractDeviceActionSettings<InterventionStep> {
-				
-		public AbstractDeviceInterventionSettings(WorkArea workArea) {
-			super(workArea);
-		}
-	}
-	
-	public static abstract class AbstractDeviceSettings {
 	}
 	
 	public abstract DeviceType getType();

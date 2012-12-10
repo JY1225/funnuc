@@ -2,6 +2,7 @@ package eu.robojob.irscw.process;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.AbstractDeviceActionSettings;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
@@ -27,7 +28,7 @@ public abstract class AbstractTransportStep extends AbstractProcessStep {
 	
 	public abstract void finalize() throws AbstractCommunicationException, RobotActionException, DeviceActionException;
 	
-	public abstract AbstractDevice.AbstractDeviceActionSettings<?> getDeviceSettings();
+	public abstract AbstractDeviceActionSettings<?> getDeviceSettings();
 	public abstract AbstractRobot.AbstractRobotActionSettings getRobotSettings();
 
 	public AbstractRobot getRobot() {

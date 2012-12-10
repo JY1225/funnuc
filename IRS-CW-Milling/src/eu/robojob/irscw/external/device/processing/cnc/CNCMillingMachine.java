@@ -1,19 +1,22 @@
-package eu.robojob.irscw.external.device.cnc;
+package eu.robojob.irscw.external.device.processing.cnc;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.communication.SocketConnection;
+import eu.robojob.irscw.external.device.DeviceInterventionSettings;
+import eu.robojob.irscw.external.device.DevicePickSettings;
+import eu.robojob.irscw.external.device.DevicePutSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.ClampingType;
 import eu.robojob.irscw.external.device.ClampingType.Type;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
+import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
@@ -130,10 +133,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		command = command | CNCMachineConstants.NC_RESET;
 		int registers[] = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
-		/*command = CNCMachineConstants.NC_RESET;
-		int registers2[] = {command};
-		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers2);*/
-		// TODO: no way of knowing this succeeded? 
 	}
 
 	@Override
@@ -178,7 +177,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void startCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (startCylusSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			int command = 0;
@@ -206,11 +205,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	// this is not taken into account for now
 	@Override
-	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException {
+	public void prepareForStartCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException {
 	}
 
 	@Override
-	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void prepareForPick(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (pickSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			// first WA
@@ -233,7 +232,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void prepareForPut(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void prepareForPut(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			// first WA
@@ -261,7 +260,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void releasePiece(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (pickSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			int command = 0;
@@ -282,7 +281,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void grabPiece(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			int command = 0;
@@ -303,7 +302,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public boolean canPut(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, InterruptedException {
+	public boolean canPut(DevicePutSettings putSettings) throws AbstractCommunicationException, InterruptedException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			boolean canPut =  waitForStatus(CNCMachineConstants.R_PUT_WA1_ALLOWED, PUT_ALLOWED_TIMEOUT);
@@ -319,89 +318,33 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	
 	// this is not taken into account on the Machine-side for now
 	@Override
-	public boolean canPick(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException {
+	public boolean canPick(DevicePickSettings pickSettings) throws AbstractCommunicationException {
 		return true;
+	}
+	
+	@Override
+	public boolean canIntervention(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {
+		return false;
 	}
 
 	// be aware! this will not be easy! of toch: prepare for pick!!
 	@Override
-	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws AbstractCommunicationException {
-		// TODO Auto-generated method stub
-		
+	public void prepareForIntervention(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException {
 	}
 	
 	// these are not taken into account by the machine for now...
 	@Override
-	public void pickFinished(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException {
+	public void pickFinished(DevicePickSettings pickSettings) throws AbstractCommunicationException {
 	}
 	@Override
-	public void putFinished(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException {
+	public void putFinished(DevicePutSettings putSettings) throws AbstractCommunicationException {
 	}
 	@Override
-	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws AbstractCommunicationException {
-	}
-	
-	public static class CNCMillingMachinePutSettings extends AbstractCNCMachinePutSettings{
-		public CNCMillingMachinePutSettings(WorkArea workArea) {
-			super(workArea);
-		}
-
-		@Override
-		public boolean isPutPositionFixed() {
-			return false;
-		}
-	}
-	public static class CNCMillingMachinePickSettings extends AbstractCNCMachinePickSettings{
-		public CNCMillingMachinePickSettings(WorkArea workArea) {
-			super(workArea);
-		}
-
-	}
-	public static class CNCMillingMachineInterventionSettings extends AbstractCNCMachineInterventionSettings{
-		public CNCMillingMachineInterventionSettings(WorkArea workArea) {
-			super(workArea);
-		}
-	}
-	public static class CNCMillingMachineStartCylusSettings extends AbstractCNCMachineStartCyclusSettings {
-		public CNCMillingMachineStartCylusSettings(WorkArea workArea) {
-			super(workArea);
-		}
-	}
-	public class CNCMillingMachineSettings extends AbstractDeviceSettings {
-
-		private Map<WorkArea, Clamping> clampings;
-		
-		public CNCMillingMachineSettings() {
-			clampings = new HashMap<WorkArea, Clamping>();
-		}
-		
-		public CNCMillingMachineSettings(List<WorkArea> workAreas) {
-			this();
-			for (WorkArea workArea : workAreas) {
-				clampings.put(workArea, workArea.getActiveClamping());
-			}
-		}
-		
-		public void setClamping(WorkArea workArea, Clamping clamping) {
-			clampings.put(workArea, clamping);
-		}
-
-		public Map<WorkArea, Clamping> getClampings() {
-			return clampings;
-		}
-
-		public void setClampings(Map<WorkArea, Clamping> clampings) {
-			this.clampings = clampings;
-		}
-		
-		public Clamping getClamping(WorkArea workArea) {
-			return clampings.get(workArea);
-		}
-	
+	public void interventionFinished(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException {
 	}
 
 	@Override
-	public void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {
+	public void loadDeviceSettings(DeviceSettings deviceSettings) {
 		if (deviceSettings instanceof CNCMillingMachineSettings) {
 			CNCMillingMachineSettings settings = (CNCMillingMachineSettings) deviceSettings;
 			for (Entry<WorkArea, Clamping> entry : settings.getClampings().entrySet()) {
@@ -413,15 +356,14 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public AbstractDeviceSettings getDeviceSettings() {
+	public DeviceSettings getDeviceSettings() {
 		return new CNCMillingMachineSettings(getWorkAreas());
 	}
 
 	@Override
-	public boolean validateStartCyclusSettings(AbstractProcessingDeviceStartCyclusSettings startCyclusSettings) {
-		CNCMillingMachineStartCylusSettings cncMillingStartCyclusSettings = (CNCMillingMachineStartCylusSettings) startCyclusSettings;
-		if ((cncMillingStartCyclusSettings != null) && (cncMillingStartCyclusSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingStartCyclusSettings.getWorkArea())) &&
-				(cncMillingStartCyclusSettings.getWorkArea().getActiveClamping() != null) ) {
+	public boolean validateStartCyclusSettings(ProcessingDeviceStartCyclusSettings startCyclusSettings) {
+		if ((startCyclusSettings != null) && (startCyclusSettings.getWorkArea() != null) && (getWorkAreas().contains(startCyclusSettings.getWorkArea())) &&
+				(startCyclusSettings.getWorkArea().getActiveClamping() != null) ) {
 			return true;
 		} else {
 			return false;
@@ -429,10 +371,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public boolean validatePickSettings(AbstractDevicePickSettings pickSettings) {
-		CNCMillingMachinePickSettings cncMillingMachinePickSettings = (CNCMillingMachinePickSettings) pickSettings;
-		if ((cncMillingMachinePickSettings != null) && (cncMillingMachinePickSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingMachinePickSettings.getWorkArea())) &&
-				(cncMillingMachinePickSettings.getWorkArea().getActiveClamping() != null) ) {
+	public boolean validatePickSettings(DevicePickSettings pickSettings) {
+		if ((pickSettings != null) && (pickSettings.getWorkArea() != null) && (getWorkAreas().contains(pickSettings.getWorkArea())) &&
+				(pickSettings.getWorkArea().getActiveClamping() != null) ) {
 			return true;
 		} else {
 			return false;
@@ -440,10 +381,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public boolean validatePutSettings(AbstractDevicePutSettings putSettings) {
-		CNCMillingMachinePutSettings cncMillingMachinePutSettings = (CNCMillingMachinePutSettings) putSettings;
-		if ((cncMillingMachinePutSettings != null) && (cncMillingMachinePutSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingMachinePutSettings.getWorkArea())) &&
-				(cncMillingMachinePutSettings.getWorkArea().getActiveClamping() != null) ) {
+	public boolean validatePutSettings(DevicePutSettings putSettings) {
+		if ((putSettings != null) && (putSettings.getWorkArea() != null) && (getWorkAreas().contains(putSettings.getWorkArea())) &&
+				(putSettings.getWorkArea().getActiveClamping() != null) ) {
 			return true;
 		} else {
 			return false;
@@ -451,24 +391,13 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public boolean validateInterventionSettings(AbstractDeviceInterventionSettings interventionSettings) {
-		CNCMillingMachineInterventionSettings cncMillingMachineInterventionSettings = (CNCMillingMachineInterventionSettings) interventionSettings;
-		if ((cncMillingMachineInterventionSettings != null) && (cncMillingMachineInterventionSettings.getWorkArea() != null) && (getWorkAreas().contains(cncMillingMachineInterventionSettings.getWorkArea())) &&
-				(cncMillingMachineInterventionSettings.getWorkArea().getActiveClamping() != null) ) {
+	public boolean validateInterventionSettings(DeviceInterventionSettings interventionSettings) {
+		if ((interventionSettings != null) && (interventionSettings.getWorkArea() != null) && (getWorkAreas().contains(interventionSettings.getWorkArea())) &&
+				(interventionSettings.getWorkArea().getActiveClamping() != null) ) {
 			return true;
 		} else {
 			return false;
 		}
-	}
-
-	@Override
-	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePickSettings pickSettings) {
-		return new CNCMillingMachineInterventionSettings(pickSettings.getWorkArea());
-	}
-
-	@Override
-	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePutSettings putSettings) {
-		return new CNCMillingMachineInterventionSettings(putSettings.getWorkArea());
 	}
 
 	@Override

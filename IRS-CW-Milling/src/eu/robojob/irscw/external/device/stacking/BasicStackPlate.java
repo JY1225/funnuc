@@ -6,7 +6,12 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
+import eu.robojob.irscw.external.device.DeviceInterventionSettings;
+import eu.robojob.irscw.external.device.DevicePickSettings;
+import eu.robojob.irscw.external.device.DevicePutSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.ClampingType;
+import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
@@ -61,7 +66,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public synchronized boolean canPick(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException {
+	public synchronized boolean canPick(DevicePickSettings pickSettings) throws AbstractCommunicationException {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == Type.RAW)) {
 				return true;
@@ -71,12 +76,19 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public synchronized boolean canPut(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException {
+	public synchronized boolean canPut(DevicePutSettings putSettings) throws AbstractCommunicationException {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if (stackingPos.getWorkPiece() == null) {
 				return true;
 			}
 		}
+		return false;
+	}
+	
+
+	@Override
+	public boolean canIntervention(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {
+		// TODO Auto-generated method stub
 		return false;
 	}
 	
@@ -112,39 +124,39 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public void prepareForPick(AbstractDevicePickSettings pickSettings) {
+	public void prepareForPick(DevicePickSettings pickSettings) {
 	}
 
 	@Override
-	public void prepareForPut(AbstractDevicePutSettings putSettings) {
+	public void prepareForPut(DevicePutSettings putSettings) {
 	}
 
 	@Override
-	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) {
+	public void prepareForIntervention(DeviceInterventionSettings interventionSettings) {
 	}
 
 	@Override
-	public synchronized void pickFinished(AbstractDevicePickSettings pickSettings) {
+	public synchronized void pickFinished(DevicePickSettings pickSettings) {
 		currentPickLocation.setWorkPiece(null);
 	}
 
 	@Override
-	public synchronized void putFinished(AbstractDevicePutSettings putSettings) {
+	public synchronized void putFinished(DevicePutSettings putSettings) {
 		//BasicStackPlatePutSettings spPutSettings = (BasicStackPlatePutSettings) putSettings;
 		currentPickLocation.setWorkPiece(finishedWorkPiece);
 		currentPickLocation = null;
 	}
 
 	@Override
-	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) {
+	public void interventionFinished(DeviceInterventionSettings interventionSettings) {
 	}
 
 	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings) {
+	public void releasePiece(DevicePickSettings pickSettings) {
 	}
 
 	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings) {
+	public void grabPiece(DevicePutSettings putSettings) {
 	}
 	
 	public BasicStackPlateLayout getLayout() {
@@ -155,83 +167,13 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		return rawWorkPiece;
 	}
 	
-	public static class BasicStackPlatePickSettings extends AbstractStackingDevicePickSettings {
-		public BasicStackPlatePickSettings(WorkArea workArea) {
-			super(workArea);
-		}
-	}
-	
-	public static class BasicStackPlatePutSettings extends AbstractStackingDevicePutSettings {
-		public BasicStackPlatePutSettings(WorkArea workArea) {
-			super(workArea);
-		}
-
-		@Override
-		public boolean isPutPositionFixed() {
-			return true;
-		}
-	}
-	
-	public class BasicStackPlateInterventionSettings extends AbstractStackingDeviceInterventionSettings {
-		
-		public BasicStackPlateInterventionSettings(WorkArea workArea) {
-			super(workArea);
-		}
-		
-	}
-	
-	public class BasicStackPlateSettings extends AbstractStackingDeviceSettings {
-
-		private WorkPiece workPiece;
-		private WorkPieceOrientation orientation;
-		private Integer amount;
-		
-		public BasicStackPlateSettings(WorkPieceDimensions dimensions, WorkPieceOrientation orientation, Integer amount) {
-			this(new WorkPiece(WorkPiece.Type.RAW, dimensions), orientation, amount);
-		}
-		
-		public BasicStackPlateSettings(WorkPiece workPiece, WorkPieceOrientation orientation, Integer amount) {
-			this.amount = amount;
-			this.orientation = orientation;
-			this.workPiece = workPiece;
-		}
-
-		public Integer getAmount() {
-			return amount;
-		}
-
-		public void setDimensions(WorkPieceDimensions dimensions) {
-			if (workPiece == null) {
-				workPiece = new WorkPiece(Type.RAW, dimensions);
-			} else {
-				this.workPiece.setDimensions(dimensions);
-			}
-		}
-
-		public void setOrientation(WorkPieceOrientation orientation) {
-			this.orientation = orientation;
-		}
-
-		public void setAmount(Integer amount) {
-			this.amount = amount;
-		}
-		
-		public WorkPiece getWorkPiece() {
-			return this.workPiece;
-		}
-
-		public WorkPieceOrientation getOrientation() {
-			return orientation;
-		}
-	}
-	
 	@Override
 	public DeviceType getType() {
 		return DeviceType.BASIC_STACK_PLATE;
 	}
 
 	@Override
-	public synchronized void loadDeviceSettings(AbstractDeviceSettings deviceSettings) {
+	public synchronized void loadDeviceSettings(DeviceSettings deviceSettings) {
 		if (deviceSettings instanceof BasicStackPlateSettings) {
 			BasicStackPlateSettings settings = (BasicStackPlateSettings) deviceSettings;
 			try {
@@ -247,16 +189,15 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public AbstractDeviceSettings getDeviceSettings() {
+	public DeviceSettings getDeviceSettings() {
 		return new BasicStackPlateSettings(rawWorkPiece, layout.getOrientation(), layout.getRawWorkPieceAmount());
 	}
 
 	@Override
-	public boolean validatePickSettings(AbstractDevicePickSettings pickSettings) {
+	public boolean validatePickSettings(DevicePickSettings pickSettings) {
 		// note we assume the corresponding device settings are loaded!
-		BasicStackPlatePickSettings stackPlatePickSettings = (BasicStackPlatePickSettings) pickSettings;
 		// the used workarea should be the one workarea configured for this device
-		if ((stackPlatePickSettings != null) && (stackPlatePickSettings.getWorkArea() != null) && (stackPlatePickSettings.getWorkArea().equals(getWorkAreas().get(0))) && 
+		if ((pickSettings != null) && (pickSettings.getWorkArea() != null) && (pickSettings.getWorkArea().equals(getWorkAreas().get(0))) && 
 				(layout.getStackingPositions() != null) && (layout.getStackingPositions().size() > 0)) {
 			return true;
 		} else {
@@ -265,11 +206,10 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public boolean validatePutSettings(AbstractDevicePutSettings putSettings) {
+	public boolean validatePutSettings(DevicePutSettings putSettings) {
 		// note we assume the corresponding device settings are loaded!
-		BasicStackPlatePutSettings stackPlatePutSettings = (BasicStackPlatePutSettings) putSettings;
 		// the used workarea should be the one workarea configured for this device
-		if ((stackPlatePutSettings != null) && (stackPlatePutSettings.getWorkArea() != null) && (stackPlatePutSettings.getWorkArea().equals(getWorkAreas().get(0))) && 
+		if ((putSettings != null) && (putSettings.getWorkArea() != null) && (putSettings.getWorkArea().equals(getWorkAreas().get(0))) && 
 				(layout.getStackingPositions() != null) && (layout.getStackingPositions().size() > 0)) {
 			return true;
 		} else {
@@ -278,27 +218,15 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public boolean validateInterventionSettings(
-			AbstractDeviceInterventionSettings interventionSettings) {
+	public boolean validateInterventionSettings(DeviceInterventionSettings interventionSettings) {
 		// note we assume the corresponding device settings are loaded!
-		BasicStackPlateInterventionSettings stackPlateInterventionSettings = (BasicStackPlateInterventionSettings) interventionSettings;
 		// the used workarea should be the one workarea configured for this device
-		if ((stackPlateInterventionSettings != null) && (stackPlateInterventionSettings.getWorkArea() != null) && (stackPlateInterventionSettings.getWorkArea().equals(getWorkAreas().get(0))) && 
+		if ((interventionSettings != null) && (interventionSettings.getWorkArea() != null) && (interventionSettings.getWorkArea().equals(getWorkAreas().get(0))) && 
 				(layout.getStackingPositions() != null) && (layout.getStackingPositions().size() > 0)) {
 			return true;
 		} else {
 			return false;
 		}
-	}
-
-	@Override
-	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePickSettings pickSettings) {
-		return new BasicStackPlateInterventionSettings(pickSettings.getWorkArea());
-	}
-
-	@Override
-	public AbstractDeviceInterventionSettings getInterventionSettings(AbstractDevicePutSettings putSettings) {
-		return new BasicStackPlateInterventionSettings(putSettings.getWorkArea());
 	}
 
 	@Override

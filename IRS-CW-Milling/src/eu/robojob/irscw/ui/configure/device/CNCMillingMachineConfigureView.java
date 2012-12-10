@@ -12,7 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.ClampingType.Type;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;

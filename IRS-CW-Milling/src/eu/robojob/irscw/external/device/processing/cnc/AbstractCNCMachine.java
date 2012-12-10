@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device.cnc;
+package eu.robojob.irscw.external.device.processing.cnc;
 
 import java.util.HashSet;
 import java.util.List;
@@ -7,13 +7,11 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.DeviceDisconnectedException;
 import eu.robojob.irscw.external.device.DeviceType;
-import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
+import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.irscw.threading.ThreadManager;
-
 
 public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 
@@ -179,29 +177,4 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		return DeviceType.CNC_MACHINE;
 	}
 
-	public abstract static class AbstractCNCMachinePutSettings extends AbstractProcessingDevicePutSettings{
-				
-		public AbstractCNCMachinePutSettings(WorkArea workArea) {
-			super(workArea);
-		}
-		
-	}
-	public abstract static class AbstractCNCMachinePickSettings extends AbstractProcessingDevicePickSettings{
-				
-		public AbstractCNCMachinePickSettings(WorkArea workArea) {
-			super(workArea);
-		}
-
-		
-	}
-	public abstract static class AbstractCNCMachineInterventionSettings extends AbstractProcessingDeviceInterventionSettings{
-		public AbstractCNCMachineInterventionSettings(WorkArea workArea) {
-			super(workArea);
-		}
-	}
-	public abstract static class AbstractCNCMachineStartCyclusSettings extends AbstractProcessingDeviceStartCyclusSettings {
-		public AbstractCNCMachineStartCyclusSettings(WorkArea workArea) {
-			super(workArea);
-		}
-	}
 }

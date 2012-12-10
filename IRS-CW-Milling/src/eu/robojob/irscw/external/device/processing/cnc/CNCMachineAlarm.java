@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device.cnc;
+package eu.robojob.irscw.external.device.processing.cnc;
 
 
 public class CNCMachineAlarm {

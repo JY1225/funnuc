@@ -5,22 +5,17 @@ import java.util.Properties;
 import eu.robojob.irscw.PropertiesProcessFlowFactory;
 import eu.robojob.irscw.external.device.ClampingType.Type;
 import eu.robojob.irscw.external.device.DeviceManager;
+import eu.robojob.irscw.external.device.DevicePickSettings;
+import eu.robojob.irscw.external.device.DevicePutSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePickSettings;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePutSettings;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineStartCylusSettings;
-import eu.robojob.irscw.external.device.pre.PrageDevice;
-import eu.robojob.irscw.external.device.pre.PrageDevice.PrageDevicePickSettings;
-import eu.robojob.irscw.external.device.pre.PrageDevice.PrageDevicePutSettings;
-import eu.robojob.irscw.external.device.pre.PrageDevice.PrageDeviceSettings;
-import eu.robojob.irscw.external.device.pre.PrageDevice.PrageDeviceStartCyclusSettings;
+import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachine;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlatePickSettings;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlatePutSettings;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlateSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.external.robot.FanucRobot;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPickSettings;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPutSettings;
@@ -264,7 +259,7 @@ public class RoboSoftAppFactory {
 			
 			// Präge Device
 			PrageDevice prageDevice = (PrageDevice) deviceMgr.getPreProcessingDeviceById("Präge");
-			PrageDeviceSettings prageDeviceSettings = (PrageDeviceSettings) prageDevice.getDeviceSettings();
+			DeviceSettings prageDeviceSettings = (DeviceSettings) prageDevice.getDeviceSettings();
 			processFlow.setDeviceSettings(prageDevice, prageDeviceSettings);
 			
 			// CNC Milling Machine
@@ -280,7 +275,7 @@ public class RoboSoftAppFactory {
 			
 			// PICK FROM STACKER
 			// Device: Basic stack plate
-			BasicStackPlatePickSettings stackPlatePickSettings = new BasicStackPlate.BasicStackPlatePickSettings(stackPlate.getWorkAreaById("IRS M Basic"));
+			DevicePickSettings stackPlatePickSettings = new DevicePickSettings(stackPlate.getWorkAreaById("IRS M Basic"));
 			// Robot: Fanuc Robot
 			FanucRobotPickSettings robotPickSettings1 = new FanucRobot.FanucRobotPickSettings();
 			robotPickSettings1.setGripperHead(robot.getGripperBody().getGripperHead("A"));
@@ -293,9 +288,9 @@ public class RoboSoftAppFactory {
 			
 			// PUT AND WAIT ON PRÄGE DEVICE
 			// Device: Präge device
-			PrageDevicePickSettings pragePickSettings = new PrageDevice.PrageDevicePickSettings(prageDevice.getWorkAreaById("Präge"));
-			PrageDeviceStartCyclusSettings prageStartCyclusSettings = new PrageDevice.PrageDeviceStartCyclusSettings(prageDevice.getWorkAreaById("Präge"));
-			PrageDevicePutSettings pragePutSettings = new PrageDevice.PrageDevicePutSettings(prageDevice.getWorkAreaById("Präge"));
+			DevicePickSettings pragePickSettings = new DevicePickSettings(prageDevice.getWorkAreaById("Präge"));
+			ProcessingDeviceStartCyclusSettings prageStartCyclusSettings = new ProcessingDeviceStartCyclusSettings(prageDevice.getWorkAreaById("Präge"));
+			DevicePutSettings pragePutSettings = new DevicePutSettings(prageDevice.getWorkAreaById("Präge"));
 			// Robot: Fanuc Robot
 			// put and wait
 			FanucRobotPutSettings robotPutSettings1 = new FanucRobot.FanucRobotPutSettings();
@@ -316,7 +311,7 @@ public class RoboSoftAppFactory {
 			
 			// PUT IN CNC VRX 
 			// Device: CNCMilling Machine
-			CNCMillingMachinePutSettings cncPutSettings = new CNCMillingMachine.CNCMillingMachinePutSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
+			DevicePutSettings cncPutSettings = new DevicePutSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
 			// Robot: Fanuc Robot
 			FanucRobotPutSettings robotPutSettings2 = new FanucRobot.FanucRobotPutSettings();
 			robotPutSettings2.setGripperHead(robot.getGripperBody().getGripperHead("A"));
@@ -328,13 +323,13 @@ public class RoboSoftAppFactory {
 			
 			
 			// PROCESSING (CNC VRX)
-			CNCMillingMachineStartCylusSettings cncStartCyclusSettings =  new CNCMillingMachine.CNCMillingMachineStartCylusSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
+			ProcessingDeviceStartCyclusSettings cncStartCyclusSettings =  new ProcessingDeviceStartCyclusSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
 			ProcessingStep processing2 = new ProcessingStep(cncMilling, cncStartCyclusSettings);
 
 			
 			// PICK FROM CNC VRX
 			// Device: CNCMilling Machine
-			CNCMillingMachinePickSettings cncPickSettings = new CNCMillingMachinePickSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
+			DevicePickSettings cncPickSettings = new DevicePickSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
 			// Robot: Fanuc Robot
 			FanucRobotPickSettings robotPickSettings3 = new FanucRobot.FanucRobotPickSettings();
 			robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead("B"));
@@ -349,7 +344,7 @@ public class RoboSoftAppFactory {
 			
 			// PUT ON BASIC STACKER
 			// Device: Basic Stacker
-			BasicStackPlatePutSettings stackPlatePutSettings = new BasicStackPlate.BasicStackPlatePutSettings(stackPlate.getWorkAreaById("IRS M Basic"));
+			DevicePutSettings stackPlatePutSettings = new DevicePutSettings(stackPlate.getWorkAreaById("IRS M Basic"));
 			// Robot: Fanuc Robot
 			FanucRobotPutSettings robotPutSettings3 = new FanucRobot.FanucRobotPutSettings();
 			robotPutSettings3.setGripperHead(robot.getGripperBody().getGripperHead("B"));

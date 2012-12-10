@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device.cnc;
+package eu.robojob.irscw.external.device.processing.cnc;
 
 import java.io.IOException;
 import java.util.ArrayList;

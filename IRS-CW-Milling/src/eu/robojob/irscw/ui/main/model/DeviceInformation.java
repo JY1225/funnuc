@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDeviceSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
@@ -22,10 +22,10 @@ public class DeviceInformation {
 	private InterventionStep interventionStepAfterPut;
 	private PickStep pickStep;
 	private ProcessFlowAdapter flowAdapter;
-	private AbstractDevice.AbstractDeviceSettings deviceSettings;
+	private DeviceSettings deviceSettings;
 
 	public DeviceInformation(int index, ProcessFlowAdapter flowAdapter, AbstractDevice device, PutStep putStep, InterventionStep interventionStepBeforePick, ProcessingStep processingStep,
-			InterventionStep interventionStepAfterPut, PickStep pickStep, AbstractDeviceSettings deviceSettings) {
+			InterventionStep interventionStepAfterPut, PickStep pickStep, DeviceSettings deviceSettings) {
 		this.index = index;
 		this.flowAdapter = flowAdapter;
 		this.device = device;
@@ -163,12 +163,11 @@ public class DeviceInformation {
 		}
 	}
 
-	public AbstractDevice.AbstractDeviceSettings getDeviceSettings() {
+	public DeviceSettings getDeviceSettings() {
 		return deviceSettings;
 	}
 
-	public void setDeviceSettings(
-			AbstractDevice.AbstractDeviceSettings deviceSettings) {
+	public void setDeviceSettings(DeviceSettings deviceSettings) {
 		this.deviceSettings = deviceSettings;
 	}
 

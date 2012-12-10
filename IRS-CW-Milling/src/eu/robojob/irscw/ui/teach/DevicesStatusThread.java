@@ -8,10 +8,10 @@ import javafx.application.Platform;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.cnc.CNCMachineAlarmsOccuredEvent;
-import eu.robojob.irscw.external.device.cnc.CNCMachineEvent;
-import eu.robojob.irscw.external.device.cnc.CNCMachineListener;
-import eu.robojob.irscw.external.device.cnc.CNCMachineStatusChangedEvent;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMachineEvent;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMachineListener;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMachineStatusChangedEvent;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredEvent;
 import eu.robojob.irscw.external.robot.FanucRobotEvent;

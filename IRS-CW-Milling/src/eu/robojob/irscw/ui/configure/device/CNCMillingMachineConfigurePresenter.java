@@ -5,10 +5,10 @@ import org.apache.log4j.Logger;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.ClampingType.Type;
 import eu.robojob.irscw.external.device.DeviceManager;
+import eu.robojob.irscw.external.device.DevicePickSettings;
+import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePickSettings;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePutSettings;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
 import eu.robojob.irscw.process.AbstractProcessStep;
@@ -141,9 +141,9 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 
 	@Override
 	public boolean isConfigured() {
-		CNCMillingMachinePickSettings pickSettings = (CNCMillingMachinePickSettings) deviceInfo.getPickStep().getDeviceSettings();
+		DevicePickSettings pickSettings = deviceInfo.getPickStep().getDeviceSettings();
 		AbstractRobotPickSettings robotPickSettings = deviceInfo.getPickStep().getRobotSettings();
-		CNCMillingMachinePutSettings putSettings = (CNCMillingMachinePutSettings) deviceInfo.getPutStep().getDeviceSettings();
+		DevicePutSettings putSettings = deviceInfo.getPutStep().getDeviceSettings();
 		AbstractRobotPutSettings robotPutSettings = deviceInfo.getPutStep().getRobotSettings();
 		CNCMillingMachineSettings deviceSettings = (CNCMillingMachineSettings) deviceInfo.getDeviceSettings();
 		// TODO take into account start cyclus settings

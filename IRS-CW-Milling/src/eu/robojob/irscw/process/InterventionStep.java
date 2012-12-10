@@ -6,6 +6,7 @@ import java.util.Set;
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.DeviceInterventionSettings;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
@@ -15,18 +16,18 @@ public class InterventionStep extends AbstractProcessStep {
 
 	private int frequency;
 	
-	private AbstractDevice.AbstractDeviceInterventionSettings interventionSettings;
+	private DeviceInterventionSettings interventionSettings;
 	
 	private AbstractRobot robot;
 		
-	public InterventionStep(ProcessFlow processFlow, AbstractDevice device, AbstractRobot robot, AbstractDevice.AbstractDeviceInterventionSettings interventionSettings, int frequency) {
+	public InterventionStep(ProcessFlow processFlow, AbstractDevice device, AbstractRobot robot, DeviceInterventionSettings interventionSettings, int frequency) {
 		super(processFlow, device);
 		this.robot = robot;
 		this.frequency = frequency;
 		setInterventionSettings(interventionSettings);
 	}
 	
-	public InterventionStep(AbstractDevice device, AbstractRobot robot, AbstractDevice.AbstractDeviceInterventionSettings interventionSettings, int frequency) {
+	public InterventionStep(AbstractDevice device, AbstractRobot robot, DeviceInterventionSettings interventionSettings, int frequency) {
 		this(null, device, robot, interventionSettings, frequency);
 	}
 	
@@ -48,12 +49,11 @@ public class InterventionStep extends AbstractProcessStep {
 		}
 	}
 
-	public AbstractDevice.AbstractDeviceInterventionSettings getInterventionSettings() {
+	public DeviceInterventionSettings getInterventionSettings() {
 		return interventionSettings;
 	}
 
-	public void setInterventionSettings(
-			AbstractDevice.AbstractDeviceInterventionSettings interventionSettings) {
+	public void setInterventionSettings(DeviceInterventionSettings interventionSettings) {
 		this.interventionSettings = interventionSettings;
 		if (interventionSettings != null)
 			interventionSettings.setStep(this);

@@ -14,7 +14,7 @@ import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.ClampingType;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachine;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPickSettings;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPutSettings;

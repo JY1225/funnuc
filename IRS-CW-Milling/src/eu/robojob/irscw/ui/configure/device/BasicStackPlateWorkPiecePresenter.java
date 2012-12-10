@@ -3,8 +3,8 @@ package eu.robojob.irscw.ui.configure.device;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate.BasicStackPlateSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;

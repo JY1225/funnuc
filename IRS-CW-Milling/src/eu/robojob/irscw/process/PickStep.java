@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
+import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
@@ -20,10 +20,10 @@ public class PickStep extends AbstractTransportStep {
 
 	private static final Logger logger = Logger.getLogger(PickStep.class);
 	
-	protected AbstractDevice.AbstractDevicePickSettings pickSettings;
+	protected DevicePickSettings pickSettings;
 	protected AbstractRobot.AbstractRobotPickSettings robotPickSettings;
 			
-	public PickStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
+	public PickStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceFrom, DevicePickSettings pickSettings,
 			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
 		super(processFlow, deviceFrom, robot);
 		this.pickSettings = pickSettings;
@@ -33,7 +33,7 @@ public class PickStep extends AbstractTransportStep {
 		setRobotSettings(robotPickSettings);
 	}
 	
-	public PickStep(AbstractRobot robot, AbstractDevice deviceFrom, AbstractDevice.AbstractDevicePickSettings pickSettings,
+	public PickStep(AbstractRobot robot, AbstractDevice deviceFrom, DevicePickSettings pickSettings,
 			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
 		this(null, robot, deviceFrom, pickSettings, robotPickSettings);
 	}
@@ -170,7 +170,7 @@ public class PickStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public AbstractDevicePickSettings getDeviceSettings() {
+	public DevicePickSettings getDeviceSettings() {
 		return pickSettings;
 	}
 

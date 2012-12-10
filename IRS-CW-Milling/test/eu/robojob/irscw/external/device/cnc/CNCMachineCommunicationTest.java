@@ -14,20 +14,21 @@ import org.junit.Test;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceManager;
+import eu.robojob.irscw.external.device.DevicePickSettings;
+import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePickSettings;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachinePutSettings;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineStartCylusSettings;
+import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachine;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.robot.RobotManager;
 
 public class CNCMachineCommunicationTest {
 
 	private CNCMillingMachine cncMillingMachine;
-	private CNCMillingMachinePutSettings putSettings;
-	private CNCMillingMachinePickSettings pickSettings;
+	private DevicePutSettings putSettings;
+	private DevicePickSettings pickSettings;
 	private CNCMillingMachineSettings cncMillingSetting;
-	private CNCMillingMachineStartCylusSettings startCyclusSettings;
+	private ProcessingDeviceStartCyclusSettings startCyclusSettings;
 	private RobotManager robotManager;
 	private DeviceManager deviceManager;
 	
@@ -40,9 +41,9 @@ public class CNCMachineCommunicationTest {
 		this.robotManager = new RobotManager(properties);
 		this.deviceManager = new DeviceManager(robotManager, properties);
 		cncMillingMachine = (CNCMillingMachine) deviceManager.getCNCMachineById("Mazak VRX J500");
-		putSettings = new CNCMillingMachine.CNCMillingMachinePutSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
-		pickSettings = new CNCMillingMachinePickSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
-		startCyclusSettings = new CNCMillingMachineStartCylusSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
+		putSettings = new DevicePutSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
+		pickSettings = new DevicePickSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
+		startCyclusSettings = new ProcessingDeviceStartCyclusSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
 		cncMillingSetting = (CNCMillingMachineSettings) cncMillingMachine.getDeviceSettings();
 		WorkArea mainWorkArea = cncMillingMachine.getWorkAreaById("Mazak VRX Main");
 		cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingById("Clamping 1"));

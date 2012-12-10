@@ -1,6 +1,6 @@
 package eu.robojob.irscw.ui.configure.device;
 
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;

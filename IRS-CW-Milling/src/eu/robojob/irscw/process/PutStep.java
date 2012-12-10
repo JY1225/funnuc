@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePutSettings;
+import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
@@ -18,13 +18,13 @@ import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
 public class PutStep extends AbstractTransportStep {
 
-	protected AbstractDevice.AbstractDevicePutSettings putSettings;
+	protected DevicePutSettings putSettings;
 	protected AbstractRobot.AbstractRobotPutSettings robotPutSettings;
 	
 	private static final Logger logger = Logger.getLogger(PutStep.class);
 	
 	public PutStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceTo,
-			AbstractDevice.AbstractDevicePutSettings putSettings, AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
+			DevicePutSettings putSettings, AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
 		super(processFlow, deviceTo, robot);
 		this.putSettings = putSettings;
 		if (putSettings != null) {
@@ -33,7 +33,7 @@ public class PutStep extends AbstractTransportStep {
 		setRobotSettings(robotPutSettings);
 	}
 	
-	public PutStep(AbstractRobot robot, AbstractDevice deviceTo, AbstractDevice.AbstractDevicePutSettings putSettings,
+	public PutStep(AbstractRobot robot, AbstractDevice deviceTo, DevicePutSettings putSettings,
 			AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
 		this(null, robot, deviceTo, putSettings, robotPutSettings);
 	}
@@ -168,7 +168,7 @@ public class PutStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public AbstractDevicePutSettings getDeviceSettings() {
+	public DevicePutSettings getDeviceSettings() {
 		return putSettings;
 	}
 

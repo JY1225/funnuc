@@ -10,7 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import eu.robojob.irscw.external.device.cnc.CNCMillingMachine.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.NumericTextField;

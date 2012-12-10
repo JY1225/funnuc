@@ -2,11 +2,11 @@
 
 import org.apache.log4j.Logger;
 
+import eu.robojob.irscw.external.device.DevicePickSettings;
+import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.external.device.pre.PrageDevice;
-import eu.robojob.irscw.external.device.pre.PrageDevice.PrageDevicePickSettings;
-import eu.robojob.irscw.external.device.pre.PrageDevice.PrageDevicePutSettings;
-import eu.robojob.irscw.external.device.pre.PrageDevice.PrageDeviceStartCyclusSettings;
+import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.robot.FanucRobot;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPickSettings;
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPutSettings;
@@ -245,9 +245,9 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		PrageDevice prageDevice = (PrageDevice) deviceManager.getPreProcessingDeviceById("Präge");
 		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
 		
-		PrageDevicePickSettings pragePickSettings = new PrageDevice.PrageDevicePickSettings(prageDevice.getWorkAreaById("Präge"));
-		PrageDeviceStartCyclusSettings prageStartCyclusSettings = new PrageDevice.PrageDeviceStartCyclusSettings(prageDevice.getWorkAreaById("Präge"));
-		PrageDevicePutSettings pragePutSettings = new PrageDevice.PrageDevicePutSettings(prageDevice.getWorkAreaById("Präge"));
+		DevicePickSettings pragePickSettings = new DevicePickSettings(prageDevice.getWorkAreaById("Präge"));
+		ProcessingDeviceStartCyclusSettings prageStartCyclusSettings = new ProcessingDeviceStartCyclusSettings(prageDevice.getWorkAreaById("Präge"));
+		DevicePutSettings pragePutSettings = new DevicePutSettings(prageDevice.getWorkAreaById("Präge"));
 		
 		FanucRobotPutSettings robotPutSettings = new FanucRobot.FanucRobotPutSettings();
 		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
