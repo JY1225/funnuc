@@ -12,7 +12,6 @@ public class Clamping {
 	}
 	
 	private String id;
-	private WorkArea correspondingWorkArea;
 	private Coordinates relativePosition;
 	private Coordinates smoothToPoint;
 	private Coordinates smoothFromPoint;
@@ -32,6 +31,10 @@ public class Clamping {
 		this.imageURL = imageURL;
 		this.relatedClampings = new HashSet<Clamping>();
 		this.type = type;
+	}
+	
+	public Clamping(Type type, String id, float height, Coordinates relativePosition, Coordinates smoothPoint, String imageURL) {
+		this(type, id, height, relativePosition, smoothPoint, smoothPoint, imageURL);
 	}
 	
 	public Type getType() {
@@ -54,10 +57,6 @@ public class Clamping {
 		return relatedClampings;
 	}
 	
-	public Clamping(Type type, String id, float height, Coordinates relativePosition, Coordinates smoothPoint, String imageURL) {
-		this(type, id, height, relativePosition, smoothPoint, smoothPoint, imageURL);
-	}
-
 	public String getId() {
 		return id;
 	}
@@ -96,14 +95,6 @@ public class Clamping {
 
 	public void setSmoothFromPoint(Coordinates smoothFromPoint) {
 		this.smoothFromPoint = smoothFromPoint;
-	}
-
-	public WorkArea getCorrespondingWorkArea() {
-		return correspondingWorkArea;
-	}
-
-	public void setCorrespondingWorkArea(WorkArea correspondingWorkArea) {
-		this.correspondingWorkArea = correspondingWorkArea;
 	}
 
 	public float getHeight() {

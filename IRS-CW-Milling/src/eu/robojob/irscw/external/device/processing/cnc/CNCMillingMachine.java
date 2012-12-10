@@ -32,6 +32,13 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int PUT_ALLOWED_TIMEOUT = 5*60*1000;
 	private static final int START_CYCLE_TIMEOUT = 5*60*1000;
 	private static final int CYCLE_FINISHED_TIMEOUT = Integer.MAX_VALUE;
+	
+	private static final String EXCEPTION_CYCLE_NOT_STARTED = "CNCMillingMachine.cycleNotStarted";
+	private static final String EXCEPTION_CYCLE_END_TIMEOUT = "CNCMillingMachine.cycleEndTimeout";
+	private static final String EXCEPTION_PREPARE_PICK_TIMEOUT = "CNCMillingMachine.preparePickTimeout";
+	private static final String EXCEPTION_PREPARE_PUT_TIMEOUT = "CNCMillingMachine.preparePutTimeout";
+	private static final String EXCEPTION_UNCLAMP_TIMEOUT = "CNCMillingMachine.unclampTimeout";
+	private static final String EXCEPTION_CLAMP_TIMEOUT = "CNCMillingMachine.clampTimeout";
 			
 	public CNCMillingMachine(String id, SocketConnection socketConnection) {
 		super(id);
@@ -188,14 +195,14 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			
 			boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
 			if (!cycleStartReady) {
-				throw new DeviceActionException("Machine cycle start was not given");
+				throw new DeviceActionException(this, EXCEPTION_CYCLE_NOT_STARTED);
 			} else {
 				// we now wait for pick requested
 				boolean cycleFinished =  waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED, CYCLE_FINISHED_TIMEOUT);
 				if (cycleFinished) {
 					return;
 				} else {
-					throw new DeviceActionException("Timeout when waiting for machine to start cyclus");
+					throw new DeviceActionException(this, EXCEPTION_CYCLE_END_TIMEOUT);
 				}
 			}
 		} else {
@@ -222,7 +229,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			// check put is prepared
 			boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA1_READY, PREPARE_PICK_TIMEOUT);
 			if (!pickReady) {
-				throw new DeviceActionException("Machine could not prepare for pick");
+				throw new DeviceActionException(this, EXCEPTION_PREPARE_PICK_TIMEOUT);
 			} else {
 			}
 			
@@ -251,7 +258,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			// check put is prepared
 			boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
 			if (!putReady) {
-				throw new DeviceActionException("Machine could not prepare for put");
+				throw new DeviceActionException(this, EXCEPTION_PREPARE_PUT_TIMEOUT);
 			} 
 					
 		} else {
@@ -271,7 +278,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			
 			boolean clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY, UNCLAMP_TIMEOUT);
 			if (!clampReady) {
-				throw new DeviceActionException("Could not open clamp");
+				throw new DeviceActionException(this, EXCEPTION_UNCLAMP_TIMEOUT);
 			} else {
 			}
 			
@@ -292,7 +299,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			
 			boolean clampReady =  waitForStatus(CNCMachineConstants.R_CLAMP_WA1_READY, CLAMP_TIMEOUT);
 			if (!clampReady) {
-				throw new DeviceActionException("Could not close clamp");
+				throw new DeviceActionException(this, EXCEPTION_CLAMP_TIMEOUT);
 			} else {
 			}
 			
@@ -302,7 +309,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public boolean canPut(DevicePutSettings putSettings) throws AbstractCommunicationException, InterruptedException {
+	public boolean canPut(DevicePutSettings putSettings) throws InterruptedException, DeviceActionException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			boolean canPut =  waitForStatus(CNCMachineConstants.R_PUT_WA1_ALLOWED, PUT_ALLOWED_TIMEOUT);

@@ -29,6 +29,8 @@ public class PrageDevice extends AbstractProcessingDevice {
 	
 	private static final Logger logger = Logger.getLogger(PrageDevice.class);
 	
+	private static final String EXCEPTION_PRAGE_TIMEOUT = "PrageDevice.prageTimeout";
+	
 	public PrageDevice(String id, AbstractRobot robot) {
 		super(id, false);
 		this.robot = robot;
@@ -95,7 +97,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 		try {
 			robot.doPrage();
 		} catch (RobotActionException e) {
-			throw new DeviceActionException(e.getMessage());
+			throw new DeviceActionException(this, EXCEPTION_PRAGE_TIMEOUT);
 		}
 	}
 	@Override

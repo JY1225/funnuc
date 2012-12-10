@@ -7,7 +7,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.DeviceDisconnectedException;
+import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.Zone;
 import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
@@ -26,6 +26,8 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private boolean stopAction;
 	
 	private static final Logger logger = Logger.getLogger(AbstractCNCMachine.class);
+	
+	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "AbstractCNCMachine.disconnectedWhileWaiting";
 	
 	public AbstractCNCMachine(String id) {
 		super(id, true);
@@ -126,7 +128,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	public abstract void operatorRequested(boolean requested) throws AbstractCommunicationException, InterruptedException;
 	public abstract void stopIndications() throws AbstractCommunicationException, InterruptedException;
 	
-	protected boolean waitForStatus(int status, long timeout) throws AbstractCommunicationException, InterruptedException {
+	protected boolean waitForStatus(int status, long timeout) throws InterruptedException, DeviceActionException {
 		long waitedTime = 0;
 		stopAction = false;
 		do {
@@ -135,7 +137,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 				return true;
 			} else {
 				if (!isConnected()) {
-					throw new DeviceDisconnectedException(this);
+					throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
 				}
 				try {
 					statusChanged = false;
@@ -159,7 +161,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 					throw new InterruptedException();
 				}
 				if (!isConnected()) {
-					throw new DeviceDisconnectedException(this);
+					throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
 				}
 				waitedTime += System.currentTimeMillis() - lastTime;
 				if (statusChanged == true) {

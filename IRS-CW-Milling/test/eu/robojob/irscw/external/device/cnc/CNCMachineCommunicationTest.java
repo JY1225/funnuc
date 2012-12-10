@@ -103,7 +103,7 @@ public class CNCMachineCommunicationTest {
 	public void testCanPut() {
 		try {
 			logger.info("Can I ask you to prepare for put? : " + cncMillingMachine.canPut(putSettings));
-		} catch (AbstractCommunicationException | InterruptedException e) {
+		} catch (DeviceActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			cncMillingMachine.disconnect();

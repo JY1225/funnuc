@@ -77,12 +77,10 @@ public class WorkArea {
 	
 	public void addClamping(Clamping clamping) {
 		clampings.add(clamping);
-		clamping.setCorrespondingWorkArea(this);
 	}
 	
 	public void removeClamping(Clamping clamping) {
 		clampings.remove(clamping);
-		clamping.setCorrespondingWorkArea(null);
 	}
 	
 	public List<String> getClampingIds() {
