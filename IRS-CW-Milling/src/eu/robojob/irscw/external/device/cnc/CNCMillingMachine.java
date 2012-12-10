@@ -506,4 +506,16 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		cncMachineCommunication.disconnect();
 	}
 
+	@Override
+	public void reset() throws CommunicationException, InterruptedException {
+		/*int command = 0;
+		command = command | CNCMachineConstants.RESET_REQUEST;
+		int registers[] = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);*/
+		/*command = CNCMachineConstants.NC_RESET;
+		int registers2[] = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers2);*/
+		// TODO: no way of knowing this succeeded? 
+	}
+
 }

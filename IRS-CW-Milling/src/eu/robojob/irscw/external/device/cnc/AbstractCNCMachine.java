@@ -121,6 +121,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		}
 	}
 	
+	public abstract void reset() throws CommunicationException, InterruptedException;
 	public abstract void nCReset() throws CommunicationException, InterruptedException;
 	public abstract void powerOff() throws CommunicationException, InterruptedException;
 	public abstract void indicateAllProcessed() throws CommunicationException, InterruptedException;

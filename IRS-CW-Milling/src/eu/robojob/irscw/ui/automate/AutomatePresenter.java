@@ -170,6 +170,16 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 			view.hideAlarmMessage();
 		}
 		processFlow.initialize();
+		for (AbstractDevice device : processFlow.getDevices()) {
+			if (device instanceof AbstractCNCMachine) {
+				try {
+					((AbstractCNCMachine) device).reset();
+				} catch (CommunicationException | InterruptedException e) {
+					logger.error(e);
+					e.printStackTrace();
+				}
+			}
+		}
 		processFlowPresenter.refresh();
 	}
 	

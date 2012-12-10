@@ -616,7 +616,7 @@ public class FanucRobot extends AbstractRobot {
 		values.add("" + df.format(location.getZ()));
 		values.add("" + df.format(location.getR()));
 		if (location.getZ() > 0) {
-			values.add("" + (df.format(dimensions.getHeight()) + df.format(location.getZ())));
+			values.add("" + (df.format(dimensions.getHeight() + location.getZ())));
 		} else {
 			values.add("" + df.format(dimensions.getHeight()));
 		}
