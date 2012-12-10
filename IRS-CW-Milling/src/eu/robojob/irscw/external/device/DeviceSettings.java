@@ -13,6 +13,7 @@ public class DeviceSettings {
 	}
 	
 	public DeviceSettings(List<WorkArea> workAreas) {
+		this();
 		for (WorkArea workArea : workAreas) {
 			clampings.put(workArea, workArea.getActiveClamping());
 		}
