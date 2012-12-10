@@ -37,10 +37,10 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	public abstract boolean validatePutSettings(DevicePutSettings putSettings);
 	public abstract boolean validateInterventionSettings(DeviceInterventionSettings interventionSettings);
 	
-	public abstract Coordinates getPickLocation(WorkArea workArea, ClampingType clampType);
-	public abstract Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingType clampType);
+	public abstract Coordinates getPickLocation(WorkArea workArea, ClampingManner clampType);
+	public abstract Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType);
 	
-	public abstract void stopCurrentAction();
+	public abstract void interruptCurrentAction();
 	
 	public abstract boolean isConnected();
 	

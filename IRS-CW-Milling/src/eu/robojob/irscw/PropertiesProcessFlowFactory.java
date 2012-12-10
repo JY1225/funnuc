@@ -2,8 +2,8 @@ package eu.robojob.irscw;
 
 import java.util.Properties;
 
-import eu.robojob.irscw.external.device.ClampingType;
-import eu.robojob.irscw.external.device.ClampingType.Type;
+import eu.robojob.irscw.external.device.ClampingManner;
+import eu.robojob.irscw.external.device.ClampingManner.Type;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
@@ -143,7 +143,7 @@ public class PropertiesProcessFlowFactory {
 		WorkArea mainWorkArea = cncMilling.getWorkAreaById("Mazak VRX Main");
 		cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingById(clampingId));
 		processFlow.setDeviceSettings(cncMilling, cncMillingSetting);
-		processFlow.setClampingType(new ClampingType());
+		processFlow.setClampingType(new ClampingManner());
 		if (clampLength) {
 			processFlow.getClampingType().setType(Type.LENGTH);
 		} else {

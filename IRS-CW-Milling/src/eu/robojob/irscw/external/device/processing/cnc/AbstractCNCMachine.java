@@ -52,7 +52,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public void stopCurrentAction() {
+	public void interruptCurrentAction() {
 		logger.info("stopping current machine action");
 		stopAction = true;
 		synchronized(syncObject) {

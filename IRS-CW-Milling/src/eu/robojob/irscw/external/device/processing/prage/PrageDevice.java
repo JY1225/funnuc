@@ -9,8 +9,8 @@ import eu.robojob.irscw.external.device.DeviceInterventionSettings;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.external.device.ClampingType;
-import eu.robojob.irscw.external.device.ClampingType.Type;
+import eu.robojob.irscw.external.device.ClampingManner;
+import eu.robojob.irscw.external.device.ClampingManner.Type;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
@@ -117,7 +117,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 		return true;
 	}
 	@Override
-	public Coordinates getPickLocation(WorkArea workArea, ClampingType clampType) {
+	public Coordinates getPickLocation(WorkArea workArea, ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			c.setR(90);
@@ -127,7 +127,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 		return c;
 	}
 	@Override
-	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingType clampType) {
+	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			c.offset(new Coordinates(0, workPieceDimensions.getWidth()/2, 0, 0, 0, 0));
@@ -140,7 +140,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public void stopCurrentAction() {}
+	public void interruptCurrentAction() {}
 	@Override
 	public boolean isConnected() {
 		return false;

@@ -1,6 +1,6 @@
 package eu.robojob.irscw.external.device;
 
-public class ClampingType {
+public class ClampingManner {
 
 	public enum Type {
 		LENGTH, WIDTH
@@ -8,7 +8,7 @@ public class ClampingType {
 	
 	private Type type;
 	
-	public ClampingType() {
+	public ClampingManner() {
 		this.type = Type.LENGTH;
 	}
 

@@ -3,7 +3,7 @@ package eu.robojob.irscw.ui;
 import java.util.Properties;
 
 import eu.robojob.irscw.PropertiesProcessFlowFactory;
-import eu.robojob.irscw.external.device.ClampingType.Type;
+import eu.robojob.irscw.external.device.ClampingManner.Type;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;

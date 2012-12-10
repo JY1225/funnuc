@@ -3,7 +3,7 @@ package eu.robojob.irscw.ui.configure.device;
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.robojob.irscw.external.device.ClampingType;
+import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
@@ -116,7 +116,7 @@ public class DeviceMenuFactory {
 	
 	public BasicStackPlateLayoutPresenter getBasicStackPlateLayoutPresenter(DeviceInformation deviceInfo) {
 		BasicStackPlateLayoutView view = new BasicStackPlateLayoutView();
-		ClampingType clampingType = null;
+		ClampingManner clampingType = null;
 		if (deviceInfo.getPickStep() != null) {
 			clampingType = deviceInfo.getPickStep().getProcessFlow().getClampingType();
 		} else if (deviceInfo.getPutStep() != null) {

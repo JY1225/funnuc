@@ -3,7 +3,7 @@ package eu.robojob.irscw.external.device.stacking;
 import java.util.List;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.ClampingType;
+import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
@@ -20,7 +20,7 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 		super(id);
 	}
 	
-	public abstract Coordinates getLocation(WorkArea workArea, Type type, ClampingType clampType);
+	public abstract Coordinates getLocation(WorkArea workArea, Type type, ClampingManner clampType);
 	
 	@Override
 	public DeviceType getType() {

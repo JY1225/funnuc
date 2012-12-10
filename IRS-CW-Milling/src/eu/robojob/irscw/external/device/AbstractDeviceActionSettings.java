@@ -3,6 +3,7 @@ package eu.robojob.irscw.external.device;
 import eu.robojob.irscw.process.AbstractProcessStep;
 
 public abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep> {
+	
 	protected WorkArea workArea;
 	protected T step;
 	

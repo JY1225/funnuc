@@ -11,8 +11,8 @@ import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.Clamping;
-import eu.robojob.irscw.external.device.ClampingType;
-import eu.robojob.irscw.external.device.ClampingType.Type;
+import eu.robojob.irscw.external.device.ClampingManner;
+import eu.robojob.irscw.external.device.ClampingManner.Type;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
@@ -401,7 +401,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public Coordinates getPickLocation(WorkArea workArea, ClampingType clampType) {
+	public Coordinates getPickLocation(WorkArea workArea, ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			c.setR(0);
@@ -412,7 +412,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingType clampType) {
+	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			c.setR(0);

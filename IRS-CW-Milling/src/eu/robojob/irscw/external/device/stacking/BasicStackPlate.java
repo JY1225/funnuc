@@ -10,7 +10,7 @@ import eu.robojob.irscw.external.device.DeviceInterventionSettings;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.external.device.ClampingType;
+import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
@@ -93,7 +93,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	@Override
-	public synchronized Coordinates getPickLocation(WorkArea workArea, ClampingType clampType) {
+	public synchronized Coordinates getPickLocation(WorkArea workArea, ClampingManner clampType) {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null)&&(stackingPos.getWorkPiece().getType() != Type.FINISHED)) {
 				currentPickLocation = stackingPos;
@@ -105,7 +105,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	@Override 
-	public synchronized Coordinates getLocation(WorkArea workArea, Type type, ClampingType clampType) {
+	public synchronized Coordinates getLocation(WorkArea workArea, Type type, ClampingManner clampType) {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null)&&(stackingPos.getWorkPiece().getType()==type)) {
 				Coordinates c = new Coordinates(stackingPos.getPosition());
@@ -116,7 +116,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public synchronized Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingType clampType) {
+	public synchronized Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType) {
 		logger.info("getting put location: " + workPieceDimensions);
 		finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, workPieceDimensions);
 		Coordinates c = new Coordinates(currentPickLocation.getPosition());
@@ -235,7 +235,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public void stopCurrentAction() {
+	public void interruptCurrentAction() {
 	}
 
 	@Override

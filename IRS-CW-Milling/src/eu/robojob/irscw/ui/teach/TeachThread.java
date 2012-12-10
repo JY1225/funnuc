@@ -122,7 +122,7 @@ public class TeachThread extends Thread {
 				}
 			}
 			for (AbstractDevice device :processFlow.getDevices()) {
-				device.stopCurrentAction();
+				device.interruptCurrentAction();
 			}
 			running = false;
 		}

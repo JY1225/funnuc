@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.external.device.ClampingType;
+import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotSettings;
@@ -46,13 +46,13 @@ public class ProcessFlow {
 	
 	private static final Logger logger = Logger.getLogger(ProcessFlow.class);
 	
-	private ClampingType clampingType;
+	private ClampingManner clampingType;
 	
 	private int currentStepIndex;
 	
 	//TODO refactor constructors so there is one constructor, called by the others
 	public ProcessFlow(String name) {
-		this.clampingType = new ClampingType();
+		this.clampingType = new ClampingManner();
 		this.name = name;
 		this.processSteps = new ArrayList<AbstractProcessStep>();
 		this.deviceSettings = new HashMap<AbstractDevice, DeviceSettings>();
@@ -68,7 +68,7 @@ public class ProcessFlow {
 	public ProcessFlow(String name, List<AbstractProcessStep>processSteps, Map<AbstractDevice, DeviceSettings> deviceSettings,
 			Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> robotSettings) {
 		this.name = name;
-		this.clampingType = new ClampingType();
+		this.clampingType = new ClampingManner();
 		needsTeaching = true;
 		this.deviceSettings = deviceSettings;
 		this.robotSettings = robotSettings;
@@ -435,11 +435,11 @@ public class ProcessFlow {
 		return robots;
 	}
 
-	public ClampingType getClampingType() {
+	public ClampingManner getClampingType() {
 		return clampingType;
 	}
 
-	public void setClampingType(ClampingType clampingType) {
+	public void setClampingType(ClampingManner clampingType) {
 		this.clampingType = clampingType;
 	}
 	

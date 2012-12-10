@@ -15,7 +15,7 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
-import eu.robojob.irscw.external.device.ClampingType;
+import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateLayout;
@@ -35,7 +35,7 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	private Pane root;
 	
 	@SuppressWarnings("unused")
-	private ClampingType clampingType;
+	private ClampingManner clampingType;
 	
 	private List<Circle> holes;
 	private List<Circle> studs;
@@ -62,7 +62,7 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 		this.width = basicStackPlateLayout.getWidth();
 	}
 	
-	public void setClampingType(ClampingType clampingType) {
+	public void setClampingType(ClampingManner clampingType) {
 		this.clampingType = clampingType;
 	}
 	
