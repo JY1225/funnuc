@@ -249,7 +249,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		for (AbstractDevice device : processFlow.getDevices()) {
 			if (device instanceof AbstractCNCMachine) {
 				try {
-					((AbstractCNCMachine) device).stopIndications();
+					((AbstractCNCMachine) device).clearIndications();
 				} catch (AbstractCommunicationException e) {
 					e.printStackTrace();
 					exceptionOccured(e);
@@ -264,7 +264,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		for (AbstractDevice device : processFlow.getDevices()) {
 			if (device instanceof AbstractCNCMachine) {
 				try {
-					((AbstractCNCMachine) device).operatorRequested(true);
+					((AbstractCNCMachine) device).indicateOperatorRequested(true);
 				} catch (AbstractCommunicationException e) {
 					e.printStackTrace();
 					exceptionOccured(e);

@@ -162,7 +162,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void operatorRequested(boolean requested) throws AbstractCommunicationException, InterruptedException {
+	public void indicateOperatorRequested(boolean requested) throws AbstractCommunicationException, InterruptedException {
 		int command = 0;
 		if (requested) {
 			command = command | CNCMachineConstants.OPERATOR_REQUESTED;
@@ -172,7 +172,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void stopIndications() throws AbstractCommunicationException, InterruptedException {
+	public void clearIndications() throws AbstractCommunicationException, InterruptedException {
 		int command = 0;
 		int registers[] = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);

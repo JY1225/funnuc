@@ -53,7 +53,7 @@ public class TeachThread extends Thread {
 			for (AbstractDevice device: processFlow.getDevices()) {
 				device.prepareForProcess(processFlow);
 				if (device instanceof AbstractCNCMachine) {
-					((AbstractCNCMachine) device).stopIndications();
+					((AbstractCNCMachine) device).clearIndications();
 				}
 			}
 			while (processFlow.hasStep()) {

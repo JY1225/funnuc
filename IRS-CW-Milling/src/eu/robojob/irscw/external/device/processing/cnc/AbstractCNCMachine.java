@@ -1,5 +1,6 @@
 package eu.robojob.irscw.external.device.processing.cnc;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,33 +30,26 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "AbstractCNCMachine.disconnectedWhileWaiting";
 	
-	public AbstractCNCMachine(String id) {
-		super(id, true);
-		this.statusChanged = false;
-		syncObject = new Object();
-		this.alarms = new HashSet<CNCMachineAlarm>();
-		this.status = new CNCMachineStatus(0);
-		this.listeners = new HashSet<CNCMachineListener>();
-		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
-		ThreadManager.getInstance().submit(cncMachineMonitoringThread);
-		this.stopAction = false;
-	}
-	
 	public AbstractCNCMachine(String id, List<Zone> zones) {
 		super(id, zones, true);
 		this.statusChanged = false;
 		syncObject = new Object();
 		this.alarms = new HashSet<CNCMachineAlarm>();
-		this.status = new CNCMachineStatus(0);
+		this.status = new CNCMachineStatus();
 		this.listeners = new HashSet<CNCMachineListener>();
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
+		// start monitoring thread at creation of this object
 		ThreadManager.getInstance().submit(cncMachineMonitoringThread);
 		this.stopAction = false;
 	}
 	
+	public AbstractCNCMachine(String id) {
+		this(id, new ArrayList<Zone>());
+	}
+	
 	@Override
 	public void interruptCurrentAction() {
-		logger.info("stopping current machine action");
+		logger.debug("Stopping current action of: " + id);
 		stopAction = true;
 		synchronized(syncObject) {
 			syncObject.notifyAll();
@@ -63,12 +57,10 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	}
 
 	public void addListener(CNCMachineListener listener) {
-		logger.info("added listener: " + listener);
 		listeners.add(listener);
 	}
 	
 	public void removeListener(CNCMachineListener listener) {
-		logger.info("removed listener: " + listener);
 		listeners.remove(listener);
 	}
 	
@@ -105,19 +97,17 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 				break;
 			case CNCMachineEvent.ALARM_OCCURED : 
 				for (CNCMachineListener listener : listeners) {
-					// TODO get list of alarms!
 					listener.cNCMachineAlarmsOccured((CNCMachineAlarmsOccuredEvent) event);
 				}
 				break;
 			case CNCMachineEvent.STATUS_CHANGED : 
 				statusChanged();
 				for (CNCMachineListener listener : listeners) {
-					// TODO get status!
 					listener.cNCMachineStatusChanged((CNCMachineStatusChangedEvent) event);
 				}
 				break;
 			default:
-				throw new IllegalArgumentException("Unknown event type");
+				throw new IllegalArgumentException("Unknown event type.");
 		}
 	}
 	
@@ -125,8 +115,8 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	public abstract void nCReset() throws AbstractCommunicationException, InterruptedException;
 	public abstract void powerOff() throws AbstractCommunicationException, InterruptedException;
 	public abstract void indicateAllProcessed() throws AbstractCommunicationException, InterruptedException;
-	public abstract void operatorRequested(boolean requested) throws AbstractCommunicationException, InterruptedException;
-	public abstract void stopIndications() throws AbstractCommunicationException, InterruptedException;
+	public abstract void indicateOperatorRequested(boolean requested) throws AbstractCommunicationException, InterruptedException;
+	public abstract void clearIndications() throws AbstractCommunicationException, InterruptedException;
 	
 	protected boolean waitForStatus(int status, long timeout) throws InterruptedException, DeviceActionException {
 		long waitedTime = 0;
@@ -179,4 +169,8 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		return DeviceType.CNC_MACHINE;
 	}
 
+	@Override
+	public String toString() {
+		return "AbstractCNCMachine: " + id;
+	}
 }

@@ -8,6 +8,10 @@ public class CNCMachineStatus {
 		setStatus(status);
 	}
 	
+	public CNCMachineStatus() {
+		this(0);
+	}
+	
 	public void setStatus(int status) {
 		this.status = status;
 	}
