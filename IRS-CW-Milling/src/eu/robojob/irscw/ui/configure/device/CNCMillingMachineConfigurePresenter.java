@@ -7,8 +7,8 @@ import eu.robojob.irscw.external.device.ClampingManner.Type;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
 import eu.robojob.irscw.process.AbstractProcessStep;
@@ -77,8 +77,8 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			if (clamping == null) {
 				throw new IllegalArgumentException("Unknown clamping");
 			} else {
-				if ( (clamping != ((CNCMillingMachineSettings) deviceInfo.getDeviceSettings()).getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea())) ||
-						(clamping != ((CNCMillingMachineSettings) deviceInfo.getDeviceSettings()).getClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea())) ){
+				if ( (clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea())) ||
+						(clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea())) ){
 					setClamping(clamping);
 				}
 			}
@@ -128,11 +128,11 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	// these methods should only be called when a combo-box value is changed, into a real value
 	private void setClamping(Clamping clamping) {
 		logger.debug("Changed clamping-settings to: " + clamping);
-		CNCMillingMachineSettings settings = (CNCMillingMachineSettings) deviceInfo.getDeviceSettings();
+		DeviceSettings settings = deviceInfo.getDeviceSettings();
 		settings.setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
 		deviceInfo.getDevice().loadDeviceSettings(settings);
-		((CNCMillingMachineSettings) deviceInfo.getPickStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
-		((CNCMillingMachineSettings) deviceInfo.getPutStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), clamping);
+		(deviceInfo.getPickStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
+		(deviceInfo.getPutStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), clamping);
 		deviceInfo.getPutStep().setRelativeTeachedOffset(null);
 		deviceInfo.getPickStep().setRelativeTeachedOffset(null);
 		deviceInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPutStep().getProcessFlow(), deviceInfo.getPutStep(), true));
@@ -145,7 +145,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		AbstractRobotPickSettings robotPickSettings = deviceInfo.getPickStep().getRobotSettings();
 		DevicePutSettings putSettings = deviceInfo.getPutStep().getDeviceSettings();
 		AbstractRobotPutSettings robotPutSettings = deviceInfo.getPutStep().getRobotSettings();
-		CNCMillingMachineSettings deviceSettings = (CNCMillingMachineSettings) deviceInfo.getDeviceSettings();
+		DeviceSettings deviceSettings = (DeviceSettings) deviceInfo.getDeviceSettings();
 		// TODO take into account start cyclus settings
 		if (    
 				(pickSettings.getWorkArea() != null) && 

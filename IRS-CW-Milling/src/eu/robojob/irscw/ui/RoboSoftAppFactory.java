@@ -11,7 +11,6 @@ import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachine;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
@@ -264,9 +263,9 @@ public class RoboSoftAppFactory {
 			
 			// CNC Milling Machine
 			CNCMillingMachine cncMilling = (CNCMillingMachine) deviceMgr.getCNCMachineById("Mazak VRX J500");
-			CNCMillingMachineSettings cncMillingSetting = (CNCMillingMachineSettings) cncMilling.getDeviceSettings();
-			WorkArea mainWorkArea = cncMilling.getWorkAreaById("Mazak VRX Main");
-			cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingById("Clamping 1"));
+			DeviceSettings cncMillingSetting = cncMilling.getDeviceSettings();
+			WorkArea mainWorkArea = cncMilling.getWorkAreaById("Mazak VRX J500 Main");
+			cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingById("Shunk"));
 			processFlow.setDeviceSettings(cncMilling, cncMillingSetting);
 			
 			processFlow.getClampingType().setType(Type.LENGTH);
@@ -311,30 +310,30 @@ public class RoboSoftAppFactory {
 			
 			// PUT IN CNC VRX 
 			// Device: CNCMilling Machine
-			DevicePutSettings cncPutSettings = new DevicePutSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
+			DevicePutSettings cncPutSettings = new DevicePutSettings(cncMilling.getWorkAreaById("Mazak VRX J500 Main"));
 			// Robot: Fanuc Robot
 			FanucRobotPutSettings robotPutSettings2 = new FanucRobot.FanucRobotPutSettings();
 			robotPutSettings2.setGripperHead(robot.getGripperBody().getGripperHead("A"));
-			robotPutSettings2.setSmoothPoint(new Coordinates(cncMilling.getWorkAreaById("Mazak VRX Main").getClampingById("Clamping 1").getSmoothToPoint()));
-			robotPutSettings2.setWorkArea(cncMilling.getWorkAreaById("Mazak VRX Main"));
+			robotPutSettings2.setSmoothPoint(new Coordinates(cncMilling.getWorkAreaById("Mazak VRX J500 Main").getClampingById("Shunk").getSmoothToPoint()));
+			robotPutSettings2.setWorkArea(cncMilling.getWorkAreaById("Mazak VRX J500 Main"));
 			robotPutSettings2.setDoMachineAirblow(true);
 			// Put step
 			PutStep put1 = new PutStep(robot, cncMilling, cncPutSettings, robotPutSettings2);
 			
 			
 			// PROCESSING (CNC VRX)
-			ProcessingDeviceStartCyclusSettings cncStartCyclusSettings =  new ProcessingDeviceStartCyclusSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
+			ProcessingDeviceStartCyclusSettings cncStartCyclusSettings =  new ProcessingDeviceStartCyclusSettings(cncMilling.getWorkAreaById("Mazak VRX J500 Main"));
 			ProcessingStep processing2 = new ProcessingStep(cncMilling, cncStartCyclusSettings);
 
 			
 			// PICK FROM CNC VRX
 			// Device: CNCMilling Machine
-			DevicePickSettings cncPickSettings = new DevicePickSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
+			DevicePickSettings cncPickSettings = new DevicePickSettings(cncMilling.getWorkAreaById("Mazak VRX J500 Main"));
 			// Robot: Fanuc Robot
 			FanucRobotPickSettings robotPickSettings3 = new FanucRobot.FanucRobotPickSettings();
 			robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead("B"));
 			//robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead("A"));
-			robotPickSettings3.setSmoothPoint(new Coordinates(cncMilling.getWorkAreaById("Mazak VRX Main").getClampingById("Clamping 1").getSmoothFromPoint()));
+			robotPickSettings3.setSmoothPoint(new Coordinates(cncMilling.getWorkAreaById("Mazak VRX J500 Main").getClampingById("Shunk").getSmoothFromPoint()));
 			robotPickSettings3.setWorkArea(mainWorkArea);
 			robotPickSettings3.setDoMachineAirblow(true);
 			robotPickSettings3.setWorkPiece(finishedWorkPiece);

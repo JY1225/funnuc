@@ -10,7 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.NumericTextField;
@@ -20,7 +20,7 @@ import eu.robojob.irscw.util.UIConstants;
 public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachinePickPresenter> {
 
 	private PickStep pickStep;
-	private CNCMillingMachineSettings deviceSettings;
+	private DeviceSettings deviceSettings;
 
 	private Label lblSmoothInfo;
 	
@@ -151,7 +151,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		this.pickStep = pickStep;
 	}
 	
-	public void setDeviceSettings(CNCMillingMachineSettings deviceSettings) {
+	public void setDeviceSettings(DeviceSettings deviceSettings) {
 		this.deviceSettings = deviceSettings;
 	}
 

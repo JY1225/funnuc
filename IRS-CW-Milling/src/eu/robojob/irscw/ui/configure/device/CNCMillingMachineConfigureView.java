@@ -12,7 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.ClampingManner.Type;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
@@ -103,7 +103,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if ((oldValue == null) || (!oldValue.equals(newValue))) {
-					CNCMillingMachineSettings deviceSettings = (CNCMillingMachineSettings) deviceInfo.getDeviceSettings();
+					DeviceSettings deviceSettings = deviceInfo.getDeviceSettings();
 					Clamping currentClamping = deviceSettings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
 					if ((currentClamping == null) || (newValue != currentClamping.getId())) {
 						presenter.changedClamping(newValue);

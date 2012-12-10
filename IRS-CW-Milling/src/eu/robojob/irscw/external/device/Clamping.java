@@ -8,7 +8,7 @@ import eu.robojob.irscw.positioning.Coordinates;
 public class Clamping {
 	
 	enum Type {
-		CENTRUM, FIXED
+		CENTRUM, FIXED, NONE
 	}
 	
 	private String id;

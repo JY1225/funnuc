@@ -5,7 +5,7 @@ import java.util.Map;
 
 import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.process.PickStep;
@@ -67,8 +67,8 @@ public class DeviceMenuFactory {
 	
 	private CNCMillingMachineMenuPresenter getCncMillingMachineMenuPresenter(DeviceInformation deviceInfo) {
 		DeviceMenuView view = new DeviceMenuView();
-		CNCMillingMachineMenuPresenter cncMillingMachineMenuPresenter = new CNCMillingMachineMenuPresenter(view, deviceInfo, getCncMillingMachineConfigurePresenter(deviceInfo), getCNCMillingMachinePickPresenter(deviceInfo.getPickStep(), (CNCMillingMachineSettings) deviceInfo.getDeviceSettings()),
-				getCNCMillingMachinePutPresenter(deviceInfo.getPutStep(), (CNCMillingMachineSettings) deviceInfo.getDeviceSettings()));
+		CNCMillingMachineMenuPresenter cncMillingMachineMenuPresenter = new CNCMillingMachineMenuPresenter(view, deviceInfo, getCncMillingMachineConfigurePresenter(deviceInfo), getCNCMillingMachinePickPresenter(deviceInfo.getPickStep(), deviceInfo.getDeviceSettings()),
+				getCNCMillingMachinePutPresenter(deviceInfo.getPutStep(),  deviceInfo.getDeviceSettings()));
 		return cncMillingMachineMenuPresenter;
 	}
 	
@@ -78,13 +78,13 @@ public class DeviceMenuFactory {
 		return cncMillingMachineConfigurePresenter;
 	}
 	
-	private CNCMillingMachinePickPresenter getCNCMillingMachinePickPresenter(PickStep pickStep, CNCMillingMachineSettings deviceSettings) {
+	private CNCMillingMachinePickPresenter getCNCMillingMachinePickPresenter(PickStep pickStep,DeviceSettings deviceSettings) {
 		CNCMillingMachinePickView view = new CNCMillingMachinePickView();
 		CNCMillingMachinePickPresenter cncMillingMachinePickPresenter = new CNCMillingMachinePickPresenter(view, pickStep, deviceSettings);
 		return cncMillingMachinePickPresenter;
 	}
 	
-	private CNCMillingMachinePutPresenter getCNCMillingMachinePutPresenter(PutStep putStep, CNCMillingMachineSettings deviceSettings) {
+	private CNCMillingMachinePutPresenter getCNCMillingMachinePutPresenter(PutStep putStep, DeviceSettings deviceSettings) {
 		CNCMillingMachinePutView view = new CNCMillingMachinePutView();
 		CNCMillingMachinePutPresenter cncMillingMachinePutPresenter = new CNCMillingMachinePutPresenter(view, putStep, deviceSettings);
 		return cncMillingMachinePutPresenter;

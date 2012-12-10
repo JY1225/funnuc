@@ -16,10 +16,10 @@ import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachine;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.robot.RobotManager;
 
 public class CNCMachineCommunicationTest {
@@ -27,7 +27,7 @@ public class CNCMachineCommunicationTest {
 	private CNCMillingMachine cncMillingMachine;
 	private DevicePutSettings putSettings;
 	private DevicePickSettings pickSettings;
-	private CNCMillingMachineSettings cncMillingSetting;
+	private DeviceSettings cncMillingSetting;
 	private ProcessingDeviceStartCyclusSettings startCyclusSettings;
 	private RobotManager robotManager;
 	private DeviceManager deviceManager;
@@ -44,7 +44,7 @@ public class CNCMachineCommunicationTest {
 		putSettings = new DevicePutSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
 		pickSettings = new DevicePickSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
 		startCyclusSettings = new ProcessingDeviceStartCyclusSettings(cncMillingMachine.getWorkAreaById("Mazak VRX Main"));
-		cncMillingSetting = (CNCMillingMachineSettings) cncMillingMachine.getDeviceSettings();
+		cncMillingSetting = cncMillingMachine.getDeviceSettings();
 		WorkArea mainWorkArea = cncMillingMachine.getWorkAreaById("Mazak VRX Main");
 		cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingById("Clamping 1"));
 		cncMillingMachine.loadDeviceSettings(cncMillingSetting);

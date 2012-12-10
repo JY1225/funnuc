@@ -6,14 +6,14 @@ import java.util.Map.Entry;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.communication.SocketConnection;
-import eu.robojob.irscw.external.device.DeviceInterventionSettings;
-import eu.robojob.irscw.external.device.DevicePickSettings;
-import eu.robojob.irscw.external.device.DevicePutSettings;
-import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.ClampingManner.Type;
 import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.device.DeviceInterventionSettings;
+import eu.robojob.irscw.external.device.DevicePickSettings;
+import eu.robojob.irscw.external.device.DevicePutSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
@@ -352,19 +352,14 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	@Override
 	public void loadDeviceSettings(DeviceSettings deviceSettings) {
-		if (deviceSettings instanceof CNCMillingMachineSettings) {
-			CNCMillingMachineSettings settings = (CNCMillingMachineSettings) deviceSettings;
-			for (Entry<WorkArea, Clamping> entry : settings.getClampings().entrySet()) {
-				entry.getKey().setActiveClamping(entry.getValue());
-			}
-		} else {
-			throw new IllegalArgumentException("Unknown device settings");
+		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
+			entry.getKey().setActiveClamping(entry.getValue());
 		}
 	}
 
 	@Override
 	public DeviceSettings getDeviceSettings() {
-		return new CNCMillingMachineSettings(getWorkAreas());
+		return new DeviceSettings(getWorkAreas());
 	}
 
 	@Override

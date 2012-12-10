@@ -1,6 +1,6 @@
 package eu.robojob.irscw.ui.configure.device;
 
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.event.DataChangedEvent;
@@ -10,10 +10,10 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMillingMachinePickView, CNCMillingMachineMenuPresenter> {
 
 	private PickStep pickStep;
-	private CNCMillingMachineSettings deviceSettings;
+	private DeviceSettings deviceSettings;
 	//private Logger logger = Logger.getLogger(CNCMillingMachinePickPresenter.class);
 	
-	public CNCMillingMachinePickPresenter(CNCMillingMachinePickView view, PickStep pickStep, CNCMillingMachineSettings deviceSettings) {
+	public CNCMillingMachinePickPresenter(CNCMillingMachinePickView view, PickStep pickStep, DeviceSettings deviceSettings) {
 		super(view);
 		this.pickStep = pickStep;
 		this.deviceSettings = deviceSettings;

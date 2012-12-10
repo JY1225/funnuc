@@ -45,85 +45,65 @@ public class DeviceManager {
 	
 	Properties properties;
 	
-	//TODO enforce unique ids
 	public DeviceManager(RobotManager robotManager, Properties properties) {
-		cncMachines = new HashMap<String, AbstractCNCMachine>();
-		preProcessingDevices = new HashMap<String, AbstractProcessingDevice>();
-		postProcessingDevices = new HashMap<String, AbstractProcessingDevice>();
-		stackingFromDevices = new HashMap<String, AbstractStackingDevice>();
-		stackingToDevices = new HashMap<String, AbstractStackingDevice>();
+		this.cncMachines = new HashMap<String, AbstractCNCMachine>();
+		this.preProcessingDevices = new HashMap<String, AbstractProcessingDevice>();
+		this.postProcessingDevices = new HashMap<String, AbstractProcessingDevice>();
+		this.stackingFromDevices = new HashMap<String, AbstractStackingDevice>();
+		this.stackingToDevices = new HashMap<String, AbstractStackingDevice>();
 		this.robotManager = robotManager;
 		this.properties = properties;
 		initialize();
 	}
 	
+	//TODO build up devices with data from external source (database)
 	private void initialize() {
 		
-		// add CNC Milling machine
-		Clamping clamping1 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 1", 0, new Coordinates(1, -1f, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
-		Clamping clamping2 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 2", 0, new Coordinates(1, -1f, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
-		Clamping clamping3 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Clamping 3", 0, new Coordinates(1, -1f, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
-		UserFrame uf3 = new UserFrame(3, 5);
-		List<WorkArea> workAreas = new ArrayList<WorkArea>();
-		WorkArea workArea1 = new WorkArea("Mazak VRX Main", uf3);
-		workArea1.addClamping(clamping1);
-		//workArea1.addClamping(clamping2);
-		//workArea1.addClamping(clamping3);
-		workArea1.setActiveClamping(clamping1);
-		/*WorkArea workArea2 = new WorkArea("Mazak VRX Second", uf2);
-		workArea2.addClamping(clamping3);*/
-		workAreas.add(workArea1);
-	//	workAreas.add(workArea2);
-		Zone zone1 = new Zone("zone 1", workAreas);
-		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.200.4", 2010);  // other: 6
-		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "10.10.40.12", 2010);  // other: 6
-		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", properties.getProperty(CNC_IP), Integer.parseInt(properties.getProperty(CNC_PORT)));  // other: 6
-		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.220.7", 2010);  // other: 6
-		//SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "cnc socket", "192.168.0.102", 2010);  // other: 6
+		// CNC Milling machine
+		Clamping shunkClamping = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Shunk", 0, new Coordinates(1, -1f, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
+		UserFrame machineUserFrame = new UserFrame(3, 5);
+		List<WorkArea> machineWAs = new ArrayList<WorkArea>();
+		WorkArea machineMainWA = new WorkArea("Mazak VRX J500 Main", machineUserFrame);
+		machineMainWA.addClamping(shunkClamping);
+		machineMainWA.setActiveClamping(shunkClamping);
+		machineWAs.add(machineMainWA);
+		Zone machineMainZone = new Zone("Mazak VRX Main J500 Zone", machineWAs);
+		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "Mazak VRX J500", properties.getProperty(CNC_IP), Integer.parseInt(properties.getProperty(CNC_PORT)));  // other: 6
 		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak VRX J500", cncSocketCon);
-		cncMillingMachine.addZone(zone1);
+		cncMillingMachine.addZone(machineMainZone);
 		cncMachines.put(cncMillingMachine.getId(), cncMillingMachine);
 		
-		// add Basic Stacker
-		//UserFrame uf1 = new UserFrame(1, 20);
-		UserFrame uf1 = new UserFrame(1, 100);
-		List<WorkArea> workAreas4 = new ArrayList<WorkArea>();
-		Clamping clamping4 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 4", 25, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
-		WorkArea workArea5 = new WorkArea("IRS M Basic", uf1);
-		workArea5.addClamping(clamping4);
-		workArea5.setActiveClamping(clamping4);
-		workAreas4.add(workArea5);
-		Zone zone4 = new Zone("Zone 4", workAreas4);
+		// Basic Stacker
+		Clamping stackerClamping = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.NONE, "Stacker", 25, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
+		UserFrame stackerUserFrame = new UserFrame(1, 100);
+		List<WorkArea> stackerWAs = new ArrayList<WorkArea>();
+		WorkArea stackerWA = new WorkArea("IRS M Basic", stackerUserFrame);
+		stackerWA.addClamping(stackerClamping);
+		stackerWA.setActiveClamping(stackerClamping);
+		stackerWAs.add(stackerWA);
+		Zone stackerMainZone = new Zone("IRS M Basic Zone", stackerWAs);
 		BasicStackPlateLayout basicStackPlateLayout = new BasicStackPlateLayout(27, 7, 10f, 15f, 45f, 40f, 26f, 35f, 1f, 0.5f);
-		//BasicStackPlateLayout basicStackPlateLayout = new BasicStackPlateLayout(27, 7, 10f, 15f, 45f, 40f, 26f, 34.975f, 1f, 0.5f);
 		BasicStackPlate basicStackPlate = new BasicStackPlate("IRS M Basic", basicStackPlateLayout);
-		basicStackPlate.addZone(zone4);
+		basicStackPlate.addZone(stackerMainZone);
 		stackingFromDevices.put(basicStackPlate.getId(), basicStackPlate);
 		stackingToDevices.put(basicStackPlate.getId(), basicStackPlate);
 		
-		// add Embossing Machine
-		//UserFrame uf4 = new UserFrame(4, 10);
-		List<WorkArea> workAreas3 = new ArrayList<WorkArea>();
-		WorkArea workArea4 = new WorkArea("Präge", uf1);
-		workAreas3.add(workArea4);
+		// Praege Device
 		float x = Float.parseFloat(properties.getProperty("prage-x"));
 		float y = Float.parseFloat(properties.getProperty("prage-y"));
 		float z = Float.parseFloat(properties.getProperty("prage-z"));
-		logger.info("X: " + x + ", Y: " + y + ", Z: " + z);
-		Clamping clamping5 = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 5", 25, new Coordinates(x, y, z, 0, 0, 90), new Coordinates(0, 2, 5, 0, 0, 0), null);
-		clamping5.addRelatedClamping(clamping1);
-		clamping1.addRelatedClamping(clamping5);
-		clamping5.addRelatedClamping(clamping2);
-		clamping2.addRelatedClamping(clamping5);
-		clamping5.addRelatedClamping(clamping3);
-		clamping3.addRelatedClamping(clamping5);
-		workArea4.addClamping(clamping5);
-		workArea4.setActiveClamping(clamping5);
-		Zone zone3 = new Zone("Zone 3", workAreas3);
+		Clamping praegeClamping = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 5", 25, new Coordinates(x, y, z, 0, 0, 90), new Coordinates(0, 2, 5, 0, 0, 0), null);
+		List<WorkArea> praegeWAs = new ArrayList<WorkArea>();
+		WorkArea praegeWA = new WorkArea("Präge", stackerUserFrame);
+		praegeWAs.add(praegeWA);
+		praegeClamping.addRelatedClamping(shunkClamping);
+		shunkClamping.addRelatedClamping(praegeClamping);
+		praegeWA.addClamping(praegeClamping);
+		praegeWA.setActiveClamping(praegeClamping);
+		Zone praegeZone = new Zone("Zone 3", praegeWAs);
 		PrageDevice prageDevice = new PrageDevice("Präge", robotManager.getRobotById("Fanuc M20iA"));
-		prageDevice.addZone(zone3);
+		prageDevice.addZone(praegeZone);
 		preProcessingDevices.put(prageDevice.getId(), prageDevice);
-				
 		
 	}
 	

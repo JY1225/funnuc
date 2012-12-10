@@ -1,6 +1,6 @@
 package eu.robojob.irscw.ui.configure.device;
 
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
@@ -8,9 +8,9 @@ import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMillingMachinePutView, CNCMillingMachineMenuPresenter> {
 
 	private PutStep putStep;
-	private CNCMillingMachineSettings deviceSettings;
+	private DeviceSettings deviceSettings;
 	
-	public CNCMillingMachinePutPresenter(CNCMillingMachinePutView view, PutStep putStep, CNCMillingMachineSettings deviceSettings) {
+	public CNCMillingMachinePutPresenter(CNCMillingMachinePutView view, PutStep putStep, DeviceSettings deviceSettings) {
 		super(view);
 		this.putStep = putStep;
 		this.deviceSettings = deviceSettings;

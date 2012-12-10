@@ -11,7 +11,6 @@ import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachine;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachineSettings;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
@@ -139,7 +138,7 @@ public class PropertiesProcessFlowFactory {
 		
 		// CNC Milling Machine
 		CNCMillingMachine cncMilling = (CNCMillingMachine) deviceManager.getCNCMachineById("Mazak VRX J500");
-		CNCMillingMachineSettings cncMillingSetting = (CNCMillingMachineSettings) cncMilling.getDeviceSettings();
+		DeviceSettings cncMillingSetting = cncMilling.getDeviceSettings();
 		WorkArea mainWorkArea = cncMilling.getWorkAreaById("Mazak VRX Main");
 		cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingById(clampingId));
 		processFlow.setDeviceSettings(cncMilling, cncMillingSetting);
