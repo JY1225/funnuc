@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PickStep;
@@ -36,7 +36,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this(id, null, null);
 	}
 	
-	public void setSpeed(int speedPercentage) throws CommunicationException {
+	public void setSpeed(int speedPercentage) throws AbstractCommunicationException {
 		if ((speedPercentage < 0) || (speedPercentage > 100) || !((speedPercentage == 10) || (speedPercentage == 25) || (speedPercentage == 50) || (speedPercentage == 100))) {
 			throw new IllegalArgumentException("Illegal speed value: " + speedPercentage + ", should be between 0 and 100");
 		}
@@ -63,41 +63,41 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.possibleGripperBodies = possibleGripperBodies;
 	}
 	
-	public abstract void restartProgram() throws CommunicationException;
-	public abstract Coordinates getPosition() throws CommunicationException, RobotActionException;
+	public abstract void restartProgram() throws AbstractCommunicationException;
+	public abstract Coordinates getPosition() throws AbstractCommunicationException, RobotActionException;
 	
-	public abstract void initiatePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException;
-	public abstract void initiatePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void initiatePick(AbstractRobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void initiatePut(AbstractRobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void finalizePut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException;
-	public abstract void finalizePick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizePut(AbstractRobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizePick(AbstractRobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void moveToAndWait(AbstractRobotPutSettings putSettings, boolean withPiece) throws CommunicationException, RobotActionException, InterruptedException;
-	public abstract void teachedMoveToAndWait(AbstractRobotPutSettings putSettings, boolean withPiece) throws CommunicationException, RobotActionException, InterruptedException;
-	public abstract void moveAway() throws CommunicationException, RobotActionException, InterruptedException;
-	public abstract void teachedMoveAway() throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void moveToAndWait(AbstractRobotPutSettings putSettings, boolean withPiece) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void teachedMoveToAndWait(AbstractRobotPutSettings putSettings, boolean withPiece) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void moveAway() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void teachedMoveAway() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void teachedMoveNoWait(AbstractRobotPutSettings putSettings, boolean withPiece) throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void teachedMoveNoWait(AbstractRobotPutSettings putSettings, boolean withPiece) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void moveToHome() throws CommunicationException, RobotActionException;
-	public abstract void moveToChangePoint() throws CommunicationException, RobotActionException;
+	public abstract void moveToHome() throws AbstractCommunicationException, RobotActionException;
+	public abstract void moveToChangePoint() throws AbstractCommunicationException, RobotActionException;
 	
-	public abstract void initiateTeachedPick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException;
-	public abstract void initiateTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void initiateTeachedPick(AbstractRobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void initiateTeachedPut(AbstractRobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void finalizeTeachedPick(AbstractRobotPickSettings pickSettings) throws CommunicationException, RobotActionException, InterruptedException;
-	public abstract void finalizeTeachedPut(AbstractRobotPutSettings putSettings) throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizeTeachedPick(AbstractRobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizeTeachedPut(AbstractRobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
 	public abstract boolean validatePickSettings(AbstractRobotPickSettings pickSettings);
 	public abstract boolean validatePutSettings(AbstractRobotPutSettings putSettings);
 	
-	public abstract void writeRegister(int registerNr, String value) throws CommunicationException, RobotActionException;
-	public abstract void doPrage() throws CommunicationException, RobotActionException, InterruptedException;
+	public abstract void writeRegister(int registerNr, String value) throws AbstractCommunicationException, RobotActionException;
+	public abstract void doPrage() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void continueProgram() throws CommunicationException;
-	public abstract void abort() throws CommunicationException;
+	public abstract void continueProgram() throws AbstractCommunicationException;
+	public abstract void abort() throws AbstractCommunicationException;
 	
-	public abstract void recalculateTCPs() throws CommunicationException;
+	public abstract void recalculateTCPs() throws AbstractCommunicationException;
 	
 	public abstract void stopCurrentAction();
 	

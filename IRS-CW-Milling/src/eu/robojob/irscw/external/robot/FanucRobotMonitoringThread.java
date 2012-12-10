@@ -2,7 +2,7 @@ package eu.robojob.irscw.external.robot;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.threading.MonitoringThread;
 
 public class FanucRobotMonitoringThread extends Thread implements MonitoringThread{
@@ -34,7 +34,7 @@ public class FanucRobotMonitoringThread extends Thread implements MonitoringThre
 						fanucRobot.processFanucRobotEvent(new FanucRobotAlarmsOccuredEvent(fanucRobot, status.getAlarms()));
 					}
 					this.previousStatus = status;
-				} catch (CommunicationException e) {
+				} catch (AbstractCommunicationException e) {
 					fanucRobot.disconnect();
 					logger.error(e);
 				}

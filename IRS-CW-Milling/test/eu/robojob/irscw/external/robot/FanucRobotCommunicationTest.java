@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.ClampingType;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
@@ -73,7 +73,7 @@ public class FanucRobotCommunicationTest {
 			fanucRobot.restartProgram();
 			fanucRobot.initiatePick(pickSettings);
 			fanucRobot.finalizePick(pickSettings);
-		} catch (CommunicationException | RobotActionException | InterruptedException e) {
+		} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			fanucRobot.disconnect();
@@ -86,7 +86,7 @@ public class FanucRobotCommunicationTest {
 		try {
 			fanucRobot.restartProgram();
 			fanucRobot.moveToHome();
-		} catch (CommunicationException | RobotActionException e) {
+		} catch (AbstractCommunicationException | RobotActionException e) {
 			e.printStackTrace();
 		} finally {
 			fanucRobot.disconnect();
@@ -101,7 +101,7 @@ public class FanucRobotCommunicationTest {
 			fanucRobot.finalizePick(pickSettings);
 			fanucRobot.initiatePut(putSettings);
 			fanucRobot.finalizePut(putSettings);
-		} catch (CommunicationException | RobotActionException | InterruptedException e) {
+		} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			fanucRobot.disconnect();
@@ -115,7 +115,7 @@ public class FanucRobotCommunicationTest {
 			fanucRobot.restartProgram();
 			fanucRobot.initiateTeachedPick(pickSettings);
 			fanucRobot.finalizeTeachedPick(pickSettings);
-		} catch (CommunicationException | RobotActionException | InterruptedException e) {
+		} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			fanucRobot.disconnect();
@@ -131,7 +131,7 @@ public class FanucRobotCommunicationTest {
 			fanucRobot.finalizeTeachedPick(pickSettings);
 			fanucRobot.initiateTeachedPut(putSettings);
 			fanucRobot.finalizeTeachedPut(putSettings);
-		} catch (CommunicationException | RobotActionException | InterruptedException e) {
+		} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			fanucRobot.disconnect();
@@ -145,7 +145,7 @@ public class FanucRobotCommunicationTest {
 			fanucRobot.restartProgram();
 			fanucRobot.initiateTeachedPick(pickInMachineSettings);
 			fanucRobot.finalizeTeachedPick(pickInMachineSettings);
-		} catch (CommunicationException | RobotActionException | InterruptedException e) {
+		} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			fanucRobot.disconnect();
@@ -159,7 +159,7 @@ public class FanucRobotCommunicationTest {
 			fanucRobot.restartProgram();
 			fanucRobot.initiateTeachedPick(pickInMachineW2Settings);
 			fanucRobot.finalizeTeachedPick(pickInMachineW2Settings);
-		} catch (CommunicationException | RobotActionException | InterruptedException e) {
+		} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			fanucRobot.disconnect();

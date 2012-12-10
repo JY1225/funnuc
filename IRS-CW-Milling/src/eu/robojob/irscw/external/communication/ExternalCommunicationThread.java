@@ -6,9 +6,8 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 /**
- * All devices act as servers, so this communication-thread will try to keep the connection alive, and will act as
- * a buffer for communicating with them
- * @author Peter
+ * All external devices act as servers, so this communication-thread will continuously try to establish connection, read incoming messages, and will act as
+ * a buffer for incoming messages
  */
 public class ExternalCommunicationThread extends Thread {
 
@@ -18,6 +17,9 @@ public class ExternalCommunicationThread extends Thread {
 	
 	private SocketConnection socketConnection;
 	
+	/**
+	 * this parameter will indicate liveliness of the thread, not the connection
+	 */
 	private boolean alive;
 	
 	private LinkedList<String> incommingMessages;
@@ -32,7 +34,7 @@ public class ExternalCommunicationThread extends Thread {
 		this.wasConnected = false;
 		this.externalCommunication = externalCommunication;
 		if (socketConnection == null) {
-			throw new IllegalArgumentException("SocketConnection must be provided");
+			throw new IllegalArgumentException("A valid SocketConnection-object must be provided");
 		}
 	}
 	
@@ -40,25 +42,29 @@ public class ExternalCommunicationThread extends Thread {
 	public void run() {
 		while(alive) {
 			if (!socketConnection.isConnected()) {
+				// not connected...
 				if (wasConnected) {
 					wasConnected = false;
-					logger.info("DISCONNECTED!");
+					logger.info("Disconnected from " + socketConnection + ".");
+					// disconnected, so spread the word
 					externalCommunication.disconnected();
 				}
 				try {
 					socketConnection.connect();
 					wasConnected = true;
+					logger.info("Connected to " + socketConnection + ".");
+					// connected, so spread the word
 					externalCommunication.connected();
 				} catch (IOException e) {
 					try {
 						Thread.sleep(CONNECTION_RETRY_INTERVAL);
 					} catch (InterruptedException e1) {
-						// we got interrupted, so let's just stop executing! Are already disconnected so no need to call disconnect()
+						// we got interrupted, so let's just stop executing! Are already disconnected so no need to call disconnect().
 						alive = false;
 					}
 				}
 			} else {
-				// connected!
+				// connected...
 				// this thread should just try reading messages and add these to the reading buffer, will also serve as 
 				// check for connection-liveness
 				try {
@@ -66,11 +72,14 @@ public class ExternalCommunicationThread extends Thread {
 					putMessage(icommingMessage);
 				} catch (IOException e) {
 					if (alive) {
+						logger.info("IOException detected: " + e.getMessage());
+						e.printStackTrace();
+						// exception occurred, spread the word and disconnect
 						externalCommunication.iOExceptionOccured(e);
 						socketConnection.disconnect();
 					}
 				} catch (DisconnectedException e) {
-					throw new IllegalStateException("This catch shouldn't be reached as in case of disconnected socket, connection occurs");
+					throw new IllegalStateException("This catch shouldn't be reached as in case of disconnection, we don't want to read, but we want to connect first.");
 				}
 			}
 		}
@@ -97,7 +106,7 @@ public class ExternalCommunicationThread extends Thread {
 		}
 	}
 	
-	public synchronized void clearIncommingCharacterBuffer() {
+	public synchronized void clearIncommingBuffer() {
 		incommingMessages.clear();
 	}
 	
@@ -106,15 +115,15 @@ public class ExternalCommunicationThread extends Thread {
 	}
 	
 	public synchronized void writeMessage(String message) throws DisconnectedException {
-		socketConnection.sendString(message);
+		socketConnection.send(message);
 	}
 	
 	public synchronized void writeCharacter(char character) throws DisconnectedException {
-		socketConnection.sendCharacter(character);
+		socketConnection.send(character);
 	}
 	
 	public synchronized void writeString(String message) throws DisconnectedException {
-		socketConnection.sendString(message);
+		socketConnection.send(message);
 	}
 	
 	public synchronized boolean isConnected() {
@@ -127,20 +136,18 @@ public class ExternalCommunicationThread extends Thread {
 	}
 	
 	public synchronized void disconnectAndStop() {
-		if (socketConnection.isConnected()) {
-			alive = false;
-			socketConnection.disconnect();
-		}
+		disconnect();
+		alive = false;
 	}
 	
-	public synchronized void justDisconnect() {
+	public synchronized void disconnect() {
 		if (socketConnection.isConnected()) {
 			socketConnection.disconnect();
 		}
 	}
 	
 	public String toString() {
-		return "CommunicatingThread: " + socketConnection;
+		return "ExternalCommunicationThread: " + socketConnection;
 	}
 	
 }

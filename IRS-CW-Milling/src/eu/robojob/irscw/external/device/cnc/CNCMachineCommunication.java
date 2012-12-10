@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.communication.DisconnectedException;
 import eu.robojob.irscw.external.communication.ExternalCommunication;
 import eu.robojob.irscw.external.communication.ResponseTimedOutException;
@@ -25,7 +25,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		this.command = new StringBuffer();
 	}
 
-	public synchronized void writeRegisters(int startingRegisterNr, int timeout, int[] values) throws CommunicationException, DisconnectedException {
+	public synchronized void writeRegisters(int startingRegisterNr, int timeout, int[] values) throws AbstractCommunicationException, DisconnectedException {
 		command = new StringBuffer();
 		command.append('W');
 		command.append('W');
@@ -48,7 +48,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 			command.append(';');
 		}
 		// send the command and wait for reply 
-		extCommThread.clearIncommingCharacterBuffer();
+		extCommThread.clearIncommingBuffer();
 		int waitedTime = 0;
 		extCommThread.writeString(command.toString());
 		do {
@@ -74,14 +74,14 @@ public class CNCMachineCommunication extends ExternalCommunication {
 			}
 			waitedTime += timeToWait;
 		} while (waitedTime <= timeout);
-		throw new ResponseTimedOutException(this);
+		throw new ResponseTimedOutException(extCommThread.getSocketConnection());
 	}
 	
-	public synchronized void writeRegisters(int startingRegisterNr, int[] values) throws CommunicationException, DisconnectedException {
+	public synchronized void writeRegisters(int startingRegisterNr, int[] values) throws AbstractCommunicationException, DisconnectedException {
 		writeRegisters(startingRegisterNr, getDefaultWaitTimeout(), values);
 	}
 	
-	public synchronized List<Integer> readRegisters(int startingRegisterNr, int amount, int timeout) throws CommunicationException, DisconnectedException{
+	public synchronized List<Integer> readRegisters(int startingRegisterNr, int amount, int timeout) throws AbstractCommunicationException, DisconnectedException{
 		command = new StringBuffer();
 		command.append('W');
 		command.append('R');
@@ -100,7 +100,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		}
 		command.append(amount);
 		// send the command and wait for reply 
-		extCommThread.clearIncommingCharacterBuffer();
+		extCommThread.clearIncommingBuffer();
 		int waitedTime = 0;
 		extCommThread.writeString(command.toString());
 		do {
@@ -124,7 +124,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 			}
 			waitedTime += timeToWait;
 		} while (waitedTime <= timeout);
-		throw new ResponseTimedOutException(this);
+		throw new ResponseTimedOutException(extCommThread.getSocketConnection());
 	}
 	
 	public List<Integer> parseResult(String message, String command) {
@@ -140,7 +140,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		return results;
 	}
 	
-	public synchronized boolean checkRegisterValue(int registerNumber, int value, int waitTimeout) throws CommunicationException, DisconnectedException {
+	public synchronized boolean checkRegisterValue(int registerNumber, int value, int waitTimeout) throws AbstractCommunicationException, DisconnectedException {
 		long currentTime = System.currentTimeMillis();
 		List<Integer> readRegisters;
 		boolean timeout = false;
@@ -160,7 +160,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 	}
 	
 	// TODO test this method
-	public synchronized boolean checkRegisterValueBitPattern(int registerNumber, int bitPattern, int waitTimeout) throws CommunicationException, DisconnectedException {
+	public synchronized boolean checkRegisterValueBitPattern(int registerNumber, int bitPattern, int waitTimeout) throws AbstractCommunicationException, DisconnectedException {
 		long currentTime = System.currentTimeMillis();
 		List<Integer> readRegisters;
 		boolean timeout = false;
@@ -178,7 +178,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		return false;
 	}
 	
-	public synchronized List<Integer> readRegisters(int startingRegisterNr, int amount) throws CommunicationException, DisconnectedException {
+	public synchronized List<Integer> readRegisters(int startingRegisterNr, int amount) throws AbstractCommunicationException, DisconnectedException {
 		return readRegisters(startingRegisterNr, amount, getDefaultWaitTimeout());
 	}
 

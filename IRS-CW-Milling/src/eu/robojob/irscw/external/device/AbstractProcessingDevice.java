@@ -2,7 +2,7 @@ package eu.robojob.irscw.external.device;
 
 import java.util.List;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.process.ProcessingStep;
 
 public abstract class AbstractProcessingDevice extends AbstractDevice {
@@ -23,8 +23,8 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 		return isInvasive;
 	}
 	
-	public abstract void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException, InterruptedException;	
-	public abstract void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException;
+	public abstract void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;	
+	public abstract void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException;
 	
 	public abstract boolean validateStartCyclusSettings(AbstractProcessingDeviceStartCyclusSettings startCyclusSettings);
 	

@@ -2,7 +2,7 @@ package eu.robojob.irscw.process;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
 import eu.robojob.irscw.external.device.DeviceActionException;
@@ -24,7 +24,7 @@ public class PickAfterWaitStep extends PickStep {
 	}
 
 	@Override
-	public void executeStep() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	public void executeStep() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the devices to be used
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
@@ -53,13 +53,13 @@ public class PickAfterWaitStep extends PickStep {
 	}
 	
 	@Override
-	public void prepareForTeaching() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	public void prepareForTeaching() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		throw new IllegalStateException("No teaching needed with this kind of step.");
 
 	}
 
 	@Override
-	public void teachingFinished() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	public void teachingFinished() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		throw new IllegalStateException("No teaching needed with this kind of step.");
 	}
 	

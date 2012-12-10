@@ -3,7 +3,7 @@ package eu.robojob.irscw.process;
 import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.RobotActionException;
@@ -24,7 +24,7 @@ public abstract class AbstractProcessStep {
 		this(null, device);
 	}
 	
-	public abstract void executeStep() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException;
+	public abstract void executeStep() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException;
 		
 	public abstract String toString();
 	

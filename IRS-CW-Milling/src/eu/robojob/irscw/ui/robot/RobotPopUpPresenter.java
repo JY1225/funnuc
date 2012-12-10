@@ -1,6 +1,6 @@
 package eu.robojob.irscw.ui.robot;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.robot.FanucRobot;
 import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredEvent;
 import eu.robojob.irscw.external.robot.FanucRobotEvent;
@@ -45,7 +45,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 		if (robot.isConnected()) {
 			try {
 				robot.restartProgram();
-			} catch (CommunicationException e) {
+			} catch (AbstractCommunicationException e) {
 				e.printStackTrace();
 			}
 		}
@@ -55,7 +55,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 		if (robot.isConnected()) {
 			try {
 				robot.moveToHome();
-			} catch (CommunicationException | RobotActionException e) {
+			} catch (AbstractCommunicationException | RobotActionException e) {
 				e.printStackTrace();
 			}
 		}
@@ -65,7 +65,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 		if (robot.isConnected()) {
 			try {
 				robot.moveToChangePoint();
-			} catch (CommunicationException | RobotActionException e) {
+			} catch (AbstractCommunicationException | RobotActionException e) {
 				e.printStackTrace();
 			}
 		}
@@ -75,7 +75,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 		if (robot.isConnected()) {
 			try {
 				robot.setSpeed(speed);
-			} catch (CommunicationException e) {
+			} catch (AbstractCommunicationException e) {
 				e.printStackTrace();
 			}
 		}

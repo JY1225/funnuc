@@ -1,8 +1,8 @@
 package eu.robojob.irscw.external.device;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 
-public class DeviceDisconnectedException extends CommunicationException {
+public class DeviceDisconnectedException extends AbstractCommunicationException {
 
 	private static final long serialVersionUID = 1L;
 	private AbstractDevice device;
@@ -18,5 +18,11 @@ public class DeviceDisconnectedException extends CommunicationException {
 	@Override
 	public String getMessage() {
 		return "Verbinding verbroken met " + device.getId();
+	}
+
+	@Override
+	public String getLocalizedMessage() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

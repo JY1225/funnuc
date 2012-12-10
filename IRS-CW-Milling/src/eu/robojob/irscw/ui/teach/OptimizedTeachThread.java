@@ -2,7 +2,7 @@ package eu.robojob.irscw.ui.teach;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceManager;
@@ -166,7 +166,7 @@ public class OptimizedTeachThread extends TeachThread {
 			this.running = false;
 
 			processFlow.setMode(Mode.READY);
-		} catch (CommunicationException | RobotActionException | DeviceActionException e) {
+		} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
 			e.printStackTrace();
 			notifyException(e);
 			processFlow.setMode(Mode.STOPPED);
@@ -176,7 +176,7 @@ public class OptimizedTeachThread extends TeachThread {
 		}
 	}
 	
-	private Coordinates getFinishedWorkPieceTeachedOffset(PutStep putOnStackerStep) throws CommunicationException, RobotActionException, InterruptedException {
+	private Coordinates getFinishedWorkPieceTeachedOffset(PutStep putOnStackerStep) throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		logger.info("About to get teached offset of finished workpiece");
 		Coordinates teachedOffsetFinishedWp = null;
 		BasicStackPlate stackPlate = (BasicStackPlate) putOnStackerStep.getDevice();

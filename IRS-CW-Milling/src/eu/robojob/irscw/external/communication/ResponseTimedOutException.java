@@ -1,20 +1,32 @@
 package eu.robojob.irscw.external.communication;
 
-public class ResponseTimedOutException extends CommunicationException {
+import eu.robojob.irscw.util.Translator;
+
+public class ResponseTimedOutException extends AbstractCommunicationException {
 
 	private static final long serialVersionUID = 1L;
-
-	private ExternalCommunication extComm;
 	
-	public ResponseTimedOutException(ExternalCommunication extComm) {
-		this.extComm = extComm;
+	private static final String RESPONSE_TIMED_OUT_FROM = "ResponseTimedOutException.responseTimedOutFrom";
+	
+	private SocketConnection socketConnection;
+	private Translator translator;
+	
+	public ResponseTimedOutException(SocketConnection socketConnection) {
+		this.socketConnection = socketConnection;
+		this.translator = Translator.getInstance();
 	}
 	
-	public ExternalCommunication getExternalCommunication() {
-		return extComm;
+	public SocketConnection getConnection() {
+		return socketConnection;
 	}
 	
+	@Override
 	public String getMessage() {
-		return "Het duurde te lang voordat een antwoord kwam van " + extComm;
+		return "Waiting for a response from " + socketConnection + " timed out.";
+	}
+	
+	@Override
+	public String getLocalizedMessage() {
+		return translator.getTranslation(RESPONSE_TIMED_OUT_FROM) + " " + socketConnection;
 	}
 }

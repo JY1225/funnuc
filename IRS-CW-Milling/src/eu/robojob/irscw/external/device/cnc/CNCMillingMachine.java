@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.ClampingType;
@@ -41,7 +41,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void updateStatusAndAlarms() throws CommunicationException {
+	public void updateStatusAndAlarms() throws AbstractCommunicationException {
 		int statusInt = (cncMachineCommunication.readRegisters(CNCMachineConstants.STATUS, 1)).get(0);
 		this.status = new CNCMachineStatus(statusInt);
 		
@@ -125,7 +125,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void nCReset() throws CommunicationException, InterruptedException {
+	public void nCReset() throws AbstractCommunicationException, InterruptedException {
 		int command = 0;
 		command = command | CNCMachineConstants.NC_RESET;
 		int registers[] = {command};
@@ -137,7 +137,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void powerOff() throws CommunicationException, InterruptedException {
+	public void powerOff() throws AbstractCommunicationException, InterruptedException {
 		int command = 0;
 		command = command | CNCMachineConstants.POWER_OFF;
 		int registers[] = {command};
@@ -148,7 +148,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	 * This method will also take care of turning on the blue lamp
 	 */
 	@Override
-	public void indicateAllProcessed() throws CommunicationException, InterruptedException {
+	public void indicateAllProcessed() throws AbstractCommunicationException, InterruptedException {
 		int command = 0;
 		command = command | CNCMachineConstants.ALL_WP_PROCESSED;
 		int registers[] = {command};
@@ -156,7 +156,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void operatorRequested(boolean requested) throws CommunicationException, InterruptedException {
+	public void operatorRequested(boolean requested) throws AbstractCommunicationException, InterruptedException {
 		int command = 0;
 		if (requested) {
 			command = command | CNCMachineConstants.OPERATOR_REQUESTED;
@@ -166,19 +166,19 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void stopIndications() throws CommunicationException, InterruptedException {
+	public void stopIndications() throws AbstractCommunicationException, InterruptedException {
 		int command = 0;
 		int registers[] = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
 	}
 	
 	@Override
-	public void prepareForProcess(ProcessFlow process)  throws CommunicationException, InterruptedException {
+	public void prepareForProcess(ProcessFlow process)  throws AbstractCommunicationException, InterruptedException {
 		nCReset();
 	}
 
 	@Override
-	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (startCylusSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			int command = 0;
@@ -206,11 +206,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	// this is not taken into account for now
 	@Override
-	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException {
+	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException {
 	}
 
 	@Override
-	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (pickSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			// first WA
@@ -233,7 +233,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+	public void prepareForPut(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			// first WA
@@ -261,7 +261,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+	public void releasePiece(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (pickSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			int command = 0;
@@ -282,7 +282,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+	public void grabPiece(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			int command = 0;
@@ -303,7 +303,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException, InterruptedException {
+	public boolean canPut(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, InterruptedException {
 		// check first workarea is selected 
 		if (putSettings.getWorkArea().getId().equals(getWorkAreas().get(0).getId())) {
 			boolean canPut =  waitForStatus(CNCMachineConstants.R_PUT_WA1_ALLOWED, PUT_ALLOWED_TIMEOUT);
@@ -319,26 +319,26 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	
 	// this is not taken into account on the Machine-side for now
 	@Override
-	public boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+	public boolean canPick(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException {
 		return true;
 	}
 
 	// be aware! this will not be easy! of toch: prepare for pick!!
 	@Override
-	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException {
+	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws AbstractCommunicationException {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	// these are not taken into account by the machine for now...
 	@Override
-	public void pickFinished(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+	public void pickFinished(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException {
 	}
 	@Override
-	public void putFinished(AbstractDevicePutSettings putSettings) throws CommunicationException {
+	public void putFinished(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException {
 	}
 	@Override
-	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException {
+	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws AbstractCommunicationException {
 	}
 	
 	public static class CNCMillingMachinePutSettings extends AbstractCNCMachinePutSettings{
@@ -507,7 +507,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void reset() throws CommunicationException, InterruptedException {
+	public void reset() throws AbstractCommunicationException, InterruptedException {
 		/*int command = 0;
 		command = command | CNCMachineConstants.RESET_REQUEST;
 		int registers[] = {command};

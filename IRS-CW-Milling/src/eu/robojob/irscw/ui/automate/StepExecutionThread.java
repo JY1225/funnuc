@@ -1,6 +1,6 @@
 package eu.robojob.irscw.ui.automate;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
@@ -21,7 +21,7 @@ public class StepExecutionThread extends Thread {
 	public void run() {
 		try {
 			step.executeStep();
-		} catch (CommunicationException | RobotActionException | DeviceActionException e) {
+		} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
 			e.printStackTrace();
 			automateThread.notifyException(e);
 			step.getProcessFlow().setMode(Mode.STOPPED);

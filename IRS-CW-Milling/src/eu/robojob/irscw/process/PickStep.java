@@ -6,7 +6,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDevice.AbstractDevicePickSettings;
 import eu.robojob.irscw.external.device.DeviceActionException;
@@ -39,7 +39,7 @@ public class PickStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public void executeStep() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	public void executeStep() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the devices to be used
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
@@ -85,7 +85,7 @@ public class PickStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public void prepareForTeaching() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	public void prepareForTeaching() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
@@ -114,7 +114,7 @@ public class PickStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public void teachingFinished() throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	public void teachingFinished() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {
@@ -141,7 +141,7 @@ public class PickStep extends AbstractTransportStep {
 	
 	@Override
 	//TODO review!!
-	public void finalize() throws CommunicationException, DeviceActionException {
+	public void finalize() throws AbstractCommunicationException, DeviceActionException {
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
 		} else {

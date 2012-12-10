@@ -2,7 +2,7 @@ package eu.robojob.irscw.ui.teach;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
@@ -93,7 +93,7 @@ public class TeachThread extends Thread {
 			} else {
 				processFlow.setMode(Mode.STOPPED);
 			}
-		} catch(CommunicationException | RobotActionException | DeviceActionException e) {
+		} catch(AbstractCommunicationException | RobotActionException | DeviceActionException e) {
 			notifyException(e);
 			processFlow.setMode(Mode.STOPPED);
 		} catch(InterruptedException e) {
@@ -117,7 +117,7 @@ public class TeachThread extends Thread {
 				robot.stopCurrentAction();
 				try {
 					robot.abort();
-				} catch (CommunicationException e) {
+				} catch (AbstractCommunicationException e) {
 					notifyException(e);
 				}
 			}
@@ -132,7 +132,7 @@ public class TeachThread extends Thread {
 		return running;
 	}
 	
-	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	private void handlePick(final PickStep pickStep) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		if (pickStep.needsTeaching()) {
 			pickStep.prepareForTeaching();
 			pickStep.teachingFinished();
@@ -141,7 +141,7 @@ public class TeachThread extends Thread {
 		}
 	}
 	
-	private void handlePut(final PutStep putStep) throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	private void handlePut(final PutStep putStep) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		if (putStep.needsTeaching()) {
 			putStep.prepareForTeaching();
 			putStep.teachingFinished();
@@ -150,7 +150,7 @@ public class TeachThread extends Thread {
 		}
 	}
 
-	private void handleProcessing(final ProcessingStep step) throws CommunicationException, DeviceActionException, InterruptedException {
+	private void handleProcessing(final ProcessingStep step) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		step.executeStep();
 	}
 	

@@ -6,7 +6,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
@@ -28,7 +28,7 @@ public class ProcessingStep extends AbstractProcessStep {
 	}
 	
 	@Override
-	public void executeStep() throws CommunicationException, DeviceActionException, InterruptedException {
+	public void executeStep() throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the device to be used
 		if (!device.lock(processFlow)) {
 			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.communication.DisconnectedException;
 import eu.robojob.irscw.external.communication.ExternalCommunication;
 import eu.robojob.irscw.external.communication.ResponseTimedOutException;
@@ -62,7 +62,7 @@ public class FanucRobotCommunication extends ExternalCommunication {
 			}
 			waitedTime += timeToWait;
 		} while (waitedTime < timeout);
-		throw new ResponseTimedOutException(this);
+		throw new ResponseTimedOutException(extCommThread.getSocketConnection());
 	}
 
 	public synchronized void writeCommand(int commandId, int ackId, int timeout) throws DisconnectedException, ResponseTimedOutException {
@@ -103,7 +103,7 @@ public class FanucRobotCommunication extends ExternalCommunication {
 			}
 			waitedTime += timeToWait;
 		} while (waitedTime <= timeout);
-		throw new ResponseTimedOutException(this);
+		throw new ResponseTimedOutException(extCommThread.getSocketConnection());
 	}
 	
 	public List<String> parseResult(String response) {
@@ -128,7 +128,7 @@ public class FanucRobotCommunication extends ExternalCommunication {
 		return false;
 	}*/
 	
-	public synchronized Coordinates getPosition(int waitTimeout) throws CommunicationException, DisconnectedException {
+	public synchronized Coordinates getPosition(int waitTimeout) throws AbstractCommunicationException, DisconnectedException {
 		long currentTime = System.currentTimeMillis();
 		boolean timeout = false;
 		while (!timeout) {

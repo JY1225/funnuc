@@ -19,12 +19,12 @@ public abstract class ExternalCommunication {
 		defaultWaitTimeout = DEFAULT_WAIT_TIMEOUT;
 	}
 	
-	public boolean isConnected() {
+	public synchronized boolean isConnected() {
 		return extCommThread.isConnected();
 	}
 	
 	public synchronized void disconnect() {
-		extCommThread.justDisconnect();
+		extCommThread.disconnect();
 	}
 	
 	public synchronized boolean hasMessage() {
@@ -47,8 +47,17 @@ public abstract class ExternalCommunication {
 		return defaultWaitTimeout;
 	}
 	
+	/**
+	 * This message will be called when the communication thread established connection.
+	 */
 	public abstract void connected();
+	/**
+	 * This message will be called when the communication thread established disconnection.
+	 */
 	public abstract void disconnected();
+	/**
+	 * This message will be called when an IOException occurred in the communication thread.
+	 */
 	public abstract void iOExceptionOccured(IOException e);
 	
 }

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.ClampingType;
@@ -36,12 +36,12 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 
 	@Override
-	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+	public void startCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		logger.info("start cyclus.");
 	}
 
 	@Override
-	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws CommunicationException, DeviceActionException {
+	public void prepareForStartCyclus(AbstractProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException {
 	}
 
 	@Override
@@ -55,35 +55,35 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 
 	@Override
-	public boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException {
+	public boolean canPick(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException {
 		return true;
 	}
 	@Override
-	public boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+	public boolean canPut(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		return true;
 	}
 
 	@Override
-	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+	public void prepareForPick(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 	}
 
 	@Override
-	public void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+	public void prepareForPut(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 	}
 
 	@Override
-	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException, DeviceActionException {}
+	public void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {}
 	@Override
-	public void pickFinished(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException {}
+	public void pickFinished(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException {}
 	@Override
-	public void putFinished(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException {}
+	public void putFinished(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException {}
 	@Override
-	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException, DeviceActionException {}
+	public void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {}
 	@Override
-	public void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+	public void releasePiece(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 	}
 	@Override
-	public void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException {
+	public void grabPiece(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		try {
 			robot.doPrage();
 		} catch (RobotActionException e) {
@@ -179,6 +179,6 @@ public class PrageDevice extends AbstractProcessingDevice {
 		}
 	}
 	@Override
-	public void prepareForProcess(ProcessFlow process) throws CommunicationException, InterruptedException {		
+	public void prepareForProcess(ProcessFlow process) throws AbstractCommunicationException, InterruptedException {		
 	}
 }

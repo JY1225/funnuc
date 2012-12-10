@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.threading.MonitoringThread;
 
 public class CNCMachineMonitoringThread extends Thread implements MonitoringThread {
@@ -41,7 +41,7 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 						cncMachine.processCNCMachineEvent(new CNCMachineAlarmsOccuredEvent(cncMachine, alarms));
 					}
 					this.previousAlarms = alarms;
-				} catch (CommunicationException e) {
+				} catch (AbstractCommunicationException e) {
 					cncMachine.disconnect();
 					logger.error(e);
 				}

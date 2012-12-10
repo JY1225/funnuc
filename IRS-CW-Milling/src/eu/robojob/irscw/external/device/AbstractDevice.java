@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.InterventionStep;
@@ -17,21 +17,21 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	protected List<Zone> zones;
 	
-	public abstract void prepareForProcess(ProcessFlow process) throws CommunicationException, InterruptedException;
+	public abstract void prepareForProcess(ProcessFlow process) throws AbstractCommunicationException, InterruptedException;
 		
-	public abstract boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException;
-	public abstract boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException;
+	public abstract boolean canPick(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException;
+	public abstract boolean canPut(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
 	
-	public abstract void prepareForPick(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException;
-	public abstract void prepareForPut(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException;
-	public abstract void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException, DeviceActionException;
+	public abstract void prepareForPick(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
+	public abstract void prepareForPut(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
+	public abstract void prepareForIntervention(AbstractDeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException;
 	
-	public abstract void pickFinished(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException;
-	public abstract void putFinished(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException;
-	public abstract void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws CommunicationException, DeviceActionException;
+	public abstract void pickFinished(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException;
+	public abstract void putFinished(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException;
+	public abstract void interventionFinished(AbstractDeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException;
 	
-	public abstract void releasePiece(AbstractDevicePickSettings pickSettings) throws CommunicationException, DeviceActionException, InterruptedException;
-	public abstract void grabPiece(AbstractDevicePutSettings putSettings) throws CommunicationException, DeviceActionException, InterruptedException;
+	public abstract void releasePiece(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
+	public abstract void grabPiece(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
 	
 	public abstract void loadDeviceSettings(AbstractDeviceSettings deviceSettings);
 	public abstract AbstractDeviceSettings getDeviceSettings();

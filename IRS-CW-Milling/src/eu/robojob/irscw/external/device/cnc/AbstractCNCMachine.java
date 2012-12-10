@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.DeviceDisconnectedException;
 import eu.robojob.irscw.external.device.DeviceType;
@@ -76,7 +76,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		return status;
 	}
 	
-	public abstract void updateStatusAndAlarms() throws CommunicationException;
+	public abstract void updateStatusAndAlarms() throws AbstractCommunicationException;
 	public abstract void disconnect();
 	
 	public Set<CNCMachineAlarm> getAlarms() {
@@ -121,14 +121,14 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		}
 	}
 	
-	public abstract void reset() throws CommunicationException, InterruptedException;
-	public abstract void nCReset() throws CommunicationException, InterruptedException;
-	public abstract void powerOff() throws CommunicationException, InterruptedException;
-	public abstract void indicateAllProcessed() throws CommunicationException, InterruptedException;
-	public abstract void operatorRequested(boolean requested) throws CommunicationException, InterruptedException;
-	public abstract void stopIndications() throws CommunicationException, InterruptedException;
+	public abstract void reset() throws AbstractCommunicationException, InterruptedException;
+	public abstract void nCReset() throws AbstractCommunicationException, InterruptedException;
+	public abstract void powerOff() throws AbstractCommunicationException, InterruptedException;
+	public abstract void indicateAllProcessed() throws AbstractCommunicationException, InterruptedException;
+	public abstract void operatorRequested(boolean requested) throws AbstractCommunicationException, InterruptedException;
+	public abstract void stopIndications() throws AbstractCommunicationException, InterruptedException;
 	
-	protected boolean waitForStatus(int status, long timeout) throws CommunicationException, InterruptedException {
+	protected boolean waitForStatus(int status, long timeout) throws AbstractCommunicationException, InterruptedException {
 		long waitedTime = 0;
 		stopAction = false;
 		do {

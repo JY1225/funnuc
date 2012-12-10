@@ -10,7 +10,7 @@ import javafx.application.Platform;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.cnc.CNCMachineAlarmsOccuredEvent;
@@ -415,7 +415,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 					try {
 						event.getSource().continueProgram();
 						teachStatusView.hideAlarmMessage();
-					} catch (CommunicationException e) {
+					} catch (AbstractCommunicationException e) {
 						exceptionOccured(e);
 					}
 				}

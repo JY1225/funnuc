@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.ClampingType;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
@@ -61,7 +61,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public synchronized boolean canPick(AbstractDevicePickSettings pickSettings) throws CommunicationException {
+	public synchronized boolean canPick(AbstractDevicePickSettings pickSettings) throws AbstractCommunicationException {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == Type.RAW)) {
 				return true;
@@ -71,7 +71,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public synchronized boolean canPut(AbstractDevicePutSettings putSettings) throws CommunicationException {
+	public synchronized boolean canPut(AbstractDevicePutSettings putSettings) throws AbstractCommunicationException {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if (stackingPos.getWorkPiece() == null) {
 				return true;
@@ -311,7 +311,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public void prepareForProcess(ProcessFlow process) throws CommunicationException, InterruptedException {
+	public void prepareForProcess(ProcessFlow process) throws AbstractCommunicationException, InterruptedException {
 		/*try {
 			layout.placeRawWorkPieces(rawWorkPiece, process.getTotalAmount());
 		} catch (IncorrectWorkPieceDataException e) {

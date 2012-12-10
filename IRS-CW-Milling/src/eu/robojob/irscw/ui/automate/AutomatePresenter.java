@@ -7,7 +7,7 @@ import javafx.application.Platform;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.cnc.CNCMachineAlarmsOccuredEvent;
@@ -174,7 +174,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 			if (device instanceof AbstractCNCMachine) {
 				try {
 					((AbstractCNCMachine) device).reset();
-				} catch (CommunicationException | InterruptedException e) {
+				} catch (AbstractCommunicationException | InterruptedException e) {
 					logger.error(e);
 					e.printStackTrace();
 				}
@@ -235,7 +235,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 			if (device instanceof AbstractCNCMachine) {
 				try {
 					((AbstractCNCMachine) device).indicateAllProcessed();
-				} catch (CommunicationException e) {
+				} catch (AbstractCommunicationException e) {
 					e.printStackTrace();
 					exceptionOccured(e);
 				} catch(InterruptedException e) {
@@ -250,7 +250,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 			if (device instanceof AbstractCNCMachine) {
 				try {
 					((AbstractCNCMachine) device).stopIndications();
-				} catch (CommunicationException e) {
+				} catch (AbstractCommunicationException e) {
 					e.printStackTrace();
 					exceptionOccured(e);
 				} catch(InterruptedException e) {
@@ -265,7 +265,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 			if (device instanceof AbstractCNCMachine) {
 				try {
 					((AbstractCNCMachine) device).operatorRequested(true);
-				} catch (CommunicationException e) {
+				} catch (AbstractCommunicationException e) {
 					e.printStackTrace();
 					exceptionOccured(e);
 				} catch(InterruptedException e) {
@@ -396,7 +396,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 					try {
 						event.getSource().continueProgram();
 						view.hideAlarmMessage();
-					} catch (CommunicationException e) {
+					} catch (AbstractCommunicationException e) {
 						exceptionOccured(e);
 					}
 				}

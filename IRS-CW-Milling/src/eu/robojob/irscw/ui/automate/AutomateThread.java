@@ -2,7 +2,7 @@ package eu.robojob.irscw.ui.automate;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.cnc.AbstractCNCMachine;
@@ -99,7 +99,7 @@ public class AutomateThread extends Thread{
 			} else {
 				processFlow.setMode(Mode.PAUSED);
 			}
-		} catch(CommunicationException | RobotActionException | DeviceActionException e) {
+		} catch(AbstractCommunicationException | RobotActionException | DeviceActionException e) {
 			notifyException(e);
 			processFlow.setMode(Mode.STOPPED);
 		} catch(InterruptedException e) {
@@ -120,15 +120,15 @@ public class AutomateThread extends Thread{
 		this.running = false;
 	}
 	
-	private void handlePick(final PickStep pickStep) throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	private void handlePick(final PickStep pickStep) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		pickStep.executeStep();
 	}
 	
-	private void handlePut(final PutStep putStep) throws CommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	private void handlePut(final PutStep putStep) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		putStep.executeStep();
 	}
 
-	private void handleProcessing(final ProcessingStep step) throws CommunicationException, DeviceActionException, InterruptedException {
+	private void handleProcessing(final ProcessingStep step) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		step.executeStep();
 	}
 	
@@ -159,7 +159,7 @@ public class AutomateThread extends Thread{
 				robot.stopCurrentAction();
 				try {
 					robot.abort();
-				} catch (CommunicationException e) {
+				} catch (AbstractCommunicationException e) {
 					notifyException(e);
 				}
 			}

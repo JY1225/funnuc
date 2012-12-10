@@ -2,7 +2,7 @@ package eu.robojob.irscw.ui.automate;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.CommunicationException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceManager;
@@ -87,7 +87,7 @@ public class OptimizedAutomateThread extends AutomateThread {
 				}
 			}
 		//} catch(CommunicationException | RobotActionException | DeviceActionException e) {
-		} catch(CommunicationException e) {
+		} catch(AbstractCommunicationException e) {
 			notifyException(e);
 			processFlow.setMode(Mode.STOPPED);
 		} catch(InterruptedException e) {

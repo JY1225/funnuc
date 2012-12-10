@@ -15,7 +15,7 @@ public class SocketConnection {
 		CLIENT, SERVER
 	}
 	
-	private String name;
+	private String id;
 	private String ipAddress;
 	private int portNumber;
 	private Type type;
@@ -27,18 +27,18 @@ public class SocketConnection {
 	
 	private boolean connected;
 		
-	private static Logger logger = Logger.getLogger(SocketConnection.class.getName());
+	private static Logger logger = Logger.getLogger(SocketConnection.class);
 		
-	public SocketConnection(Type type, String name, String ipAddress, int portNumber) {
+	public SocketConnection(Type type, String id, String ipAddress, int portNumber) {
 		this.type = type;
-		this.name = name;
+		this.id = id;
 		this.ipAddress = ipAddress;
 		this.portNumber = portNumber;
 		this.connected = false;
 	}
 	
-	public SocketConnection(Type type, String name, int portNumber) {
-		this(type, name, "127.0.0.1", portNumber);
+	public SocketConnection(Type type, String id, int portNumber) {
+		this(type, id, "127.0.0.1", portNumber);
 	}
 	
 	public void connect() throws IOException{
@@ -46,7 +46,7 @@ public class SocketConnection {
 		} else {
 			if (type == Type.CLIENT) {
 				try {
-					connectAsClient();
+					socket = new Socket(ipAddress, portNumber);
 					connectInOut();
 					connected = true;
 				} catch (IOException e) {
@@ -58,7 +58,8 @@ public class SocketConnection {
 				}
 			} else if (type == Type.SERVER) {
 				try {
-					connectAsServer();
+					serverSocket = new ServerSocket(portNumber);
+					socket = serverSocket.accept();
 					connectInOut();
 					connected = true;
 				} catch (IOException e) {
@@ -69,18 +70,9 @@ public class SocketConnection {
 					}
 				}
 			} else {
-				throw new IllegalStateException("Unknown connection type");
+				throw new IllegalStateException("Unknown connection type.");
 			}
 		}
-	}
-	
-	private void connectAsClient() throws IOException {
-		socket = new Socket(ipAddress, portNumber);
-	}
-	
-	private void connectAsServer() throws IOException {
-		serverSocket = new ServerSocket(portNumber);
-		socket = serverSocket.accept();
 	}
 	
 	private void connectInOut() throws IOException {
@@ -88,14 +80,13 @@ public class SocketConnection {
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 	}
 	
-	
-	// TODO refactor!
 	public void disconnect() {
 		try {
 			if (serverSocket != null) {
 				serverSocket.close();
 			}
 		} catch (IOException e) {
+			logger.error(e);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -103,6 +94,7 @@ public class SocketConnection {
 					socket.close();
 				}
 			} catch (IOException e) {
+				logger.error(e);
 				e.printStackTrace();
 			} finally {
 				serverSocket = null;
@@ -114,6 +106,7 @@ public class SocketConnection {
 					try {
 						in.close();
 					} catch (IOException e) {
+						logger.error(e);
 						e.printStackTrace();
 					}
 				}
@@ -125,7 +118,7 @@ public class SocketConnection {
 	}
 	
 	public String getName() {
-		return name;
+		return id;
 	}
 
 	public String getIpAddress() {
@@ -156,7 +149,7 @@ public class SocketConnection {
 		}
 	}
 	
-	public void sendString(String message) throws DisconnectedException {
+	public void send(String message) throws DisconnectedException {
 		if (isConnected()) {
 			out.print(message);
 			out.flush();
@@ -165,7 +158,7 @@ public class SocketConnection {
 		}
 	}
 	
-	public void sendCharacter(char character) throws DisconnectedException {
+	public void send(char character) throws DisconnectedException {
 		if (isConnected()) {
 			out.print(character);
 			out.flush();
@@ -185,6 +178,7 @@ public class SocketConnection {
 				return msg;
 			} catch (IOException e) {
 				connected = false;
+				// Disconnect by default when exception occurred, if external device is healthy it will be waiting for re-connection.
 				disconnect();
 				throw e;
 			}
@@ -199,13 +193,12 @@ public class SocketConnection {
 		      int b = in.read();
 		      if (b < 0) {
 		    	  disconnect();
-		    	  throw new IOException("Data truncated (end of stream reached)");
-			   } else {
-					logger.info("read character: " + b);
+		    	  throw new IOException("Data truncated (end of stream reached).");
 			   }
 			   return (char) b;
 			} catch (IOException e) {
 				connected = false;
+				// Disconnect by default when exception occurred, if external device is healthy it will be waiting for re-connection.
 				disconnect();
 				throw e;
 			}
@@ -221,18 +214,18 @@ public class SocketConnection {
 			      int b = in.read();
 			      if (b < 0) {
 			    	  disconnect();
-			    	  throw new IOException("Data truncated");
+			    	  throw new IOException("Data truncated (end of stream reached).");
 				   } else {
 						message = message + (char) b;
 						while (in.ready()) {
 							b = in.read();
 							message = message + (char) b;
 						}
-						//logger.info("read message: " + message);
 						return message;
 				   }
 				} catch (IOException e) {
 					connected = false;
+					// Disconnect by default when exception occurred, if external device is healthy it will be waiting for re-connection.
 					disconnect();
 					throw e;
 				}
@@ -243,6 +236,6 @@ public class SocketConnection {
 	
 	@Override
 	public String toString() {
-		return this.name + "(type: " + type + ", " + ipAddress + ":" + portNumber + ")";
+		return this.id + "(type: " + type + ", " + ipAddress + ":" + portNumber + ")";
 	}
 }
