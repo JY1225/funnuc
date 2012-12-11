@@ -5,7 +5,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
+import eu.robojob.irscw.external.communication.DisconnectedException;
+import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.threading.MonitoringThread;
 
 public class CNCMachineMonitoringThread extends Thread implements MonitoringThread {
@@ -31,17 +32,18 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 			if (cncMachine.isConnected()) {
 				try {
 					cncMachine.updateStatusAndAlarms();
-					CNCMachineStatus status = cncMachine.getStatus();
-					if (status.getStatus() != previousStatus) {
-						cncMachine.processCNCMachineEvent(new CNCMachineStatusChangedEvent(cncMachine, status));
+					int status = cncMachine.getStatus();
+					if (status!= previousStatus) {
+						cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.STATUS_CHANGED));
 					}
-					this.previousStatus = status.getStatus();
+					this.previousStatus = status;
 					Set<CNCMachineAlarm> alarms = cncMachine.getAlarms();
 					if ((!previousAlarms.containsAll(alarms)) || (!alarms.containsAll(previousAlarms))) {
 						cncMachine.processCNCMachineEvent(new CNCMachineAlarmsOccuredEvent(cncMachine, alarms));
 					}
 					this.previousAlarms = alarms;
-				} catch (AbstractCommunicationException | InterruptedException e) {
+				} catch (ResponseTimedOutException | DisconnectedException | InterruptedException e) {
+					//TODO do something with this exception
 					cncMachine.disconnect();
 					logger.error(e);
 				}
@@ -49,7 +51,7 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 			try {
 				Thread.sleep(REFRESH_TIME);
 			} catch (InterruptedException e) {
-				// interrupted, so let's just stop
+				// interrupted, so let's just stop, the external communication thread takes care of disconnecting if needed at this point
 				alive = false;
 			}
 		}

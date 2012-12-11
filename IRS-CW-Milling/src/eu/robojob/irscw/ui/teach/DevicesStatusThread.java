@@ -11,7 +11,6 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineListener;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineStatusChangedEvent;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredEvent;
 import eu.robojob.irscw.external.robot.FanucRobotEvent;
@@ -111,7 +110,7 @@ public class DevicesStatusThread extends Thread implements FanucRobotListener, C
 	}
 
 	@Override
-	public void cNCMachineStatusChanged(CNCMachineStatusChangedEvent event) {
+	public void cNCMachineStatusChanged(CNCMachineEvent event) {
 	}
 
 	@Override

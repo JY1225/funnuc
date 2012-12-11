@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
+import eu.robojob.irscw.external.communication.DisconnectedException;
+import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.ClampingManner;
@@ -51,9 +53,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void updateStatusAndAlarms() throws AbstractCommunicationException, InterruptedException {
+	public void updateStatusAndAlarms() throws InterruptedException, ResponseTimedOutException, DisconnectedException {
 		int statusInt = (cncMachineCommunication.readRegisters(CNCMachineConstants.STATUS, 1)).get(0);
-		this.status = new CNCMachineStatus(statusInt);
+		this.currentStatus = statusInt;
 		
 		this.alarms = new HashSet<CNCMachineAlarm>();
 		List<Integer> alarmInts = cncMachineCommunication.readRegisters(CNCMachineConstants.ALARMS_REG1, 2);

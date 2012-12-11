@@ -8,6 +8,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
+import eu.robojob.irscw.external.communication.DisconnectedException;
+import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.Zone;
@@ -19,7 +21,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private Set<CNCMachineListener> listeners;
 	
 	protected Set<CNCMachineAlarm> alarms;
-	protected CNCMachineStatus status;
+	protected int currentStatus;
 	
 	private boolean statusChanged;
 	private Object syncObject;
@@ -35,7 +37,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.statusChanged = false;
 		syncObject = new Object();
 		this.alarms = new HashSet<CNCMachineAlarm>();
-		this.status = new CNCMachineStatus();
+		this.currentStatus = 0;
 		this.listeners = new HashSet<CNCMachineListener>();
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
 		// start monitoring thread at creation of this object
@@ -64,11 +66,11 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		listeners.remove(listener);
 	}
 	
-	public CNCMachineStatus getStatus() {
-		return status;
+	public int getStatus() {
+		return currentStatus;
 	}
 	
-	public abstract void updateStatusAndAlarms() throws AbstractCommunicationException, InterruptedException;
+	public abstract void updateStatusAndAlarms() throws DisconnectedException, ResponseTimedOutException, InterruptedException;
 	public abstract void disconnect();
 	
 	public Set<CNCMachineAlarm> getAlarms() {
@@ -96,7 +98,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 			case CNCMachineEvent.STATUS_CHANGED : 
 				statusChanged();
 				for (CNCMachineListener listener : listeners) {
-					listener.cNCMachineStatusChanged((CNCMachineStatusChangedEvent) event);
+					listener.cNCMachineStatusChanged(event);
 				}
 				break;
 			default:
@@ -126,7 +128,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		long waitedTime = 0;
 		stopAction = false;
 		// check status before we start
-		if ((getStatus().getStatus() & status) > 0) {
+		if ((currentStatus & status) > 0) {
 			return true;
 		}
 		// also check connection status
@@ -152,7 +154,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 						throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
 					}
 					// check if status has changed
-					if ((statusChanged == true) && ((getStatus().getStatus() & status) > 0)) {
+					if ((statusChanged == true) && ((currentStatus & status) > 0)) {
 						statusChanged = false;
 						return true;
 					}

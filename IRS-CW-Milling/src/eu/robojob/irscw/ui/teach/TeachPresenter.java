@@ -16,7 +16,6 @@ import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineListener;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineStatusChangedEvent;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.FanucRobot;
 import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredEvent;
@@ -423,7 +422,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	}
 	
 	@Override
-	public void cNCMachineStatusChanged(CNCMachineStatusChangedEvent event) {}
+	public void cNCMachineStatusChanged(CNCMachineEvent event) {}
 	
 	@Override
 	public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) {
