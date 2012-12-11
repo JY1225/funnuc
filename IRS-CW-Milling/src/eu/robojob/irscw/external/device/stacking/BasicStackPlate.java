@@ -200,7 +200,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		return rawWorkPiece;
 	}
 
-	public void setFinishedAmount(int finishedAmount) {
+	public void placeFinishedWorkPieces(int finishedAmount) {
 		for (int i = 0; i < layout.getStackingPositions().size(); i++) {
 			if (i < finishedAmount) {
 				//TODO improve, dimensions finished workpiece are not always the same as raw workpiece dimensions

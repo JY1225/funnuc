@@ -111,7 +111,7 @@ public class ProcessFlow {
 		this.clampingType.setType(processFlow.getClampingType().getType());
 		for(AbstractDevice device : getDevices()) {
 			if (device instanceof BasicStackPlate) {
-				((BasicStackPlate) device).setFinishedAmount(processFlow.getFinishedAmount());
+				((BasicStackPlate) device).placeFinishedWorkPieces(processFlow.getFinishedAmount());
 			}
 		}
 	}
