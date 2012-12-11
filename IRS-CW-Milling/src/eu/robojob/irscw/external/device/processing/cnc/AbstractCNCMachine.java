@@ -49,7 +49,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	@Override
 	public void interruptCurrentAction() {
-		logger.debug("Stopping current action of: " + id);
+		logger.debug("Interrupting current action of: " + id);
 		stopAction = true;
 		synchronized(syncObject) {
 			syncObject.notifyAll();
@@ -73,13 +73,6 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	public Set<CNCMachineAlarm> getAlarms() {
 		return alarms;
-	}
-	
-	private void statusChanged() {
-		synchronized(syncObject) {
-			statusChanged = true;
-			syncObject.notifyAll();
-		}
 	}
 	
 	public void processCNCMachineEvent(CNCMachineEvent event) {
@@ -111,6 +104,17 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		}
 	}
 	
+	/**
+	 * This method will be called after processing a STATUS_CHANGED event, so if the waitForStatus method
+	 * is waiting, it will be notified
+	 */
+	private void statusChanged() {
+		synchronized(syncObject) {
+			statusChanged = true;
+			syncObject.notifyAll();
+		}
+	}
+	
 	public abstract void reset() throws AbstractCommunicationException, InterruptedException;
 	public abstract void nCReset() throws AbstractCommunicationException, InterruptedException;
 	public abstract void powerOff() throws AbstractCommunicationException, InterruptedException;
@@ -121,46 +125,47 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	protected boolean waitForStatus(int status, long timeout) throws InterruptedException, DeviceActionException {
 		long waitedTime = 0;
 		stopAction = false;
-		do {
-			long lastTime = System.currentTimeMillis();
-			if ((getStatus().getStatus() & status) > 0) {
-				return true;
-			} else {
-				if (!isConnected()) {
-					throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
-				}
-				try {
-					statusChanged = false;
-					if (timeout > waitedTime) {
-						synchronized(syncObject) {
-							syncObject.wait(timeout - waitedTime);
-						}
+		// check status before we start
+		if ((getStatus().getStatus() & status) > 0) {
+			return true;
+		}
+		// also check connection status
+		if (!isConnected()) {
+			throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
+		}
+		while(waitedTime < timeout) {
+			// start waiting
+			try {
+				statusChanged = false;
+				if (timeout > waitedTime) {
+					long timeBeforeWait = System.currentTimeMillis();
+					synchronized(syncObject) {
+						syncObject.wait(timeout - waitedTime);
 					}
-				} catch (InterruptedException e) {
-					if (!statusChanged) {
-						if (stopAction) {
-							stopAction = false;
-							throw e;
-						} else {
-							e.printStackTrace();
-						}
+					// at this point the wait is finished, either by a notify (status changed, or request to stop), or by a timeout
+					if (stopAction) {
+						stopAction = false;
+						throw new InterruptedException("Waiting for status: " + status + " got interrupted");
 					}
-				} 
-				if (stopAction) {
-					stopAction = false;
-					throw new InterruptedException();
-				}
-				if (!isConnected()) {
-					throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
-				}
-				waitedTime += System.currentTimeMillis() - lastTime;
-				if (statusChanged == true) {
-					if ((getStatus().getStatus() & status) > 0) {
+					// just to be sure, check connection
+					if (!isConnected()) {
+						throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
+					}
+					// check if status has changed
+					if ((statusChanged == true) && ((getStatus().getStatus() & status) > 0)) {
+						statusChanged = false;
 						return true;
 					}
+					// update waited time
+					waitedTime += System.currentTimeMillis() - timeBeforeWait;
+				} else {
+					return false;
 				}
-			}
-		} while (waitedTime < timeout);
+			} catch (InterruptedException e) {
+				// we got interrupted while waiting, just pass the exception!
+				throw e;
+			} 
+		} 
 		return false;
 	}
 	
