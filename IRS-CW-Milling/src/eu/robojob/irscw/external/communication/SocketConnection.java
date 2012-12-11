@@ -41,7 +41,7 @@ public class SocketConnection {
 		this(type, id, "127.0.0.1", portNumber);
 	}
 	
-	public void connect() throws IOException{
+	public synchronized void connect() throws IOException{
 		if (connected) {
 		} else {
 			if (type == Type.CLIENT) {
@@ -50,11 +50,10 @@ public class SocketConnection {
 					connectInOut();
 					connected = true;
 				} catch (IOException e) {
-					throw e;
-				} finally {
-					if (!connected) {
+					if (connected) {
 						disconnect();
 					}
+					throw e;
 				}
 			} else if (type == Type.SERVER) {
 				try {
@@ -63,11 +62,10 @@ public class SocketConnection {
 					connectInOut();
 					connected = true;
 				} catch (IOException e) {
-					throw e;
-				} finally {
-					if (!connected) {
+					if (connected) {
 						disconnect();
 					}
+					throw e;
 				}
 			} else {
 				throw new IllegalStateException("Unknown connection type.");
@@ -80,8 +78,7 @@ public class SocketConnection {
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 	}
 	
-	public void disconnect() {
-		logger.info("Disconnecting " + toString() + ".");
+	public synchronized void disconnect() {
 		try {
 			if (serverSocket != null) {
 				serverSocket.close();
@@ -138,7 +135,7 @@ public class SocketConnection {
 		this.portNumber = portNumber;
 	}
 	
-	public boolean isConnected() {
+	public synchronized boolean isConnected() {
 		if (connected) {
 			if ((socket == null) || (out == null) || (in == null)) {
 				throw new IllegalStateException("Status indicates connection, but one or more objects are null");
@@ -178,7 +175,6 @@ public class SocketConnection {
 				}
 				return msg;
 			} catch (IOException e) {
-				connected = false;
 				// Disconnect by default when exception occurred, if external device is healthy it will be waiting for re-connection.
 				disconnect();
 				throw e;
@@ -198,7 +194,6 @@ public class SocketConnection {
 			   }
 			   return (char) b;
 			} catch (IOException e) {
-				connected = false;
 				// Disconnect by default when exception occurred, if external device is healthy it will be waiting for re-connection.
 				disconnect();
 				throw e;
@@ -215,7 +210,7 @@ public class SocketConnection {
 			      int b = in.read();
 			      if (b < 0) {
 			    	  disconnect();
-			    	  throw new IOException("Data truncated (end of stream reached).");
+			    	  throw new DisconnectedException(this);
 				   } else {
 						message = message + (char) b;
 						while (in.ready()) {
@@ -225,7 +220,6 @@ public class SocketConnection {
 						return message;
 				   }
 				} catch (IOException e) {
-					connected = false;
 					// Disconnect by default when exception occurred, if external device is healthy it will be waiting for re-connection.
 					disconnect();
 					throw e;

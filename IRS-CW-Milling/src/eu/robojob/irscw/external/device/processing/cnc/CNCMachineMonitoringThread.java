@@ -33,7 +33,7 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 				try {
 					cncMachine.updateStatusAndAlarms();
 					int status = cncMachine.getStatus();
-					if (status!= previousStatus) {
+					if (status != previousStatus) {
 						cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.STATUS_CHANGED));
 					}
 					this.previousStatus = status;
@@ -44,7 +44,9 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 					this.previousAlarms = alarms;
 				} catch (ResponseTimedOutException | DisconnectedException | InterruptedException e) {
 					//TODO do something with this exception
-					cncMachine.disconnect();
+					if (cncMachine.isConnected()) {
+						cncMachine.disconnect();
+					}
 					logger.error(e);
 				}
 			}

@@ -74,12 +74,11 @@ public class ExternalCommunicationThread extends Thread {
 					if (alive) {
 						logger.error("IOException detected: " + e.getMessage() + " so disconnectiong...");
 						e.printStackTrace();
-						// exception occurred, spread the word and disconnect
+						// exception occurred, spread the word (disconnection occurs automatically)
 						externalCommunication.iOExceptionOccured(e);
-						socketConnection.disconnect();
 					}
 				} catch (DisconnectedException e) {
-					throw new IllegalStateException("This catch shouldn't be reached as in case of disconnection, we don't want to read, but we want to connect first.");
+					// we got disconnected, retry connection
 				}
 			}
 		}
@@ -136,7 +135,9 @@ public class ExternalCommunicationThread extends Thread {
 	}
 	
 	public synchronized void disconnectAndStop() {
-		disconnect();
+		if (socketConnection.isConnected()) {
+			disconnect();
+		}
 		alive = false;
 	}
 	

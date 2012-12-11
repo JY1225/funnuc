@@ -136,36 +136,31 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		}
 		while(waitedTime < timeout) {
 			// start waiting
-			try {
-				statusChanged = false;
-				if (timeout > waitedTime) {
-					long timeBeforeWait = System.currentTimeMillis();
-					synchronized(syncObject) {
-						syncObject.wait(timeout - waitedTime);
-					}
-					// at this point the wait is finished, either by a notify (status changed, or request to stop), or by a timeout
-					if (stopAction) {
-						stopAction = false;
-						throw new InterruptedException("Waiting for status: " + status + " got interrupted");
-					}
-					// just to be sure, check connection
-					if (!isConnected()) {
-						throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
-					}
-					// check if status has changed
-					if ((statusChanged == true) && ((currentStatus & status) > 0)) {
-						statusChanged = false;
-						return true;
-					}
-					// update waited time
-					waitedTime += System.currentTimeMillis() - timeBeforeWait;
-				} else {
-					return false;
+			statusChanged = false;
+			if (timeout > waitedTime) {
+				long timeBeforeWait = System.currentTimeMillis();
+				synchronized(syncObject) {
+					syncObject.wait(timeout - waitedTime);
 				}
-			} catch (InterruptedException e) {
-				// we got interrupted while waiting, just pass the exception!
-				throw e;
-			} 
+				// at this point the wait is finished, either by a notify (status changed, or request to stop), or by a timeout
+				if (stopAction) {
+					stopAction = false;
+					throw new InterruptedException("Waiting for status: " + status + " got interrupted");
+				}
+				// just to be sure, check connection
+				if (!isConnected()) {
+					throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
+				}
+				// check if status has changed
+				if ((statusChanged == true) && ((currentStatus & status) > 0)) {
+					statusChanged = false;
+					return true;
+				}
+				// update waited time
+				waitedTime += System.currentTimeMillis() - timeBeforeWait;
+			} else {
+				return false;
+			}
 		} 
 		return false;
 	}

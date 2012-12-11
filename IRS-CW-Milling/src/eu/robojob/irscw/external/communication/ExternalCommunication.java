@@ -59,5 +59,6 @@ public abstract class ExternalCommunication {
 	 * This message will be called when an IOException occurred in the communication thread.
 	 */
 	public abstract void iOExceptionOccured(IOException e);
+	@Override public abstract String toString();
 	
 }

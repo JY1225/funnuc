@@ -165,4 +165,9 @@ public class FanucRobotCommunication extends ExternalCommunication {
 		logger.error(e);
 		e.printStackTrace();
 	}
+
+	@Override
+	public String toString() {
+		return "Fanuc robot communication: " + extCommThread.getSocketConnection().toString();
+	}
 }

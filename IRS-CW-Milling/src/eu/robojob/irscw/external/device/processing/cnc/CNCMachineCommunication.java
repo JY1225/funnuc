@@ -180,4 +180,9 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		// this exception is already logged, and the machine was disconnected as a result
 		// TODO handle this error in more detail if needed
 	}
+
+	@Override
+	public String toString() {
+		return "CNC machine communication: " + extCommThread.getSocketConnection().toString();
+	}
 }
