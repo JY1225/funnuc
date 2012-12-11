@@ -42,7 +42,6 @@ public class ThreadManager {
 			monitoringThreads.add((MonitoringThread) thread);
 		}
 		executorService.submit(thread);
-		logger.info("Thread submitted");
 	}
 	
 	public void shutDown() {
