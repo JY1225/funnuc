@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <appenders>
+    <File name="LogFile" fileName="org.apache.log4j.RollingFileAppender" append="true" maxFileSize="2MB" maxBackupIndex="3">
+      <PatternLayout pattern="%-7p %-25d %-30t %-5L %-70c - %m%n"/>
+    </File>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="%-7p %-25d %-30t %-5L %-70c - %m%n"/>
+    </Console>
+  </appenders>
+  
+  <loggers>
+    <logger name="org.apache.log4j.xml" level="debug">
+      <appender-ref ref="LogFile"/>
+    </logger>
+    <root level="debug">
+      <appender-ref ref="STDOUT"/>
+    </root>
+  </loggers>
+  
+</configuration>
