@@ -193,6 +193,7 @@ public class CNCMachineConstants {
 	public static final int OPERATOR_REQUESTED			=	BIT1;
 	public static final int ALL_WP_PROCESSED			=	BIT2;
 	public static final int NC_RESET					=	BIT3;
+	// used with M-codes and service requests
 	public static final int SERV_REQ_FINISH				=	BIT4;
 	public static final int POWER_OFF					=	BIT5;
 	

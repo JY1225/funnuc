@@ -89,6 +89,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		command = command | CNCMachineConstants.POWER_OFF;
 		int registers[] = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+		// normally no more commands after this, so multiple IPC requests problem can't occur
 	}
 
 	@Override
