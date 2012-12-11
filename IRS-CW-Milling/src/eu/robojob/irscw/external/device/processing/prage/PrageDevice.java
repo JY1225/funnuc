@@ -132,7 +132,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	
 	@Override
 	public boolean isConnected() {
-		return false;
+		return robot.isConnected();
 	}
 	
 	@Override
