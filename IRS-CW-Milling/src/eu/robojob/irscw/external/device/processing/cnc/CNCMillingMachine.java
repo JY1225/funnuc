@@ -61,79 +61,16 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		List<Integer> alarmInts = cncMachineCommunication.readRegisters(CNCMachineConstants.ALARMS_REG1, 2);
 		int alarmReg1 = alarmInts.get(0);
 		int alarmReg2 = alarmInts.get(1);
-		if ((alarmReg1 & CNCMachineConstants.ALR_MACHINE)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MACHINE));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_FEED_HOLD)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.FEED_HOLD));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_MAIN_PRESSURE)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MAIN_PRESSURE));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_OIL_TEMP_HIGH)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.OIL_TEMP_HIGH));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_OIL_LEVEL_LOW)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.OIL_LEVEL_LOW));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_DOOR1_NOT_OPEN)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.DOOR1_NOT_OPEN));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_DOOR2_NOT_OPEN)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.DOOR2_NOT_OPEN));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_DOOR1_NOT_CLOSE)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.DOOR1_NOT_CLOSED));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_DOOR2_NOT_CLOSE)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.DOOR2_NOT_CLOSED));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_CLAMP1_NOT_OPEN)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.CLAMP1_NOT_OPEN));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_CLAMP2_NOT_OPEN)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.CLAMP2_NOT_OPEN));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_CLAMP1_NOT_CLOSE)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.CLAMP1_NOT_CLOSED));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_CLAMP2_NOT_CLOSE)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.CLAMP2_NOT_CLOSED));
-		}
-		
-		if ((alarmReg2 & CNCMachineConstants.ALR_WA1_PUT)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA1_PUT));
-		}
-		if ((alarmReg2 & CNCMachineConstants.ALR_WA2_PUT)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA2_PUT));
-		}
-		if ((alarmReg2 & CNCMachineConstants.ALR_WA1_PICK)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA1_PICK));
-		}
-		if ((alarmReg2 & CNCMachineConstants.ALR_WA2_PICK)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA2_PICK));
-		}
-		if ((alarmReg2 & CNCMachineConstants.ALR_WA1_CYST)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA1_CYCLUS_START));
-		}
-		if ((alarmReg2 & CNCMachineConstants.ALR_WA2_CYST)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA2_CYCLUS_START));
-		}
-		if ((alarmReg2 & CNCMachineConstants.ALR_WA1_CLAMP)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA1_CLAMP));
-		}
-		if ((alarmReg2 & CNCMachineConstants.ALR_WA2_CLAMP)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA2_CLAMP));
-		}
-		if ((alarmReg2 & CNCMachineConstants.ALR_WA1_UNCLAMP)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA1_UNCLAMP));
-		}
-		if ((alarmReg2 & CNCMachineConstants.ALR_WA2_UNCLAMP)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.WA2_UNCLAMP));
-		}
-		if ((alarmReg2 & CNCMachineConstants.ALR_MULTIPLE_IPC_RQST)>0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MULTIPLE_IPC_REQUESTS));
-		}
+		alarms = CNCMachineAlarm.parseAlarms(alarmReg1, alarmReg2);
+	}
+	
+	@Override
+	public void reset() throws AbstractCommunicationException, InterruptedException {
+		int command = 0;
+		command = command | CNCMachineConstants.RESET_REQUEST;
+		int registers[] = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+		// this one does not need to wait, we can assume it will work
 	}
 	
 	@Override
@@ -142,6 +79,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		command = command | CNCMachineConstants.NC_RESET;
 		int registers[] = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+		//TODO read the OTHER register and wait till the set bit is zero, this has to be implemented in the device interface, for now: wait 2 seconds
+		Thread.sleep(2000);
 	}
 
 	@Override
@@ -152,9 +91,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
 	}
 
-	/*
-	 * This method will also take care of turning on the blue lamp
-	 */
 	@Override
 	public void indicateAllProcessed() throws AbstractCommunicationException, InterruptedException {
 		int command = 0;
@@ -437,18 +373,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void disconnect() {
 		cncMachineCommunication.disconnect();
-	}
-
-	@Override
-	public void reset() throws AbstractCommunicationException, InterruptedException {
-		/*int command = 0;
-		command = command | CNCMachineConstants.RESET_REQUEST;
-		int registers[] = {command};
-		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);*/
-		/*command = CNCMachineConstants.NC_RESET;
-		int registers2[] = {command};
-		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers2);*/
-		// TODO: no way of knowing this succeeded? 
 	}
 
 }
