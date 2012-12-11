@@ -21,13 +21,10 @@ import eu.robojob.irscw.workpiece.WorkPiece;
 import eu.robojob.irscw.workpiece.WorkPiece.Type;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
-// it is important this device can keep state, for other (processing) devices, no state is needed
-// a workpiece is put, processed and picked, and the device-state is the same as before these actions
-// for this device, state is needed to know the configuration (studs) and workpieces (finished, raw, ...) present
-
-// for now, we asume only one layer can be placed, and the pick-locations will be re-used for putting finished workpieces
-// also, this stack plate can only contain two types of workpieces, raw workpieces and finished workpieces
-// also, the orientation of raw and finished workpieces is the same, and as mentioned earlier pick-locations equal put-locations
+/**
+ * This device needs to maintain state (position contents change during process-execution). 
+ * Basic Stack Plate: one layer, can contain Raw of Finished workPieces with same orientation and dimensions
+ */
 public class BasicStackPlate extends AbstractStackingDevice {
 
 	public enum WorkPieceOrientation {
