@@ -72,7 +72,7 @@ public class ExternalCommunicationThread extends Thread {
 					putMessage(icommingMessage);
 				} catch (IOException e) {
 					if (alive) {
-						logger.info("IOException detected: " + e.getMessage());
+						logger.error("IOException detected: " + e.getMessage() + " so disconnectiong...");
 						e.printStackTrace();
 						// exception occurred, spread the word and disconnect
 						externalCommunication.iOExceptionOccured(e);

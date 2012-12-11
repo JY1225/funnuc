@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.communication.DisconnectedException;
 import eu.robojob.irscw.external.communication.ExternalCommunication;
 import eu.robojob.irscw.external.communication.ResponseTimedOutException;
@@ -25,10 +24,9 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		this.command = new StringBuffer();
 	}
 
-	public synchronized void writeRegisters(int startingRegisterNr, int timeout, int[] values) throws AbstractCommunicationException, DisconnectedException {
+	public synchronized void writeRegisters(int startingRegisterNr, int timeout, int[] values) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
 		command = new StringBuffer();
-		command.append('W');
-		command.append('W');
+		command.append("WW");
 		if (startingRegisterNr >= 100) {
 			throw new IllegalArgumentException("Register number is too high!");
 		}
@@ -49,42 +47,17 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		}
 		// send the command and wait for reply 
 		extCommThread.clearIncommingBuffer();
-		int waitedTime = 0;
 		extCommThread.writeString(command.toString());
-		do {
-			if (extCommThread.hasNextMessage()) {
-				String message = extCommThread.getNextMessage();
-				if (command.toString().startsWith(message)) {
-					return;
-				}
-			}
-			int timeToWait = READ_RETRY_INTERVAL;
-			if (timeout - waitedTime < READ_RETRY_INTERVAL) {
-				timeToWait = timeout - waitedTime;
-			}
-			if (timeToWait <= 0) {
-				break;
-			}
-			try {
-				Thread.sleep(timeToWait);
-			} catch(InterruptedException e) {
-				e.printStackTrace();
-				logger.error(e);
-				break;
-			}
-			waitedTime += timeToWait;
-		} while (waitedTime <= timeout);
-		throw new ResponseTimedOutException(extCommThread.getSocketConnection());
+		awaitResponse(command.toString(), timeout);
 	}
 	
-	public synchronized void writeRegisters(int startingRegisterNr, int[] values) throws AbstractCommunicationException, DisconnectedException {
+	public synchronized void writeRegisters(int startingRegisterNr, int[] values) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
 		writeRegisters(startingRegisterNr, getDefaultWaitTimeout(), values);
 	}
 	
-	public synchronized List<Integer> readRegisters(int startingRegisterNr, int amount, int timeout) throws AbstractCommunicationException, DisconnectedException{
+	public synchronized List<Integer> readRegisters(int startingRegisterNr, int amount, int timeout) throws ResponseTimedOutException, DisconnectedException, InterruptedException{
 		command = new StringBuffer();
-		command.append('W');
-		command.append('R');
+		command.append("WR");
 		if (startingRegisterNr >= 100) {
 			throw new IllegalArgumentException("Register number is too high!");
 		}
@@ -101,30 +74,8 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		command.append(amount);
 		// send the command and wait for reply 
 		extCommThread.clearIncommingBuffer();
-		int waitedTime = 0;
 		extCommThread.writeString(command.toString());
-		do {
-			if (extCommThread.hasNextMessage()) {
-				String response = extCommThread.getNextMessage();
-				return parseResult(response, command.toString());
-			}
-			int timeToWait = READ_RETRY_INTERVAL;
-			if (timeout - waitedTime < READ_RETRY_INTERVAL) {
-				timeToWait = timeout - waitedTime;
-			}
-			if (timeToWait <= 0) {
-				break;
-			}
-			try {
-				Thread.sleep(timeToWait);
-			} catch(InterruptedException e) {
-				e.printStackTrace();
-				logger.error(e);
-				break;
-			}
-			waitedTime += timeToWait;
-		} while (waitedTime <= timeout);
-		throw new ResponseTimedOutException(extCommThread.getSocketConnection());
+		return parseResult(awaitResponse(command.toString(), timeout), command.toString());
 	}
 	
 	public List<Integer> parseResult(String message, String command) {
@@ -139,8 +90,44 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		}
 		return results;
 	}
+
+	public synchronized List<Integer> readRegisters(int startingRegisterNr, int amount) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+		return readRegisters(startingRegisterNr, amount, getDefaultWaitTimeout());
+	}
+
+	private String awaitResponse(String command, int timeout) throws ResponseTimedOutException, InterruptedException, DisconnectedException {
+		int waitedTime = 0;
+		while (waitedTime <= timeout) {
+			if (!extCommThread.isConnected()) {
+				// no longer connected
+				throw new DisconnectedException(extCommThread.getSocketConnection());
+			}
+			if (extCommThread.hasNextMessage()) {
+				String response = extCommThread.getNextMessage();
+				if (response.startsWith(command.toString())) {
+					return response;
+				} else {
+					logger.error("Got wrong response: " + response + ", command was: " + command);
+				}
+			}
+			int timeToWait = READ_RETRY_INTERVAL;
+			if (timeout - waitedTime < READ_RETRY_INTERVAL) {
+				timeToWait = timeout - waitedTime;
+			}
+			if (timeToWait <= 0) {
+				break;
+			}
+			try {
+				Thread.sleep(timeToWait);
+			} catch(InterruptedException e) {
+				throw e;
+			}
+			waitedTime += timeToWait;
+		}
+		throw new ResponseTimedOutException(extCommThread.getSocketConnection());
+	}
 	
-	public synchronized boolean checkRegisterValue(int registerNumber, int value, int waitTimeout) throws AbstractCommunicationException, DisconnectedException {
+	public synchronized boolean checkRegisterValue(int registerNumber, int value, int waitTimeout) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
 		long currentTime = System.currentTimeMillis();
 		List<Integer> readRegisters;
 		boolean timeout = false;
@@ -159,16 +146,16 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		return false;
 	}
 	
-	// TODO test this method
-	public synchronized boolean checkRegisterValueBitPattern(int registerNumber, int bitPattern, int waitTimeout) throws AbstractCommunicationException, DisconnectedException {
+	public synchronized boolean checkRegisterValueBitPattern(int registerNumber, int bitPattern, int waitTimeout) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
 		long currentTime = System.currentTimeMillis();
 		List<Integer> readRegisters;
 		boolean timeout = false;
 		while (!timeout) {
-			logger.info("checking again regiser value: " + System.currentTimeMillis() + " - " + currentTime);
 			if (System.currentTimeMillis() - currentTime >= waitTimeout) {
 				timeout = true;
 				break;
+			} else {
+				currentTime = System.currentTimeMillis();
 			}
 			readRegisters = readRegisters(registerNumber, 1);
 			if ((readRegisters.get(0) & bitPattern) == bitPattern) {
@@ -178,10 +165,6 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		return false;
 	}
 	
-	public synchronized List<Integer> readRegisters(int startingRegisterNr, int amount) throws AbstractCommunicationException, DisconnectedException {
-		return readRegisters(startingRegisterNr, amount, getDefaultWaitTimeout());
-	}
-
 	@Override
 	public void connected() {
 		cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.CNC_MACHINE_CONNECTED));
@@ -194,8 +177,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 
 	@Override
 	public void iOExceptionOccured(IOException e) {
-		// we just log the error here
-		logger.error(e);
-		e.printStackTrace();
+		// this exception is already logged, and the machine was disconnected as a result
+		// TODO handle this error in more detail if needed
 	}
 }

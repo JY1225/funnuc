@@ -51,7 +51,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void updateStatusAndAlarms() throws AbstractCommunicationException {
+	public void updateStatusAndAlarms() throws AbstractCommunicationException, InterruptedException {
 		int statusInt = (cncMachineCommunication.readRegisters(CNCMachineConstants.STATUS, 1)).get(0);
 		this.status = new CNCMachineStatus(statusInt);
 		

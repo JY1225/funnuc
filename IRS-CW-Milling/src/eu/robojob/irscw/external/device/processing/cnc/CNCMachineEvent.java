@@ -4,18 +4,17 @@ public class CNCMachineEvent {
 
 	private AbstractCNCMachine source;
 	private int id;
-	private long when;
+	private long timestamp;
 	
 	public static final int CNC_MACHINE_CONNECTED = 1;
 	public static final int CNC_MACHINE_DISCONNECTED = 2;
-
 	public static final int ALARM_OCCURED = 3;
 	public static final int STATUS_CHANGED = 4;
 	
 	public CNCMachineEvent(AbstractCNCMachine source, int id) {
 		this.source = source;
 		this.id = id;
-		this.when = System.currentTimeMillis();
+		this.timestamp = System.currentTimeMillis();
 	}
 
 	public AbstractCNCMachine getSource() {
@@ -26,8 +25,8 @@ public class CNCMachineEvent {
 		return id;
 	}
 
-	public long getWhen() {
-		return when;
+	public long getTimestamp() {
+		return timestamp;
 	}
 
 }

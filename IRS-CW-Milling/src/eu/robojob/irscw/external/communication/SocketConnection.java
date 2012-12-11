@@ -81,6 +81,7 @@ public class SocketConnection {
 	}
 	
 	public void disconnect() {
+		logger.info("Disconnecting " + toString() + ".");
 		try {
 			if (serverSocket != null) {
 				serverSocket.close();

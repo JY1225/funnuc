@@ -1,5 +1,6 @@
 package eu.robojob.irscw.external.device.processing.cnc;
 
+import eu.robojob.irscw.util.Translator;
 
 public class CNCMachineAlarm {
 
@@ -28,57 +29,30 @@ public class CNCMachineAlarm {
 	public static final int WA2_UNCLAMP = 22;
 	public static final int MULTIPLE_IPC_REQUESTS = 23;
 	
+	private Translator translator;
+	
 	private int id;
 	
 	public CNCMachineAlarm(int id) {
 		this.id = id;
+		this.translator = Translator.getInstance();
 	}
 	
-/*	public String getMessage() {
+	public String getLocalizedMessage() {
 		return translator.getTranslation("CNCMachineAlarm." + id);
-	}*/
+	}
 	
+	public String getMessage() {
+		return "CNC Machine alarm: id = " + id;
+	}
+	
+	//TODO implement priorities, for now: all the same
 	public int getPriority() {
-		return 0;
+		return 5;
 	}
 	
 	public int getId() {
 		return id;
-	}
-	
-	public String getMessage() {
-		switch (id) {
-			case MACHINE:
-				return "Machine alarm";
-			case FEED_HOLD:
-				return "Feed hold";
-			case MAIN_PRESSURE:
-				return "Main pressure";
-			case OIL_TEMP_HIGH:
-				return "Oil temp high";
-			case OIL_LEVEL_LOW:
-				return "Oil level low";
-			case DOOR1_NOT_OPEN:
-				return "Door 1 not open";
-			case DOOR2_NOT_OPEN:
-				return "Door 2 not open";
-			case DOOR1_NOT_CLOSED:
-				return "Door 1 not closed";
-			case DOOR2_NOT_CLOSED:
-				return "Door 2 not closed";
-			case CLAMP1_NOT_OPEN:
-				return "Clamp 1 not open";
-			case CLAMP2_NOT_OPEN:
-				return "Clamp 2 not open";
-			case CLAMP1_NOT_CLOSED:
-				return "Clamp 1 not closed";
-			case CLAMP2_NOT_CLOSED:
-				return "Clamp 2 not closed";
-			case MULTIPLE_IPC_REQUESTS:
-				return "Multiple IPC requests";
-			default:
-				return "Other: " + id;
-		}
 	}
 	
 	@Override
@@ -96,6 +70,6 @@ public class CNCMachineAlarm {
 	}
 	
 	public String toString() {
-		return getMessage();
+		return "CNCMachineAlarm: " + id;
 	}
 }
