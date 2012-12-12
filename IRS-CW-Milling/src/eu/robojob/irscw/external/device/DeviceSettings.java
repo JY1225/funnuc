@@ -12,14 +12,14 @@ public class DeviceSettings {
 		clampings = new HashMap<WorkArea, Clamping>();
 	}
 	
-	public DeviceSettings(List<WorkArea> workAreas) {
+	public DeviceSettings(final List<WorkArea> workAreas) {
 		this();
 		for (WorkArea workArea : workAreas) {
 			clampings.put(workArea, workArea.getActiveClamping());
 		}
 	}
 	
-	public void setClamping(WorkArea workArea, Clamping clamping) {
+	public void setClamping(final WorkArea workArea, final Clamping clamping) {
 		clampings.put(workArea, clamping);
 	}
 
@@ -27,11 +27,11 @@ public class DeviceSettings {
 		return clampings;
 	}
 
-	public void setClampings(Map<WorkArea, Clamping> clampings) {
+	public void setClampings(final Map<WorkArea, Clamping> clampings) {
 		this.clampings = clampings;
 	}
 	
-	public Clamping getClamping(WorkArea workArea) {
+	public Clamping getClamping(final WorkArea workArea) {
 		return clampings.get(workArea);
 	}
 

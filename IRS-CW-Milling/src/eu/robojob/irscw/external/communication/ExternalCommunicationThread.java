@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class ExternalCommunicationThread extends Thread {
 
-	private static final Logger logger = LogManager.getLogger(ExternalCommunicationThread.class.getName());
+	private static Logger logger = LogManager.getLogger(ExternalCommunicationThread.class.getName());
 	
 	private static final int CONNECTION_RETRY_INTERVAL = 1000;
 	
@@ -28,7 +28,7 @@ public class ExternalCommunicationThread extends Thread {
 	
 	private boolean wasConnected;
 	
-	public ExternalCommunicationThread(SocketConnection socketConnection, ExternalCommunication externalCommunication) {
+	public ExternalCommunicationThread(final SocketConnection socketConnection, final ExternalCommunication externalCommunication) {
 		this.socketConnection = socketConnection;
 		this.incommingMessages = new LinkedList<String>();
 		this.alive = true;
@@ -41,7 +41,7 @@ public class ExternalCommunicationThread extends Thread {
 	
 	@Override
 	public void run() {
-		while(alive) {
+		while (alive) {
 			if (!socketConnection.isConnected()) {
 				// not connected...
 				if (wasConnected) {
@@ -80,6 +80,7 @@ public class ExternalCommunicationThread extends Thread {
 					}
 				} catch (DisconnectedException e) {
 					// we got disconnected, retry connection
+					logger.info("Gotten disconnected during reading, about to retry connection...");
 				}
 			}
 		}
@@ -89,9 +90,8 @@ public class ExternalCommunicationThread extends Thread {
 	public synchronized boolean hasNextMessage() {
 		if (incommingMessages.size() > 0) {
 			return true;
-		} else {
-			return false;
-		}
+		} 
+		return false;
 	}
 	
 	public SocketConnection getSocketConnection() {
@@ -110,19 +110,19 @@ public class ExternalCommunicationThread extends Thread {
 		incommingMessages.clear();
 	}
 	
-	private synchronized void putMessage(String message) {
+	private synchronized void putMessage(final String message) {
 		incommingMessages.addLast(message);
 	}
 	
-	public synchronized void writeMessage(String message) throws DisconnectedException {
+	public synchronized void writeMessage(final String message) throws DisconnectedException {
 		socketConnection.send(message);
 	}
 	
-	public synchronized void writeCharacter(char character) throws DisconnectedException {
+	public synchronized void writeCharacter(final char character) throws DisconnectedException {
 		socketConnection.send(character);
 	}
 	
-	public synchronized void writeString(String message) throws DisconnectedException {
+	public synchronized void writeString(final String message) throws DisconnectedException {
 		socketConnection.send(message);
 	}
 	

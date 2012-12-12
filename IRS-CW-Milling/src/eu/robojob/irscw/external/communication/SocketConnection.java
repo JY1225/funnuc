@@ -21,16 +21,16 @@ public class SocketConnection {
 	private int portNumber;
 	private Type type;
 	
-	ServerSocket serverSocket;
-	Socket socket;
-	PrintWriter out;
-	BufferedReader in;
+	private ServerSocket serverSocket;
+	private Socket socket;
+	private PrintWriter out;
+	private BufferedReader in;
 	
 	private boolean connected;
 		
 	private static Logger logger = LogManager.getLogger(SocketConnection.class.getName());
 		
-	public SocketConnection(Type type, String id, String ipAddress, int portNumber) {
+	public SocketConnection(final Type type, final String id, final String ipAddress, final int portNumber) {
 		this.type = type;
 		this.id = id;
 		this.ipAddress = ipAddress;
@@ -38,13 +38,12 @@ public class SocketConnection {
 		this.connected = false;
 	}
 	
-	public SocketConnection(Type type, String id, int portNumber) {
+	public SocketConnection(final Type type, final String id, final int portNumber) {
 		this(type, id, "127.0.0.1", portNumber);
 	}
 	
-	public synchronized void connect() throws IOException{
-		if (connected) {
-		} else {
+	public synchronized void connect() throws IOException {
+		if (!connected) {
 			if (type == Type.CLIENT) {
 				try {
 					socket = new Socket(ipAddress, portNumber);
@@ -124,7 +123,7 @@ public class SocketConnection {
 		return ipAddress;
 	}
 
-	public void setIpAddress(String ipAddress) {
+	public void setIpAddress(final String ipAddress) {
 		this.ipAddress = ipAddress;
 	}
 
@@ -132,7 +131,7 @@ public class SocketConnection {
 		return portNumber;
 	}
 
-	public void setPortNumber(int portNumber) {
+	public void setPortNumber(final int portNumber) {
 		this.portNumber = portNumber;
 	}
 	
@@ -148,7 +147,7 @@ public class SocketConnection {
 		}
 	}
 	
-	public void send(String message) throws DisconnectedException {
+	public void send(final String message) throws DisconnectedException {
 		if (isConnected()) {
 			out.print(message);
 			out.flush();
@@ -157,7 +156,7 @@ public class SocketConnection {
 		}
 	}
 	
-	public void send(char character) throws DisconnectedException {
+	public void send(final char character) throws DisconnectedException {
 		if (isConnected()) {
 			out.print(character);
 			out.flush();

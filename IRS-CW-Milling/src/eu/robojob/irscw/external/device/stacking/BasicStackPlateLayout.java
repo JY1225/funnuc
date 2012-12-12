@@ -31,12 +31,14 @@ public class BasicStackPlateLayout {
 	private StudPosition[][] studPositions;
 	private List<StackingPosition> stackingPositions;
 	
+	private static final int INTERFERENCE_DISTANCE = 5;
 	private static final float MIN_OVERLAP_DISTANCE = 9;
+	private static final double MAX_OVERLAP_PERCENTAGE = 0.35;
 	
-	private static final Logger logger = LogManager.getLogger(BasicStackPlateLayout.class.getName());
+	private static Logger logger = LogManager.getLogger(BasicStackPlateLayout.class.getName());
 		
-	public BasicStackPlateLayout(int horizontalHoleAmount, int verticalHoleAmount, float holeDiameter, float studDiameter, float horizontalPadding,
-			float verticalPaddingTop, float verticalPaddingBottom, float horizontalHoleDistance, float interferenceDistance, float overflowPercentage) {
+	public BasicStackPlateLayout(final int horizontalHoleAmount, final int verticalHoleAmount, final float holeDiameter, final float studDiameter, final float horizontalPadding,
+			final float verticalPaddingTop, final float verticalPaddingBottom, final float horizontalHoleDistance, final float interferenceDistance, final float overflowPercentage) {
 		this.horizontalHoleAmount = horizontalHoleAmount;
 		this.verticalHoleAmount = verticalHoleAmount;
 		this.holeDiameter = holeDiameter;
@@ -45,7 +47,7 @@ public class BasicStackPlateLayout {
 		this.verticalPaddingTop = verticalPaddingTop;
 		this.verticalPaddingBottom = verticalPaddingBottom;
 		this.horizontalHoleDistance = horizontalHoleDistance;
-		this.verticalHoleDistance = 2*horizontalHoleDistance;		// this is always the case with this Basic Stack Plate (so tilted layout results in a 45° angle)
+		this.verticalHoleDistance = 2 * horizontalHoleDistance;		// this is always the case with this Basic Stack Plate (so tilted layout results in a 45° angle)
 		this.interferenceDistance = interferenceDistance;
 		this.overFlowPercentage = overflowPercentage;
 		// initialize stud positions
@@ -66,7 +68,7 @@ public class BasicStackPlateLayout {
 	}
 	
 	public float getLength() {
-		return horizontalPadding*2 + (horizontalHoleAmount - 1) * horizontalHoleDistance;
+		return horizontalPadding * 2 + (horizontalHoleAmount - 1) * horizontalHoleDistance;
 	}
 	
 	private void clearStuds() {
@@ -81,7 +83,7 @@ public class BasicStackPlateLayout {
 	 * Configures the list of Stacking-positions and updates the 2D-array of studPositions 
 	 * @throws IncorrectWorkPieceDataException 
 	 */
-	public void configureStackingPositions(WorkPiece rawWorkPiece, WorkPieceOrientation orientation) throws IncorrectWorkPieceDataException {
+	public void configureStackingPositions(final WorkPiece rawWorkPiece, final WorkPieceOrientation orientation) throws IncorrectWorkPieceDataException {
 		stackingPositions.clear();
 		clearStuds();
 		//TODO add upper limits
@@ -102,7 +104,7 @@ public class BasicStackPlateLayout {
 		this.orientation = orientation;
 	}
 	
-	private void configureHorizontalStackingPositions(WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
+	private void configureHorizontalStackingPositions(final WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
 		if (dimensions.getLength() < dimensions.getWidth()) {
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.LENGTH_SMALLER_WIDTH);
 		}
@@ -112,7 +114,7 @@ public class BasicStackPlateLayout {
 		
 		// the piece is moved studDiameter/2 from the center of its left-most stud (since it's aligned against it)
 		// the distance between the left-most side and the center of the second stud is removed from the remaining length
-		remainingLength -= (horizontalHoleDistance - studDiameter/2);
+		remainingLength -= (horizontalHoleDistance - studDiameter / 2);
 		
 		// for real small work-pieces
 		if (remainingLength < 0) {
@@ -127,7 +129,7 @@ public class BasicStackPlateLayout {
 		
 		// the remaining distance is the space between the next stud and the end of the piece
 		float remainingDistance = horizontalHoleDistance - remainingLength;
-		if (remainingDistance - studDiameter/2 < interferenceDistance) {
+		if (remainingDistance - studDiameter / 2 < interferenceDistance) {
 			remainingLength = 0;
 			amountOfHorizontalStudsOnePiece++;
 		}
@@ -138,17 +140,17 @@ public class BasicStackPlateLayout {
 		
 		// special condition for the last piece
 		// we calculate the amount of space there is left:
-		float remainingDistanceBetweenHoles = (horizontalHoleAmount % amountOfHorizontalStudsOnePiece - 1)*horizontalHoleDistance;
+		float remainingDistanceBetweenHoles = (horizontalHoleAmount % amountOfHorizontalStudsOnePiece - 1) * horizontalHoleDistance;
 		if (remainingDistanceBetweenHoles < 0)  {
 			remainingDistanceBetweenHoles = 0;
 		}
-		float spaceLeft = remainingDistanceBetweenHoles + horizontalPadding + overFlowPercentage*dimensions.getLength() - studDiameter/2;
+		float spaceLeft = remainingDistanceBetweenHoles + horizontalPadding + overFlowPercentage * dimensions.getLength() - studDiameter / 2;
 		// if enough space if left (taking into account the overflowPercentage), an extra piece can be placed
 		if (spaceLeft >= dimensions.getLength()) {
 			// add an extra piece, note minimum two stud-holes should be available:
 			if (horizontalHoleAmount % amountOfHorizontalStudsOnePiece >= 2) {
 				// also the space over the right-most stud should be smaller than a third of the length
-				if ((dimensions.getLength() - remainingDistanceBetweenHoles)/dimensions.getLength() <= 0.4) {
+				if ((dimensions.getLength() - remainingDistanceBetweenHoles) / dimensions.getLength() <= MAX_OVERLAP_PERCENTAGE) {
 					amountHorizontal++;
 				}
 			}
@@ -161,7 +163,7 @@ public class BasicStackPlateLayout {
 		float remainingWidth = dimensions.getWidth();
 		while (remainingWidth > verticalHoleDistance) {
 			remainingWidth -= verticalHoleDistance;
-			amountOfVerticalStudsOnePiece ++;
+			amountOfVerticalStudsOnePiece++;
 		}
 		
 		remainingDistance = verticalHoleDistance - remainingWidth;
@@ -175,33 +177,33 @@ public class BasicStackPlateLayout {
 		int amountVertical = (int) Math.floor(verticalHoleAmount / amountOfVerticalStudsOnePiece);
 		// special condition for the last piece
 		// we calculate the amount of space there is left: 
-		remainingDistanceBetweenHoles = (verticalHoleAmount % amountOfVerticalStudsOnePiece - 1)*verticalHoleDistance;
+		remainingDistanceBetweenHoles = (verticalHoleAmount % amountOfVerticalStudsOnePiece - 1) * verticalHoleDistance;
 		if (remainingDistanceBetweenHoles < 0) {
 			remainingDistanceBetweenHoles = 0;
 		}
-		spaceLeft = remainingDistanceBetweenHoles + verticalPaddingTop + overFlowPercentage*dimensions.getWidth() - studDiameter/2;
+		spaceLeft = remainingDistanceBetweenHoles + verticalPaddingTop + overFlowPercentage * dimensions.getWidth() - studDiameter / 2;
 		if (spaceLeft >= dimensions.getWidth()) {
 			amountVertical++;
 		} else if ((spaceLeft < remainingWidth) && (remainingDistanceBetweenHoles == 0)) {
 			amountVertical--;
 		}
-		if ((amountOfVerticalStudsOnePiece == 1)&&(amountVertical > verticalHoleAmount)) {
+		if ((amountOfVerticalStudsOnePiece == 1) && (amountVertical > verticalHoleAmount)) {
 			amountVertical--;
 		}
 				
 		initializeRawWorkPiecePositionsHorizontal(amountOfHorizontalStudsOnePiece, amountOfVerticalStudsOnePiece, amountHorizontal, amountVertical, dimensions, remainingLength, remainingWidth);
 	}
 	
-	private void initializeRawWorkPiecePositionsHorizontal(int amountOfHorizontalStudsOnePiece, int amountOfVerticalStudsOnePiece, 
-			int amountHorizontal, int amountVertical, WorkPieceDimensions workPieceDimensions, float remainingLength, float remainingWidth) {
+	private void initializeRawWorkPiecePositionsHorizontal(final int amountOfHorizontalStudsOnePiece, final int amountOfVerticalStudsOnePiece, 
+			final int amountHorizontal, final int amountVertical, final WorkPieceDimensions workPieceDimensions, final float remainingLength, final float remainingWidth) {
 		int verticalStudIndex = 0;
 		for (int i = 0; i < amountVertical; i++) {
 			// calculate vertical position
 			// position is calculated using width, because of the orientation of x: right, y: down
-			float verticalPos = verticalStudIndex * verticalHoleDistance + studDiameter/2 + workPieceDimensions.getWidth()/2 + verticalPaddingBottom;
+			float verticalPos = verticalStudIndex * verticalHoleDistance + studDiameter / 2 + workPieceDimensions.getWidth() / 2 + verticalPaddingBottom;
 			int horizontalStudIndex = 0;
 			for (int j = 0; j < amountHorizontal; j++) {
-				float horizontalPos = horizontalStudIndex * horizontalHoleDistance + studDiameter/2 + workPieceDimensions.getLength()/2 + horizontalPadding;
+				float horizontalPos = horizontalStudIndex * horizontalHoleDistance + studDiameter / 2 + workPieceDimensions.getLength() / 2 + horizontalPadding;
 				
 				int leftVerticalExtraIndex = (int) Math.ceil(amountOfVerticalStudsOnePiece / 2);
 				int rightHorizontalExtraIndex = amountOfHorizontalStudsOnePiece - 1;
@@ -210,7 +212,7 @@ public class BasicStackPlateLayout {
 					rightHorizontalExtraIndex--;
 				}
 				// not necessary as we divide by 2
-				if ((remainingWidth <= MIN_OVERLAP_DISTANCE) && (leftVerticalExtraIndex == amountOfVerticalStudsOnePiece -1)) {
+				if ((remainingWidth <= MIN_OVERLAP_DISTANCE) && (leftVerticalExtraIndex == amountOfVerticalStudsOnePiece - 1)) {
 					leftVerticalExtraIndex--;
 				}
 				
@@ -219,7 +221,7 @@ public class BasicStackPlateLayout {
 				
 				// condition one: only two vertical studs and not enough remaining width (only one leftVerticalExtraIndex)
 				// condition two: only two horizontal studs, or: only three horizontal studs and not enough remaining length (only two rightHorizontalExtraIndex)
-				if ((rightHorizontalExtraIndex <=2) || (leftVerticalExtraIndex == 0)) {
+				if ((rightHorizontalExtraIndex <= 2) || (leftVerticalExtraIndex == 0)) {
 					StudPosition studPosition = new StudPosition(horizontalStudIndex, verticalStudIndex, studPositions[verticalStudIndex][horizontalStudIndex].getCenterPosition(), StudType.HORIZONTAL_CORNER);
 					stackingPosition.addstud(studPosition);
 					corner = true;
@@ -229,14 +231,14 @@ public class BasicStackPlateLayout {
 						stackingPosition.addstud(studPosition2);
 					}
 				} else {
-					StudPosition studPosition1 = new StudPosition(horizontalStudIndex, verticalStudIndex+leftVerticalExtraIndex, studPositions[verticalStudIndex+leftVerticalExtraIndex][horizontalStudIndex].getCenterPosition(), StudType.NORMAL);
+					StudPosition studPosition1 = new StudPosition(horizontalStudIndex, verticalStudIndex + leftVerticalExtraIndex, studPositions[verticalStudIndex + leftVerticalExtraIndex][horizontalStudIndex].getCenterPosition(), StudType.NORMAL);
 					StudPosition studPosition2 = new StudPosition(horizontalStudIndex + 1, verticalStudIndex, studPositions[verticalStudIndex][horizontalStudIndex + 1].getCenterPosition(), StudType.NORMAL);
 					stackingPosition.addstud(studPosition1);
 					stackingPosition.addstud(studPosition2);
 				}
 				
 				int horizontalPos2 = horizontalStudIndex + rightHorizontalExtraIndex;
-				while(horizontalPos2 >= studPositions[0].length) {
+				while (horizontalPos2 >= studPositions[0].length) {
 					horizontalPos2--;
 				}
 				if (horizontalPos2 > horizontalStudIndex) {
@@ -252,7 +254,7 @@ public class BasicStackPlateLayout {
 		}
 	}
 	
-	private void configureTiltedStackingPositionsAlt(WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
+	private void configureTiltedStackingPositionsAlt(final WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
 		if (dimensions.getLength() < dimensions.getWidth()) {
 			logger.error("incorrect data!!!");
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.LENGTH_SMALLER_WIDTH);
@@ -260,19 +262,19 @@ public class BasicStackPlateLayout {
 		
 		//TODO take int account strategy
 		//TODO take int account edge-overlap
-		double interference = 5;
-		double minimumStudOverlap = 5;
+		double interference = INTERFERENCE_DISTANCE;
+		double minimumStudOverlap = MIN_OVERLAP_DISTANCE;
 		
-		double A = Math.sqrt(2) * (horizontalHoleDistance/2);
-		double B = studDiameter/2 + Math.sqrt(2) * (horizontalHoleDistance/2 - Math.sqrt(2)*(studDiameter/2));
-		double C = horizontalHoleDistance/2 - Math.sqrt(2)*studDiameter/2;
-		double D = horizontalHoleDistance/2;
+		double a = Math.sqrt(2) * (horizontalHoleDistance / 2);
+		double b = studDiameter / 2 + Math.sqrt(2) * (horizontalHoleDistance / 2 - Math.sqrt(2) * (studDiameter / 2));
+		double c = horizontalHoleDistance / 2 - Math.sqrt(2) * studDiameter / 2;
+		double d = horizontalHoleDistance / 2;
 		
 		boolean needsCorners = false;
-		if(dimensions.getWidth() < B + minimumStudOverlap) {
+		if (dimensions.getWidth() < b + minimumStudOverlap) {
 			needsCorners = true;
 		}
-		if (dimensions.getLength() - B < 4*A + minimumStudOverlap) {
+		if (dimensions.getLength() - b < 4 * a + minimumStudOverlap) {
 			needsCorners = true;
 		}
 		
@@ -283,37 +285,37 @@ public class BasicStackPlateLayout {
 		int studsNeededVertical = 1;
 		
 		double width = dimensions.getWidth();
-		width -= B;
-		while (width > A - studDiameter/2) {
+		width -= b;
+		while (width > a - studDiameter / 2) {
 			studsNeededLeft++;
-			width -= A;
+			width -= a;
 		}
-		if (width > A - studDiameter/2 - interference) {
+		if (width > a - studDiameter / 2 - interference) {
 			studsNeededLeft++;
 		}
 		double length = dimensions.getLength();
-		length -= D;
-		double lengthProj = length*Math.cos(Math.PI/4);
-		while (lengthProj > horizontalHoleDistance - studDiameter/2) {
+		length -= d;
+		double lengthProj = length * Math.cos(Math.PI / 4);
+		while (lengthProj > horizontalHoleDistance - studDiameter / 2) {
 			studsTotalRight++;
 			lengthProj -= horizontalHoleDistance;
 		}
 		width = dimensions.getWidth();
-		width -= D;
-		double widthProj = width*Math.cos(Math.PI/4);
-		while (widthProj > horizontalHoleDistance - studDiameter/2) {
+		width -= d;
+		double widthProj = width * Math.cos(Math.PI / 4);
+		while (widthProj > horizontalHoleDistance - studDiameter / 2) {
 			studsTotalLeft++;
 			widthProj -= horizontalHoleDistance;
 		}
-		double totalHeight = (dimensions.getLength() + dimensions.getWidth()) * Math.sin(Math.PI/4);
-		totalHeight = totalHeight - C;
-		studsNeededVertical += Math.floor(totalHeight/verticalHoleDistance);
-		double restHeight = totalHeight - (studsNeededVertical-1) * verticalHoleDistance;
+		double totalHeight = (dimensions.getLength() + dimensions.getWidth()) * Math.sin(Math.PI / 4);
+		totalHeight = totalHeight - c;
+		studsNeededVertical += Math.floor(totalHeight / verticalHoleDistance);
+		double restHeight = totalHeight - (studsNeededVertical - 1) * verticalHoleDistance;
 		double extraMargin = 0;
 		if (needsCorners) {
-			extraMargin = holeDiameter/2 + Math.sqrt(2)*studDiameter/2;
+			extraMargin = holeDiameter / 2 + Math.sqrt(2) * studDiameter / 2;
 		}
-		if (restHeight > verticalHoleDistance - studDiameter/2 - interference - extraMargin) {
+		if (restHeight > verticalHoleDistance - studDiameter / 2 - interference - extraMargin) {
 			studsNeededVertical++;
 		}
 		
@@ -321,12 +323,12 @@ public class BasicStackPlateLayout {
 		
 	}
 	
-	private void initializeRawWorkPiecePositionsTilted(WorkPieceDimensions dimensions, int studsNeededLeft, int studsNeededRight, int studsTotalLeft, int studsTotalRight, int studsNeededVertical,
-			boolean needsCorners) {		
-		float a = (float) (horizontalHoleDistance/2 - Math.sqrt(2)*(studDiameter/2));
+	private void initializeRawWorkPiecePositionsTilted(final WorkPieceDimensions dimensions, final int studsNeededLeft, final int studsNeededRight, final int studsTotalLeft, 
+			final int studsTotalRight, final int studsNeededVertical, final boolean needsCorners) {		
+		float a = (float) (horizontalHoleDistance / 2 - Math.sqrt(2) * (studDiameter / 2));
 		
-		float h = (float) (horizontalHoleDistance/2 + ( dimensions.getLength()/(Math.sqrt(2)) - dimensions.getWidth()/(Math.sqrt(2)) )/2);
-		float v = (float) ( (dimensions.getLength()/(Math.sqrt(2)) + dimensions.getWidth()/(Math.sqrt(2)))/2 - a);
+		float h = (float) (horizontalHoleDistance / 2 + (dimensions.getLength() / (Math.sqrt(2)) - dimensions.getWidth() / (Math.sqrt(2))) / 2);
+		float v = (float) ((dimensions.getLength() / (Math.sqrt(2)) + dimensions.getWidth() / (Math.sqrt(2))) / 2 - a);
 		
 		boolean finished = false;
 		int firstHorizontalPositionLeftStudIndex = studsTotalLeft - 1;
@@ -355,15 +357,15 @@ public class BasicStackPlateLayout {
 						//int extraHorizontal = (int) Math.floor(studsTotalRight/2);
 						//int extraVertical = extraHorizontal/2;
 						logger.info("studsTotalRight: " + studsTotalRight);
-						int extraHorizontal = studsTotalRight -1;
+						int extraHorizontal = studsTotalRight - 1;
 						if (extraHorizontal % 2 != 0) {
-							extraHorizontal = extraHorizontal -1;
+							extraHorizontal = extraHorizontal - 1;
 						}
-						int extraVertical = extraHorizontal/2;
+						int extraVertical = extraHorizontal / 2;
 						extraHorizontal++;
 						if (extraHorizontal > 4) {
-							extraHorizontal = extraHorizontal-2;
-							extraVertical = extraVertical-1;
+							extraHorizontal = extraHorizontal - 2;
+							extraVertical = extraVertical - 1;
 						}
 						StudPosition studPos2 = new StudPosition(horizontalIndex + extraHorizontal, verticalIndex + extraVertical, studPositions[verticalIndex + extraVertical][horizontalIndex + extraHorizontal].getCenterPosition(), StudType.NORMAL);
 						position.addstud(studPos2);
@@ -371,13 +373,13 @@ public class BasicStackPlateLayout {
 					position.addstud(studPos);
 				} else {
 					StudPosition studPos = new StudPosition(horizontalIndex, verticalIndex, studPositions[verticalIndex][horizontalIndex].getCenterPosition(), StudType.NORMAL);
-					StudPosition studPos2 = new StudPosition(horizontalIndex+1, verticalIndex, studPositions[verticalIndex][horizontalIndex+1].getCenterPosition(), StudType.NORMAL);
-					int extraHorizontal = (int) Math.floor(studsTotalRight-1);
-					if (extraHorizontal % 2 != 0){
+					StudPosition studPos2 = new StudPosition(horizontalIndex + 1, verticalIndex, studPositions[verticalIndex][horizontalIndex + 1].getCenterPosition(), StudType.NORMAL);
+					int extraHorizontal = (int) Math.floor(studsTotalRight - 1);
+					if (extraHorizontal % 2 != 0) {
 						extraHorizontal--;
 					}
-					int extraVertical = extraHorizontal/2;
-					StudPosition studPos3 = new StudPosition(horizontalIndex +1+ extraHorizontal, verticalIndex + extraVertical, studPositions[verticalIndex + extraVertical][horizontalIndex+1 + extraHorizontal].getCenterPosition(), StudType.NORMAL);
+					int extraVertical = extraHorizontal / 2;
+					StudPosition studPos3 = new StudPosition(horizontalIndex + 1 + extraHorizontal, verticalIndex + extraVertical, studPositions[verticalIndex + extraVertical][horizontalIndex + 1 + extraHorizontal].getCenterPosition(), StudType.NORMAL);
 					position.addstud(studPos);
 					position.addstud(studPos2);
 					position.addstud(studPos3);
@@ -390,7 +392,7 @@ public class BasicStackPlateLayout {
 		}
 	}
 
-	public void placeRawWorkPieces(WorkPiece rawWorkPiece, int amount) throws IncorrectWorkPieceDataException {
+	public void placeRawWorkPieces(final WorkPiece rawWorkPiece, final int amount) throws IncorrectWorkPieceDataException {
 		if (amount <= getMaxRawWorkPiecesAmount()) {
 			for (int i = 0; i < amount; i++) {
 				StackingPosition stackingPos = stackingPositions.get(i);
@@ -412,7 +414,7 @@ public class BasicStackPlateLayout {
 		return horizontalHoleAmount;
 	}
 
-	public void setHorizontalHoleAmount(int horizontalHoleAmount) {
+	public void setHorizontalHoleAmount(final int horizontalHoleAmount) {
 		this.horizontalHoleAmount = horizontalHoleAmount;
 	}
 
@@ -420,7 +422,7 @@ public class BasicStackPlateLayout {
 		return verticalHoleAmount;
 	}
 
-	public void setVerticalHoleAmount(int verticalHoleAmount) {
+	public void setVerticalHoleAmount(final int verticalHoleAmount) {
 		this.verticalHoleAmount = verticalHoleAmount;
 	}
 
@@ -428,7 +430,7 @@ public class BasicStackPlateLayout {
 		return holeDiameter;
 	}
 
-	public void setHoleDiameter(float holeDiameter) {
+	public void setHoleDiameter(final float holeDiameter) {
 		this.holeDiameter = holeDiameter;
 	}
 
@@ -436,7 +438,7 @@ public class BasicStackPlateLayout {
 		return studDiameter;
 	}
 
-	public void setStudDiameter(float studDiameter) {
+	public void setStudDiameter(final float studDiameter) {
 		this.studDiameter = studDiameter;
 	}
 
@@ -444,7 +446,7 @@ public class BasicStackPlateLayout {
 		return horizontalPadding;
 	}
 
-	public void setHorizontalPadding(float horizontalPadding) {
+	public void setHorizontalPadding(final float horizontalPadding) {
 		this.horizontalPadding = horizontalPadding;
 	}
 
@@ -456,7 +458,7 @@ public class BasicStackPlateLayout {
 		return verticalPaddingBottom;
 	}
 
-	public void setVerticalPadding(float verticalPadding) {
+	public void setVerticalPadding(final float verticalPadding) {
 		this.verticalPaddingTop = verticalPadding;
 	}
 
@@ -464,7 +466,7 @@ public class BasicStackPlateLayout {
 		return horizontalHoleDistance;
 	}
 
-	public void setHorizontalHoleDistance(float horizontalHoleDistance) {
+	public void setHorizontalHoleDistance(final float horizontalHoleDistance) {
 		this.horizontalHoleDistance = horizontalHoleDistance;
 	}
 
@@ -472,7 +474,7 @@ public class BasicStackPlateLayout {
 		return verticalHoleDistance;
 	}
 
-	public void setVerticalHoleDistance(float verticalHoleDistance) {
+	public void setVerticalHoleDistance(final float verticalHoleDistance) {
 		this.verticalHoleDistance = verticalHoleDistance;
 	}
 
@@ -480,7 +482,7 @@ public class BasicStackPlateLayout {
 		return studPositions;
 	}
 
-	public void setStudPositions(StudPosition[][] studPositions) {
+	public void setStudPositions(final StudPosition[][] studPositions) {
 		this.studPositions = studPositions;
 	}
 
@@ -488,7 +490,7 @@ public class BasicStackPlateLayout {
 		return stackingPositions;
 	}
 
-	public void setStackingPositions(List<StackingPosition> stackingPositions) {
+	public void setStackingPositions(final List<StackingPosition> stackingPositions) {
 		this.stackingPositions = stackingPositions;
 	}
 	

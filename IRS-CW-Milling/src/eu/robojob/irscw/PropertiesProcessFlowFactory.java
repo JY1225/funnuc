@@ -37,12 +37,12 @@ public class PropertiesProcessFlowFactory {
 	private RobotManager robotManager;
 	private ProcessFlowTimer processFlowTimer;
 		
-	public PropertiesProcessFlowFactory(DeviceManager deviceManager, RobotManager robotManager) {
+	public PropertiesProcessFlowFactory(final DeviceManager deviceManager, final RobotManager robotManager) {
 		this.deviceManager = deviceManager;
 		this.robotManager = robotManager;
 	}
 	
-	public ProcessFlow loadProcessFlow(Properties properties) {
+	public ProcessFlow loadProcessFlow(final Properties properties) {
 		// first read all parameters
 		String processFlowId = (properties.getProperty("processflow.id")).toUpperCase();
 		boolean tilted = Boolean.parseBoolean(properties.getProperty("basicstackplate.orientation.tilted"));
@@ -101,10 +101,10 @@ public class PropertiesProcessFlowFactory {
 		return createProcessFlow(processFlowId, processFlowAmount, finishedAmount, rawWorkPieceDimensions, finishedWorkPieceDimensions, tilted, hasPrageStep, clampingId, clampLength, robotHeadBeforeMachineId, robotHeadAfterMachineId, gripperHeadAId, gripperHeadBId, relativeTeachedPickStacker, relativeTeachedPutPrage, relativeTeachedPutMachine, relativeTeachedPickMachine, relativeTeachedPutStacker);
 	}
 	
-	private ProcessFlow createProcessFlow(String processFlowId, int amount, int finishedAmount, WorkPieceDimensions rawDimensions, WorkPieceDimensions finishedDimensions, boolean tilted, boolean hasPrage, 
-			String clampingId, boolean clampLength, String robotHeadIdBefore,
-			String robotHeadIdAfter, String gripperHeadAId, String gripperHeadBId, Coordinates relativeTeachedPickStacker, Coordinates relativeTeachedPutPrage, 
-				Coordinates relativeTeachedPutMachine, Coordinates relativeTeachedPickMachine, Coordinates relativeTeachedPutStacker) {
+	private ProcessFlow createProcessFlow(final String processFlowId, final int amount, final int finishedAmount, final WorkPieceDimensions rawDimensions, final WorkPieceDimensions finishedDimensions, final boolean tilted, final boolean hasPrage, 
+			final String clampingId, final boolean clampLength, final String robotHeadIdBefore,
+			final String robotHeadIdAfter, final String gripperHeadAId, final String gripperHeadBId, final Coordinates relativeTeachedPickStacker, final Coordinates relativeTeachedPutPrage, 
+				final Coordinates relativeTeachedPutMachine, final Coordinates relativeTeachedPickMachine, final Coordinates relativeTeachedPutStacker) {
 		ProcessFlow processFlow = new ProcessFlow(processFlowId);
 		processFlow.setTotalAmount(amount);
 		

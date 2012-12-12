@@ -21,7 +21,7 @@ public class RobotManager {
 	private static final String ROBOT_IP = "robot-ip";
 	private static final String ROBOT_PORT = "robot-port";
 	
-	public RobotManager(Properties properties) {
+	public RobotManager(final Properties properties) {
 		robots = new HashMap<String, AbstractRobot>();
 		this.properties = properties;
 		initialize();
@@ -48,19 +48,19 @@ public class RobotManager {
 		addRobot(fanucRobot);
 	}
 	
-	public List<GripperHead> getGripperHeads(String robotId) {
+	public List<GripperHead> getGripperHeads(final String robotId) {
 		return robots.get(robotId).getGripperBody().getGripperHeads();
 	}
 	
-	public Set<Gripper> getGrippers(GripperBody gripperBody) {
+	public Set<Gripper> getGrippers(final GripperBody gripperBody) {
 		return gripperBody.getPossibleGrippers();
 	}
 	
-	public Set<GripperBody> getGripperBodies(AbstractRobot robot) {
+	public Set<GripperBody> getGripperBodies(final AbstractRobot robot) {
 		return robot.getPossibleGripperBodies();
 	}
 	
-	public Gripper getGripper(String id) {
+	public Gripper getGripper(final String id) {
 		for (AbstractRobot robot : robots.values()) {
 			for (GripperBody body : robot.getPossibleGripperBodies()) {
 				for (Gripper gripper : body.getPossibleGrippers()) {
@@ -73,7 +73,7 @@ public class RobotManager {
 		return null;
 	}
 	
-	public void addRobot(AbstractRobot robot) {
+	public void addRobot(final AbstractRobot robot) {
 		robots.put(robot.getId(), robot);
 	}
 	
@@ -85,7 +85,7 @@ public class RobotManager {
 		return robots.values();
 	}
 	
-	public AbstractRobot getRobotById(String robotId) {
+	public AbstractRobot getRobotById(final String robotId) {
 		return robots.get(robotId);
 	}
 }

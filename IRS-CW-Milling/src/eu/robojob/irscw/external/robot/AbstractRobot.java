@@ -14,7 +14,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	private Set<GripperBody> possibleGripperBodies;
 	private int speed;
 	
-	public AbstractRobot(String id, Set<GripperBody> possibleGripperBodies, GripperBody activeGripperBody) {
+	public AbstractRobot(final String id, final Set<GripperBody> possibleGripperBodies, final GripperBody activeGripperBody) {
 		super(id);
 		this.speed = 50;
 		if (possibleGripperBodies != null) {
@@ -27,18 +27,18 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		}
 	}
 	
-	public AbstractRobot(String id) {
+	public AbstractRobot(final String id) {
 		this(id, null, null);
 	}
 	
-	public void setActiveGripperBody(GripperBody body) {
+	public void setActiveGripperBody(final GripperBody body) {
 		if (!possibleGripperBodies.contains(body)) {
 			throw new IllegalArgumentException("Unknown GripperBody value.");
 		}
 		activeGripperBody = body;
 	}
 	
-	public void setSpeed(int speedPercentage) throws DisconnectedException, ResponseTimedOutException {
+	public void setSpeed(final int speedPercentage) throws DisconnectedException, ResponseTimedOutException {
 		if ((speedPercentage < 0) || (speedPercentage > 100) || !((speedPercentage == 10) || (speedPercentage == 25) || (speedPercentage == 50) || (speedPercentage == 100))) {
 			throw new IllegalArgumentException("Illegal speed value: " + speedPercentage + ", should be between 0 and 100");
 		}
@@ -54,7 +54,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		return possibleGripperBodies;
 	}
 
-	public void setPossibleGripperBodies(Set<GripperBody> possibleGripperBodies) {
+	public void setPossibleGripperBodies(final Set<GripperBody> possibleGripperBodies) {
 		this.possibleGripperBodies = possibleGripperBodies;
 	}
 	
@@ -99,14 +99,14 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract boolean isConnected();
 	
 	public String toString() {
-		return "Robot: " + id;
+		return "Robot: " + getId();
 	}
 	
 	public GripperBody getGripperBody() {
 		return activeGripperBody;
 	}
 
-	public void setGripperBody(GripperBody gripperBody) {
+	public void setGripperBody(final GripperBody gripperBody) {
 		this.activeGripperBody = gripperBody;
 	}
 	

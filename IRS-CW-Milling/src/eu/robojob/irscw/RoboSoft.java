@@ -20,25 +20,25 @@ import eu.robojob.irscw.ui.RoboSoftAppFactory;
 
 public class RoboSoft extends Application {
 
-	static Logger logger = LogManager.getLogger(RoboSoft.class.getName());
+	private static Logger logger = LogManager.getLogger(RoboSoft.class.getName());
+	private static final int WIDTH = 800;
+	private static final int HEIGHT = 600;
 	
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		launch(args);
 	}
 
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void start(final Stage stage) throws Exception {
 		logger.info("Started application.");
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
 		RoboSoftAppFactory factory = new RoboSoftAppFactory(properties);
 		MainPresenter mainPresenter = factory.getMainPresenter();
 		mainPresenter.showConfigure();
-		Scene scene = new Scene(mainPresenter.getView(), 800, 600);
+		Scene scene = new Scene(mainPresenter.getView(), WIDTH, HEIGHT);
 		Locale.setDefault(new Locale("nl"));
-		if (Boolean.parseBoolean(properties.getProperty("mouse-visible"))) {
-			
-		} else {
+		if (!Boolean.parseBoolean(properties.getProperty("mouse-visible"))) {
 			scene.setCursor(Cursor.NONE);
 		}
 		scene.getStylesheets().add("css/general-style.css");

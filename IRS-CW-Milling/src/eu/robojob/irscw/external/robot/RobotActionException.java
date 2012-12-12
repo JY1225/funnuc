@@ -12,7 +12,7 @@ public class RobotActionException extends Exception {
 	private String errorId;
 	private Translator translator;
 	
-	public RobotActionException(AbstractRobot robot, String errorId) {
+	public RobotActionException(final AbstractRobot robot, final String errorId) {
 		this.errorId = errorId;
 		this.robot = robot;
 		this.translator = Translator.getInstance();

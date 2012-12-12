@@ -4,19 +4,19 @@ import java.util.Map;
 
 public class RobotSettings {
 	
-	protected GripperBody gripperBody;
-	protected Map<GripperHead, Gripper> grippers;
+	private GripperBody gripperBody;
+	private Map<GripperHead, Gripper> grippers;
 	
-	public RobotSettings(GripperBody gripperBody, Map<GripperHead, Gripper> grippers) {
+	public RobotSettings(final GripperBody gripperBody, final Map<GripperHead, Gripper> grippers) {
 		this.gripperBody = gripperBody;
 		this.grippers = grippers;
 	}
 
-	public void setGripper(GripperHead head, Gripper gripper) {
+	public void setGripper(final GripperHead head, final Gripper gripper) {
 		grippers.put(head, gripper);
 	}
 	
-	public Gripper getGripper(GripperHead head) {
+	public Gripper getGripper(final GripperHead head) {
 		return grippers.get(head);
 	}
 

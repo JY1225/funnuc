@@ -20,19 +20,19 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 
 	private Set<CNCMachineListener> listeners;
 	
-	protected Set<CNCMachineAlarm> alarms;
-	protected int currentStatus;
+	private Set<CNCMachineAlarm> alarms;
+	private int currentStatus;
 	
 	private boolean statusChanged;
 	private Object syncObject;
 	
 	private boolean stopAction;
 	
-	private static final Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());
+	private static Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());
 	
 	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "AbstractCNCMachine.disconnectedWhileWaiting";
 	
-	public AbstractCNCMachine(String id, List<Zone> zones) {
+	public AbstractCNCMachine(final String id, final List<Zone> zones) {
 		super(id, zones, true);
 		this.statusChanged = false;
 		syncObject = new Object();
@@ -45,29 +45,37 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.stopAction = false;
 	}
 	
-	public AbstractCNCMachine(String id) {
+	public AbstractCNCMachine(final String id) {
 		this(id, new ArrayList<Zone>());
 	}
 	
 	@Override
 	public void interruptCurrentAction() {
-		logger.debug("Interrupting current action of: " + id);
+		logger.debug("Interrupting current action of: " + getId());
 		stopAction = true;
-		synchronized(syncObject) {
+		synchronized (syncObject) {
 			syncObject.notifyAll();
 		}
 	}
 
-	public void addListener(CNCMachineListener listener) {
+	public void addListener(final CNCMachineListener listener) {
 		listeners.add(listener);
 	}
 	
-	public void removeListener(CNCMachineListener listener) {
+	public void removeListener(final CNCMachineListener listener) {
 		listeners.remove(listener);
 	}
 	
 	public int getStatus() {
 		return currentStatus;
+	}
+	
+	public void setStatus(final int status) {
+		this.currentStatus = status;
+	}
+	
+	public void setAlarms(final Set<CNCMachineAlarm> alarms) {
+		this.alarms = alarms;
 	}
 	
 	public abstract void updateStatusAndAlarms() throws DisconnectedException, ResponseTimedOutException, InterruptedException;
@@ -77,7 +85,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		return alarms;
 	}
 	
-	public void processCNCMachineEvent(CNCMachineEvent event) {
+	public void processCNCMachineEvent(final CNCMachineEvent event) {
 		switch(event.getId()) {
 			case CNCMachineEvent.CNC_MACHINE_CONNECTED : 
 				for (CNCMachineListener listener : listeners) {
@@ -111,7 +119,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	 * is waiting, it will be notified
 	 */
 	private void statusChanged() {
-		synchronized(syncObject) {
+		synchronized (syncObject) {
 			statusChanged = true;
 			syncObject.notifyAll();
 		}
@@ -124,7 +132,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	public abstract void indicateOperatorRequested(boolean requested) throws ResponseTimedOutException, DisconnectedException, InterruptedException;
 	public abstract void clearIndications() throws ResponseTimedOutException, DisconnectedException, InterruptedException;
 	
-	protected boolean waitForStatus(int status, long timeout) throws InterruptedException, DeviceActionException {
+	protected boolean waitForStatus(final int status, final long timeout) throws InterruptedException, DeviceActionException {
 		long waitedTime = 0;
 		stopAction = false;
 		// check status before we start
@@ -135,12 +143,12 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		if (!isConnected()) {
 			throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
 		}
-		while(waitedTime < timeout) {
+		while (waitedTime < timeout) {
 			// start waiting
 			statusChanged = false;
 			if (timeout > waitedTime) {
 				long timeBeforeWait = System.currentTimeMillis();
-				synchronized(syncObject) {
+				synchronized (syncObject) {
 					syncObject.wait(timeout - waitedTime);
 				}
 				// at this point the wait is finished, either by a notify (status changed, or request to stop), or by a timeout
@@ -153,7 +161,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 					throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
 				}
 				// check if status has changed
-				if ((statusChanged == true) && ((currentStatus & status) > 0)) {
+				if ((statusChanged) && ((currentStatus & status) > 0)) {
 					statusChanged = false;
 					return true;
 				}
@@ -173,6 +181,6 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 
 	@Override
 	public String toString() {
-		return "AbstractCNCMachine: " + id;
+		return "AbstractCNCMachine: " + getId();
 	}
 }

@@ -14,16 +14,20 @@ import org.apache.derby.jdbc.ClientDriver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DatabaseMapper {
+public final class DatabaseMapper {
 	
 	private static Logger logger = LogManager.getLogger(DatabaseMapper.class.getName());
+	
+	private static final int ID_INDEX = 1;
+	private static final int NAME_INDEX = 2;
+	private static final int CITY_INDEX = 3;
 	
 	private Connection conn = null;
 	private Statement stmt = null;
 	
 	private static DatabaseMapper instance = null;
 	
-	private DatabaseMapper () {
+	private DatabaseMapper() {
 		createConnection();
 	}
 	
@@ -42,15 +46,14 @@ public class DatabaseMapper {
 			props.load(url.openStream());
 			Class.forName(props.getProperty("jdbc.driver")).newInstance();
 			new ClientDriver();
-			conn = DriverManager.getConnection(props.getProperty("jdbc.protocol") + "://" + props.getProperty("jdbc.host") + ":" + props.getProperty("jdbc.port") + "/" + props.getProperty("jdbc.database") + ";create=true" + ";user=" + 
-						props.getProperty("jdbc.user") + ";password=" + props.getProperty("jdbc.password"));
+			conn = DriverManager.getConnection(props.getProperty("jdbc.protocol") + "://" + props.getProperty("jdbc.host") + ":" + props.getProperty("jdbc.port") + "/" + props.getProperty("jdbc.database") + ";create=true" + ";user=" 
+					+ props.getProperty("jdbc.user") + ";password=" + props.getProperty("jdbc.password"));
 			logger.info("Created database connection");
 		} catch (FileNotFoundException e) {
 			logger.error(e);
 		} catch (IOException e) {
 			logger.error(e);
-		} 
-		catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			logger.error(e);
 		} catch (SQLException e) {
 			logger.error(e);
@@ -66,9 +69,9 @@ public class DatabaseMapper {
 			stmt = conn.createStatement();
 			ResultSet results = stmt.executeQuery("select * from TEST");
 			while (results.next()) {
-				int id = results.getInt(1);
-				String name = results.getString(2);
-				String city = results.getString(3);
+				int id = results.getInt(ID_INDEX);
+				String name = results.getString(NAME_INDEX);
+				String city = results.getString(CITY_INDEX);
 				logger.info("Person: " + name + " from " + city + " with id: " + id);
 			}
 		} catch (SQLException e) {

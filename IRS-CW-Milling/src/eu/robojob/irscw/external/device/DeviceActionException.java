@@ -12,7 +12,7 @@ public class DeviceActionException extends Exception {
 	private String errorId;
 	private Translator translator;
 	
-	public DeviceActionException(AbstractDevice device, String errorId) {
+	public DeviceActionException(final AbstractDevice device, final String errorId) {
 		this.errorId = errorId;
 		this.device = device;
 		this.translator = Translator.getInstance();

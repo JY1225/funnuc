@@ -9,7 +9,7 @@ public class Zone {
 	private List<WorkArea> workAreas;
 	private AbstractDevice device;
 
-	public Zone(String id, List<WorkArea> workAreas) {
+	public Zone(final String id, final List<WorkArea> workAreas) {
 		this.id = id;
 		this.workAreas =  new ArrayList<WorkArea>();
 		for (WorkArea workArea : workAreas) {
@@ -17,11 +17,11 @@ public class Zone {
 		}
 	}
 	
-	public Zone(String id) {
+	public Zone(final String id) {
 		this(id, new ArrayList<WorkArea>());
 	}
 	
-	public void setDevice(AbstractDevice device) {
+	public void setDevice(final AbstractDevice device) {
 		this.device = device;
 	}
 
@@ -29,7 +29,7 @@ public class Zone {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -45,12 +45,12 @@ public class Zone {
 		return workAreaIds;
 	}
 
-	public void setWorkAreas(List<WorkArea> workAreas) {
+	public void setWorkAreas(final List<WorkArea> workAreas) {
 		this.workAreas = workAreas;
 	}
 	
-	public void addWorkArea(WorkArea workArea) throws IllegalArgumentException {
-		if (getWorkAreaById(workArea.getId())!=null) {
+	public void addWorkArea(final WorkArea workArea) {
+		if (getWorkAreaById(workArea.getId()) != null) {
 			throw new IllegalArgumentException("A workArea with the same id already exists within this zone.");
 		} else {
 			this.workAreas.add(workArea);
@@ -58,11 +58,11 @@ public class Zone {
 		}
 	}
 	
-	public void removeWorkArea(WorkArea workArea) {
+	public void removeWorkArea(final WorkArea workArea) {
 		this.workAreas.remove(workArea);
 	}
 	
-	public WorkArea getWorkAreaById(String id) {
+	public WorkArea getWorkAreaById(final String id) {
 		for (WorkArea workArea : workAreas) {
 			if (workArea.getId().equals(id)) {
 				return workArea;

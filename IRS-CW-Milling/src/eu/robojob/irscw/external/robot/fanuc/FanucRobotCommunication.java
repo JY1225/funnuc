@@ -37,10 +37,10 @@ public class FanucRobotCommunication extends ExternalCommunication {
 			command.append(";");
 		}
 		int waitedTime = 0;
-		extCommThread.writeString(command.toString());
+		getExternalCommunicationThread().writeString(command.toString());
 		do {
-			if (extCommThread.hasNextMessage()) {
-				String message = extCommThread.getNextMessage();
+			if (getExternalCommunicationThread().hasNextMessage()) {
+				String message = getExternalCommunicationThread().getNextMessage();
 				message = message.replaceAll(" ", "");
 				message = message.substring(0, message.length()-1);
 				if (message.equals(ackId + ";")) {
@@ -63,7 +63,7 @@ public class FanucRobotCommunication extends ExternalCommunication {
 			}
 			waitedTime += timeToWait;
 		} while (waitedTime < timeout);
-		throw new ResponseTimedOutException(extCommThread.getSocketConnection());
+		throw new ResponseTimedOutException(getExternalCommunicationThread().getSocketConnection());
 	}
 
 	public synchronized void writeCommand(int commandId, int ackId, int timeout) throws DisconnectedException, ResponseTimedOutException {
@@ -78,10 +78,10 @@ public class FanucRobotCommunication extends ExternalCommunication {
 	
 	public synchronized List<String> readValues(int commandId, int ackId, int timeout) throws DisconnectedException, ResponseTimedOutException {
 		int waitedTime = 0;
-		extCommThread.writeString(commandId + ";");
+		getExternalCommunicationThread().writeString(commandId + ";");
 		do {
-			if (extCommThread.hasNextMessage()) {
-				String response = extCommThread.getNextMessage();
+			if (getExternalCommunicationThread().hasNextMessage()) {
+				String response = getExternalCommunicationThread().getNextMessage();
 				response = response.replaceAll(" ", "");
 				//response = response.substring(0, response.length()-1);
 				if (response.startsWith(ackId + ";")) {
@@ -104,7 +104,7 @@ public class FanucRobotCommunication extends ExternalCommunication {
 			}
 			waitedTime += timeToWait;
 		} while (waitedTime <= timeout);
-		throw new ResponseTimedOutException(extCommThread.getSocketConnection());
+		throw new ResponseTimedOutException(getExternalCommunicationThread().getSocketConnection());
 	}
 	
 	public List<String> parseResult(String response) {
@@ -152,6 +152,6 @@ public class FanucRobotCommunication extends ExternalCommunication {
 
 	@Override
 	public String toString() {
-		return "Fanuc robot communication: " + extCommThread.getSocketConnection().toString();
+		return "Fanuc robot communication: " + getExternalCommunicationThread().getSocketConnection().toString();
 	}
 }

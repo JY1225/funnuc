@@ -13,18 +13,18 @@ public class WorkArea {
 	private Clamping activeClamping;
 	private List<Clamping> clampings;
 	
-	public WorkArea (String id, UserFrame userFrame, Clamping activeClamping, List<Clamping> clampings) {
+	public WorkArea(final String id, final UserFrame userFrame, final Clamping activeClamping, final List<Clamping> clampings) {
 		this.id = id;
 		this.userFrame = userFrame;
 		this.activeClamping = activeClamping;
 		this.clampings = clampings;
 	}
 	
-	public WorkArea (String id, UserFrame userFrame, List<Clamping> clampings) {
+	public WorkArea(final String id, final UserFrame userFrame, final List<Clamping> clampings) {
 		this(id, userFrame, null, clampings);
 	}
 	
-	public WorkArea(String id, UserFrame userFrame) {
+	public WorkArea(final String id, final UserFrame userFrame) {
 		this(id, userFrame, null, new ArrayList<Clamping>());
 	}
 
@@ -32,7 +32,7 @@ public class WorkArea {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -40,7 +40,7 @@ public class WorkArea {
 		return zone;
 	}
 
-	public void setZone(Zone zone) {
+	public void setZone(final Zone zone) {
 		this.zone = zone;
 	}
 
@@ -48,7 +48,7 @@ public class WorkArea {
 		return userFrame;
 	}
 
-	public void setUserFrame(UserFrame userFrame) {
+	public void setUserFrame(final UserFrame userFrame) {
 		this.userFrame = userFrame;
 	}
 
@@ -56,7 +56,7 @@ public class WorkArea {
 		return activeClamping;
 	}
 
-	public void setActiveClamping(Clamping activeClamping) {
+	public void setActiveClamping(final Clamping activeClamping) {
 		this.activeClamping = activeClamping;
 	}
 	
@@ -68,18 +68,18 @@ public class WorkArea {
 		return clampings;
 	}
 
-	public void setClampings(List<Clamping> clampings) {
-		clampings = new ArrayList<Clamping>();
+	public void setClampings(final List<Clamping> clampings) {
+		this.clampings = new ArrayList<Clamping>();
 		for (Clamping clamping : clampings) {
 			addClamping(clamping);
 		}
 	}
 	
-	public void addClamping(Clamping clamping) {
+	public void addClamping(final Clamping clamping) {
 		clampings.add(clamping);
 	}
 	
-	public void removeClamping(Clamping clamping) {
+	public void removeClamping(final Clamping clamping) {
 		clampings.remove(clamping);
 	}
 	
@@ -91,7 +91,7 @@ public class WorkArea {
 		return clampingIds;
 	}
 	
-	public Clamping getClampingById(String id) {
+	public Clamping getClampingById(final String id) {
 		for (Clamping clamping : clampings) {
 			if (clamping.getId().equals(id)) {
 				return clamping;

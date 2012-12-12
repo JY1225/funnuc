@@ -21,8 +21,8 @@ public class Clamping {
 	
 	private Set<Clamping> relatedClampings;
 	
-	public Clamping(Type type, String id, float height, Coordinates relativePosition, Coordinates smoothToPoint,
-				Coordinates smoothFromPoint, String imageURL) {
+	public Clamping(final Type type, final String id, final float height, final Coordinates relativePosition, final Coordinates smoothToPoint,
+				final Coordinates smoothFromPoint, final String imageURL) {
 		this.id = id;
 		this.height = height;
 		this.relativePosition = relativePosition;
@@ -33,7 +33,7 @@ public class Clamping {
 		this.type = type;
 	}
 	
-	public Clamping(Type type, String id, float height, Coordinates relativePosition, Coordinates smoothPoint, String imageURL) {
+	public Clamping(final Type type, final String id, final float height, final Coordinates relativePosition, final Coordinates smoothPoint, final String imageURL) {
 		this(type, id, height, relativePosition, smoothPoint, smoothPoint, imageURL);
 	}
 	
@@ -41,15 +41,15 @@ public class Clamping {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(final Type type) {
 		this.type = type;
 	}
 
-	public void addRelatedClamping(Clamping clamping) {
+	public void addRelatedClamping(final Clamping clamping) {
 		relatedClampings.add(clamping);
 	}
 	
-	public void removeRelatedClamping(Clamping clamping) {
+	public void removeRelatedClamping(final Clamping clamping) {
 		relatedClampings.remove(clamping);
 	}
 	
@@ -61,7 +61,7 @@ public class Clamping {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -69,7 +69,7 @@ public class Clamping {
 		return relativePosition;
 	}
 
-	public void setRelativePosition(Coordinates relativePosition) {
+	public void setRelativePosition(final Coordinates relativePosition) {
 		this.relativePosition = relativePosition;
 	}
 
@@ -77,7 +77,7 @@ public class Clamping {
 		return imageURL;
 	}
 
-	public void setImageURL(String imageURL) {
+	public void setImageURL(final String imageURL) {
 		this.imageURL = imageURL;
 	}
 
@@ -85,7 +85,7 @@ public class Clamping {
 		return smoothToPoint;
 	}
 
-	public void setSmoothToPoint(Coordinates smoothToPoint) {
+	public void setSmoothToPoint(final Coordinates smoothToPoint) {
 		this.smoothToPoint = smoothToPoint;
 	}
 
@@ -93,7 +93,7 @@ public class Clamping {
 		return smoothFromPoint;
 	}
 
-	public void setSmoothFromPoint(Coordinates smoothFromPoint) {
+	public void setSmoothFromPoint(final Coordinates smoothFromPoint) {
 		this.smoothFromPoint = smoothFromPoint;
 	}
 
@@ -101,7 +101,7 @@ public class Clamping {
 		return height;
 	}
 
-	public void setHeight(float height) {
+	public void setHeight(final float height) {
 		this.height = height;
 	}
 }

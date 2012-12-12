@@ -18,7 +18,7 @@ public class StackingPosition {
 	
 	private List<StudPosition> studs;
 	
-	public StackingPosition(Coordinates position, WorkPiece workPiece, WorkPieceOrientation orientation, List<StudPosition> studs) {
+	public StackingPosition(final Coordinates position, final WorkPiece workPiece, final WorkPieceOrientation orientation, final List<StudPosition> studs) {
 		this.position = position;
 		this.workPiece = workPiece;
 		this.studs = studs;
@@ -32,11 +32,11 @@ public class StackingPosition {
 		}
 	}
 	
-	public StackingPosition(Coordinates position,WorkPiece workPiece, WorkPieceOrientation orientation) {
+	public StackingPosition(final Coordinates position, final WorkPiece workPiece, final WorkPieceOrientation orientation) {
 		this(position, workPiece, orientation, new ArrayList<StudPosition>());
 	}
 
-	public StackingPosition(float horizontalPosition, float verticalPosition, WorkPiece workPiece, WorkPieceOrientation orientation) {
+	public StackingPosition(final float horizontalPosition, final float verticalPosition, final WorkPiece workPiece, final WorkPieceOrientation orientation) {
 		this (new Coordinates(horizontalPosition, verticalPosition, 0, 0, 0, 0), workPiece, orientation);
 	}
 	
@@ -48,7 +48,7 @@ public class StackingPosition {
 		return workPiece;
 	}
 
-	public void setWorkPiece(WorkPiece workPiece) {
+	public void setWorkPiece(final WorkPiece workPiece) {
 		this.workPiece = workPiece;
 	}
 	
@@ -60,7 +60,7 @@ public class StackingPosition {
 		return orientation;
 	}
 	
-	public void addstud(StudPosition stud) {
+	public void addstud(final StudPosition stud) {
 		studs.add(stud);
 	}
 

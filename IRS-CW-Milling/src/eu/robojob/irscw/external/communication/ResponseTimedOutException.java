@@ -11,7 +11,7 @@ public class ResponseTimedOutException extends AbstractCommunicationException {
 	private SocketConnection socketConnection;
 	private Translator translator;
 	
-	public ResponseTimedOutException(SocketConnection socketConnection) {
+	public ResponseTimedOutException(final SocketConnection socketConnection) {
 		this.socketConnection = socketConnection;
 		this.translator = Translator.getInstance();
 	}

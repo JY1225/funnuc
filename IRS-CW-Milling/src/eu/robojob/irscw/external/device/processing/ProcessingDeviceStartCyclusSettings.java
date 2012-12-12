@@ -6,7 +6,7 @@ import eu.robojob.irscw.process.ProcessingStep;
 
 public class ProcessingDeviceStartCyclusSettings extends AbstractDeviceActionSettings<ProcessingStep> {
 
-	public ProcessingDeviceStartCyclusSettings(WorkArea workArea) {
+	public ProcessingDeviceStartCyclusSettings(final WorkArea workArea) {
 		super(workArea);
 	}
 

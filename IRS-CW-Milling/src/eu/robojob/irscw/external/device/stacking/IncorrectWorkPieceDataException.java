@@ -12,7 +12,7 @@ public class IncorrectWorkPieceDataException extends Exception {
 	private Translator translator;
 	private String key;
 
-	public IncorrectWorkPieceDataException(String key) {
+	public IncorrectWorkPieceDataException(final String key) {
 		this.key = key;
 		this.translator = Translator.getInstance();
 	}

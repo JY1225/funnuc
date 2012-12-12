@@ -11,12 +11,12 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 	
 	private boolean isInvasive;
 	
-	public AbstractProcessingDevice (String id, List<Zone> zones, boolean isInvasive) {
+	public AbstractProcessingDevice(final String id, final List<Zone> zones, final boolean isInvasive) {
 		super(id, zones);
 		this.isInvasive = isInvasive;
 	}
 	
-	public AbstractProcessingDevice (String id, boolean isInvasive) {
+	public AbstractProcessingDevice(final String id, final boolean isInvasive) {
 		super(id);
 		this.isInvasive = isInvasive;
 	}
@@ -31,7 +31,7 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 	public abstract boolean validateStartCyclusSettings(ProcessingDeviceStartCyclusSettings startCyclusSettings);
 	
 	public String toString() {
-		return "ProcessingDevice: " + id;
+		return "ProcessingDevice: " + getId();
 	}
 	
 }

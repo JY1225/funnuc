@@ -12,11 +12,11 @@ public class BasicStackPlateSettings extends DeviceSettings {
 	private WorkPieceOrientation orientation;
 	private Integer amount;
 	
-	public BasicStackPlateSettings(WorkPieceDimensions dimensions, WorkPieceOrientation orientation, Integer amount) {
+	public BasicStackPlateSettings(final WorkPieceDimensions dimensions, final WorkPieceOrientation orientation, final Integer amount) {
 		this(new WorkPiece(WorkPiece.Type.RAW, dimensions), orientation, amount);
 	}
 	
-	public BasicStackPlateSettings(WorkPiece workPiece, WorkPieceOrientation orientation, Integer amount) {
+	public BasicStackPlateSettings(final WorkPiece workPiece, final WorkPieceOrientation orientation, final Integer amount) {
 		this.amount = amount;
 		this.orientation = orientation;
 		this.workPiece = workPiece;
@@ -26,7 +26,7 @@ public class BasicStackPlateSettings extends DeviceSettings {
 		return amount;
 	}
 
-	public void setDimensions(WorkPieceDimensions dimensions) {
+	public void setDimensions(final WorkPieceDimensions dimensions) {
 		if (workPiece == null) {
 			workPiece = new WorkPiece(Type.RAW, dimensions);
 		} else {
@@ -34,11 +34,11 @@ public class BasicStackPlateSettings extends DeviceSettings {
 		}
 	}
 
-	public void setOrientation(WorkPieceOrientation orientation) {
+	public void setOrientation(final WorkPieceOrientation orientation) {
 		this.orientation = orientation;
 	}
 
-	public void setAmount(Integer amount) {
+	public void setAmount(final Integer amount) {
 		this.amount = amount;
 	}
 	

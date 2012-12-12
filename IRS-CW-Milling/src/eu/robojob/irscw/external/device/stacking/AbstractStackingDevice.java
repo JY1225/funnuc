@@ -12,11 +12,11 @@ import eu.robojob.irscw.workpiece.WorkPiece.Type;
 
 public abstract class AbstractStackingDevice extends AbstractDevice {
 
-	public AbstractStackingDevice(String id, List<Zone> zones) {
+	public AbstractStackingDevice(final String id, final List<Zone> zones) {
 		super(id, zones);
 	}
 	
-	public AbstractStackingDevice(String id) {
+	public AbstractStackingDevice(final String id) {
 		super(id);
 	}
 	

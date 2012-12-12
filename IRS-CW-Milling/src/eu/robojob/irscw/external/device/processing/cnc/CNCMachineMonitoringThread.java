@@ -21,7 +21,7 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 	
 	private static Logger logger = LogManager.getLogger(CNCMachineMonitoringThread.class.getName());
 	
-	public CNCMachineMonitoringThread(AbstractCNCMachine cncMachine) {
+	public CNCMachineMonitoringThread(final AbstractCNCMachine cncMachine) {
 		this.cncMachine = cncMachine;
 		this.alive = true;
 		this.previousAlarms = new HashSet<CNCMachineAlarm>();

@@ -5,7 +5,7 @@ public class GripperHead {
 	private String id;
 	private Gripper gripper;
 	
-	public GripperHead(String id, Gripper gripper) {
+	public GripperHead(final String id, final Gripper gripper) {
 		this.id = id;
 		setGripper(gripper);
 	}
@@ -14,7 +14,7 @@ public class GripperHead {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -22,7 +22,7 @@ public class GripperHead {
 		return gripper;
 	}
 
-	public void setGripper(Gripper gripper) {
+	public void setGripper(final Gripper gripper) {
 		this.gripper = gripper;
 	}
 	

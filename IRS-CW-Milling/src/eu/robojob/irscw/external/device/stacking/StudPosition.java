@@ -15,14 +15,14 @@ public class StudPosition {
 	
 	private StudType studType;
 	
-	public StudPosition(int columnIndex, int rowIndex, Coordinates centerPosition, StudType studType) {
+	public StudPosition(final int columnIndex, final int rowIndex, final Coordinates centerPosition, final StudType studType) {
 		this.columnIndex = columnIndex;
 		this.rowIndex = rowIndex;
 		this.centerPosition = centerPosition;
 		this.studType = studType;
 	}
 	
-	public StudPosition(int columnIndex, int rowIndex, float x, float y, StudType studType) {
+	public StudPosition(final int columnIndex, final int rowIndex, final float x, final float y, final StudType studType) {
 		this(columnIndex, rowIndex, new Coordinates(x, y, 0, 0, 0, 0), studType);
 	}
 
@@ -30,7 +30,7 @@ public class StudPosition {
 		return centerPosition;
 	}
 
-	public void setCenterPosition(Coordinates centerPosition) {
+	public void setCenterPosition(final Coordinates centerPosition) {
 		this.centerPosition = centerPosition;
 	}
 
@@ -38,7 +38,7 @@ public class StudPosition {
 		return studType;
 	}
 
-	public void setStudType(StudType studType) {
+	public void setStudType(final StudType studType) {
 		this.studType = studType;
 	}
 
@@ -46,7 +46,7 @@ public class StudPosition {
 		return columnIndex;
 	}
 
-	public void setColumnIndex(int columnIndex) {
+	public void setColumnIndex(final int columnIndex) {
 		this.columnIndex = columnIndex;
 	}
 
@@ -54,7 +54,7 @@ public class StudPosition {
 		return rowIndex;
 	}
 
-	public void setRowIndex(int rowIndex) {
+	public void setRowIndex(final int rowIndex) {
 		this.rowIndex = rowIndex;
 	}
 	

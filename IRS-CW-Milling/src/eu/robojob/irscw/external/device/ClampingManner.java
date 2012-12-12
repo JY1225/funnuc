@@ -16,7 +16,7 @@ public class ClampingManner {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(final Type type) {
 		this.type = type;
 	}
 	

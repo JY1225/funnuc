@@ -44,9 +44,9 @@ public class DeviceManager {
 	
 	private RobotManager robotManager;
 	
-	Properties properties;
+	private Properties properties;
 	
-	public DeviceManager(RobotManager robotManager, Properties properties) {
+	public DeviceManager(final RobotManager robotManager, final Properties properties) {
 		this.cncMachines = new HashMap<String, AbstractCNCMachine>();
 		this.preProcessingDevices = new HashMap<String, AbstractProcessingDevice>();
 		this.postProcessingDevices = new HashMap<String, AbstractProcessingDevice>();
@@ -155,7 +155,7 @@ public class DeviceManager {
 		return ids;
 	}
 	
-	public AbstractDevice getDeviceById(String id) {
+	public AbstractDevice getDeviceById(final String id) {
 		AbstractStackingDevice stackingFrom = getStackingFromDeviceById(id);
 		AbstractStackingDevice stackingTo = getStackingToDeviceById(id);
 		AbstractCNCMachine cncMachine = getCNCMachineById(id);
@@ -164,8 +164,7 @@ public class DeviceManager {
 		if ((stackingFrom == null) && (stackingTo == null) && (cncMachine == null) && (prePocessing == null) && (postProcessing == null)) {
 			logger.info("no device found with id: " + id);
 			return null; 
-		} 
-		else if (stackingFrom != null) {
+		} else if (stackingFrom != null) {
 			return stackingFrom;
 		} else if (stackingTo != null) {
 			return stackingTo;
@@ -179,23 +178,23 @@ public class DeviceManager {
 		
 	}
 	
-	public AbstractStackingDevice getStackingFromDeviceById(String id) {
+	public AbstractStackingDevice getStackingFromDeviceById(final String id) {
 		return stackingFromDevices.get(id);
 	}
 	
-	public AbstractCNCMachine getCNCMachineById(String id) {
+	public AbstractCNCMachine getCNCMachineById(final String id) {
 		return cncMachines.get(id);
 	}
 	
-	public AbstractProcessingDevice getPreProcessingDeviceById(String id) {
+	public AbstractProcessingDevice getPreProcessingDeviceById(final String id) {
 		return preProcessingDevices.get(id);
 	}
 	
-	public AbstractProcessingDevice getPostProcessingDeviceById(String id) {
+	public AbstractProcessingDevice getPostProcessingDeviceById(final String id) {
 		return postProcessingDevices.get(id);
 	}
 	
-	public AbstractStackingDevice getStackingToDeviceById(String id) {
+	public AbstractStackingDevice getStackingToDeviceById(final String id) {
 		return stackingToDevices.get(id);
 	}
 }

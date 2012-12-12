@@ -6,22 +6,21 @@ public abstract class AbstractServiceProvider {
 	
 	private boolean isLocked;
 	private ProcessFlow ownerProcess;
-	protected String id;
+	private String id;
 	
-	public AbstractServiceProvider(String id) {
+	public AbstractServiceProvider(final String id) {
 		isLocked = false;
 		ownerProcess = null;
 		this.id = id;
 	}
 	
 	//TODO: add timer to auto-expire the lock after a certain delay
-	public synchronized boolean lock(ProcessFlow ownerProcess) {
+	public synchronized boolean lock(final ProcessFlow ownerProcess) {
 		if (isLocked) {
 			if (this.ownerProcess.equals(ownerProcess)) {
 				return true;
-			} else {
-				return false;
 			}
+			return false;
 		} else {
 			isLocked = true;
 			this.ownerProcess = ownerProcess;
@@ -29,10 +28,10 @@ public abstract class AbstractServiceProvider {
 		}
 	}
 	
-	public synchronized boolean release(ProcessFlow ownerProcess) {
+	public synchronized boolean release(final ProcessFlow ownerProcess) {
 		if (this.ownerProcess.equals(ownerProcess)) {
 			isLocked = false;
-			ownerProcess = null;
+			this.ownerProcess = null;
 			return true;
 		} else {
 			return false;
@@ -43,12 +42,11 @@ public abstract class AbstractServiceProvider {
 		return isLocked;
 	}
 		
-	public synchronized boolean hasLock(ProcessFlow parentProcess) {
+	public synchronized boolean hasLock(final ProcessFlow parentProcess) {
 		if (this.ownerProcess.equals(parentProcess)) {
 			return true;
-		} else {
-			return false;
-		}
+		} 
+		return false;
 	}
 	
 	public synchronized ProcessFlow getLockingProcess() {
@@ -59,7 +57,7 @@ public abstract class AbstractServiceProvider {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 	

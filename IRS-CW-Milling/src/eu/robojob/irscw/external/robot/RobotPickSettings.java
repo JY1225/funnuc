@@ -7,9 +7,9 @@ import eu.robojob.irscw.workpiece.WorkPiece;
 
 public abstract class RobotPickSettings extends AbstractRobotActionSettings<PickStep> {
 	
-	protected WorkPiece workPiece;
+	private WorkPiece workPiece;
 
-	public RobotPickSettings(WorkArea workArea, GripperHead gripperHead, Coordinates smoothPoint, Coordinates location, WorkPiece workPiece) {
+	public RobotPickSettings(final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final WorkPiece workPiece) {
 		super(workArea, gripperHead, smoothPoint, location);
 		this.workPiece = workPiece;
 	}
@@ -18,7 +18,7 @@ public abstract class RobotPickSettings extends AbstractRobotActionSettings<Pick
 		return workPiece;
 	}
 
-	public void setWorkPiece(WorkPiece workPiece) {
+	public void setWorkPiece(final WorkPiece workPiece) {
 		this.workPiece = workPiece;
 	}
 	

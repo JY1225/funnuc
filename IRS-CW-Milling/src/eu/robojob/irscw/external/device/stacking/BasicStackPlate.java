@@ -40,7 +40,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	
 	private StackingPosition currentPickLocation;
 	
-	public BasicStackPlate(String id, List<Zone> zones, BasicStackPlateLayout layout) {
+	public BasicStackPlate(final String id, final List<Zone> zones, final BasicStackPlateLayout layout) {
 		super(id, zones);
 		this.layout = layout;
 		this.rawWorkPiece = null;
@@ -48,12 +48,12 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		currentPickLocation = null;
 	}
 	
-	public BasicStackPlate(String id, BasicStackPlateLayout layout) {
+	public BasicStackPlate(final String id, final BasicStackPlateLayout layout) {
 		this(id, new ArrayList<Zone>(), layout);
 	}
 
 	@Override
-	public synchronized boolean canPick(DevicePickSettings pickSettings) throws AbstractCommunicationException {
+	public synchronized boolean canPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == Type.RAW)) {
 				return true;
@@ -63,7 +63,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public synchronized boolean canPut(DevicePutSettings putSettings) throws AbstractCommunicationException {
+	public synchronized boolean canPut(final DevicePutSettings putSettings) throws AbstractCommunicationException {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if (stackingPos.getWorkPiece() == null) {
 				return true;
@@ -73,14 +73,14 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public boolean canIntervention(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {
+	public boolean canIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {
 		return true;
 	}
 	
 	@Override
-	public synchronized Coordinates getPickLocation(WorkArea workArea, ClampingManner clampType) {
+	public synchronized Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
-			if ((stackingPos.getWorkPiece() != null)&&(stackingPos.getWorkPiece().getType() == Type.RAW)) {
+			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == Type.RAW)) {
 				currentPickLocation = stackingPos;
 				Coordinates c = new Coordinates(stackingPos.getPosition());
 				return c;
@@ -90,9 +90,9 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	@Override 
-	public synchronized Coordinates getLocation(WorkArea workArea, Type type, ClampingManner clampType) {
+	public synchronized Coordinates getLocation(final WorkArea workArea, final Type type, final ClampingManner clampType) {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
-			if ((stackingPos.getWorkPiece() != null)&&(stackingPos.getWorkPiece().getType() == type)) {
+			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == type)) {
 				Coordinates c = new Coordinates(stackingPos.getPosition());
 				return c;
 			}
@@ -101,27 +101,27 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public synchronized Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType) {
+	public synchronized Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, workPieceDimensions);
 		Coordinates c = new Coordinates(currentPickLocation.getPosition());
 		return c;
 	}
 
-	@Override public void prepareForPick(DevicePickSettings pickSettings) {}
-	@Override public void prepareForPut(DevicePutSettings putSettings) {}
-	@Override public void prepareForIntervention(DeviceInterventionSettings interventionSettings) {}
-	@Override public void interventionFinished(DeviceInterventionSettings interventionSettings) {}
-	@Override public void releasePiece(DevicePickSettings pickSettings) {}
-	@Override public void grabPiece(DevicePutSettings putSettings) {}
-	@Override public void interruptCurrentAction() {}
+	@Override public void prepareForPick(final DevicePickSettings pickSettings) { }
+	@Override public void prepareForPut(final DevicePutSettings putSettings) { }
+	@Override public void prepareForIntervention(final DeviceInterventionSettings interventionSettings) { }
+	@Override public void interventionFinished(final DeviceInterventionSettings interventionSettings) { }
+	@Override public void releasePiece(final DevicePickSettings pickSettings) { }
+	@Override public void grabPiece(final DevicePutSettings putSettings) { }
+	@Override public void interruptCurrentAction() { }
 
 	@Override
-	public synchronized void pickFinished(DevicePickSettings pickSettings) {
+	public synchronized void pickFinished(final DevicePickSettings pickSettings) {
 		currentPickLocation.setWorkPiece(null);
 	}
 
 	@Override
-	public synchronized void putFinished(DevicePutSettings putSettings) {
+	public synchronized void putFinished(final DevicePutSettings putSettings) {
 		currentPickLocation.setWorkPiece(finishedWorkPiece);
 		currentPickLocation = null;
 	}
@@ -132,7 +132,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public synchronized void loadDeviceSettings(DeviceSettings deviceSettings) {
+	public synchronized void loadDeviceSettings(final DeviceSettings deviceSettings) {
 		if (deviceSettings instanceof BasicStackPlateSettings) {
 			BasicStackPlateSettings settings = (BasicStackPlateSettings) deviceSettings;
 			try {
@@ -153,36 +153,33 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public boolean validatePickSettings(DevicePickSettings pickSettings) {
+	public boolean validatePickSettings(final DevicePickSettings pickSettings) {
 		// note we assume the corresponding device settings are loaded!
-		if ((pickSettings != null) && (pickSettings.getWorkArea() != null) && (getWorkAreaIds().contains(pickSettings.getWorkArea().getId())) && 
-				(layout.getStackingPositions() != null) && (layout.getStackingPositions().size() > 0)) {
+		if ((pickSettings != null) && (pickSettings.getWorkArea() != null) && (getWorkAreaIds().contains(pickSettings.getWorkArea().getId())) 
+				&& (layout.getStackingPositions() != null) && (layout.getStackingPositions().size() > 0)) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	@Override
-	public boolean validatePutSettings(DevicePutSettings putSettings) {
+	public boolean validatePutSettings(final DevicePutSettings putSettings) {
 		// note we assume the corresponding device settings are loaded!
-		if ((putSettings != null) && (putSettings.getWorkArea() != null) && (getWorkAreaIds().contains(putSettings.getWorkArea().getId())) && 
-				(layout.getStackingPositions() != null) && (layout.getStackingPositions().size() > 0)) {
+		if ((putSettings != null) && (putSettings.getWorkArea() != null) && (getWorkAreaIds().contains(putSettings.getWorkArea().getId())) 
+				&& (layout.getStackingPositions() != null) && (layout.getStackingPositions().size() > 0)) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	@Override
-	public boolean validateInterventionSettings(DeviceInterventionSettings interventionSettings) {
+	public boolean validateInterventionSettings(final DeviceInterventionSettings interventionSettings) {
 		// note we assume the corresponding device settings are loaded!
-		if ((interventionSettings != null) && (interventionSettings.getWorkArea() != null) && (getWorkAreaIds().contains(interventionSettings.getWorkArea().getId())) && 
-				(layout.getStackingPositions() != null) && (layout.getStackingPositions().size() > 0)) {
+		if ((interventionSettings != null) && (interventionSettings.getWorkArea() != null) && (getWorkAreaIds().contains(interventionSettings.getWorkArea().getId())) 
+				&& (layout.getStackingPositions() != null) && (layout.getStackingPositions().size() > 0)) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	@Override
@@ -191,7 +188,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public void prepareForProcess(ProcessFlow process) throws AbstractCommunicationException, InterruptedException {}
+	public void prepareForProcess(final ProcessFlow process) throws AbstractCommunicationException, InterruptedException { }
 	
 	public BasicStackPlateLayout getLayout() {
 		return layout;
@@ -201,7 +198,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		return rawWorkPiece;
 	}
 
-	public void placeFinishedWorkPieces(int finishedAmount) {
+	public void placeFinishedWorkPieces(final int finishedAmount) {
 		for (int i = 0; i < layout.getStackingPositions().size(); i++) {
 			if (i < finishedAmount) {
 				//TODO improve, dimensions finished workpiece are not always the same as raw workpiece dimensions

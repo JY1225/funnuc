@@ -11,7 +11,7 @@ public class Gripper {
 	private String imageUrl;
 	private WorkPiece workPiece;
 	
-	public Gripper(String id, float height, String description, String imageUrl) {
+	public Gripper(final String id, final float height, final String description, final String imageUrl) {
 		this.id = id;
 		this.height = height;
 		this.description = description;
@@ -24,7 +24,7 @@ public class Gripper {
 		return workPiece;
 	}
 	
-	public void setWorkPiece(WorkPiece workPiece) {
+	public void setWorkPiece(final WorkPiece workPiece) {
 		this.workPiece = workPiece;
 	}
 
@@ -32,7 +32,7 @@ public class Gripper {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(final String id) {
 		this.id = id;
 	}
 
@@ -40,7 +40,7 @@ public class Gripper {
 		return height;
 	}
 
-	public void setHeight(float height) {
+	public void setHeight(final float height) {
 		this.height = height;
 	}
 
@@ -48,7 +48,7 @@ public class Gripper {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public void setDescription(final String description) {
 		this.description = description;
 	}
 
@@ -56,7 +56,7 @@ public class Gripper {
 		return imageUrl;
 	}
 
-	public void setImageUrl(String imageUrl) {
+	public void setImageUrl(final String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
 
@@ -64,7 +64,7 @@ public class Gripper {
 		return fixedHeight;
 	}
 
-	public void setFixedHeight(boolean fixedHeight) {
+	public void setFixedHeight(final boolean fixedHeight) {
 		this.fixedHeight = fixedHeight;
 	}
 

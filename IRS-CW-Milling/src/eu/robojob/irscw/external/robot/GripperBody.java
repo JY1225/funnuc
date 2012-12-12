@@ -6,13 +6,13 @@ import java.util.Set;
 
 public class GripperBody {
 
-	String id;
-	String description;
+	private String id;
+	private String description;
 	
 	private List<GripperHead> gripperHeads;
 	private Set<Gripper> possibleGrippers;
 	
-	public GripperBody (String id, String description, List<GripperHead> gripperHeads, Set<Gripper> possibleGrippers) {
+	public GripperBody(final String id, final String description, final List<GripperHead> gripperHeads, final Set<Gripper> possibleGrippers) {
 		this.id = id;
 		this.description = description;
 		this.gripperHeads = gripperHeads;
@@ -31,7 +31,7 @@ public class GripperBody {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public void setDescription(final String description) {
 		this.description = description;
 	}
 	
@@ -39,7 +39,7 @@ public class GripperBody {
 		return gripperHeads.size();
 	}
 	
-	public void addGripperHead(GripperHead gripperHead) {
+	public void addGripperHead(final GripperHead gripperHead) {
 		if (getGripperHead(gripperHead.getId()) != null) {
 			throw new IllegalArgumentException("A GripperHead with the same id already exists");
 		} else {
@@ -47,7 +47,7 @@ public class GripperBody {
 		}
 	}
 	
-	public GripperHead getGripperHead(String id) {
+	public GripperHead getGripperHead(final String id) {
 		for (GripperHead gripperHead : gripperHeads) {
 			if (gripperHead.getId().equals(id)) {
 				return gripperHead;
@@ -64,7 +64,7 @@ public class GripperBody {
 		return possibleGrippers;
 	}
 
-	public Gripper getGripper(String id) {
+	public Gripper getGripper(final String id) {
 		for (Gripper gripper : possibleGrippers) {
 			if (gripper.getId().equals(id)) {
 				return gripper;
@@ -73,15 +73,15 @@ public class GripperBody {
 		return null;
 	}
 	
-	public void setPossibleGrippers(Set<Gripper> possibleGrippers) {
+	public void setPossibleGrippers(final Set<Gripper> possibleGrippers) {
 		this.possibleGrippers = possibleGrippers;
 	}
 	
-	public void addPossibleGripper(Gripper gripper) {
+	public void addPossibleGripper(final Gripper gripper) {
 		possibleGrippers.add(gripper);
 	}
 	
-	public void setActiveGripper(GripperHead head, Gripper gripper) {
+	public void setActiveGripper(final GripperHead head, final Gripper gripper) {
 		if (!gripperHeads.contains(head)) {
 			throw new IllegalArgumentException("Wrong GripperHead value");
 		}
@@ -96,7 +96,7 @@ public class GripperBody {
 		head.setGripper(gripper);
 	}
 	
-	public Gripper getActiveGripper(GripperHead head) {
+	public Gripper getActiveGripper(final GripperHead head) {
 		if (!gripperHeads.contains(head)) {
 			throw new IllegalArgumentException("Wrong GripperHead value");
 		}

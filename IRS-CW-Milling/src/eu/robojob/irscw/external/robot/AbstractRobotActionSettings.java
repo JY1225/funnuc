@@ -6,14 +6,14 @@ import eu.robojob.irscw.process.AbstractProcessStep;
 
 public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep> {
 	
-	protected T step;
-	protected WorkArea workArea;
-	protected GripperHead gripperHead;
-	protected Coordinates smoothPoint;
-	protected Coordinates location;
-	protected boolean freeAfter;
+	private T step;
+	private WorkArea workArea;
+	private GripperHead gripperHead;
+	private Coordinates smoothPoint;
+	private Coordinates location;
+	private boolean freeAfter;
 	
-	public AbstractRobotActionSettings(WorkArea workArea, GripperHead gripperHead, Coordinates smoothPoint, Coordinates location) {
+	public AbstractRobotActionSettings(final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location) {
 		this.workArea = workArea;
 		this.gripperHead = gripperHead;
 		this.smoothPoint = smoothPoint;
@@ -21,7 +21,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		this.freeAfter = false;
 	}
 	
-	public void setStep(T step) {
+	public void setStep(final T step) {
 		this.step = step;
 	}
 	
@@ -33,7 +33,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		return freeAfter;
 	}
 
-	public void setFreeAfter(boolean freeAfter) {
+	public void setFreeAfter(final boolean freeAfter) {
 		this.freeAfter = freeAfter;
 	}
 
@@ -43,22 +43,22 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 	public GripperHead getGripperHead() {
 		return gripperHead;
 	}
-	public void setGripperHead(GripperHead gripperHead) {
+	public void setGripperHead(final GripperHead gripperHead) {
 		this.gripperHead = gripperHead;
 	}
 	public Coordinates getSmoothPoint() {
 		return smoothPoint;
 	}
-	public void setSmoothPoint(Coordinates smoothPoint) {
+	public void setSmoothPoint(final Coordinates smoothPoint) {
 		this.smoothPoint = smoothPoint;
 	}
 	public Coordinates getLocation() {
 		return location;
 	}
-	public void setLocation(Coordinates location) {
+	public void setLocation(final Coordinates location) {
 		this.location = location;
 	}
-	public void setWorkArea(WorkArea workArea) {
+	public void setWorkArea(final WorkArea workArea) {
 		this.workArea = workArea;
 	}
 }

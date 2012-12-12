@@ -11,7 +11,7 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractDevice extends AbstractServiceProvider {
 	
-	protected List<Zone> zones;
+	private List<Zone> zones;
 	
 	public abstract void prepareForProcess(ProcessFlow process) throws AbstractCommunicationException, InterruptedException;
 		
@@ -44,24 +44,24 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public abstract boolean isConnected();
 	
-	public AbstractDevice(String id) {
+	public AbstractDevice(final String id) {
 		super(id);
 		zones = new ArrayList<Zone>();
 	}
 	
-	public AbstractDevice (String id, List<Zone> zones) {
+	public AbstractDevice(final String id, final List<Zone> zones) {
 		this(id);
 		for (Zone zone : zones) {
 			addZone(zone);
 		}
 	}
 
-	public void addZone(Zone zone) {
+	public void addZone(final Zone zone) {
 		this.zones.add(zone);
 		zone.setDevice(this);
 	}
 	
-	public Zone getZoneById(String id) {
+	public Zone getZoneById(final String id) {
 		for (Zone zone : zones) {
 			if (zone.getId().equals(id)) {
 				return zone;
@@ -70,11 +70,11 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return null;
 	}
 	
-	public void removeZone(Zone zone) {
+	public void removeZone(final Zone zone) {
 		this.zones.remove(zone);
 	}
 	
-	public WorkArea getWorkAreaById(String id) {
+	public WorkArea getWorkAreaById(final String id) {
 		for (Zone zone : zones) {
 			for (WorkArea workArea : zone.getWorkAreas()) {
 				if (workArea.getId().equals(id)) {
@@ -102,7 +102,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	}
 	
 	public String toString() {
-		return "Device: " + id;
+		return "Device: " + getId();
 	}
 	
 	public abstract DeviceType getType();

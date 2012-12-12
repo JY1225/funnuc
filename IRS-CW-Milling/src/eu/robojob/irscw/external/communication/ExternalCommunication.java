@@ -11,12 +11,16 @@ public abstract class ExternalCommunication {
 	
 	private int defaultWaitTimeout;
 	
-	protected ExternalCommunicationThread extCommThread;
+	private ExternalCommunicationThread extCommThread;
 		
-	public ExternalCommunication(SocketConnection socketConnection) {
+	public ExternalCommunication(final SocketConnection socketConnection) {
 		this.extCommThread = new ExternalCommunicationThread(socketConnection, this);
 		ThreadManager.getInstance().submit(extCommThread);
 		defaultWaitTimeout = DEFAULT_WAIT_TIMEOUT;
+	}
+	
+	public ExternalCommunicationThread getExternalCommunicationThread() {
+		return extCommThread;
 	}
 	
 	public synchronized boolean isConnected() {
@@ -35,11 +39,11 @@ public abstract class ExternalCommunication {
 		return extCommThread.getNextMessage();
 	}
 	
-	public synchronized void writeMessage(String message) throws DisconnectedException {
+	public synchronized void writeMessage(final String message) throws DisconnectedException {
 		extCommThread.writeMessage(message);
 	}
 	
-	public void setDefaultWaitTimeout(int defaultWaitTimeout) {
+	public void setDefaultWaitTimeout(final int defaultWaitTimeout) {
 		this.defaultWaitTimeout = defaultWaitTimeout;
 	}
 	

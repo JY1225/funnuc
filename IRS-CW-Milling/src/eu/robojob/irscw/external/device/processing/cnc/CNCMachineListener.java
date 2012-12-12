@@ -3,10 +3,10 @@ package eu.robojob.irscw.external.device.processing.cnc;
 
 public interface CNCMachineListener {
 
-	public void cNCMachineConnected(CNCMachineEvent event);
-	public void cNCMachineDisconnected(CNCMachineEvent event);
+	void cNCMachineConnected(CNCMachineEvent event);
+	void cNCMachineDisconnected(CNCMachineEvent event);
 	
-	public void cNCMachineStatusChanged(CNCMachineEvent event);
-	public void cNCMachineAlarmsOccured(CNCMachineAlarmsOccuredEvent event);
+	void cNCMachineStatusChanged(CNCMachineEvent event);
+	void cNCMachineAlarmsOccured(CNCMachineAlarmsOccuredEvent event);
 	
 }

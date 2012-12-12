@@ -37,15 +37,15 @@ public class FanucRobot extends AbstractRobot {
 	private FanucRobotCommunication fanucRobotCommunication;
 	
 	private static final int WRITE_VALUES_TIMEOUT = 5000;
-	private static final int MOVE_TO_LOCATION_TIMEOUT = 3*60*1000;
-	private static final int MOVE_FINISH_TIMEOUT = 3*60*1000;
+	private static final int MOVE_TO_LOCATION_TIMEOUT = 3 * 60 * 1000;
+	private static final int MOVE_FINISH_TIMEOUT = 3 * 60 * 1000;
 	private static final int ASK_POSITION_TIMEOUT = 50000;
-	private static final int PICK_TEACH_TIMEOUT = 10*60*1000;
-	private static final int PUT_TEACH_TIMEOUT = 10*60*1000;
-	private static final int ASK_STATUS_TIMEOUT = 5*1000;
+	private static final int PICK_TEACH_TIMEOUT = 10 * 60 * 1000;
+	private static final int PUT_TEACH_TIMEOUT = 10 * 60 * 1000;
+	private static final int ASK_STATUS_TIMEOUT = 5 * 1000;
 	
 	private static final int WRITE_REGISTER_TIMEOUT = 5000;
-	private static final int PRAGE_TIMEOUT = 2*60*1000;
+	private static final int PRAGE_TIMEOUT = 2 * 60 * 1000;
 	
 	private boolean stopAction;
 	private Set<FanucRobotListener> listeners;

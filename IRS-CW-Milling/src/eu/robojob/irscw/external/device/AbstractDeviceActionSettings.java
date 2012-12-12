@@ -4,22 +4,26 @@ import eu.robojob.irscw.process.AbstractProcessStep;
 
 public abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep> {
 	
-	protected WorkArea workArea;
-	protected T step;
+	private WorkArea workArea;
+	private T step;
 	
-	public AbstractDeviceActionSettings(WorkArea workArea) {
+	public AbstractDeviceActionSettings(final WorkArea workArea) {
 		setWorkArea(workArea);
 	}
 	
-	public void setStep(T step) {
+	public void setStep(final T step) {
 		this.step = step;
 	}
 
+	public T getStep() {
+		return step;
+	}
+	
 	public WorkArea getWorkArea() {
 		return workArea;
 	}
 	
-	public void setWorkArea(WorkArea workArea) {
+	public void setWorkArea(final WorkArea workArea) {
 		this.workArea = workArea;
 	}
 }

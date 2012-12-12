@@ -4,7 +4,7 @@ import eu.robojob.irscw.process.InterventionStep;
 
 public class DeviceInterventionSettings extends AbstractDeviceActionSettings<InterventionStep> {
 	
-	public DeviceInterventionSettings(WorkArea workArea) {
+	public DeviceInterventionSettings(final WorkArea workArea) {
 		super(workArea);
 	}
 }

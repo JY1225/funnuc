@@ -11,7 +11,7 @@ public class CNCMachineEvent {
 	public static final int ALARM_OCCURED = 3;
 	public static final int STATUS_CHANGED = 4;
 	
-	public CNCMachineEvent(AbstractCNCMachine source, int id) {
+	public CNCMachineEvent(final AbstractCNCMachine source, final int id) {
 		this.source = source;
 		this.id = id;
 		this.timestamp = System.currentTimeMillis();

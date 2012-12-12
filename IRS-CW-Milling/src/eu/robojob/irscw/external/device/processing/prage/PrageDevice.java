@@ -30,44 +30,44 @@ public class PrageDevice extends AbstractProcessingDevice {
 	private static final float LENGTH_CLAMP_LOCATION_R = 90;
 	private static final float WIDTH_CLAMP_LOCATION_R = 0;
 	
-	public PrageDevice(String id, AbstractRobot robot) {
+	public PrageDevice(final String id, final AbstractRobot robot) {
 		super(id, false);
 		this.robot = robot;
 	}
 	
-	public PrageDevice (String id, List<Zone> zones, AbstractRobot robot) {
+	public PrageDevice(final String id, final List<Zone> zones, final AbstractRobot robot) {
 		super(id, zones, false);
 		this.robot = robot;
 	}
 
-	@Override public void startCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {}
-	@Override public void prepareForStartCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException {}
-	@Override public void prepareForPick(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {}
-	@Override public void prepareForPut(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {}
-	@Override public void prepareForIntervention(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {}
-	@Override public void pickFinished(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException {}
-	@Override public void putFinished(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException {}
-	@Override public void interventionFinished(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {}
-	@Override public void releasePiece(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {}
-	@Override public void loadDeviceSettings(DeviceSettings deviceSettings) {}
-	@Override public void interruptCurrentAction() {}
-	@Override public void prepareForProcess(ProcessFlow process) throws AbstractCommunicationException, InterruptedException {}
+	@Override public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
+	@Override public void prepareForStartCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException { }
+	@Override public void prepareForPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
+	@Override public void prepareForPut(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
+	@Override public void prepareForIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException { }
+	@Override public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException { }
+	@Override public void putFinished(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException { }
+	@Override public void interventionFinished(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException { }
+	@Override public void releasePiece(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
+	@Override public void loadDeviceSettings(final DeviceSettings deviceSettings) { }
+	@Override public void interruptCurrentAction() { }
+	@Override public void prepareForProcess(final ProcessFlow process) throws AbstractCommunicationException, InterruptedException { }
 	
 	@Override
-	public boolean canPick(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException {
+	public boolean canPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException {
 		return true;
 	}
 	@Override
-	public boolean canPut(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public boolean canPut(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		return true;
 	}
 	@Override
-	public boolean canIntervention(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {
+	public boolean canIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {
 		return true;
 	}
 	
 	@Override
-	public void grabPiece(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void grabPiece(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		try {
 			robot.doPrage();
 		} catch (RobotActionException e) {
@@ -81,7 +81,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public boolean validateStartCyclusSettings(ProcessingDeviceStartCyclusSettings startCyclusSettings) {
+	public boolean validateStartCyclusSettings(final ProcessingDeviceStartCyclusSettings startCyclusSettings) {
 		if (getWorkAreaIds().contains(startCyclusSettings.getWorkArea().getId())) {
 			return true;
 		}
@@ -89,7 +89,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public boolean validatePickSettings(DevicePickSettings pickSettings) {
+	public boolean validatePickSettings(final DevicePickSettings pickSettings) {
 		if (getWorkAreaIds().contains(pickSettings.getWorkArea().getId())) {
 			return true;
 		}
@@ -97,7 +97,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public boolean validatePutSettings(DevicePutSettings putSettings) {
+	public boolean validatePutSettings(final DevicePutSettings putSettings) {
 		if (getWorkAreaIds().contains(putSettings.getWorkArea().getId())) {
 			return true;
 		}
@@ -105,7 +105,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public boolean validateInterventionSettings(DeviceInterventionSettings interventionSettings) {
+	public boolean validateInterventionSettings(final DeviceInterventionSettings interventionSettings) {
 		if (getWorkAreaIds().contains(interventionSettings.getWorkArea().getId())) {
 			return true;
 		}
@@ -113,18 +113,18 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public Coordinates getPickLocation(WorkArea workArea, ClampingManner clampType) {
+	public Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {
 		throw new IllegalStateException("This method should never be called");
 	}
 	
 	@Override
-	public Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType) {
+	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			c.offset(new Coordinates(0, workPieceDimensions.getWidth()/2, 0, 0, 0, 0));
+			c.offset(new Coordinates(0, workPieceDimensions.getWidth() / 2, 0, 0, 0, 0));
 			c.setR(LENGTH_CLAMP_LOCATION_R);
 		} else {
-			c.offset(new Coordinates(0, workPieceDimensions.getLength()/2, 0, 0, 0, 0));
+			c.offset(new Coordinates(0, workPieceDimensions.getLength() / 2, 0, 0, 0, 0));
 			c.setR(WIDTH_CLAMP_LOCATION_R);
 		}
 		return c;

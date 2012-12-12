@@ -16,28 +16,31 @@ public class CNCMachineCommunication extends ExternalCommunication {
 
 	private StringBuffer command;
 		
-	private static final Logger logger = LogManager.getLogger(CNCMachineCommunication.class.getName());
+	private static Logger logger = LogManager.getLogger(CNCMachineCommunication.class.getName());
 	private AbstractCNCMachine cncMachine;
 	
-	public CNCMachineCommunication(SocketConnection socketConnection, AbstractCNCMachine cncMachine) {
+	private static final int MAX_REGISTER_NR = 100;
+	private static final int NEEDS_DECIMAL = 10;
+	
+	public CNCMachineCommunication(final SocketConnection socketConnection, final AbstractCNCMachine cncMachine) {
 		super(socketConnection);
 		this.cncMachine = cncMachine;
 		this.command = new StringBuffer();
 	}
 
-	public synchronized void writeRegisters(int startingRegisterNr, int timeout, int[] values) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+	public synchronized void writeRegisters(final int startingRegisterNr, final int timeout, final int[] values) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
 		command = new StringBuffer();
 		command.append("WW");
-		if (startingRegisterNr >= 100) {
+		if (startingRegisterNr >= MAX_REGISTER_NR) {
 			throw new IllegalArgumentException("Register number is too high!");
 		}
-		if (startingRegisterNr < 10) {
+		if (startingRegisterNr < NEEDS_DECIMAL) {
 			command.append(0);
 		}
 		command.append(startingRegisterNr);
 		command.append(';');
 		int amount = values.length;
-		if (amount < 10) {
+		if (amount < NEEDS_DECIMAL) {
 			command.append(0);
 		}
 		command.append(amount);
@@ -47,64 +50,64 @@ public class CNCMachineCommunication extends ExternalCommunication {
 			command.append(';');
 		}
 		// send the command and wait for reply 
-		extCommThread.clearIncommingBuffer();
-		extCommThread.writeString(command.toString());
+		getExternalCommunicationThread().clearIncommingBuffer();
+		getExternalCommunicationThread().writeString(command.toString());
 		awaitResponse(command.toString(), timeout);
 	}
 	
-	public synchronized void writeRegisters(int startingRegisterNr, int[] values) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+	public synchronized void writeRegisters(final int startingRegisterNr, final int[] values) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
 		writeRegisters(startingRegisterNr, getDefaultWaitTimeout(), values);
 	}
 	
-	public synchronized List<Integer> readRegisters(int startingRegisterNr, int amount, int timeout) throws ResponseTimedOutException, DisconnectedException, InterruptedException{
+	public synchronized List<Integer> readRegisters(final int startingRegisterNr, final int amount, final int timeout) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
 		command = new StringBuffer();
 		command.append("WR");
-		if (startingRegisterNr >= 100) {
+		if (startingRegisterNr >= MAX_REGISTER_NR) {
 			throw new IllegalArgumentException("Register number is too high!");
 		}
-		if (startingRegisterNr < 10) {
+		if (startingRegisterNr < NEEDS_DECIMAL) {
 			command.append('0');
 		}
 		command.append(startingRegisterNr);
-		if (amount >= 100) {
+		if (amount >= MAX_REGISTER_NR) {
 			throw new IllegalArgumentException("Amount number is too high!");
 		}
-		if (amount < 10) {
+		if (amount < NEEDS_DECIMAL) {
 			command.append('0');
 		}
 		command.append(amount);
 		// send the command and wait for reply 
-		extCommThread.clearIncommingBuffer();
-		extCommThread.writeString(command.toString());
+		getExternalCommunicationThread().clearIncommingBuffer();
+		getExternalCommunicationThread().writeString(command.toString());
 		return parseResult(awaitResponse(command.toString(), timeout), command.toString());
 	}
 	
-	public List<Integer> parseResult(String message, String command) {
+	public List<Integer> parseResult(final String message, final String command) {
 		List<Integer> results = new ArrayList<Integer>();
 		if (!message.startsWith(command)) {
 			throw new IllegalArgumentException("message does not start with command");
 		}
-		message = message.substring(command.length());
-		String[] values = message.split(";");
+		String newMessage = message.substring(command.length());
+		String[] values = newMessage.split(";");
 		for (String value : values) {
 			results.add(Integer.valueOf(value));
 		}
 		return results;
 	}
 
-	public synchronized List<Integer> readRegisters(int startingRegisterNr, int amount) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+	public synchronized List<Integer> readRegisters(final int startingRegisterNr, final int amount) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
 		return readRegisters(startingRegisterNr, amount, getDefaultWaitTimeout());
 	}
 
-	private String awaitResponse(String command, int timeout) throws ResponseTimedOutException, InterruptedException, DisconnectedException {
+	private String awaitResponse(final String command, final int timeout) throws ResponseTimedOutException, InterruptedException, DisconnectedException {
 		int waitedTime = 0;
 		while (waitedTime <= timeout) {
-			if (!extCommThread.isConnected()) {
+			if (!getExternalCommunicationThread().isConnected()) {
 				// no longer connected
-				throw new DisconnectedException(extCommThread.getSocketConnection());
+				throw new DisconnectedException(getExternalCommunicationThread().getSocketConnection());
 			}
-			if (extCommThread.hasNextMessage()) {
-				String response = extCommThread.getNextMessage();
+			if (getExternalCommunicationThread().hasNextMessage()) {
+				String response = getExternalCommunicationThread().getNextMessage();
 				if (response.startsWith(command.toString())) {
 					return response;
 				} else {
@@ -120,15 +123,15 @@ public class CNCMachineCommunication extends ExternalCommunication {
 			}
 			try {
 				Thread.sleep(timeToWait);
-			} catch(InterruptedException e) {
+			} catch (InterruptedException e) {
 				throw e;
 			}
 			waitedTime += timeToWait;
 		}
-		throw new ResponseTimedOutException(extCommThread.getSocketConnection());
+		throw new ResponseTimedOutException(getExternalCommunicationThread().getSocketConnection());
 	}
 	
-	public synchronized boolean checkRegisterValue(int registerNumber, int value, int waitTimeout) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+	public synchronized boolean checkRegisterValue(final int registerNumber, final int value, final int waitTimeout) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
 		long currentTime = System.currentTimeMillis();
 		List<Integer> readRegisters;
 		boolean timeout = false;
@@ -147,7 +150,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 		return false;
 	}
 	
-	public synchronized boolean checkRegisterValueBitPattern(int registerNumber, int bitPattern, int waitTimeout) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+	public synchronized boolean checkRegisterValueBitPattern(final int registerNumber, final int bitPattern, final int waitTimeout) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
 		long currentTime = System.currentTimeMillis();
 		List<Integer> readRegisters;
 		boolean timeout = false;
@@ -177,13 +180,13 @@ public class CNCMachineCommunication extends ExternalCommunication {
 	}
 
 	@Override
-	public void iOExceptionOccured(IOException e) {
+	public void iOExceptionOccured(final IOException e) {
 		// this exception is already logged, and the machine was disconnected as a result
 		// TODO handle this error in more detail if needed
 	}
 
 	@Override
 	public String toString() {
-		return "CNC machine communication: " + extCommThread.getSocketConnection().toString();
+		return "CNC machine communication: " + getExternalCommunicationThread().getSocketConnection().toString();
 	}
 }

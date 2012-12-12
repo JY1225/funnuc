@@ -1,7 +1,11 @@
 package eu.robojob.irscw.external.device.processing.cnc;
 
-public class CNCMachineConstants {
+public final class CNCMachineConstants {
 
+	private CNCMachineConstants() {
+		
+	}
+	
 	public static final int BIT0						=	0b0000000000000001;
 	public static final int BIT1						=	0b0000000000000010;
 	public static final int BIT2						=	0b0000000000000100;

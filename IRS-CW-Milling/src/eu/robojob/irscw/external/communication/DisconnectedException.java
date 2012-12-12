@@ -11,7 +11,7 @@ public class DisconnectedException extends AbstractCommunicationException {
 	private SocketConnection connection;
 	private Translator translator;
 	
-	public DisconnectedException(SocketConnection socketConnection) {
+	public DisconnectedException(final SocketConnection socketConnection) {
 		this.connection = socketConnection;
 		this.translator = Translator.getInstance();
 	}
