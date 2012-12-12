@@ -15,6 +15,9 @@
     <File name="HTML" fileName="C:/RoboJob/logs/html/index.html">
       <HTMLLayout locationInfo="true" title="RoboSoft log"/>
     </File>
+    <File name="XML" fileName="C:/RoboJob/logs/xml/logFile.xml">
+      <XMLLayout locationInfo="true"/>
+    </File>
     <Console name="STDOUT">
       <PatternLayout>
         <pattern>%-7p %-25d %-30t %-5L %-70c - %m%n</pattern>
@@ -26,7 +29,7 @@
     <root level="debug">
        <appender-ref ref="STDOUT"/>
        <appender-ref ref="LOGFILE"/>
-       <appender-ref ref="HTML"/>
+       <appender-ref ref="XML"/>
     </root>
   </loggers>
   

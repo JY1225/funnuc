@@ -28,7 +28,7 @@ public class RoboSoft extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		logger.info("********* STARTED APPLICATION **********");
+		logger.info("Started application.");
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
 		RoboSoftAppFactory factory = new RoboSoftAppFactory(properties);
@@ -58,8 +58,8 @@ public class RoboSoft extends Application {
 	
 	@Override
 	public void stop() {
-		logger.info("should stop now!");
+		logger.info("Closing application.");
 		ThreadManager.getInstance().shutDown();
-		logger.info("********* CLOSED APPLICATION **********");
+		logger.info("Closed application.");
 	}
 }
