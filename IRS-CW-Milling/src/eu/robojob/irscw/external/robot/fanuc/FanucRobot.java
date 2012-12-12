@@ -150,7 +150,7 @@ public class FanucRobot extends AbstractRobot {
 			fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_ABORT, FanucRobotConstants.RESPONSE_ABORT, WRITE_VALUES_TIMEOUT);
 		} catch (DisconnectedException | ResponseTimedOutException e) {
 			e.printStackTrace();
-			logger.error("Could not abort current action of: " + getId() + " because of: " + e.getMessage());
+			logger.error("Could not abort current action of [" + getId() + "] because of " + e.getMessage());
 		}
 		synchronized (syncObject) {
 			syncObject.notifyAll();
@@ -171,7 +171,7 @@ public class FanucRobot extends AbstractRobot {
 				try {
 					statusChanged = false;
 					if (timeout > waitedTime) {
-						synchronized(syncObject) {
+						synchronized (syncObject) {
 							syncObject.wait(timeout - waitedTime);
 						}
 					}
@@ -193,7 +193,7 @@ public class FanucRobot extends AbstractRobot {
 					throw new RobotActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
 				}
 				waitedTime += (System.currentTimeMillis() - lastTime);
-				if (statusChanged == true) {
+				if (statusChanged) {
 					if ((getStatus().getControllerString() & status) > 0) {
 						return true;
 					}
