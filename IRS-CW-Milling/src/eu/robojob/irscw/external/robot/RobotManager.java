@@ -31,9 +31,6 @@ public class RobotManager {
 		Gripper gripper = new Gripper("Vacuum grip", 270, "Vacuum grip, type 1", "img/grippers/gripper1.png");
 		Gripper gripper2 = new Gripper("2P clamp grip A", 133, "Clamp grip, two points", "img/grippers/gripper2.png");
 		Gripper gripper3 = new Gripper("2P clamp grip B", 133, "Clamp grip, two points", "img/grippers/gripper2.png");
-		/*Gripper gripper4 = new Gripper("clamp grip 2", 250, "clamp grip, type 2", "img/grippers/gripper2.png");
-		Gripper gripper5 = new Gripper("vacuum grip 3", 200, "vacuum grip, type 1", "img/grippers/gripper1.png");
-		Gripper gripper6 = new Gripper("clamp grip 3", 250, "clamp grip, type 2", "img/grippers/gripper2.png");*/
 		GripperHead head1 = new GripperHead("A", gripper);
 		GripperHead head2 = new GripperHead("B", gripper2);
 		List<GripperHead> gripperHeads = new ArrayList<GripperHead>();
@@ -43,18 +40,10 @@ public class RobotManager {
 		grippers.add(gripper);
 		grippers.add(gripper2);
 		grippers.add(gripper3);
-		/*grippers.add(gripper4);
-		grippers.add(gripper5);
-		grippers.add(gripper6);*/
 		GripperBody gripperBody = new GripperBody("2", "Standard Body", gripperHeads, grippers);
 		Set<GripperBody> gripperBodies = new HashSet<GripperBody>();
 		gripperBodies.add(gripperBody);
-		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.200.9", 2001);
-		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "10.10.40.12", 2001);
-		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.200.1", 2001);
 		SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", properties.getProperty(ROBOT_IP), Integer.parseInt(properties.getProperty(ROBOT_PORT)));
-		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.220.7", 2001);
-		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.0.102", 2001);
 		FanucRobot fanucRobot = new FanucRobot("Fanuc M20iA", gripperBodies, gripperBody, connection);
 		addRobot(fanucRobot);
 	}
