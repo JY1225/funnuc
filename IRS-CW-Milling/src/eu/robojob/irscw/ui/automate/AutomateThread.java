@@ -157,7 +157,7 @@ public class AutomateThread extends Thread{
 			running = false;
 			for (AbstractRobot robot :processFlow.getRobots()) {
 				logger.info("stopping robot: " + robot.getId());
-				robot.stopCurrentAction();
+				robot.interruptCurrentAction();
 				try {
 					robot.abort();
 				} catch (AbstractCommunicationException e) {

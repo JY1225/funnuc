@@ -94,7 +94,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	public abstract void recalculateTCPs() throws DisconnectedException, ResponseTimedOutException;
 	
-	public abstract void stopCurrentAction();
+	public abstract void interruptCurrentAction();
 	
 	public abstract boolean isConnected();
 	

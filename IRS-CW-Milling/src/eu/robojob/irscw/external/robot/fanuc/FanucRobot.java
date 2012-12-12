@@ -68,7 +68,7 @@ public class FanucRobot extends AbstractRobot {
 	private boolean statusChanged;
 	private Object syncObject;
 	
-	public FanucRobot(String id, Set<GripperBody> gripperBodies, GripperBody gripperBody, SocketConnection socketConnection) {
+	public FanucRobot(final String id, final Set<GripperBody> gripperBodies, final GripperBody gripperBody, final SocketConnection socketConnection) {
 		super(id, gripperBodies, gripperBody);
 		this.statusChanged = false;
 		syncObject = new Object();
@@ -79,11 +79,11 @@ public class FanucRobot extends AbstractRobot {
 		this.stopAction = false;
 	}
 	
-	public FanucRobot(String id, SocketConnection socketConnection) {
+	public FanucRobot(final String id, final SocketConnection socketConnection) {
 		this(id, null, null, socketConnection);
 	}
 	
-	public void updateStatus() throws AbstractCommunicationException {
+	public void updateStatus() throws DisconnectedException, ResponseTimedOutException {
 		List<String> values = fanucRobotCommunication.readValues(FanucRobotConstants.COMMAND_ASK_STATUS, FanucRobotConstants.RESPONSE_ASK_STATUS, ASK_STATUS_TIMEOUT);
 		int errorId = Integer.parseInt(values.get(0));
 		int controllerValue = Integer.parseInt(values.get(1));
@@ -96,17 +96,17 @@ public class FanucRobot extends AbstractRobot {
 		return status;
 	}
 	
-	public void addListener(FanucRobotListener listener) {
-		logger.info("added listener: " + listener);
+	public void addListener(final FanucRobotListener listener) {
 		listeners.add(listener);
+		logger.debug("Now listening to [" + toString() + "]: " + listener.toString());
 	}
 	
-	public void removeListener(FanucRobotListener listener) {
-		logger.info("removed listener: " + listener);
+	public void removeListener(final FanucRobotListener listener) {
 		listeners.remove(listener);
+		logger.debug("Stopped listening to [" + toString() + "]: " + listener.toString());
 	}
 	
-	public void processFanucRobotEvent(FanucRobotEvent event) {
+	public void processFanucRobotEvent(final FanucRobotEvent event) {
 		switch(event.getId()) {
 			case FanucRobotEvent.ROBOT_CONNECTED:
 				for (FanucRobotListener listener : listeners) {
@@ -120,12 +120,6 @@ public class FanucRobot extends AbstractRobot {
 				}
 				break;
 			case FanucRobotEvent.ALARMS_OCCURED:
-				if (((FanucRobotAlarmsOccuredEvent) event).getAlarms().size() > 0) {
-					logger.info("ALARM!!");
-				} else {
-					logger.info("GEEN ALARMS MEER!");
-				}
-				
 				for (FanucRobotListener listener : listeners) {
 					listener.robotAlarmsOccured((FanucRobotAlarmsOccuredEvent) event);
 				}
@@ -137,33 +131,33 @@ public class FanucRobot extends AbstractRobot {
 				}
 				break;
 			default:
-					break;
+				break;
 		}
 	}
 	
 	private void statusChanged() {
-		synchronized(syncObject) {
+		synchronized (syncObject) {
 			statusChanged = true;
 			syncObject.notifyAll();
 		}
 	}
-	
 
 	@Override
-	public void stopCurrentAction() {
-		logger.info("stopping Fanuc Robot action");
+	public void interruptCurrentAction() {
+		logger.debug("Interrupting current action of: " + getId());
 		stopAction = true;
 		try {
 			fanucRobotCommunication.writeCommand(FanucRobotConstants.COMMAND_ABORT, FanucRobotConstants.RESPONSE_ABORT, WRITE_VALUES_TIMEOUT);
 		} catch (DisconnectedException | ResponseTimedOutException e) {
 			e.printStackTrace();
+			logger.error("Could not abort current action of: " + getId() + " because of: " + e.getMessage());
 		}
-		synchronized(syncObject) {
+		synchronized (syncObject) {
 			syncObject.notifyAll();
 		}
 	}
 	
-	private boolean waitForStatus(int status, long timeout) throws RobotActionException, InterruptedException {
+	private boolean waitForStatus(final int status, final long timeout) throws RobotActionException, InterruptedException {
 		long waitedTime = 0;
 		stopAction = false;
 		do {

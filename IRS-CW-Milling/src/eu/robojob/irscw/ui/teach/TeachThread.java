@@ -115,7 +115,7 @@ public class TeachThread extends Thread {
 		logger.info("about to interrupt teach thread");
 		if (running) {
 			for (AbstractRobot robot :processFlow.getRobots()) {
-				robot.stopCurrentAction();
+				robot.interruptCurrentAction();
 				try {
 					robot.abort();
 				} catch (AbstractCommunicationException e) {
