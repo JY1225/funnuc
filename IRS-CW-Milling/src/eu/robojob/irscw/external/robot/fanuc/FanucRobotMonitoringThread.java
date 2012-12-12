@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.robot;
+package eu.robojob.irscw.external.robot.fanuc;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

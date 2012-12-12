@@ -18,11 +18,11 @@ import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEv
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineListener;
 import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.FanucRobot;
-import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredEvent;
-import eu.robojob.irscw.external.robot.FanucRobotEvent;
-import eu.robojob.irscw.external.robot.FanucRobotListener;
-import eu.robojob.irscw.external.robot.FanucRobotStatusChangedEvent;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobotAlarmsOccuredEvent;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobotEvent;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobotListener;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobotStatusChangedEvent;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;

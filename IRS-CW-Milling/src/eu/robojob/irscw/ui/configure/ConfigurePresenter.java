@@ -8,9 +8,8 @@ import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
-import eu.robojob.irscw.external.robot.FanucRobot;
-import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPickSettings;
-import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotPutSettings;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobotPickSettings;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobotPutSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.ProcessFlow;
@@ -250,13 +249,13 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		ProcessingDeviceStartCyclusSettings prageStartCyclusSettings = new ProcessingDeviceStartCyclusSettings(prageDevice.getWorkAreaById("Präge"));
 		DevicePutSettings pragePutSettings = new DevicePutSettings(prageDevice.getWorkAreaById("Präge"));
 		
-		FanucRobotPutSettings robotPutSettings = new FanucRobot.FanucRobotPutSettings();
+		FanucRobotPutSettings robotPutSettings = new FanucRobotPutSettings();
 		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
 		robotPutSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getActiveClamping().getSmoothToPoint()));
 		robotPutSettings.setWorkArea(prageDevice.getWorkAreaById("Präge"));
 		robotPutSettings.setDoMachineAirblow(false);	
 		
-		FanucRobotPickSettings robotPickSettings = new FanucRobot.FanucRobotPickSettings();
+		FanucRobotPickSettings robotPickSettings = new FanucRobotPickSettings();
 		robotPickSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
 		robotPickSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getActiveClamping().getSmoothFromPoint()));
 		robotPickSettings.setWorkArea(prageDevice.getWorkAreaById("Präge"));

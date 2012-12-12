@@ -16,7 +16,7 @@ import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotSettings;
+import eu.robojob.irscw.external.robot.RobotSettings;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
@@ -33,7 +33,7 @@ public class ProcessFlow {
 	private List<AbstractProcessStep> processSteps;
 	
 	private Map<AbstractDevice, DeviceSettings> deviceSettings;
-	private Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> robotSettings;
+	private Map<AbstractRobot, RobotSettings> robotSettings;
 		
 	private Integer totalAmount;
 	private Integer finishedAmount;
@@ -57,7 +57,7 @@ public class ProcessFlow {
 		this.name = name;
 		this.processSteps = new ArrayList<AbstractProcessStep>();
 		this.deviceSettings = new HashMap<AbstractDevice, DeviceSettings>();
-		this.robotSettings = new HashMap<AbstractRobot, AbstractRobot.AbstractRobotSettings>();
+		this.robotSettings = new HashMap<AbstractRobot, RobotSettings>();
 		needsTeaching = true;
 		this.totalAmount = 0;
 		this.finishedAmount = 0;
@@ -67,7 +67,7 @@ public class ProcessFlow {
 	}
 			
 	public ProcessFlow(String name, List<AbstractProcessStep>processSteps, Map<AbstractDevice, DeviceSettings> deviceSettings,
-			Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> robotSettings) {
+			Map<AbstractRobot, RobotSettings> robotSettings) {
 		this.name = name;
 		this.clampingType = new ClampingManner();
 		needsTeaching = true;
@@ -121,7 +121,7 @@ public class ProcessFlow {
 		return deviceSettings;
 	}
 	
-	public Map<AbstractRobot, AbstractRobot.AbstractRobotSettings> getRobotSettings() {
+	public Map<AbstractRobot, RobotSettings> getRobotSettings() {
 		return robotSettings;
 	}
 	
@@ -342,7 +342,7 @@ public class ProcessFlow {
 		return deviceSettings.get(device);
 	}
 	
-	public AbstractRobotSettings getRobotSettings(AbstractRobot robot) {
+	public RobotSettings getRobotSettings(AbstractRobot robot) {
 		return robotSettings.get(robot);
 	}
 	
@@ -350,7 +350,7 @@ public class ProcessFlow {
 		deviceSettings.put(device, settings);
 	}
 	
-	public void setRobotSettings(AbstractRobot robot, AbstractRobotSettings settings) {
+	public void setRobotSettings(AbstractRobot robot, RobotSettings settings) {
 		robotSettings.put(robot, settings);
 	}
 	
@@ -361,7 +361,7 @@ public class ProcessFlow {
 	}
 	
 	public void loadAllRobotSettings() {
-		for (Entry<AbstractRobot, AbstractRobotSettings> settings : robotSettings.entrySet()) {
+		for (Entry<AbstractRobot, RobotSettings> settings : robotSettings.entrySet()) {
 			settings.getKey().loadRobotSettings(settings.getValue());
 		}
 	}

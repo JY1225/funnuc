@@ -10,8 +10,8 @@ import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
-import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
+import eu.robojob.irscw.external.robot.RobotPickSettings;
+import eu.robojob.irscw.external.robot.RobotPutSettings;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.PickStep;
@@ -143,9 +143,9 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	@Override
 	public boolean isConfigured() {
 		DevicePickSettings pickSettings = deviceInfo.getPickStep().getDeviceSettings();
-		AbstractRobotPickSettings robotPickSettings = deviceInfo.getPickStep().getRobotSettings();
+		RobotPickSettings robotPickSettings = deviceInfo.getPickStep().getRobotSettings();
 		DevicePutSettings putSettings = deviceInfo.getPutStep().getDeviceSettings();
-		AbstractRobotPutSettings robotPutSettings = deviceInfo.getPutStep().getRobotSettings();
+		RobotPutSettings robotPutSettings = deviceInfo.getPutStep().getRobotSettings();
 		DeviceSettings deviceSettings = (DeviceSettings) deviceInfo.getDeviceSettings();
 		// TODO take into account start cyclus settings
 		if (    

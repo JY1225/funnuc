@@ -4,19 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.communication.DisconnectedException;
+import eu.robojob.irscw.external.communication.ResponseTimedOutException;
 import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.workpiece.WorkPiece;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	private GripperBody activeGripperBody;
-	
 	private Set<GripperBody> possibleGripperBodies;
-	
 	private int speed;
 	
 	public AbstractRobot(String id, Set<GripperBody> possibleGripperBodies, GripperBody activeGripperBody) {
@@ -36,23 +31,23 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this(id, null, null);
 	}
 	
-	public void setSpeed(int speedPercentage) throws AbstractCommunicationException {
+	public void setActiveGripperBody(GripperBody body) {
+		if (!possibleGripperBodies.contains(body)) {
+			throw new IllegalArgumentException("Unknown GripperBody value.");
+		}
+		activeGripperBody = body;
+	}
+	
+	public void setSpeed(int speedPercentage) throws DisconnectedException, ResponseTimedOutException {
 		if ((speedPercentage < 0) || (speedPercentage > 100) || !((speedPercentage == 10) || (speedPercentage == 25) || (speedPercentage == 50) || (speedPercentage == 100))) {
 			throw new IllegalArgumentException("Illegal speed value: " + speedPercentage + ", should be between 0 and 100");
 		}
 		this.speed = speedPercentage;
+		sendSpeed(speedPercentage);
 	}
 	
 	public int getSpeed() {
 		return speed;
-	}
-	
-	public void setActiveGripperBody(GripperBody body) {
-		if (!possibleGripperBodies.contains(body)) {
-			throw new IllegalArgumentException("Unknown GripperBody value");
-		}
-		
-		activeGripperBody = body;
 	}
 	
 	public Set<GripperBody> getPossibleGripperBodies() {
@@ -63,41 +58,41 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.possibleGripperBodies = possibleGripperBodies;
 	}
 	
-	public abstract void restartProgram() throws AbstractCommunicationException;
-	public abstract Coordinates getPosition() throws AbstractCommunicationException, RobotActionException;
+	public abstract void restartProgram() throws DisconnectedException, ResponseTimedOutException;
+	public abstract Coordinates getPosition() throws DisconnectedException, ResponseTimedOutException, RobotActionException;
+	public abstract void sendSpeed(int speedPercentage) throws DisconnectedException, ResponseTimedOutException;
+	public abstract void initiatePick(RobotPickSettings pickSettings) throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
+	public abstract void initiatePut(RobotPutSettings putSettings) throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
 	
-	public abstract void initiatePick(AbstractRobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void initiatePut(AbstractRobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizePut(RobotPutSettings putSettings) throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
+	public abstract void finalizePick(RobotPickSettings pickSettings) throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
 	
-	public abstract void finalizePut(AbstractRobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void finalizePick(AbstractRobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void moveToAndWait(RobotPutSettings putSettings, boolean withPiece) throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
+	public abstract void teachedMoveToAndWait(RobotPutSettings putSettings, boolean withPiece) throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
+	public abstract void moveAway() throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
+	public abstract void teachedMoveAway() throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
 	
-	public abstract void moveToAndWait(AbstractRobotPutSettings putSettings, boolean withPiece) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void teachedMoveToAndWait(AbstractRobotPutSettings putSettings, boolean withPiece) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void moveAway() throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void teachedMoveAway() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void teachedMoveNoWait(RobotPutSettings putSettings, boolean withPiece) throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
 	
-	public abstract void teachedMoveNoWait(AbstractRobotPutSettings putSettings, boolean withPiece) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void moveToHome() throws DisconnectedException, ResponseTimedOutException, RobotActionException;
+	public abstract void moveToChangePoint() throws DisconnectedException, ResponseTimedOutException, RobotActionException;
 	
-	public abstract void moveToHome() throws AbstractCommunicationException, RobotActionException;
-	public abstract void moveToChangePoint() throws AbstractCommunicationException, RobotActionException;
+	public abstract void initiateTeachedPick(RobotPickSettings pickSettings) throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
+	public abstract void initiateTeachedPut(RobotPutSettings putSettings) throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
 	
-	public abstract void initiateTeachedPick(AbstractRobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void initiateTeachedPut(AbstractRobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizeTeachedPick(RobotPickSettings pickSettings) throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
+	public abstract void finalizeTeachedPut(RobotPutSettings putSettings) throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
 	
-	public abstract void finalizeTeachedPick(AbstractRobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void finalizeTeachedPut(AbstractRobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract boolean validatePickSettings(RobotPickSettings pickSettings);
+	public abstract boolean validatePutSettings(RobotPutSettings putSettings);
 	
-	public abstract boolean validatePickSettings(AbstractRobotPickSettings pickSettings);
-	public abstract boolean validatePutSettings(AbstractRobotPutSettings putSettings);
+	public abstract void writeRegister(int registerNr, String value) throws DisconnectedException, ResponseTimedOutException, RobotActionException;
+	public abstract void doPrage() throws DisconnectedException, ResponseTimedOutException, RobotActionException, InterruptedException;
 	
-	public abstract void writeRegister(int registerNr, String value) throws AbstractCommunicationException, RobotActionException;
-	public abstract void doPrage() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continueProgram() throws DisconnectedException, ResponseTimedOutException;
+	public abstract void abort() throws DisconnectedException, ResponseTimedOutException;
 	
-	public abstract void continueProgram() throws AbstractCommunicationException;
-	public abstract void abort() throws AbstractCommunicationException;
-	
-	public abstract void recalculateTCPs() throws AbstractCommunicationException;
+	public abstract void recalculateTCPs() throws DisconnectedException, ResponseTimedOutException;
 	
 	public abstract void stopCurrentAction();
 	
@@ -105,105 +100,6 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	public String toString() {
 		return "Robot: " + id;
-	}
-	
-	public static abstract class AbstractRobotActionSettings {
-		
-		protected WorkArea workArea;
-		protected GripperHead gripperHead;
-		protected Coordinates smoothPoint;
-		protected Coordinates location;
-		protected boolean freeAfter;
-		
-		public AbstractRobotActionSettings(WorkArea workArea, GripperHead gripperHead, Coordinates smoothPoint, Coordinates location) {
-			this.workArea = workArea;
-			this.gripperHead = gripperHead;
-			this.smoothPoint = smoothPoint;
-			this.location = location;
-			this.freeAfter = false;
-		}
-		
-		public boolean isFreeAfter() {
-			return freeAfter;
-		}
-
-		public void setFreeAfter(boolean freeAfter) {
-			this.freeAfter = freeAfter;
-		}
-
-		public WorkArea getWorkArea() {
-			return workArea;
-		}
-		public GripperHead getGripperHead() {
-			return gripperHead;
-		}
-		public void setGripperHead(GripperHead gripperHead) {
-			this.gripperHead = gripperHead;
-		}
-		public Coordinates getSmoothPoint() {
-			return smoothPoint;
-		}
-		public void setSmoothPoint(Coordinates smoothPoint) {
-			this.smoothPoint = smoothPoint;
-		}
-		public Coordinates getLocation() {
-			return location;
-		}
-		public void setLocation(Coordinates location) {
-			this.location = location;
-		}
-		public void setWorkArea(WorkArea workArea) {
-			this.workArea = workArea;
-		}
-	}
-	
-	public static abstract class AbstractRobotPickSettings extends AbstractRobotActionSettings {
-		protected PickStep pickStep;
-		protected WorkPiece workPiece;
-
-		public AbstractRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Coordinates smoothPoint, Coordinates location, WorkPiece workPiece) {
-			super(workArea, gripperHead, smoothPoint, location);
-			this.workPiece = workPiece;
-		}
-
-		public WorkPiece getWorkPiece() {
-			return workPiece;
-		}
-
-		public void setWorkPiece(WorkPiece workPiece) {
-			this.workPiece = workPiece;
-		}
-
-		public PickStep getPickStep() {
-			return pickStep;
-		}
-
-		public void setPickStep(PickStep pickStep) {
-			this.pickStep = pickStep;
-		}
-		
-	}
-	
-	// dimensions for put follow from pick
-	public static abstract class AbstractRobotPutSettings extends AbstractRobotActionSettings {
-		
-		protected PutStep putStep;
-		
-		public AbstractRobotPutSettings(WorkArea workArea, GripperHead gripperHead, Coordinates smoothPoint, Coordinates location) {
-			super(workArea, gripperHead, smoothPoint, location);
-		}
-
-		public PutStep getPutStep() {
-			return putStep;
-		}
-
-		public void setPutStep(PutStep putStep) {
-			this.putStep = putStep;
-		}
-		
-	}
-	
-	public static abstract class AbstractRobotSettings {
 	}
 	
 	public GripperBody getGripperBody() {
@@ -214,9 +110,9 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.activeGripperBody = gripperBody;
 	}
 	
-	public abstract AbstractRobotPickSettings getDefaultPickSettings();
-	public abstract AbstractRobotPutSettings getDefaultPutSettings();
+	public abstract RobotPickSettings getDefaultPickSettings();
+	public abstract RobotPutSettings getDefaultPutSettings();
 	
-	public abstract void loadRobotSettings(AbstractRobotSettings robotSettings);
-	public abstract AbstractRobotSettings getRobotSettings();
+	public abstract void loadRobotSettings(RobotSettings robotSettings);
+	public abstract RobotSettings getRobotSettings();
 }

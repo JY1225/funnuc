@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.robot;
+package eu.robojob.irscw.external.robot.fanuc;
 
 public class FanucRobotEvent {
 

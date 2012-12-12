@@ -1,7 +1,7 @@
 package eu.robojob.irscw.ui.main.model;
 
 import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotSettings;
+import eu.robojob.irscw.external.robot.RobotSettings;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.PutStep;
@@ -15,12 +15,12 @@ public class TransportInformation {
 	private PutStep putStep;
 	private InterventionStep interventionAfterPut;
 	
-	private AbstractRobotSettings robotSettings;
+	private RobotSettings robotSettings;
 	
 	private int index; 
 	
 	public TransportInformation(int index, AbstractRobot robot, InterventionStep interventionBeforePick, PickStep pickStep, PutStep putStep, 
-			InterventionStep interventionAfterPut, AbstractRobotSettings robotSettings) {
+			InterventionStep interventionAfterPut, RobotSettings robotSettings) {
 		this.index = index;
 		this.robot = robot;
 		this.interventionBeforePick = interventionBeforePick;
@@ -100,11 +100,11 @@ public class TransportInformation {
 		}
 	}
 
-	public AbstractRobotSettings getRobotSettings() {
+	public RobotSettings getRobotSettings() {
 		return robotSettings;
 	}
 
-	public void setRobotSettings(AbstractRobotSettings robotSettings) {
+	public void setRobotSettings(RobotSettings robotSettings) {
 		this.robotSettings = robotSettings;
 	}
 }

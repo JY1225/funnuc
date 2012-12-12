@@ -8,19 +8,19 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
 import eu.robojob.irscw.external.robot.RobotActionException;
+import eu.robojob.irscw.external.robot.RobotPickSettings;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
 public class PickAfterWaitStep extends PickStep {
 
 	private static final Logger logger = LogManager.getLogger(PickAfterWaitStep.class.getName());
 			
-	public PickAfterWaitStep(AbstractRobot robot, AbstractDevice deviceFrom, DevicePickSettings pickSettings, AbstractRobotPickSettings robotPickSettings) {
+	public PickAfterWaitStep(AbstractRobot robot, AbstractDevice deviceFrom, DevicePickSettings pickSettings, RobotPickSettings robotPickSettings) {
 		super(robot, deviceFrom, pickSettings, robotPickSettings);
 	}
 	
-	public PickAfterWaitStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceFrom, DevicePickSettings pickSettings, AbstractRobotPickSettings robotPickSettings) {
+	public PickAfterWaitStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceFrom, DevicePickSettings pickSettings, RobotPickSettings robotPickSettings) {
 		super(processFlow, robot, deviceFrom, pickSettings, robotPickSettings);
 	}
 

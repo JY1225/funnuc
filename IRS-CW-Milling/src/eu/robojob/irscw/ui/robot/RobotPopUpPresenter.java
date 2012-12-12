@@ -1,12 +1,12 @@
 package eu.robojob.irscw.ui.robot;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.robot.FanucRobot;
-import eu.robojob.irscw.external.robot.FanucRobotAlarmsOccuredEvent;
-import eu.robojob.irscw.external.robot.FanucRobotEvent;
-import eu.robojob.irscw.external.robot.FanucRobotListener;
-import eu.robojob.irscw.external.robot.FanucRobotStatusChangedEvent;
 import eu.robojob.irscw.external.robot.RobotActionException;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobotAlarmsOccuredEvent;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobotEvent;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobotListener;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobotStatusChangedEvent;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;

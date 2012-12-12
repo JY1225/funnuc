@@ -12,8 +12,8 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
 import eu.robojob.irscw.external.robot.RobotActionException;
+import eu.robojob.irscw.external.robot.RobotPickSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
@@ -22,20 +22,22 @@ public class PickStep extends AbstractTransportStep {
 	private static final Logger logger = LogManager.getLogger(PickStep.class.getName());
 	
 	protected DevicePickSettings pickSettings;
-	protected AbstractRobot.AbstractRobotPickSettings robotPickSettings;
+	protected RobotPickSettings robotPickSettings;
 			
 	public PickStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceFrom, DevicePickSettings pickSettings,
-			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
+			RobotPickSettings robotPickSettings) {
 		super(processFlow, deviceFrom, robot);
 		this.pickSettings = pickSettings;
 		if (pickSettings != null) {
 			pickSettings.setStep(this);
 		}
+		if (robotPickSettings != null) {
+			robotPickSettings.setStep(this);
+		}
 		setRobotSettings(robotPickSettings);
 	}
 	
-	public PickStep(AbstractRobot robot, AbstractDevice deviceFrom, DevicePickSettings pickSettings,
-			AbstractRobot.AbstractRobotPickSettings robotPickSettings) {
+	public PickStep(AbstractRobot robot, AbstractDevice deviceFrom, DevicePickSettings pickSettings, RobotPickSettings robotPickSettings) {
 		this(null, robot, deviceFrom, pickSettings, robotPickSettings);
 	}
 
@@ -181,11 +183,11 @@ public class PickStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public AbstractRobotPickSettings getRobotSettings() {
+	public RobotPickSettings getRobotSettings() {
 		return robotPickSettings;
 	}
 
-	public void setRobotSettings(AbstractRobotPickSettings settings) {
+	public void setRobotSettings(RobotPickSettings settings) {
 		this.robotPickSettings = settings;
 		if (robotPickSettings != null) {
 			robotPickSettings.setPickStep(this);
@@ -194,12 +196,7 @@ public class PickStep extends AbstractTransportStep {
 
 	@Override
 	public boolean needsTeaching() {
-		// pick location is always fixed!
-		/*if ((robotPickSettings.getWorkPiece().getDimensions().isKnownShape()) && (robotPickSettings.getGripper().isFixedHeight())) {
-			return false;
-		} else {
-			return true;
-		}*/
+		//TODO implement
 		return true;
 	}
 

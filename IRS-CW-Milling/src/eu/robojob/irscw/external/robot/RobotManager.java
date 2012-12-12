@@ -11,6 +11,7 @@ import java.util.Set;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.communication.SocketConnection.Type;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 
 public class RobotManager {
 	

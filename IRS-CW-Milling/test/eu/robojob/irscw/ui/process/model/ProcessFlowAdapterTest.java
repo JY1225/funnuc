@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachine;
-import eu.robojob.irscw.external.robot.FanucRobot;
+import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;

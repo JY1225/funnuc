@@ -12,20 +12,20 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
 import eu.robojob.irscw.external.robot.RobotActionException;
+import eu.robojob.irscw.external.robot.RobotPutSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
 public class PutStep extends AbstractTransportStep {
 
 	protected DevicePutSettings putSettings;
-	protected AbstractRobot.AbstractRobotPutSettings robotPutSettings;
+	protected RobotPutSettings robotPutSettings;
 	
 	private static final Logger logger = LogManager.getLogger(PutStep.class.getName());
 	
 	public PutStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceTo,
-			DevicePutSettings putSettings, AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
+			DevicePutSettings putSettings, RobotPutSettings robotPutSettings) {
 		super(processFlow, deviceTo, robot);
 		this.putSettings = putSettings;
 		if (putSettings != null) {
@@ -34,8 +34,7 @@ public class PutStep extends AbstractTransportStep {
 		setRobotSettings(robotPutSettings);
 	}
 	
-	public PutStep(AbstractRobot robot, AbstractDevice deviceTo, DevicePutSettings putSettings,
-			AbstractRobot.AbstractRobotPutSettings robotPutSettings) {
+	public PutStep(AbstractRobot robot, AbstractDevice deviceTo, DevicePutSettings putSettings, RobotPutSettings robotPutSettings) {
 		this(null, robot, deviceTo, putSettings, robotPutSettings);
 	}
 
@@ -179,11 +178,11 @@ public class PutStep extends AbstractTransportStep {
 	}
 
 	@Override
-	public AbstractRobotPutSettings getRobotSettings() {
+	public RobotPutSettings getRobotSettings() {
 		return robotPutSettings;
 	}
 	
-	public void setRobotSettings(AbstractRobotPutSettings settings) {
+	public void setRobotSettings(RobotPutSettings settings) {
 		this.robotPutSettings = settings;
 		if (robotPutSettings != null) {
 			robotPutSettings.setPutStep(this);
@@ -192,12 +191,7 @@ public class PutStep extends AbstractTransportStep {
 
 	@Override
 	public boolean needsTeaching() {
-		// since we already know the work piece's dimensions (ground pane) and griper height from picking it up
-		/*if (putSettings.isPutPositionFixed()) {
-			return false;
-		} else {
-			return true;
-		}*/
+		//TODO implement
 		return true;
 	}
 }

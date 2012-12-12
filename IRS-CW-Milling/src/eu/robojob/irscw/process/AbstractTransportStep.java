@@ -5,6 +5,7 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.AbstractDeviceActionSettings;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.external.robot.AbstractRobotActionSettings;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.TeachedCoordinatesCalculator;
@@ -29,7 +30,7 @@ public abstract class AbstractTransportStep extends AbstractProcessStep {
 	public abstract void finalize() throws AbstractCommunicationException, RobotActionException, DeviceActionException;
 	
 	public abstract AbstractDeviceActionSettings<?> getDeviceSettings();
-	public abstract AbstractRobot.AbstractRobotActionSettings getRobotSettings();
+	public abstract AbstractRobotActionSettings getRobotSettings();
 
 	public AbstractRobot getRobot() {
 		return robot;

@@ -12,9 +12,6 @@
       </Policies>
       <DefaultRolloverStrategy max="20"/>
     </RollingFile>
-    <File name="HTML" fileName="C:/RoboJob/logs/html/index.html">
-      <HTMLLayout locationInfo="true" title="RoboSoft log"/>
-    </File>
     <File name="XML" fileName="C:/RoboJob/logs/xml/logFile.xml">
       <XMLLayout locationInfo="true"/>
     </File>

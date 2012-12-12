@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.robot;
+package eu.robojob.irscw.external.robot.fanuc;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -112,24 +112,7 @@ public class FanucRobotCommunication extends ExternalCommunication {
 		return new ArrayList<String>(Arrays.asList(values));
 	}
 	
-	/*public boolean checkStatusValue(int valueIndex, int value, int waitTimeout) throws CommunicationException, DisconnectedException {
-		long currentTime = System.currentTimeMillis();
-		boolean timeout = false;
-		while (!timeout) {
-			if (System.currentTimeMillis() - currentTime >= waitTimeout) {
-				timeout = true;
-				break;
-			}
-			List<String> statusValues = readValues(FanucRobotConstants.COMMAND_ASK_STATUS, FanucRobotConstants.RESPONSE_ASK_STATUS, getDefaultWaitTimeout());
-			int responseValue = Integer.parseInt(statusValues.get(valueIndex));
-			if ((responseValue & value) != 0) {
-				return true;
-			}
-		}
-		return false;
-	}*/
-	
-	public synchronized Coordinates getPosition(int waitTimeout) throws AbstractCommunicationException, DisconnectedException {
+	public synchronized Coordinates getPosition(int waitTimeout) throws ResponseTimedOutException, DisconnectedException {
 		long currentTime = System.currentTimeMillis();
 		boolean timeout = false;
 		while (!timeout) {
