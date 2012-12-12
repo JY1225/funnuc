@@ -46,7 +46,7 @@ public class RobotManager {
 		/*grippers.add(gripper4);
 		grippers.add(gripper5);
 		grippers.add(gripper6);*/
-		GripperBody gripperBody = new GripperBody(2, "Standard Body", gripperHeads, grippers);
+		GripperBody gripperBody = new GripperBody("2", "Standard Body", gripperHeads, grippers);
 		Set<GripperBody> gripperBodies = new HashSet<GripperBody>();
 		gripperBodies.add(gripperBody);
 		//SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", "192.168.200.9", 2001);

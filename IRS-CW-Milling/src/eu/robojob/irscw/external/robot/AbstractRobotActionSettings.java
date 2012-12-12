@@ -25,6 +25,10 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		this.step = step;
 	}
 	
+	public T getStep() {
+		return step;
+	}
+	
 	public boolean isFreeAfter() {
 		return freeAfter;
 	}

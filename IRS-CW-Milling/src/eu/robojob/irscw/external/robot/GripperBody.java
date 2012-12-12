@@ -6,13 +6,13 @@ import java.util.Set;
 
 public class GripperBody {
 
-	int id;
+	String id;
 	String description;
 	
 	private List<GripperHead> gripperHeads;
 	private Set<Gripper> possibleGrippers;
 	
-	public GripperBody (int id, String description, List<GripperHead> gripperHeads, Set<Gripper> possibleGrippers) {
+	public GripperBody (String id, String description, List<GripperHead> gripperHeads, Set<Gripper> possibleGrippers) {
 		this.id = id;
 		this.description = description;
 		this.gripperHeads = gripperHeads;
@@ -23,7 +23,7 @@ public class GripperBody {
 		}
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 

@@ -357,12 +357,12 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 		// we now wait for the robot to indicate he moved to its location
 		boolean waitForTeachingNeeded = waitForStatus(FanucRobotConstants.STATUS_AWAITING_TEACHING, PICK_TEACH_TIMEOUT);
-		pickSettings.getPickStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(pickSettings.getPickStep().getProcessFlow(), pickSettings.getPickStep(), ActiveStepChangedEvent.TEACHING_NEEDED));
+		pickSettings.getStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(pickSettings.getStep().getProcessFlow(), pickSettings.getStep(), ActiveStepChangedEvent.TEACHING_NEEDED));
 		if (!waitForTeachingNeeded) {
 			throw new RobotActionException(this, EXCEPTION_MOVE_TO_PICK_POSITION_TIMEOUT);
 		} else {
 			boolean waitingForTeachingFinished = waitForStatus(FanucRobotConstants.STATUS_TEACHING_FINISHED, PICK_TEACH_TIMEOUT);
-			pickSettings.getPickStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(pickSettings.getPickStep().getProcessFlow(), pickSettings.getPickStep(), ActiveStepChangedEvent.TEACHING_FINISHED));
+			pickSettings.getStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(pickSettings.getStep().getProcessFlow(), pickSettings.getStep(), ActiveStepChangedEvent.TEACHING_FINISHED));
 			if (!waitingForTeachingFinished) {
 				throw new RobotActionException(this, EXCEPTION_TEACHING_TIMEOUT);
 			} else {
@@ -393,13 +393,13 @@ public class FanucRobot extends AbstractRobot {
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_PUT);
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 		boolean waitingForTeachingNeeded = waitForStatus(FanucRobotConstants.STATUS_AWAITING_TEACHING, PUT_TEACH_TIMEOUT);
-		putSettings.getPutStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getPutStep().getProcessFlow(), putSettings.getPutStep(), ActiveStepChangedEvent.TEACHING_NEEDED));
+		putSettings.getStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getStep().getProcessFlow(), putSettings.getStep(), ActiveStepChangedEvent.TEACHING_NEEDED));
 		if (!waitingForTeachingNeeded) {
 			logger.info("Troubles");
 			throw new RobotActionException(this, EXCEPTION_MOVE_TO_PUT_POSITION_TIMEOUT);
 		} else {
 			boolean waitingForRelease = waitForStatus(FanucRobotConstants.STATUS_TEACHING_FINISHED, PUT_TEACH_TIMEOUT);
-			putSettings.getPutStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getPutStep().getProcessFlow(), putSettings.getPutStep(), ActiveStepChangedEvent.TEACHING_FINISHED));
+			putSettings.getStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getStep().getProcessFlow(), putSettings.getStep(), ActiveStepChangedEvent.TEACHING_FINISHED));
 			if (!waitingForRelease) {
 				logger.info("Troubles!");
 				throw new RobotActionException(this, EXCEPTION_TEACHING_TIMEOUT);
@@ -463,12 +463,12 @@ public class FanucRobot extends AbstractRobot {
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 		boolean waitingForTeachingNeeded = waitForStatus(FanucRobotConstants.STATUS_AWAITING_TEACHING, MOVE_TO_LOCATION_TIMEOUT);
-		putSettings.getPutStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getPutStep().getProcessFlow(), putSettings.getPutStep(), ActiveStepChangedEvent.TEACHING_NEEDED));
+		putSettings.getStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getStep().getProcessFlow(), putSettings.getStep(), ActiveStepChangedEvent.TEACHING_NEEDED));
 		if (!waitingForTeachingNeeded) {
 			throw new RobotActionException(this, EXCEPTION_MOVE_TO_POSITION_TIMEOUT);
 		} else {
 			boolean waitingForRelease = waitForStatus(FanucRobotConstants.STATUS_TEACHING_FINISHED, PUT_TEACH_TIMEOUT);
-			putSettings.getPutStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getPutStep().getProcessFlow(), putSettings.getPutStep(), ActiveStepChangedEvent.TEACHING_FINISHED));
+			putSettings.getStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getStep().getProcessFlow(), putSettings.getStep(), ActiveStepChangedEvent.TEACHING_FINISHED));
 			if (!waitingForRelease) {
 				logger.info("Troubles!");
 				throw new RobotActionException(this, EXCEPTION_TEACHING_TIMEOUT);
@@ -502,12 +502,12 @@ public class FanucRobot extends AbstractRobot {
 		writeCommand(FanucRobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
 		fanucRobotCommunication.writeValue(FanucRobotConstants.COMMAND_START_SERVICE, FanucRobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 		boolean waitingForTeachingNeeded = waitForStatus(FanucRobotConstants.STATUS_AWAITING_TEACHING, MOVE_TO_LOCATION_TIMEOUT);
-		putSettings.getPutStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getPutStep().getProcessFlow(), putSettings.getPutStep(), ActiveStepChangedEvent.TEACHING_NEEDED));
+		putSettings.getStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getStep().getProcessFlow(), putSettings.getStep(), ActiveStepChangedEvent.TEACHING_NEEDED));
 		if (!waitingForTeachingNeeded) {
 			throw new RobotActionException(this, EXCEPTION_MOVE_TO_POSITION_TIMEOUT);
 		} else {
 			boolean waitingForRelease = waitForStatus(FanucRobotConstants.STATUS_TEACHING_FINISHED, PUT_TEACH_TIMEOUT);
-			putSettings.getPutStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getPutStep().getProcessFlow(), putSettings.getPutStep(), ActiveStepChangedEvent.TEACHING_FINISHED));
+			putSettings.getStep().getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(putSettings.getStep().getProcessFlow(), putSettings.getStep(), ActiveStepChangedEvent.TEACHING_FINISHED));
 			if (!waitingForRelease) {
 				throw new RobotActionException(this, EXCEPTION_TEACHING_TIMEOUT);
 			} else {

@@ -31,6 +31,9 @@ public class PutStep extends AbstractTransportStep {
 		if (putSettings != null) {
 			putSettings.setStep(this);
 		}
+		if (robotPutSettings != null) {
+			robotPutSettings.setStep(this);
+		}
 		setRobotSettings(robotPutSettings);
 	}
 	
@@ -185,7 +188,7 @@ public class PutStep extends AbstractTransportStep {
 	public void setRobotSettings(RobotPutSettings settings) {
 		this.robotPutSettings = settings;
 		if (robotPutSettings != null) {
-			robotPutSettings.setPutStep(this);
+			robotPutSettings.setStep(this);
 		}
 	}
 
