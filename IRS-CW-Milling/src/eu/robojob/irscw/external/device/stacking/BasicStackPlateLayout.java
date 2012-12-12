@@ -87,7 +87,7 @@ public class BasicStackPlateLayout {
 		//TODO add upper limits
 		WorkPieceDimensions dimensions = rawWorkPiece.getDimensions();
 		if (!((dimensions != null) && (dimensions.getWidth() > 0) && (dimensions.getLength() > 0) && (dimensions.getHeight() > 0))) {
-			throw new IncorrectWorkPieceDataException();
+			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_DATA);
 		}
 		switch(orientation) {
 			case HORIZONTAL:
@@ -104,7 +104,7 @@ public class BasicStackPlateLayout {
 	
 	private void configureHorizontalStackingPositions(WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
 		if (dimensions.getLength() < dimensions.getWidth()) {
-			throw new IncorrectWorkPieceDataException("Length should be larger than height.");
+			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.LENGTH_SMALLER_WIDTH);
 		}
 		float remainingLength = dimensions.getLength();
 		// initially two studs are used (even if corner is needed!)
@@ -153,7 +153,7 @@ public class BasicStackPlateLayout {
 				}
 			}
 		} else if ((spaceLeft < remainingLength) && (remainingDistanceBetweenHoles == 0)) {
-			// the last piece would come over the edge
+			// the last piece would come to much over the edge
 			amountHorizontal--;
 		}
 				
@@ -215,7 +215,6 @@ public class BasicStackPlateLayout {
 				}
 				
 				boolean corner = false;
-				
 				StackingPosition stackingPosition = new StackingPosition(horizontalPos, verticalPos, null, WorkPieceOrientation.HORIZONTAL);
 				
 				// condition one: only two vertical studs and not enough remaining width (only one leftVerticalExtraIndex)
@@ -246,9 +245,7 @@ public class BasicStackPlateLayout {
 						stackingPosition.addstud(studPos2);
 					}
 				}
-				
 				stackingPositions.add(stackingPosition);
-				
 				horizontalStudIndex += amountOfHorizontalStudsOnePiece;
 			}
 			verticalStudIndex += amountOfVerticalStudsOnePiece;
@@ -258,7 +255,7 @@ public class BasicStackPlateLayout {
 	private void configureTiltedStackingPositionsAlt(WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
 		if (dimensions.getLength() < dimensions.getWidth()) {
 			logger.error("incorrect data!!!");
-			throw new IncorrectWorkPieceDataException("Length should be larger than height.");
+			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.LENGTH_SMALLER_WIDTH);
 		}
 		
 		//TODO take int account strategy
@@ -403,7 +400,7 @@ public class BasicStackPlateLayout {
 				}
 			}
 		} else {
-			throw new IncorrectWorkPieceDataException("Provided amount-argument is too high");
+			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
 		}
 	}
 	
