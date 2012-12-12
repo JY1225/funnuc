@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.teach;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
@@ -18,14 +19,14 @@ import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.workpiece.WorkPiece;
 
 public class OptimizedTeachThread extends TeachThread {
 	
-	private static final Logger logger = Logger.getLogger(OptimizedTeachThread.class);
+	private static final Logger logger = LogManager.getLogger(OptimizedTeachThread.class.getName());
 	private TeachedCoordinatesCalculator calculator;
 	private Coordinates extraFinishedOffset;
 

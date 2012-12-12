@@ -5,7 +5,8 @@ import java.util.Set;
 
 import javafx.application.Platform;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
@@ -27,7 +28,7 @@ public class DevicesStatusThread extends Thread implements FanucRobotListener, C
 	
 	private static final int SLEEP_TIME = 1000;
 	
-	private static final Logger logger = Logger.getLogger(DevicesStatusThread.class);
+	private static final Logger logger = LogManager.getLogger(DevicesStatusThread.class.getName());
 	
 	public DevicesStatusThread(TeachPresenter teachPresenter, ProcessFlow processFlow) {
 		this.teachPresenter = teachPresenter;

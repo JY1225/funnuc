@@ -7,7 +7,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SocketConnection {
 	
@@ -27,7 +28,7 @@ public class SocketConnection {
 	
 	private boolean connected;
 		
-	private static Logger logger = Logger.getLogger(SocketConnection.class);
+	private static Logger logger = LogManager.getLogger(SocketConnection.class.getName());
 		
 	public SocketConnection(Type type, String id, String ipAddress, int portNumber) {
 		this.type = type;

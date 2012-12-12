@@ -8,7 +8,8 @@ import java.util.Set;
 
 import javafx.application.Platform;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
@@ -54,7 +55,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	
 	private Translator translator;
 	
-	private static Logger logger = Logger.getLogger(TeachPresenter.class);
+	private static Logger logger = LogManager.getLogger(TeachPresenter.class.getName());
 	
 	private Map<AbstractCNCMachine, Boolean> machines;
 	private Map<FanucRobot, Boolean> robots;

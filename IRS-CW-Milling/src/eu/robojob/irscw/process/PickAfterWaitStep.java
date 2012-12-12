@@ -1,11 +1,12 @@
 package eu.robojob.irscw.process;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPickSettings;
 import eu.robojob.irscw.external.robot.RobotActionException;
@@ -13,7 +14,7 @@ import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
 public class PickAfterWaitStep extends PickStep {
 
-	private static final Logger logger = Logger.getLogger(PickAfterWaitStep.class);
+	private static final Logger logger = LogManager.getLogger(PickAfterWaitStep.class.getName());
 			
 	public PickAfterWaitStep(AbstractRobot robot, AbstractDevice deviceFrom, DevicePickSettings pickSettings, AbstractRobotPickSettings robotPickSettings) {
 		super(robot, deviceFrom, pickSettings, robotPickSettings);

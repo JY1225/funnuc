@@ -2,20 +2,31 @@
 <configuration>
 
   <appenders>
-    <File name="LogFile" fileName="org.apache.log4j.RollingFileAppender" append="true" maxFileSize="2MB" maxBackupIndex="3">
-      <PatternLayout pattern="%-7p %-25d %-30t %-5L %-70c - %m%n"/>
+    <RollingFile name="LOGFILE" fileName="C:/RoboJob/logs/logfile.log" append="true" filePattern="C:/RoboJob/logs/$${date:yyyy-MM}/logfile-%d{MM-dd-yyyy}-%i.log">
+	  <PatternLayout>
+        <pattern>%-7p %-25d %-30t %-5L %-70c - %m%n</pattern>
+      </PatternLayout>     
+      <Policies>
+        <TimeBasedTriggeringPolicy />
+        <SizeBasedTriggeringPolicy size="250 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="20"/>
+    </RollingFile>
+    <File name="HTML" fileName="C:/RoboJob/logs/html/index.html">
+      <HTMLLayout locationInfo="true" title="RoboSoft log"/>
     </File>
-    <Console name="STDOUT" target="SYSTEM_OUT">
-      <PatternLayout pattern="%-7p %-25d %-30t %-5L %-70c - %m%n"/>
+    <Console name="STDOUT">
+      <PatternLayout>
+        <pattern>%-7p %-25d %-30t %-5L %-70c - %m%n</pattern>
+      </PatternLayout> 
     </Console>
   </appenders>
   
   <loggers>
-    <logger name="org.apache.log4j.xml" level="debug">
-      <appender-ref ref="LogFile"/>
-    </logger>
     <root level="debug">
-      <appender-ref ref="STDOUT"/>
+       <appender-ref ref="STDOUT"/>
+       <appender-ref ref="LOGFILE"/>
+       <appender-ref ref="HTML"/>
     </root>
   </loggers>
   

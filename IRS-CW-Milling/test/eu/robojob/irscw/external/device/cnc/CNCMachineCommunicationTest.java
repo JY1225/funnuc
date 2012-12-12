@@ -6,7 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class CNCMachineCommunicationTest {
 	private RobotManager robotManager;
 	private DeviceManager deviceManager;
 	
-	private static Logger logger = Logger.getLogger(CNCMachineCommunicationTest.class);
+	private static Logger logger = LogManager.getLogger(CNCMachineCommunicationTest.class.getName());
 	
 	@Before
 	public void setup() throws FileNotFoundException, IOException {

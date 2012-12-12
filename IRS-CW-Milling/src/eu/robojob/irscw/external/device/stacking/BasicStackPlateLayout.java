@@ -3,7 +3,8 @@ package eu.robojob.irscw.external.device.stacking;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.external.device.stacking.StudPosition.StudType;
@@ -34,7 +35,7 @@ public class BasicStackPlateLayout {
 	
 	private static final float MIN_OVERLAP_DISTANCE = 9;
 	
-	private static final Logger logger = Logger.getLogger(BasicStackPlateLayout.class);
+	private static final Logger logger = LogManager.getLogger(BasicStackPlateLayout.class.getName());
 		
 	public BasicStackPlateLayout(int horizontalHoleAmount, int verticalHoleAmount, float holeDiameter, float studDiameter, float horizontalPadding,
 			float verticalPadding, float verticalPaddingBottom, float horizontalHoleDistance, float interferenceDistance, float overflowPercentage) {

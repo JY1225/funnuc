@@ -2,7 +2,7 @@ package eu.robojob.irscw.ui;
 
 public class MenuBarPresenter {
 
-	//private static Logger logger = Logger.getLogger(MenuBarPresenter.class);
+	//private static Logger logger = LogManager.getLogger(MenuBarPresenter.class.getName());
 	
 	private MenuBarView view;
 	private MainPresenter parent;

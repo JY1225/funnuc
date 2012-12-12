@@ -12,7 +12,7 @@ public class IconFlowSelector extends ScrollPane {
 
 	private Map<Integer, IconFlowSelectorItem> items;
 	
-//	private static Logger logger = Logger.getLogger(IconFlowSelector.class);
+//	private static Logger logger = LogManager.getLogger(IconFlowSelector.class.getName());
 	
 	private HBox box;
 	

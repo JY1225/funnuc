@@ -2,7 +2,8 @@ package eu.robojob.irscw.ui.keyboard;
 
 import javafx.scene.input.KeyCode;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.ui.controls.AbstractTextField;
 
@@ -14,7 +15,7 @@ public abstract class AbstractKeyboardPresenter {
 	
 	private String originalText;
 	
-	private static Logger logger = Logger.getLogger(AbstractKeyboardPresenter.class);
+	private static Logger logger = LogManager.getLogger(AbstractKeyboardPresenter.class.getName());
 	
 	public AbstractKeyboardPresenter(AbstractKeyboardView view) {
 		this.view = view;

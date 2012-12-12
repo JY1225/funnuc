@@ -1,6 +1,7 @@
 package eu.robojob.irscw.external.robot;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.threading.MonitoringThread;
@@ -13,7 +14,7 @@ public class FanucRobotMonitoringThread extends Thread implements MonitoringThre
 	private FanucRobotStatus previousStatus;
 	//TODO alarms!
 	
-	private static Logger logger = Logger.getLogger(FanucRobotMonitoringThread.class);
+	private static Logger logger = LogManager.getLogger(FanucRobotMonitoringThread.class.getName());
 	
 	public FanucRobotMonitoringThread(FanucRobot fanucRobot) {
 		this.alive = true;

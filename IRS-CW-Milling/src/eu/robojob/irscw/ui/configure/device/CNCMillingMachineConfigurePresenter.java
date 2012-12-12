@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.configure.device;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.ClampingManner.Type;
@@ -30,7 +31,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 
 	private DeviceInformation deviceInfo;
 	
-	private static Logger logger = Logger.getLogger(CNCMillingMachineConfigurePresenter.class);
+	private static Logger logger = LogManager.getLogger(CNCMillingMachineConfigurePresenter.class.getName());
 	private ProcessFlow processFlow;
 	
 	public CNCMillingMachineConfigurePresenter(CNCMillingMachineConfigureView view, DeviceInformation deviceInfo, DeviceManager deviceManager) {

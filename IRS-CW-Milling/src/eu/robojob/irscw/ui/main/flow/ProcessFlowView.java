@@ -14,7 +14,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.ProcessFlow;
@@ -33,7 +34,7 @@ public class ProcessFlowView extends GridPane  {
 	private Map<Integer, Region> progressTransportRegionsLeft;
 	private Map<Integer, Region> progressTransportRegionsRight;
 	
-	private static final Logger logger = Logger.getLogger(ProcessFlowView.class);
+	private static final Logger logger = LogManager.getLogger(ProcessFlowView.class.getName());
 	
 	private static final int HEIGHT = 10; 
 			

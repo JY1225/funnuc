@@ -3,7 +3,8 @@ package eu.robojob.irscw.external.communication;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * All external devices act as servers, so this communication-thread will continuously try to establish connection, read incoming messages, and will act as
@@ -11,7 +12,7 @@ import org.apache.log4j.Logger;
  */
 public class ExternalCommunicationThread extends Thread {
 
-	private static final Logger logger = Logger.getLogger(ExternalCommunicationThread.class);
+	private static final Logger logger = LogManager.getLogger(ExternalCommunicationThread.class.getName());
 	
 	private static final int CONNECTION_RETRY_INTERVAL = 1000;
 	

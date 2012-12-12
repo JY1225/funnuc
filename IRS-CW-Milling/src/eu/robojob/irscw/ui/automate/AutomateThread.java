@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.automate;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
@@ -23,7 +24,7 @@ public class AutomateThread extends Thread{
 
 	protected ProcessFlow processFlow;
 	
-	private static final Logger logger = Logger.getLogger(AutomateThread.class);
+	private static final Logger logger = LogManager.getLogger(AutomateThread.class.getName());
 	
 	protected boolean running;
 	

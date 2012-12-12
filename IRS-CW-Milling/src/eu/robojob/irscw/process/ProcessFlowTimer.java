@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
@@ -25,7 +26,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	
 	private AbstractProcessStep currentStep;
 	
-	private static final Logger logger = Logger.getLogger(ProcessFlowTimer.class);
+	private static final Logger logger = LogManager.getLogger(ProcessFlowTimer.class.getName());
 	
 	enum Mode {
 		RUNNING, PAUSED, STOPPED

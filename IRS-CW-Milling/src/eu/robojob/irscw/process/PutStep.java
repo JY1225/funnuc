@@ -3,13 +3,14 @@ package eu.robojob.irscw.process;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotPutSettings;
 import eu.robojob.irscw.external.robot.RobotActionException;
@@ -21,7 +22,7 @@ public class PutStep extends AbstractTransportStep {
 	protected DevicePutSettings putSettings;
 	protected AbstractRobot.AbstractRobotPutSettings robotPutSettings;
 	
-	private static final Logger logger = Logger.getLogger(PutStep.class);
+	private static final Logger logger = LogManager.getLogger(PutStep.class.getName());
 	
 	public PutStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceTo,
 			DevicePutSettings putSettings, AbstractRobot.AbstractRobotPutSettings robotPutSettings) {

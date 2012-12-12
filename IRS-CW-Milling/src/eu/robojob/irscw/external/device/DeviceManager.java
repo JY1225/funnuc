@@ -9,7 +9,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.SocketConnection;
 import eu.robojob.irscw.external.communication.SocketConnection.Type;
@@ -32,7 +33,7 @@ public class DeviceManager {
 	private Map<String, AbstractStackingDevice> stackingFromDevices;
 	private Map<String, AbstractStackingDevice> stackingToDevices;
 	
-	private static Logger logger = Logger.getLogger(DeviceManager.class);
+	private static Logger logger = LogManager.getLogger(DeviceManager.class.getName());
 	
 	public static final String IRS_M_BASIC = "IRS M Basic";
 	public static final String PRAGE_DEVICE = "Präge";

@@ -29,7 +29,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 	private static final int HGAP = 15;
 	private static final int VGAP = 10;
 	
-	//private static Logger logger = Logger.getLogger(TransportGripperView.class); 
+	//private static Logger logger = LogManager.getLogger(TransportGripperView.class.getName()); 
 	
 	public TransportGripperView() {
 		super();

@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.DisconnectedException;
 import eu.robojob.irscw.external.communication.ExternalCommunication;
@@ -15,7 +16,7 @@ public class CNCMachineCommunication extends ExternalCommunication {
 
 	private StringBuffer command;
 		
-	private static final Logger logger = Logger.getLogger(CNCMachineCommunication.class);
+	private static final Logger logger = LogManager.getLogger(CNCMachineCommunication.class.getName());
 	private AbstractCNCMachine cncMachine;
 	
 	public CNCMachineCommunication(SocketConnection socketConnection, AbstractCNCMachine cncMachine) {

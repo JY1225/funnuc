@@ -8,11 +8,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.ClampingManner;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobot.AbstractRobotSettings;
@@ -44,7 +45,7 @@ public class ProcessFlow {
 	private Set<ProcessFlowListener> listeners;
 	private Mode mode;
 	
-	private static final Logger logger = Logger.getLogger(ProcessFlow.class);
+	private static final Logger logger = LogManager.getLogger(ProcessFlow.class.getName());
 	
 	private ClampingManner clampingType;
 	

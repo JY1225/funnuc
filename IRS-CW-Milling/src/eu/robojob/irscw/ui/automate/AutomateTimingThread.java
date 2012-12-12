@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.automate;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlowTimer;
 
@@ -10,7 +11,7 @@ public class AutomateTimingThread extends Thread {
 	private boolean running;
 	private AutomatePresenter automatePresenter;
 	
-	private static final Logger logger = Logger.getLogger(AutomateTimingThread.class);
+	private static final Logger logger = LogManager.getLogger(AutomateTimingThread.class.getName());
 	
 	public AutomateTimingThread(AutomatePresenter automatePresenter, ProcessFlowTimer processFlowTimer) {
 		this.automatePresenter = automatePresenter;

@@ -3,7 +3,8 @@ package eu.robojob.irscw.external.device.processing.cnc;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.DisconnectedException;
 import eu.robojob.irscw.external.communication.ResponseTimedOutException;
@@ -18,7 +19,7 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 	private int previousStatus;
 	private Set<CNCMachineAlarm> previousAlarms;
 	
-	private static Logger logger = Logger.getLogger(CNCMachineMonitoringThread.class);
+	private static Logger logger = LogManager.getLogger(CNCMachineMonitoringThread.class.getName());
 	
 	public CNCMachineMonitoringThread(AbstractCNCMachine cncMachine) {
 		this.cncMachine = cncMachine;

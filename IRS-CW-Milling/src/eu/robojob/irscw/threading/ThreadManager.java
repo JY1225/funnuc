@@ -5,7 +5,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.ExternalCommunicationThread;
 
@@ -16,7 +17,7 @@ public class ThreadManager {
 	private static final int amountOfThreads = 8;
 	private static ThreadManager instance;
 	
-	private static final Logger logger = Logger.getLogger(ThreadManager.class);
+	private static final Logger logger = LogManager.getLogger(ThreadManager.class.getName());
 	
 	private Set<ExternalCommunicationThread> communicationThreads;
 	private Set<MonitoringThread> monitoringThreads;

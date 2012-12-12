@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.main.model;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceInterventionSettings;
@@ -20,7 +21,7 @@ public class ProcessFlowAdapter {
 	private ProcessFlow processFlow;
 	private static final int maxDeviceCount = 4;
 	
-	private static final Logger logger = Logger.getLogger(ProcessFlowAdapter.class);
+	private static final Logger logger = LogManager.getLogger(ProcessFlowAdapter.class.getName());
 	
 	public ProcessFlowAdapter(ProcessFlow processFlow) {
 		this.processFlow = processFlow;

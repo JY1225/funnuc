@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.configure.transport;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
@@ -11,7 +12,7 @@ public class TransportInterventionPresenter extends AbstractFormPresenter<Transp
 	private TransportInformation transportInfo;
 	private ProcessFlowAdapter processFlowAdapter;
 	
-	private static Logger logger = Logger.getLogger(TransportInterventionPresenter.class);
+	private static Logger logger = LogManager.getLogger(TransportInterventionPresenter.class.getName());
 	
 	public TransportInterventionPresenter(TransportInterventionView view, TransportInformation transportInfo, ProcessFlowAdapter processFlowAdapter) {
 		super(view);

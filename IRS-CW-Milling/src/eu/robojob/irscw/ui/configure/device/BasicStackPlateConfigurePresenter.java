@@ -8,7 +8,7 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 
 	private DeviceInformation deviceInfo;
 	
-//	private static Logger logger = Logger.getLogger(BasicStackPlateConfigurePresenter.class);
+//	private static Logger logger = LogManager.getLogger(BasicStackPlateConfigurePresenter.class.getName());
 	
 	public BasicStackPlateConfigurePresenter(BasicStackPlateConfigureView view, DeviceInformation deviceInfo, DeviceManager deviceManager) {
 		super(view);

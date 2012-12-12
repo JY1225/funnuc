@@ -11,7 +11,7 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 
 	private PickStep pickStep;
 	private DeviceSettings deviceSettings;
-	//private Logger logger = Logger.getLogger(CNCMillingMachinePickPresenter.class);
+	//private Logger logger = LogManager.getLogger(CNCMillingMachinePickPresenter.class.getName());
 	
 	public CNCMillingMachinePickPresenter(CNCMillingMachinePickView view, PickStep pickStep, DeviceSettings deviceSettings) {
 		super(view);

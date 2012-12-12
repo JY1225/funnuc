@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.teach;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.ui.controls.AbstractTextField;
@@ -19,7 +20,7 @@ public class OffsetPresenter implements TextFieldListener, KeyboardParentPresent
 	
 	private boolean keyboardActive;
 	
-	private static final Logger logger = Logger.getLogger(OffsetPresenter.class);
+	private static final Logger logger = LogManager.getLogger(OffsetPresenter.class.getName());
 
 	public OffsetPresenter(NumericKeyboardPresenter keyboardPresenter) {
 		this.view = new OffsetView();

@@ -11,11 +11,12 @@ import java.sql.Statement;
 import java.util.Properties;
 
 import org.apache.derby.jdbc.ClientDriver;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DatabaseMapper {
 	
-	private static Logger logger = Logger.getLogger(DatabaseMapper.class.getName());
+	private static Logger logger = LogManager.getLogger(DatabaseMapper.class.getName());
 	
 	private Connection conn = null;
 	private Statement stmt = null;

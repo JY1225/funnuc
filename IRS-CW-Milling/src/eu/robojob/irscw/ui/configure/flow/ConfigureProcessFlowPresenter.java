@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.configure.flow;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
@@ -12,7 +13,7 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 	
 	private ConfigurePresenter parent;
 	
-	private static Logger logger = Logger.getLogger(AbstractProcessFlowPresenter.class);
+	private static Logger logger = LogManager.getLogger(AbstractProcessFlowPresenter.class.getName());
 	
 	private int focussedDevice;
 	private int focussedTransport;

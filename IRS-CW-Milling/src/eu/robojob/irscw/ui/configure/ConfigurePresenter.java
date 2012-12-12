@@ -1,10 +1,11 @@
 	package eu.robojob.irscw.ui.configure;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
-import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.robot.FanucRobot;
@@ -37,7 +38,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		NORMAL, ADD_DEVICE, REMOVE_DEVICE
 	}
 
-	private static Logger logger = Logger.getLogger(ConfigurePresenter.class);
+	private static Logger logger = LogManager.getLogger(ConfigurePresenter.class.getName());
 		
 	private ConfigureView view;
 	

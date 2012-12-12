@@ -3,7 +3,8 @@ package eu.robojob.irscw.process;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
@@ -16,7 +17,7 @@ public class ProcessingStep extends AbstractProcessStep {
 
 	private ProcessingDeviceStartCyclusSettings startCyclusSettings;
 	
-	private static final Logger logger = Logger.getLogger(ProcessingStep.class);
+	private static final Logger logger = LogManager.getLogger(ProcessingStep.class.getName());
 	
 	public ProcessingStep(ProcessFlow processFlow, AbstractProcessingDevice processingDevice,
 			ProcessingDeviceStartCyclusSettings startCyclusSettings) {

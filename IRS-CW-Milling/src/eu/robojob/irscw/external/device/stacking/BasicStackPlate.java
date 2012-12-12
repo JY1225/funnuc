@@ -3,15 +3,16 @@ package eu.robojob.irscw.external.device.stacking;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
+import eu.robojob.irscw.external.device.ClampingManner;
+import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceInterventionSettings;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.external.device.ClampingManner;
-import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
@@ -31,7 +32,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		HORIZONTAL, TILTED
 	}
 		
-	private static Logger logger = Logger.getLogger(BasicStackPlate.class);
+	private static Logger logger = LogManager.getLogger(BasicStackPlate.class.getName());
 	private BasicStackPlateLayout layout;
 		
 	private WorkPiece rawWorkPiece;

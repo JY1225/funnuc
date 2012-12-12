@@ -1,12 +1,11 @@
 package eu.robojob.irscw.ui.automate;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
@@ -17,7 +16,7 @@ import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
 public class OptimizedAutomateThread extends AutomateThread {
 	
-	private static final Logger logger = Logger.getLogger(OptimizedAutomateThread.class);
+	private static final Logger logger = LogManager.getLogger(OptimizedAutomateThread.class.getName());
 	
 	private int pickFromStackerIndex;
 	private int putAndWaitPrageIndex;

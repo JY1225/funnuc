@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.DisconnectedException;
 import eu.robojob.irscw.external.communication.ResponseTimedOutException;
@@ -27,7 +28,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	private boolean stopAction;
 	
-	private static final Logger logger = Logger.getLogger(AbstractCNCMachine.class);
+	private static final Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());
 	
 	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "AbstractCNCMachine.disconnectedWhileWaiting";
 	

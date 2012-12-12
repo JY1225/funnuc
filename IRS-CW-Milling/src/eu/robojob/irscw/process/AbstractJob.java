@@ -3,7 +3,7 @@ package eu.robojob.irscw.process;
 
 public abstract class AbstractJob {
 	
-	//private static Logger logger = Logger.getLogger(AbstractJob.class);
+	//private static Logger logger = LogManager.getLogger(AbstractJob.class.getName());
 	
 	private int currentStepIndex;
 	

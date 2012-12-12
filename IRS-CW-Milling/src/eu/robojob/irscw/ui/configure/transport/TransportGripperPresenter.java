@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.configure.transport;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.robot.FanucRobot.FanucRobotSettings;
 import eu.robojob.irscw.external.robot.Gripper;
@@ -11,7 +12,7 @@ import eu.robojob.irscw.ui.main.model.TransportInformation;
 
 public class TransportGripperPresenter extends AbstractFormPresenter<TransportGripperView, TransportMenuPresenter> {
 
-	private static Logger logger = Logger.getLogger(TransportGripperPresenter.class);
+	private static Logger logger = LogManager.getLogger(TransportGripperPresenter.class.getName());
 	
 	private TransportInformation transportInfo;
 	private FanucRobotSettings robotSettings;

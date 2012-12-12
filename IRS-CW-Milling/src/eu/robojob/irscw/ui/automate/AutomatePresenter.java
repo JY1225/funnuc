@@ -5,7 +5,8 @@ import java.util.Set;
 
 import javafx.application.Platform;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
@@ -50,7 +51,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	
 	private boolean alarms;
 	
-	private static final Logger logger = Logger.getLogger(AutomatePresenter.class);
+	private static final Logger logger = LogManager.getLogger(AutomatePresenter.class.getName());
 	
 	public AutomatePresenter(AutomateView view, FixedProcessFlowPresenter processFlowPresenter, ProcessFlow processFlow, ProcessFlowTimer processFlowTimer) {
 		this.view = view;

@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.teach;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
@@ -25,7 +26,7 @@ public class TeachThread extends Thread {
 			
 	protected boolean running;
 	
-	private static final Logger logger = Logger.getLogger(TeachThread.class);
+	private static final Logger logger = LogManager.getLogger(TeachThread.class.getName());
 	
 	public TeachThread(ProcessFlow processFlow) {
 		this.processFlow = processFlow;

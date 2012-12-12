@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.communication.DisconnectedException;
@@ -19,7 +20,7 @@ public class FanucRobotCommunication extends ExternalCommunication {
 	private StringBuffer command;
 	private FanucRobot fanucRobot;
 	
-	private static final Logger logger = Logger.getLogger(FanucRobotCommunication.class);
+	private static final Logger logger = LogManager.getLogger(FanucRobotCommunication.class.getName());
 	
 	public FanucRobotCommunication(SocketConnection socketConnection, FanucRobot fanucRobot) {
 		super(socketConnection);

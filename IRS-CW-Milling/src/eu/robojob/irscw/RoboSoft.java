@@ -11,7 +11,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainPresenter;
@@ -19,7 +20,7 @@ import eu.robojob.irscw.ui.RoboSoftAppFactory;
 
 public class RoboSoft extends Application {
 
-	static Logger logger = Logger.getLogger(RoboSoft.class.getName());
+	static Logger logger = LogManager.getLogger(RoboSoft.class.getName());
 	
 	public static void main(String[] args) {
 		launch(args);

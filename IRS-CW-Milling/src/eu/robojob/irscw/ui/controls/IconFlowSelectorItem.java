@@ -6,7 +6,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class IconFlowSelectorItem extends VBox {
 	
@@ -18,7 +19,7 @@ public class IconFlowSelectorItem extends VBox {
 	
 	private Label lblName;
 	
-	private static final Logger logger = Logger.getLogger(IconFlowSelectorItem.class);
+	private static final Logger logger = LogManager.getLogger(IconFlowSelectorItem.class.getName());
 	
 	private static final double IMG_WIDTH = 100;
 	private static final double WIDTH = 120;

@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.communication.DisconnectedException;
@@ -44,7 +45,7 @@ public class FanucRobot extends AbstractRobot {
 	
 	private FanucRobotStatus status;
 	
-	private static Logger logger = Logger.getLogger(FanucRobot.class);
+	private static Logger logger = LogManager.getLogger(FanucRobot.class.getName());
 	
 	private boolean statusChanged;
 	private Object syncObject;

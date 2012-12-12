@@ -5,18 +5,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import javafx.application.Platform;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.PropertiesProcessFlowFactory;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
-import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 
 public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView, ProcessMenuPresenter> {
 	
-	private static final Logger logger = Logger.getLogger(ProcessOpenPresenter.class);
+	private static final Logger logger = LogManager.getLogger(ProcessOpenPresenter.class.getName());
 	private ProcessFlow processFlow;
 	private PropertiesProcessFlowFactory propertiesProcessFlowFactory;
 	

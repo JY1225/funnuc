@@ -1,13 +1,14 @@
 package eu.robojob.irscw.ui.configure.device;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.main.model.DeviceInformation;
 
 public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 
-	private Logger logger = Logger.getLogger(BasicStackPlateMenuPresenter.class);
+	private Logger logger = LogManager.getLogger(BasicStackPlateMenuPresenter.class.getName());
 	
 	private BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
 	private BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter;

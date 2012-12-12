@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.configure.device;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
@@ -17,7 +18,7 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 	private WorkPieceDimensions dimensions;
 	private WorkPieceOrientation orientation;
 	
-	private static final Logger logger = Logger.getLogger(BasicStackPlateWorkPiecePresenter.class);
+	private static final Logger logger = LogManager.getLogger(BasicStackPlateWorkPiecePresenter.class.getName());
 	
 	public BasicStackPlateWorkPiecePresenter(BasicStackPlateWorkPieceView view, PickStep pickStep, BasicStackPlateSettings deviceSettings) {
 		super(view);
