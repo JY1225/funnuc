@@ -64,7 +64,7 @@ public final class RobotConstants {
 	public static final int STATUS_WAITING_AFTER_MOVE			=	BIT12;
 	public static final int STATUS_MOVEWAIT_FINISHED			=	BIT13;
 	// PRAGE
-	public static final int STATUS_PRAGE_FINISHED				=	BIT14;
+	public static final int STATUS_IOACTION_FINISHED			=	BIT14;
 	
 	// COMMAND IDS
 	public static final int COMMAND_ASK_STATUS					=	20;
@@ -143,7 +143,7 @@ public final class RobotConstants {
 	public static final int PERMISSIOSN_COMMAND_BAR_MOVE_ACK				=	BIT6;
 	public static final int PERMISSIONS_COMMAND_MOVEWAIT					=	BIT7;
 	public static final int PERMISSIONS_COMMAND_MOVEWAIT_CONTINUE			=	BIT8;
-	public static final int PERMISSIONS_COMMAND_DO_PRAGE					=	BIT9;
+	public static final int PERMISSIONS_COMMAND_IOACTION					=	BIT9;
 
 	// ERROR VALUES
 	public static final int E_NO_ERROR										=	0;

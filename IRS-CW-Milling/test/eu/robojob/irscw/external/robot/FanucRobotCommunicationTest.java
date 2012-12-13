@@ -66,7 +66,7 @@ public class FanucRobotCommunicationTest {
 		
 		pickInMachineW2Settings = new FanucRobotPickSettings(wa2, head2, wa2.getActiveClamping().getSmoothFromPoint(),cncMillingMachine.getPutLocation(wa2, wp.getDimensions(), new ClampingManner()), wp);
 	}
-	
+	/*
 	@Ignore
 	@Test
 	public void testPick() {
@@ -165,5 +165,5 @@ public class FanucRobotCommunicationTest {
 		} finally {
 			fanucRobot.disconnect();
 		}
-	}
+	}*/
 }

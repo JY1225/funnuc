@@ -12,6 +12,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 	private Coordinates smoothPoint;
 	private Coordinates location;
 	private boolean freeAfter;
+	private boolean teachingNeeded;
 	
 	public AbstractRobotActionSettings(final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location) {
 		this.workArea = workArea;
@@ -19,6 +20,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		this.smoothPoint = smoothPoint;
 		this.location = location;
 		this.freeAfter = false;
+		this.teachingNeeded = false;
 	}
 	
 	public void setStep(final T step) {
@@ -60,5 +62,12 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 	}
 	public void setWorkArea(final WorkArea workArea) {
 		this.workArea = workArea;
+	}
+
+	public boolean isTeachingNeeded() {
+		return teachingNeeded;
+	}
+	public void setTeachingNeeded(final boolean teachingNeeded) {
+		this.teachingNeeded = teachingNeeded;
 	}
 }

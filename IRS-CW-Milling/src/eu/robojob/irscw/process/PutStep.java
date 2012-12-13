@@ -76,10 +76,13 @@ public class PutStep extends AbstractTransportStep {
 				}
 				logger.debug("Robot initiating put action");
 				getRobot().initiatePut(robotPutSettings);
+				getRobot().continuePutTillAtLocation();
+				getRobot().continuePutTillClampAck();
 				logger.debug("Robot action succeeded, about to ask device to grab piece");
 				getDevice().grabPiece(putSettings);
 				logger.debug("Device grabbed piece, about to finalize put");
-				getRobot().finalizePut(robotPutSettings);
+				getRobot().continuePutTillIPPoint();
+				getRobot().finalizePut();
 				getDevice().putFinished(putSettings);
 				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PUT_FINISHED));
 				logger.debug("Put finished");
@@ -110,7 +113,9 @@ public class PutStep extends AbstractTransportStep {
 				robotPutSettings.setLocation(coordinates);
 				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PUT_EXECUTE_TEACHED));
 				logger.debug("Robot initiating put action");
-				getRobot().initiateTeachedPut(robotPutSettings);
+				robotPutSettings.setTeachingNeeded(true);
+				getRobot().initiatePut(robotPutSettings);
+				getRobot().continuePutTillAtLocation();
 				logger.debug("Robot action succeeded");
 			}
 		}
@@ -134,7 +139,9 @@ public class PutStep extends AbstractTransportStep {
 				logger.debug("About to ask device to grab piece");
 				getDevice().grabPiece(putSettings);
 				logger.debug("Device grabbed piece, about to finalize put");
-				getRobot().finalizeTeachedPut(robotPutSettings);
+				getRobot().continuePutTillClampAck();
+				getRobot().continuePutTillIPPoint();
+				getRobot().finalizePut();
 				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PUT_FINISHED));
 				getDevice().putFinished(putSettings);
 				logger.debug("Put finished");

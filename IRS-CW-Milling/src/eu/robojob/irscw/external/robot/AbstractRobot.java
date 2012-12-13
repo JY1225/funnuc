@@ -32,6 +32,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	private Set<RobotAlarm> alarms;
 	private int currentStatus;
 	private double zrest;
+	
+	private AbstractRobotActionSettings<?> currentActionSettings;
 
 	public AbstractRobot(final String id, final Set<GripperBody> possibleGripperBodies, final GripperBody activeGripperBody) {
 		super(id);
@@ -42,6 +44,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.stopAction = false;
 		this.alarms = new HashSet<RobotAlarm>();
 		this.currentStatus = 0;
+		this.currentActionSettings = null;
 		this.zrest = -1;
 		if (possibleGripperBodies != null) {
 			this.possibleGripperBodies = possibleGripperBodies;
@@ -193,6 +196,21 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		return false;
 	}
 	
+	public boolean isExecutionInProgress() {
+		if (currentActionSettings == null) {
+			return false;
+		}
+		return true;
+	}
+
+	public AbstractRobotActionSettings<?> getCurrentActionSettings() {
+		return currentActionSettings;
+	}
+
+	public void setCurrentActionSettings(final AbstractRobotActionSettings<?> currentActionSettings) {
+		this.currentActionSettings = currentActionSettings;
+	}
+
 	public void setActiveGripperBody(final GripperBody body) {
 		if (!possibleGripperBodies.contains(body)) {
 			throw new IllegalArgumentException("Unknown GripperBody value.");
@@ -226,38 +244,34 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void reset() throws AbstractCommunicationException, InterruptedException;
 	public abstract Coordinates getPosition() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void sendSpeed(int speedPercentage) throws AbstractCommunicationException, InterruptedException;
-	
-	public abstract void initiateTeachedPick(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void initiateTeachedPut(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	
-	public abstract void finalizeTeachedPick(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void finalizeTeachedPut(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	
-	public abstract void initiatePick(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void initiatePut(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	
-	public abstract void finalizePut(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void finalizePick(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	
-	public abstract void moveToAndWait(RobotPutSettings putSettings, boolean withPiece) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void teachedMoveToAndWait(RobotPutSettings putSettings, boolean withPiece) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void moveAway() throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void teachedMoveAway() throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void teachedMoveNoWait(RobotPutSettings putSettings, boolean withPiece) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	
+	public abstract void writeRegister(int registerNr, String value) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continueProgram() throws AbstractCommunicationException, InterruptedException;
+	public abstract void abort() throws AbstractCommunicationException, InterruptedException;
+	public abstract void recalculateTCPs() throws AbstractCommunicationException, InterruptedException;	
+	public abstract boolean isConnected();
+	public abstract void disconnect();
 	public abstract void moveToHome() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void moveToChangePoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void writeRegister(int registerNr, String value) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void doPrage() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void initiatePut(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continuePutTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continuePutTillClampAck() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continuePutTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizePut() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void continueProgram() throws AbstractCommunicationException, InterruptedException;
-	public abstract void abort() throws AbstractCommunicationException, InterruptedException;
+	public abstract void initiatePick(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continuePickTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continuePickTillUnclampAck() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continuePickTillIPPoint(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizePick() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void recalculateTCPs() throws AbstractCommunicationException, InterruptedException;	
-	public abstract boolean isConnected();
+	public abstract void initiateMoveWithPiece(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continueMoveWithPieceTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continueMoveWithPieceTillWait() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void performIOAction() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continueMoveWithPieceTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizeMoveWithPiece() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void disconnect();
 	
 	public String toString() {
 		return "Robot: " + getId();

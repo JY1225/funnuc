@@ -69,7 +69,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	@Override
 	public void grabPiece(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		try {
-			robot.doPrage();
+			robot.performIOAction();
 		} catch (RobotActionException e) {
 			throw new DeviceActionException(this, EXCEPTION_PRAGE_TIMEOUT);
 		}

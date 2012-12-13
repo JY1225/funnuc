@@ -188,12 +188,17 @@ public class OptimizedTeachThread extends TeachThread {
 		Coordinates originalCoordinates = stackPlate.getLocation(putOnStackerStep.getRobotSettings().getWorkArea(), WorkPiece.Type.FINISHED, processFlow.getClampingType());
 		putSettings.setLocation(originalCoordinates);
 		logger.info("Original coordinates: " + originalCoordinates);
-		fRobot.teachedMoveNoWait(putSettings, false);
+		//fRobot.teachedMoveNoWait(putSettings, false);
+		putSettings.setTeachingNeeded(true);
+		fRobot.initiateMoveWithPiece(putSettings);
+		fRobot.continueMoveWithPieceTillAtLocation();
+		fRobot.continueMoveWithPieceTillWait();
 		Coordinates coordinates = new Coordinates(fRobot.getPosition());
 		teachedOffsetFinishedWp = coordinates.calculateOffset(originalCoordinates);
 		Coordinates relTeachedOffsetFinishedWp = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalCoordinates, teachedOffsetFinishedWp);
 		logger.info("Teached offset (relative): " + relTeachedOffsetFinishedWp);
-		fRobot.moveAway();
+		fRobot.continueMoveWithPieceTillIPPoint();
+		fRobot.finalizeMoveWithPiece();
 		return relTeachedOffsetFinishedWp;
 	}
 	

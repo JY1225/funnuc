@@ -59,7 +59,9 @@ public class PutAndWaitStep extends PutStep {
 					getRobotSettings().setLocation(position);
 				}
 				logger.debug("Robot initiating put and wait action");
-				getRobot().moveToAndWait(getRobotSettings(), true);
+				getRobot().initiateMoveWithPiece(getRobotSettings());
+				getRobot().continueMoveWithPieceTillAtLocation();
+				getRobot().continueMoveWithPieceTillWait();
 				logger.debug("Robot action succeeded, about to ask device to grab piece");
 				getDevice().grabPiece(getDeviceSettings());
 				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PUT_FINISHED));
@@ -91,7 +93,9 @@ public class PutAndWaitStep extends PutStep {
 				getRobotSettings().setLocation(coordinates);
 				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PUT_EXECUTE_TEACHED));
 				logger.debug("Robot initiating put and wait action");
-				getRobot().teachedMoveToAndWait(getRobotSettings(), true);
+				getRobot().initiateMoveWithPiece(getRobotSettings());
+				getRobot().continueMoveWithPieceTillAtLocation();
+				getRobot().continueMoveWithPieceTillAtLocation();
 				logger.debug("Robot action succeeded");
 			}
 		}

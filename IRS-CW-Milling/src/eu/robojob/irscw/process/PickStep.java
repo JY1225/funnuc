@@ -71,10 +71,13 @@ public class PickStep extends AbstractTransportStep {
 				}
 				logger.debug("Robot initiating pick action");
 				getRobot().initiatePick(robotPickSettings);
+				getRobot().continuePickTillAtLocation();
+				getRobot().continuePickTillUnclampAck();
 				logger.debug("Robot action succeeded, about to ask device to release piece");
 				getDevice().releasePiece(pickSettings);
 				logger.debug("Device released piece, about to finalize pick");
-				getRobot().finalizePick(robotPickSettings);
+				getRobot().continuePickTillIPPoint(robotPickSettings);
+				getRobot().finalizePick();
 				robotPickSettings.getGripperHead().getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
 				//robot.moveToHome();
 				getDevice().pickFinished(pickSettings);
@@ -106,7 +109,9 @@ public class PickStep extends AbstractTransportStep {
 				robotPickSettings.setLocation(coordinates);
 				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PICK_EXECUTE_TEACHED));
 				logger.debug("Robot initiating pick action");
-				getRobot().initiateTeachedPick(robotPickSettings);
+				robotPickSettings.setTeachingNeeded(true);
+				getRobot().initiatePick(robotPickSettings);
+				getRobot().continuePickTillAtLocation();
 				logger.debug("Robot action succeeded");
 			}
 		}
@@ -130,7 +135,8 @@ public class PickStep extends AbstractTransportStep {
 				logger.debug("About to ask device to release piece");
 				getDevice().releasePiece(pickSettings);
 				logger.debug("Device released piece, about to finalize pick");
-				getRobot().finalizeTeachedPick(robotPickSettings);
+				getRobot().continuePickTillUnclampAck();
+				getRobot().finalizePick();
 				getDevice().pickFinished(pickSettings);
 				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PICK_FINISHED));
 				logger.debug("Pick finished");
