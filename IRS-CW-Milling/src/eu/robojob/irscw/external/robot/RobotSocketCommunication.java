@@ -32,7 +32,7 @@ public class RobotSocketCommunication extends ExternalSocketCommunication {
 		}
 		getExternalCommunicationThread().clearIncommingBuffer();
 		getExternalCommunicationThread().writeString(command.toString());
-		awaitResponse(command.toString(), timeout);
+		awaitResponse(ackId + ";", timeout);
 	}
 	
 	public synchronized void writeCommand(final int commandId, final int ackId, final int timeout) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
@@ -47,9 +47,8 @@ public class RobotSocketCommunication extends ExternalSocketCommunication {
 	
 	public synchronized List<String> readValues(final int commandId, final int ackId, final int timeout) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
 		getExternalCommunicationThread().writeString(commandId + ";");
-		String responseString = awaitResponse(commandId + ";", timeout);
-		parseResult(responseString.substring((ackId + ";").length()));
-		throw new SocketResponseTimedOutException(getExternalCommunicationThread().getSocketConnection());
+		String responseString = awaitResponse(ackId + ";", timeout);
+		return parseResult(responseString.substring((ackId + ";").length()));
 	}
 	
 	public List<String> parseResult(final String response) {

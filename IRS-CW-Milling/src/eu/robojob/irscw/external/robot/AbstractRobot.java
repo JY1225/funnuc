@@ -13,8 +13,6 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotPickSettings;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotPutSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {
@@ -296,12 +294,11 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 
 	public boolean validatePickSettings(final RobotPickSettings pickSettings) {
-		FanucRobotPickSettings fanucPickSettings = (FanucRobotPickSettings) pickSettings;
-		if ((fanucPickSettings.getGripperHead() != null)
-				&& (getGripperBody().getActiveGripper(fanucPickSettings.getGripperHead()).equals(fanucPickSettings.getGripperHead().getGripper()))
-				&& (fanucPickSettings.getSmoothPoint() != null)
-				&& (fanucPickSettings.getWorkArea() != null)
-				&& (fanucPickSettings.getWorkPiece() != null)
+		if ((pickSettings.getGripperHead() != null)
+				&& (getGripperBody().getActiveGripper(pickSettings.getGripperHead()).equals(pickSettings.getGripperHead().getGripper()))
+				&& (pickSettings.getSmoothPoint() != null)
+				&& (pickSettings.getWorkArea() != null)
+				&& (pickSettings.getWorkPiece() != null)
 			) {
 			return true;
 		}
@@ -309,11 +306,10 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 
 	public boolean validatePutSettings(final RobotPutSettings putSettings) {
-		FanucRobotPutSettings fanucPutSettings = (FanucRobotPutSettings) putSettings;
-		if ((fanucPutSettings.getGripperHead() != null)
-				&& (getGripperBody().getActiveGripper(fanucPutSettings.getGripperHead()).equals(fanucPutSettings.getGripperHead().getGripper()))
-				&& (fanucPutSettings.getSmoothPoint() != null)
-				&& (fanucPutSettings.getWorkArea() != null)
+		if ((putSettings.getGripperHead() != null)
+				&& (getGripperBody().getActiveGripper(putSettings.getGripperHead()).equals(putSettings.getGripperHead().getGripper()))
+				&& (putSettings.getSmoothPoint() != null)
+				&& (putSettings.getWorkArea() != null)
 			) {
 			return true;
 		}

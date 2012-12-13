@@ -509,4 +509,19 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_RECALC_TCPS, RobotConstants.RESPONSE_RECALC_TCPS, WRITE_VALUES_TIMEOUT);
 	}
 
+	@Override
+	public boolean validatePickSettings(final RobotPickSettings pickSettings) {
+		if (super.validatePickSettings(pickSettings) && (pickSettings instanceof FanucRobotPickSettings)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean validatePutSettings(final RobotPutSettings putSettings) {
+		if (super.validatePutSettings(putSettings) && (putSettings instanceof FanucRobotPutSettings)) {
+			return true;
+		}
+		return false;
+	}
 }
