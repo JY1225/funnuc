@@ -45,14 +45,14 @@ public class ProcessFlow {
 	private Set<ProcessFlowListener> listeners;
 	private Mode mode;
 	
-	private static final Logger logger = LogManager.getLogger(ProcessFlow.class.getName());
+	private static Logger logger = LogManager.getLogger(ProcessFlow.class.getName());
 	
 	private ClampingManner clampingType;
 	
 	private int currentStepIndex;
 	
 	//TODO refactor constructors so there is one constructor, called by the others
-	public ProcessFlow(String name) {
+	public ProcessFlow(final String name) {
 		this.clampingType = new ClampingManner();
 		this.name = name;
 		this.processSteps = new ArrayList<AbstractProcessStep>();

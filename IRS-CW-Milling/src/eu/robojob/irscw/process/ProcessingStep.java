@@ -32,19 +32,19 @@ public class ProcessingStep extends AbstractProcessStep {
 	@Override
 	public void executeStep() throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the device to be used
-		if (!device.lock(processFlow)) {
-			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
+		if (!getDevice().lock(getProcessFlow())) {
+			throw new IllegalStateException("Device " + getDevice() + " was already locked by: " + getDevice().getLockingProcess());
 		} else {
-			logger.debug("About to execute processing by " + device.getId());
-			processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PROCESSING_PREPARE_DEVICE));
+			logger.debug("About to execute processing by " + getDevice().getId());
+			getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PROCESSING_PREPARE_DEVICE));
 			logger.debug("Preparing device...");
-			((AbstractProcessingDevice) device).prepareForStartCyclus(startCyclusSettings);
+			((AbstractProcessingDevice) getDevice()).prepareForStartCyclus(startCyclusSettings);
 			logger.debug("Device prepared, starting processing");
-			processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PROCESSING_IN_PROGRESS));
-			((AbstractProcessingDevice) device).startCyclus(startCyclusSettings);
+			getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PROCESSING_IN_PROGRESS));
+			((AbstractProcessingDevice) getDevice()).startCyclus(startCyclusSettings);
 			logger.debug("Processing finished!");
-			device.release(processFlow);
-			processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PROCESSING_FINISHED));
+			getDevice().release(getProcessFlow());
+			getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PROCESSING_FINISHED));
 		}
 	}
 
@@ -60,16 +60,8 @@ public class ProcessingStep extends AbstractProcessStep {
 
 	@Override
 	public String toString() {
-		return "Processing step, " + "device: " + device; 
+		return "Processing step, " + "device: " + getDevice(); 
 	}
-	
-	@Override
-	public Set<AbstractServiceProvider> getServiceProviders() {
-		Set<AbstractServiceProvider> providers = new HashSet<AbstractServiceProvider>();
-		providers.add(device);
-		return providers;
-	}
-
 	@Override
 	public ProcessStepType getType() {
 		return ProcessStepType.PROCESSING_STEP;

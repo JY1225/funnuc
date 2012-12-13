@@ -14,40 +14,40 @@ import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
 public class PickAfterWaitStep extends PickStep {
 
-	private static final Logger logger = LogManager.getLogger(PickAfterWaitStep.class.getName());
+	private static Logger logger = LogManager.getLogger(PickAfterWaitStep.class.getName());
 			
-	public PickAfterWaitStep(AbstractRobot robot, AbstractDevice deviceFrom, DevicePickSettings pickSettings, RobotPickSettings robotPickSettings) {
+	public PickAfterWaitStep(final AbstractRobot robot, final AbstractDevice deviceFrom, final DevicePickSettings pickSettings, final RobotPickSettings robotPickSettings) {
 		super(robot, deviceFrom, pickSettings, robotPickSettings);
 	}
 	
-	public PickAfterWaitStep(ProcessFlow processFlow, AbstractRobot robot, AbstractDevice deviceFrom, DevicePickSettings pickSettings, RobotPickSettings robotPickSettings) {
+	public PickAfterWaitStep(final ProcessFlow processFlow, final AbstractRobot robot, final AbstractDevice deviceFrom, final DevicePickSettings pickSettings, final RobotPickSettings robotPickSettings) {
 		super(processFlow, robot, deviceFrom, pickSettings, robotPickSettings);
 	}
 
 	@Override
 	public void executeStep() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the devices to be used
-		if (!device.lock(processFlow)) {
-			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
+		if (!getDevice().lock(getProcessFlow())) {
+			throw new IllegalStateException("Device " + getDevice() + " was already locked by: " + getDevice().getLockingProcess());
 		} else {
-			if (!robot.lock(processFlow)) {
-				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
+			if (!getRobot().lock(getProcessFlow())) {
+				throw new IllegalStateException("Robot " + getRobot() + " was already locked by: " + getRobot().getLockingProcess());
 			} else {
-				logger.debug("About to execute pick after wait in " + device.getId() + " using " + robot.getId());
-				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_PREPARE_DEVICE));
+				logger.debug("About to execute pick after wait in " + getDevice().getId() + " using " + getRobot().getId());
+				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PICK_PREPARE_DEVICE));
 				logger.debug("Preparing device...");
-				device.prepareForPick(pickSettings);
+				getDevice().prepareForPick(getDeviceSettings());
 				logger.debug("Device prepared.");
-				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.PICK_EXECUTE_NORMAL));
+				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PICK_EXECUTE_NORMAL));
 				if (needsTeaching()) {
 					throw new IllegalStateException("No teaching needed with this kind of step.");
 				}
 				logger.debug("About to ask device to release piece");
-				device.releasePiece(pickSettings);
+				getDevice().releasePiece(getDeviceSettings());
 				logger.debug("Device released piece, about to move away");
-				robot.moveAway();
-				robotPickSettings.getGripperHead().getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
-				device.pickFinished(pickSettings);
+				getRobot().moveAway();
+				getRobotSettings().getGripperHead().getGripper().setWorkPiece(getRobotSettings().getWorkPiece());
+				getDevice().pickFinished(getDeviceSettings());
 				logger.debug("Pick finished");
 			}
 		}

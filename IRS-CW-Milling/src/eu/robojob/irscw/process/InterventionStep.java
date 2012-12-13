@@ -1,13 +1,9 @@
 package eu.robojob.irscw.process;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.DeviceInterventionSettings;
 import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.device.DeviceInterventionSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
@@ -20,31 +16,31 @@ public class InterventionStep extends AbstractProcessStep {
 	
 	private AbstractRobot robot;
 		
-	public InterventionStep(ProcessFlow processFlow, AbstractDevice device, AbstractRobot robot, DeviceInterventionSettings interventionSettings, int frequency) {
+	public InterventionStep(final ProcessFlow processFlow, final AbstractDevice device, final AbstractRobot robot, final DeviceInterventionSettings interventionSettings, final int frequency) {
 		super(processFlow, device);
 		this.robot = robot;
 		this.frequency = frequency;
 		setInterventionSettings(interventionSettings);
 	}
 	
-	public InterventionStep(AbstractDevice device, AbstractRobot robot, DeviceInterventionSettings interventionSettings, int frequency) {
+	public InterventionStep(final AbstractDevice device, final AbstractRobot robot, final DeviceInterventionSettings interventionSettings, final int frequency) {
 		this(null, device, robot, interventionSettings, frequency);
 	}
 	
 	@Override
 	public void executeStep() throws AbstractCommunicationException, DeviceActionException, RobotActionException, InterruptedException {
 		// check if the parent process has locked the device to be used
-		if (!device.lock(processFlow)) {
-			throw new IllegalStateException("Device " + device + " was already locked by: " + device.getLockingProcess());
+		if (!getDevice().lock(getProcessFlow())) {
+			throw new IllegalStateException("Device " + getDevice() + " was already locked by: " + getDevice().getLockingProcess());
 		} else {
-			if (!robot.lock(processFlow)) {
+			if (!robot.lock(getProcessFlow())) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
-				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.INTERVENTION_ROBOT_TO_HOME));
+				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.INTERVENTION_ROBOT_TO_HOME));
 				robot.moveToHome();
-				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.INTERVENTION_PREPARE_DEVICE));
-				device.prepareForIntervention(interventionSettings);
-				processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, this, ActiveStepChangedEvent.INTERVENTION_READY));
+				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.INTERVENTION_PREPARE_DEVICE));
+				getDevice().prepareForIntervention(interventionSettings);
+				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.INTERVENTION_READY));
 			}
 		}
 	}
@@ -53,30 +49,24 @@ public class InterventionStep extends AbstractProcessStep {
 		return interventionSettings;
 	}
 
-	public void setInterventionSettings(DeviceInterventionSettings interventionSettings) {
+	public void setInterventionSettings(final DeviceInterventionSettings interventionSettings) {
 		this.interventionSettings = interventionSettings;
-		if (interventionSettings != null)
+		if (interventionSettings != null) {
 			interventionSettings.setStep(this);
+		}
 	}
 
 	public int getFrequency() {
 		return frequency;
 	}
 
-	public void setFrequency(int frequency) {
+	public void setFrequency(final int frequency) {
 		this.frequency = frequency;
 	}
 
 	@Override
 	public String toString() {
-		return "InterventionStep, " + "device: " + device;
-	}
-
-	@Override
-	public Set<AbstractServiceProvider> getServiceProviders() {
-		Set<AbstractServiceProvider> providers = new HashSet<AbstractServiceProvider>();
-		providers.add(device);
-		return providers;
+		return "InterventionStep, " + "device: " + getDevice();
 	}
 
 	@Override
