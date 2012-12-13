@@ -18,11 +18,10 @@ import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEv
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineListener;
 import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.external.robot.RobotAlarmsOccuredEvent;
+import eu.robojob.irscw.external.robot.RobotEvent;
+import eu.robojob.irscw.external.robot.RobotListener;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotAlarmsOccuredEvent;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotEvent;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotListener;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotStatusChangedEvent;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
@@ -39,7 +38,7 @@ import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.util.Translator;
 
-public class TeachPresenter implements CNCMachineListener, FanucRobotListener, ProcessFlowListener, MainContentPresenter {
+public class TeachPresenter implements CNCMachineListener, RobotListener, ProcessFlowListener, MainContentPresenter {
 
 	private TeachView view;
 	private FixedProcessFlowPresenter processFlowPresenter;
@@ -58,7 +57,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	private static Logger logger = LogManager.getLogger(TeachPresenter.class.getName());
 	
 	private Map<AbstractCNCMachine, Boolean> machines;
-	private Map<FanucRobot, Boolean> robots;
+	private Map<AbstractRobot, Boolean> robots;
 	
 	private boolean alarms;
 	
@@ -78,7 +77,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		this.offsetPresenter = offsetPresenter;
 		offsetPresenter.setParent(this);
 		machines = new HashMap<AbstractCNCMachine, Boolean>();
-		robots = new HashMap<FanucRobot, Boolean>();
+		robots = new HashMap<AbstractRobot, Boolean>();
 		this.translator = Translator.getInstance();
 		this.alarms = false;
 	}
@@ -145,7 +144,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 				disconnectedDevices.add(entry.getKey().getId());
 			}
 		}
-		for (Entry<FanucRobot, Boolean> entry : robots.entrySet()) {
+		for (Entry<AbstractRobot, Boolean> entry : robots.entrySet()) {
 			if (!entry.getValue()) {
 				allConnected = false;
 				disconnectedDevices.add(entry.getKey().getId());
@@ -179,7 +178,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 		for (AbstractCNCMachine machine : machines.keySet()) {
 			machine.removeListener(this);
 		}
-		for (FanucRobot robot : robots.keySet()) {
+		for (AbstractRobot robot : robots.keySet()) {
 			robot.removeListener(this);
 		}
 		machines.clear();
@@ -295,7 +294,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	}
 
 	@Override
-	public void robotConnected(final FanucRobotEvent event) {
+	public void robotConnected(final RobotEvent event) {
 		if (processFlow.getMode() != Mode.TEACH) {
 			Platform.runLater(new Runnable() {
 				@Override public void run() {
@@ -307,7 +306,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	}
 
 	@Override
-	public void robotDisconnected(FanucRobotEvent event) {
+	public void robotDisconnected(RobotEvent event) {
 		if (processFlow.getMode() != Mode.TEACH) {
 			Platform.runLater(new Runnable() {
 				@Override public void run() {
@@ -395,15 +394,15 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	}
 
 	@Override
-	public void robotStatusChanged(final FanucRobotStatusChangedEvent event) {
+	public void robotStatusChanged(final RobotEvent event) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
-				teachStatusView.setZRest(event.getStatus().getZRest());
+				teachStatusView.setZRest(event.getSource().getZRest());
 			}});
 	}
 	
 	@Override
-	public void robotAlarmsOccured(final FanucRobotAlarmsOccuredEvent event) {
+	public void robotAlarmsOccured(final RobotAlarmsOccuredEvent event) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				if (event.getAlarms().size() > 0) {
@@ -415,7 +414,7 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 					try {
 						event.getSource().continueProgram();
 						teachStatusView.hideAlarmMessage();
-					} catch (AbstractCommunicationException e) {
+					} catch (AbstractCommunicationException | InterruptedException e) {
 						exceptionOccured(e);
 					}
 				}
@@ -451,6 +450,18 @@ public class TeachPresenter implements CNCMachineListener, FanucRobotListener, P
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {
 		processFlowPresenter.loadProcessFlow(processFlow);
+	}
+
+	@Override
+	public void robotZRestChanged(RobotEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void robotSpeedChanged(RobotEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

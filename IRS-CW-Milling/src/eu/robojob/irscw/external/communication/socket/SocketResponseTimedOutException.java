@@ -1,8 +1,9 @@
-package eu.robojob.irscw.external.communication;
+package eu.robojob.irscw.external.communication.socket;
 
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.util.Translator;
 
-public class ResponseTimedOutException extends AbstractCommunicationException {
+public class SocketResponseTimedOutException extends AbstractCommunicationException {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -11,7 +12,7 @@ public class ResponseTimedOutException extends AbstractCommunicationException {
 	private SocketConnection socketConnection;
 	private Translator translator;
 	
-	public ResponseTimedOutException(final SocketConnection socketConnection) {
+	public SocketResponseTimedOutException(final SocketConnection socketConnection) {
 		this.socketConnection = socketConnection;
 		this.translator = Translator.getInstance();
 	}

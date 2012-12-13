@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.DisconnectedException;
-import eu.robojob.irscw.external.communication.ResponseTimedOutException;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
+import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.DeviceType;
+import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
 import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.irscw.threading.ThreadManager;
@@ -80,7 +83,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.alarms = alarms;
 	}
 	
-	public abstract void updateStatusAndAlarms() throws DisconnectedException, ResponseTimedOutException, InterruptedException;
+	public abstract void updateStatusAndAlarms() throws AbstractCommunicationException, InterruptedException;
 	public abstract void disconnect();
 	
 	public Set<CNCMachineAlarm> getAlarms() {
@@ -127,12 +130,12 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		}
 	}
 	
-	public abstract void reset() throws ResponseTimedOutException, DisconnectedException, InterruptedException;
-	public abstract void nCReset() throws ResponseTimedOutException, DisconnectedException, InterruptedException;
-	public abstract void powerOff() throws ResponseTimedOutException, DisconnectedException, InterruptedException;
-	public abstract void indicateAllProcessed() throws ResponseTimedOutException, DisconnectedException, InterruptedException;
-	public abstract void indicateOperatorRequested(boolean requested) throws ResponseTimedOutException, DisconnectedException, InterruptedException;
-	public abstract void clearIndications() throws ResponseTimedOutException, DisconnectedException, InterruptedException;
+	public abstract void reset() throws AbstractCommunicationException, InterruptedException;
+	public abstract void nCReset() throws AbstractCommunicationException, InterruptedException;
+	public abstract void powerOff() throws AbstractCommunicationException, InterruptedException;
+	public abstract void indicateAllProcessed() throws AbstractCommunicationException, InterruptedException;
+	public abstract void indicateOperatorRequested(boolean requested) throws AbstractCommunicationException, InterruptedException;
+	public abstract void clearIndications() throws AbstractCommunicationException, InterruptedException;
 	
 	protected boolean waitForStatus(final int status, final long timeout) throws InterruptedException, DeviceActionException {
 		long waitedTime = 0;
@@ -185,4 +188,19 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	public String toString() {
 		return "AbstractCNCMachine: " + getId();
 	}
+	
+	@Override
+	public void loadDeviceSettings(final DeviceSettings deviceSettings) {
+		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
+			if (!getWorkAreaIds().contains(entry.getKey().getId())) {
+				getWorkAreaById(entry.getKey().getId()).setActiveClamping(entry.getValue());
+			}
+		}
+	}
+
+	@Override
+	public DeviceSettings getDeviceSettings() {
+		return new DeviceSettings(getWorkAreas());
+	}
+
 }

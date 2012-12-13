@@ -1,30 +1,31 @@
-package eu.robojob.irscw.external.device.processing.cnc;
+package eu.robojob.irscw.external.device.processing.cnc.milling;
 
 import java.util.List;
-import java.util.Map.Entry;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.communication.DisconnectedException;
-import eu.robojob.irscw.external.communication.ResponseTimedOutException;
-import eu.robojob.irscw.external.communication.SocketConnection;
-import eu.robojob.irscw.external.device.Clamping;
+import eu.robojob.irscw.external.communication.socket.SocketConnection;
+import eu.robojob.irscw.external.communication.socket.SocketDisconnectedException;
+import eu.robojob.irscw.external.communication.socket.SocketResponseTimedOutException;
 import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.ClampingManner.Type;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceInterventionSettings;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
-import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarm;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMachineConstants;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMachineSocketCommunication;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachine extends AbstractCNCMachine {
 
-	private CNCMachineCommunication cncMachineCommunication;
+	private CNCMachineSocketCommunication cncMachineCommunication;
 		
 	private static final int PREPARE_PUT_TIMEOUT = 2 * 60 * 1000;
 	private static final int PREPARE_PICK_TIMEOUT = 2 * 60 * 1000;
@@ -47,26 +48,26 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			
 	public CNCMillingMachine(final String id, final SocketConnection socketConnection) {
 		super(id);
-		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection, this);
+		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 	}
 	
 	public CNCMillingMachine(final String id, final List<Zone> zones, final SocketConnection socketConnection) {
 		super(id, zones);
-		this.cncMachineCommunication = new CNCMachineCommunication(socketConnection, this);
+		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 	}
 	
 	@Override
-	public void updateStatusAndAlarms() throws InterruptedException, ResponseTimedOutException, DisconnectedException {
+	public void updateStatusAndAlarms() throws InterruptedException, SocketResponseTimedOutException, SocketDisconnectedException {
 		int statusInt = (cncMachineCommunication.readRegisters(CNCMachineConstants.STATUS, 1)).get(0);
 		setStatus(statusInt);
 		List<Integer> alarmInts = cncMachineCommunication.readRegisters(CNCMachineConstants.ALARMS_REG1, 2);
 		int alarmReg1 = alarmInts.get(0);
 		int alarmReg2 = alarmInts.get(1);
-		setAlarms(CNCMachineAlarm.parseAlarms(alarmReg1, alarmReg2));
+		setAlarms(CNCMachineAlarm.parseCNCAlarms(alarmReg1, alarmReg2));
 	}
 	
 	@Override
-	public void reset() throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+	public void reset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		int command = 0;
 		command = command | CNCMachineConstants.RESET_REQUEST;
 		int[] registers = {command};
@@ -75,7 +76,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void nCReset() throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+	public void nCReset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		int command = 0;
 		command = command | CNCMachineConstants.NC_RESET;
 		int[] registers = {command};
@@ -85,7 +86,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void powerOff() throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+	public void powerOff() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		int command = 0;
 		command = command | CNCMachineConstants.POWER_OFF;
 		int[] registers = {command};
@@ -94,7 +95,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void indicateAllProcessed() throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+	public void indicateAllProcessed() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		int command = 0;
 		command = command | CNCMachineConstants.ALL_WP_PROCESSED;
 		int[] registers = {command};
@@ -102,7 +103,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void indicateOperatorRequested(final boolean requested) throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+	public void indicateOperatorRequested(final boolean requested) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		int command = 0;
 		if (requested) {
 			command = command | CNCMachineConstants.OPERATOR_REQUESTED;
@@ -112,19 +113,19 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void clearIndications() throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+	public void clearIndications() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		int command = 0;
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
 	}
 	
 	@Override
-	public void prepareForProcess(final ProcessFlow process)  throws ResponseTimedOutException, DisconnectedException, InterruptedException {
+	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		nCReset();
 	}
 
 	@Override
-	public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws ResponseTimedOutException, DisconnectedException, DeviceActionException, InterruptedException {
+	public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws SocketResponseTimedOutException, SocketDisconnectedException, DeviceActionException, InterruptedException {
 		// check a valid workarea is selected 
 		if (!getWorkAreaIds().contains(startCylusSettings.getWorkArea().getId())) {
 			throw new IllegalArgumentException("Unknown workarea: " + startCylusSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaIds());
@@ -263,56 +264,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override public void putFinished(final DevicePutSettings putSettings) throws AbstractCommunicationException { }
 	@Override public void interventionFinished(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException { }
 	@Override public void prepareForStartCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException { }
-	
-	@Override
-	public void loadDeviceSettings(final DeviceSettings deviceSettings) {
-		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
-			if (!getWorkAreaIds().contains(entry.getKey().getId())) {
-				getWorkAreaById(entry.getKey().getId()).setActiveClamping(entry.getValue());
-			}
-		}
-	}
-
-	@Override
-	public DeviceSettings getDeviceSettings() {
-		return new DeviceSettings(getWorkAreas());
-	}
-
-	@Override
-	public boolean validateStartCyclusSettings(final ProcessingDeviceStartCyclusSettings startCyclusSettings) {
-		if ((startCyclusSettings != null) && (startCyclusSettings.getWorkArea() != null) && (getWorkAreaIds().contains(startCyclusSettings.getWorkArea().getId())) 
-				&& (startCyclusSettings.getWorkArea().getActiveClamping() != null)) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean validatePickSettings(final DevicePickSettings pickSettings) {
-		if ((pickSettings != null) && (pickSettings.getWorkArea() != null) && (getWorkAreaIds().contains(pickSettings.getWorkArea().getId())) 
-				&& (pickSettings.getWorkArea().getActiveClamping() != null)) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean validatePutSettings(final DevicePutSettings putSettings) {
-		if ((putSettings != null) && (putSettings.getWorkArea() != null) && (getWorkAreas().contains(putSettings.getWorkArea())) 
-				&& (putSettings.getWorkArea().getActiveClamping() != null)) {
-			return true;
-		} 
-		return false;
-	}
-
-	@Override
-	public boolean validateInterventionSettings(final DeviceInterventionSettings interventionSettings) {
-		if ((interventionSettings != null) && (interventionSettings.getWorkArea() != null) && (getWorkAreas().contains(interventionSettings.getWorkArea())) 
-				&& (interventionSettings.getWorkArea().getActiveClamping() != null)) {
-			return true;
-		}
-		return false;
-	}
 
 	@Override
 	public Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {

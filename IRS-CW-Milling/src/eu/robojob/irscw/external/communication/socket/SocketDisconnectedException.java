@@ -1,8 +1,9 @@
-package eu.robojob.irscw.external.communication;
+package eu.robojob.irscw.external.communication.socket;
 
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.util.Translator;
 
-public class DisconnectedException extends AbstractCommunicationException {
+public class SocketDisconnectedException extends AbstractCommunicationException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -11,7 +12,7 @@ public class DisconnectedException extends AbstractCommunicationException {
 	private SocketConnection connection;
 	private Translator translator;
 	
-	public DisconnectedException(final SocketConnection socketConnection) {
+	public SocketDisconnectedException(final SocketConnection socketConnection) {
 		this.connection = socketConnection;
 		this.translator = Translator.getInstance();
 	}

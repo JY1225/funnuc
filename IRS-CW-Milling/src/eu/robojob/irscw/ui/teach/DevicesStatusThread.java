@@ -13,13 +13,12 @@ import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEv
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineListener;
 import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotAlarmsOccuredEvent;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotEvent;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotListener;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotStatusChangedEvent;
+import eu.robojob.irscw.external.robot.RobotAlarmsOccuredEvent;
+import eu.robojob.irscw.external.robot.RobotEvent;
+import eu.robojob.irscw.external.robot.RobotListener;
 import eu.robojob.irscw.process.ProcessFlow;
 
-public class DevicesStatusThread extends Thread implements FanucRobotListener, CNCMachineListener {
+public class DevicesStatusThread extends Thread implements RobotListener, CNCMachineListener {
 
 	private ProcessFlow processFlow;
 	private TeachPresenter teachPresenter;
@@ -119,21 +118,33 @@ public class DevicesStatusThread extends Thread implements FanucRobotListener, C
 	}
 
 	@Override
-	public void robotConnected(FanucRobotEvent event) {
+	public void robotConnected(RobotEvent event) {
 		
 	}
 
 	@Override
-	public void robotDisconnected(FanucRobotEvent event) {
+	public void robotDisconnected(RobotEvent event) {
 		
 	}
 
 	@Override
-	public void robotStatusChanged(FanucRobotStatusChangedEvent event) {
+	public void robotStatusChanged(RobotEvent event) {
 	}
 
 	@Override
-	public void robotAlarmsOccured(FanucRobotAlarmsOccuredEvent event) {
+	public void robotAlarmsOccured(RobotAlarmsOccuredEvent event) {
+	}
+
+	@Override
+	public void robotZRestChanged(RobotEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void robotSpeedChanged(RobotEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

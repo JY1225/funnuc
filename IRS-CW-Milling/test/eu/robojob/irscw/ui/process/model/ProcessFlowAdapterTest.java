@@ -5,7 +5,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachine;
+import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;

@@ -27,11 +27,17 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 	
 	public abstract void startCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;	
 	public abstract void prepareForStartCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException;
-	
-	public abstract boolean validateStartCyclusSettings(ProcessingDeviceStartCyclusSettings startCyclusSettings);
-	
+		
 	public String toString() {
 		return "ProcessingDevice: " + getId();
+	}
+	
+	public boolean validateStartCyclusSettings(final ProcessingDeviceStartCyclusSettings startCyclusSettings) {
+		if ((startCyclusSettings != null) && (startCyclusSettings.getWorkArea() != null) && (getWorkAreaIds().contains(startCyclusSettings.getWorkArea().getId())) 
+				&& (startCyclusSettings.getWorkArea().getActiveClamping() != null)) {
+			return true;
+		}
+		return false;
 	}
 	
 }

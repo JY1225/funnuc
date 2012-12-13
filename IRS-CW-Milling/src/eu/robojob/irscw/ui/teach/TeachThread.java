@@ -118,7 +118,7 @@ public class TeachThread extends Thread {
 				robot.interruptCurrentAction();
 				try {
 					robot.abort();
-				} catch (AbstractCommunicationException e) {
+				} catch (AbstractCommunicationException | InterruptedException e) {
 					notifyException(e);
 				}
 			}

@@ -1,7 +1,11 @@
-package eu.robojob.irscw.external.robot.fanuc;
+package eu.robojob.irscw.external.robot;
 
-public class FanucRobotConstants {
+public final class RobotConstants {
 
+	private RobotConstants() {
+		
+	}
+	
 	public static final int BIT0								=	0b0000000000000001;
 	public static final int BIT1								=	0b0000000000000010;
 	public static final int BIT2								=	0b0000000000000100;

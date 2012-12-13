@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import eu.robojob.irscw.external.communication.SocketConnection;
-import eu.robojob.irscw.external.communication.SocketConnection.Type;
+import eu.robojob.irscw.external.communication.socket.SocketConnection;
+import eu.robojob.irscw.external.communication.socket.SocketConnection.Type;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 
 public class RobotManager {

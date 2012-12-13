@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.communication;
+package eu.robojob.irscw.external.communication.socket;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +9,7 @@ import java.net.Socket;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 
 public class SocketConnection {
 	
@@ -147,31 +148,31 @@ public class SocketConnection {
 		}
 	}
 	
-	public void send(final String message) throws DisconnectedException {
+	public void send(final String message) throws SocketDisconnectedException {
 		if (isConnected()) {
 			out.print(message);
 			out.flush();
 		} else {
-			throw new DisconnectedException(this);
+			throw new SocketDisconnectedException(this);
 		}
 	}
 	
-	public void send(final char character) throws DisconnectedException {
+	public void send(final char character) throws SocketDisconnectedException {
 		if (isConnected()) {
 			out.print(character);
 			out.flush();
 		} else {
-			throw new DisconnectedException(this);
+			throw new SocketDisconnectedException(this);
 		}
 	}
 	
-	public String readString() throws IOException, DisconnectedException {
+	public String readString() throws IOException, SocketDisconnectedException {
 		if (isConnected()) {
 			try {
 				String msg = in.readLine();
 				if (msg == null) {
 					disconnect();
-					throw new DisconnectedException(this);
+					throw new SocketDisconnectedException(this);
 				}
 				return msg;
 			} catch (IOException e) {
@@ -180,11 +181,11 @@ public class SocketConnection {
 				throw e;
 			}
 		} else {
-			throw new DisconnectedException(this);
+			throw new SocketDisconnectedException(this);
 		}
 	}
 	
-	public char read() throws IOException, DisconnectedException {
+	public char read() throws IOException, SocketDisconnectedException {
 		if (isConnected()) {
 			try {
 		      int b = in.read();
@@ -199,18 +200,18 @@ public class SocketConnection {
 				throw e;
 			}
 		} else {
-			throw new DisconnectedException(this);
+			throw new SocketDisconnectedException(this);
 		}
 	}
 	
-	public String readMessage() throws IOException, DisconnectedException {
+	public String readMessage() throws IOException, SocketDisconnectedException {
 		if (isConnected()) {
 			String message = "";
 			try {
 			      int b = in.read();
 			      if (b < 0) {
 			    	  disconnect();
-			    	  throw new DisconnectedException(this);
+			    	  throw new SocketDisconnectedException(this);
 				   } else {
 						message = message + (char) b;
 						while (in.ready()) {
@@ -225,7 +226,7 @@ public class SocketConnection {
 					throw e;
 				}
 		} else {
-			throw new DisconnectedException(this);
+			throw new SocketDisconnectedException(this);
 		}
 	}
 	

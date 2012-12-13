@@ -10,7 +10,7 @@ import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachine;
+import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;

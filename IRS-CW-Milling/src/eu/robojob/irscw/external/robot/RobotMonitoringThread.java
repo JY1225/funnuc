@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device.processing.cnc;
+package eu.robojob.irscw.external.robot;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,43 +9,47 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.threading.MonitoringThread;
 
-public class CNCMachineMonitoringThread extends Thread implements MonitoringThread {
+public class RobotMonitoringThread extends Thread implements MonitoringThread {
 
-	private static final int REFRESH_TIME = 500;
+	private static final int REFRESH_TIME = 150;
 	
-	private AbstractCNCMachine cncMachine;
+	private AbstractRobot robot;
 	private boolean alive;
+	private double previousZRest;
 	private int previousStatus;
-	private Set<CNCMachineAlarm> previousAlarms;
+	private Set<RobotAlarm> previousAlarms;
 	
-	private static Logger logger = LogManager.getLogger(CNCMachineMonitoringThread.class.getName());
+	private static Logger logger = LogManager.getLogger(RobotMonitoringThread.class.getName());
 	
-	public CNCMachineMonitoringThread(final AbstractCNCMachine cncMachine) {
-		this.cncMachine = cncMachine;
+	public RobotMonitoringThread(final AbstractRobot robot) {
+		this.robot = robot;
 		this.alive = true;
-		this.previousAlarms = new HashSet<CNCMachineAlarm>();
+		this.previousAlarms = new HashSet<RobotAlarm>();
 	}
 	
 	@Override
 	public void run() {
 		while (alive) {
-			if (cncMachine.isConnected()) {
+			if (robot.isConnected()) {
 				try {
-					cncMachine.updateStatusAndAlarms();
-					int status = cncMachine.getStatus();
+					robot.updateStatusZRestAndAlarms();
+					int status = robot.getStatus();
 					if (status != previousStatus) {
-						cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.STATUS_CHANGED));
+						robot.processRobotEvent(new RobotEvent(robot, RobotEvent.STATUS_CHANGED));
 					}
 					this.previousStatus = status;
-					Set<CNCMachineAlarm> alarms = cncMachine.getAlarms();
+					Set<RobotAlarm> alarms = robot.getAlarms();
 					if ((!previousAlarms.containsAll(alarms)) || (!alarms.containsAll(previousAlarms))) {
-						cncMachine.processCNCMachineEvent(new CNCMachineAlarmsOccuredEvent(cncMachine, alarms));
+						robot.processRobotEvent(new RobotEvent(robot, RobotEvent.ALARMS_OCCURED));
 					}
 					this.previousAlarms = alarms;
+					double zrest = robot.getZRest();
+					if (zrest != previousZRest) {
+						robot.processRobotEvent(new RobotEvent(robot, RobotEvent.ZREST_CHANGED));
+					}
 				} catch (AbstractCommunicationException | InterruptedException e) {
-					//TODO do something with this exception
-					if (cncMachine.isConnected()) {
-						cncMachine.disconnect();
+					if (robot.isConnected()) {
+						robot.disconnect();
 					}
 					logger.error(e);
 				}
@@ -67,7 +71,7 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 	
 	@Override
 	public String toString() {
-		return "CNCMachineMonitoringThread: " + cncMachine.toString();
+		return "RobotMonitoringThread: " + robot.toString();
 	}
 
 	@Override

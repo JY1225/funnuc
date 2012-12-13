@@ -15,11 +15,10 @@ import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEv
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineListener;
 import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.external.robot.RobotAlarmsOccuredEvent;
+import eu.robojob.irscw.external.robot.RobotEvent;
+import eu.robojob.irscw.external.robot.RobotListener;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotAlarmsOccuredEvent;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotEvent;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotListener;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotStatusChangedEvent;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlowTimer;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
@@ -33,8 +32,7 @@ import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.util.Translator;
 
-
-public class AutomatePresenter implements MainContentPresenter, CNCMachineListener, FanucRobotListener, ProcessFlowListener {
+public class AutomatePresenter implements MainContentPresenter, CNCMachineListener, RobotListener, ProcessFlowListener {
 
 	private AutomateView view;
 	private FixedProcessFlowPresenter processFlowPresenter;
@@ -370,21 +368,21 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	}
 
 	@Override
-	public void robotConnected(FanucRobotEvent event) {}
+	public void robotConnected(RobotEvent event) {}
 
 	@Override
-	public void robotDisconnected(FanucRobotEvent event) {}
+	public void robotDisconnected(RobotEvent event) {}
 
 	@Override
-	public void robotStatusChanged(final FanucRobotStatusChangedEvent event) {
+	public void robotStatusChanged(final RobotEvent event) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
-				view.setZRest(event.getStatus().getZRest());
+				view.setZRest(event.getSource().getZRest());
 			}});
 	}
 
 	@Override
-	public void robotAlarmsOccured(final FanucRobotAlarmsOccuredEvent event) {
+	public void robotAlarmsOccured(final RobotAlarmsOccuredEvent event) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				if (event.getAlarms().size() > 0) {
@@ -396,7 +394,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 					try {
 						event.getSource().continueProgram();
 						view.hideAlarmMessage();
-					} catch (AbstractCommunicationException e) {
+					} catch (AbstractCommunicationException | InterruptedException e) {
 						exceptionOccured(e);
 					}
 				}
@@ -410,9 +408,6 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	public void cNCMachineDisconnected(CNCMachineEvent event) {}
 
 	@Override
-	public void cNCMachineStatusChanged(CNCMachineEvent event) {}
-
-	@Override
 	public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
@@ -424,5 +419,23 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 					view.hideAlarmMessage();
 				}
 			}});
+	}
+
+	@Override
+	public void robotZRestChanged(RobotEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void robotSpeedChanged(RobotEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cNCMachineStatusChanged(CNCMachineEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 }

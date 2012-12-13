@@ -12,11 +12,11 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.SocketConnection;
-import eu.robojob.irscw.external.communication.SocketConnection.Type;
+import eu.robojob.irscw.external.communication.socket.SocketConnection;
+import eu.robojob.irscw.external.communication.socket.SocketConnection.Type;
 import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachine;
+import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;

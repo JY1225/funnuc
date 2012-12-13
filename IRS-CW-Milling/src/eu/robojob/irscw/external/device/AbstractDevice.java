@@ -33,9 +33,29 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	public abstract void loadDeviceSettings(DeviceSettings deviceSettings);
 	public abstract DeviceSettings getDeviceSettings();
 	
-	public abstract boolean validatePickSettings(DevicePickSettings pickSettings);
-	public abstract boolean validatePutSettings(DevicePutSettings putSettings);
-	public abstract boolean validateInterventionSettings(DeviceInterventionSettings interventionSettings);
+	public boolean validatePickSettings(final DevicePickSettings pickSettings) {
+		if ((pickSettings != null) && (pickSettings.getWorkArea() != null) && (getWorkAreaIds().contains(pickSettings.getWorkArea().getId())) 
+				&& (pickSettings.getWorkArea().getActiveClamping() != null)) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean validatePutSettings(final DevicePutSettings putSettings) {
+		if ((putSettings != null) && (putSettings.getWorkArea() != null) && (getWorkAreas().contains(putSettings.getWorkArea())) 
+				&& (putSettings.getWorkArea().getActiveClamping() != null)) {
+			return true;
+		} 
+		return false;
+	}
+
+	public boolean validateInterventionSettings(final DeviceInterventionSettings interventionSettings) {
+		if ((interventionSettings != null) && (interventionSettings.getWorkArea() != null) && (getWorkAreas().contains(interventionSettings.getWorkArea())) 
+				&& (interventionSettings.getWorkArea().getActiveClamping() != null)) {
+			return true;
+		}
+		return false;
+	}
 	
 	public abstract Coordinates getPickLocation(WorkArea workArea, ClampingManner clampType);
 	public abstract Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType);

@@ -8,9 +8,9 @@ import eu.robojob.irscw.workpiece.WorkPiece;
 
 public class FanucRobotPickSettings extends RobotPickSettings {
 
-	protected boolean doMachineAirblow;
+	private boolean doMachineAirblow;
 
-	public FanucRobotPickSettings(WorkArea workArea, GripperHead gripperHead, Coordinates smoothPoint, Coordinates location, WorkPiece workPiece) {
+	public FanucRobotPickSettings(final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final WorkPiece workPiece) {
 		super(workArea, gripperHead, smoothPoint, location, workPiece);
 		this.doMachineAirblow = false;
 	}
@@ -24,7 +24,7 @@ public class FanucRobotPickSettings extends RobotPickSettings {
 		return doMachineAirblow;
 	}
 
-	public void setDoMachineAirblow(boolean doMachineAirblow) {
+	public void setDoMachineAirblow(final boolean doMachineAirblow) {
 		this.doMachineAirblow = doMachineAirblow;
 	}
 	

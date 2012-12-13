@@ -14,7 +14,7 @@ import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMillingMachine;
+import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobotPickSettings;
@@ -87,7 +87,7 @@ public class FanucRobotCommunicationTest {
 		try {
 			fanucRobot.restartProgram();
 			fanucRobot.moveToHome();
-		} catch (AbstractCommunicationException | RobotActionException e) {
+		} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			fanucRobot.disconnect();

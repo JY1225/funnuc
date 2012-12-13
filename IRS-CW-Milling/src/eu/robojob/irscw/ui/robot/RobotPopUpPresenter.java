@@ -2,11 +2,10 @@ package eu.robojob.irscw.ui.robot;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.robot.RobotActionException;
+import eu.robojob.irscw.external.robot.RobotAlarmsOccuredEvent;
+import eu.robojob.irscw.external.robot.RobotEvent;
+import eu.robojob.irscw.external.robot.RobotListener;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotAlarmsOccuredEvent;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotEvent;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotListener;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotStatusChangedEvent;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
@@ -16,7 +15,7 @@ import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.ui.AbstractPopUpPresenter;
 
-public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> implements FanucRobotListener, ProcessFlowListener {
+public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> implements RobotListener, ProcessFlowListener {
 
 	private FanucRobot robot;
 	private boolean connected;
@@ -45,7 +44,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 		if (robot.isConnected()) {
 			try {
 				robot.restartProgram();
-			} catch (AbstractCommunicationException e) {
+			} catch (AbstractCommunicationException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -55,7 +54,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 		if (robot.isConnected()) {
 			try {
 				robot.moveToHome();
-			} catch (AbstractCommunicationException | RobotActionException e) {
+			} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -65,7 +64,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 		if (robot.isConnected()) {
 			try {
 				robot.moveToChangePoint();
-			} catch (AbstractCommunicationException | RobotActionException e) {
+			} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -75,7 +74,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 		if (robot.isConnected()) {
 			try {
 				robot.setSpeed(speed);
-			} catch (AbstractCommunicationException e) {
+			} catch (AbstractCommunicationException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -83,24 +82,24 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	}
 
 	@Override
-	public void robotConnected(FanucRobotEvent event) {
+	public void robotConnected(RobotEvent event) {
 		view.setRobotConnected(true);
 		connected = true;
 	}
 
 	@Override
-	public void robotDisconnected(FanucRobotEvent event) {
+	public void robotDisconnected(RobotEvent event) {
 		view.setRobotConnected(false);
 		connected = false;
 	}
 
 	@Override
-	public void robotStatusChanged(FanucRobotStatusChangedEvent event) {
-		view.refreshSpeed(event.getStatus().getSpeed());
+	public void robotStatusChanged(RobotEvent event) {
+		view.refreshSpeed(event.getSource().getSpeed());
 	}
 
 	@Override
-	public void robotAlarmsOccured(FanucRobotAlarmsOccuredEvent event) {
+	public void robotAlarmsOccured(RobotAlarmsOccuredEvent event) {
 	}
 
 	@Override
@@ -128,5 +127,17 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	@Override public void exceptionOccured(ExceptionOccuredEvent e) {}
 	@Override public void dataChanged(ProcessFlowEvent e) {}
 	@Override public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
+
+	@Override
+	public void robotZRestChanged(RobotEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void robotSpeedChanged(RobotEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

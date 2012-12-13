@@ -79,7 +79,8 @@ public class CNCMachineAlarm {
 		return "CNCMachineAlarm: " + id;
 	}
 	
-	public static Set<CNCMachineAlarm> parseAlarms(final int alarmReg1, final int alarmReg2) {
+	//TODO perhaps this methods should be placed in the CNCMillingMachine-class or an helper class
+	public static Set<CNCMachineAlarm> parseCNCAlarms(final int alarmReg1, final int alarmReg2) {
 		Set<CNCMachineAlarm> alarms = new HashSet<CNCMachineAlarm>();
 		if ((alarmReg1 & CNCMachineConstants.ALR_MACHINE) > 0) {
 			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MACHINE));

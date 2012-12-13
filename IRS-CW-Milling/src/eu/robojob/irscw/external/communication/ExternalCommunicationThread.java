@@ -6,6 +6,10 @@ import java.util.LinkedList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.robojob.irscw.external.communication.socket.ExternalSocketCommunication;
+import eu.robojob.irscw.external.communication.socket.SocketConnection;
+import eu.robojob.irscw.external.communication.socket.SocketDisconnectedException;
+
 /**
  * All external devices act as servers, so this communication-thread will continuously try to establish connection, read incoming messages, and will act as
  * a buffer for incoming messages
@@ -24,11 +28,11 @@ public class ExternalCommunicationThread extends Thread {
 	private boolean alive;
 	
 	private LinkedList<String> incommingMessages;
-	private ExternalCommunication externalCommunication;
+	private ExternalSocketCommunication externalCommunication;
 	
 	private boolean wasConnected;
 	
-	public ExternalCommunicationThread(final SocketConnection socketConnection, final ExternalCommunication externalCommunication) {
+	public ExternalCommunicationThread(final SocketConnection socketConnection, final ExternalSocketCommunication externalCommunication) {
 		this.socketConnection = socketConnection;
 		this.incommingMessages = new LinkedList<String>();
 		this.alive = true;
@@ -78,7 +82,7 @@ public class ExternalCommunicationThread extends Thread {
 						// exception occurred, spread the word (disconnection occurs automatically)
 						externalCommunication.iOExceptionOccured(e);
 					}
-				} catch (DisconnectedException e) {
+				} catch (SocketDisconnectedException e) {
 					// we got disconnected, retry connection
 					logger.info("Gotten disconnected during reading, about to retry connection...");
 				}
@@ -114,15 +118,15 @@ public class ExternalCommunicationThread extends Thread {
 		incommingMessages.addLast(message);
 	}
 	
-	public synchronized void writeMessage(final String message) throws DisconnectedException {
+	public synchronized void writeMessage(final String message) throws SocketDisconnectedException {
 		socketConnection.send(message);
 	}
 	
-	public synchronized void writeCharacter(final char character) throws DisconnectedException {
+	public synchronized void writeCharacter(final char character) throws SocketDisconnectedException {
 		socketConnection.send(character);
 	}
 	
-	public synchronized void writeString(final String message) throws DisconnectedException {
+	public synchronized void writeString(final String message) throws SocketDisconnectedException {
 		socketConnection.send(message);
 	}
 	
