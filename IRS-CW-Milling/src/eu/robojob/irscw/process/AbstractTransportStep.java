@@ -14,13 +14,11 @@ public abstract class AbstractTransportStep extends AbstractProcessStep {
 
 	protected AbstractRobot robot;
 	protected Coordinates relativeTeachedOffset;
-	protected TeachedCoordinatesCalculator calculator;
 	
 	public AbstractTransportStep(ProcessFlow processFlow, AbstractDevice device, AbstractRobot robot) {
 		super(processFlow, device);
 		this.robot = robot;
 		relativeTeachedOffset = null;
-		this.calculator = new TeachedCoordinatesCalculator();
 	}
 	
 	public AbstractTransportStep(AbstractDevice device, AbstractRobot robot) {

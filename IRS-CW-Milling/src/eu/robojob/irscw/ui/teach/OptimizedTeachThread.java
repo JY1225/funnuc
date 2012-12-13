@@ -27,12 +27,10 @@ import eu.robojob.irscw.workpiece.WorkPiece;
 public class OptimizedTeachThread extends TeachThread {
 	
 	private static final Logger logger = LogManager.getLogger(OptimizedTeachThread.class.getName());
-	private TeachedCoordinatesCalculator calculator;
 	private Coordinates extraFinishedOffset;
 
 	public OptimizedTeachThread(ProcessFlow processFlow, Coordinates extraFinishedOffset) {
 		super(processFlow);
-		this.calculator = new TeachedCoordinatesCalculator();
 		this.extraFinishedOffset = extraFinishedOffset;
 	}
 
@@ -193,7 +191,7 @@ public class OptimizedTeachThread extends TeachThread {
 		fRobot.teachedMoveNoWait(putSettings, false);
 		Coordinates coordinates = new Coordinates(fRobot.getPosition());
 		teachedOffsetFinishedWp = coordinates.calculateOffset(originalCoordinates);
-		Coordinates relTeachedOffsetFinishedWp = calculator.calculateRelativeTeachedOffset(originalCoordinates, teachedOffsetFinishedWp);
+		Coordinates relTeachedOffsetFinishedWp = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalCoordinates, teachedOffsetFinishedWp);
 		logger.info("Teached offset (relative): " + relTeachedOffsetFinishedWp);
 		fRobot.moveAway();
 		return relTeachedOffsetFinishedWp;

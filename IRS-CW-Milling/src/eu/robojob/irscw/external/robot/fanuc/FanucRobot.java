@@ -45,7 +45,6 @@ public class FanucRobot extends AbstractRobot {
 	
 	private static final int WRITE_REGISTER_TIMEOUT = 5000;
 	private static final int PRAGE_TIMEOUT = 2 * 60 * 1000;
-	private static final int SAFETY_ADD_Z = 20;
 	
 	private static final List<Integer> VALID_USERFRAMES = Arrays.asList(1, 3);
 	
@@ -455,10 +454,10 @@ public class FanucRobot extends AbstractRobot {
 		values.add(df.format(location.getZ()));		// z offset
 		values.add(df.format(location.getR()));		// r offset							
 		values.add(df.format(dimensions.getHeight() + location.getZ()));	// z safe plane offset
-		if (smoothPoint.getZ() > SAFETY_ADD_Z) {				// safety add z
+		if (smoothPoint.getZ() > workArea.getUserFrame().getzSafeDistance()) {	// safety add z
 			values.add(df.format(smoothPoint.getZ()));
 		} else {
-			values.add("" + SAFETY_ADD_Z);
+			values.add("" + workArea.getUserFrame().getzSafeDistance());
 		}
 		values.add(df.format(smoothPoint.getX()));	// smooth x
 		values.add(df.format(smoothPoint.getY()));	// smooth y

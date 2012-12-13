@@ -62,7 +62,7 @@ public class DeviceManager {
 		
 		// CNC Milling machine
 		Clamping shunkClamping = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Shunk", 0, new Coordinates(1, -1f, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
-		UserFrame machineUserFrame = new UserFrame(3, 5);
+		UserFrame machineUserFrame = new UserFrame(3, 20);
 		List<WorkArea> machineWAs = new ArrayList<WorkArea>();
 		WorkArea machineMainWA = new WorkArea("Mazak VRX J500 Main", machineUserFrame);
 		machineMainWA.addClamping(shunkClamping);
@@ -75,8 +75,8 @@ public class DeviceManager {
 		cncMachines.put(cncMillingMachine.getId(), cncMillingMachine);
 		
 		// Basic Stacker
-		Clamping stackerClamping = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.NONE, "Stacker", 25, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
-		UserFrame stackerUserFrame = new UserFrame(1, 100);
+		Clamping stackerClamping = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.NONE, "Stacker", BasicStackPlate.STUD_HEIGHT, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
+		UserFrame stackerUserFrame = new UserFrame(1, 20);
 		List<WorkArea> stackerWAs = new ArrayList<WorkArea>();
 		WorkArea stackerWA = new WorkArea("IRS M Basic", stackerUserFrame);
 		stackerWA.addClamping(stackerClamping);

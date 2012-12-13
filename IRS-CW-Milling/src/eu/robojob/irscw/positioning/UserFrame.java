@@ -5,8 +5,7 @@ public class UserFrame {
 	private int idNumber;
 	private float zSafeDistance;
 	
-	// At a later stage other information can be added (e.g. coordinates)
-	public UserFrame(int idNumber, float zSafeDistance) {
+	public UserFrame(final int idNumber, final float zSafeDistance) {
 		this.idNumber = idNumber;
 		this.zSafeDistance = zSafeDistance;
 	}
@@ -15,7 +14,7 @@ public class UserFrame {
 		return idNumber;
 	}
 
-	public void setIdNumber(int idNumber) {
+	public void setIdNumber(final int idNumber) {
 		this.idNumber = idNumber;
 	}
 
@@ -23,7 +22,7 @@ public class UserFrame {
 		return zSafeDistance;
 	}
 
-	public void setzSafeDistance(float zSafeDistance) {
+	public void setzSafeDistance(final float zSafeDistance) {
 		this.zSafeDistance = zSafeDistance;
 	}
 		

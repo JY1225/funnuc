@@ -15,6 +15,7 @@ import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.external.robot.RobotPutSettings;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.positioning.TeachedCoordinatesCalculator;
 import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
 
 public class PutStep extends AbstractTransportStep {
@@ -63,7 +64,7 @@ public class PutStep extends AbstractTransportStep {
 					} else {
 						Coordinates position = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), processFlow.getClampingType()));
 						logger.debug("Normal coordinates: " + position);
-						Coordinates absoluteOffset = calculator.calculateAbsoluteOffset(position, relativeTeachedOffset);
+						Coordinates absoluteOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, relativeTeachedOffset);
 						position.offset(absoluteOffset);
 						logger.debug("Coordinates after adding teached offset: " + position);
 						robotPutSettings.setLocation(position);
@@ -102,7 +103,7 @@ public class PutStep extends AbstractTransportStep {
 				Coordinates coordinates = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), processFlow.getClampingType()));
 				logger.info("Coordinates before teaching: " + coordinates);
 				if (relativeTeachedOffset != null) {
-					Coordinates c = calculator.calculateAbsoluteOffset(coordinates, relativeTeachedOffset);
+					Coordinates c = TeachedCoordinatesCalculator.calculateAbsoluteOffset(coordinates, relativeTeachedOffset);
 					coordinates.offset(c);
 					logger.info("Coordinates before teaching (added teached offset): " + coordinates);
 				}
@@ -127,7 +128,7 @@ public class PutStep extends AbstractTransportStep {
 				Coordinates coordinates = new Coordinates(robot.getPosition());
 				Coordinates oldCoordinates = new Coordinates(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), processFlow.getClampingType()));
 				this.relativeTeachedOffset = coordinates.calculateOffset(oldCoordinates);
-				this.relativeTeachedOffset = calculator.calculateRelativeTeachedOffset(oldCoordinates, relativeTeachedOffset);
+				this.relativeTeachedOffset = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(oldCoordinates, relativeTeachedOffset);
 				logger.debug("The teached offset is: " + relativeTeachedOffset);
 				robotPutSettings.setLocation(device.getPutLocation(putSettings.getWorkArea(), robotPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), processFlow.getClampingType()));
 				logger.debug("About to ask device to grab piece");

@@ -28,6 +28,8 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
  */
 public class BasicStackPlate extends AbstractStackingDevice {
 
+	public static final float STUD_HEIGHT = 30;
+	
 	public enum WorkPieceOrientation {
 		HORIZONTAL, TILTED
 	}

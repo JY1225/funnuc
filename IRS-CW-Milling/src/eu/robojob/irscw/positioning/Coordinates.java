@@ -10,7 +10,7 @@ public class Coordinates {
 	private float p;
 	private float r;
 		
-	public Coordinates(float x, float y, float z, float w, float p, float r) {
+	public Coordinates(final float x, final float y, final float z, final float w, final float p, final float r) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -19,7 +19,7 @@ public class Coordinates {
 		this.r = r;
 	}
 	
-	public Coordinates(Coordinates c) {
+	public Coordinates(final Coordinates c) {
 		this.x = c.getX();
 		this.y = c.getY();
 		this.z = c.getZ();
@@ -36,7 +36,7 @@ public class Coordinates {
 		return x;
 	}
 
-	public void setX(float x) {
+	public void setX(final float x) {
 		this.x = x;
 	}
 
@@ -44,7 +44,7 @@ public class Coordinates {
 		return y;
 	}
 
-	public void setY(float y) {
+	public void setY(final float y) {
 		this.y = y;
 	}
 
@@ -52,7 +52,7 @@ public class Coordinates {
 		return z;
 	}
 
-	public void setZ(float z) {
+	public void setZ(final float z) {
 		this.z = z;
 	}
 
@@ -60,7 +60,7 @@ public class Coordinates {
 		return w;
 	}
 
-	public void setW(float w) {
+	public void setW(final float w) {
 		this.w = w;
 	}
 
@@ -68,7 +68,7 @@ public class Coordinates {
 		return p;
 	}
 
-	public void setP(float p) {
+	public void setP(final float p) {
 		this.p = p;
 	}
 
@@ -76,11 +76,11 @@ public class Coordinates {
 		return r;
 	}
 
-	public void setR(float r) {
+	public void setR(final float r) {
 		this.r = r;
 	}
 	
-	public void minus(Coordinates c) {
+	public void minus(final Coordinates c) {
 		setX(getX() - c.getX());
 		setY(getY() - c.getY());
 		setZ(getZ() - c.getZ());
@@ -89,7 +89,7 @@ public class Coordinates {
 		setR(getR() - c.getR());
 	}
 	
-	public void plus(Coordinates c) {
+	public void plus(final Coordinates c) {
 		setX(getX() + c.getX());
 		setY(getY() + c.getY());
 		setZ(getZ() + c.getZ());
@@ -98,11 +98,11 @@ public class Coordinates {
 		setR(getR() + c.getR());
 	}
 	
-	public Coordinates calculateOffset(Coordinates coordinates) {
-		return new Coordinates(getX()-coordinates.getX(), getY()-coordinates.getY(), getZ()-coordinates.getZ(), getW()-coordinates.getW(), getP()-coordinates.getP(), getR()-coordinates.getR());
+	public Coordinates calculateOffset(final Coordinates coordinates) {
+		return new Coordinates(getX() - coordinates.getX(), getY() - coordinates.getY(), getZ() - coordinates.getZ(), getW() - coordinates.getW(), getP() - coordinates.getP(), getR() - coordinates.getR());
 	}
 	
-	public void offset(Coordinates coordinates) {
+	public void offset(final Coordinates coordinates) {
 		setX(getX() + coordinates.getX());
 		setY(getY() + coordinates.getY());
 		setZ(getZ() + coordinates.getZ());
