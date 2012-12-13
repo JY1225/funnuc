@@ -226,6 +226,13 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void reset() throws AbstractCommunicationException, InterruptedException;
 	public abstract Coordinates getPosition() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void sendSpeed(int speedPercentage) throws AbstractCommunicationException, InterruptedException;
+	
+	public abstract void initiateTeachedPick(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void initiateTeachedPut(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	
+	public abstract void finalizeTeachedPick(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizeTeachedPut(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	
 	public abstract void initiatePick(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void initiatePut(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
@@ -236,17 +243,10 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void teachedMoveToAndWait(RobotPutSettings putSettings, boolean withPiece) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void moveAway() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void teachedMoveAway() throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	
 	public abstract void teachedMoveNoWait(RobotPutSettings putSettings, boolean withPiece) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
 	public abstract void moveToHome() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void moveToChangePoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	
-	public abstract void initiateTeachedPick(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void initiateTeachedPut(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	
-	public abstract void finalizeTeachedPick(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void finalizeTeachedPut(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
 	public abstract void writeRegister(int registerNr, String value) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void doPrage() throws AbstractCommunicationException, RobotActionException, InterruptedException;

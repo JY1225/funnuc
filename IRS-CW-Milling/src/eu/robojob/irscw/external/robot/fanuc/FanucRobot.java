@@ -185,7 +185,8 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public void finalizePut(final RobotPutSettings putSettings) throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException {
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_PUT_CLAMP_ACK);
-		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PUT_FINISHED, MOVE_FINISH_TIMEOUT);
+		//boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PUT_FINISHED, MOVE_FINISH_TIMEOUT);
+		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PUT_OUT_OF_MACHINE, MOVE_FINISH_TIMEOUT);
 		if (waitingForPickFinished) {
 			return;
 		} else {
