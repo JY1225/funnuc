@@ -36,11 +36,13 @@ public class InterventionStep extends AbstractProcessStep {
 			if (!robot.lock(getProcessFlow())) {
 				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
 			} else {
-				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.INTERVENTION_ROBOT_TO_HOME));
-				robot.moveToHome();
-				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.INTERVENTION_PREPARE_DEVICE));
-				getDevice().prepareForIntervention(interventionSettings);
-				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.INTERVENTION_READY));
+				if (getProcessFlow().getFinishedAmount() % frequency == 0) {	// check if the the amount of finished pieces corresponds to the frequency
+					getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.INTERVENTION_ROBOT_TO_HOME));
+					robot.moveToHome();
+					getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.INTERVENTION_PREPARE_DEVICE));
+					getDevice().prepareForIntervention(interventionSettings);
+					getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.INTERVENTION_READY));
+				}
 			}
 		}
 	}

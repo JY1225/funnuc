@@ -23,9 +23,7 @@ public abstract class AbstractTransportStep extends AbstractProcessStep {
 	public AbstractTransportStep(final AbstractDevice device, final AbstractRobot robot) {
 		this(null, device, robot);
 	}
-	
-	public abstract void finalize() throws AbstractCommunicationException, RobotActionException, DeviceActionException;
-	
+		
 	public abstract AbstractDeviceActionSettings<?> getDeviceSettings();
 	public abstract AbstractRobotActionSettings<?> getRobotSettings();
 	public abstract boolean needsTeaching();
