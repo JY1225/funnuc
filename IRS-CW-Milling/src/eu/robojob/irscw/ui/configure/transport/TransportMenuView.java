@@ -3,7 +3,7 @@ package eu.robojob.irscw.ui.configure.transport;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import eu.robojob.irscw.ui.configure.AbstractMenuView;
-import eu.robojob.irscw.ui.main.model.TransportInformation;
+import eu.robojob.irscw.ui.general.model.TransportInformation;
 
 public class TransportMenuView extends AbstractMenuView<TransportMenuPresenter> {
 

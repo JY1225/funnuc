@@ -2,7 +2,7 @@ package eu.robojob.irscw.ui.configure.device.pre;
 
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
-import eu.robojob.irscw.ui.main.model.DeviceInformation;
+import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class PrageDeviceConfigurePresenter extends AbstractFormPresenter<PrageDeviceConfigureView, PrageDeviceMenuPresenter> {
 	

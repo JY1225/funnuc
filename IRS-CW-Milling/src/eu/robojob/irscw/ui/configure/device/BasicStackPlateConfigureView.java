@@ -8,7 +8,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
-import eu.robojob.irscw.ui.main.model.DeviceInformation;
+import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPlateConfigurePresenter>{
 

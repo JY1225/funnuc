@@ -28,8 +28,7 @@ import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
-import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
 
 public class AutomatePresenter implements MainContentPresenter, CNCMachineListener, RobotListener, ProcessFlowListener {
 
@@ -42,13 +41,12 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	
 	private AutomateThread automateThread;
 	
-	private Translator translator;
 	private ProcessFlowTimer processFlowTimer;
 	private AutomateTimingThread automateTimingThread;
 	
 	private boolean alarms;
 	
-	private static final Logger logger = LogManager.getLogger(AutomatePresenter.class.getName());
+	private static Logger logger = LogManager.getLogger(AutomatePresenter.class.getName());
 	
 	public AutomatePresenter(AutomateView view, FixedProcessFlowPresenter processFlowPresenter, ProcessFlow processFlow, ProcessFlowTimer processFlowTimer) {
 		this.view = view;
@@ -60,7 +58,6 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		this.machines = new HashSet<AbstractCNCMachine>();
 		this.robots = new HashSet<FanucRobot>();
 		this.automateThread = new AutomateThread(processFlow);
-		this.translator = Translator.getInstance();
 		this.automateTimingThread = new AutomateTimingThread(this, processFlowTimer);
 		this.alarms = false;
 	}

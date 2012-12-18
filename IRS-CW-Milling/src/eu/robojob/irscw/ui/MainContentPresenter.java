@@ -6,9 +6,8 @@ public interface MainContentPresenter {
 
 	/**
 	 * Method used for indicating the presenter is active
-	 * @param active
 	 */
-	public void setActive(boolean active);
+	void setActive(boolean active);
 	
-	public Node getView();
+	Node getView();
 }

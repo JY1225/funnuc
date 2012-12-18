@@ -8,7 +8,7 @@ import eu.robojob.irscw.external.robot.GripperHead;
 import eu.robojob.irscw.external.robot.RobotSettings;
 import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
-import eu.robojob.irscw.ui.main.model.TransportInformation;
+import eu.robojob.irscw.ui.general.model.TransportInformation;
 
 public class TransportGripperPresenter extends AbstractFormPresenter<TransportGripperView, TransportMenuPresenter> {
 

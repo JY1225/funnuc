@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.main.flow;
+package eu.robojob.irscw.ui.general.flow;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -7,7 +7,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Translate;
-import eu.robojob.irscw.ui.main.model.TransportInformation;
+import eu.robojob.irscw.ui.general.model.TransportInformation;
 
 public class TransportButton extends Pane {
 

@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.main.flow;
+package eu.robojob.irscw.ui.general.flow;
 
 import eu.robojob.irscw.process.ProcessFlow;
 

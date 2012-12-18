@@ -6,8 +6,8 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.ui.controls.AbstractTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
-import eu.robojob.irscw.ui.keyboard.KeyboardParentPresenter;
-import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
+import eu.robojob.irscw.ui.controls.keyboard.KeyboardParentPresenter;
+import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
 
 public class OffsetPresenter implements TextFieldListener, KeyboardParentPresenter {
 

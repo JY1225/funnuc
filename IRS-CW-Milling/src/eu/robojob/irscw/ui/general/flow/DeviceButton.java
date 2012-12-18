@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.main.flow;
+package eu.robojob.irscw.ui.general.flow;
 
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -15,7 +15,7 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import eu.robojob.irscw.external.device.DeviceType;
-import eu.robojob.irscw.ui.main.model.DeviceInformation;
+import eu.robojob.irscw.ui.general.model.DeviceInformation;
 import eu.robojob.irscw.util.Translator;
 
 public class DeviceButton extends VBox {

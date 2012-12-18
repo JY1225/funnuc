@@ -3,7 +3,7 @@ package eu.robojob.irscw.ui.configure.device.pre;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.device.AbstractDeviceMenuPresenter;
 import eu.robojob.irscw.ui.configure.device.DeviceMenuView;
-import eu.robojob.irscw.ui.main.model.DeviceInformation;
+import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class PrageDeviceMenuPresenter extends AbstractDeviceMenuPresenter {
 

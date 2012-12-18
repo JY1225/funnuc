@@ -5,8 +5,8 @@ import java.util.Map;
 
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
-import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
-import eu.robojob.irscw.ui.main.model.TransportInformation;
+import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
+import eu.robojob.irscw.ui.general.model.TransportInformation;
 
 public class TransportMenuFactory {
 

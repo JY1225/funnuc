@@ -14,7 +14,7 @@ import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.configure.device.pre.PrageDeviceConfigurePresenter;
 import eu.robojob.irscw.ui.configure.device.pre.PrageDeviceConfigureView;
 import eu.robojob.irscw.ui.configure.device.pre.PrageDeviceMenuPresenter;
-import eu.robojob.irscw.ui.main.model.DeviceInformation;
+import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class DeviceMenuFactory {
 	

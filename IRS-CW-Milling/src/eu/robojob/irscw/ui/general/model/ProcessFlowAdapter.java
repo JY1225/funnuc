@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.main.model;
+package eu.robojob.irscw.ui.general.model;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

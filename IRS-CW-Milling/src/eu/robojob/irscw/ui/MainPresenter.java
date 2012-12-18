@@ -9,6 +9,7 @@ import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.menu.MenuBarPresenter;
 import eu.robojob.irscw.ui.robot.RobotPopUpPresenter;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
 
@@ -26,8 +27,8 @@ public class MainPresenter implements ProcessFlowListener {
 	
 	private MainContentPresenter activeContentPresenter;
 		
-	public MainPresenter(MainView view, MenuBarPresenter menuBarPresenter, ConfigurePresenter configurePresenter, TeachPresenter teachPresenter, AutomatePresenter automatePresenter,
-			RobotPopUpPresenter robotPopUpPresenter) {
+	public MainPresenter(final MainView view, final MenuBarPresenter menuBarPresenter, final ConfigurePresenter configurePresenter, final TeachPresenter teachPresenter, 
+			final AutomatePresenter automatePresenter, final RobotPopUpPresenter robotPopUpPresenter) {
 		this.view = view;
 		view.setPresenter(this);
 		this.menuBarPresenter = menuBarPresenter;

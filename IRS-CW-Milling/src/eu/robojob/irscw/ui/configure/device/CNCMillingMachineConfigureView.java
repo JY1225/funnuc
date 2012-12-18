@@ -15,7 +15,7 @@ import eu.robojob.irscw.external.device.ClampingManner.Type;
 import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
-import eu.robojob.irscw.ui.main.model.DeviceInformation;
+import eu.robojob.irscw.ui.general.model.DeviceInformation;
 import eu.robojob.irscw.util.UIConstants;
 
 public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingMachineConfigurePresenter> {

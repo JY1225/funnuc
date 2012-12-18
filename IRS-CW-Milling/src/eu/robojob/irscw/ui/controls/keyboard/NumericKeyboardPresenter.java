@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.keyboard;
+package eu.robojob.irscw.ui.controls.keyboard;
 
 import javafx.scene.input.KeyCode;
 import eu.robojob.irscw.ui.controls.NumericTextField;

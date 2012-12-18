@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.main.flow;
+package eu.robojob.irscw.ui.general.flow;
 
 import javafx.application.Platform;
 import eu.robojob.irscw.process.AbstractProcessStep;
@@ -13,7 +13,7 @@ import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
-import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
+import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 
 public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter implements ProcessFlowListener {
 

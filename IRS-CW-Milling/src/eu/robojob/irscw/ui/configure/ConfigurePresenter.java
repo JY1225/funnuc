@@ -26,10 +26,10 @@ import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
-import eu.robojob.irscw.ui.keyboard.KeyboardPresenter;
-import eu.robojob.irscw.ui.keyboard.NumericKeyboardPresenter;
-import eu.robojob.irscw.ui.main.model.DeviceInformation;
-import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
+import eu.robojob.irscw.ui.controls.keyboard.KeyboardPresenter;
+import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
+import eu.robojob.irscw.ui.general.model.DeviceInformation;
+import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 
 public class ConfigurePresenter implements TextFieldListener, MainContentPresenter {
 

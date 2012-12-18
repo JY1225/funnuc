@@ -4,8 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
-import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
-import eu.robojob.irscw.ui.main.model.TransportInformation;
+import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
+import eu.robojob.irscw.ui.general.model.TransportInformation;
 
 public class TransportInterventionPresenter extends AbstractFormPresenter<TransportInterventionView, TransportMenuPresenter> {
 

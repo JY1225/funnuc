@@ -1,7 +1,7 @@
 package eu.robojob.irscw.ui.configure.device;
 
 import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
-import eu.robojob.irscw.ui.main.model.DeviceInformation;
+import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public abstract class AbstractDeviceMenuPresenter extends AbstractMenuPresenter<DeviceMenuView> {
 

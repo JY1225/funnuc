@@ -12,7 +12,7 @@ import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
+import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 
 public class ProcessFlowAdapterTest {
 

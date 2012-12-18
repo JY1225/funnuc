@@ -11,7 +11,7 @@ import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
-import eu.robojob.irscw.ui.main.model.TransportInformation;
+import eu.robojob.irscw.ui.general.model.TransportInformation;
 import eu.robojob.irscw.util.UIConstants;
 
 public class TransportInterventionView extends AbstractFormView<TransportInterventionPresenter> {

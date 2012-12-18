@@ -25,7 +25,7 @@ import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
-import eu.robojob.irscw.ui.main.model.DeviceInformation;
+import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<CNCMillingMachineConfigureView, CNCMillingMachineMenuPresenter> implements ProcessFlowListener {
 

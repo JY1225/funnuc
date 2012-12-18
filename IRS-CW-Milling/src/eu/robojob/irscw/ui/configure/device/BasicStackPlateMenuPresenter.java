@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
-import eu.robojob.irscw.ui.main.model.DeviceInformation;
+import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 

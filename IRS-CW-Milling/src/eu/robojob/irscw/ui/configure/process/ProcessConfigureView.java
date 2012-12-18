@@ -11,7 +11,7 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
-import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
+import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 import eu.robojob.irscw.util.UIConstants;
 
 public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePresenter> {

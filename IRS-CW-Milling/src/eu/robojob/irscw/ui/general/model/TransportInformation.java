@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.main.model;
+package eu.robojob.irscw.ui.general.model;
 
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotSettings;

@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.main.flow;
+package eu.robojob.irscw.ui.general.flow;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigureView;
-import eu.robojob.irscw.ui.main.model.ProcessFlowAdapter;
+import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 
 public class ProcessFlowView extends GridPane  {
 	

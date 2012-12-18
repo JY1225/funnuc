@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.main.model;
+package eu.robojob.irscw.ui.general.model;
 
 import java.util.ArrayList;
 import java.util.List;

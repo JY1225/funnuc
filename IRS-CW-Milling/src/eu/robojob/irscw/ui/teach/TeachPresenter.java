@@ -35,7 +35,7 @@ import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
-import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
+import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.util.Translator;
 
 public class TeachPresenter implements CNCMachineListener, RobotListener, ProcessFlowListener, MainContentPresenter {

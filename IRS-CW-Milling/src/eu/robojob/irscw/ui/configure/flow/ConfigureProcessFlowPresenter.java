@@ -6,8 +6,8 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter.Mode;
-import eu.robojob.irscw.ui.main.flow.AbstractProcessFlowPresenter;
-import eu.robojob.irscw.ui.main.flow.ProcessFlowView;
+import eu.robojob.irscw.ui.general.flow.AbstractProcessFlowPresenter;
+import eu.robojob.irscw.ui.general.flow.ProcessFlowView;
 
 public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	
