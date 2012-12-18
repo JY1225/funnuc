@@ -3,38 +3,30 @@ package eu.robojob.irscw.util;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class Translator {
+public final class Translator {
 	
-	private static Translator instance;
-	private Locale locale;
-	private ResourceBundle messages;
+	private static Locale locale = new Locale("nl");;
+	private static ResourceBundle messages = ResourceBundle.getBundle("messages", locale);
 	
 	private Translator() {
 		setLanguageNL();
 	}
 	
-	public static Translator getInstance() {
-		if (instance==null) {
-			instance = new Translator();
-		}
-		return instance;
-	}
-	
-	public void setLanguageNL() {
+	public static void setLanguageNL() {
 		locale = new Locale("nl");
 		messages = ResourceBundle.getBundle("messages", locale);
 	}
 	
-	public void setLanguageEN() {
+	public static void setLanguageEN() {
 		locale = new Locale("nl");
 		messages = ResourceBundle.getBundle("messages", locale);
 	}
 	
-	public String getTranslation(String key) {
+	public static String getTranslation(final String key) {
 		return messages.getString(key);
 	}
 	
-	public Locale getLocale() {
+	public static Locale getLocale() {
 		return locale;
 	}
 }

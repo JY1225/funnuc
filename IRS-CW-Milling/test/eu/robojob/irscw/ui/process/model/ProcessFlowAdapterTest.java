@@ -37,7 +37,7 @@ public class ProcessFlowAdapterTest {
 		FanucRobot robot = new FanucRobot("robot", null);
 		put2 = new PutStep(robot, cncMilling, null, null);
 		processing2 = new ProcessingStep(cncMilling, null);
-		intervention = new InterventionStep(cncMilling, robot, null, 10);
+		intervention = new InterventionStep(cncMilling, null, 10);
 		pick3 = new PickStep(robot, cncMilling, null, null);
 		processFlow.addStep(pick1);
 		processFlow.addStep(put1);

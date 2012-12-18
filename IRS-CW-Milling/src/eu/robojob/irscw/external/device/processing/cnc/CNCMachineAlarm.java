@@ -33,18 +33,15 @@ public class CNCMachineAlarm {
 	public static final int MULTIPLE_IPC_REQUESTS = 23;
 	
 	private static final int DEFAULT_PRIORITY = 5;
-	
-	private Translator translator;
-	
+		
 	private int id;
 	
 	public CNCMachineAlarm(final int id) {
 		this.id = id;
-		this.translator = Translator.getInstance();
 	}
 	
 	public String getLocalizedMessage() {
-		return translator.getTranslation("CNCMachineAlarm." + id);
+		return Translator.getTranslation("CNCMachineAlarm." + id);
 	}
 	
 	public String getMessage() {

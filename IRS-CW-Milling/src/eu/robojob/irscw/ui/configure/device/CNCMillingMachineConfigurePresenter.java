@@ -17,7 +17,7 @@ import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessingStep;
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
@@ -169,7 +169,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	@Override
 	public void modeChanged(ModeChangedEvent e) {}
 	@Override
-	public void activeStepChanged(ActiveStepChangedEvent e) {}
+	public void statusChanged(StatusChangedEvent e) {}
 	@Override
 	public void exceptionOccured(ExceptionOccuredEvent e) {}
 	@Override

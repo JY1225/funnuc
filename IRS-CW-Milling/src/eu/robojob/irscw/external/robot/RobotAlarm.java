@@ -32,11 +32,9 @@ public class RobotAlarm {
 	private static final int DEFAULT_PRIORITY = 5;
 	
 	private int id;
-	private Translator translator;
 	
 	public RobotAlarm(final int id) {
 		this.id = id;
-		this.translator = Translator.getInstance();
 	}
 	
 	public String getMessage() {
@@ -44,7 +42,7 @@ public class RobotAlarm {
 	}
 
 	public String getLocalizedMessage() {
-		return translator.getTranslation("RobotAlarm." + id);
+		return Translator.getTranslation("RobotAlarm." + id);
 	}
 	
 	public int getPriority() {

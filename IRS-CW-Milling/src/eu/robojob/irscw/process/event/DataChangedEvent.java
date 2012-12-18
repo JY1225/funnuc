@@ -8,7 +8,7 @@ public class DataChangedEvent extends ProcessFlowEvent {
 	private AbstractProcessStep step;
 	private boolean reTeachingNeeded;
 	
-	public DataChangedEvent(ProcessFlow source, AbstractProcessStep step, boolean reTeachingNeeded) {
+	public DataChangedEvent(final ProcessFlow source, final AbstractProcessStep step, final boolean reTeachingNeeded) {
 		super(source, ProcessFlowEvent.DATA_CHANGED);
 		this.step = step;
 		this.reTeachingNeeded = reTeachingNeeded;
@@ -18,7 +18,7 @@ public class DataChangedEvent extends ProcessFlowEvent {
 		return step;
 	}
 
-	public void setStep(AbstractProcessStep step) {
+	public void setStep(final AbstractProcessStep step) {
 		this.step = step;
 	}
 
@@ -26,7 +26,7 @@ public class DataChangedEvent extends ProcessFlowEvent {
 		return reTeachingNeeded;
 	}
 
-	public void setReTeachingNeeded(boolean reTeachingNeeded) {
+	public void setReTeachingNeeded(final boolean reTeachingNeeded) {
 		this.reTeachingNeeded = reTeachingNeeded;
 	}
 

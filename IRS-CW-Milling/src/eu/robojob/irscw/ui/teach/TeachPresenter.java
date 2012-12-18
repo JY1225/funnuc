@@ -27,7 +27,7 @@ import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
@@ -317,57 +317,57 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 	}
 	
 	@Override
-	public void activeStepChanged(final ActiveStepChangedEvent e) {
+	public void statusChanged(final StatusChangedEvent e) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 			switch (e.getStatusId()) {
-				case ActiveStepChangedEvent.NONE_ACTIVE:
+				case StatusChangedEvent.NONE_ACTIVE:
 					setStatus(translator.getTranslation("none-active"));
 					break;
-				case ActiveStepChangedEvent.PICK_PREPARE_DEVICE:
+				case StatusChangedEvent.PICK_PREPARE_DEVICE:
 					setStatus(translator.getTranslation("pick-prepare-device"));
 					break;
-				case ActiveStepChangedEvent.PICK_EXECUTE_TEACHED:
+				case StatusChangedEvent.PICK_EXECUTE_TEACHED:
 					setStatus(translator.getTranslation("pick-execute-teached"));
 					break;
-				case ActiveStepChangedEvent.PICK_EXECUTE_NORMAL:
+				case StatusChangedEvent.PICK_EXECUTE_NORMAL:
 					setStatus(translator.getTranslation("pick-execute-normal"));
 					break;
-				case ActiveStepChangedEvent.PICK_FINISHED:
+				case StatusChangedEvent.PICK_FINISHED:
 					//setStatus(translator.getTranslation("pick-finished"));
 					break;
-				case ActiveStepChangedEvent.PUT_PREPARE_DEVICE:
+				case StatusChangedEvent.PUT_PREPARE_DEVICE:
 					setStatus(translator.getTranslation("put-prepare-device"));
 					break;
-				case ActiveStepChangedEvent.PUT_EXECUTE_TEACHED:
+				case StatusChangedEvent.PUT_EXECUTE_TEACHED:
 					setStatus(translator.getTranslation("put-execute-teached"));
 					break;
-				case ActiveStepChangedEvent.PUT_EXECUTE_NORMAL:
+				case StatusChangedEvent.PUT_EXECUTE_NORMAL:
 					setStatus(translator.getTranslation("put-execute-normal"));
 					break;
-				case ActiveStepChangedEvent.PUT_FINISHED:
+				case StatusChangedEvent.PUT_FINISHED:
 					if (processFlow.getProcessSteps().get(processFlow.getProcessSteps().size() - 1).equals(e.getActiveStep())) {
 						setStatus(translator.getTranslation("teach-finished"));
 					} else {
 						setStatus(translator.getTranslation("put-finished"));
 					}
 					break;
-				case ActiveStepChangedEvent.PROCESSING_PREPARE_DEVICE:
+				case StatusChangedEvent.PROCESSING_PREPARE_DEVICE:
 					setStatus(translator.getTranslation("processing-prepare-device"));
 					break;
-				case ActiveStepChangedEvent.PROCESSING_IN_PROGRESS:
+				case StatusChangedEvent.PROCESSING_IN_PROGRESS:
 					teachStatusView.setProcessPaused();
 					setStatus(translator.getTranslation("processing-in-progress"));
 					break;
-				case ActiveStepChangedEvent.PROCESSING_FINISHED:
+				case StatusChangedEvent.PROCESSING_FINISHED:
 					teachStatusView.setProcessRunning();
 					setStatus(translator.getTranslation("processing-finished"));
 					break;
-				case ActiveStepChangedEvent.TEACHING_NEEDED:
+				case StatusChangedEvent.TEACHING_NEEDED:
 					setStatus(translator.getTranslation("teaching-needed"));
 					teachStatusView.setProcessPaused();
 					break;
-				case ActiveStepChangedEvent.TEACHING_FINISHED:
+				case StatusChangedEvent.TEACHING_FINISHED:
 					teachStatusView.setProcessRunning();
 					if (e.getActiveStep() instanceof PickStep) {
 						setStatus(translator.getTranslation("pick-execute-normal"));

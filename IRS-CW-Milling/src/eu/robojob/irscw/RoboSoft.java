@@ -59,7 +59,7 @@ public class RoboSoft extends Application {
 	@Override
 	public void stop() {
 		logger.info("Closing application.");
-		ThreadManager.getInstance().shutDown();
+		ThreadManager.shutDown();
 		logger.info("Closed application.");
 	}
 }

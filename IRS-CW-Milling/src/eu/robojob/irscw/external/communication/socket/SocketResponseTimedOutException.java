@@ -10,11 +10,9 @@ public class SocketResponseTimedOutException extends AbstractCommunicationExcept
 	private static final String RESPONSE_TIMED_OUT_FROM = "ResponseTimedOutException.responseTimedOutFrom";
 	
 	private SocketConnection socketConnection;
-	private Translator translator;
 	
 	public SocketResponseTimedOutException(final SocketConnection socketConnection) {
 		this.socketConnection = socketConnection;
-		this.translator = Translator.getInstance();
 	}
 	
 	public SocketConnection getConnection() {
@@ -28,6 +26,6 @@ public class SocketResponseTimedOutException extends AbstractCommunicationExcept
 	
 	@Override
 	public String getLocalizedMessage() {
-		return translator.getTranslation(RESPONSE_TIMED_OUT_FROM) + " " + socketConnection;
+		return Translator.getTranslation(RESPONSE_TIMED_OUT_FROM) + " " + socketConnection;
 	}
 }

@@ -5,20 +5,8 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.RobotActionException;
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.AbstractTransportStep;
-import eu.robojob.irscw.process.InterventionStep;
-import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessFlow.Mode;
-import eu.robojob.irscw.process.ProcessingStep;
-import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 
 public class AutomateThread extends Thread{
 
@@ -34,7 +22,7 @@ public class AutomateThread extends Thread{
 	
 	@Override
 	public void run() {
-		processFlow.setMode(Mode.AUTO);
+		/*processFlow.setMode(Mode.AUTO);
 		logger.info("started automate thread!");
 		
 		this.running = true;
@@ -116,25 +104,9 @@ public class AutomateThread extends Thread{
 			e.printStackTrace();
 			processFlow.setMode(Mode.STOPPED);
 		}
-		processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, null, ActiveStepChangedEvent.NONE_ACTIVE));
+		processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.NONE_ACTIVE));
 		logger.info("Automate Thread ended: " + toString());
-		this.running = false;
-	}
-	
-	private void handlePick(final PickStep pickStep) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
-		pickStep.executeStep();
-	}
-	
-	private void handlePut(final PutStep putStep) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
-		putStep.executeStep();
-	}
-
-	private void handleProcessing(final ProcessingStep step) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
-		step.executeStep();
-	}
-	
-	protected void notifyException(final Exception e) {
-		processFlow.processProcessFlowEvent(new ExceptionOccuredEvent(processFlow, e));
+		this.running = false;*/
 	}
 	
 	@Override
@@ -161,7 +133,6 @@ public class AutomateThread extends Thread{
 				try {
 					robot.abort();
 				} catch (AbstractCommunicationException | InterruptedException e) {
-					notifyException(e);
 				}
 			}
 			for (AbstractDevice device :processFlow.getDevices()) {

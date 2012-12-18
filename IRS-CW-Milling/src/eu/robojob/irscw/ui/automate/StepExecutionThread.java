@@ -5,7 +5,7 @@ import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 
 public class StepExecutionThread extends Thread {
 	
@@ -19,7 +19,7 @@ public class StepExecutionThread extends Thread {
 	
 	@Override
 	public void run() {
-		try {
+		/*try {
 			step.executeStep();
 		} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
 			e.printStackTrace();
@@ -32,7 +32,7 @@ public class StepExecutionThread extends Thread {
 			e.printStackTrace();
 			step.getProcessFlow().setMode(Mode.STOPPED);
 		}
-		step.getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(step.getProcessFlow(), null, ActiveStepChangedEvent.NONE_ACTIVE));
+		step.getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(step.getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE));*/
 	}
 	
 }

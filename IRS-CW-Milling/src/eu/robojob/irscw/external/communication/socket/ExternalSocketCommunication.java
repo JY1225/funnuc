@@ -21,7 +21,7 @@ public abstract class ExternalSocketCommunication {
 		
 	public ExternalSocketCommunication(final SocketConnection socketConnection) {
 		this.extCommThread = new ExternalCommunicationThread(socketConnection, this);
-		ThreadManager.getInstance().submit(extCommThread);
+		ThreadManager.submit(extCommThread);
 		defaultWaitTimeout = DEFAULT_WAIT_TIMEOUT;
 	}
 	

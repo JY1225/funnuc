@@ -7,7 +7,7 @@ public class FinishedAmountChangedEvent extends ProcessFlowEvent {
 	private int finishedAmount;
 	private int totalAmount;
 	
-	public FinishedAmountChangedEvent(ProcessFlow source, int finishedAmount, int totalAmount) {
+	public FinishedAmountChangedEvent(final ProcessFlow source, final int finishedAmount, final int totalAmount) {
 		super(source, ProcessFlowEvent.FINISHED_AMOUNT_CHANGED);
 		this.finishedAmount = finishedAmount;
 		this.totalAmount = totalAmount;

@@ -7,12 +7,11 @@ import eu.robojob.irscw.external.robot.RobotEvent;
 import eu.robojob.irscw.external.robot.RobotListener;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.ui.AbstractPopUpPresenter;
 
 public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> implements RobotListener, ProcessFlowListener {
@@ -123,8 +122,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 		}
 	}
 
-	@Override public void activeStepChanged(ActiveStepChangedEvent e) {}
-	@Override public void exceptionOccured(ExceptionOccuredEvent e) {}
+	@Override public void statusChanged(StatusChangedEvent e) {}
 	@Override public void dataChanged(ProcessFlowEvent e) {}
 	@Override public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
 

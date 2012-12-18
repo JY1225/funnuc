@@ -10,12 +10,10 @@ public class RobotActionException extends Exception {
 
 	private AbstractRobot robot;
 	private String errorId;
-	private Translator translator;
 	
 	public RobotActionException(final AbstractRobot robot, final String errorId) {
 		this.errorId = errorId;
 		this.robot = robot;
-		this.translator = Translator.getInstance();
 	}
 
 	@Override
@@ -25,6 +23,6 @@ public class RobotActionException extends Exception {
 	
 	@Override
 	public String getLocalizedMessage() {
-		return translator.getTranslation(EXCEPTION_DURING_ROBOT_ACTION) + ": " + robot.getId() + ", " + translator.getTranslation(errorId);
+		return Translator.getTranslation(EXCEPTION_DURING_ROBOT_ACTION) + ": " + robot.getId() + ", " + Translator.getTranslation(errorId);
 	}
 }

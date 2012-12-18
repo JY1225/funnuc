@@ -10,7 +10,7 @@ import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.external.robot.RobotPickSettings;
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 
 public class PickAfterWaitStep extends PickStep {
 
@@ -25,49 +25,53 @@ public class PickAfterWaitStep extends PickStep {
 	}
 
 	@Override
-	public void executeStep() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	public void executeStep(final int workPieceId) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the devices to be used
 		if (!getDevice().lock(getProcessFlow())) {
-			throw new IllegalStateException("Device " + getDevice() + " was already locked by: " + getDevice().getLockingProcess());
+			throw new IllegalStateException("Device [" + getDevice() + "] was already locked by [" + getDevice().getLockingProcess() + "].");
 		} else {
 			if (!getRobot().lock(getProcessFlow())) {
-				throw new IllegalStateException("Robot " + getRobot() + " was already locked by: " + getRobot().getLockingProcess());
+				throw new IllegalStateException("Robot [" + getRobot() + "] was already locked by [" + getRobot().getLockingProcess() + "].");
 			} else {
-				logger.debug("About to execute pick after wait in " + getDevice().getId() + " using " + getRobot().getId());
-				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PICK_PREPARE_DEVICE));
-				logger.debug("Preparing device...");
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, workPieceId));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
+				logger.debug("Preparing device [" + getDevice() + "] for pick-after-wait, using [" + getRobot() + "].");
 				getDevice().prepareForPick(getDeviceSettings());
-				logger.debug("Device prepared.");
-				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PICK_EXECUTE_NORMAL));
+				logger.debug("Device [" + getDevice() + "] prepared for pick-after-wait.");
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, workPieceId));
 				if (needsTeaching()) {
 					throw new IllegalStateException("No teaching needed with this kind of step.");
 				}
-				logger.debug("About to ask device to release piece");
+				logger.debug("About to ask device [" + getDevice() + "] to release piece.");
 				getDevice().releasePiece(getDeviceSettings());
-				logger.debug("Device released piece, about to move away");
+				logger.debug("Device [" + getDevice() + "] released piece, about to move away.");
 				getRobot().continueMoveWithPieceTillIPPoint();
-				getRobot().finalizeMoveWithPiece();
-				getRobotSettings().getGripperHead().getGripper().setWorkPiece(getRobotSettings().getWorkPiece());
 				getDevice().pickFinished(getDeviceSettings());
-				logger.debug("Pick finished");
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
+				logger.debug("Pick-after-wait ready (but not finalized).");
 			}
 		}
 	}
 	
 	@Override
-	public void prepareForTeaching() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
-		throw new IllegalStateException("No teaching needed with this kind of step.");
-
+	public void executeStepTeached(final int workPieceId) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+		executeStep(workPieceId);
 	}
-
+	
 	@Override
-	public void teachingFinished() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
-		throw new IllegalStateException("No teaching needed with this kind of step.");
+	public void finalizeStep() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (!getRobot().lock(getProcessFlow())) {
+			throw new IllegalStateException("Robot [" + getRobot() + "] was already locked by " + getRobot().getLockingProcess());
+		} else {
+			getRobot().finalizeMoveWithPiece();
+			getRobot().release(getProcessFlow());
+			logger.debug("Finalized pick-after-wait.");
+		}
 	}
 	
 	@Override
 	public boolean needsTeaching() {
-		return false;
+		return false;		// this step never needs teaching
 	}
 
 }

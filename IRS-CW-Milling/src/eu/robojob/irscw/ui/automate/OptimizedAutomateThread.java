@@ -12,7 +12,7 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 
 public class OptimizedAutomateThread extends AutomateThread {
 	
@@ -87,7 +87,7 @@ public class OptimizedAutomateThread extends AutomateThread {
 			}
 		//} catch(CommunicationException | RobotActionException | DeviceActionException e) {
 		} catch(AbstractCommunicationException e) {
-			notifyException(e);
+			//notifyException(e);
 			processFlow.setMode(Mode.STOPPED);
 		} catch(InterruptedException e) {
 			logger.info("Execution of one or more steps got interrupted, so let't just stop");
@@ -97,7 +97,7 @@ public class OptimizedAutomateThread extends AutomateThread {
 			e.printStackTrace();
 			processFlow.setMode(Mode.STOPPED);
 		}
-		processFlow.processProcessFlowEvent(new ActiveStepChangedEvent(processFlow, null, ActiveStepChangedEvent.NONE_ACTIVE));
+		//processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.NONE_ACTIVE));
 		logger.info("Thread ended: " + toString());
 		this.running = false;
 	}

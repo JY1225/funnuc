@@ -7,7 +7,7 @@ import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
@@ -138,7 +138,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	public void modeChanged(final ModeChangedEvent e) {
 	}
 	
-	private void showActiveStepChange(ActiveStepChangedEvent e) {
+	private void showActiveStepChange(StatusChangedEvent e) {
 		AbstractProcessStep step = e.getActiveStep();
 		if (step == null) {
 			if (processFlowAdapter.getProcessFlow().getMode() != ProcessFlow.Mode.PAUSED) {
@@ -146,13 +146,13 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 			}
 		} else {
 			if (step instanceof PickStep) {
-				if (e.getStatusId() != ActiveStepChangedEvent.PICK_FINISHED) {
+				if (e.getStatusId() != StatusChangedEvent.PICK_FINISHED) {
 					setPickStepActive(processFlowAdapter.getTransportIndex((PickStep) step));
 				} else {
 					//setPickStepFinished(processFlowAdapter.getTransportIndex((PickStep) step));
 				}
 			} else if (step instanceof PutStep) {
-				if (e.getStatusId() != ActiveStepChangedEvent.PUT_FINISHED) {
+				if (e.getStatusId() != StatusChangedEvent.PUT_FINISHED) {
 					setPutStepActive(processFlowAdapter.getTransportIndex((PutStep) step));
 				} else {
 					int transportIndex = processFlowAdapter.getTransportIndex((PutStep) step);
@@ -163,7 +163,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 					}
 				}
 			} else if (step instanceof ProcessingStep) {
-				if (e.getStatusId() != ActiveStepChangedEvent.PROCESSING_FINISHED) {
+				if (e.getStatusId() != StatusChangedEvent.PROCESSING_FINISHED) {
 					setProcessingStepActive(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
 				} else {
 					setProcessingStepFinished(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
@@ -175,7 +175,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	}
 
 	@Override
-	public void activeStepChanged(final ActiveStepChangedEvent e) {
+	public void statusChanged(final StatusChangedEvent e) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				FixedProcessFlowPresenter.this.showActiveStepChange(e);

@@ -10,33 +10,21 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.ExternalCommunicationThread;
 
+public final class ThreadManager {
 
-public class ThreadManager {
-
-	private ExecutorService executorService;
-	private static final int amountOfThreads = 8;
-	private static ThreadManager instance;
+	private static final int MAX_THREAD_AMOUNT = 8;
 	
-	private static final Logger logger = LogManager.getLogger(ThreadManager.class.getName());
+	private static Logger logger = LogManager.getLogger(ThreadManager.class.getName());
 	
-	private Set<ExternalCommunicationThread> communicationThreads;
-	private Set<MonitoringThread> monitoringThreads;
+	private static ExecutorService executorService = Executors.newFixedThreadPool(MAX_THREAD_AMOUNT);
+	private static Set<ExternalCommunicationThread> communicationThreads = new HashSet<ExternalCommunicationThread>();
+	private static Set<MonitoringThread> monitoringThreads = new HashSet<MonitoringThread>();
 	
-	private ThreadManager () {
-		executorService = Executors.newFixedThreadPool(amountOfThreads);
-		communicationThreads = new HashSet<ExternalCommunicationThread>();
-		monitoringThreads = new HashSet<MonitoringThread>();
+	private ThreadManager() {
 	}
 	
-	public static ThreadManager getInstance() {
-		if (instance == null) {
-			instance = new ThreadManager();
-		}
-		return instance;
-	}
-
-	public void submit(Thread thread) {
-		logger.debug("New thread submitted: " + thread);
+	public static void submit(final Thread thread) {
+		logger.debug("New thread submitted: [" + thread + "].");
 		if (thread instanceof ExternalCommunicationThread) {
 			communicationThreads.add((ExternalCommunicationThread) thread);
 		} else if (thread instanceof MonitoringThread) {
@@ -45,7 +33,7 @@ public class ThreadManager {
 		executorService.submit(thread);
 	}
 	
-	public void shutDown() {
+	public static void shutDown() {
 		for (ExternalCommunicationThread thread : communicationThreads) {
 			thread.disconnectAndStop();
 		}
@@ -55,21 +43,19 @@ public class ThreadManager {
 		executorService.shutdownNow();
 	}
 	
-	public void stopRunning(Thread thread) {
-		//if (thread.isAlive()) {
-			if (communicationThreads.contains(thread)) {
-				ExternalCommunicationThread exThread = (ExternalCommunicationThread) thread;
-				exThread.disconnectAndStop();
-				communicationThreads.remove(thread);
-			} else if (monitoringThreads.contains(thread)) {
-				MonitoringThread mThread = (MonitoringThread) thread;
-				mThread.stopExecution();
-				monitoringThreads.remove(mThread);
-			} else {
-				logger.info("about to interrupt: " + thread);
-				thread.interrupt();
-			}
-		//}
+	public static void stopRunning(final Thread thread) {
+		logger.info("About to stop: [" + thread + "].");
+		if (communicationThreads.contains(thread)) {
+			ExternalCommunicationThread exThread = (ExternalCommunicationThread) thread;
+			exThread.disconnectAndStop();
+			communicationThreads.remove(thread);
+		} else if (monitoringThreads.contains(thread)) {
+			MonitoringThread mThread = (MonitoringThread) thread;
+			mThread.stopExecution();
+			monitoringThreads.remove(mThread);
+		} else {
+			thread.interrupt();
+		}
 	}
 
 }

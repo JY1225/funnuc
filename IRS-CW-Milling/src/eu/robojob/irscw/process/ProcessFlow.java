@@ -17,28 +17,31 @@ import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotSettings;
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 
 public class ProcessFlow {
 	
 	public enum Mode {
-		TEACH, READY, AUTO, PAUSED, STOPPED, CONFIG, FINISHED
+		CONFIG, 	// The initial mode, the ProcessFlow-data has not been checked. 
+		READY, 		// The ProcessFlow is ready to be executed.
+		TEACH, 		// The ProcessFlow is being executed in 'teach mode'.
+		AUTO, 		// The ProcessFlow is being executed in 'auto mode'.
+		PAUSED, 	// The Execution of ProcessFlow was paused.
+		STOPPED, 	// The Execution of ProcessFlow was stopped.
+		FINISHED	// The Execution of ProcessFlow has finished.
 	}
 	
 	private List<AbstractProcessStep> processSteps;
 	
-	private Map<AbstractDevice, DeviceSettings> deviceSettings;
-	private Map<AbstractRobot, RobotSettings> robotSettings;
+	private Map<AbstractDevice, DeviceSettings> deviceSettings;		// device settings that are independent of the process steps
+	private Map<AbstractRobot, RobotSettings> robotSettings;		// robot settings that are independent of the process steps
 		
 	private Integer totalAmount;
 	private Integer finishedAmount;
-	
-	private boolean needsTeaching;
 	
 	private String name;
 	
@@ -47,58 +50,40 @@ public class ProcessFlow {
 	
 	private static Logger logger = LogManager.getLogger(ProcessFlow.class.getName());
 	
-	private ClampingManner clampingType;
+	private ClampingManner clampingManner;
 	
-	private int currentStepIndex;
-	
-	//TODO refactor constructors so there is one constructor, called by the others
-	public ProcessFlow(final String name) {
-		this.clampingType = new ClampingManner();
+	private Map<Integer, AbstractProcessStep> currentSteps;
+		
+	public ProcessFlow(final String name, final List<AbstractProcessStep>processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, 
+			RobotSettings> robotSettings, final int totalAmount, final ClampingManner clampingManner) {
 		this.name = name;
-		this.processSteps = new ArrayList<AbstractProcessStep>();
-		this.deviceSettings = new HashMap<AbstractDevice, DeviceSettings>();
-		this.robotSettings = new HashMap<AbstractRobot, RobotSettings>();
-		needsTeaching = true;
-		this.totalAmount = 0;
-		this.finishedAmount = 0;
-		this.mode = Mode.CONFIG;
-		this.listeners = new HashSet<ProcessFlowListener>();
-		initialize();
-	}
-			
-	public ProcessFlow(String name, List<AbstractProcessStep>processSteps, Map<AbstractDevice, DeviceSettings> deviceSettings,
-			Map<AbstractRobot, RobotSettings> robotSettings) {
-		this.name = name;
-		this.clampingType = new ClampingManner();
-		needsTeaching = true;
+		this.clampingManner = clampingManner;
 		this.deviceSettings = deviceSettings;
 		this.robotSettings = robotSettings;
 		this.listeners = new HashSet<ProcessFlowListener>();
-		this.totalAmount = 0;
+		this.currentSteps = new HashMap<Integer, AbstractProcessStep>();
+		this.totalAmount = totalAmount;
 		this.finishedAmount = 0;
 		this.mode = Mode.CONFIG;
 		setUpProcess(processSteps);
 		initialize();
 	}
 	
-	public void restart() {
-		logger.info("restarted");
-		incrementFinishedAmount();
-		currentStepIndex = 0;
-		processProcessFlowEvent(new ActiveStepChangedEvent(this, null, ActiveStepChangedEvent.NONE_ACTIVE));
+	public ProcessFlow(final String name, final List<AbstractProcessStep> processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, RobotSettings> robotSettings) {
+		this(name, processSteps, deviceSettings, robotSettings, 0, new ClampingManner());
+	}
+	
+	public ProcessFlow(final String name) {
+		this(name, new ArrayList<AbstractProcessStep>(), new HashMap<AbstractDevice, DeviceSettings>(), new HashMap<AbstractRobot, RobotSettings>());
 	}
 	
 	public void initialize() {
-		logger.info("Process flow: initialize");
-		currentStepIndex = 0;
-		loadAllDeviceSettings();
-		loadAllRobotSettings();
+		logger.info("Initializing [" + getName() + "].");
+		loadAllSettings();
 		setFinishedAmount(0);
-		//setMode(Mode.READY);
-		processProcessFlowEvent(new ActiveStepChangedEvent(this, null, ActiveStepChangedEvent.NONE_ACTIVE));
 	}
 	
-	public void loadFromOtherProcessFlow(ProcessFlow processFlow) {
+	public void loadFromOtherProcessFlow(final ProcessFlow processFlow) {
 		this.processSteps = processFlow.getProcessSteps();
 		for (AbstractProcessStep step : this.processSteps) {
 			step.setProcessFlow(this);
@@ -108,9 +93,8 @@ public class ProcessFlow {
 		initialize();
 		this.totalAmount = processFlow.getTotalAmount();
 		this.finishedAmount = processFlow.getFinishedAmount();
-		logger.info("**TYPE: " + processFlow.getClampingType().getType());
-		this.clampingType.setType(processFlow.getClampingType().getType());
-		for(AbstractDevice device : getDevices()) {
+		this.clampingManner.setType(processFlow.getClampingType().getType());
+		for (AbstractDevice device : getDevices()) {
 			if (device instanceof BasicStackPlate) {
 				((BasicStackPlate) device).placeFinishedWorkPieces(processFlow.getFinishedAmount());
 			}
@@ -125,78 +109,32 @@ public class ProcessFlow {
 		return robotSettings;
 	}
 	
-	public boolean hasNextStep() {
-		if (getProcessSteps().size() > currentStepIndex + 1) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public boolean hasStep() {
-		if (getProcessSteps().size() > currentStepIndex) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public void nextStep() {
-		currentStepIndex++;
-	}
-	
-	public AbstractProcessStep getCurrentStep() {
-		if (hasStep()) {
-			return getStep(currentStepIndex);
-		} else {
-			return null;
-		}
-	}
-	
-	public AbstractProcessStep getNextStep() {
-		if (hasNextStep()) {
-			return getProcessSteps().get(currentStepIndex + 1);
-		} else if (finishedAmount < totalAmount) {
-			return getProcessSteps().get(0);
-		} else {
-			return null;
-		}
-	}
-	
-	public int getCurrentStepIndex() {
-		return currentStepIndex;
-	}
-	
 	public Mode getMode() {
 		return mode;
 	}
 
-	public void setMode(Mode mode) {
+	public void setMode(final Mode mode) {
 		if (mode != this.mode) { 
 			this.mode = mode;
-			if (mode == Mode.STOPPED) {
-				logger.info("ProcessFlow mode is now stopped");
-				initialize();
-			}
 			processProcessFlowEvent(new ModeChangedEvent(this, mode));
 		}
 	}
 
-	public void addListener(ProcessFlowListener listener) {
-		logger.debug("added listener: " + listener);
+	public void addListener(final ProcessFlowListener listener) {
 		this.listeners.add(listener);
+		logger.debug("Now listening to [" + toString() + "]: " + listener.toString());
 	}
 	
-	public void removeListener(ProcessFlowListener listener) {
-		logger.debug("removed listener: " + listener);
+	public void removeListener(final ProcessFlowListener listener) {
 		this.listeners.remove(listener);
+		logger.debug("Stopped listening to [" + toString() + "]: " + listener.toString());
 	}
 	
 	public Integer getTotalAmount() {
 		return totalAmount;
 	}
 
-	public void setTotalAmount(Integer totalAmount) {
+	public void setTotalAmount(final Integer totalAmount) {
 		this.totalAmount = totalAmount;
 	}
 
@@ -208,13 +146,12 @@ public class ProcessFlow {
 		setFinishedAmount(finishedAmount + 1);
 	}
 
-	public void setFinishedAmount(int finishedAmount) {
+	public void setFinishedAmount(final int finishedAmount) {
 		this.finishedAmount = finishedAmount;
 		processProcessFlowEvent(new FinishedAmountChangedEvent(this, finishedAmount, totalAmount));
 	}
 
-	public void processProcessFlowEvent(ProcessFlowEvent event) {
-		logger.info("processing event: " + event);
+	public void processProcessFlowEvent(final ProcessFlowEvent event) {
 		switch(event.getId()) {
 			case ProcessFlowEvent.MODE_CHANGED:
 				for (ProcessFlowListener listener : listeners) {
@@ -223,12 +160,7 @@ public class ProcessFlow {
 				break;
 			case ProcessFlowEvent.ACTIVE_STEP_CHANGED:
 				for (ProcessFlowListener listener : listeners) {
-					listener.activeStepChanged((ActiveStepChangedEvent) event);
-				}
-				break;
-			case ProcessFlowEvent.EXCEPTION_OCCURED:
-				for (ProcessFlowListener listener : listeners) {
-					listener.exceptionOccured((ExceptionOccuredEvent) event);
+					listener.statusChanged((StatusChangedEvent) event);
 				}
 				break;
 			case ProcessFlowEvent.DATA_CHANGED:
@@ -242,7 +174,7 @@ public class ProcessFlow {
 				}
 				break;
 			default:
-				throw new IllegalArgumentException("Unkown event-id");
+				throw new IllegalArgumentException("Unkown event type.");
 		}
 	}
 	
@@ -250,7 +182,7 @@ public class ProcessFlow {
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -258,99 +190,74 @@ public class ProcessFlow {
 		return processSteps;
 	}
 	
-	private void setUpProcess(List<AbstractProcessStep> processSteps) {
+	private void setUpProcess(final List<AbstractProcessStep> processSteps) {
 		this.processSteps = processSteps;
 		if (processSteps.size() < 2) {
-			throw new IllegalArgumentException("A process should have a minimum of 2 step (Pick & Put)");
+			throw new IllegalArgumentException("A process should have a minimum of 2 steps (Pick & Put).");
 		} 
 	}
 	
-	public boolean needsTeaching() {
-		return needsTeaching;
-	}
-
-	public void setNeedsTeaching(boolean needsTeaching) {
-		this.needsTeaching = needsTeaching;
-	}
-
-	public boolean willNeedDevice(AbstractDevice device, int currentStepNumber) {
-		for (int i = currentStepNumber; i < processSteps.size(); i++) {
-			if (processSteps.get(i).getDevice().equals(device)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public void addStep(int index, AbstractProcessStep newStep) {
+	public void addStep(final int index, final AbstractProcessStep newStep) {
 		processSteps.add(index, newStep);
 		newStep.setProcessFlow(this);
 	}
 	
-	public void addStep(AbstractProcessStep newStep) {
+	public void addStep(final AbstractProcessStep newStep) {
 		processSteps.add(newStep);
 		newStep.setProcessFlow(this);
 	}
 	
-	public int getStepIndex (AbstractProcessStep step) {
+	public int getStepIndex(final AbstractProcessStep step) {
 		return processSteps.indexOf(step);
 	}
 	
-	public AbstractProcessStep getStep(int index) {
+	public AbstractProcessStep getStep(final int index) {
 		return processSteps.get(index);
 	}
 	
-	public boolean occursMultipleTimes(AbstractProcessStep step) {
-		if ((processSteps.indexOf(step) != -1) && (processSteps.indexOf(step) != processSteps.lastIndexOf(step))) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public void removeStep (AbstractProcessStep step) {
+	public void removeStep(final AbstractProcessStep step) {
 		processSteps.remove(step);
-		initialize();
+		initialize();		// always initialize after updates to the process flow
 	}
 	
-	public void removeSteps(List<AbstractProcessStep> steps) {
+	public void removeSteps(final List<AbstractProcessStep> steps) {
 		processSteps.removeAll(steps);
-		initialize();
+		initialize();		// always initialize after updates to the process flow
 	}
 	
-	public void addStepAfter(AbstractProcessStep step, AbstractProcessStep newStep) {
+	public void addStepAfter(final AbstractProcessStep step, final AbstractProcessStep newStep) {
 		if (processSteps.indexOf(step) == -1) {
-			throw new IllegalArgumentException("Could not find this step");
+			throw new IllegalArgumentException("Could not find step: [" + step + "].");
 		} else {
 			processSteps.add(processSteps.indexOf(step) + 1, newStep);
 			newStep.setProcessFlow(this);
 		}
-		initialize();
+		initialize();		// always initialize after updates to the process flow
 	}
 	
-	public void addStepBefore(AbstractProcessStep step, AbstractProcessStep newStep) {
+	public void addStepBefore(final AbstractProcessStep step, final AbstractProcessStep newStep) {
 		if (processSteps.indexOf(step) == -1) {
 			throw new IllegalArgumentException("Could not find this step");
 		} else {
 			processSteps.add(processSteps.indexOf(step), newStep);
 			newStep.setProcessFlow(this);
 		}
-		initialize();
+		initialize();		// always initialize after updates to the process flow
 	}
 	
-	public DeviceSettings getDeviceSettings(AbstractDevice device) {
+	public DeviceSettings getDeviceSettings(final AbstractDevice device) {
 		return deviceSettings.get(device);
 	}
 	
-	public RobotSettings getRobotSettings(AbstractRobot robot) {
+	public RobotSettings getRobotSettings(final AbstractRobot robot) {
 		return robotSettings.get(robot);
 	}
 	
-	public void setDeviceSettings(AbstractDevice device, DeviceSettings settings) {
+	public void setDeviceSettings(final AbstractDevice device, final DeviceSettings settings) {
 		deviceSettings.put(device, settings);
 	}
 	
-	public void setRobotSettings(AbstractRobot robot, RobotSettings settings) {
+	public void setRobotSettings(final AbstractRobot robot, final RobotSettings settings) {
 		robotSettings.put(robot, settings);
 	}
 	
@@ -375,24 +282,22 @@ public class ProcessFlow {
 		for (AbstractProcessStep step : processSteps) {
 			if (step instanceof PickStep) {
 				PickStep pickStep = (PickStep) step;
-				if (  (!pickStep.getDevice().validatePickSettings(pickStep.getDeviceSettings())) || 
-						(!pickStep.getRobot().validatePickSettings(pickStep.getRobotSettings()))  ) {
+				if ((!pickStep.getDevice().validatePickSettings(pickStep.getDeviceSettings())) || (!pickStep.getRobot().validatePickSettings(pickStep.getRobotSettings()))) {
 					return false;
 				}
 			} else if (step instanceof PutStep) {
 				PutStep putStep = (PutStep) step;
-				if (  (!putStep.getDevice().validatePutSettings(putStep.getDeviceSettings())) || 
-						(!putStep.getRobot().validatePutSettings(putStep.getRobotSettings()))  ) {
+				if ((!putStep.getDevice().validatePutSettings(putStep.getDeviceSettings())) || (!putStep.getRobot().validatePutSettings(putStep.getRobotSettings()))) {
 					return false;
 				}
 			} else if (step instanceof InterventionStep) {
 				InterventionStep interventionStep = (InterventionStep) step;
-				if (!interventionStep.getDevice().validateInterventionSettings(interventionStep.getInterventionSettings())) {
+				if (!interventionStep.getDevice().validateInterventionSettings(interventionStep.getDeviceSettings())) {
 					return false;
 				}
 			} else if (step instanceof ProcessingStep) {
 				ProcessingStep processingStep = (ProcessingStep) step;
-				if (!processingStep.getDevice().validateStartCyclusSettings(processingStep.getStartCyclusSettings())) {
+				if (!processingStep.getDevice().validateStartCyclusSettings(processingStep.getDeviceSettings())) {
 					return false;
 				}
 			}
@@ -420,7 +325,9 @@ public class ProcessFlow {
 	public Set<AbstractDevice> getDevices() {
 		Set<AbstractDevice> devices = new HashSet<AbstractDevice>();
 		for (AbstractProcessStep step : processSteps) {
-			devices.add(step.getDevice());
+			if (step instanceof DeviceStep) {
+				devices.add(((DeviceStep) step).getDevice());
+			}
 		}
 		return devices;
 	}
@@ -428,20 +335,31 @@ public class ProcessFlow {
 	public Set<AbstractRobot> getRobots() {
 		Set<AbstractRobot> robots = new HashSet<AbstractRobot>();
 		for (AbstractProcessStep step : processSteps) {
-			if (step instanceof AbstractTransportStep) {
-				AbstractTransportStep transportStep = (AbstractTransportStep) step;
-				robots.add(transportStep.getRobot());
+			if (step instanceof RobotStep) {
+				robots.add(((RobotStep) step).getRobot());
 			}
 		}
 		return robots;
 	}
 
 	public ClampingManner getClampingType() {
-		return clampingType;
+		return clampingManner;
 	}
 
-	public void setClampingType(ClampingManner clampingType) {
-		this.clampingType = clampingType;
+	public void setClampingType(final ClampingManner clampingType) {
+		this.clampingManner = clampingType;
+	}
+	
+	public void setStepActive(final int workPieceId, final AbstractProcessStep step) {
+		currentSteps.put(workPieceId, step);
+	}
+	
+	public void workPieceFinished(final int workPieceId) {
+		currentSteps.remove(workPieceId);
+	}
+	
+	public AbstractProcessStep getCurrentStep(final int workPieceId) {
+		return currentSteps.get(workPieceId);
 	}
 	
 }

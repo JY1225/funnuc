@@ -1,213 +1,104 @@
 package eu.robojob.irscw.process;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 
 public class ProcessFlowTimer implements ProcessFlowListener {
 
-	private long startingTimeCurrentStep;
-	private long otherTimeCurrentStep;
-
+	private Map<Integer, Long> startingTimeCurrentSteps;	// currently active steps (different workpiece ids) starting time
+	private Map<Integer, Long> otherTimeCurrentSteps;		// other time used by currently active steps (different workpiece ids)
 	private Map<AbstractProcessStep, Long> stepDurations;
 	
 	private ProcessFlow processFlow;
-	
-	private AbstractProcessStep currentStep;
-	
-	private static final Logger logger = LogManager.getLogger(ProcessFlowTimer.class.getName());
-	
-	enum Mode {
-		RUNNING, PAUSED, STOPPED
-	}
-	
-	private Mode mode;
-	
-	public ProcessFlowTimer(ProcessFlow processFlow) {
+		
+	private static Logger logger = LogManager.getLogger(ProcessFlowTimer.class.getName());
+		
+	public ProcessFlowTimer(final ProcessFlow processFlow) {
 		this.processFlow = processFlow;
 		processFlow.addListener(this);
 		stepDurations = new HashMap<AbstractProcessStep, Long>();
 		reset();
 	}
 	
-	@Override
-	public void modeChanged(ModeChangedEvent e) {
-		switch (e.getMode()) {
-			case AUTO:
-				setMode(Mode.RUNNING);
-				break;
-			case FINISHED:
-				setMode(Mode.STOPPED);
-				break;
-			case PAUSED:
-				setMode(Mode.PAUSED);
-				break;
-			case STOPPED:
-				reset();
-				setMode(Mode.STOPPED);
-				break;
-			case TEACH:
-				setMode(Mode.RUNNING);
-				break;
-			case READY:
-				setMode(Mode.STOPPED);
-				break;
-			default:
-				setMode(Mode.STOPPED);
-				break;
-		}
-	}
-	
 	private void reset() {
-		logger.info("reset!");
-		startingTimeCurrentStep = -1;
-		otherTimeCurrentStep = 0;
-		currentStep = null;
+		logger.debug("Timer of [" + processFlow + "] reset.");
+		startingTimeCurrentSteps = new HashMap<Integer, Long>();
+		otherTimeCurrentSteps = new HashMap<Integer, Long>();
+	}
+	
+	@Override
+	public void modeChanged(final ModeChangedEvent e) {
+		switch (e.getMode()) {
+			case STOPPED:		// Only this mode is of importance, because it indicates the execution of one or more steps could be interrupted.
+				reset();
+				break;
+			default:
+				break;
+		}
 	}
 
 	@Override
-	public void activeStepChanged(ActiveStepChangedEvent e) {
-		logger.info("active step changed: " + e.getId() + " - " + e.getActiveStep());
-		switch(e.getStatusId()) {
-			case ActiveStepChangedEvent.NONE_ACTIVE:
-				currentStepEnded();
-				currentStep = null;
+	public void statusChanged(final StatusChangedEvent e) {
+		int workPieceId = e.getWorkPieceId();
+		switch (e.getStatusId()) {
+			case StatusChangedEvent.STARTED :
+				startingTimeCurrentSteps.put(workPieceId, System.currentTimeMillis());
 				break;
-			case ActiveStepChangedEvent.TEACHING_NEEDED:
-				setMode(Mode.PAUSED);
+			case StatusChangedEvent.TEACHING_NEEDED :
+				long otherTime = 0;
+				if (otherTimeCurrentSteps.containsKey(workPieceId)) {
+					otherTime = otherTimeCurrentSteps.get(workPieceId);
+				}
+				otherTime += (System.currentTimeMillis() - startingTimeCurrentSteps.get(workPieceId));
+				startingTimeCurrentSteps.remove(workPieceId);
+				otherTimeCurrentSteps.put(workPieceId, otherTime);
 				break;
-			case ActiveStepChangedEvent.TEACHING_FINISHED:
-				setMode(Mode.RUNNING);
+			case StatusChangedEvent.TEACHING_FINISHED :
+				startingTimeCurrentSteps.put(workPieceId, System.currentTimeMillis());
+				break;
+			case StatusChangedEvent.ENDED :
+				long totalTime = 0;
+				if (otherTimeCurrentSteps.containsKey(workPieceId)) {
+					totalTime = otherTimeCurrentSteps.get(workPieceId);
+				}
+				totalTime += (System.currentTimeMillis() - startingTimeCurrentSteps.get(workPieceId));
+				startingTimeCurrentSteps.remove(workPieceId);
+				otherTimeCurrentSteps.remove(workPieceId);
+				stepDurations.put(e.getActiveStep(), totalTime);
 				break;
 			default:
-				if (!e.getActiveStep().equals(currentStep)) {
-					if (mode == Mode.PAUSED) {
-						logger.error("FOUT 1!");
-						throw new IllegalStateException("Paused and yet the active step changes?");
-					}
-					currentStepEnded();
-					currentStep = e.getActiveStep();
-					startingTimeCurrentStep = System.currentTimeMillis();
-				} else {
-				}
 				break;
 		}
 	}
 	
-	private void setMode(Mode mode) {
-		logger.info("set mode to: " + mode +  ", previous mode: " + this.mode);
-		if ((this.mode != null) && this.mode != mode) {
-			if ((this.mode == Mode.RUNNING) && (mode == Mode.PAUSED)) {
-				if (startingTimeCurrentStep != -1) {
-					otherTimeCurrentStep += System.currentTimeMillis() - startingTimeCurrentStep;
-					startingTimeCurrentStep = -1;
-				}
-			} else if (((this.mode == Mode.PAUSED) && (mode == Mode.RUNNING)) || ((this.mode == Mode.STOPPED) && (mode == Mode.RUNNING))){
-				startingTimeCurrentStep = System.currentTimeMillis();
-			} else if (mode == Mode.STOPPED) {
-				otherTimeCurrentStep = 0;
-				startingTimeCurrentStep = -1;
-			}
-		} else {
-			if ((this.mode == null) && (mode != null)) {
-				startingTimeCurrentStep = System.currentTimeMillis();
-			}
+	public long getStepTime(final AbstractProcessStep step) {
+		if (stepDurations.containsKey(step)) {
+			return stepDurations.get(step);
 		}
-		this.mode = mode;
+		return -1;
 	}
 	
-	private void currentStepEnded() {
-		if (currentStep != null) {
-			long currentTime = System.currentTimeMillis();
-			long stepTime = otherTimeCurrentStep;
-			if (startingTimeCurrentStep != -1) {
-				stepTime += currentTime - startingTimeCurrentStep;
-			} else {
-			}
-			stepDurations.put(currentStep, stepTime);
-		}
-		startingTimeCurrentStep = -1;
-		otherTimeCurrentStep = 0;
-	}
-
-	
-	public long getCycleTime() {
-		List<AbstractProcessStep> steps = processFlow.getProcessSteps();
-		List<AbstractProcessStep> stepsWithoutIntervention = new ArrayList<AbstractProcessStep>();
-		for (AbstractProcessStep step : steps) {
-			if (step instanceof InterventionStep) {
-				
-			} else {
-				stepsWithoutIntervention.add(step);
-			}
-		}
-		if (stepDurations.keySet().containsAll(stepsWithoutIntervention)) {
-			long cycleTime = 0;
-			for (long stepTime: stepDurations.values()) {
-				cycleTime += stepTime;
-			}
-			return cycleTime;
-		} else {
+	public long getTimeInCurrentStep(final int workPieceId) {
+		if (!(otherTimeCurrentSteps.containsKey(workPieceId) || startingTimeCurrentSteps.containsKey(workPieceId))) {
 			return -1;
 		}
-	}
-	
-	public long getTimeInCurrentCycle() {
-		long timeInCycle = 0;
-		for (int i = 0; i < processFlow.getCurrentStepIndex(); i++) {
-			if (stepDurations.containsKey(processFlow.getProcessSteps().get(i))) {
-				timeInCycle += stepDurations.get(processFlow.getProcessSteps().get(i));
-			}
+		long time = 0;
+		if (otherTimeCurrentSteps.containsKey(workPieceId)) {
+			time = otherTimeCurrentSteps.get(workPieceId);
 		}
-		timeInCycle += otherTimeCurrentStep;
-		if (mode == Mode.RUNNING) {
-			if (startingTimeCurrentStep != -1) {
-				timeInCycle += (System.currentTimeMillis() - startingTimeCurrentStep);
-			}
-		} else if (mode == Mode.PAUSED) {
-		} else {
-			timeInCycle = -1;
+		if (startingTimeCurrentSteps.containsKey(workPieceId)) {
+			time += System.currentTimeMillis() - startingTimeCurrentSteps.get(workPieceId);
 		}
-		return timeInCycle;
-	}
-	
-	public long getTimeTillNextIntervention() {
-		long timeTillIntervention = 0;
-		boolean finished = false;
-		int currentWorkPiece = processFlow.getFinishedAmount() + 1;
-		while (!finished) {
-			for (int i = processFlow.getCurrentStepIndex(); i < processFlow.getProcessSteps().size(); i++) {
-				if (processFlow.getProcessSteps().get(i) instanceof InterventionStep) {
-					if (currentWorkPiece % ((InterventionStep) processFlow.getProcessSteps().get(i)).getFrequency() == 0) {
-						finished = true;
-						break;
-					}
-				} else if (stepDurations.containsKey(processFlow.getProcessSteps().get(i))) {
-					timeTillIntervention += stepDurations.get(processFlow.getProcessSteps().get(i)); 
-				} else {
-					return -1;
-				}
-			}
-			currentWorkPiece++;
-			if (currentWorkPiece > processFlow.getTotalAmount()) {
-				finished = true;
-			}
-		}
-		if (startingTimeCurrentStep != -1) {
-			timeTillIntervention = timeTillIntervention - (System.currentTimeMillis() - startingTimeCurrentStep);
-		}
-		return timeTillIntervention;
+		return time;
 	}
 	
 	public ProcessFlow getProcessFlow() {
@@ -215,13 +106,12 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	}
 	
 	@Override
-	public void dataChanged(ProcessFlowEvent e) {
-		reset();
+	public void dataChanged(final ProcessFlowEvent e) {
+		//TODO reset needed here?
 	}
 	
 	@Override
-	public void exceptionOccured(ExceptionOccuredEvent e) {}
-	@Override
-	public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
+	public void finishedAmountChanged(final FinishedAmountChangedEvent e) {
+	}
 
 }

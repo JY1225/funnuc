@@ -12,7 +12,7 @@ import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.external.robot.RobotPickSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.TeachedCoordinatesCalculator;
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 
 public class PickStep extends AbstractTransportStep {
 
@@ -23,147 +23,100 @@ public class PickStep extends AbstractTransportStep {
 			
 	public PickStep(final ProcessFlow processFlow, final AbstractRobot robot, final AbstractDevice deviceFrom, final DevicePickSettings pickSettings, final RobotPickSettings robotPickSettings) {
 		super(processFlow, deviceFrom, robot);
-		this.pickSettings = pickSettings;
-		if (pickSettings != null) {
-			pickSettings.setStep(this);
-		}
-		if (robotPickSettings != null) {
-			robotPickSettings.setStep(this);
-		}
+		setDeviceSettings(pickSettings);
 		setRobotSettings(robotPickSettings);
 	}
 	
 	public PickStep(final AbstractRobot robot, final AbstractDevice deviceFrom, final DevicePickSettings pickSettings, final RobotPickSettings robotPickSettings) {
 		this(null, robot, deviceFrom, pickSettings, robotPickSettings);
 	}
-
+	
 	@Override
-	public void executeStep() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	public void executeStep(final int workPieceId) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+		executeStep(false, workPieceId);
+	}
+	
+	@Override
+	public void executeStepTeached(final int workPieceId) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+		executeStep(true, workPieceId);
+	}
+
+	private void executeStep(final boolean teached, final int workPieceId) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the devices to be used
 		if (!getDevice().lock(getProcessFlow())) {
-			throw new IllegalStateException("Device " + getDevice() + " was already locked by: " + getDevice().getLockingProcess());
+			throw new IllegalStateException("Device [" + getDevice() + "] was already locked by [" + getDevice().getLockingProcess() + "].");
 		} else {
 			if (!getRobot().lock(getProcessFlow())) {
-				throw new IllegalStateException("Robot " + getRobot() + " was already locked by: " + getRobot().getLockingProcess());
+				throw new IllegalStateException("Robot [" + getRobot() + "] was already locked by [" + getRobot().getLockingProcess() + "].");
 			} else {
-				logger.debug("About to execute pick in " + getDevice().getId() + " using " + getRobot().getId());
-				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PICK_PREPARE_DEVICE));
-				logger.debug("Preparing device...");
-				getDevice().prepareForPick(pickSettings);
-				logger.debug("Device prepared.");
-				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PICK_EXECUTE_NORMAL));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, workPieceId));
+				Coordinates originalPosition = new Coordinates(getDevice().getPickLocation(pickSettings.getWorkArea(), getProcessFlow().getClampingType()));
 				if (needsTeaching()) {
-					logger.debug("The exact pick location should have been teached: " + getRelativeTeachedOffset());
+					Coordinates position = new Coordinates(originalPosition);
+					logger.debug("Original coordinates: " + position + ".");
 					if (getRelativeTeachedOffset() == null) {
-						throw new IllegalStateException("Unknown teached position");
+						if (!teached) {
+							throw new IllegalStateException("Teaching was needed, but no relative offset value available and 'teach mode' is not active!");
+						}
 					} else {
-						Coordinates position = new Coordinates(getDevice().getPickLocation(pickSettings.getWorkArea(), getProcessFlow().getClampingType()));
-						logger.debug("Normal coordinates: " + position);
+						logger.debug("The teached offset that will be used: [" + getRelativeTeachedOffset() + "].");
 						Coordinates absoluteOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, getRelativeTeachedOffset());
 						position.offset(absoluteOffset);
-						logger.debug("Coordinates after adding teached offset: " + position);
-						robotPickSettings.setLocation(position);
+						logger.debug("Exact pick location: [" + position + "].");
 					}
+					robotPickSettings.setLocation(position);
 				} else {
-					Coordinates position = new Coordinates(getDevice().getPickLocation(pickSettings.getWorkArea(), getProcessFlow().getClampingType()));
-					logger.debug("The location of this pick was calculated (no teaching): " + position);
+					Coordinates position = new Coordinates(originalPosition);
+					logger.debug("Exact pick location (calculated without teaching): [" + position + "].");
 					robotPickSettings.setLocation(position);
 				}
-				logger.debug("Robot initiating pick action");
-				getRobot().initiatePick(robotPickSettings);
-				getRobot().continuePickTillAtLocation();
-				getRobot().continuePickTillUnclampAck();
-				logger.debug("Robot action succeeded, about to ask device to release piece");
-				getDevice().releasePiece(pickSettings);
-				logger.debug("Device released piece, about to finalize pick");
-				getRobot().continuePickTillIPPoint(robotPickSettings);
-				getRobot().finalizePick();
-				robotPickSettings.getGripperHead().getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
-				//robot.moveToHome();
-				getDevice().pickFinished(pickSettings);
-				logger.debug("Pick finished");
-			}
-		}
-	}
-
-	@Override
-	public void prepareForTeaching() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
-		if (!getDevice().lock(getProcessFlow())) {
-			throw new IllegalStateException("Device " + getDevice() + " was already locked by: " + getDevice().getLockingProcess());
-		} else {
-			if (!getRobot().lock(getProcessFlow())) {
-				throw new IllegalStateException("Robot " + getRobot() + " was already locked by: " + getRobot().getLockingProcess());
-			} else {
-				logger.debug("About to execute pick using teaching in " + getDevice().getId() + " using " + getRobot().getId());
-				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PICK_PREPARE_DEVICE));
-				logger.debug("Preparing device...");
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
+				logger.debug("Initiating robot: [" + getRobot() + "] pick action.");
+				getRobot().initiatePick(robotPickSettings);		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
+				logger.debug("Preparing [" + getDevice() + "] for pick using [" + getRobot() + "].");
 				getDevice().prepareForPick(pickSettings);
-				logger.debug("Device prepared...");
-				Coordinates coordinates = new Coordinates(getDevice().getPickLocation(pickSettings.getWorkArea(), getProcessFlow().getClampingType()));
-				logger.info("Coordinates before teaching: " + coordinates);
-				if (getRelativeTeachedOffset() != null) {
-					Coordinates c = TeachedCoordinatesCalculator.calculateAbsoluteOffset(coordinates, getRelativeTeachedOffset());
-					coordinates.offset(c);
-					logger.info("Coordinates before teaching (added teached offset): " + coordinates);
+				logger.debug("Device [" + getDevice() + "] prepared for pick.");
+				if (teached && needsTeaching()) {
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_TEACHED, workPieceId));
+					getRobot().continuePickTillAtLocation();
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_NEEDED, workPieceId));
+					Coordinates robotPosition = getRobot().getPosition();
+					setRelativeTeachedOffset(TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, robotPosition.calculateOffset(originalPosition)));
+					getRobot().continuePickTillUnclampAck();
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_FINISHED, workPieceId));
+				} else {
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, workPieceId));
+					getRobot().continuePickTillAtLocation();
+					getRobot().continuePickTillUnclampAck();
 				}
-				robotPickSettings.setLocation(coordinates);
-				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PICK_EXECUTE_TEACHED));
-				logger.debug("Robot initiating pick action");
-				robotPickSettings.setTeachingNeeded(true);
-				getRobot().initiatePick(robotPickSettings);
-				getRobot().continuePickTillAtLocation();
-				logger.debug("Robot action succeeded");
-			}
-		}
-	}
-
-	@Override
-	public void teachingFinished() throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
-		if (!getDevice().lock(getProcessFlow())) {
-			throw new IllegalStateException("Device " + getDevice() + " was already locked by: " + getDevice().getLockingProcess());
-		} else {
-			if (!getRobot().lock(getProcessFlow())) {
-				throw new IllegalStateException("Robot " + getRobot() + " was already locked by: " + getRobot().getLockingProcess());
-			} else {
-				logger.debug("Teaching finished");
-				Coordinates coordinates = new Coordinates(getRobot().getPosition());
-				Coordinates oldCoordinates = new Coordinates(getDevice().getPickLocation(pickSettings.getWorkArea(), getProcessFlow().getClampingType()));
-				setRelativeTeachedOffset(coordinates.calculateOffset(oldCoordinates));
-				setRelativeTeachedOffset(TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(oldCoordinates, getRelativeTeachedOffset()));
-				logger.debug("The teached offset is: " + getRelativeTeachedOffset());
-				robotPickSettings.setLocation(getDevice().getPickLocation(pickSettings.getWorkArea(), getProcessFlow().getClampingType()));
-				logger.debug("About to ask device to release piece");
+				logger.debug("Robot pick action succeeded, about to ask device [" + getDevice() +  "] to release piece.");
 				getDevice().releasePiece(pickSettings);
-				logger.debug("Device released piece, about to finalize pick");
-				getRobot().continuePickTillUnclampAck();
-				getRobot().finalizePick();
+				logger.debug("Device [" + getDevice() + "] released piece, about to finalize pick.");
+				robotPickSettings.getGripperHead().getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
+				getRobot().continuePickTillIPPoint();
 				getDevice().pickFinished(pickSettings);
-				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PICK_FINISHED));
-				logger.debug("Pick finished");
+				getDevice().release(getProcessFlow());
+				getRobot().release(getProcessFlow());
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
+				logger.debug("Pick ready (but not finalized).");
 			}
 		}
 	}
 	
 	@Override
-	//TODO review!!
-	public void finalize() throws AbstractCommunicationException, DeviceActionException {
-		if (!getDevice().lock(getProcessFlow())) {
-			throw new IllegalStateException("Device " + getDevice() + " was already locked by: " + getDevice().getLockingProcess());
+	public void finalizeStep() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (!getRobot().lock(getProcessFlow())) {
+			throw new IllegalStateException("Robot [" + getRobot() + "] was already locked by " + getRobot().getLockingProcess());
 		} else {
-			if (!getRobot().lock(getProcessFlow())) {
-				throw new IllegalStateException("Robot " + getRobot() + " was already locked by: " + getRobot().getLockingProcess());
-			} else {
-				getDevice().pickFinished(pickSettings);
-				getDevice().release(getProcessFlow());
-				getRobot().release(getProcessFlow());
-				getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.PICK_FINISHED));
-			}
+			getRobot().finalizePick();
+			getRobot().release(getProcessFlow());
+			logger.debug("Finalized pick");
 		}
 	}
-
+	
 	@Override
 	public String toString() {
-		return "PickStep from " + getDevice() + " with: " + getRobot();
+		return "PickStep from [" + getDevice() + "] with [" + getRobot() + "].";
 	}
 
 	@Override
@@ -179,6 +132,13 @@ public class PickStep extends AbstractTransportStep {
 	@Override
 	public RobotPickSettings getRobotSettings() {
 		return robotPickSettings;
+	}
+	
+	public void setDeviceSettings(final DevicePickSettings settings) {
+		this.pickSettings = settings;
+		if (pickSettings != null) {
+			pickSettings.setStep(this);
+		}
 	}
 
 	public void setRobotSettings(final RobotPickSettings settings) {

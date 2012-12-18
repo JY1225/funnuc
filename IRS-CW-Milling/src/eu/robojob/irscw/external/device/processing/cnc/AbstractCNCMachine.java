@@ -44,7 +44,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.listeners = new HashSet<CNCMachineListener>();
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
 		// start monitoring thread at creation of this object
-		ThreadManager.getInstance().submit(cncMachineMonitoringThread);
+		ThreadManager.submit(cncMachineMonitoringThread);
 		this.stopAction = false;
 	}
 	

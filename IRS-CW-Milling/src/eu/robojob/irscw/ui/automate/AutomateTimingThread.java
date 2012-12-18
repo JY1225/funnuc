@@ -24,7 +24,7 @@ public class AutomateTimingThread extends Thread {
 		try {
 			running = true;
 			while (running) {
-				long cycleTime = processFlowTimer.getCycleTime();
+				/*long cycleTime = processFlowTimer.getCycleTime();
 				long cycleTimePassed = processFlowTimer.getTimeInCurrentCycle();
 				long timeTillFinished = -1;
 				long timeTillIntervention = -1;
@@ -39,7 +39,7 @@ public class AutomateTimingThread extends Thread {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					running = false;
-				}
+				}*/
 			}
 		} catch (Exception e) {
 			logger.error(e);

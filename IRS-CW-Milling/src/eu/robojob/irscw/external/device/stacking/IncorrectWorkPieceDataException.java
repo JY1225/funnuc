@@ -9,12 +9,10 @@ public class IncorrectWorkPieceDataException extends Exception {
 	public static final String LENGTH_SMALLER_WIDTH = "IncorrectWorkPieceDataException.lengthSmallerThanWidth";
 	public static final String INCORRECT_AMOUNT = "IncorrectWorkPieceDataException.incorrectAmount";
 	
-	private Translator translator;
 	private String key;
 
 	public IncorrectWorkPieceDataException(final String key) {
 		this.key = key;
-		this.translator = Translator.getInstance();
 	}
 	
 	@Override
@@ -24,6 +22,6 @@ public class IncorrectWorkPieceDataException extends Exception {
 	
 	@Override
 	public String getLocalizedMessage() {
-		return translator.getTranslation(key) + ".";
+		return Translator.getTranslation(key) + ".";
 	}
 }

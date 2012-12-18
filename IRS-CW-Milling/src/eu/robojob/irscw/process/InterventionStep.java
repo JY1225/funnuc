@@ -1,57 +1,57 @@
 package eu.robojob.irscw.process;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceInterventionSettings;
-import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 
-public class InterventionStep extends AbstractProcessStep {
+public class InterventionStep extends AbstractProcessStep implements DeviceStep {
 
 	private int frequency;
 	
+	private AbstractDevice device;
 	private DeviceInterventionSettings interventionSettings;
 	
-	private AbstractRobot robot;
+	private static Logger logger = LogManager.getLogger(InterventionStep.class.getName());
 		
-	public InterventionStep(final ProcessFlow processFlow, final AbstractDevice device, final AbstractRobot robot, final DeviceInterventionSettings interventionSettings, final int frequency) {
-		super(processFlow, device);
-		this.robot = robot;
+	public InterventionStep(final ProcessFlow processFlow, final AbstractDevice device, final DeviceInterventionSettings interventionSettings, final int frequency) {
+		super(processFlow);
 		this.frequency = frequency;
-		setInterventionSettings(interventionSettings);
+		this.device = device;
+		setDeviceSettings(interventionSettings);
 	}
 	
-	public InterventionStep(final AbstractDevice device, final AbstractRobot robot, final DeviceInterventionSettings interventionSettings, final int frequency) {
-		this(null, device, robot, interventionSettings, frequency);
+	public InterventionStep(final AbstractDevice device, final DeviceInterventionSettings interventionSettings, final int frequency) {
+		this(null, device, interventionSettings, frequency);
 	}
 	
 	@Override
-	public void executeStep() throws AbstractCommunicationException, DeviceActionException, RobotActionException, InterruptedException {
+	public void executeStep(final int workPieceId) throws AbstractCommunicationException, DeviceActionException, RobotActionException, InterruptedException {
 		// check if the parent process has locked the device to be used
 		if (!getDevice().lock(getProcessFlow())) {
-			throw new IllegalStateException("Device " + getDevice() + " was already locked by: " + getDevice().getLockingProcess());
+			throw new IllegalStateException("Device [" + getDevice() + "] was already locked by: [" + getDevice().getLockingProcess() + "].");
 		} else {
-			if (!robot.lock(getProcessFlow())) {
-				throw new IllegalStateException("Robot " + robot + " was already locked by: " + robot.getLockingProcess());
-			} else {
-				if (getProcessFlow().getFinishedAmount() % frequency == 0) {	// check if the the amount of finished pieces corresponds to the frequency
-					getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.INTERVENTION_ROBOT_TO_HOME));
-					robot.moveToHome();
-					getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.INTERVENTION_PREPARE_DEVICE));
-					getDevice().prepareForIntervention(interventionSettings);
-					getProcessFlow().processProcessFlowEvent(new ActiveStepChangedEvent(getProcessFlow(), this, ActiveStepChangedEvent.INTERVENTION_READY));
-				}
+			if (isInterventionNeeded(getProcessFlow().getFinishedAmount())) {	// check if the the amount of finished pieces corresponds to the frequency
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
+				logger.debug("About to prepare device: [" + getDevice() + "] for intervention.");
+				getDevice().prepareForIntervention(interventionSettings);
+				logger.debug("Device: [" + getDevice() + "] prepared for intervention.");
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.INTERVENTION_READY, workPieceId));
 			}
+			getDevice().release(getProcessFlow());
 		}
 	}
-
-	public DeviceInterventionSettings getInterventionSettings() {
-		return interventionSettings;
+	
+	public boolean isInterventionNeeded(final int finishedAmount) {
+		return (finishedAmount % frequency == 0);
 	}
 
-	public void setInterventionSettings(final DeviceInterventionSettings interventionSettings) {
+	public void setDeviceSettings(final DeviceInterventionSettings interventionSettings) {
 		this.interventionSettings = interventionSettings;
 		if (interventionSettings != null) {
 			interventionSettings.setStep(this);
@@ -68,12 +68,22 @@ public class InterventionStep extends AbstractProcessStep {
 
 	@Override
 	public String toString() {
-		return "InterventionStep, " + "device: " + getDevice();
+		return "InterventionStep, device [" + getDevice() + "].";
 	}
 
 	@Override
 	public ProcessStepType getType() {
 		return ProcessStepType.INTERVENTION_STEP;
+	}
+
+	@Override
+	public DeviceInterventionSettings getDeviceSettings() {
+		return interventionSettings;
+	}
+
+	@Override
+	public AbstractDevice getDevice() {
+		return device;
 	}
 
 }

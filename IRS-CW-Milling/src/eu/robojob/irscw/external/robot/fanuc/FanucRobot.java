@@ -71,7 +71,7 @@ public class FanucRobot extends AbstractRobot {
 		super(id, gripperBodies, gripperBody);
 		this.fanucRobotCommunication = new RobotSocketCommunication(socketConnection, this);
 		RobotMonitoringThread monitoringThread = new RobotMonitoringThread(this);
-		ThreadManager.getInstance().submit(monitoringThread);
+		ThreadManager.submit(monitoringThread);
 		df = new DecimalFormat("#.##");
 		df.setDecimalSeparatorAlwaysShown(false);
 		DecimalFormatSymbols custom = new DecimalFormatSymbols();
@@ -247,8 +247,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void continuePickTillIPPoint(final RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException {
-		pickSettings.getGripperHead().getGripper().setWorkPiece(pickSettings.getWorkPiece());
+	public void continuePickTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PICK_OUT_OF_MACHINE, MOVE_TO_IPPOINT_TIMEOUT);
 		if (!waitingForPickFinished) {

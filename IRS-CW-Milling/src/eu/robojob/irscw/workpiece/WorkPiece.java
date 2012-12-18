@@ -9,12 +9,12 @@ public class WorkPiece {
 	private Type type;
 	private WorkPieceDimensions dimensions;
 	
-	public WorkPiece(Type type, WorkPieceDimensions dimensions) {
+	public WorkPiece(final Type type, final WorkPieceDimensions dimensions) {
 		this.type = type;
 		this.dimensions = dimensions;
 	}
 	
-	public WorkPiece(WorkPiece wp) {
+	public WorkPiece(final WorkPiece wp) {
 		this.type = wp.getType();
 		this.dimensions = new WorkPieceDimensions(wp.getDimensions().getLength(), wp.getDimensions().getWidth(), wp.getDimensions().getHeight());
 	}
@@ -23,7 +23,7 @@ public class WorkPiece {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(final Type type) {
 		this.type = type;
 	}
 
@@ -31,7 +31,7 @@ public class WorkPiece {
 		return dimensions;
 	}
 
-	public void setDimensions(WorkPieceDimensions dimensions) {
+	public void setDimensions(final WorkPieceDimensions dimensions) {
 		this.dimensions = dimensions;
 	}
 	

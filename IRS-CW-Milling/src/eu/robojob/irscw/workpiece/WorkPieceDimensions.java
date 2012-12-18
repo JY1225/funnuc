@@ -8,15 +8,11 @@ public class WorkPieceDimensions {
 	
 	private boolean knownShape;
 	
-	public WorkPieceDimensions (float length, float width, float height) {
+	public WorkPieceDimensions(final float length, final float width, final float height) {
 		this.length = length;
 		this.width = width;
 		this.height = height;
 		this.knownShape = false;
-	}
-	
-	public WorkPieceDimensions clone() {
-		return new WorkPieceDimensions(length, width, height);
 	}
 	
 	public WorkPieceDimensions() {
@@ -27,7 +23,7 @@ public class WorkPieceDimensions {
 		return height;
 	}
 
-	public void setHeight(float height) {
+	public void setHeight(final float height) {
 		this.height = height;
 	}
 
@@ -35,7 +31,7 @@ public class WorkPieceDimensions {
 		return length;
 	}
 
-	public void setLength(float length) {
+	public void setLength(final float length) {
 		this.length = length;
 	}
 
@@ -43,7 +39,7 @@ public class WorkPieceDimensions {
 		return width;
 	}
 
-	public void setWidth(float width) {
+	public void setWidth(final float width) {
 		this.width = width;
 	}
 
@@ -51,7 +47,7 @@ public class WorkPieceDimensions {
 		return knownShape;
 	}
 
-	public void setKnownShape(boolean knownShape) {
+	public void setKnownShape(final boolean knownShape) {
 		this.knownShape = knownShape;
 	}
 

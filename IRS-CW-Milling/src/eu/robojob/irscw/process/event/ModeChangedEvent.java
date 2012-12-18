@@ -7,7 +7,7 @@ public class ModeChangedEvent extends ProcessFlowEvent {
 
 	private Mode mode;
 	
-	public ModeChangedEvent(ProcessFlow source, Mode mode) {
+	public ModeChangedEvent(final ProcessFlow source, final Mode mode) {
 		super(source, ProcessFlowEvent.MODE_CHANGED);
 		this.mode = mode;
 	}

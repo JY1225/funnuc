@@ -262,7 +262,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void initiatePick(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continuePickTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continuePickTillUnclampAck() throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void continuePickTillIPPoint(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continuePickTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void finalizePick() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
 	public abstract void initiateMoveWithPiece(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;

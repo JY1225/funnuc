@@ -10,12 +10,10 @@ public class DeviceActionException extends Exception {
 	
 	private AbstractDevice device;
 	private String errorId;
-	private Translator translator;
 	
 	public DeviceActionException(final AbstractDevice device, final String errorId) {
 		this.errorId = errorId;
 		this.device = device;
-		this.translator = Translator.getInstance();
 	}
 
 	@Override
@@ -25,6 +23,6 @@ public class DeviceActionException extends Exception {
 	
 	@Override
 	public String getLocalizedMessage() {
-		return translator.getTranslation(EXCEPTION_DURING_DEVICE_ACTION) + ": " + device.getId() + ", " + translator.getTranslation(errorId);
+		return Translator.getTranslation(EXCEPTION_DURING_DEVICE_ACTION) + ": " + device.getId() + ", " + Translator.getTranslation(errorId);
 	}
 }

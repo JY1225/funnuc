@@ -21,12 +21,11 @@ import eu.robojob.irscw.external.robot.RobotListener;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlowTimer;
-import eu.robojob.irscw.process.event.ActiveStepChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.main.flow.FixedProcessFlowPresenter;
@@ -281,78 +280,29 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		setAlarmStatus("Fout opgetreden: " + e.getMessage() + ". Het proces dient opnieuw doorlopen te worden.");
 	}
 
+	//TODO REVIEW
 	@Override
-	public void activeStepChanged(final ActiveStepChangedEvent e) {
+	public void statusChanged(final StatusChangedEvent e) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 			switch (e.getStatusId()) {
-				case ActiveStepChangedEvent.NONE_ACTIVE:
+				case StatusChangedEvent.NONE_ACTIVE:
 					view.setStatus(translator.getTranslation("none-active"));
 					break;
-				case ActiveStepChangedEvent.PICK_PREPARE_DEVICE:
-					view.setStatus(translator.getTranslation("pick-prepare-device"));
-					break;
-				case ActiveStepChangedEvent.PICK_EXECUTE_TEACHED:
-					view.setStatus(translator.getTranslation("pick-execute-teached"));
-					break;
-				case ActiveStepChangedEvent.PICK_EXECUTE_NORMAL:
-					view.setStatus(translator.getTranslation("pick-execute-normal"));
-					break;
-				case ActiveStepChangedEvent.PICK_FINISHED:
-					//setStatus(translator.getTranslation("pick-finished"));
-					break;
-				case ActiveStepChangedEvent.PUT_PREPARE_DEVICE:
-					view.setStatus(translator.getTranslation("put-prepare-device"));
-					break;
-				case ActiveStepChangedEvent.PUT_EXECUTE_TEACHED:
-					view.setStatus(translator.getTranslation("put-execute-teached"));
-					break;
-				case ActiveStepChangedEvent.PUT_EXECUTE_NORMAL:
-					view.setStatus(translator.getTranslation("put-execute-normal"));
-					break;
-				case ActiveStepChangedEvent.PUT_FINISHED:
-					if (processFlow.getProcessSteps().get(processFlow.getProcessSteps().size() - 1).equals(e.getActiveStep())) {
-						view.setStatus(translator.getTranslation("auto-finished"));
-					} else {
-						view.setStatus(translator.getTranslation("put-finished"));
-					}
-					break;
-				case ActiveStepChangedEvent.PROCESSING_PREPARE_DEVICE:
-					view.setStatus(translator.getTranslation("processing-prepare-device"));
-					break;
-				case ActiveStepChangedEvent.PROCESSING_IN_PROGRESS:
-					view.setProcessPaused();
-					view.setStatus(translator.getTranslation("processing-in-progress"));
-					break;
-				case ActiveStepChangedEvent.PROCESSING_FINISHED:
-					view.setProcessRunning();
-					view.setStatus(translator.getTranslation("processing-finished"));
-					break;
-				case ActiveStepChangedEvent.INTERVENTION_PREPARE_DEVICE:
+				case StatusChangedEvent.PREPARE_DEVICE:
 					view.setStatus(translator.getTranslation("intervention-prepare-device"));
 					break;
-				case ActiveStepChangedEvent.INTERVENTION_READY:
+				case StatusChangedEvent.INTERVENTION_READY:
 					view.setStatus(translator.getTranslation("intervention-ready"));
 					break;
-				case ActiveStepChangedEvent.INTERVENTION_ROBOT_TO_HOME:
-					view.setStatus(translator.getTranslation("intervention-robot-home"));
-					break;
-				case ActiveStepChangedEvent.TEACHING_NEEDED:
+				case StatusChangedEvent.TEACHING_NEEDED:
 					throw new IllegalStateException("Teaching not possible when in auto-mode");
-				case ActiveStepChangedEvent.TEACHING_FINISHED:
+				case StatusChangedEvent.TEACHING_FINISHED:
 					throw new IllegalStateException("Teaching not possible when in auto-mode");
 				default:
 					throw new IllegalStateException("Unkown process state changed event");
 			}
 		}});
-	}
-
-	@Override
-	public void exceptionOccured(final ExceptionOccuredEvent e) {
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
-				exceptionOccured(e.getE());
-			}});
 	}
 
 	@Override

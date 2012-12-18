@@ -133,7 +133,7 @@ public class ProcessFlowAdapter {
 	public void addInterventionStepAfterPut(TransportInformation transportInfo) {
 		AbstractDevice device = transportInfo.getPutStep().getDevice();
 		AbstractRobot robot = transportInfo.getPutStep().getRobot();
-		InterventionStep intervention = new InterventionStep(device, robot, new DeviceInterventionSettings(transportInfo.getPutStep().getDeviceSettings().getWorkArea()), 0);
+		InterventionStep intervention = new InterventionStep(device, new DeviceInterventionSettings(transportInfo.getPutStep().getDeviceSettings().getWorkArea()), 0);
 		processFlow.addStepAfter(transportInfo.getPutStep(), intervention);
 	}
 	
@@ -144,7 +144,7 @@ public class ProcessFlowAdapter {
 	public void addInterventionStepBeforePick(TransportInformation transportInfo) {
 		AbstractDevice device = transportInfo.getPickStep().getDevice();
 		AbstractRobot robot = transportInfo.getPickStep().getRobot();
-		InterventionStep intervention = new InterventionStep(device, robot, new DeviceInterventionSettings(transportInfo.getPickStep().getDeviceSettings().getWorkArea()), 0);
+		InterventionStep intervention = new InterventionStep(device, new DeviceInterventionSettings(transportInfo.getPickStep().getDeviceSettings().getWorkArea()), 0);
 		processFlow.addStepBefore(transportInfo.getPickStep(), intervention);
 	}
 	

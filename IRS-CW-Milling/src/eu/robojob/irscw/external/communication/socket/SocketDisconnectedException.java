@@ -10,11 +10,9 @@ public class SocketDisconnectedException extends AbstractCommunicationException 
 	private static final String NO_CONNECTION_TO = "DisconnectedException.notConnectedTo";
 	
 	private SocketConnection connection;
-	private Translator translator;
 	
 	public SocketDisconnectedException(final SocketConnection socketConnection) {
 		this.connection = socketConnection;
-		this.translator = Translator.getInstance();
 	}
 	
 	public SocketConnection getConnection() {
@@ -28,6 +26,6 @@ public class SocketDisconnectedException extends AbstractCommunicationException 
 	
 	@Override
 	public String getLocalizedMessage() {
-		return translator.getTranslation(NO_CONNECTION_TO) + " " + connection.toString() + ".";
+		return Translator.getTranslation(NO_CONNECTION_TO) + " " + connection.toString() + ".";
 	}
 }
