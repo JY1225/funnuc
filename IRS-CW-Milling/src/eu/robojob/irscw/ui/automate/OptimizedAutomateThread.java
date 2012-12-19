@@ -13,6 +13,7 @@ import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
+import eu.robojob.irscw.process.execution.AutomateThread;
 
 public class OptimizedAutomateThread extends AutomateThread {
 	

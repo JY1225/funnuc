@@ -122,6 +122,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		nCReset();
+		clearIndications();
 	}
 
 	@Override

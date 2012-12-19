@@ -65,7 +65,7 @@ public class MenuBarPresenter {
 		}
 	}
 	
-	public void disablePopUp() {
+	public void disablePopUps() {
 		view.setNonePopupActive();
 		robotActive = false;
 		alarmsActive = false;

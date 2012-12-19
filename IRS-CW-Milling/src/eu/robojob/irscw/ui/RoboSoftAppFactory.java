@@ -87,9 +87,9 @@ public class RoboSoftAppFactory {
 	
 	private ProcessFlowTimer processFlowTimer;
 	
-	Properties properties;
+	private Properties properties;
 	
-	public RoboSoftAppFactory(Properties properties) {
+	public RoboSoftAppFactory(final Properties properties) {
 		this.properties = properties;
 	}
 	

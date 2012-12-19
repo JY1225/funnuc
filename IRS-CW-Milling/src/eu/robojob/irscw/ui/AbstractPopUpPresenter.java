@@ -17,7 +17,7 @@ public abstract class AbstractPopUpPresenter<T extends PopUpView<?>> {
 	}
 	
 	public void lostFocus() {
-		parent.closePopUp(this);
+		parent.closePopUps();
 	}
 	
 	public T getView() {

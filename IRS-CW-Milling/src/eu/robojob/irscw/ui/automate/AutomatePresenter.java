@@ -26,6 +26,7 @@ import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
+import eu.robojob.irscw.process.execution.AutomateThread;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;

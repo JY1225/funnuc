@@ -61,6 +61,7 @@ public class PickStep extends AbstractTransportStep {
 					} else {
 						logger.debug("The teached offset that will be used: [" + getRelativeTeachedOffset() + "].");
 						Coordinates absoluteOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, getRelativeTeachedOffset());
+						logger.debug("The absolute offset that will be used: [" + absoluteOffset + "].");
 						position.offset(absoluteOffset);
 						logger.debug("Exact pick location: [" + position + "].");
 					}
@@ -80,10 +81,12 @@ public class PickStep extends AbstractTransportStep {
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_TEACHED, workPieceId));
 					getRobot().continuePickTillAtLocation();
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_NEEDED, workPieceId));
-					Coordinates robotPosition = getRobot().getPosition();
-					setRelativeTeachedOffset(TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, robotPosition.calculateOffset(originalPosition)));
 					getRobot().continuePickTillUnclampAck();
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_FINISHED, workPieceId));
+					Coordinates robotPosition = getRobot().getPosition();
+					Coordinates relTeachedOffset = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, robotPosition.calculateOffset(originalPosition));
+					logger.info("The relative teached offset: [" + relTeachedOffset + "].");
+					setRelativeTeachedOffset(relTeachedOffset);
 				} else {
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, workPieceId));
 					getRobot().continuePickTillAtLocation();

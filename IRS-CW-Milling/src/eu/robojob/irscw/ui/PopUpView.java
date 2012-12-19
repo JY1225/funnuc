@@ -1,7 +1,6 @@
 package eu.robojob.irscw.ui;
 
 import javafx.scene.layout.StackPane;
-import eu.robojob.irscw.util.Translator;
 
 public class PopUpView<T extends AbstractPopUpPresenter<?>> extends StackPane {
 	
@@ -11,15 +10,15 @@ public class PopUpView<T extends AbstractPopUpPresenter<?>> extends StackPane {
 	private double width;
 	private double height;
 	
-	protected T presenter;
-	protected Translator translator;
+	private T presenter;
 	
-	public PopUpView(double topLeftX, double topLeftY, double width, double height) {
+	private static final String CLASSNAME = "popup";
+	
+	public PopUpView(final double topLeftX, final double topLeftY, final double width, final double height) {
 		this.topLeftX = topLeftX;
 		this.topLeftY = topLeftY;
 		this.width = width;
 		this.height = height;
-		this.translator = Translator.getInstance();
 		build();
 		this.setTranslateX(topLeftX);
 		this.setTranslateY(topLeftY);
@@ -28,11 +27,15 @@ public class PopUpView<T extends AbstractPopUpPresenter<?>> extends StackPane {
 	protected void build() {
 		this.setPrefSize(width, height);
 		this.setMaxSize(width, height);
-		this.getStyleClass().add("popup");
+		this.getStyleClass().add(CLASSNAME);
 	}
 	
-	public void setPresenter(T presenter) {
+	public void setPresenter(final T presenter) {
 		this.presenter = presenter;
+	}
+	
+	public T getPresenter() {
+		return presenter;
 	}
 	
 	public double getTopLeftX() {

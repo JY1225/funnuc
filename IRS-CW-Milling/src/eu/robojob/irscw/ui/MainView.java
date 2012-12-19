@@ -7,40 +7,38 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import eu.robojob.irscw.ui.menu.MenuBarView;
 
-public class MainView extends StackPane {
+public class MainView extends BorderPane {
 	
 	private MainPresenter presenter;
-	private BorderPane mainPane;
 	private StackPane contentPane;
 	
 	public MainView() {
 		super();
-		mainPane = new BorderPane();
-		getChildren().add(mainPane);
 		contentPane = new StackPane();
-		mainPane.setCenter(contentPane);
+		this.setCenter(contentPane);
 		contentPane.setAlignment(Pos.TOP_LEFT);
 		contentPane.toBack();
 	}
 
-	public void setHeader(Node header) {
-		mainPane.setTop(header);
-		header.toFront();
+	public void setMenuBarView(final MenuBarView menuBarView) {
+		this.setTop(menuBarView);
+		menuBarView.toFront();
 	}
 	
-	public void setContent(Node content) {
+	public void setContentView(final Node contentView) {
 		contentPane.getChildren().clear();
-		contentPane.getChildren().add(content);
+		contentPane.getChildren().add(contentView);
 	}
 	
-	public void addPopup(Node popup) {
-		contentPane.getChildren().add(popup);
-		popup.requestFocus();
+	public void addPopUpView(final PopUpView<?> pupUpView) {
+		contentPane.getChildren().add(pupUpView);
+		pupUpView.requestFocus();
 	}
 	
-	public void closePopup(Node popup) {
-		contentPane.getChildren().remove(popup);
+	public void closePopup(final PopUpView<?> pupUpView) {
+		contentPane.getChildren().remove(pupUpView);
 	}
 	
 	public void closePopup() {
@@ -53,7 +51,7 @@ public class MainView extends StackPane {
 		contentPane.getChildren().removeAll(toRemove);
 	}
 	
-	public void setPresenter(MainPresenter presenter) {
+	public void setPresenter(final MainPresenter presenter) {
 		this.presenter = presenter;
 	}
 	

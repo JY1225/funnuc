@@ -52,8 +52,6 @@ public class ProcessFlow {
 	
 	private ClampingManner clampingManner;
 	
-	private Map<Integer, AbstractProcessStep> currentSteps;
-		
 	public ProcessFlow(final String name, final List<AbstractProcessStep>processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, 
 			RobotSettings> robotSettings, final int totalAmount, final ClampingManner clampingManner) {
 		this.name = name;
@@ -61,7 +59,6 @@ public class ProcessFlow {
 		this.deviceSettings = deviceSettings;
 		this.robotSettings = robotSettings;
 		this.listeners = new HashSet<ProcessFlowListener>();
-		this.currentSteps = new HashMap<Integer, AbstractProcessStep>();
 		this.totalAmount = totalAmount;
 		this.finishedAmount = 0;
 		this.mode = Mode.CONFIG;
@@ -348,18 +345,6 @@ public class ProcessFlow {
 
 	public void setClampingType(final ClampingManner clampingType) {
 		this.clampingManner = clampingType;
-	}
-	
-	public void setStepActive(final int workPieceId, final AbstractProcessStep step) {
-		currentSteps.put(workPieceId, step);
-	}
-	
-	public void workPieceFinished(final int workPieceId) {
-		currentSteps.remove(workPieceId);
-	}
-	
-	public AbstractProcessStep getCurrentStep(final int workPieceId) {
-		return currentSteps.get(workPieceId);
 	}
 	
 }

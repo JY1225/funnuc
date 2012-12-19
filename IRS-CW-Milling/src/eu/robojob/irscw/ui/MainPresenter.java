@@ -36,27 +36,21 @@ public class MainPresenter implements ProcessFlowListener {
 		this.configurePresenter = configurePresenter;
 		configurePresenter.setParent(this);
 		this.teachPresenter = teachPresenter;
+		teachPresenter.setParent(this);
 		this.automatePresenter = automatePresenter;
+		automatePresenter.setParent(this);
 		this.robotPopUpPresenter = robotPopUpPresenter;
 		robotPopUpPresenter.setParent(this);
+		view.setMenuBarView(menuBarPresenter.getView());
 		this.process = null;
-		view.setHeader(menuBarPresenter.getView());
-	}
-	
-	public void setProcessMenuBarPresenter(MenuBarPresenter processMenuBarPresenter) {
-		this.menuBarPresenter = processMenuBarPresenter;
-	}
-	
-	public void setProcessMainContentPresenter(ConfigurePresenter configurePresenter) {
-		this.configurePresenter = configurePresenter;
 	}
 
-	private void setActiveMainContentPresenter(MainContentPresenter presenter) {
+	private void setActiveMainContentPresenter(final MainContentPresenter presenter) {
 		if (activeContentPresenter != null) {
 			activeContentPresenter.setActive(false);
 		}
 		activeContentPresenter = presenter;
-		view.setContent(activeContentPresenter.getView());
+		view.setContentView(activeContentPresenter.getView());
 		activeContentPresenter.setActive(true);
 	}
 	
@@ -80,9 +74,24 @@ public class MainPresenter implements ProcessFlowListener {
 	
 	public void showAlarms() {
 		menuBarPresenter.alarmsActive();
+		//TODO show alarms content
+	}
+
+	public void showRobot() {
+		menuBarPresenter.robotActive();
+		view.addPopUpView(robotPopUpPresenter.getView());
 	}
 	
-	//TODO refresh based on process flow status
+	public void showAdmin() {
+		menuBarPresenter.showAdminView();
+		//TODO show admin content
+	}
+	
+	public void closePopUps() {
+		menuBarPresenter.disablePopUps();
+		view.closePopup();
+	}
+	
 	public void refreshStatus() {
 		menuBarPresenter.setConfigureButtonEnabled(true);
 		menuBarPresenter.setTeachButtonEnabled(false);
@@ -94,44 +103,26 @@ public class MainPresenter implements ProcessFlowListener {
 					menuBarPresenter.setAutomateButtonEnabled(true);
 				}
 			} else {
-				throw new IllegalStateException("Configuration UI says ok, but there is still data missing");
+				throw new IllegalStateException("Configuration UI says ok, but there is still data missing.");
 			}
 		} 
-	}
-	
-	public void showRobot() {
-		menuBarPresenter.robotActive();
-		view.addPopup(robotPopUpPresenter.getView());
-	}
-	
-	public void closePopUp(AbstractPopUpPresenter<?> presenter) {
-		closePopUps();
-	}
-	
-	public void closePopUps() {
-		menuBarPresenter.disablePopUp();
-		view.closePopup();
-	}
-	
-	public void showAdmin() {
-		menuBarPresenter.showAdminView();
 	}
 	
 	public MainView getView() {
 		return view;
 	}
 	
-	public void setChangeContentEnabled(boolean enabled) {
+	public void setChangeContentEnabled(final boolean enabled) {
 		menuBarPresenter.setAutomateButtonEnabled(enabled);
 		menuBarPresenter.setConfigureButtonEnabled(enabled);
 		menuBarPresenter.setTeachButtonEnabled(enabled);
+		menuBarPresenter.setAdminButtonEnabled(enabled);
 		if (enabled) {
 			refreshStatus();
 		}
-		//menuBarPresenter.setAdminButtonEnabled(enabled);
 	}
 	
-	public void loadProcessFlow(ProcessFlow process) {
+	public void loadProcessFlow(final ProcessFlow process) {
 		if (this.process != null) {
 			this.process.removeListener(this);
 		}
@@ -142,23 +133,15 @@ public class MainPresenter implements ProcessFlowListener {
 		this.process.addListener(this);
 	}
 	
-	public void showMessage(String message) {
-		
-	}
-	
 	public ProcessFlow getProcessFlow() {
 		return process;
-	}
-	
-	public void updateProcessConfiguredStatus(boolean configured) {
-		
 	}
 	
 	public void exit() {
 		Platform.exit();
 	}
 
-	@Override public void modeChanged(ModeChangedEvent e) {
+	@Override public void modeChanged(final ModeChangedEvent e) {
 		refreshStatus();
 		switch(e.getMode()) {
 			case AUTO:
@@ -166,14 +149,18 @@ public class MainPresenter implements ProcessFlowListener {
 				setChangeContentEnabled(false);
 				break;
 			default:
+				setChangeContentEnabled(true);
 				break;
 		}
 	}
-	@Override public void statusChanged(StatusChangedEvent e) {}
-	@Override public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
+	
+	@Override public void statusChanged(final StatusChangedEvent e) {
+	}
+	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) {
+	}
 	
 	@Override
-	public void dataChanged(ProcessFlowEvent e) {
+	public void dataChanged(final ProcessFlowEvent e) {
 		refreshStatus();
 	}
 
