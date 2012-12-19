@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device;
+package eu.robojob.irscw.ui.configure.device.stacking;
 
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
@@ -7,10 +7,8 @@ import eu.robojob.irscw.ui.general.model.DeviceInformation;
 public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<BasicStackPlateConfigureView, BasicStackPlateMenuPresenter> {
 
 	private DeviceInformation deviceInfo;
-	
-//	private static Logger logger = LogManager.getLogger(BasicStackPlateConfigurePresenter.class.getName());
-	
-	public BasicStackPlateConfigurePresenter(BasicStackPlateConfigureView view, DeviceInformation deviceInfo, DeviceManager deviceManager) {
+		
+	public BasicStackPlateConfigurePresenter(final BasicStackPlateConfigureView view, final DeviceInformation deviceInfo, final DeviceManager deviceManager) {
 		super(view);
 		this.deviceInfo = deviceInfo;
 		view.setDeviceInfo(deviceInfo);
@@ -20,10 +18,10 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 
 	@Override
 	public void setPresenter() {
-		view.setPresenter(this);
+		getView().setPresenter(this);
 	}
 	
-	public void changedDevice(String deviceId) {
+	public void changedDevice(final String deviceId) {
 		// TODO implement!
 	}
 
@@ -31,9 +29,8 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 	public boolean isConfigured() {
 		if (deviceInfo.getDevice() != null) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 }

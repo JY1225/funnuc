@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device;
+package eu.robojob.irscw.ui.configure.device.processing.cnc;
 
 import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.positioning.Coordinates;

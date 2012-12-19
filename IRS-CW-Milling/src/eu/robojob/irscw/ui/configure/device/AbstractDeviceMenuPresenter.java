@@ -7,7 +7,7 @@ public abstract class AbstractDeviceMenuPresenter extends AbstractMenuPresenter<
 
 	private DeviceInformation deviceInfo;
 	
-	public AbstractDeviceMenuPresenter(DeviceMenuView view, DeviceInformation deviceInfo) {
+	public AbstractDeviceMenuPresenter(final DeviceMenuView view, final DeviceInformation deviceInfo) {
 		super(view);
 		this.deviceInfo = deviceInfo;
 		view.setDeviceInfo(deviceInfo);
@@ -15,7 +15,7 @@ public abstract class AbstractDeviceMenuPresenter extends AbstractMenuPresenter<
 
 	@Override
 	protected void setPresenter() {
-		view.setPresenter(this);
+		getView().setPresenter(this);
 	}
 
 	public abstract void configurePick();

@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device.pre;
+package eu.robojob.irscw.ui.configure.device.processing.prage;
 
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.device.AbstractDeviceMenuPresenter;

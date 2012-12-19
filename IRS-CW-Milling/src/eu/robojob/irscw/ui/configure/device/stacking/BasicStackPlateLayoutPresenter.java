@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device;
+package eu.robojob.irscw.ui.configure.device.stacking;
 
 import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
@@ -8,7 +8,7 @@ public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicS
 
 	private BasicStackPlate basicStackPlate;
 	
-	public BasicStackPlateLayoutPresenter(BasicStackPlateLayoutView view, BasicStackPlate basicStackPlate, ClampingManner clampingType) {
+	public BasicStackPlateLayoutPresenter(final BasicStackPlateLayoutView view, final BasicStackPlate basicStackPlate, final ClampingManner clampingType) {
 		super(view);
 		this.basicStackPlate = basicStackPlate;
 		view.setBasicStackPlate(basicStackPlate);
@@ -18,11 +18,11 @@ public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicS
 
 	@Override
 	public void setPresenter() {
-		view.setPresenter(this);
+		getView().setPresenter(this);
 	}
 
 	@Override
 	public boolean isConfigured() {
-		return ((basicStackPlate.getLayout().getStackingPositions().size() > 0) && (basicStackPlate.getLayout().getStackingPositions().get(0).getWorkPiece() != null) );
+		return ((basicStackPlate.getLayout().getStackingPositions().size() > 0) && (basicStackPlate.getLayout().getStackingPositions().get(0).getWorkPiece() != null));
 	}
 }

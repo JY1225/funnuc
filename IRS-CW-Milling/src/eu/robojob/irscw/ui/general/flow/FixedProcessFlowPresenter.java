@@ -7,12 +7,11 @@ import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 
 public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter implements ProcessFlowListener {
@@ -29,20 +28,14 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 
 	@Override
 	public void deviceClicked(int deviceIndex) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void transportClicked(int transportIndex) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void backgroundClicked() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public void loadProcessFlow(ProcessFlow processFlow) {

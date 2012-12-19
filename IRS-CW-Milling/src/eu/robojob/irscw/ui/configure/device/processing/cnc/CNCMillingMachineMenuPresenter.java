@@ -1,9 +1,11 @@
-package eu.robojob.irscw.ui.configure.device;
+package eu.robojob.irscw.ui.configure.device.processing.cnc;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.configure.device.AbstractDeviceMenuPresenter;
+import eu.robojob.irscw.ui.configure.device.DeviceMenuView;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter {

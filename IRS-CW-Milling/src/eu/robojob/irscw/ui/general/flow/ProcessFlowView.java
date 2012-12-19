@@ -13,10 +13,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigureView;
@@ -33,12 +29,9 @@ public class ProcessFlowView extends GridPane  {
 	private Map<Integer, Region> progressDeviceRegions;
 	private Map<Integer, Region> progressTransportRegionsLeft;
 	private Map<Integer, Region> progressTransportRegionsRight;
-	
-	private static final Logger logger = LogManager.getLogger(ProcessFlowView.class.getName());
-	
+		
 	private static final int HEIGHT = 10; 
-			
-	private static final int maxDevicesFirstRow = 4;
+	private static final int MAX_AMOUNT_DEVICES_ONE_ROW = 4;
 	
 	public ProcessFlowView() {
 		deviceButtons = new HashMap<Integer, DeviceButton>();
@@ -80,7 +73,7 @@ public class ProcessFlowView extends GridPane  {
 			progressDeviceRegions.put(i, progressDeviceRegion);
 			device.setOnAction(new DeviceEventHandler(i));
 			column++;
-			if ((i+1)%maxDevicesFirstRow == 0) {
+			if ((i+1)%MAX_AMOUNT_DEVICES_ONE_ROW == 0) {
 				column = 1;
 				row++;
 			}

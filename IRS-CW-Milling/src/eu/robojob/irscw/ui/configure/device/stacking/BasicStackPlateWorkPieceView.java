@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device;
+package eu.robojob.irscw.ui.configure.device.stacking;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

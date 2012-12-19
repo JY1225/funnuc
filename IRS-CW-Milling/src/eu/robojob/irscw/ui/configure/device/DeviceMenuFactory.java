@@ -11,9 +11,24 @@ import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
-import eu.robojob.irscw.ui.configure.device.pre.PrageDeviceConfigurePresenter;
-import eu.robojob.irscw.ui.configure.device.pre.PrageDeviceConfigureView;
-import eu.robojob.irscw.ui.configure.device.pre.PrageDeviceMenuPresenter;
+import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineConfigurePresenter;
+import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineConfigureView;
+import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineMenuPresenter;
+import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachinePickPresenter;
+import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachinePickView;
+import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachinePutPresenter;
+import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachinePutView;
+import eu.robojob.irscw.ui.configure.device.processing.prage.PrageDeviceConfigurePresenter;
+import eu.robojob.irscw.ui.configure.device.processing.prage.PrageDeviceConfigureView;
+import eu.robojob.irscw.ui.configure.device.processing.prage.PrageDeviceMenuPresenter;
+import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateConfigurePresenter;
+import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateConfigureView;
+import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateLayoutPresenter;
+import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateLayoutView;
+import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateMenuPresenter;
+import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateWorkPiecePresenter;
+import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateWorkPieceView;
+import eu.robojob.irscw.ui.configure.device.stacking.StackingDeviceMenuView;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class DeviceMenuFactory {
@@ -22,7 +37,7 @@ public class DeviceMenuFactory {
 	
 	private Map<Integer, AbstractMenuPresenter<?>> presentersBuffer;
 			
-	public DeviceMenuFactory(DeviceManager deviceManager) {
+	public DeviceMenuFactory(final DeviceManager deviceManager) {
 		this.deviceManager = deviceManager;
 		presentersBuffer = new HashMap<Integer, AbstractMenuPresenter<?>>();
 	}
@@ -31,7 +46,7 @@ public class DeviceMenuFactory {
 		presentersBuffer.clear();
 	}
 	
-	public synchronized AbstractMenuPresenter<?> getDeviceMenu(DeviceInformation deviceInfo) {
+	public synchronized AbstractMenuPresenter<?> getDeviceMenu(final DeviceInformation deviceInfo) {
 		AbstractMenuPresenter<?> menuPresenter = presentersBuffer.get(deviceInfo.getIndex());
 		if (menuPresenter == null) {
 			switch(deviceInfo.getType()) {
@@ -52,59 +67,59 @@ public class DeviceMenuFactory {
 		return menuPresenter;
 	}
 	
-	private PrageDeviceMenuPresenter getPrageDeviceMenuPresenter(DeviceInformation deviceInfo) {
+	private PrageDeviceMenuPresenter getPrageDeviceMenuPresenter(final DeviceInformation deviceInfo) {
 		DeviceMenuView view = new DeviceMenuView(false, false, true);
 		PrageDeviceMenuPresenter prageDeviceMenuPresenter = new PrageDeviceMenuPresenter(view, deviceInfo, getPrageDeviceConfiguerPresenter(deviceInfo));
 		return prageDeviceMenuPresenter;
 	}
 	
-	private PrageDeviceConfigurePresenter getPrageDeviceConfiguerPresenter(DeviceInformation deviceInfo) {
+	private PrageDeviceConfigurePresenter getPrageDeviceConfiguerPresenter(final DeviceInformation deviceInfo) {
 		PrageDeviceConfigureView view = new PrageDeviceConfigureView(deviceInfo);
 		PrageDeviceConfigurePresenter presenter = new PrageDeviceConfigurePresenter(view, deviceInfo, deviceManager);
 		return presenter;
 		
 	}
 	
-	private CNCMillingMachineMenuPresenter getCncMillingMachineMenuPresenter(DeviceInformation deviceInfo) {
+	private CNCMillingMachineMenuPresenter getCncMillingMachineMenuPresenter(final DeviceInformation deviceInfo) {
 		DeviceMenuView view = new DeviceMenuView();
 		CNCMillingMachineMenuPresenter cncMillingMachineMenuPresenter = new CNCMillingMachineMenuPresenter(view, deviceInfo, getCncMillingMachineConfigurePresenter(deviceInfo), getCNCMillingMachinePickPresenter(deviceInfo.getPickStep(), deviceInfo.getDeviceSettings()),
 				getCNCMillingMachinePutPresenter(deviceInfo.getPutStep(),  deviceInfo.getDeviceSettings()));
 		return cncMillingMachineMenuPresenter;
 	}
 	
-	private CNCMillingMachineConfigurePresenter getCncMillingMachineConfigurePresenter(DeviceInformation deviceInfo) {
+	private CNCMillingMachineConfigurePresenter getCncMillingMachineConfigurePresenter(final DeviceInformation deviceInfo) {
 		CNCMillingMachineConfigureView view = new CNCMillingMachineConfigureView();
 		CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter = new CNCMillingMachineConfigurePresenter(view, deviceInfo, deviceManager);
 		return cncMillingMachineConfigurePresenter;
 	}
 	
-	private CNCMillingMachinePickPresenter getCNCMillingMachinePickPresenter(PickStep pickStep,DeviceSettings deviceSettings) {
+	private CNCMillingMachinePickPresenter getCNCMillingMachinePickPresenter(final PickStep pickStep, final DeviceSettings deviceSettings) {
 		CNCMillingMachinePickView view = new CNCMillingMachinePickView();
 		CNCMillingMachinePickPresenter cncMillingMachinePickPresenter = new CNCMillingMachinePickPresenter(view, pickStep, deviceSettings);
 		return cncMillingMachinePickPresenter;
 	}
 	
-	private CNCMillingMachinePutPresenter getCNCMillingMachinePutPresenter(PutStep putStep, DeviceSettings deviceSettings) {
+	private CNCMillingMachinePutPresenter getCNCMillingMachinePutPresenter(final PutStep putStep, final DeviceSettings deviceSettings) {
 		CNCMillingMachinePutView view = new CNCMillingMachinePutView();
 		CNCMillingMachinePutPresenter cncMillingMachinePutPresenter = new CNCMillingMachinePutPresenter(view, putStep, deviceSettings);
 		return cncMillingMachinePutPresenter;
 	}
 	
-	public BasicStackPlateMenuPresenter getBasicStackPlateMenuPresenter(DeviceInformation deviceInfo) {
+	public BasicStackPlateMenuPresenter getBasicStackPlateMenuPresenter(final DeviceInformation deviceInfo) {
 		StackingDeviceMenuView stackingDeviceMenuView = new StackingDeviceMenuView();
-		BasicStackPlateMenuPresenter basicStackPlateMenuPresenter = new BasicStackPlateMenuPresenter(stackingDeviceMenuView,deviceInfo, getBasicStackPlateConfigurePresenter(deviceInfo), 
+		BasicStackPlateMenuPresenter basicStackPlateMenuPresenter = new BasicStackPlateMenuPresenter(stackingDeviceMenuView, deviceInfo, getBasicStackPlateConfigurePresenter(deviceInfo), 
 				getBasicStackPlateWorkPiecePresenter(deviceInfo), getBasicStackPlateLayoutPresenter(deviceInfo));
 		return basicStackPlateMenuPresenter;
 	}
 	
 	// we always create a new, because the stacker can (and probably will) be used more than once (first and last)
-	public BasicStackPlateConfigurePresenter getBasicStackPlateConfigurePresenter(DeviceInformation deviceInfo) {
+	public BasicStackPlateConfigurePresenter getBasicStackPlateConfigurePresenter(final DeviceInformation deviceInfo) {
 		BasicStackPlateConfigureView view = new BasicStackPlateConfigureView();
 		BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter = new BasicStackPlateConfigurePresenter(view, deviceInfo, deviceManager);
 		return basicStackPlateConfigurePresenter;
 	}
 	
-	public BasicStackPlateWorkPiecePresenter getBasicStackPlateWorkPiecePresenter(DeviceInformation deviceInfo) {
+	public BasicStackPlateWorkPiecePresenter getBasicStackPlateWorkPiecePresenter(final DeviceInformation deviceInfo) {
 		if (deviceInfo.getPickStep() != null) {
 			BasicStackPlateWorkPieceView view = new BasicStackPlateWorkPieceView();
 			BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter = new BasicStackPlateWorkPiecePresenter(view, deviceInfo.getPickStep(), (BasicStackPlateSettings) deviceInfo.getDeviceSettings());
@@ -114,7 +129,7 @@ public class DeviceMenuFactory {
 		}
 	}
 	
-	public BasicStackPlateLayoutPresenter getBasicStackPlateLayoutPresenter(DeviceInformation deviceInfo) {
+	public BasicStackPlateLayoutPresenter getBasicStackPlateLayoutPresenter(final DeviceInformation deviceInfo) {
 		BasicStackPlateLayoutView view = new BasicStackPlateLayoutView();
 		ClampingManner clampingType = null;
 		if (deviceInfo.getPickStep() != null) {

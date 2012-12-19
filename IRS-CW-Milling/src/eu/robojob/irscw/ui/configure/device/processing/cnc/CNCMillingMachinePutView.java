@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device;
+package eu.robojob.irscw.ui.configure.device.processing.cnc;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -11,21 +11,20 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.process.PickStep;
+import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.util.UIConstants;
 
-public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachinePickPresenter> {
+public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachinePutPresenter> {
 
-	private PickStep pickStep;
+	private PutStep putStep;
 	private DeviceSettings deviceSettings;
-
+	
 	private Label lblSmoothInfo;
 	
 	private HBox hBoxSmoothPoint;
-	private HBox hboxHeight;
 	
 	private Label lblSmoothX;
 	private Label lblSmoothY;
@@ -37,21 +36,26 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	private NumericTextField ntxtSmoothY;
 	private NumericTextField ntxtSmoothZ;
 	
-	private Label lblHeight;
-	private NumericTextField ntxtHeight;
-	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
 	
-	public CNCMillingMachinePickView() {
+	public CNCMillingMachinePutView() {
 		super();
-		setHgap(HGAP);
 		setVgap(VGAP);
+		setHgap(HGAP);
+	}
+	
+	public void setPutStep(PutStep putStep) {
+		this.putStep = putStep;
+	}
+	
+	public void setDeviceSettings(DeviceSettings deviceSettings) {
+		this.deviceSettings = deviceSettings;
 	}
 	
 	@Override
 	protected void build() {
-		lblSmoothInfo = new Label(translator.getTranslation("smoothPickInfo"));
+		lblSmoothInfo = new Label(translator.getTranslation("smoothPutInfo"));
 		
 		lblSmoothX = new Label(translator.getTranslation("smoothX"));
 		lblSmoothY = new Label(translator.getTranslation("smoothY"));
@@ -99,17 +103,6 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		btnResetSmooth.getStyleClass().add("form-button");
 		btnResetSmooth.setPrefSize(UIConstants.BUTTON_HEIGHT*1.5, UIConstants.BUTTON_HEIGHT);
 		
-		lblHeight = new Label(translator.getTranslation("height"));
-		
-		ntxtHeight = new NumericTextField(6);
-		ntxtHeight.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
-		ntxtHeight.setOnChange(new ChangeListener<Float>() {
-			@Override
-			public void changed(ObservableValue<? extends Float> overvable, Float oldValue, Float newValue) {
-				presenter.changedHeight(newValue);
-			}
-		});
-		
 		hBoxSmoothPoint = new HBox();
 		hBoxSmoothPoint.getChildren().addAll(lblSmoothX, ntxtSmoothX, lblSmoothY, ntxtSmoothY, lblSmoothZ, ntxtSmoothZ, btnResetSmooth);
 		HBox.setMargin(ntxtSmoothX, new Insets(0, 20, 0, 0));
@@ -117,13 +110,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		HBox.setMargin(ntxtSmoothZ, new Insets(0, 20, 0, 0));
 		hBoxSmoothPoint.setFillHeight(false);
 		hBoxSmoothPoint.setAlignment(Pos.CENTER_LEFT);
-		
-		hboxHeight = new HBox();
-		hboxHeight.getChildren().addAll(lblHeight, ntxtHeight);
-		hboxHeight.setAlignment(Pos.CENTER_LEFT);
-		hboxHeight.setFillHeight(false);
-		hboxHeight.setPadding(new Insets(15, 0, 0, 0));
-		
+
 		int column = 0;
 		int row = 0;
 		add(lblSmoothInfo, column++, row);
@@ -131,10 +118,6 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		column = 0;
 		row++;
 		add(hBoxSmoothPoint, column++, row);
-				
-		column = 0;
-		row++;
-		add(hboxHeight, column++, row);
 		
 		refresh();
 	}
@@ -144,32 +127,19 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		ntxtSmoothX.setFocusListener(listener);
 		ntxtSmoothY.setFocusListener(listener);
 		ntxtSmoothZ.setFocusListener(listener);
-		ntxtHeight.setFocusListener(listener);
-	}
-	
-	public void setPickStep(PickStep pickStep) {
-		this.pickStep = pickStep;
-	}
-	
-	public void setDeviceSettings(DeviceSettings deviceSettings) {
-		this.deviceSettings = deviceSettings;
 	}
 
 	@Override
 	public void refresh() {
-		if (pickStep.getRobotSettings().getSmoothPoint() != null) {
-			ntxtSmoothX.setText(""+pickStep.getRobotSettings().getSmoothPoint().getX());
-			ntxtSmoothY.setText(""+pickStep.getRobotSettings().getSmoothPoint().getY());
-			ntxtSmoothZ.setText(""+pickStep.getRobotSettings().getSmoothPoint().getZ());
+		if (putStep.getRobotSettings().getSmoothPoint() != null) {
+			ntxtSmoothX.setText(""+putStep.getRobotSettings().getSmoothPoint().getX());
+			ntxtSmoothY.setText(""+putStep.getRobotSettings().getSmoothPoint().getY());
+			ntxtSmoothZ.setText(""+putStep.getRobotSettings().getSmoothPoint().getZ());
 		}
-		if(deviceSettings.getClamping(pickStep.getDeviceSettings().getWorkArea()) == null) {
+		if(deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()) == null) {
 			btnResetSmooth.setDisable(true);
 		} else {
 			btnResetSmooth.setDisable(false);
-		}if (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null) {
-			if (pickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight() != -1) {
-				ntxtHeight.setText("" + pickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight());
-			}
 		}
 	}
 

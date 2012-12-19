@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device.pre;
+package eu.robojob.irscw.ui.configure.device.processing.prage;
 
 import java.util.Set;
 

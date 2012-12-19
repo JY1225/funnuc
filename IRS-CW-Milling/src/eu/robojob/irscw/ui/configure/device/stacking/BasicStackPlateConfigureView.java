@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device;
+package eu.robojob.irscw.ui.configure.device.stacking;
 
 import java.util.Set;
 
@@ -9,8 +9,9 @@ import javafx.scene.control.Label;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
+import eu.robojob.irscw.util.Translator;
 
-public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPlateConfigurePresenter>{
+public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPlateConfigurePresenter> {
 
 	private Label lblStacker;
 	private ComboBox<String> cbbStacker;
@@ -19,15 +20,16 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
-	
 	private static final int COMBO_WIDTH = 200;
 	private static final int COMBO_HEIGHT = 40;
 	
-	public void setDeviceInfo(DeviceInformation deviceInfo) {
+	private static final String STACKER = "BasicStackPlateConfigureView.stacker";
+	
+	public void setDeviceInfo(final DeviceInformation deviceInfo) {
 		this.deviceInfo = deviceInfo;
 	}
 	
-	public void setStackingDeviceIds(Set<String> stackingDeviceIds) {
+	public void setStackingDeviceIds(final Set<String> stackingDeviceIds) {
 		this.stackingDeviceIds = stackingDeviceIds;
 	}
 	
@@ -36,8 +38,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		setVgap(VGAP);
 		setHgap(HGAP);
 		getChildren().clear();
-		
-		lblStacker = new Label(translator.getTranslation("BasicStackPlateConfigureView.stacker"));
+		lblStacker = new Label(Translator.getTranslation(STACKER));
 		int column = 0;
 		int row = 0;
 		add(lblStacker, column++, row);
@@ -45,10 +46,9 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		cbbStacker.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		cbbStacker.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
-			public void changed(ObservableValue<? extends String> arg0,
-					String oldValue, String newValue) {
+			public void changed(final ObservableValue<? extends String> arg0, final String oldValue, final String newValue) {
 				if ((oldValue == null) || (!oldValue.equals(newValue))) {
-					presenter.changedDevice(newValue);
+					getPresenter().changedDevice(newValue);
 				}
 			}
 		});
@@ -62,8 +62,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	}
 	
 	@Override
-	public void setTextFieldListener(TextFieldListener listener) {
-		
+	public void setTextFieldListener(final TextFieldListener listener) {
 	}
 
 	public void refreshStackers() {

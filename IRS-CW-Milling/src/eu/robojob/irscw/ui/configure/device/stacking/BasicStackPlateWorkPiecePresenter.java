@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device;
+package eu.robojob.irscw.ui.configure.device.stacking;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
