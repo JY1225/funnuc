@@ -11,33 +11,34 @@ import eu.robojob.irscw.external.robot.GripperBody;
 import eu.robojob.irscw.external.robot.GripperHead;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.IconFlowSelector;
-import eu.robojob.irscw.ui.controls.IconFlowSelectorItemChangedHandler;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.general.model.TransportInformation;
+import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 
 public class TransportGripperView extends AbstractFormView<TransportGripperPresenter> {
 
 	private TransportInformation transportInfo;
 	
-	// for now we assume the robot and robotbody are fixed! 
 	private Label lblGripperHead;
 	private ComboBox<String> cbbGripperHeads;
 	private Label lblGripper;
 	private IconFlowSelector ifsGrippers;
 	
+	private static final String GRIPPERHEADS = "TransportGripperView.gripperHeads";
+	private static final String GRIPPER = "TransportGripperView.gripper";
+	
 	private static final int HGAP = 15;
 	private static final int VGAP = 10;
-	
-	//private static Logger logger = LogManager.getLogger(TransportGripperView.class.getName()); 
-	
+	private static final double ICONFLOWSELECTOR_WIDTH = 530;
+		
 	public TransportGripperView() {
 		super();
 		setVgap(VGAP);
 		setHgap(HGAP);
 	}
 	
-	public void setTransportInfo(TransportInformation transportInfo) {
+	public void setTransportInfo(final TransportInformation transportInfo) {
 		this.transportInfo = transportInfo;
 	}
 	
@@ -48,18 +49,17 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		
 		getChildren().clear();
 		
-		lblGripperHead = new Label(translator.getTranslation("gripperHeads"));
+		lblGripperHead = new Label(Translator.getTranslation(GRIPPERHEADS));
 		add(lblGripperHead, column++, row);
 		
-		// for now we assume the gripper head also can't be changed, because a fixed convention is used!
 		cbbGripperHeads = new ComboBox<String>();
-		cbbGripperHeads.setPrefSize(UIConstants.COMBO_WIDTH/2, UIConstants.COMBO_HEIGHT);
+		cbbGripperHeads.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
 		add(cbbGripperHeads, column++, row);
 		cbbGripperHeads.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
 				if ((oldValue == null) || (!oldValue.equals(newValue))) {
-					presenter.changedGripperHead(newValue);
+					getPresenter().changedGripperHead(newValue);
 				}
 			}
 		});
@@ -68,11 +68,11 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		column = 0;
 		row++;
 		
-		lblGripper = new Label(translator.getTranslation("gripper"));
+		lblGripper = new Label(Translator.getTranslation(GRIPPER));
 		add(lblGripper, column++, row);
 		
 		ifsGrippers = new IconFlowSelector();
-		ifsGrippers.setPrefWidth(530);
+		ifsGrippers.setPrefWidth(ICONFLOWSELECTOR_WIDTH);
 		column = 0;
 		row++;
 		add(ifsGrippers, column++, row, 3, 1);
@@ -100,10 +100,10 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		GripperBody body = transportInfo.getRobot().getGripperBody();
 		int itemIndex = 0;
 		for (final Gripper gripper : body.getPossibleGrippers()) {
-			ifsGrippers.addItem(itemIndex, gripper.getId(), gripper.getImageUrl(), new IconFlowSelectorItemChangedHandler() {
+			ifsGrippers.addItem(itemIndex, gripper.getId(), gripper.getImageUrl(), new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(final MouseEvent event) {
-					presenter.changedGripper(gripper.getId());
+					getPresenter().changedGripper(gripper.getId());
 				}
 			});
 			itemIndex++;
@@ -121,9 +121,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 	}
 	
 	@Override
-	public void setTextFieldListener(TextFieldListener listener) {
-		// TODO Auto-generated method stub
-		
+	public void setTextFieldListener(final TextFieldListener listener) {
 	}
 
 	@Override
@@ -133,15 +131,4 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		setSelectedGripper();
 	}
 
-	public abstract class ChangedGripperHandler implements EventHandler<MouseEvent> {
-		protected Gripper gripper;
-		
-		public ChangedGripperHandler(Gripper gripper) {
-			this.gripper = gripper;
-		}
-
-		@Override
-		public abstract void handle(MouseEvent event);
-		
-	}
 }

@@ -14,12 +14,12 @@ public class TransportMenuFactory {
 	
 	private Map<TransportInformation, AbstractMenuPresenter<?>> presentersBuffer;
 	
-	public TransportMenuFactory(ProcessFlow processFlow) {
+	public TransportMenuFactory(final ProcessFlow processFlow) {
 		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		presentersBuffer = new HashMap<TransportInformation, AbstractMenuPresenter<?>>();
 	}
 	
-	public AbstractMenuPresenter<?> getTransportMenu(TransportInformation transportInfo) {
+	public AbstractMenuPresenter<?> getTransportMenu(final TransportInformation transportInfo) {
 		AbstractMenuPresenter<?> menuPresenter = presentersBuffer.get(transportInfo);
 		if (menuPresenter == null) {
 			menuPresenter =  getTransportMenuPresenter(transportInfo);
@@ -28,19 +28,19 @@ public class TransportMenuFactory {
 		return menuPresenter;
 	}
 	
-	public TransportMenuPresenter getTransportMenuPresenter(TransportInformation transportInfo) {
+	public TransportMenuPresenter getTransportMenuPresenter(final TransportInformation transportInfo) {
 		TransportMenuView view = new TransportMenuView(transportInfo);
 		TransportMenuPresenter transportMenuPresenter = new TransportMenuPresenter(view, getTransportGripperPresenter(transportInfo), getTransportInterventionPresenter(transportInfo));
 		return transportMenuPresenter;
 	}
 	
-	public TransportGripperPresenter getTransportGripperPresenter(TransportInformation transportInfo) {
+	public TransportGripperPresenter getTransportGripperPresenter(final TransportInformation transportInfo) {
 		TransportGripperView view = new TransportGripperView();
 		TransportGripperPresenter transportGripperPresenter = new TransportGripperPresenter(view, transportInfo);
 		return transportGripperPresenter;
 	}
 	
-	public TransportInterventionPresenter getTransportInterventionPresenter(TransportInformation transportInfo) {
+	public TransportInterventionPresenter getTransportInterventionPresenter(final TransportInformation transportInfo) {
 		TransportInterventionView view = new TransportInterventionView();
 		TransportInterventionPresenter transportInterventionPresenter = new TransportInterventionPresenter(view, transportInfo, processFlowAdapter);
 		return transportInterventionPresenter;

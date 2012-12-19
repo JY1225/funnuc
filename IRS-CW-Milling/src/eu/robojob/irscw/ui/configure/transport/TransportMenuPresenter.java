@@ -8,7 +8,7 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 	private TransportGripperPresenter transportGripperPresenter;
 	private TransportInterventionPresenter transportInterventionPresenter;
 	
-	public TransportMenuPresenter(TransportMenuView view, TransportGripperPresenter transportGripperPresenter, TransportInterventionPresenter transportInterventionPresenter) {
+	public TransportMenuPresenter(final TransportMenuView view, final TransportGripperPresenter transportGripperPresenter, final TransportInterventionPresenter transportInterventionPresenter) {
 		super(view);
 		this.transportGripperPresenter = transportGripperPresenter;
 		this.transportInterventionPresenter = transportInterventionPresenter;
@@ -18,12 +18,12 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 
 	@Override
 	protected void setPresenter() {
-		view.setPresenter(this);
+		getView().setPresenter(this);
 	}
 
 	public void configureGriper() {
-		view.setConfigureGripperActive();
-		parent.setBottomRightView(transportGripperPresenter.getView());
+		getView().setConfigureGripperActive();
+		getParent().setBottomRightView(transportGripperPresenter.getView());
 	}
 
 	@Override
@@ -32,23 +32,21 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 	}
 	
 	public void configureInterventions() {
-		view.setConfigureInterventionsActive();
-		parent.setBottomRightView(transportInterventionPresenter.getView());
+		getView().setConfigureInterventionsActive();
+		getParent().setBottomRightView(transportInterventionPresenter.getView());
 	}
 
 	@Override
-	public void setBlocked(boolean blocked) {
-		// TODO Auto-generated method stub
-		
+	public void setBlocked(final boolean blocked) {
 	}
 
 	@Override
-	public void setTextFieldListener(ConfigurePresenter parent) {
+	public void setTextFieldListener(final ConfigurePresenter parent) {
 		transportInterventionPresenter.setTextFieldListener(parent);
 	}
 	
 	public void processFlowUpdated() {
-		parent.updateProcessFlow();
+		getParent().updateProcessFlow();
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 	private TransportInformation transportInfo;
 	private RobotSettings robotSettings;
 	
-	public TransportGripperPresenter(TransportGripperView view, TransportInformation transportInfo) {
+	public TransportGripperPresenter(final TransportGripperView view, final TransportInformation transportInfo) {
 		super(view);
 		this.transportInfo = transportInfo;
 		this.robotSettings = transportInfo.getRobotSettings();
@@ -27,27 +27,24 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 
 	@Override
 	public void setPresenter() {
-		view.setPresenter(this);
+		getView().setPresenter(this);
 	}
 
-	public void changedGripperHead(String id) {
-		// for now this wil be impossible, since a fixed convention will be used! 
-		logger.debug("Gripper head not changed for now...");
+	public void changedGripperHead(final String id) {
+		// TODO implement
+		throw new IllegalStateException("This method is not supperted for now");
 	}
 	
-	public void changedGripper(String id) {
-		// TODO: make sure that a gripper is used with one head, and automatic gripper changed aren't possible!
-		logger.debug("Changed gripper to: " + id);
+	public void changedGripper(final String id) {
 		Gripper gripper = transportInfo.getRobot().getGripperBody().getGripper(id);
 		boolean found = false;
 		for (GripperHead head : transportInfo.getRobot().getGripperBody().getGripperHeads()) {
-			if ((head.getGripper() != null) && (head.getGripper().equals(gripper)) && (!head.equals(transportInfo.getPickStep().getRobotSettings().getGripperHead()))){
+			if ((head.getGripper() != null) && (head.getGripper().equals(gripper)) && (!head.equals(transportInfo.getPickStep().getRobotSettings().getGripperHead()))) {
 				found = true;
 			}
 		}
 		if (!found) {
 			if ((transportInfo.getPickStep().getRobotSettings().getGripperHead().getGripper() != null) && transportInfo.getPickStep().getRobotSettings().getGripperHead().getGripper().equals(gripper)) {
-				// deselect gripper
 				robotSettings.setGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead(), null);
 			} else {
 				robotSettings.setGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead(), gripper);
@@ -57,9 +54,10 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 			transportInfo.getPutStep().setRelativeTeachedOffset(null);
 			transportInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(transportInfo.getPickStep().getProcessFlow(), transportInfo.getPickStep(), true));
 			transportInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(transportInfo.getPutStep().getProcessFlow(), transportInfo.getPutStep(), true));
-			view.setSelectedGripper();
+			getView().setSelectedGripper();
 		} else {
-			logger.debug("duplicate gripper usage!");
+			// TODO handle this error (warning dialog...)
+			logger.debug("Duplicate gripper usage!");
 		}
 	}
 
@@ -67,8 +65,7 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 	public boolean isConfigured() {
 		if (robotSettings.getGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead()) != null) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 }

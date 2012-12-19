@@ -4,24 +4,28 @@ import eu.robojob.irscw.ui.controls.TextFieldListener;
 
 public abstract class AbstractFormPresenter<T extends AbstractFormView<?>, S extends AbstractMenuPresenter<?>> {
 
-	protected T view;
-	protected S menuPresenter;
+	private T view;
+	private S menuPresenter;
 		
-	public AbstractFormPresenter(T view) {
+	public AbstractFormPresenter(final T view) {
 		this.view = view;
 		setPresenter();
 	}
 	
-	public void setMenuPresenter(S menuPresenter) {
+	public void setMenuPresenter(final S menuPresenter) {
 		this.menuPresenter = menuPresenter;
 	}
 	
-	public void setTextFieldListener(TextFieldListener listener) {
+	public void setTextFieldListener(final TextFieldListener listener) {
 		view.setTextFieldListener(listener);
 	}
 	
 	public T getView() {
 		return view;
+	}
+	
+	public S getMenuPresenter() {
+		return menuPresenter;
 	}
 	
 	public abstract void setPresenter();

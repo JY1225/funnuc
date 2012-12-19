@@ -12,6 +12,7 @@ import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.general.model.TransportInformation;
+import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 
 public class TransportInterventionView extends AbstractFormView<TransportInterventionPresenter> {
@@ -32,13 +33,21 @@ public class TransportInterventionView extends AbstractFormView<TransportInterve
 	
 	private static final double BTN_WIDTH = 200;
 	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
-	
+	private static final double ICON_WIDTH = 40.188;
 	private static final int VGAP = 15;
 	private static final int HGAP = 15;
 	
+	private static final String CSS_CLASS_FORM_BUTTON_ACTIVE = "form-button-active";
+	private static final String CSS_CLASS_BUTTON_INTERVENTION = "btn-intervention";
+	private static final String CSS_CLASS_LABEL_INTERVENTION = "lbl-intervention";
+	
+	private static final String INTERVAL = "interval";
+	private static final String INTERVENTION_BEFORE_PICK = "interventionBeforePick";
+	private static final String INTERVENTION_AFTER_PUT = "interventionAfterPut";
+	
 	private static final double LBL_WIDTH = 100;
 	
-	public void setTransportInfo(TransportInformation transportInfo) {
+	public void setTransportInfo(final TransportInformation transportInfo) {
 		this.transportInfo = transportInfo;
 		setVgap(VGAP);
 		setHgap(HGAP);
@@ -46,21 +55,21 @@ public class TransportInterventionView extends AbstractFormView<TransportInterve
 	
 	@Override
 	protected void build() {
-		btnInterventionBeforePick = createButton(PAUSE_LEFT_ICON, "btn-intervention", translator.getTranslation("interventionBeforePick"), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+		btnInterventionBeforePick = createButton(PAUSE_LEFT_ICON, CSS_CLASS_BUTTON_INTERVENTION, Translator.getTranslation(INTERVENTION_BEFORE_PICK), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
-			public void handle(ActionEvent arg0) {
-				presenter.clickedInterventionBeforePick();
+			public void handle(final ActionEvent arg0) {
+				getPresenter().clickedInterventionBeforePick();
 			}
-		}, 40.188);
+		}, ICON_WIDTH);
 		
 		int column = 0;
 		int row = 0;
 		
 		add(btnInterventionBeforePick, column++, row);
 		
-		lblInterventionBeforeInterval = new Label(translator.getTranslation("interval"));
+		lblInterventionBeforeInterval = new Label(Translator.getTranslation(INTERVAL));
 		lblInterventionBeforeInterval.setPrefWidth(LBL_WIDTH);
-		lblInterventionBeforeInterval.getStyleClass().add("lbl-intervention");
+		lblInterventionBeforeInterval.getStyleClass().add(CSS_CLASS_LABEL_INTERVENTION);
 		add(lblInterventionBeforeInterval, column++, row);
 		
 		itfInterventionBeforePickFrequency = new IntegerTextField(2);
@@ -68,27 +77,26 @@ public class TransportInterventionView extends AbstractFormView<TransportInterve
 		add(itfInterventionBeforePickFrequency, column++, row);
 		itfInterventionBeforePickFrequency.setOnChange(new ChangeListener<Integer>() {
 			@Override
-			public void changed(ObservableValue<? extends Integer> arg0, Integer arg1,
-					Integer arg2) {
-				presenter.changedInterventionBeforePickInterval(arg2);
+			public void changed(final ObservableValue<? extends Integer> arg0, final Integer arg1, final Integer arg2) {
+				getPresenter().changedInterventionBeforePickInterval(arg2);
 			}
 		});
 		
 		column = 0;
 		row++;
 		
-		btnInterventionAfterPut = createButton(PAUSE_RIGHT_ICON, "btn-intervention", translator.getTranslation("interventionAfterPut"), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+		btnInterventionAfterPut = createButton(PAUSE_RIGHT_ICON, CSS_CLASS_BUTTON_INTERVENTION, Translator.getTranslation(INTERVENTION_AFTER_PUT), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
-			public void handle(ActionEvent arg0) {
-				presenter.clickedInterventionAfterPut();
+			public void handle(final ActionEvent arg0) {
+				getPresenter().clickedInterventionAfterPut();
 			}
-		}, 40.188);
+		}, ICON_WIDTH);
 		
 		add(btnInterventionAfterPut, column++, row);
 		
-		lblIntervnetionAfterInterval = new Label(translator.getTranslation("interval"));
+		lblIntervnetionAfterInterval = new Label(Translator.getTranslation(INTERVAL));
 		lblIntervnetionAfterInterval.setPrefWidth(LBL_WIDTH);
-		lblIntervnetionAfterInterval.getStyleClass().add("lbl-intervention");
+		lblIntervnetionAfterInterval.getStyleClass().add(CSS_CLASS_LABEL_INTERVENTION);
 		add(lblIntervnetionAfterInterval, column++, row);
 		
 		itfInterventionAfterPutFrequency = new IntegerTextField(2);
@@ -96,23 +104,22 @@ public class TransportInterventionView extends AbstractFormView<TransportInterve
 		add(itfInterventionAfterPutFrequency, column++, row);
 		itfInterventionAfterPutFrequency.setOnChange(new ChangeListener<Integer>() {
 			@Override
-			public void changed(ObservableValue<? extends Integer> arg0, Integer arg1,
-					Integer arg2) {
-				presenter.changedInterventionAfterPutInterval(arg2);
+			public void changed(final ObservableValue<? extends Integer> arg0, final Integer arg1, final Integer arg2) {
+				getPresenter().changedInterventionAfterPutInterval(arg2);
 			}
 		});
 	}
 
 	@Override
-	public void setTextFieldListener(TextFieldListener listener) {
+	public void setTextFieldListener(final TextFieldListener listener) {
 		itfInterventionAfterPutFrequency.setFocusListener(listener);
 		itfInterventionBeforePickFrequency.setFocusListener(listener);
 	}
 
 	@Override
 	public void refresh() {
-		btnInterventionAfterPut.getStyleClass().remove("form-button-active");
-		btnInterventionBeforePick.getStyleClass().remove("form-button-active");
+		btnInterventionAfterPut.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnInterventionBeforePick.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		itfInterventionAfterPutFrequency.setDisable(true);
 		lblIntervnetionAfterInterval.setDisable(true);
 		itfInterventionAfterPutFrequency.setText("");
@@ -120,13 +127,13 @@ public class TransportInterventionView extends AbstractFormView<TransportInterve
 		lblInterventionBeforeInterval.setDisable(true);
 		itfInterventionBeforePickFrequency.setText("");
 		if (transportInfo.hasInterventionBeforePick()) {
-			btnInterventionBeforePick.getStyleClass().add("form-button-active");
+			btnInterventionBeforePick.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
 			itfInterventionBeforePickFrequency.setText(transportInfo.getInterventionBeforePick().getFrequency() + "");
 			itfInterventionBeforePickFrequency.setDisable(false);
 			lblInterventionBeforeInterval.setDisable(false);
 		}
 		if (transportInfo.hasInterventionAfterPut()) {
-			btnInterventionAfterPut.getStyleClass().add("form-button-active");
+			btnInterventionAfterPut.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
 			itfInterventionAfterPutFrequency.setText(transportInfo.getInterventionAfterPut().getFrequency() + "");
 			itfInterventionAfterPutFrequency.setDisable(false);
 			lblIntervnetionAfterInterval.setDisable(false);

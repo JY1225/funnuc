@@ -2,15 +2,15 @@ package eu.robojob.irscw.ui.configure;
 
 public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> {
 
-	protected ConfigurePresenter parent;
-	protected T view;
+	private ConfigurePresenter parent;
+	private T view;
 	
-	public AbstractMenuPresenter(T view) {
+	public AbstractMenuPresenter(final T view) {
 		this.view = view;
 		setPresenter();
 	}
 	
-	public void setParent(ConfigurePresenter parent) {
+	public void setParent(final ConfigurePresenter parent) {
 		this.parent = parent;
 	}
 	
@@ -20,6 +20,10 @@ public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> {
 	
 	public T getView() {
 		return view;
+	}
+	
+	public ConfigurePresenter getParent() {
+		return parent;
 	}
 	
 	public abstract void openFirst();

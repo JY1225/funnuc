@@ -1,8 +1,5 @@
 	package eu.robojob.irscw.ui.configure;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
@@ -36,48 +33,37 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	public enum Mode {
 		NORMAL, ADD_DEVICE, REMOVE_DEVICE
 	}
-
-	private static Logger logger = LogManager.getLogger(ConfigurePresenter.class.getName());
 		
 	private ConfigureView view;
-	
 	private FullKeyboardPresenter keyboardPresenter;
 	private NumericKeyboardPresenter numericKeyboardPresenter;
-	
 	private ConfigureProcessFlowPresenter processFlowPresenter;
-
 	private AbstractMenuPresenter<?> activeMenu;
 	private DeviceMenuFactory deviceMenuFactory;
 	private TransportMenuFactory transportMenuFactory;
-	
 	private boolean keyboardActive;
 	private boolean numericKeyboardActive;
-	
 	private ProcessFlowAdapter processFlowAdapter;
-	
 	private MainPresenter parent;
-	
 	private ProcessMenuPresenter processMenuPresenter;
-	
 	private DeviceManager deviceManager;
-	
 	private Mode mode;
 	
-	public ConfigurePresenter(ConfigureView view, FullKeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
-			ConfigureProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processMenuPresenter, DeviceMenuFactory deviceMenuFactory, TransportMenuFactory transportMenuFactory,
-			 DeviceManager deviceManager) {
+	public ConfigurePresenter(final ConfigureView view, final FullKeyboardPresenter keyboardPresenter, final NumericKeyboardPresenter numericKeyboardPresenter,
+			final ConfigureProcessFlowPresenter processFlowPresenter, final ProcessMenuPresenter processMenuPresenter, final DeviceMenuFactory deviceMenuFactory, 
+			final TransportMenuFactory transportMenuFactory, final DeviceManager deviceManager) {
 		this.view = view;
+		view.setPresenter(this);
 		this.keyboardPresenter = keyboardPresenter;
 		keyboardPresenter.setParent(this);
 		this.numericKeyboardPresenter = numericKeyboardPresenter;
 		numericKeyboardPresenter.setParent(this);
 		this.processFlowPresenter = processFlowPresenter;
 		processFlowPresenter.setParent(this);
-		this.deviceMenuFactory = deviceMenuFactory;
-		this.transportMenuFactory = transportMenuFactory;
 		this.processMenuPresenter = processMenuPresenter;
 		processMenuPresenter.setParent(this);
-		view.setPresenter(this);
+		this.deviceMenuFactory = deviceMenuFactory;
+		this.transportMenuFactory = transportMenuFactory;
 		keyboardActive = false;
 		numericKeyboardActive = false;
 		mode = Mode.NORMAL;
@@ -86,7 +72,58 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		configureProcess();
 	}
 	
-	public void setParent(MainPresenter parent) {
+	private void configureProcess() {
+		view.setBottomLeft(processMenuPresenter.getView());
+		if (keyboardActive) {
+			view.addNodeToTop(keyboardPresenter.getView()); 
+		}
+		if (numericKeyboardActive) {
+			view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
+		}
+		processMenuPresenter.setTextFieldListener(this);
+		processMenuPresenter.openFirst();
+		refreshProgressBar();
+	}
+	
+	private void refreshProgressBar() {
+		if (parent != null) {
+			parent.refreshStatus();
+		} else {
+			isConfigured();
+		}
+	}
+	
+	public boolean isConfigured() {
+		boolean configured = true;
+		if (processFlowAdapter != null) {
+			for (int i = 0; i < processFlowAdapter.getDeviceStepCount(); i++) {
+				AbstractMenuPresenter<?> menu = deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i));
+				if ((menu != null) && (menu.isConfigured())) {
+					processFlowPresenter.setDeviceConfigured(i, true);
+				} else {
+					if (deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)) != null) {
+						processFlowPresenter.setDeviceConfigured(i, false);
+						configured = false;
+					} else {
+						processFlowPresenter.setDeviceConfigured(i, true);
+					}
+				}
+			}
+			for (int j = 0; j < processFlowAdapter.getTransportStepCount(); j++) {
+				if ((transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(j)) != null) && (transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(j)).isConfigured())) {
+					processFlowPresenter.setTransportConfigured(j, true);
+				} else {
+					processFlowPresenter.setTransportConfigured(j, false);
+					configured = false;
+				}
+			}
+		} else {
+			configured = false;
+		}
+		return configured;
+	}
+	
+	public void setParent(final MainPresenter parent) {
 		this.parent = parent;
 	}
 	
@@ -106,24 +143,23 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		}
 		if (keyboardActive) {
 			keyboardActive = false;
-			logger.debug("Close keyboard");
 			// we assume the keyboard view is always on top
 			view.removeNodeFromTop(keyboardPresenter.getView());
 			view.requestFocus();
 		} else if (numericKeyboardActive) {
 			numericKeyboardActive = false;
-			logger.debug("Close numeric keyboard");
+			// we assume the keyboard view is always on top
 			view.removeNodeFromBottomLeft(numericKeyboardPresenter.getView());
 			view.requestFocus();
 		}
 	}
 	
-	public void setBottomRightView(AbstractFormView<?> bottomRight) {
+	public void setBottomRightView(final AbstractFormView<?> bottomRight) {
 		bottomRight.refresh();
 		view.setBottomRight(bottomRight);
 	}
 
-	public void textFieldFocussed(AbstractTextField<?> textField) {
+	public void textFieldFocussed(final AbstractTextField<?> textField) {
 		if (textField instanceof FullTextField) {
 			this.textFieldFocussed((FullTextField) textField);
 		} else if (textField instanceof NumericTextField) {
@@ -131,11 +167,11 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		} else if (textField instanceof IntegerTextField) {
 			this.textFieldFocussed((IntegerTextField) textField);
 		} else {
-			throw new IllegalArgumentException("Unknown keyboard-type");
+			throw new IllegalArgumentException("Unknown keyboard-type [" + textField + "].");
 		}
 	}
 	
-	private void textFieldFocussed(FullTextField textField) {
+	private void textFieldFocussed(final FullTextField textField) {
 		keyboardPresenter.setTarget(textField);
 		if (!keyboardActive) {
 			view.addNodeToTop(keyboardPresenter.getView());
@@ -143,42 +179,36 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		}
 	}
 	
-	private void textFieldFocussed(NumericTextField textField) {
+	private void textFieldFocussed(final NumericTextField textField) {
 		numericKeyboardPresenter.setTarget(textField);
 		if (!numericKeyboardActive) {
-			logger.debug("Opening numeric keyboard");
 			view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
 			numericKeyboardActive = true;
 		}
 	}
 	
-	private void textFieldFocussed(IntegerTextField textField) {
+	private void textFieldFocussed(final IntegerTextField textField) {
 		numericKeyboardPresenter.setTarget(textField);
 		if (!numericKeyboardActive) {
-			logger.debug("Opening numeric keyboard");
 			view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
 			numericKeyboardActive = true;
 		}
 	}
 
 	@Override
-	public void textFieldLostFocus(AbstractTextField<?> textField) {
+	public void textFieldLostFocus(final AbstractTextField<?> textField) {
 		closeKeyboard();
 	}
 	
-	public void configureDevice(int index) {
+	public void configureDevice(final int index) {
 		activeMenu = deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(index));
-		if (activeMenu != null) {
-			activeMenu.setParent(this);
-			activeMenu.setTextFieldListener(this);
-			view.setBottomLeft(activeMenu.getView());
-			activeMenu.openFirst();
-		} else {
-			processFlowPresenter.removeFocus();
-		}
+		activeMenu.setParent(this);
+		activeMenu.setTextFieldListener(this);
+		view.setBottomLeft(activeMenu.getView());
+		activeMenu.openFirst();
 	}
 	
-	public void configureTransport(int index) {
+	public void configureTransport(final int index) {
 		activeMenu = transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(index));
 		activeMenu.setParent(this);
 		activeMenu.setTextFieldListener(this);
@@ -186,7 +216,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		activeMenu.openFirst();
 	}
 	
-	public void loadProcessFlow(ProcessFlow processFlow) {
+	public void loadProcessFlow(final ProcessFlow processFlow) {
 		processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		processFlowPresenter.loadProcessFlow(processFlow);
 		refreshProgressBar();
@@ -194,19 +224,6 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	
 	public void updateProcessFlow() {
 		processFlowPresenter.refresh();
-		refreshProgressBar();
-	}
-	
-	public void configureProcess() {
-		view.setBottomLeft(processMenuPresenter.getView());
-		if (keyboardActive) {
-			view.addNodeToTop(keyboardPresenter.getView()); 
-		}
-		if (numericKeyboardActive) {
-			view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
-		}
-		processMenuPresenter.setTextFieldListener(this);
-		processMenuPresenter.openFirst();
 		refreshProgressBar();
 	}
 	
@@ -240,7 +257,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	}
 	
 	//TODO review, for now this is hard coded
-	public void addDevice(int index) {
+	public void addDevice(final int index) {
 		
 		PrageDevice prageDevice = (PrageDevice) deviceManager.getPreProcessingDeviceById("Präge");
 		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
@@ -276,7 +293,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		refresh();
 	}
 	
-	public void removeDevice(int index) {
+	public void removeDevice(final int index) {
 		processFlowAdapter.removeDeviceSteps(index);
 		deviceMenuFactory.reset();
 		refresh();
@@ -288,46 +305,6 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		refreshProgressBar();
 	}
 	
-	public boolean isConfigured() {
-		boolean configured = true;
-		
-		if (processFlowAdapter != null) {
-			for (int i = 0; i < processFlowAdapter.getDeviceStepCount(); i++) {
-				AbstractMenuPresenter<?> menu = deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i));
-				if ((menu != null) && (menu.isConfigured())){
-					processFlowPresenter.setDeviceConfigured(i, true);
-				} else {
-					if (deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)) != null) {
-						processFlowPresenter.setDeviceConfigured(i, false);
-						configured = false;
-					} else {
-						processFlowPresenter.setDeviceConfigured(i, true);
-					}
-				}
-			}
-			for (int j = 0; j < processFlowAdapter.getTransportStepCount(); j++) {
-				if ((transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(j)) != null) && (transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(j)).isConfigured())) {
-					processFlowPresenter.setTransportConfigured(j, true);
-				} else {
-					processFlowPresenter.setTransportConfigured(j, false);
-					configured = false;
-				}
-			}
-		} else {
-			configured = false;
-		}
-		
-		return configured;
-	}
-	
-	public void refreshProgressBar() {
-		if (parent != null) {
-			parent.refreshStatus();
-		} else {
-			isConfigured();
-		}
-	}
-	
 	public void processOpened() {
 		transportMenuFactory.clearBuffer();
 		deviceMenuFactory.clearBuffer();
@@ -336,7 +313,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	}
 
 	@Override
-	public void setActive(boolean active) {
+	public void setActive(final boolean active) {
 	}
 
 }

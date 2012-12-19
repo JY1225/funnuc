@@ -22,11 +22,16 @@ public class ConfigureView extends VBox {
 	public static final int WIDTH = 800;
 	public static final int WIDTH_BOTTOM_LEFT = 230;
 	
-	public ConfigureView () {
+	private static final String CSS_CLASS_TOP_PANE = "top-panel";
+	private static final String CSS_CLASS_BOTTOM_PANE = "bottompane";
+	private static final String CSS_CLASS_BOTTOM_LEFT_PANE = "bottom-left";
+	private static final String CSS_CLASS_BOTTOM_RIGHT_PANE = "bottom-right";
+	
+	public ConfigureView() {
 		buildView();
 	}
 	
-	public void setPresenter(ConfigurePresenter presenter) {
+	public void setPresenter(final ConfigurePresenter presenter) {
 		this.presenter = presenter;
 	}
 	
@@ -42,60 +47,60 @@ public class ConfigureView extends VBox {
 		getChildren().add(top);
 		top.setPrefHeight(HEIGHT_TOP);
 		top.setPrefWidth(WIDTH);
-		top.getStyleClass().add("top-panel");
+		top.getStyleClass().add(CSS_CLASS_TOP_PANE);
 		
 		bottom = new HBox();
 		getChildren().add(bottom);
 		bottom.setPrefHeight(HEIGHT_BOTTOM);
 		bottom.setPrefWidth(WIDTH);
 		VBox.setVgrow(bottom, Priority.ALWAYS);
-		bottom.getStyleClass().add("bottompane");
+		bottom.getStyleClass().add(CSS_CLASS_BOTTOM_PANE);
 		
 		bottomLeft = new StackPane();
 		bottom.getChildren().add(bottomLeft);
 		bottomLeft.setPrefWidth(WIDTH_BOTTOM_LEFT);
-		bottomLeft.getStyleClass().add("bottom-left");
+		bottomLeft.getStyleClass().add(CSS_CLASS_BOTTOM_LEFT_PANE);
 		
 		bottomRight = new Pane();
 		bottom.getChildren().add(bottomRight);
-		bottomRight.getStyleClass().add("bottom-right");
-		bottomRight.setPrefWidth(WIDTH-WIDTH_BOTTOM_LEFT);
+		bottomRight.getStyleClass().add(CSS_CLASS_BOTTOM_RIGHT_PANE);
+		bottomRight.setPrefWidth(WIDTH - WIDTH_BOTTOM_LEFT);
 		bottomRight.setPrefHeight(HEIGHT_BOTTOM);
 
 	}
 
-	public void addNodeToTop(Node node) {
+	public void addNodeToTop(final Node node) {
 		this.top.getChildren().add(node);
 	}
 	
-	public void removeNodeFromTop(Node node) {
+	public void removeNodeFromTop(final Node node) {
 		this.top.getChildren().remove(node);
 	}
 	
-	public void setTop(Node node) {
+	public void setTop(final Node node) {
 		this.top.getChildren().clear();
 		this.top.getChildren().add(node);
 	}
 	
-	public void addNodeToBottomLeft(Node node) {
+	public void addNodeToBottomLeft(final Node node) {
 		this.bottomLeft.getChildren().add(node);
 	}
 	
-	public void removeNodeFromBottomLeft(Node node) {
+	public void removeNodeFromBottomLeft(final Node node) {
 		this.bottomLeft.getChildren().remove(node);
 	}
 	
-	public void setBottomLeft(Node bottom) {
+	public void setBottomLeft(final Node bottom) {
 		this.bottomLeft.getChildren().clear();
 		this.bottomLeft.getChildren().add(bottom);
 	}
 	
-	public void setBottomRight(Node node) {
+	public void setBottomRight(final Node node) {
 		this.bottomRight.getChildren().clear();
 		this.bottomRight.getChildren().add(node);
 	}
 	
-	public void setBottomLeftEnabled(boolean enabled) {
+	public void setBottomLeftEnabled(final boolean enabled) {
 		this.bottomLeft.setDisable(!enabled);
 	}
 }
