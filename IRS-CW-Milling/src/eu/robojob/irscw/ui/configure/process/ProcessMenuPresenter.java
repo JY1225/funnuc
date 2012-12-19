@@ -4,53 +4,45 @@ import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 
 public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView> {
-
-	private ConfigurePresenter parent;
 	
 	private ProcessConfigurePresenter configurePresenter;
 	private ProcessOpenPresenter openPresenter;
 			
-	public ProcessMenuPresenter(ProcessMenuView view, ProcessConfigurePresenter configurePresenter, ProcessOpenPresenter openPresenter) {
+	public ProcessMenuPresenter(final ProcessMenuView view, final ProcessConfigurePresenter configurePresenter, final ProcessOpenPresenter openPresenter) {
 		super(view);
 		this.configurePresenter = configurePresenter;
 		configurePresenter.setMenuPresenter(this);
-		configurePresenter.setTextFieldListener(parent);
 		this.openPresenter = openPresenter;
 		openPresenter.setMenuPresenter(this);
 	}
 
 	@Override
 	protected void setPresenter() {
-		view.setPresenter(this);
+		getView().setPresenter(this);
 	}
 	
-	public void setParent(ConfigurePresenter parent) {
-		this.parent = parent;
-	}
-
 	public ProcessMenuView getView() {
-		return view;
+		return getView();
 	}
 	
 	public void saveData() {
 	}
 	
 	public void configureProcess() {
-		view.setConfigureActive();
-		parent.setBottomRightView(configurePresenter.getView());
+		getView().setConfigureActive();
+		getParent().setBottomRightView(configurePresenter.getView());
 	}
 	
 	public void openProcess() {
-		view.setOpenActive();
-		parent.setBottomRightView(openPresenter.getView());
+		getView().setOpenActive();
+		getParent().setBottomRightView(openPresenter.getView());
 	}
 	
 	public void newProcess() {
-		
 	}
 	
 	public void processOpened() {
-		parent.processOpened();
+		getParent().processOpened();
 	}
 
 	@Override
@@ -59,32 +51,30 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	}
 
 	public void setAddDeviceMode() {
-		parent.setAddDeviceMode();
+		getParent().setAddDeviceMode();
 	}
 	
 	public void setRemoveDeviceMode() {
-		parent.setRemoveDeviceMode();
+		getParent().setRemoveDeviceMode();
 	}
 	
 	public void setNormalMode() {
-		parent.setNormalMode();
+		getParent().setNormalMode();
 		configurePresenter.setNormalMode();
 	}
 
 	@Override
-	public void setBlocked(boolean blocked) {
-		// TODO Auto-generated method stub
-		
+	public void setBlocked(final boolean blocked) {
 	}
 
 	@Override
-	public void setTextFieldListener(ConfigurePresenter parent) {
+	public void setTextFieldListener(final ConfigurePresenter parent) {
 		configurePresenter.setTextFieldListener(parent);
 	}
 
 	@Override
 	public boolean isConfigured() {
-		// TODO Auto-generated method stub
+		//TODO implement
 		return false;
 	}
 

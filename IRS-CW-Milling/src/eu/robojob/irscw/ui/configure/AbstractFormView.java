@@ -25,6 +25,10 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	private static final String CSS_CLASS_FORM_BUTTON_PANEL = "form-button-panel";
 	private static final String CSS_CLASS_FORM_BUTTON = "form-button";
 	
+	protected static final String CSS_CLASS_FORM_BUTTON_ACTIVE = "form-button-active";
+	protected static final String CSS_CLASS_FORM_LABEL = "form-label";
+	protected static final String CSS_CLASS_FORM_FULLTEXTFIELD = "form-full-textfield";
+	
 	public AbstractFormView() {
 		super();
 		setAlignment(Pos.CENTER);

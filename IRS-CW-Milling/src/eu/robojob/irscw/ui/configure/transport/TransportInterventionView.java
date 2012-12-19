@@ -37,13 +37,12 @@ public class TransportInterventionView extends AbstractFormView<TransportInterve
 	private static final int VGAP = 15;
 	private static final int HGAP = 15;
 	
-	private static final String CSS_CLASS_FORM_BUTTON_ACTIVE = "form-button-active";
 	private static final String CSS_CLASS_BUTTON_INTERVENTION = "btn-intervention";
 	private static final String CSS_CLASS_LABEL_INTERVENTION = "lbl-intervention";
 	
-	private static final String INTERVAL = "interval";
-	private static final String INTERVENTION_BEFORE_PICK = "interventionBeforePick";
-	private static final String INTERVENTION_AFTER_PUT = "interventionAfterPut";
+	private static final String INTERVAL = "TransportInterventionView.interval";
+	private static final String INTERVENTION_BEFORE_PICK = "TransportInterventionView.interventionBeforePick";
+	private static final String INTERVENTION_AFTER_PUT = "TransportInterventionView.interventionAfterPut";
 	
 	private static final double LBL_WIDTH = 100;
 	

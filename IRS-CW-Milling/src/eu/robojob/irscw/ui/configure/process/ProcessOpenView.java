@@ -13,6 +13,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 
 public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
@@ -30,6 +31,11 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
 	private static final double BTN_WIDTH = BTN_HEIGHT * 3.5;
 	
+	private static final String CSS_CLASS_PROCESSES_LIST_VIEW = "processes-list-view";
+	private static final String CSS_CLASS_BUTTON_LOAD = "btn-load";
+	
+	private static final String LOAD = "ProcessOpenView.load";
+	
 	public ProcessOpenView() {
 		build();
 	}
@@ -38,10 +44,10 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 	protected void build() {
 		lvProcesses = new ListView<String>();
 		lvProcesses.setPrefSize(LIST_VIEW_WIDTH, LIST_VIEW_HEIGHT);
-		lvProcesses.getStyleClass().add("processes-list-view");
+		lvProcesses.getStyleClass().add(CSS_CLASS_PROCESSES_LIST_VIEW);
 		lvProcesses.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 			@Override
-			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+			public void changed(final ObservableValue<? extends String> arg0, final String arg1, final String arg2) {
 				if (arg2 != null) {
 					btnLoad.setDisable(false);
 				} else {
@@ -50,10 +56,10 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 			}
 		});
 		HBox btnHBox = new HBox();
-		btnLoad = createButton(openIconPath, "btn-load", translator.getTranslation("load"), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+		btnLoad = createButton(openIconPath, CSS_CLASS_BUTTON_LOAD, Translator.getTranslation(LOAD), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
-			public void handle(ActionEvent arg0) {
-				presenter.openProcess(lvProcesses.getSelectionModel().selectedItemProperty().get());
+			public void handle(final ActionEvent arg0) {
+				getPresenter().openProcess(lvProcesses.getSelectionModel().selectedItemProperty().get());
 			}
 		});
 		btnLoad.setDisable(true);
@@ -71,13 +77,10 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 	}
 
 	@Override
-	public void setTextFieldListener(TextFieldListener listener) {
-		
+	public void setTextFieldListener(final TextFieldListener listener) {
 	}
 
 	@Override
 	public void refresh() {
-		// TODO Auto-generated method stub
-		
 	}
 }

@@ -8,7 +8,7 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 	private boolean addDeviceActive;
 	private boolean removeDeviceActive;
 		
-	public ProcessConfigurePresenter(ProcessConfigureView view, ProcessFlow processFlow) {
+	public ProcessConfigurePresenter(final ProcessConfigureView view, final ProcessFlow processFlow) {
 		super(view);
 		view.setProcessFlow(processFlow);
 		view.build();
@@ -20,10 +20,10 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 		if (!addDeviceActive) {
 			addDeviceActive = true;
 			removeDeviceActive = false;
-			menuPresenter.setAddDeviceMode();
+			getMenuPresenter().setAddDeviceMode();
 		} else {
 			setNormalMode();
-			menuPresenter.setNormalMode();
+			getMenuPresenter().setNormalMode();
 		}
 		updateActiveParts();
 	}
@@ -32,10 +32,10 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 		if (!removeDeviceActive) {
 			addDeviceActive = false;
 			removeDeviceActive = true;
-			menuPresenter.setRemoveDeviceMode();
+			getMenuPresenter().setRemoveDeviceMode();
 		} else {
 			setNormalMode();
-			menuPresenter.setNormalMode();
+			getMenuPresenter().setNormalMode();
 		}
 		updateActiveParts();
 	}
@@ -43,19 +43,19 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 	public void setNormalMode() {
 		addDeviceActive = false;
 		removeDeviceActive = false;
-		view.refresh();
+		getView().refresh();
 		updateActiveParts();
 	}
 	
 	private void updateActiveParts() {
-		view.setAddDeviceStepActive(addDeviceActive);
-		view.setRemoveDeviceStepActive(removeDeviceActive);
-		view.setNameEnabled(!(addDeviceActive||removeDeviceActive));
+		getView().setAddDeviceStepActive(addDeviceActive);
+		getView().setRemoveDeviceStepActive(removeDeviceActive);
+		getView().setNameEnabled(!(addDeviceActive || removeDeviceActive));
 	}
 
 	@Override
 	public void setPresenter() {
-		view.setPresenter(this);
+		getView().setPresenter(this);
 	}
 
 	@Override
