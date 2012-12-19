@@ -41,11 +41,11 @@ import eu.robojob.irscw.ui.configure.process.ProcessMenuView;
 import eu.robojob.irscw.ui.configure.process.ProcessOpenPresenter;
 import eu.robojob.irscw.ui.configure.process.ProcessOpenView;
 import eu.robojob.irscw.ui.configure.transport.TransportMenuFactory;
-import eu.robojob.irscw.ui.controls.keyboard.KeyboardPresenter;
-import eu.robojob.irscw.ui.controls.keyboard.KeyboardView;
+import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardPresenter;
+import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardView;
-import eu.robojob.irscw.ui.controls.keyboard.KeyboardView.KeyboardType;
+import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.ui.general.flow.ProcessFlowView;
 import eu.robojob.irscw.ui.menu.MenuBarPresenter;
@@ -66,7 +66,7 @@ public class RoboSoftAppFactory {
 	private MainPresenter mainPresenter;
 	private MenuBarPresenter menuBarPresenter;
 	private ConfigurePresenter configurePresenter;
-	private KeyboardPresenter keyboardPresenter;
+	private FullKeyboardPresenter keyboardPresenter;
 	private ProcessConfigurePresenter processConfigurationPresenter;
 	private TeachPresenter teachPresenter;
 	private AutomatePresenter automatePresenter;
@@ -155,10 +155,10 @@ public class RoboSoftAppFactory {
 		return robotPopUpPresenter;
 	}
 	
-	public KeyboardPresenter getKeyboardPresenter() {
+	public FullKeyboardPresenter getKeyboardPresenter() {
 		if (keyboardPresenter == null) {
-			KeyboardView keyboardView = new KeyboardView(KeyboardType.AZERTY);
-			keyboardPresenter = new KeyboardPresenter(keyboardView);
+			FullKeyboardView keyboardView = new FullKeyboardView(KeyboardType.AZERTY);
+			keyboardPresenter = new FullKeyboardPresenter(keyboardView);
 		}
 		return keyboardPresenter;
 	}

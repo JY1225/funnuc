@@ -12,7 +12,7 @@ public class PopUpView<T extends AbstractPopUpPresenter<?>> extends StackPane {
 	
 	private T presenter;
 	
-	private static final String CLASSNAME = "popup";
+	private static final String CSS_CLASS_POPUP = "popup";
 	
 	public PopUpView(final double topLeftX, final double topLeftY, final double width, final double height) {
 		this.topLeftX = topLeftX;
@@ -27,7 +27,7 @@ public class PopUpView<T extends AbstractPopUpPresenter<?>> extends StackPane {
 	protected void build() {
 		this.setPrefSize(width, height);
 		this.setMaxSize(width, height);
-		this.getStyleClass().add(CLASSNAME);
+		this.getStyleClass().add(CSS_CLASS_POPUP);
 	}
 	
 	public void setPresenter(final T presenter) {

@@ -2,7 +2,7 @@ package eu.robojob.irscw.ui.controls.keyboard;
 
 import javafx.scene.input.KeyCode;
 
-public class KeyboardView extends AbstractKeyboardView {
+public class FullKeyboardView extends AbstractKeyboardView {
 	
 	public enum KeyboardType {
 		AZERTY, QWERTY, QWERTZ_DE
@@ -10,12 +10,12 @@ public class KeyboardView extends AbstractKeyboardView {
 	
 	private KeyboardType type;
 	
-	public KeyboardView(KeyboardType type) {
+	public FullKeyboardView(final KeyboardType type) {
 		this.type = type;
 		buildView();
 	}
 	
-	public void changeType(KeyboardType type) {
+	public void changeType(final KeyboardType type) {
 		this.type = type;
 		buildView();
 	}
@@ -89,7 +89,7 @@ public class KeyboardView extends AbstractKeyboardView {
 		addKey("L", KeyCode.L, column++, row, 1, 1, "key-L", null);
 		addKey("Ö", KeyCode.COLORED_KEY_1, column++, row, 1, 1, "key-O-special", null);
 		addKey("Ä", KeyCode.COLORED_KEY_2, column++, row, 1, 1, "key-A-special", null);
-		addKey("\u2190", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-back-space", null);
+		addKey("\u2190", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-backspace", null);
 		
 		column = 0;
 		row++;
@@ -105,7 +105,6 @@ public class KeyboardView extends AbstractKeyboardView {
 		addKey("", KeyCode.SPACE, column++, row, 2, 1, "key-space", null);
 		column++;
 		addKey("OK", KeyCode.ENTER, column++, row, 1, 1, "key-OK", null);
-		
 	}
 	
 	private void buildViewQwerty() {
@@ -153,7 +152,7 @@ public class KeyboardView extends AbstractKeyboardView {
 		addKey("L", KeyCode.L, column++, row, 1, 1, "key-L", null);
 		column++;
 		column++;
-		addKey("\u2190", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-back-space", null);
+		addKey("\u2190", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-backspace", null);
 		
 		column = 0;
 		row++;
@@ -215,7 +214,7 @@ public class KeyboardView extends AbstractKeyboardView {
 		addKey("K", KeyCode.K, column++, row, 1, 1, "key-K", null);
 		addKey("L", KeyCode.L, column++, row, 1, 1, "key-L", null);
 		addKey("M", KeyCode.M, column++, row, 1, 1, "key-M", null);
-		addKey("\u2190", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-back-space", null);
+		addKey("\u2190", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-backspace", null);
 		
 		column = 1;
 		row++;
@@ -233,7 +232,7 @@ public class KeyboardView extends AbstractKeyboardView {
 		
 	}
 	
-	public void setPresenter(KeyboardPresenter presenter) {
+	public void setPresenter(final FullKeyboardPresenter presenter) {
 		super.setPresenter(presenter);
 	}
 

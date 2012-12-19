@@ -99,11 +99,11 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		ifsGrippers.clearItems();
 		GripperBody body = transportInfo.getRobot().getGripperBody();
 		int itemIndex = 0;
-		for (Gripper gripper : body.getPossibleGrippers()) {
+		for (final Gripper gripper : body.getPossibleGrippers()) {
 			ifsGrippers.addItem(itemIndex, gripper.getId(), gripper.getImageUrl(), new IconFlowSelectorItemChangedHandler() {
 				@Override
-				public void handle(MouseEvent event, int index, String name) {
-					presenter.changedGripper(name);
+				public void handle(final MouseEvent event) {
+					presenter.changedGripper(gripper.getId());
 				}
 			});
 			itemIndex++;

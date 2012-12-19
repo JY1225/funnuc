@@ -1,10 +1,6 @@
 package eu.robojob.irscw.ui.controls.keyboard;
 
 import javafx.scene.input.KeyCode;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.irscw.ui.controls.AbstractTextField;
 
 public abstract class AbstractKeyboardPresenter {
@@ -14,19 +10,17 @@ public abstract class AbstractKeyboardPresenter {
 	private AbstractTextField<?> target;
 	
 	private String originalText;
-	
-	private static Logger logger = LogManager.getLogger(AbstractKeyboardPresenter.class.getName());
-	
-	public AbstractKeyboardPresenter(AbstractKeyboardView view) {
+		
+	public AbstractKeyboardPresenter(final AbstractKeyboardView view) {
 		this.view = view;
 		view.setPresenter(this);
 	}
 	
-	public void setParent(KeyboardParentPresenter parent) {
+	public void setParent(final KeyboardParentPresenter parent) {
 		this.parent = parent;
 	}
 	
-	public void setTarget(AbstractTextField<?> target) {
+	public void setTarget(final AbstractTextField<?> target) {
 		this.target = target;
 		originalText = target.getText();
 		target.requestFocus();
@@ -40,8 +34,7 @@ public abstract class AbstractKeyboardPresenter {
 		return view;
 	}
 	
-	public void keyPressed(KeyCode keyCode) {
-		logger.debug("Pressed key: " + keyCode);
+	public void keyPressed(final KeyCode keyCode) {
 		if (target == null) {
 			throw new IllegalStateException("Target was not set.");
 		}
@@ -79,7 +72,7 @@ public abstract class AbstractKeyboardPresenter {
 		target.replaceSelection("");
 	}
 	
-	private void clickedOtherKey(KeyCode keyCode) {
+	private void clickedOtherKey(final KeyCode keyCode) {
 		target.replaceSelection("" + getChar(keyCode));
 	}
 	

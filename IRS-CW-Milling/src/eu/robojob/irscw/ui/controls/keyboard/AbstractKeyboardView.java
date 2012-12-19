@@ -16,12 +16,14 @@ public abstract class AbstractKeyboardView extends GridPane {
 	private static final int BTN_WIDTH = 50;
 	private static final int BTN_HEIGHT = 50;
 	private static final int SPACING = 5;
-	
 	private static final int MARGIN = 15;
+	
+	private static final String CSS_CLASS_KEYBOARD_BACKGROUND = "keyboard-background";
+	private static final String CSS_CLASS_KEYBOARD_BUTTON = "keyboard-button";
 	
 	private GridPane gridPane;
 	
-	public void setPresenter(AbstractKeyboardPresenter presenter) {
+	public void setPresenter(final AbstractKeyboardPresenter presenter) {
 		this.presenter = presenter;
 	}
 	
@@ -36,7 +38,7 @@ public abstract class AbstractKeyboardView extends GridPane {
 		buildKeyboard();
 		
 		this.setPrefWidth(getPreferedWidth());
-		this.getStyleClass().add("keyboard-background");
+		this.getStyleClass().add(CSS_CLASS_KEYBOARD_BACKGROUND);
 		setAlignment(Pos.CENTER);
 		setMargin(gridPane, new Insets(getMargin(), 0, getMargin(), 0));
 		
@@ -60,17 +62,16 @@ public abstract class AbstractKeyboardView extends GridPane {
 	}
 	
 	protected abstract void buildKeyboard();
-	
 	protected abstract double getPreferedWidth();
 	
-	protected void addKey(String text, KeyCode keyCode, int columnIndex, int rowIndex, int colspan, int rowspan, String id, String extraClassName) {
+	protected void addKey(final String text, final KeyCode keyCode, final int columnIndex, final int rowIndex, final int colspan, final int rowspan, final String id, final String extraClassName) {
 		Button btn = new Button();
 		Text btnText = new Text(text);
 		btn.setId(id);
 		btn.setGraphic(btnText);
 		btn.focusTraversableProperty().set(false);
-		btn.setPrefSize((getButtonWidth()*colspan) + (colspan-1)*getSpacing(), (getButtonHeight()*rowspan) + (rowspan-1)*getSpacing());
-		btn.getStyleClass().add("keyboard-button");
+		btn.setPrefSize((getButtonWidth() * colspan) + (colspan - 1) * getSpacing(), (getButtonHeight() * rowspan) + (rowspan - 1) * getSpacing());
+		btn.getStyleClass().add(CSS_CLASS_KEYBOARD_BUTTON);
 		if (extraClassName != null) {
 			btn.getStyleClass().add(extraClassName);
 		}
@@ -82,12 +83,12 @@ public abstract class AbstractKeyboardView extends GridPane {
 		
 		private KeyCode keyCode;
 
-		public KeyboardClickedEventHandler(KeyCode keyCode) {
+		public KeyboardClickedEventHandler(final KeyCode keyCode) {
 			this.keyCode = keyCode;
 		}
 		
 		@Override
-		public void handle(ActionEvent event) {
+		public void handle(final ActionEvent event) {
 			presenter.keyPressed(keyCode);
 		}
 		

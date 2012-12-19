@@ -26,7 +26,7 @@ import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
-import eu.robojob.irscw.ui.controls.keyboard.KeyboardPresenter;
+import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
@@ -41,7 +41,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		
 	private ConfigureView view;
 	
-	private KeyboardPresenter keyboardPresenter;
+	private FullKeyboardPresenter keyboardPresenter;
 	private NumericKeyboardPresenter numericKeyboardPresenter;
 	
 	private ConfigureProcessFlowPresenter processFlowPresenter;
@@ -63,7 +63,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	
 	private Mode mode;
 	
-	public ConfigurePresenter(ConfigureView view, KeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
+	public ConfigurePresenter(ConfigureView view, FullKeyboardPresenter keyboardPresenter, NumericKeyboardPresenter numericKeyboardPresenter,
 			ConfigureProcessFlowPresenter processFlowPresenter, ProcessMenuPresenter processMenuPresenter, DeviceMenuFactory deviceMenuFactory, TransportMenuFactory transportMenuFactory,
 			 DeviceManager deviceManager) {
 		this.view = view;

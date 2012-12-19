@@ -8,18 +8,17 @@ import javafx.scene.input.KeyEvent;
 
 public abstract class AbstractTextField<T> extends javafx.scene.control.TextField {
 
-	protected TextFieldListener listener;
-	protected ChangeListener<T> changeListener;
+	private TextFieldListener listener;
+	private ChangeListener<T> changeListener;
 	private String originalText;
 	
 	private int maxLength;
 	
-	public AbstractTextField(int maxLength) {
+	public AbstractTextField(final int maxLength) {
 		this.focusedProperty().addListener(new TextFieldFocusListener(this));
 		this.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-
 			@Override
-			public void handle(KeyEvent event) {
+			public void handle(final KeyEvent event) {
 				if (event.getCode().equals(KeyCode.ENTER)) {
 					listener.closeKeyboard();
 				} else {
@@ -32,22 +31,21 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 					}
 				}
 			}
-			
 		});
-		
 		this.maxLength = maxLength;
 	}
 	
-	public void setFocusListener(TextFieldListener listener) {
+	public void setFocusListener(final TextFieldListener listener) {
 		this.listener = listener;
 	}
 	
-	public void setOnChange(ChangeListener<T> changeListener) {
+	public void setOnChange(final ChangeListener<T> changeListener) {
 		this.changeListener = changeListener;
 	}
 	
+	// These methods are overridden to make sure the entered text is valid
 	@Override
-	public void replaceText(int start, int end, String text) {
+	public void replaceText(final int start, final int end, final String text) {
 		String currentText = getText();
 		String newString = currentText.substring(0, start) + text + currentText.substring(end);
 		
@@ -55,9 +53,8 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 			super.replaceText(start, end, text);
 		}
 	}
-
 	@Override
-	public void replaceSelection(String text) {
+	public void replaceSelection(final String text) {
 		String currentText = getText();
 		String newString = currentText.substring(0, getSelection().getStart()) + text + currentText.substring(getSelection().getEnd());
 		
@@ -74,19 +71,19 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 
 		private AbstractTextField<?> textField;
 		
-		public TextFieldFocusListener(AbstractTextField<?> textField) {
+		public TextFieldFocusListener(final AbstractTextField<?> textField) {
 			this.textField = textField;
 		}
 		
 		@Override
-		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		public void changed(final ObservableValue<? extends Boolean> observable, final Boolean oldValue, final Boolean newValue) {
 			if (newValue) {
 				originalText = textField.getText();
 				listener.textFieldFocussed(textField);
 			} else {
 				cleanText();
 				listener.textFieldLostFocus(textField);
-				if (changeListener!= null) {
+				if (changeListener != null) {
 					changeListener.changed(null, convertString(originalText), convertString(textField.getText()));
 				}
 			}

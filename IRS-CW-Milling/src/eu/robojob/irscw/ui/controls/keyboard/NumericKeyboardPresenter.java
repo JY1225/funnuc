@@ -5,20 +5,20 @@ import eu.robojob.irscw.ui.controls.NumericTextField;
 
 public class NumericKeyboardPresenter extends AbstractKeyboardPresenter {
 
-	public NumericKeyboardPresenter(NumericKeyboardView view) {
+	public NumericKeyboardPresenter(final NumericKeyboardView view) {
 		super(view);
 	}
 
 	@Override
-	public char getChar(KeyCode keyCode) {
-		char returnChar = keyCode.toString().charAt(keyCode.toString().length()-1);
+	public char getChar(final KeyCode keyCode) {
+		char returnChar = keyCode.toString().charAt(keyCode.toString().length() - 1);
 		if (keyCode.equals(KeyCode.DECIMAL)) {
 			returnChar = '.';
 		}
 		return returnChar;
 	}
 	
-	public void setTarget(NumericTextField target) {
+	public void setTarget(final NumericTextField target) {
 		super.setTarget(target);
 	}
 }

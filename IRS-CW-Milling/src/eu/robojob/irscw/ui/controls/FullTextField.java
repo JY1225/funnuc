@@ -2,7 +2,7 @@ package eu.robojob.irscw.ui.controls;
 
 public class FullTextField extends AbstractTextField<String> {
 
-	public FullTextField(int maxLength) {
+	public FullTextField(final int maxLength) {
 		super(maxLength);
 	}
 
@@ -12,7 +12,7 @@ public class FullTextField extends AbstractTextField<String> {
 	}
 
 	@Override
-	public void replaceText(int start, int end, String text) {
+	public void replaceText(final int start, final int end, final String text) {
 		super.replaceText(start, end, text.toUpperCase());
 	}
 
@@ -22,12 +22,12 @@ public class FullTextField extends AbstractTextField<String> {
 	}
 
 	@Override
-	public String convertString(String text) {
+	public String convertString(final String text) {
 		return text;
 	}
 
 	@Override
-	public int calculateLength(String string) {
+	public int calculateLength(final String string) {
 		return string.length();
 	}
 	
