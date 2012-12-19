@@ -30,34 +30,48 @@ public class DeviceButton extends VBox {
 	private static final int BUTTON_HEIGHT = 60;
 	private static final int LABEL_WIDTH = 120;
 	
+	private static final String UNKNOWN_DEVICE = "DeviceButton.unknownDevice";
+	private static final String CSS_CLASS_UNKNOWN_DEVICE = "unknown-device";
+	private static final String CSS_CLASS_DEVICE_UNFOCUSSED = "device-unfocussed";
+	private static final String CSS_CLASS_PREPROCESS = "pre-process";
+	private static final String CSS_CLASS_POSTPROCESS = "post-process";
+	private static final String CSS_CLASS_CNCMACHINE = "cnc-machine";
+	private static final String CSS_CLASS_BTN_PREPROCESS = "btn-pre";
+	private static final String CSS_CLASS_BTN_POSTPROCESS = "btn-post";
+	private static final String CSS_CLASS_BTN_CNCMACHINE = "btn-cnc";
+	private static final String CSS_CLASS_BUTTON_SHAPE = "button-shape";
+	private static final String CSS_CLASS_DEVICE_BUTTON = "device-button";
+	private static final String CSS_CLASS_DEVICE_LABEL = "device-label";
+	private static final String CSS_CLASS_DEVICE_BUTTON_WRAPPER = "device-button-wrapper";
+	
 	private Button mainButton;
 	private SVGPath imagePath;
 	private Label deviceName;
 	
-	RotateTransition rt;
+	private RotateTransition rotateTransition;
 	
 	private DeviceInformation deviceInfo;
 	
-	public DeviceButton(DeviceInformation deviceInfo) {
+	public DeviceButton(final DeviceInformation deviceInfo) {
 		build();
 		setDeviceInformation(deviceInfo);
 	}
 	
-	public void setDeviceInformation(DeviceInformation deviceInfo) {
+	public void setDeviceInformation(final DeviceInformation deviceInfo) {
 		this.deviceInfo = deviceInfo;
 		if (deviceInfo.getDevice() != null) {
 			deviceName.setText(deviceInfo.getDevice().getId());
 		} else {
-			deviceName.setText(Translator.getInstance().getTranslation("UnknownDevice"));
-			deviceName.getStyleClass().add("unknown-device");
+			deviceName.setText(Translator.getTranslation(UNKNOWN_DEVICE));
+			deviceName.getStyleClass().add(CSS_CLASS_UNKNOWN_DEVICE);
 		}
 		setImage();
-		if ((deviceInfo != null) && (deviceInfo.getDevice()!= null) && (deviceInfo.getDevice().getType() == DeviceType.CNC_MACHINE)) {
-			rt = new RotateTransition(Duration.millis(5000), imagePath);
-			rt.setFromAngle(0);
-			rt.setToAngle(360);
-			rt.setInterpolator(Interpolator.LINEAR);
-			rt.setCycleCount(Timeline.INDEFINITE);
+		if ((deviceInfo != null) && (deviceInfo.getDevice() != null) && (deviceInfo.getDevice().getType() == DeviceType.CNC_MACHINE)) {
+			rotateTransition = new RotateTransition(Duration.millis(5000), imagePath);
+			rotateTransition.setFromAngle(0);
+			rotateTransition.setToAngle(360);
+			rotateTransition.setInterpolator(Interpolator.LINEAR);
+			rotateTransition.setCycleCount(Timeline.INDEFINITE);
 		}
 	}
 	
@@ -67,30 +81,30 @@ public class DeviceButton extends VBox {
 	
 	private void build() {
 		imagePath = new SVGPath();
-		imagePath.getStyleClass().add("button-shape");
+		imagePath.getStyleClass().add(CSS_CLASS_BUTTON_SHAPE);
 		mainButton = new Button();
 		StackPane pane = new StackPane();
 		pane.getChildren().add(imagePath);
 		mainButton.setGraphic(pane);
 		mainButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		mainButton.setAlignment(Pos.CENTER);
-		mainButton.getStyleClass().add("device-button");
+		mainButton.getStyleClass().add(CSS_CLASS_DEVICE_BUTTON);
 
 		deviceName = new Label();
 		deviceName.setPrefWidth(LABEL_WIDTH);
 		deviceName.setWrapText(true);
 		deviceName.setAlignment(Pos.TOP_CENTER);
 		deviceName.setTextAlignment(TextAlignment.CENTER);
-		deviceName.getStyleClass().add("device-label");
+		deviceName.getStyleClass().add(CSS_CLASS_DEVICE_LABEL);
 		VBox.setMargin(deviceName, new Insets(5, 0, 0, 0));
 		
 		this.getChildren().add(mainButton);
 		this.getChildren().add(deviceName);
-		this.setPadding(new Insets(20, -(LABEL_WIDTH-BUTTON_WIDTH)/2 + 1, 0, -(LABEL_WIDTH-BUTTON_WIDTH)/2));
+		this.setPadding(new Insets(20, -(LABEL_WIDTH - BUTTON_WIDTH) / 2 + 1, 0, -(LABEL_WIDTH - BUTTON_WIDTH) / 2));
 		this.setPrefWidth(BUTTON_WIDTH);
 		this.setAlignment(Pos.CENTER);
 		
-		this.getStyleClass().add("device-button-wrapper");
+		this.getStyleClass().add(CSS_CLASS_DEVICE_BUTTON_WRAPPER);
 	}
 	
 	private void setImage() {
@@ -99,63 +113,61 @@ public class DeviceButton extends VBox {
 			case STACKING:	
 				if (deviceInfo.getPutStep() == null) {
 					imagePath.setContent(preStackingPath);
-					imagePath.getStyleClass().add("pre-process");
-					mainButton.getStyleClass().add("btn-pre");
+					imagePath.getStyleClass().add(CSS_CLASS_PREPROCESS);
+					mainButton.getStyleClass().add(CSS_CLASS_BTN_PREPROCESS);
 				} else {
 					if (deviceInfo.getPickStep() == null) {
 						imagePath.setContent(postStackingPath);
-						imagePath.getStyleClass().add("post-process");
-						mainButton.getStyleClass().add("btn-post");
+						imagePath.getStyleClass().add(CSS_CLASS_POSTPROCESS);
+						mainButton.getStyleClass().add(CSS_CLASS_BTN_POSTPROCESS);
 					} else {
-						throw new IllegalStateException("Unknown stacking-device type");
+						throw new IllegalStateException("Unknown stacking-device type [" + deviceInfo.getType() + "].");
 					}
 				}
 				break;
 			case PRE_PROCESSING:
 				imagePath.setContent(prePocessingPath);
-				imagePath.getStyleClass().add("pre-process");
-				mainButton.getStyleClass().add("btn-pre");
+				imagePath.getStyleClass().add(CSS_CLASS_PREPROCESS);
+				mainButton.getStyleClass().add(CSS_CLASS_BTN_PREPROCESS);
 				break;
 			case CNC_MACHINE:
 				imagePath.setContent(cncMachinePath);
-				imagePath.getStyleClass().add("cnc-machine");
-				mainButton.getStyleClass().add("btn-cnc");
+				imagePath.getStyleClass().add(CSS_CLASS_CNCMACHINE);
+				mainButton.getStyleClass().add(CSS_CLASS_BTN_CNCMACHINE);
 				break;
 			case POST_PROCESSING:
 				imagePath.setContent(postProcessingPath);
-				imagePath.getStyleClass().add("post-process");
-				mainButton.getStyleClass().add("btn-post");
+				imagePath.getStyleClass().add(CSS_CLASS_POSTPROCESS);
+				mainButton.getStyleClass().add(CSS_CLASS_BTN_POSTPROCESS);
 				break;
 			default:
-				throw new IllegalArgumentException("Unknown Device type");
+				throw new IllegalArgumentException("Unknown Device type [" + deviceInfo.getType() + "].");
 		}
 	}
 	
-	public void animate(boolean animate) {
+	public void animate(final boolean animate) {
 		if (animate) {
-			if (rt != null) {
-				rt.pause();
-				rt.play();
+			if (rotateTransition != null) {
+				rotateTransition.play();
 			}
 		} else {
-			if (rt != null) {
-				rt.stop();
+			if (rotateTransition != null) {
+				rotateTransition.pause();
 			}
 		}
 	}
 	
-	public void setOnAction(EventHandler<ActionEvent> handler) {
+	public void setOnAction(final EventHandler<ActionEvent> handler) {
 		mainButton.setOnAction(handler);
 	}
 	
-	public void setFocussed(boolean focussed) {
-		this.getStyleClass().remove("device-unfocussed");
-		if(!focussed) {
-			this.getStyleClass().add("device-unfocussed");
+	public void setFocussed(final boolean focussed) {
+		this.getStyleClass().remove(CSS_CLASS_DEVICE_UNFOCUSSED);
+		if (!focussed) {
+			this.getStyleClass().add(CSS_CLASS_DEVICE_UNFOCUSSED);
 		}
 	}
 	
-	public void setClickable(boolean clickable) {
-		
+	public void setClickable(final boolean clickable) {
 	}
 }

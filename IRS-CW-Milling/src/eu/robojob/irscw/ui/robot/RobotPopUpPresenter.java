@@ -19,7 +19,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	private FanucRobot robot;
 	private boolean connected;
 	
-	public RobotPopUpPresenter(RobotPopUpView view, FanucRobot robot, ProcessFlow processFlow) {
+	public RobotPopUpPresenter(final RobotPopUpView view, final FanucRobot robot, final ProcessFlow processFlow) {
 		super(view);
 		this.robot = robot;
 		connected = false;
@@ -36,7 +36,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	
 	@Override
 	protected void setViewPresenter() {
-		view.setPresenter(this);
+		getView().setPresenter(this);
 	}
 	
 	public void resetClicked() {
@@ -69,7 +69,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 		}
 	}
 	
-	public void setSpeedClicked(int speed) {
+	public void setSpeedClicked(final int speed) {
 		if (robot.isConnected()) {
 			try {
 				robot.setSpeed(speed);
@@ -77,65 +77,65 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 				e.printStackTrace();
 			}
 		}
-		view.refreshSpeed(robot.getSpeed());
+		getView().refreshSpeed(robot.getSpeed());
 	}
 
 	@Override
-	public void robotConnected(RobotEvent event) {
-		view.setRobotConnected(true);
+	public void robotConnected(final RobotEvent event) {
+		getView().setRobotConnected(true);
 		connected = true;
 	}
 
 	@Override
-	public void robotDisconnected(RobotEvent event) {
-		view.setRobotConnected(false);
+	public void robotDisconnected(final RobotEvent event) {
+		getView().setRobotConnected(false);
 		connected = false;
 	}
 
 	@Override
-	public void robotStatusChanged(RobotEvent event) {
-		view.refreshSpeed(event.getSource().getSpeed());
+	public void robotStatusChanged(final RobotEvent event) {
+		getView().refreshSpeed(event.getSource().getSpeed());
 	}
 
 	@Override
-	public void robotAlarmsOccured(RobotAlarmsOccuredEvent event) {
+	public void robotAlarmsOccured(final RobotAlarmsOccuredEvent event) {
 	}
 
 	@Override
-	public void modeChanged(ModeChangedEvent e) {
+	// this pop-up should be disabled when running in AUTO or TEACH mode
+	public void modeChanged(final ModeChangedEvent e) {
 		switch (e.getMode()) {
 			case AUTO:
 				if (connected) {
-					view.setProcessActive(true);
+					getView().setProcessActive(true);
 				}
 				break;
 			case TEACH: 
 				if (connected) {
-					view.setProcessActive(true);
+					getView().setProcessActive(true);
 				}
 				break;
 			default:
 				if (connected) {
-					view.setProcessActive(false);
+					getView().setProcessActive(false);
 				}
 				break;
 		}
 	}
 
-	@Override public void statusChanged(StatusChangedEvent e) {}
-	@Override public void dataChanged(ProcessFlowEvent e) {}
-	@Override public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
-
+	@Override public void statusChanged(final StatusChangedEvent e) {
+	}
+	@Override public void dataChanged(final ProcessFlowEvent e) {
+	}
+	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) {
+	}
 	@Override
-	public void robotZRestChanged(RobotEvent event) {
-		// TODO Auto-generated method stub
-		
+	public void robotZRestChanged(final RobotEvent event) {
 	}
 
 	@Override
-	public void robotSpeedChanged(RobotEvent event) {
-		// TODO Auto-generated method stub
-		
+	public void robotSpeedChanged(final RobotEvent event) {
+		getView().refreshSpeed(event.getSource().getSpeed());
 	}
 	
 }

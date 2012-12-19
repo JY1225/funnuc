@@ -29,7 +29,7 @@ public class TransportInterventionPresenter extends AbstractFormPresenter<Transp
 
 	public void clickedInterventionBeforePick() {
 		if (transportInfo.hasInterventionBeforePick()) {
-			processFlowAdapter.removeInterventionStepBeforePick(transportInfo);
+			processFlowAdapter.getProcessFlow().removeStep(transportInfo.getInterventionBeforePick());
 			logger.debug("removed interventionstep before pick");
 		} else {
 			processFlowAdapter.addInterventionStepBeforePick(transportInfo);
@@ -43,7 +43,7 @@ public class TransportInterventionPresenter extends AbstractFormPresenter<Transp
 	
 	public void clickedInterventionAfterPut() {
 		if (transportInfo.hasInterventionAfterPut()) {
-			processFlowAdapter.removeInterventionStepAfterPut(transportInfo);
+			processFlowAdapter.getProcessFlow().removeStep(transportInfo.getInterventionAfterPut());
 			logger.debug("removed interventionstep before pick");
 		} else {
 			processFlowAdapter.addInterventionStepAfterPut(transportInfo);

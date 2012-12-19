@@ -24,8 +24,8 @@ public class DeviceInformation {
 	private ProcessFlowAdapter flowAdapter;
 	private DeviceSettings deviceSettings;
 
-	public DeviceInformation(int index, ProcessFlowAdapter flowAdapter, AbstractDevice device, PutStep putStep, InterventionStep interventionStepBeforePick, ProcessingStep processingStep,
-			InterventionStep interventionStepAfterPut, PickStep pickStep, DeviceSettings deviceSettings) {
+	public DeviceInformation(final int index, final ProcessFlowAdapter flowAdapter, final AbstractDevice device, final PutStep putStep, final InterventionStep interventionStepBeforePick, 
+			final ProcessingStep processingStep, final InterventionStep interventionStepAfterPut, final PickStep pickStep, final DeviceSettings deviceSettings) {
 		this.index = index;
 		this.flowAdapter = flowAdapter;
 		this.device = device;
@@ -37,15 +37,16 @@ public class DeviceInformation {
 		this.deviceSettings = deviceSettings;
 	}
 	
-	public DeviceInformation(int index, ProcessFlowAdapter flowAdapter) {
+	public DeviceInformation(final int index, final ProcessFlowAdapter flowAdapter) {
 		this(index, flowAdapter, null, null, null, null, null, null, null);
 	}
 	
+	//TODO review
 	public DeviceType getType() {
 		if (device != null) {
 			return device.getType();
 		} else {
-			if ((index == 0)||(index == (flowAdapter.getDeviceStepCount()-1))) {
+			if ((index == 0) || (index == (flowAdapter.getDeviceStepCount() - 1))) {	// first or last device
 				return DeviceType.STACKING;
 			} else {
 				if (index < flowAdapter.getCNCMachineIndex()) {
@@ -63,7 +64,7 @@ public class DeviceInformation {
 		return index;
 	}
 
-	public void setIndex(int index) {
+	public void setIndex(final int index) {
 		this.index = index;
 	}
 
@@ -71,7 +72,7 @@ public class DeviceInformation {
 		return device;
 	}
 
-	public void setDevice(AbstractDevice device) {
+	public void setDevice(final AbstractDevice device) {
 		this.device = device;
 	}
 
@@ -79,7 +80,7 @@ public class DeviceInformation {
 		return putStep;
 	}
 
-	public void setPutStep(PutStep putStep) {
+	public void setPutStep(final PutStep putStep) {
 		this.putStep = putStep;
 		setDevice(putStep.getDevice());
 	}
@@ -89,8 +90,7 @@ public class DeviceInformation {
 		return interventionStepBeforePick;
 	}
 
-	public void setInterventionStepBeforePick(
-			InterventionStep interventionStepBeforePick) {
+	public void setInterventionStepBeforePick(final InterventionStep interventionStepBeforePick) {
 		this.interventionStepBeforePick = interventionStepBeforePick;
 		setDevice(interventionStepBeforePick.getDevice());
 	}
@@ -99,7 +99,7 @@ public class DeviceInformation {
 		return processingStep;
 	}
 
-	public void setProcessingStep(ProcessingStep processingStep) {
+	public void setProcessingStep(final ProcessingStep processingStep) {
 		this.processingStep = processingStep;
 		setDevice(processingStep.getDevice());
 	}
@@ -108,8 +108,7 @@ public class DeviceInformation {
 		return interventionStepAfterPut;
 	}
 
-	public void setInterventionStepAfterPut(
-			InterventionStep interventionStepAfterPut) {
+	public void setInterventionStepAfterPut(final InterventionStep interventionStepAfterPut) {
 		this.interventionStepAfterPut = interventionStepAfterPut;
 		setDevice(interventionStepAfterPut.getDevice());
 	}
@@ -118,7 +117,7 @@ public class DeviceInformation {
 		return pickStep;
 	}
 
-	public void setPickStep(PickStep pickStep) {
+	public void setPickStep(final PickStep pickStep) {
 		this.pickStep = pickStep;
 		setDevice(pickStep.getDevice());
 	}
@@ -126,63 +125,63 @@ public class DeviceInformation {
 	public boolean hasPutStep() {
 		if (putStep != null) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 	
 	public boolean hasInterventionStepBeforePick() {
 		if (interventionStepBeforePick != null) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 	
 	public boolean hasProcessingStep() {
 		if (processingStep != null) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 	
 	public boolean hasInterventionStepAfterPut() {
 		if (interventionStepAfterPut != null) {
 			return true;
-		} else {
-			return false;
-		}
+		} 
+		return false;
 	}
 	
 	public boolean hasPickStep() {
 		if (pickStep != null) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	public DeviceSettings getDeviceSettings() {
 		return deviceSettings;
 	}
 
-	public void setDeviceSettings(DeviceSettings deviceSettings) {
+	public void setDeviceSettings(final DeviceSettings deviceSettings) {
 		this.deviceSettings = deviceSettings;
 	}
 
 	public List<AbstractProcessStep> getSteps() {
 		List<AbstractProcessStep> steps = new ArrayList<AbstractProcessStep>();
-		if (hasPickStep())
+		if (hasPickStep()) {
 			steps.add(pickStep);
-		if (hasPutStep())
+		}
+		if (hasPutStep()) {
 			steps.add(putStep);
-		if (hasProcessingStep())
+		}
+		if (hasProcessingStep()) {
 			steps.add(processingStep);
-		if (hasInterventionStepAfterPut())
+		}
+		if (hasInterventionStepAfterPut()) {
 			steps.add(interventionStepAfterPut);
-		if (hasInterventionStepBeforePick())
+		}
+		if (hasInterventionStepBeforePick()) {
 			steps.add(interventionStepBeforePick);
+		}
 		return steps;
 	}
 	

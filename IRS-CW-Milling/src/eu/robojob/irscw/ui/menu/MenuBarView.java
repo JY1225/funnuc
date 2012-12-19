@@ -36,22 +36,31 @@ public class MenuBarView extends ToolBar {
 	private Button btnExit;
 	
 	private MenuBarPresenter presenter;
-	private Translator translator;
 	
 	private Button selectedBtn;
 	private Button selectedPopupBtn;
 	
-	private static final String BTN_SELECTED = "selected";
 	private static final int BTN_HEIGHT = 45;
 	private static final int BTN_WIDTH_SMALL = 60;
 	private static final int BTN_WIDTH_LARGE = 130;
 	
+	private static final String CSS_CLASS_BTN_SELECTED = "selected";
+	private static final String CSS_CLASS_HEADER_BUTTON = "header-button";
+	private static final String CSS_CLASS_HEADER_BUTTON_EXIT = "header-button-exit";
+	private static final String CSS_CLASS_HEADER_BUTTON_SHAPE = "header-button-shape";
+	private static final String CSS_CLASS_BAR = "bar";
+	private static final String CSS_CLASS_FIRST = "first";
+	private static final String CSS_CLASS_LAST = "last";
+	
+	private static final String CONFIGURE = "MenuBarView.configure";
+	private static final String TEACH = "MenuBarView.teach";
+	private static final String AUTOMATE = "MenuBarView.automate";
+	
 	public MenuBarView() {
-		translator = Translator.getInstance();
 		buildView();
 	}
 	
-	public void setPresenter(MenuBarPresenter presenter) {
+	public void setPresenter(final MenuBarPresenter presenter) {
 		this.presenter = presenter;
 	}
 	
@@ -62,98 +71,98 @@ public class MenuBarView extends ToolBar {
 		
 		robotShape = new SVGPath();
 		robotShape.setContent(robotPath);
-		robotShape.getStyleClass().add("header-button-shape");
+		robotShape.getStyleClass().add(CSS_CLASS_HEADER_BUTTON_SHAPE);
 		
 		btnRobot = new Button();
 		btnRobot.setGraphic(robotShape);
 		
 		btnRobot.setPrefSize(BTN_WIDTH_SMALL, BTN_HEIGHT);
 		btnRobot.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
+			public void handle(final ActionEvent event) {
 				presenter.clickedRobot();
 			}
 		});
-		btnRobot.getStyleClass().add("header-button");
+		btnRobot.getStyleClass().add(CSS_CLASS_HEADER_BUTTON);
 		btnRobot.setId("btnRobot");
 		
 		alarmsShape = new SVGPath();
 		alarmsShape.setContent(alarmsPath);
-		alarmsShape.getStyleClass().add("header-button-shape");
+		alarmsShape.getStyleClass().add(CSS_CLASS_HEADER_BUTTON_SHAPE);
 		
 		btnAlarms = new Button();
 		btnAlarms.setGraphic(alarmsShape);
 		btnAlarms.setDisable(true);
 		btnAlarms.setPrefSize(BTN_WIDTH_SMALL, BTN_HEIGHT);
 		btnAlarms.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
+			public void handle(final ActionEvent event) {
 				presenter.clickedAlarms();
 			}
 		});
-		btnAlarms.getStyleClass().add("header-button");
+		btnAlarms.getStyleClass().add(CSS_CLASS_HEADER_BUTTON);
 		btnAlarms.setId("btnAlarms");
 		
 		adminShape = new SVGPath();
 		adminShape.setContent(adminPath);
-		adminShape.getStyleClass().add("header-button-shape");
+		adminShape.getStyleClass().add(CSS_CLASS_HEADER_BUTTON_SHAPE);
 		
 		btnAdmin = new Button();
 		btnAdmin.setGraphic(adminShape);
 		btnAdmin.setPrefSize(BTN_WIDTH_SMALL, BTN_HEIGHT);
 		btnAdmin.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
+			public void handle(final ActionEvent event) {
 				presenter.clickedAdmin();
 			}
 		});
 		btnAdmin.setDisable(true);
-		btnAdmin.getStyleClass().add("header-button");
+		btnAdmin.getStyleClass().add(CSS_CLASS_HEADER_BUTTON);
 		btnAdmin.setId("btnAdmin");
 		
 		exitShape = new SVGPath();
 		exitShape.setContent(exitPath);
-		exitShape.getStyleClass().add("header-button-shape");
+		exitShape.getStyleClass().add(CSS_CLASS_HEADER_BUTTON_SHAPE);
 		
 		btnExit = new Button();
 		btnExit.setGraphic(exitShape);
 		btnExit.setPrefSize(BTN_WIDTH_SMALL, BTN_HEIGHT);
 		btnExit.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
+			public void handle(final ActionEvent event) {
 				presenter.clickedExit();
 			}
 		});
-		btnExit.getStyleClass().add("header-button");
-		btnExit.getStyleClass().add("header-button-exit");
+		btnExit.getStyleClass().add(CSS_CLASS_HEADER_BUTTON);
+		btnExit.getStyleClass().add(CSS_CLASS_HEADER_BUTTON_EXIT);
 		btnExit.setId("btnExit");
 		
 		hBoxProcessMenuItems = new HBox();
 		hBoxProcessMenuItems.setSpacing(0);
 		
 		btnConfigure = new Button();
-		Text btnConfigureText = new Text(translator.getTranslation("Configure"));
+		Text btnConfigureText = new Text(Translator.getTranslation(CONFIGURE));
 		btnConfigure.setGraphic(btnConfigureText);
-		btnConfigure.getStyleClass().addAll("first", "header-button");
+		btnConfigure.getStyleClass().addAll(CSS_CLASS_FIRST, CSS_CLASS_HEADER_BUTTON);
 		btnConfigure.setPrefSize(BTN_WIDTH_LARGE, BTN_HEIGHT);
 		btnConfigure.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
+			public void handle(final ActionEvent event) {
 				presenter.clickedConfigure();
 			}
 		});
 		btnTeach = new Button();
-		Text btnTeachText = new Text(translator.getTranslation("Teach"));
+		Text btnTeachText = new Text(Translator.getTranslation(TEACH));
 		btnTeach.setGraphic(btnTeachText);
-		btnTeach.getStyleClass().addAll("bar", "header-button");
+		btnTeach.getStyleClass().addAll(CSS_CLASS_BAR, CSS_CLASS_HEADER_BUTTON);
 		btnTeach.setPrefSize(BTN_WIDTH_LARGE, BTN_HEIGHT);
 		btnTeach.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
+			public void handle(final ActionEvent event) {
 				presenter.clickedTeach();
 			}
 		});
 		btnAutomate = new Button();
-		Text btnAutomateText = new Text(translator.getTranslation("Automate"));
+		Text btnAutomateText = new Text(Translator.getTranslation(AUTOMATE));
 		btnAutomate.setGraphic(btnAutomateText);
 		btnAutomate.setPrefSize(BTN_WIDTH_LARGE, BTN_HEIGHT);
-		btnAutomate.getStyleClass().addAll("last", "header-button");
+		btnAutomate.getStyleClass().addAll(CSS_CLASS_LAST, CSS_CLASS_HEADER_BUTTON);
 		btnAutomate.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
+			public void handle(final ActionEvent event) {
 				presenter.clickedAutomate();
 			}
 		});
@@ -212,48 +221,46 @@ public class MenuBarView extends ToolBar {
 	
 	public void setNoneActive() {
 		if (selectedBtn != null) {
-			selectedBtn.getStyleClass().remove(BTN_SELECTED);
+			selectedBtn.getStyleClass().remove(CSS_CLASS_BTN_SELECTED);
 		}
 		setNonePopupActive();
 	}
 	
 	public void setNonePopupActive() {
 		if (selectedPopupBtn != null) {
-			selectedPopupBtn.getStyleClass().remove(BTN_SELECTED);
+			selectedPopupBtn.getStyleClass().remove(CSS_CLASS_BTN_SELECTED);
 		}
 	}
 	
-	private void setActive(Button button) {
+	private void setActive(final Button button) {
 		this.selectedBtn = button;
-		selectedBtn.getStyleClass().add(BTN_SELECTED);
+		selectedBtn.getStyleClass().add(CSS_CLASS_BTN_SELECTED);
 	}
 	
-	private void setPopupActive(Button button) {
+	private void setPopupActive(final Button button) {
 		setNonePopupActive();
 		this.selectedPopupBtn = button;
-		selectedPopupBtn.getStyleClass().add(BTN_SELECTED);
+		selectedPopupBtn.getStyleClass().add(CSS_CLASS_BTN_SELECTED);
 	}
 	
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(final boolean enabled) {
 		this.setDisable(!enabled);
 	}
 	
-	public void setConfigureButtonEnabled(boolean enabled) {
+	public void setConfigureButtonEnabled(final boolean enabled) {
 		btnConfigure.setDisable(!enabled);
 	}
 	
-	public void setTeachButtonEnabled(boolean enabled) {
+	public void setTeachButtonEnabled(final boolean enabled) {
 		btnTeach.setDisable(!enabled);
 	}
 	
-	public void setAdminButtonEnabled(boolean enabled) {
+	public void setAdminButtonEnabled(final boolean enabled) {
 		btnAdmin.setDisable(!enabled);
 	}
 	
-	public void setAutomateButtonEnabled(boolean enabled) {
+	public void setAutomateButtonEnabled(final boolean enabled) {
 		btnAutomate.setDisable(!enabled);
 	}
 	
 }
-
-

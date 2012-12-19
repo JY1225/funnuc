@@ -3,8 +3,6 @@ package eu.robojob.irscw.ui.menu;
 import eu.robojob.irscw.ui.MainPresenter;
 
 public class MenuBarPresenter {
-
-	//private static Logger logger = LogManager.getLogger(MenuBarPresenter.class.getName());
 	
 	private MenuBarView view;
 	private MainPresenter parent;
@@ -12,14 +10,14 @@ public class MenuBarPresenter {
 	private boolean robotActive;
 	private boolean alarmsActive;
 	
-	public MenuBarPresenter(MenuBarView processMenuBarView) {
+	public MenuBarPresenter(final MenuBarView processMenuBarView) {
 		this.view = processMenuBarView;
 		processMenuBarView.setPresenter(this);
 		robotActive = false;
 		alarmsActive = false;
 	}
 	
-	public void setParent(MainPresenter parent) {
+	public void setParent(final MainPresenter parent) {
 		this.parent = parent;
 	}
 	
@@ -89,23 +87,23 @@ public class MenuBarPresenter {
 		view.setAlarmsActive();
 	}
 	
-	public void setConfigureButtonEnabled(boolean enabled) {
+	public void setConfigureButtonEnabled(final boolean enabled) {
 		view.setConfigureButtonEnabled(enabled);
 	}
 	
-	public void setTeachButtonEnabled(boolean enabled) {
+	public void setTeachButtonEnabled(final boolean enabled) {
 		view.setTeachButtonEnabled(enabled);
 	}
 	
-	public void setAdminButtonEnabled(boolean enabled) {
+	public void setAdminButtonEnabled(final boolean enabled) {
 		view.setAdminButtonEnabled(enabled);
 	}
 	
-	public void setAutomateButtonEnabled(boolean enabled) {
+	public void setAutomateButtonEnabled(final boolean enabled) {
 		view.setAutomateButtonEnabled(enabled);
 	}
 	
-	public void setMenuBarEnabled(boolean enabled) {
+	public void setMenuBarEnabled(final boolean enabled) {
 		view.setEnabled(enabled);
 	}
 	

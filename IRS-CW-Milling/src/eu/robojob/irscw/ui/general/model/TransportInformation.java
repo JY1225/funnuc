@@ -19,8 +19,8 @@ public class TransportInformation {
 	
 	private int index; 
 	
-	public TransportInformation(int index, AbstractRobot robot, InterventionStep interventionBeforePick, PickStep pickStep, PutStep putStep, 
-			InterventionStep interventionAfterPut, RobotSettings robotSettings) {
+	public TransportInformation(final int index, final AbstractRobot robot, final InterventionStep interventionBeforePick, final PickStep pickStep, final PutStep putStep, 
+			final InterventionStep interventionAfterPut, final RobotSettings robotSettings) {
 		this.index = index;
 		this.robot = robot;
 		this.interventionBeforePick = interventionBeforePick;
@@ -38,7 +38,7 @@ public class TransportInformation {
 		return index;
 	}
 
-	public void setIndex(int index) {
+	public void setIndex(final int index) {
 		this.index = index;
 	}
 
@@ -46,7 +46,7 @@ public class TransportInformation {
 		return robot;
 	}
 
-	public void setRobot(AbstractRobot robot) {
+	public void setRobot(final AbstractRobot robot) {
 		this.robot = robot;
 	}
 
@@ -54,7 +54,7 @@ public class TransportInformation {
 		return interventionBeforePick;
 	}
 
-	public void setInterventionBeforePick(InterventionStep interventionBeforePick) {
+	public void setInterventionBeforePick(final InterventionStep interventionBeforePick) {
 		this.interventionBeforePick = interventionBeforePick;
 	}
 
@@ -62,7 +62,7 @@ public class TransportInformation {
 		return pickStep;
 	}
 
-	public void setPickStep(PickStep pickStep) {
+	public void setPickStep(final PickStep pickStep) {
 		this.pickStep = pickStep;
 		setRobot(pickStep.getRobot());
 	}
@@ -71,7 +71,7 @@ public class TransportInformation {
 		return putStep;
 	}
 
-	public void setPutStep(PutStep putStep) {
+	public void setPutStep(final PutStep putStep) {
 		this.putStep = putStep;
 		setRobot(putStep.getRobot());
 	}
@@ -80,31 +80,29 @@ public class TransportInformation {
 		return interventionAfterPut;
 	}
 
-	public void setInterventionAfterPut(InterventionStep interventionAfterPut) {
+	public void setInterventionAfterPut(final InterventionStep interventionAfterPut) {
 		this.interventionAfterPut = interventionAfterPut;
 	}
 	
 	public boolean hasInterventionBeforePick() {
 		if (interventionBeforePick != null) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 	
 	public boolean hasInterventionAfterPut() {
 		if (interventionAfterPut != null) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	public RobotSettings getRobotSettings() {
 		return robotSettings;
 	}
 
-	public void setRobotSettings(RobotSettings robotSettings) {
+	public void setRobotSettings(final RobotSettings robotSettings) {
 		this.robotSettings = robotSettings;
 	}
 }

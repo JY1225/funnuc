@@ -67,6 +67,9 @@ public class AutomateThread extends Thread {
 					}
 					if (step instanceof InterventionStep) {
 						if (((InterventionStep) step).isInterventionNeeded(processFlow.getFinishedAmount())) {
+							for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
+								robot.moveToHome();	// send robots to home
+							}
 							step.executeStep(WORKPIECE_ID);
 							running = false;
 						}

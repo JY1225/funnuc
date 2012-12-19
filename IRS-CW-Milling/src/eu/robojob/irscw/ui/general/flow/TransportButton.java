@@ -34,17 +34,13 @@ public class TransportButton extends Pane {
 	private EventHandler<MouseEvent> handlerPressed;
 	private EventHandler<MouseEvent> handlerReleased;
 	
-	public TransportButton(TransportInformation transportInfo) {
-		super();
-		
+	public TransportButton(final TransportInformation transportInfo) {
 		build();
-		
 		setTransportInformation(transportInfo);
 		setFocused(true);
 	}
 	
 	private void build() {
-	
 		arrowShapePane = new Pane();
 		arrowShapePane.getStyleClass().add("arrowp");
 		
