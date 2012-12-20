@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
+import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 
 public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfigurePresenter> {
@@ -24,11 +25,13 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	private static final int COMBO_WIDTH = 200;
 	private static final int COMBO_HEIGHT = UIConstants.COMBO_HEIGHT;
 	
-	public PrageDeviceConfigureView(DeviceInformation deviceInfo) {
+	private static final String DEVICE = "PrageDeviceConfigureView.device";
+	
+	public PrageDeviceConfigureView(final DeviceInformation deviceInfo) {
 		this.deviceInfo = deviceInfo;
 	}
 	
-	public void setPreProcessingDeviceIds(Set<String> preProcessingDeviceIds) {
+	public void setPreProcessingDeviceIds(final Set<String> preProcessingDeviceIds) {
 		this.preProcessingDeviceIds = preProcessingDeviceIds;
 	}
 	
@@ -38,7 +41,7 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 		setHgap(HGAP);
 		getChildren().clear();
 		
-		lblMachine = new Label(translator.getTranslation("CNCMillingMachineConfigureView.machine"));
+		lblMachine = new Label(Translator.getTranslation(DEVICE));
 		int column = 0;
 		int row = 0;
 		add(lblMachine, column++, row);
@@ -46,10 +49,9 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 		cbbMachine.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		cbbMachine.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
-			public void changed(ObservableValue<? extends String> arg0,
-					String oldValue, String newValue) {
+			public void changed(final ObservableValue<? extends String> arg0, final String oldValue, final String newValue) {
 				if ((oldValue == null) || (!oldValue.equals(newValue))) {
-					presenter.changedDevice(newValue);
+					getPresenter().changedDevice(newValue);
 				}
 			}
 		});
@@ -69,7 +71,7 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	}
 
 	@Override
-	public void setTextFieldListener(TextFieldListener listener) {
+	public void setTextFieldListener(final TextFieldListener listener) {
 	}
 
 	@Override

@@ -1,8 +1,5 @@
 package eu.robojob.irscw.ui.configure.device.processing.cnc;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.device.AbstractDeviceMenuPresenter;
 import eu.robojob.irscw.ui.configure.device.DeviceMenuView;
@@ -13,11 +10,9 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 	private CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter;
 	private CNCMillingMachinePickPresenter cncMillingMachinePickPresenter;
 	private CNCMillingMachinePutPresenter cncMillingMachinePutPresenter;
-	
-	private Logger logger = LogManager.getLogger(CNCMillingMachineMenuPresenter.class.getName());
-	
-	public CNCMillingMachineMenuPresenter(DeviceMenuView view, DeviceInformation deviceInfo, CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter, 
-			CNCMillingMachinePickPresenter cncMillingMachinePickPresenter, CNCMillingMachinePutPresenter cncMillingMachinePutPresenter) {
+		
+	public CNCMillingMachineMenuPresenter(final DeviceMenuView view, final DeviceInformation deviceInfo, final CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter, 
+			final CNCMillingMachinePickPresenter cncMillingMachinePickPresenter, final CNCMillingMachinePutPresenter cncMillingMachinePutPresenter) {
 		super(view, deviceInfo);
 		this.cncMillingMachineConfigurePresenter = cncMillingMachineConfigurePresenter;
 		this.cncMillingMachinePickPresenter = cncMillingMachinePickPresenter;
@@ -26,31 +21,28 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 
 	@Override
 	public void configurePick() {
-		view.setConfigurePickActive();
-		logger.debug("clicked configure pick");
-		parent.setBottomRightView(cncMillingMachinePickPresenter.getView());
+		getView().setConfigurePickActive();
+		getParent().setBottomRightView(cncMillingMachinePickPresenter.getView());
 	}
 
 	@Override
 	public void configurePut() {
-		view.setConfigurePutActive();
-		logger.debug("clicked configure put");
-		parent.setBottomRightView(cncMillingMachinePutPresenter.getView());
+		getView().setConfigurePutActive();
+		getParent().setBottomRightView(cncMillingMachinePutPresenter.getView());
 	}
 
 	@Override
 	public void configureDevice() {
-		view.setProcessingActive();
-		parent.setBottomRightView(cncMillingMachineConfigurePresenter.getView());
+		getView().setProcessingActive();
+		getParent().setBottomRightView(cncMillingMachineConfigurePresenter.getView());
 	}
 
 	@Override
-	public void setBlocked(boolean blocked) {
-		
+	public void setBlocked(final boolean blocked) {
 	}
 
 	@Override
-	public void setTextFieldListener(ConfigurePresenter parent) {
+	public void setTextFieldListener(final ConfigurePresenter parent) {
 		cncMillingMachinePickPresenter.setTextFieldListener(parent);
 		cncMillingMachinePutPresenter.setTextFieldListener(parent);
 	}

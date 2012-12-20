@@ -15,6 +15,7 @@ import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 
 public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachinePutPresenter> {
@@ -38,6 +39,15 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
+	private static final int MAX_INTEGER_LENGTH = 6;
+	
+	private static final String SMOOTH_PUT_INFO = "CNCMillingMachinePutView.smoothPickInfo";
+	private static final String SMOOTH_X = "CNCMillingMachinePutView.smoothX";
+	private static final String SMOOTH_Y = "CNCMillingMachinePutView.smoothY";
+	private static final String SMOOTH_Z = "CNCMillingMachinePutView.smoothZ";
+	private static final String SMOOTH_RESET = "CNCMillingMachinePutView.resetSmooth";
+	
+	private static final String CSS_CLASS_CENTER_TEXT = "center-text";
 	
 	public CNCMillingMachinePutView() {
 		super();
@@ -45,63 +55,60 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		setHgap(HGAP);
 	}
 	
-	public void setPutStep(PutStep putStep) {
+	public void setPutStep(final PutStep putStep) {
 		this.putStep = putStep;
 	}
 	
-	public void setDeviceSettings(DeviceSettings deviceSettings) {
+	public void setDeviceSettings(final DeviceSettings deviceSettings) {
 		this.deviceSettings = deviceSettings;
 	}
 	
 	@Override
 	protected void build() {
-		lblSmoothInfo = new Label(translator.getTranslation("smoothPutInfo"));
+		lblSmoothInfo = new Label(Translator.getTranslation(SMOOTH_PUT_INFO));
 		
-		lblSmoothX = new Label(translator.getTranslation("smoothX"));
-		lblSmoothY = new Label(translator.getTranslation("smoothY"));
-		lblSmoothZ = new Label(translator.getTranslation("smoothZ"));
+		lblSmoothX = new Label(Translator.getTranslation(SMOOTH_X));
+		lblSmoothY = new Label(Translator.getTranslation(SMOOTH_Y));
+		lblSmoothZ = new Label(Translator.getTranslation(SMOOTH_Z));
 		
-		ntxtSmoothX = new NumericTextField(6);
+		ntxtSmoothX = new NumericTextField(MAX_INTEGER_LENGTH);
 		ntxtSmoothX.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		ntxtSmoothX.setOnChange(new ChangeListener<Float>() {
 			@Override
-			public void changed(ObservableValue<? extends Float> observable,
-					Float oldValue, Float newValue) {
-				presenter.changedSmoothX(newValue);
+			public void changed(final ObservableValue<? extends Float> observable, final Float oldValue, final Float newValue) {
+				getPresenter().changedSmoothX(newValue);
 			}
 		});
-		ntxtSmoothY = new NumericTextField(6);
+		ntxtSmoothY = new NumericTextField(MAX_INTEGER_LENGTH);
 		ntxtSmoothY.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		ntxtSmoothY.setOnChange(new ChangeListener<Float>() {
 			@Override
-			public void changed(ObservableValue<? extends Float> observable,
-					Float oldValue, Float newValue) {
-				presenter.changedSmoothY(newValue);
+			public void changed(final ObservableValue<? extends Float> observable, final Float oldValue, final Float newValue) {
+				getPresenter().changedSmoothY(newValue);
 			}
 		});
-		ntxtSmoothZ = new NumericTextField(6);
+		ntxtSmoothZ = new NumericTextField(MAX_INTEGER_LENGTH);
 		ntxtSmoothZ.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		ntxtSmoothZ.setOnChange(new ChangeListener<Float>() {
 			@Override
-			public void changed(ObservableValue<? extends Float> observable,
-					Float oldValue, Float newValue) {
-				presenter.changedSmoothZ(newValue);
+			public void changed(final ObservableValue<? extends Float> observable, final Float oldValue, final Float newValue) {
+				getPresenter().changedSmoothZ(newValue);
 			}
 		});
 		
 		btnResetSmooth = new Button();
-		Text txtBtnResetSmooth = new Text(translator.getTranslation("resetSmooth"));
-		txtBtnResetSmooth.getStyleClass().addAll("form-button-label", "center-text");
+		Text txtBtnResetSmooth = new Text(Translator.getTranslation(SMOOTH_RESET));
+		txtBtnResetSmooth.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT);
 		btnResetSmooth.setGraphic(txtBtnResetSmooth);
 		btnResetSmooth.setAlignment(Pos.CENTER);
 		btnResetSmooth.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
-			public void handle(ActionEvent event) {
-				presenter.resetSmooth();
+			public void handle(final ActionEvent event) {
+				getPresenter().resetSmooth();
 			}
 		});
-		btnResetSmooth.getStyleClass().add("form-button");
-		btnResetSmooth.setPrefSize(UIConstants.BUTTON_HEIGHT*1.5, UIConstants.BUTTON_HEIGHT);
+		btnResetSmooth.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
+		btnResetSmooth.setPrefSize(UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT);
 		
 		hBoxSmoothPoint = new HBox();
 		hBoxSmoothPoint.getChildren().addAll(lblSmoothX, ntxtSmoothX, lblSmoothY, ntxtSmoothY, lblSmoothZ, ntxtSmoothZ, btnResetSmooth);
@@ -123,7 +130,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	}
 
 	@Override
-	public void setTextFieldListener(TextFieldListener listener) {
+	public void setTextFieldListener(final TextFieldListener listener) {
 		ntxtSmoothX.setFocusListener(listener);
 		ntxtSmoothY.setFocusListener(listener);
 		ntxtSmoothZ.setFocusListener(listener);
@@ -132,11 +139,11 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	@Override
 	public void refresh() {
 		if (putStep.getRobotSettings().getSmoothPoint() != null) {
-			ntxtSmoothX.setText(""+putStep.getRobotSettings().getSmoothPoint().getX());
-			ntxtSmoothY.setText(""+putStep.getRobotSettings().getSmoothPoint().getY());
-			ntxtSmoothZ.setText(""+putStep.getRobotSettings().getSmoothPoint().getZ());
+			ntxtSmoothX.setText("" + putStep.getRobotSettings().getSmoothPoint().getX());
+			ntxtSmoothY.setText("" + putStep.getRobotSettings().getSmoothPoint().getY());
+			ntxtSmoothZ.setText("" + putStep.getRobotSettings().getSmoothPoint().getZ());
 		}
-		if(deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()) == null) {
+		if (deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()) == null) {
 			btnResetSmooth.setDisable(true);
 		} else {
 			btnResetSmooth.setDisable(false);

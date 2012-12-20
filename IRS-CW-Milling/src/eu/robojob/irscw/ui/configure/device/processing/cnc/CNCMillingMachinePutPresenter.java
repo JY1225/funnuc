@@ -10,7 +10,7 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 	private PutStep putStep;
 	private DeviceSettings deviceSettings;
 	
-	public CNCMillingMachinePutPresenter(CNCMillingMachinePutView view, PutStep putStep, DeviceSettings deviceSettings) {
+	public CNCMillingMachinePutPresenter(final CNCMillingMachinePutView view, final PutStep putStep, final DeviceSettings deviceSettings) {
 		super(view);
 		this.putStep = putStep;
 		this.deviceSettings = deviceSettings;
@@ -21,40 +21,40 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 
 	@Override
 	public void setPresenter() {
-		view.setPresenter(this);
+		getView().setPresenter(this);
 	}
 
-	public void changedSmoothX(float smoothX) {
+	public void changedSmoothX(final float smoothX) {
 		if (putStep.getRobotSettings().getSmoothPoint() != null) {
 			putStep.getRobotSettings().getSmoothPoint().setX(smoothX);
 		}  else {
 			putStep.getRobotSettings().setSmoothPoint(new Coordinates(smoothX, 0, 0, 0, 0, 0));
 		}
-		view.refresh();
+		getView().refresh();
 	}
 	
-	public void changedSmoothY(float smoothY) {
+	public void changedSmoothY(final float smoothY) {
 		if (putStep.getRobotSettings().getSmoothPoint() != null) {
 			putStep.getRobotSettings().getSmoothPoint().setY(smoothY);
 		} else {
 			putStep.getRobotSettings().setSmoothPoint(new Coordinates(0, smoothY, 0, 0, 0, 0));
 		}
-		view.refresh();
+		getView().refresh();
 	}
 	
-	public void changedSmoothZ(float smoothZ) {
+	public void changedSmoothZ(final float smoothZ) {
 		if (putStep.getRobotSettings().getSmoothPoint() != null) {
 			putStep.getRobotSettings().getSmoothPoint().setZ(smoothZ);
 		} else {
 			putStep.getRobotSettings().setSmoothPoint(new Coordinates(0, 0, smoothZ, 0, 0, 0));
 		}
-		view.refresh();
+		getView().refresh();
 	}
 	
 	public void resetSmooth() {
 		if (deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()) != null) {
 			putStep.getRobotSettings().setSmoothPoint(deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()).getSmoothFromPoint());
-			view.refresh();
+			getView().refresh();
 		}
 	}
 
@@ -62,8 +62,7 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 	public boolean isConfigured() {
 		if (putStep.getRobotSettings().getSmoothPoint() != null) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 }

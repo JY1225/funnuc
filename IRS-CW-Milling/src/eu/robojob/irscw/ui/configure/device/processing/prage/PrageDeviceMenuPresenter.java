@@ -9,37 +9,33 @@ public class PrageDeviceMenuPresenter extends AbstractDeviceMenuPresenter {
 
 	private PrageDeviceConfigurePresenter deviceConfigurePresenter;
 	
-	public PrageDeviceMenuPresenter(DeviceMenuView view, DeviceInformation deviceInfo, PrageDeviceConfigurePresenter deviceConfigurePresenter) {
+	public PrageDeviceMenuPresenter(final DeviceMenuView view, final DeviceInformation deviceInfo, final PrageDeviceConfigurePresenter deviceConfigurePresenter) {
 		super(view, deviceInfo);
 		this.deviceConfigurePresenter = deviceConfigurePresenter;
 	}
 
 	@Override
 	public void configurePick() {
-		throw new IllegalStateException("Shouldn't be possible with this device");
+		throw new IllegalStateException("Not possible with this device [" + getDeviceInformation().getDevice() + "].");
 	}
 
 	@Override
 	public void configurePut() {
-		throw new IllegalStateException("Shouldn't be possible with this device");
+		throw new IllegalStateException("Not possible with this device [" + getDeviceInformation().getDevice() + "].");
 	}
 
 	@Override
 	public void configureDevice() {
-		view.setProcessingActive();
-		parent.setBottomRightView(deviceConfigurePresenter.getView());
+		getView().setProcessingActive();
+		getParent().setBottomRightView(deviceConfigurePresenter.getView());
 	}
 
 	@Override
-	public void setTextFieldListener(ConfigurePresenter parent) {
-		// TODO Auto-generated method stub
-		
+	public void setTextFieldListener(final ConfigurePresenter parent) {		
 	}
 
 	@Override
-	public void setBlocked(boolean blocked) {
-		// TODO Auto-generated method stub
-		
+	public void setBlocked(final boolean blocked) {
 	}
 
 	@Override

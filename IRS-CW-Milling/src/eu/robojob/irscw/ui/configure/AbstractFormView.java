@@ -21,7 +21,7 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	private static final int ICON_MARGIN = 6;
 	
 	private static final String CSS_CLASS_FORM_BUTTON_ICON = "form-button-icon";
-	private static final String CSS_CLASS_FORM_BUTTON_LABEL = "form-button-label";
+	protected static final String CSS_CLASS_FORM_BUTTON_LABEL = "form-button-label";
 	private static final String CSS_CLASS_FORM_BUTTON_PANEL = "form-button-panel";
 	
 	protected static final String CSS_CLASS_FORM_BUTTON = "form-button";
