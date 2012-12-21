@@ -44,115 +44,123 @@ public class OptimizedTeachThread extends TeachThread {
 		//    or 
 		// -  BasicStackPlate - CNCMillingMachine - BasicStackPlate
 		logger.debug("Started execution, processflow [" + getProcessFlow() + "].");
-		getProcessFlow().initialize();
-		getProcessFlow().setMode(Mode.TEACH);
-		setRunning(true);
-		resetOffsets();
 		try {
-			for (AbstractRobot robot : getProcessFlow().getRobots()) {
-				robot.recalculateTCPs();
-			}
-			for (AbstractDevice device: getProcessFlow().getDevices()) {
-				device.prepareForProcess(getProcessFlow());
-			}
-			PickStep pickFromStackerStep = null;
-			PutAndWaitStep putAndWaitOnPrageStep = null;
-			PickAfterWaitStep pickAfterWaitOnPrageStep = null;
-			PutStep putInMachineStep = null;
-			PickStep pickFromMachineStep = null;
-			PutStep putOnStackerStep = null;
-			
-			Coordinates relTeachedOffsetFinishedWp = null;
-	
-			for (AbstractProcessStep step : getProcessFlow().getProcessSteps()) {
-				if ((step instanceof PickStep) && ((PickStep) step).getDevice().getId().equals(DeviceManager.IRS_M_BASIC)) {
-					pickFromStackerStep = (PickStep) step;
-				} else if ((step instanceof PutAndWaitStep) && ((PutAndWaitStep) step).getDevice().getId().equals(DeviceManager.PRAGE_DEVICE)) {
-					putAndWaitOnPrageStep = (PutAndWaitStep) step;
-				} else if ((step instanceof PickAfterWaitStep) && ((PickAfterWaitStep) step).getDevice().getId().equals(DeviceManager.PRAGE_DEVICE)) {
-					pickAfterWaitOnPrageStep = (PickAfterWaitStep) step;
-				} else if ((step instanceof PutStep) && ((PutStep) step).getDevice().getId().equals(DeviceManager.MAZAK_VRX)) {
-					putInMachineStep = (PutStep) step;
-				} else if ((step instanceof PickStep) && ((PickStep) step).getDevice().getId().equals(DeviceManager.MAZAK_VRX)) {
-					pickFromMachineStep = (PickStep) step;
-				} else if ((step instanceof PutStep) && ((PutStep) step).getDevice().getId().equals(DeviceManager.IRS_M_BASIC)) {
-					putOnStackerStep = (PutStep) step;
+			getProcessFlow().initialize();
+			getProcessFlow().setMode(Mode.TEACH);
+			setRunning(true);
+			resetOffsets();
+			try {
+				for (AbstractRobot robot : getProcessFlow().getRobots()) {
+					robot.recalculateTCPs();
 				}
-			}
-			
-			// before doing this, we fake the gripper holding a workpiece
-			putOnStackerStep.getRobotSettings().getGripperHead().getGripper().setWorkPiece(pickFromMachineStep.getRobotSettings().getWorkPiece());
-			relTeachedOffsetFinishedWp = getFinishedWorkPieceTeachedOffset(putOnStackerStep);
-			relTeachedOffsetFinishedWp.offset(extraFinishedOffset);
-			//TODO review if this offset needs formatting (depending on clamp manner...)
-			logger.info("Relative offset finished work piece after added extra offset: [" + relTeachedOffsetFinishedWp + "].");
-			pickFromMachineStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
-			putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
-			
-			Coordinates relTeachedOffsetRawWp = null;
-			Coordinates relTeachedOffsetMachineClamping = null;
-			
-			boolean knowEnough = false;
-			int currentStepIndex = 0;
-			while ((currentStepIndex < getProcessFlow().getProcessSteps().size()) && !knowEnough && isRunning()) {
-				AbstractProcessStep step = getProcessFlow().getProcessSteps().get(currentStepIndex);
-				if (step.equals(pickFromStackerStep)) {
-					pickFromStackerStep.executeStepTeached(WORKPIECE_ID);
-					pickFromStackerStep.finalizeStep();
-					// update relative offset for upcoming steps
-					relTeachedOffsetRawWp = pickFromStackerStep.getRelativeTeachedOffset();
-					if (putAndWaitOnPrageStep != null) {
-						putAndWaitOnPrageStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
+				for (AbstractDevice device: getProcessFlow().getDevices()) {
+					device.prepareForProcess(getProcessFlow());
+				}
+				PickStep pickFromStackerStep = null;
+				PutAndWaitStep putAndWaitOnPrageStep = null;
+				PickAfterWaitStep pickAfterWaitOnPrageStep = null;
+				PutStep putInMachineStep = null;
+				PickStep pickFromMachineStep = null;
+				PutStep putOnStackerStep = null;
+				
+				Coordinates relTeachedOffsetFinishedWp = null;
+		
+				for (AbstractProcessStep step : getProcessFlow().getProcessSteps()) {
+					if ((step instanceof PickStep) && ((PickStep) step).getDevice().getId().equals(DeviceManager.IRS_M_BASIC)) {
+						pickFromStackerStep = (PickStep) step;
+					} else if ((step instanceof PutAndWaitStep) && ((PutAndWaitStep) step).getDevice().getId().equals(DeviceManager.PRAGE_DEVICE)) {
+						putAndWaitOnPrageStep = (PutAndWaitStep) step;
+					} else if ((step instanceof PickAfterWaitStep) && ((PickAfterWaitStep) step).getDevice().getId().equals(DeviceManager.PRAGE_DEVICE)) {
+						pickAfterWaitOnPrageStep = (PickAfterWaitStep) step;
+					} else if ((step instanceof PutStep) && ((PutStep) step).getDevice().getId().equals(DeviceManager.MAZAK_VRX)) {
+						putInMachineStep = (PutStep) step;
+					} else if ((step instanceof PickStep) && ((PickStep) step).getDevice().getId().equals(DeviceManager.MAZAK_VRX)) {
+						pickFromMachineStep = (PickStep) step;
+					} else if ((step instanceof PutStep) && ((PutStep) step).getDevice().getId().equals(DeviceManager.IRS_M_BASIC)) {
+						putOnStackerStep = (PutStep) step;
 					}
-					putInMachineStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
-				} else if (step.equals(putAndWaitOnPrageStep)) {
-					putAndWaitOnPrageStep.executeStepTeached(WORKPIECE_ID);
-					putAndWaitOnPrageStep.finalizeStep();
-					relTeachedOffsetMachineClamping = putAndWaitOnPrageStep.getRelativeTeachedOffset();
-					Coordinates offsetInMachine = new Coordinates(relTeachedOffsetMachineClamping);
-					putInMachineStep.setRelativeTeachedOffset(offsetInMachine);
-					//TODO what to do with y offset of Präge?
-				} else if (step.equals(putInMachineStep)) {
-					putInMachineStep.executeStepTeached(WORKPIECE_ID);
-					putInMachineStep.finalizeStep();
-					relTeachedOffsetMachineClamping = putInMachineStep.getRelativeTeachedOffset();
-					knowEnough = true;
-				} else if (step.equals(pickAfterWaitOnPrageStep)) {
-					pickAfterWaitOnPrageStep.executeStep(WORKPIECE_ID);
-					knowEnough = true;
-				} else {
-					step.executeStep(WORKPIECE_ID);
 				}
-				currentStepIndex++;
-			}
-			if (isRunning()) {
-				Coordinates pickFromMachineOffset = new Coordinates(relTeachedOffsetMachineClamping);
-				pickFromMachineOffset.minus(relTeachedOffsetRawWp);
-				pickFromMachineOffset.plus(relTeachedOffsetFinishedWp);
-				pickFromMachineStep.setRelativeTeachedOffset(pickFromMachineOffset);
-				putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);			
-				setRunning(false);
-				getProcessFlow().setMode(Mode.READY);
-				logger.info(toString() + " ended...");
-			} else {
-				getProcessFlow().setMode(Mode.STOPPED);
-			}
-		} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
-			e.printStackTrace();
-			logger.error(e);
-			getProcessFlow().setMode(Mode.STOPPED);
-		} catch (InterruptedException e) {
-			if (!isRunning()) {
-				logger.info("Execution of one or more steps got interrupted, so let't just stop");
-			} else {
+				
+				// before doing this, we fake the gripper holding a workpiece
+				putOnStackerStep.getRobotSettings().getGripperHead().getGripper().setWorkPiece(pickFromMachineStep.getRobotSettings().getWorkPiece());
+				relTeachedOffsetFinishedWp = getFinishedWorkPieceTeachedOffset(putOnStackerStep);
+				relTeachedOffsetFinishedWp.offset(extraFinishedOffset);
+				//TODO review if this offset needs formatting (depending on clamp manner...)
+				logger.info("Relative offset finished work piece after added extra offset: [" + relTeachedOffsetFinishedWp + "].");
+				pickFromMachineStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
+				putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
+				
+				Coordinates relTeachedOffsetRawWp = null;
+				Coordinates relTeachedOffsetMachineClamping = null;
+				
+				boolean knowEnough = false;
+				int currentStepIndex = 0;
+				while ((currentStepIndex < getProcessFlow().getProcessSteps().size()) && !knowEnough && isRunning()) {
+					AbstractProcessStep step = getProcessFlow().getProcessSteps().get(currentStepIndex);
+					if (step.equals(pickFromStackerStep)) {
+						pickFromStackerStep.executeStepTeached(WORKPIECE_ID);
+						pickFromStackerStep.finalizeStep();
+						// update relative offset for upcoming steps
+						relTeachedOffsetRawWp = pickFromStackerStep.getRelativeTeachedOffset();
+						if (putAndWaitOnPrageStep != null) {
+							putAndWaitOnPrageStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
+						}
+						putInMachineStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
+					} else if (step.equals(putAndWaitOnPrageStep)) {
+						putAndWaitOnPrageStep.executeStepTeached(WORKPIECE_ID);
+						putAndWaitOnPrageStep.finalizeStep();
+						relTeachedOffsetMachineClamping = putAndWaitOnPrageStep.getRelativeTeachedOffset();
+						Coordinates offsetInMachine = new Coordinates(relTeachedOffsetMachineClamping);
+						putInMachineStep.setRelativeTeachedOffset(offsetInMachine);
+						//TODO what to do with y offset of Präge?
+					} else if (step.equals(putInMachineStep)) {
+						putInMachineStep.executeStepTeached(WORKPIECE_ID);
+						putInMachineStep.finalizeStep();
+						relTeachedOffsetMachineClamping = putInMachineStep.getRelativeTeachedOffset();
+						knowEnough = true;
+					} else if (step.equals(pickAfterWaitOnPrageStep)) {
+						pickAfterWaitOnPrageStep.executeStep(WORKPIECE_ID);
+						knowEnough = true;
+					} else {
+						step.executeStep(WORKPIECE_ID);
+					}
+					currentStepIndex++;
+				}
+				if (isRunning()) {
+					Coordinates pickFromMachineOffset = new Coordinates(relTeachedOffsetMachineClamping);
+					pickFromMachineOffset.minus(relTeachedOffsetRawWp);
+					pickFromMachineOffset.plus(relTeachedOffsetFinishedWp);
+					pickFromMachineStep.setRelativeTeachedOffset(pickFromMachineOffset);
+					putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);			
+					setRunning(false);
+					getProcessFlow().setMode(Mode.READY);
+					logger.info(toString() + " ended...");
+				} else {
+					getProcessFlow().setMode(Mode.STOPPED);
+				}
+			} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
 				e.printStackTrace();
 				logger.error(e);
+				getProcessFlow().setMode(Mode.STOPPED);
+			} catch (InterruptedException e) {
+				if (!isRunning()) {
+					logger.info("Execution of one or more steps got interrupted, so let't just stop");
+				} else {
+					e.printStackTrace();
+					logger.error(e);
+				}
+				getProcessFlow().setMode(Mode.STOPPED);
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e);
+				getProcessFlow().setMode(Mode.STOPPED);
 			}
-			getProcessFlow().setMode(Mode.STOPPED);
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error(e);
-			getProcessFlow().setMode(Mode.STOPPED);
+			e.printStackTrace();
+		} catch (Throwable t) {
+			logger.error(t);
+			t.printStackTrace();
 		}
 		logger.info(toString() + " ended...");
 	}

@@ -21,7 +21,15 @@ public class AutomateTimingThread extends Thread {
 	
 	@Override
 	public void run() {
-		//FIXME implement
+		try {
+			//FIXME implement
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		} catch (Throwable t) {
+			logger.error(t);
+			t.printStackTrace();
+		}
 	}
 	
 	private String toTimeString(final long milliSeconds) {

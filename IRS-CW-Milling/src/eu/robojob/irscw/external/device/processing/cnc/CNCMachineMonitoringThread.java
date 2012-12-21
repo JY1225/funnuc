@@ -28,34 +28,44 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 	
 	@Override
 	public void run() {
-		while (alive) {
-			if (cncMachine.isConnected()) {
+		try {
+			while (alive) {
+				if (cncMachine.isConnected()) {
+					try {
+						cncMachine.updateStatusAndAlarms();
+						int status = cncMachine.getStatus();
+						if (status != previousStatus) {
+							cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.STATUS_CHANGED));
+						}
+						this.previousStatus = status;
+						Set<CNCMachineAlarm> alarms = cncMachine.getAlarms();
+						if ((!previousAlarms.containsAll(alarms)) || (!alarms.containsAll(previousAlarms))) {
+							cncMachine.processCNCMachineEvent(new CNCMachineAlarmsOccuredEvent(cncMachine, alarms));
+						}
+						this.previousAlarms = alarms;
+					} catch (AbstractCommunicationException | InterruptedException e) {
+						//TODO do something with this exception
+						if (cncMachine.isConnected()) {
+							cncMachine.disconnect();
+						}
+						logger.error(e);
+					} catch (Exception e) {
+						logger.error(e);
+					}
+				}
 				try {
-					cncMachine.updateStatusAndAlarms();
-					int status = cncMachine.getStatus();
-					if (status != previousStatus) {
-						cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.STATUS_CHANGED));
-					}
-					this.previousStatus = status;
-					Set<CNCMachineAlarm> alarms = cncMachine.getAlarms();
-					if ((!previousAlarms.containsAll(alarms)) || (!alarms.containsAll(previousAlarms))) {
-						cncMachine.processCNCMachineEvent(new CNCMachineAlarmsOccuredEvent(cncMachine, alarms));
-					}
-					this.previousAlarms = alarms;
-				} catch (AbstractCommunicationException | InterruptedException e) {
-					//TODO do something with this exception
-					if (cncMachine.isConnected()) {
-						cncMachine.disconnect();
-					}
-					logger.error(e);
+					Thread.sleep(REFRESH_TIME);
+				} catch (InterruptedException e) {
+					// interrupted, so let's just stop, the external communication thread takes care of disconnecting if needed at this point
+					alive = false;
 				}
 			}
-			try {
-				Thread.sleep(REFRESH_TIME);
-			} catch (InterruptedException e) {
-				// interrupted, so let's just stop, the external communication thread takes care of disconnecting if needed at this point
-				alive = false;
-			}
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		} catch (Throwable t) {
+			logger.error(t);
+			t.printStackTrace();
 		}
 		logger.info(toString() + " ended...");
 	}
@@ -63,6 +73,7 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 	@Override
 	public void interrupt() {
 		alive = false;
+		super.interrupt();
 	}
 	
 	@Override

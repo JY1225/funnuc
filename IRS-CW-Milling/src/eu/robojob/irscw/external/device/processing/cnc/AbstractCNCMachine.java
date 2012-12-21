@@ -3,8 +3,8 @@ package eu.robojob.irscw.external.device.processing.cnc;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +17,6 @@ import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
 import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
-import eu.robojob.irscw.threading.ThreadManager;
 
 public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 
@@ -42,9 +41,6 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.alarms = new HashSet<CNCMachineAlarm>();
 		this.currentStatus = 0;
 		this.listeners = new HashSet<CNCMachineListener>();
-		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
-		// start monitoring thread at creation of this object
-		ThreadManager.submit(cncMachineMonitoringThread);
 		this.stopAction = false;
 	}
 	

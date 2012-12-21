@@ -45,48 +45,56 @@ public class ExternalCommunicationThread extends Thread {
 	
 	@Override
 	public void run() {
-		while (alive) {
-			if (!socketConnection.isConnected()) {
-				// not connected...
-				if (wasConnected) {
-					wasConnected = false;
-					logger.info("Disconnected from " + socketConnection + ".");
-					// disconnected, so spread the word
-					externalCommunication.disconnected();
-				}
-				try {
-					socketConnection.connect();
-					wasConnected = true;
-					logger.info("Connected to " + socketConnection + ".");
-					// connected, so spread the word
-					externalCommunication.connected();
-				} catch (IOException e) {
+		try {
+			while (alive) {
+				if (!socketConnection.isConnected()) {
+					// not connected...
+					if (wasConnected) {
+						wasConnected = false;
+						logger.info("Disconnected from " + socketConnection + ".");
+						// disconnected, so spread the word
+						externalCommunication.disconnected();
+					}
 					try {
-						Thread.sleep(CONNECTION_RETRY_INTERVAL);
-					} catch (InterruptedException e1) {
-						// we got interrupted, so let's just stop executing! Are already disconnected so no need to call disconnect().
-						alive = false;
+						socketConnection.connect();
+						wasConnected = true;
+						logger.info("Connected to " + socketConnection + ".");
+						// connected, so spread the word
+						externalCommunication.connected();
+					} catch (IOException e) {
+						try {
+							Thread.sleep(CONNECTION_RETRY_INTERVAL);
+						} catch (InterruptedException e1) {
+							// we got interrupted, so let's just stop executing! Are already disconnected so no need to call disconnect().
+							alive = false;
+						}
 					}
-				}
-			} else {
-				// connected...
-				// this thread should just try reading messages and add these to the reading buffer, will also serve as 
-				// check for connection-liveness
-				try {
-					String icommingMessage = socketConnection.readMessage();
-					putMessage(icommingMessage);
-				} catch (IOException e) {
-					if (alive) {
-						logger.error("IOException detected: " + e.getMessage() + " so disconnectiong...");
-						e.printStackTrace();
-						// exception occurred, spread the word (disconnection occurs automatically)
-						externalCommunication.iOExceptionOccured(e);
+				} else {
+					// connected...
+					// this thread should just try reading messages and add these to the reading buffer, will also serve as 
+					// check for connection-liveness
+					try {
+						String icommingMessage = socketConnection.readMessage();
+						putMessage(icommingMessage);
+					} catch (IOException e) {
+						if (alive) {
+							logger.error("IOException detected: " + e.getMessage() + " so disconnectiong...");
+							e.printStackTrace();
+							// exception occurred, spread the word (disconnection occurs automatically)
+							externalCommunication.iOExceptionOccured(e);
+						}
+					} catch (SocketDisconnectedException e) {
+						// we got disconnected, retry connection
+						logger.info("Gotten disconnected during reading, about to retry connection...");
 					}
-				} catch (SocketDisconnectedException e) {
-					// we got disconnected, retry connection
-					logger.info("Gotten disconnected during reading, about to retry connection...");
 				}
 			}
+		}  catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		} catch (Throwable t) {
+			logger.error(t);
+			t.printStackTrace();
 		}
 		logger.info(toString() + " ended...");
 	}
@@ -137,6 +145,7 @@ public class ExternalCommunicationThread extends Thread {
 	@Override
 	public void interrupt() {
 		disconnectAndStop();
+		super.interrupt();
 	}
 	
 	public synchronized void disconnectAndStop() {

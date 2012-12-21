@@ -1,5 +1,6 @@
 package eu.robojob.irscw.external.device.processing.cnc.milling;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
@@ -18,9 +19,11 @@ import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSe
 import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarm;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineConstants;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMachineMonitoringThread;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineSocketCommunication;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachine extends AbstractCNCMachine {
@@ -46,14 +49,17 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final String EXCEPTION_UNCLAMP_TIMEOUT = "CNCMillingMachine.unclampTimeout";
 	private static final String EXCEPTION_CLAMP_TIMEOUT = "CNCMillingMachine.clampTimeout";
 			
-	public CNCMillingMachine(final String id, final SocketConnection socketConnection) {
-		super(id);
-		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
-	}
-	
 	public CNCMillingMachine(final String id, final List<Zone> zones, final SocketConnection socketConnection) {
 		super(id, zones);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
+		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
+		// start monitoring thread at creation of this object
+		ThreadManager.submit(cncMachineMonitoringThread);
+	}
+	
+	public CNCMillingMachine(final String id, final SocketConnection socketConnection) {
+		this(id, new ArrayList<Zone>(), socketConnection);
+		
 	}
 	
 	@Override
