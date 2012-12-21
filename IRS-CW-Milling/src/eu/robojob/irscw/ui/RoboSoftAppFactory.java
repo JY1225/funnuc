@@ -47,7 +47,7 @@ import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardView;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
-import eu.robojob.irscw.ui.general.flow.ProcessFlowView;
+import eu.robojob.irscw.ui.general.flow.OldProcessFlowView;
 import eu.robojob.irscw.ui.menu.MenuBarPresenter;
 import eu.robojob.irscw.ui.menu.MenuBarView;
 import eu.robojob.irscw.ui.robot.RobotPopUpPresenter;
@@ -182,7 +182,7 @@ public class RoboSoftAppFactory {
 	
 	public ConfigureProcessFlowPresenter getConfigureProcessFlowPresenter() {
 		if (configureProcessFlowPresenter == null) {
-			ProcessFlowView processFlowView = new ProcessFlowView();
+			OldProcessFlowView processFlowView = new OldProcessFlowView();
 			configureProcessFlowPresenter = new ConfigureProcessFlowPresenter(processFlowView);
 		}
 		return configureProcessFlowPresenter;
@@ -190,7 +190,7 @@ public class RoboSoftAppFactory {
 	
 	public FixedProcessFlowPresenter getTeachProcessFlowPresenter() {
 		if (teachProcessFlowPresenter == null) {
-			ProcessFlowView processFlowView = new ProcessFlowView();
+			OldProcessFlowView processFlowView = new OldProcessFlowView();
 			teachProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView, true);
 		}
 		return teachProcessFlowPresenter;
@@ -198,7 +198,7 @@ public class RoboSoftAppFactory {
 	
 	public FixedProcessFlowPresenter getAutomateProcessFlowPresenter() {
 		if (automateProcessFlowPresenter == null) {
-			ProcessFlowView processFlowView = new ProcessFlowView();
+			OldProcessFlowView processFlowView = new OldProcessFlowView();
 			automateProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView, false);
 		}
 		return automateProcessFlowPresenter;

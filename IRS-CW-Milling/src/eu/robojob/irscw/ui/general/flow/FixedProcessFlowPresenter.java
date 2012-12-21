@@ -19,7 +19,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	private boolean showQuestionMarks;
 	private ProcessFlowAdapter processFlowAdapter;
 			
-	public FixedProcessFlowPresenter(ProcessFlowView view, boolean showQuestionMarks) {
+	public FixedProcessFlowPresenter(OldProcessFlowView view, boolean showQuestionMarks) {
 		super(view);
 		view.setPresenter(this);
 		this.showQuestionMarks = showQuestionMarks;

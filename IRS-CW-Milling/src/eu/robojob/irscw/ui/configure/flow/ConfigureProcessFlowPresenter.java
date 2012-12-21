@@ -7,7 +7,7 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter.Mode;
 import eu.robojob.irscw.ui.general.flow.AbstractProcessFlowPresenter;
-import eu.robojob.irscw.ui.general.flow.ProcessFlowView;
+import eu.robojob.irscw.ui.general.flow.OldProcessFlowView;
 
 public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	
@@ -18,7 +18,7 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 	private int focussedDevice;
 	private int focussedTransport;
 		
-	public ConfigureProcessFlowPresenter(ProcessFlowView view) {
+	public ConfigureProcessFlowPresenter(OldProcessFlowView view) {
 		super(view);
 		focussedDevice = -1;
 		focussedTransport = -1;

@@ -4,9 +4,9 @@ import eu.robojob.irscw.process.ProcessFlow;
 
 public abstract class AbstractProcessFlowPresenter {
 
-	private ProcessFlowView view;
+	private OldProcessFlowView view;
 	
-	public AbstractProcessFlowPresenter(final ProcessFlowView view) {
+	public AbstractProcessFlowPresenter(final OldProcessFlowView view) {
 		this.view = view;
 	}
 	
@@ -38,11 +38,11 @@ public abstract class AbstractProcessFlowPresenter {
 		view.setTransportProgressNone(deviceIndex);
 	}
 	
-	public ProcessFlowView getView() {
+	public OldProcessFlowView getView() {
 		return view;
 	}
 	
-	public void setView(final ProcessFlowView view) {
+	public void setView(final OldProcessFlowView view) {
 		this.view = view;
 	}
 	
