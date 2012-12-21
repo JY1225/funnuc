@@ -32,8 +32,11 @@ public class ProcessFlowView extends GridPane {
 	private List<List<Region>> transportProgressRegionsLeft;
 	private List<List<Region>> transportProgressRegionsRight;
 	
+	private List<List<Region>> allRegions;
+	
 	private static final int GAP = 10; 
 	private static final String CSS_CLASS_PROCESSFLOW_VIEW = "process-flow-view";
+	private static final String CSS_CLASS_PROGRESS_BAR_UNFOCUSSED = "progressbar-piece-unfocussed";
 	private int progressBarAmount;
 	
 	public ProcessFlowView(final ProcessFlow processFlow, final int progressBarAmount) {
@@ -46,6 +49,7 @@ public class ProcessFlowView extends GridPane {
 		this.deviceProgressRegions = new ArrayList<List<Region>>();
 		this.transportProgressRegionsLeft = new ArrayList<List<Region>>();
 		this.transportProgressRegionsRight = new ArrayList<List<Region>>();
+		this.allRegions = new ArrayList<List<Region>>();
 		build();
 		this.progressBarAmount = progressBarAmount;
 	}
@@ -80,6 +84,9 @@ public class ProcessFlowView extends GridPane {
 			}
 		});
 		setupProgressBarRegions();
+		allRegions = new ArrayList<List<Region>>(deviceProgressRegions);
+		allRegions.addAll(transportProgressRegionsLeft);
+		allRegions.addAll(transportProgressRegionsRight);
 	}
 	
 	private void setupDevice(final int index, final int column, final int row) {
@@ -134,17 +141,66 @@ public class ProcessFlowView extends GridPane {
 		}
 	}
 	
-	public void focusDevice(final int index) {
-		if ((index < 0) || (index >= processFlowAdapter.getDeviceStepCount()) || (deviceButtons.get(index) == null)) {
-			throw new IllegalArgumentException("Incorrect index [" + index + "].");
-		}
+	private void unfocusAll() {
 		for (TransportButton transport : transportButtons) {
 			transport.setFocussed(false);
 		}
 		for (DeviceButton device : deviceButtons) {
 			device.setFocussed(false);
 		}
+		for (List<Region> regions : allRegions) {
+			for (Region region : regions) {
+				region.getStyleClass().remove(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
+				region.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
+			}
+		}
+	}
+	
+	public void focusDevice(final int index) {
+		if ((index < 0) || (index >= processFlowAdapter.getDeviceStepCount()) || (deviceButtons.get(index) == null)) {
+			throw new IllegalArgumentException("Incorrect index [" + index + "].");
+		}
+		unfocusAll();
 		deviceButtons.get(index).setFocussed(true);
+		for (Region region : deviceProgressRegions.get(index)) {
+			region.getStyleClass().remove(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
+		}
+	}
+	
+	public void focusTransport(final int index) {
+		if ((index < 0) || (index >= processFlowAdapter.getDeviceStepCount()) || (deviceButtons.get(index) == null)) {
+			throw new IllegalArgumentException("Incorrect index [" + index + "].");
+		}
+		unfocusAll();
+		transportButtons.get(index).setFocussed(true);
+		for (Region region : transportProgressRegionsLeft.get(index)) {
+			region.getStyleClass().remove(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
+		}
+		for (Region region : transportProgressRegionsRight.get(index)) {
+			region.getStyleClass().remove(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
+		}
+	}
+	
+	public void focusAll() {
+		for (DeviceButton device : deviceButtons) {
+			device.setFocussed(true);
+		}
+		for (TransportButton transport : transportButtons) {
+			transport.setFocussed(true);
+		}
+		for (List<Region> regions : allRegions) {
+			for (Region region : regions) {
+				region.getStyleClass().remove(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
+			}
+		}
+	}
+	
+	public void setDeviceAnimation(final int index, final boolean animate) {
+		if ((index < 0) || (index >= processFlowAdapter.getDeviceStepCount()) || (deviceButtons.get(index) == null)) {
+			throw new IllegalArgumentException("Incorrect index [" + index + "].");
+		} else {
+			deviceButtons.get(index).animate(animate);
+		}
 	}
 	
 	public AbstractProcessFlowPresenter getPresenter() {
