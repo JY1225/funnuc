@@ -75,7 +75,7 @@ public class ProcessFlow {
 	}
 	
 	public void initialize() {
-		logger.info("Initializing [" + getName() + "].");
+		logger.info("Initializing [" + toString() + "].");
 		loadAllSettings();
 		setFinishedAmount(0);
 	}
@@ -344,4 +344,7 @@ public class ProcessFlow {
 		this.clampingManner = clampingType;
 	}
 	
+	public String toString() {
+		return "ProcessFlow: " + getName();
+	}
 }

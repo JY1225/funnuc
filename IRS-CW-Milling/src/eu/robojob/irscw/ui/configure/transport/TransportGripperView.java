@@ -58,7 +58,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		cbbGripperHeads.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-				if ((oldValue == null) || (!oldValue.equals(newValue))) {
+				if ((oldValue != null) && (!oldValue.equals(newValue))) {
 					getPresenter().changedGripperHead(newValue);
 				}
 			}

@@ -89,8 +89,6 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 		// add plate
 		stackPlate = new Rectangle(0, 0, basicStackPlateLayout.getLength(), basicStackPlateLayout.getWidth());
 		stackPlate.getStyleClass().add(CSS_CLASS_STACKPLATE);
-		stackPlate.setArcHeight(25);
-		stackPlate.setArcWidth(25);
 		
 		group.getChildren().add(stackPlate);
 		
