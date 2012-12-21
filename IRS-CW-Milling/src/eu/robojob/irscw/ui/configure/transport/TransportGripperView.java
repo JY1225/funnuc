@@ -25,7 +25,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 	private Label lblGripper;
 	private IconFlowSelector ifsGrippers;
 	
-	private static final String GRIPPERHEADS = "TransportGripperView.gripperHeads";
+	private static final String GRIPPERHEAD = "TransportGripperView.gripperHead";
 	private static final String GRIPPER = "TransportGripperView.gripper";
 	
 	private static final int HGAP = 15;
@@ -49,7 +49,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		
 		getChildren().clear();
 		
-		lblGripperHead = new Label(Translator.getTranslation(GRIPPERHEADS));
+		lblGripperHead = new Label(Translator.getTranslation(GRIPPERHEAD));
 		add(lblGripperHead, column++, row);
 		
 		cbbGripperHeads = new ComboBox<String>();

@@ -21,10 +21,6 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 		getView().setPresenter(this);
 	}
 	
-	public ProcessMenuView getView() {
-		return getView();
-	}
-	
 	public void saveData() {
 	}
 	

@@ -12,7 +12,7 @@ public class DisconnectedDevicesView extends VBox {
 	private Label lblDisconnectedDevices;
 	private Label lblDisconnectedList;
 		
-	private static final String DISCONNECTED_DEVICES = "DisconnectedDevicesView.disconnected-devices";
+	private static final String DISCONNECTED_DEVICES = "DisconnectedDevicesView.disconnectedDevices";
 	private static final String CSS_CLASS_DISCONNECTED = "lbl-disconnected";
 	private static final String CSS_CLASS_DISCONNECTED_LIST = "lbl-disconnected-list";
 	

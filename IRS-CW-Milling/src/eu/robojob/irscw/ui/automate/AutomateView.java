@@ -33,15 +33,23 @@ public class AutomateView extends VBox {
 	public static final int HEIGHT_BOTTOM_TOP = 185;
 	public static final int HEIGHT_BOTTOM = 300;
 	public static final int WIDTH = 800;
-	
 	public static final int PROGRESS_RADIUS = 70;
 	public static final int PROGRESS_RADIUS_INNER = 0;
-	
 	public static final double ICON_WIDTH = 49.5;
 	public static final double ICON_HEIGHT = 55.813;
-	
 	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
 	private static final double BTN_HEIGHT = 40;
+	
+	private static final String START = "AutomateView.start";
+	private static final String RESET = "AutomateView.reset";
+	private static final String PAUSE = "AutomateView.pause";
+	private static final String STOP = "AutomateView.stop";
+	private static final String CYCLE_TIME = "AutomateView.cycleTime";
+	private static final String CYCLE_TIME_PASSED = "AutomateView.cyleTimePassed";
+	private static final String TIME_TILL_INTERVENTION = "AutomateView.timeTillIntervention";
+	private static final String TIME_TILL_FINISHED = "AutomateView.timeTillFinished";
+	private static final String DEFAULT_STATUTS_MSG = "AutomateView.defaultStatusMessage";
+	private static final String UNKNOWN = "AutomateView.unknown";
 	
 	private int totalAmount;
 	private int finishedAmount;
@@ -207,7 +215,7 @@ public class AutomateView extends VBox {
 		btnStart = new Button();
 		btnStart.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
 		btnStart.getStyleClass().add("automate-btn");
-		Text txtStart = new Text(Translator.getTranslation("play"));
+		Text txtStart = new Text(Translator.getTranslation(START));
 		txtStart.getStyleClass().add("automate-btn-text");
 		btnStart.setGraphic(txtStart);
 		btnStart.setOnAction(new EventHandler<ActionEvent>() {
@@ -219,7 +227,7 @@ public class AutomateView extends VBox {
 		btnReset = new Button();
 		btnReset.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
 		btnReset.getStyleClass().add("automate-btn");
-		Text txtRestart = new Text(Translator.getTranslation("reset-flow"));
+		Text txtRestart = new Text(Translator.getTranslation(RESET));
 		txtRestart.getStyleClass().add("automate-btn-text");
 		btnReset.setGraphic(txtRestart);
 		btnReset.setOnAction(new EventHandler<ActionEvent>() {
@@ -232,7 +240,7 @@ public class AutomateView extends VBox {
 		btnPause = new Button();
 		btnPause.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
 		btnPause.getStyleClass().add("automate-btn");
-		Text txtPause = new Text(Translator.getTranslation("pause"));
+		Text txtPause = new Text(Translator.getTranslation(PAUSE));
 		txtPause.getStyleClass().add("automate-btn-text");
 		btnPause.setGraphic(txtPause);
 		btnPause.setOnAction(new EventHandler<ActionEvent>() {
@@ -244,7 +252,7 @@ public class AutomateView extends VBox {
 		btnStop = new Button();
 		btnStop.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
 		btnStop.getStyleClass().add("automate-btn");
-		Text txtStop = new Text(Translator.getTranslation("stop"));
+		Text txtStop = new Text(Translator.getTranslation(STOP));
 		txtStop.getStyleClass().add("automate-btn-text");
 		btnStop.setGraphic(txtStop);
 		HBox.setMargin(btnStop, new Insets(0, 15, 0, 0));
@@ -283,7 +291,7 @@ public class AutomateView extends VBox {
 		iconPane.setPrefSize(33.375, ICON_HEIGHT);
 		iconPane.setMaxSize(33.375, ICON_HEIGHT);
 		iconPane.getChildren().add(cycleTimeShape);
-		lblCycleTimeMessage = new Label(Translator.getTranslation("cycletime"));
+		lblCycleTimeMessage = new Label(Translator.getTranslation(CYCLE_TIME));
 		lblCycleTimeMessage.getStyleClass().add("automate-info-lbl");
 		lblCycleTime = new Label();
 		lblCycleTime.getStyleClass().add("automate-time-lbl");
@@ -303,7 +311,7 @@ public class AutomateView extends VBox {
 		iconPane2.setPrefSize(36.281, ICON_HEIGHT);
 		iconPane2.setMaxSize(36.281, ICON_HEIGHT);
 		iconPane2.getChildren().add(cycleTimePassedShape);
-		lblCycleTimePassedMessage = new Label(Translator.getTranslation("cycletimepassed"));
+		lblCycleTimePassedMessage = new Label(Translator.getTranslation(CYCLE_TIME_PASSED));
 		lblCycleTimePassedMessage.getStyleClass().add("automate-info-lbl");
 		lblCycleTimePassed = new Label();
 		lblCycleTimePassed.getStyleClass().addAll("automate-time-lbl", "blue-time");
@@ -323,7 +331,7 @@ public class AutomateView extends VBox {
 		iconPane3.setPrefSize(38.874, ICON_HEIGHT);
 		iconPane3.setMaxSize(38.874, ICON_HEIGHT);
 		iconPane3.getChildren().add(timeTillPauseShape);
-		lblTimeTillPauseMessage = new Label(Translator.getTranslation("timetillpause"));
+		lblTimeTillPauseMessage = new Label(Translator.getTranslation(TIME_TILL_INTERVENTION));
 		lblTimeTillPauseMessage.getStyleClass().add("automate-info-lbl");
 		lblTimeTillPause = new Label();
 		lblTimeTillPause.getStyleClass().add("automate-time-lbl");
@@ -343,7 +351,7 @@ public class AutomateView extends VBox {
 		iconPane4.setPrefSize(47.345, ICON_HEIGHT);
 		iconPane4.setMaxSize(47.345, ICON_HEIGHT);
 		iconPane4.getChildren().add(timeTillFinishedShape);
-		lblTimeTillFinishedMessage = new Label(Translator.getTranslation("timetillfinished"));
+		lblTimeTillFinishedMessage = new Label(Translator.getTranslation(TIME_TILL_FINISHED));
 		lblTimeTillFinishedMessage.getStyleClass().add("automate-info-lbl");
 		lblTimeTillFinished = new Label();
 		lblTimeTillFinished.getStyleClass().addAll("automate-time-lbl", "automate-time-hl-lbl");
@@ -354,18 +362,10 @@ public class AutomateView extends VBox {
 		vboxTimeTillFinished.setPrefHeight(HEIGHT_BOTTOM - HEIGHT_BOTTOM_TOP);
 		bottomBottom.getChildren().add(vboxTimeTillFinished);
 		
-		setStatus(Translator.getTranslation("status-first"));
+		setStatus(Translator.getTranslation(DEFAULT_STATUTS_MSG));
 		piePiecePath.getStyleClass().add("automate-progress-green");
 		setProcessStopped();
 		
-	}
-	
-	public void setCycleTime(final String timeString) {
-		if (timeString == null) {
-			lblCycleTime.setText(Translator.getTranslation("unknown"));
-		} else {
-			lblCycleTime.setText(timeString);
-		}
 	}
 	
 	public void setStatus(final String message) {
@@ -444,7 +444,7 @@ public class AutomateView extends VBox {
 	
 	public void setCycleTimePassed(final String timeString) {
 		if (timeString == null) {
-			lblCycleTimePassed.setText(Translator.getTranslation("unknown"));
+			lblCycleTimePassed.setText(Translator.getTranslation(UNKNOWN));
 		} else {
 			lblCycleTimePassed.setText(timeString);
 		}
@@ -452,7 +452,7 @@ public class AutomateView extends VBox {
 	
 	public void setTimeTillPause(final String timeString) {
 		if (timeString == null) {
-			lblTimeTillPause.setText(Translator.getTranslation("unknown"));
+			lblTimeTillPause.setText(Translator.getTranslation(UNKNOWN));
 		} else {
 			lblTimeTillPause.setText(timeString);
 		}
@@ -460,9 +460,17 @@ public class AutomateView extends VBox {
 	
 	public void setTimeTillFinished(final String timeString) {
 		if (timeString == null) {
-			lblTimeTillFinished.setText(Translator.getTranslation("unknown"));
+			lblTimeTillFinished.setText(Translator.getTranslation(UNKNOWN));
 		} else {
 			lblTimeTillFinished.setText(timeString);
+		}
+	}
+
+	public void setCycleTime(final String timeString) {
+		if (timeString == null) {
+			lblCycleTime.setText(Translator.getTranslation(UNKNOWN));
+		} else {
+			lblCycleTime.setText(timeString);
 		}
 	}
 	

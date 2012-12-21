@@ -39,6 +39,7 @@ public class StatusView extends VBox {
 	private static final String CSS_CLASS_MSG_ERROR = "message-error";
 	
 	private static final String DROPS_ANOTHER = "StatusView.dropsAnother";
+	private static final String RESTART = "StatusView.restart";
 			
 	public StatusView() {
 		build();
@@ -109,7 +110,7 @@ public class StatusView extends VBox {
 		btnRestart = new Button();
 		btnRestart.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
 		btnRestart.getStyleClass().add(TeachView.CSS_CLASS_TEACH_BUTTON);
-		Text txtPause = new Text(Translator.getTranslation("restart"));
+		Text txtPause = new Text(Translator.getTranslation(RESTART));
 		txtPause.getStyleClass().add(TeachView.CSS_CLASS_TEACH_BUTTON_TEXT);
 		btnRestart.setGraphic(txtPause);
 		btnRestart.setOnAction(new EventHandler<ActionEvent>() {

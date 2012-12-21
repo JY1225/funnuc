@@ -29,7 +29,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	
 	private static final String RESET = "RobotPopUpView.reset";
 	private static final String TO_HOME = "RobotPopUpView.toHome";
-	private static final String TO_CHANGE = "to-change";
+	private static final String TO_CHANGE = "RobotPopUpView.toChange";
 	
 	private static final String CSS_CLASS_POPUP_BUTTON = "pop-up-btn";
 	private static final String CSS_CLASS_POPUP_BUTTON_BOTTOM = "pop-up-btn-bottom";

@@ -189,9 +189,6 @@ public class ProcessFlow {
 	
 	private void setUpProcess(final List<AbstractProcessStep> processSteps) {
 		this.processSteps = processSteps;
-		if (processSteps.size() < 2) {
-			throw new IllegalArgumentException("A process should have a minimum of 2 steps (Pick & Put).");
-		} 
 	}
 	
 	public void addStep(final int index, final AbstractProcessStep newStep) {
