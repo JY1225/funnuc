@@ -72,7 +72,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		configureProcess();
 	}
 	
-	private void configureProcess() {
+	public void configureProcess() {
 		view.setBottomLeft(processMenuPresenter.getView());
 		if (keyboardActive) {
 			view.addNodeToTop(keyboardPresenter.getView()); 

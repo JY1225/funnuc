@@ -193,7 +193,6 @@ public class ProcessFlowView extends GridPane  {
 	}
 	
 	public void focusAll() {
-		logger.info("focus all");
 		for (DeviceButton device : deviceButtons.values()) {
 			device.setFocussed(true);
 		}
@@ -344,13 +343,10 @@ public class ProcessFlowView extends GridPane  {
 			deviceButton.setDisable(true);
 		}
 		for (Entry<Integer, TransportButton> entry : transportButtons.entrySet()) {
-			logger.info("hello: " + addPreProcessPossible + " - " + addPostProcessPossible);
 			if ((entry.getKey() < processFlowAdapter.getCNCMachineIndex() && addPreProcessPossible)) {
-				logger.info("1: " + entry.getKey() + " - " + processFlowAdapter.getCNCMachineIndex());
 				entry.getValue().setFocussed(true);
 				entry.getValue().setDisable(false);
 			} else if (addPostProcessPossible) {
-				logger.info("2: " + entry.getKey() + " - " + processFlowAdapter.getCNCMachineIndex());
 				entry.getValue().setFocussed(true);
 				entry.getValue().setDisable(false);
 			} else {

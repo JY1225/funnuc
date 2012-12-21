@@ -21,27 +21,30 @@ public class StatusView extends VBox {
 	}
 	
 	private TeachPresenter presenter;
-	
 	private Region loading;
-	
 	private Label lblZRest;
 	private Label lblZRestValue;
-	
 	private Label lblMessage;
 	private Label lblAlarmMessage;
-	
 	private Button btnRestart;
 	
 	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
 	private static final double BTN_HEIGHT = 40;
-		
-	private Translator translator = Translator.getInstance();
 	
+	private static final String CSS_CLASS_LOADING = "loading";
+	private static final String CSS_CLASS_LOADING_INACTIVE = "loading-inactive";
+	private static final String CSS_CLASS_Z_REST = "lbl-z-rest";
+	private static final String CSS_CLASS_Z_REST_VAL = "lbl-z-rest-val";
+	private static final String CSS_CLASS_MSG_NORMAL = "message-normal";
+	private static final String CSS_CLASS_MSG_ERROR = "message-error";
+	
+	private static final String DROPS_ANOTHER = "StatusView.dropsAnother";
+			
 	public StatusView() {
 		build();
 	}
 	
-	public void setPresenter(TeachPresenter presenter) {
+	public void setPresenter(final TeachPresenter presenter) {
 		this.presenter = presenter;
 	}
 	
@@ -58,15 +61,15 @@ public class StatusView extends VBox {
 		loading.setMaxSize(40, 40);
 
 		lblZRest = new Label();
-		lblZRest.getStyleClass().add("lbl-z-rest");
+		lblZRest.getStyleClass().add(CSS_CLASS_Z_REST);
 		lblZRest.setPrefSize(100, 40);
 		lblZRest.setMaxSize(100, 40);
 		lblZRest.setMinSize(100, 40);
-		lblZRest.setText("zakt nog");
+		lblZRest.setText(DROPS_ANOTHER);
 		
 		lblZRestValue = new Label();
-		lblZRestValue.getStyleClass().add("lbl-z-rest");
-		lblZRestValue.getStyleClass().add("lbl-z-rest-val");
+		lblZRestValue.getStyleClass().add(CSS_CLASS_Z_REST);
+		lblZRestValue.getStyleClass().add(CSS_CLASS_Z_REST_VAL);
 		lblZRestValue.setPrefSize(100, 40);
 		lblZRestValue.setMaxSize(100, 40);
 		lblZRestValue.setMinSize(100, 40);
@@ -88,11 +91,11 @@ public class StatusView extends VBox {
 		setProcessStopped();
 		
 		lblMessage = new Label();
-		lblMessage.getStyleClass().addAll("teach-msg", "message-normal");
+		lblMessage.getStyleClass().addAll(TeachView.CSS_CLASS_TEACH_MESSAGE, CSS_CLASS_MSG_NORMAL);
 		lblMessage.setPrefSize(500, 80);
 		lblMessage.setWrapText(true);
 		lblAlarmMessage = new Label();
-		lblAlarmMessage.getStyleClass().addAll("teach-msg", "message-error");
+		lblAlarmMessage.getStyleClass().addAll(TeachView.CSS_CLASS_TEACH_MESSAGE, CSS_CLASS_MSG_ERROR);
 		lblAlarmMessage.setPrefSize(500, 80);
 		lblAlarmMessage.setWrapText(true);
 		
@@ -105,13 +108,13 @@ public class StatusView extends VBox {
 		
 		btnRestart = new Button();
 		btnRestart.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
-		btnRestart.getStyleClass().add("teach-btn");
-		Text txtPause = new Text(translator.getTranslation("restart"));
-		txtPause.getStyleClass().add("teach-btn-text");
+		btnRestart.getStyleClass().add(TeachView.CSS_CLASS_TEACH_BUTTON);
+		Text txtPause = new Text(Translator.getTranslation("restart"));
+		txtPause.getStyleClass().add(TeachView.CSS_CLASS_TEACH_BUTTON_TEXT);
 		btnRestart.setGraphic(txtPause);
 		btnRestart.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
-			public void handle(ActionEvent arg0) {
+			public void handle(final ActionEvent arg0) {
 				presenter.stopTeaching();
 			}
 		});
@@ -122,11 +125,11 @@ public class StatusView extends VBox {
 		this.getChildren().add(btnRestart);
 	}
 	
-	public void setMessage(String message) {
+	public void setMessage(final String message) {
 		lblMessage.setText(message);
 	}
 	
-	public void setAlarmMessage(String message) {
+	public void setAlarmMessage(final String message) {
 		lblAlarmMessage.setText(message);
 		lblAlarmMessage.setVisible(true);
 	}
@@ -136,24 +139,24 @@ public class StatusView extends VBox {
 	}
 	
 	public void setProcessPaused() {
-		loading.getStyleClass().remove("loading");
-		loading.getStyleClass().remove("loading-inactive");
-		loading.getStyleClass().add("loading");
+		loading.getStyleClass().remove(CSS_CLASS_LOADING);
+		loading.getStyleClass().remove(CSS_CLASS_LOADING_INACTIVE);
+		loading.getStyleClass().add(CSS_CLASS_LOADING);
 	}
 	
 	public void setProcessRunning() {
-		loading.getStyleClass().remove("loading");
-		loading.getStyleClass().remove("loading-inactive");
-		loading.getStyleClass().add("loading");
+		loading.getStyleClass().remove(CSS_CLASS_LOADING);
+		loading.getStyleClass().remove(CSS_CLASS_LOADING_INACTIVE);
+		loading.getStyleClass().add(CSS_CLASS_LOADING);
 	}
 	
 	public void setProcessStopped() {
-		loading.getStyleClass().remove("loading");
-		loading.getStyleClass().remove("loading-inactive");
-		loading.getStyleClass().add("loading-inactive");
+		loading.getStyleClass().remove(CSS_CLASS_LOADING);
+		loading.getStyleClass().remove(CSS_CLASS_LOADING_INACTIVE);
+		loading.getStyleClass().add(CSS_CLASS_LOADING_INACTIVE);
 	}
 	
-	public void setZRest(double zrest) {
+	public void setZRest(final double zrest) {
 		if (zrest > 0) {
 			lblZRestValue.setText(zrest + " mm");
 			lblZRestValue.setVisible(true);

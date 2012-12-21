@@ -23,23 +23,22 @@ import eu.robojob.irscw.external.robot.RobotEvent;
 import eu.robojob.irscw.external.robot.RobotListener;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
-import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.process.execution.OptimizedTeachThread;
 import eu.robojob.irscw.process.execution.TeachThread;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
+import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.util.Translator;
 
+//TODO review!
 public class TeachPresenter implements CNCMachineListener, RobotListener, ProcessFlowListener, MainContentPresenter {
 
 	private TeachView view;
@@ -53,23 +52,24 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 	private TeachThread teachThread;
 	
 	private ProcessFlow processFlow;
-	
-	private Translator translator;
-	
+		
 	private static Logger logger = LogManager.getLogger(TeachPresenter.class.getName());
 	
 	private Map<AbstractCNCMachine, Boolean> machines;
 	private Map<AbstractRobot, Boolean> robots;
 	
+	private static final String STARTING_PROCESS = "TeachPresenter.startingProcess";
+	private static final String ALARM_OCCURED = "TeachPresenter.alarmOccured";
+	private static final String TEACHING_FINISHED = "TeachPresenter.teachingFinished";
+	
 	private boolean alarms;
 	
-	public TeachPresenter(TeachView view, FixedProcessFlowPresenter processFlowPresenter, ProcessFlow processFlow, DisconnectedDevicesView teachDisconnectedDevicesView,
-			GeneralInfoView teachGeneralInfoView, StatusView teachStatusView, OffsetPresenter offsetPresenter) {
+	public TeachPresenter(final TeachView view, final FixedProcessFlowPresenter processFlowPresenter, final ProcessFlow processFlow, final DisconnectedDevicesView teachDisconnectedDevicesView,
+			final GeneralInfoView teachGeneralInfoView, final StatusView teachStatusView, final OffsetPresenter offsetPresenter) {
 		this.view = view;
 		this.processFlowPresenter = processFlowPresenter;
 		view.setTop(processFlowPresenter.getView());
 		this.processFlow = processFlow;
-		//this.teachThread = new TeachThread(processFlow);
 		this.teachThread = new OptimizedTeachThread(processFlow, new Coordinates());
 		this.teachDisconnectedDevicesView = teachDisconnectedDevicesView;
 		this.teachGeneralInfoView = teachGeneralInfoView;
@@ -80,38 +80,25 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		offsetPresenter.setParent(this);
 		machines = new HashMap<AbstractCNCMachine, Boolean>();
 		robots = new HashMap<AbstractRobot, Boolean>();
-		this.translator = Translator.getInstance();
 		this.alarms = false;
 	}
-	
-	/**
-	 * This method is called when the teach-screen is opened (active) or closed (not active)
-	 * @param active
-	 */
+
 	@Override
-	public void setActive(boolean active) {
+	public void setActive(final boolean active) {
 		if (active) {
 			enable();
 		} else {
-			// disable this view, we don't want to listen anymore to the robots, devices, process 
-			// and the teach thread can be stopped (if still running)
 			if (teachThread.isRunning()) {
-				ThreadManager.getInstance().stopRunning(teachThread);
+				ThreadManager.stopRunning(teachThread);
 			}
 			stopListening();
 		}
 	}
 	
-	/**
-	 * Helper method, executed when the teach-screen is opened
-	 */
 	private void enable() {
-		// always check if all devices are connected before continuing
 		view.setBottom(teachDisconnectedDevicesView);
-		// listen to the process and refresh the process flow view
 		processFlow.addListener(this);
 		processFlowPresenter.refresh();
-		// check status of all devices and start listening to them
 		for (AbstractDevice device : processFlow.getDevices()) {
 			if (device instanceof AbstractCNCMachine) {
 				AbstractCNCMachine machine = (AbstractCNCMachine) device;
@@ -159,19 +146,11 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		}
 	}
 	
-	/**
-	 * Enable the DisconnectedDevicesView, showing all devices that are not yet connected
-	 * @param deviceNames
-	 */
-	public void showDisconnectedDevices(Set<String> deviceNames) {
-		logger.info("about to show " + deviceNames.size() + " disconnected devices");
+	public void showDisconnectedDevices(final Set<String> deviceNames) {
 		teachDisconnectedDevicesView.setDisconnectedDevices(deviceNames);
 		view.setBottom(teachDisconnectedDevicesView);
 	}
 	
-	/**
-	 * Show the general info message when everything is set so the teaching can begin
-	 */
 	public void showInfoMessage() {
 		view.setBottom(teachGeneralInfoView);
 	}
@@ -192,23 +171,18 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		view.setBottom(offsetPresenter.getView());
 	}
 
-	/**
-	 * When start-button is clicked on GeneralInfoView
-	 */
-	public void startFlow(Coordinates extraFinishedOffset) {
+	public void startFlow(final Coordinates extraFinishedOffset) {
 		view.setBottom(teachStatusView);
 		if (!alarms) {
 			teachStatusView.hideAlarmMessage();
 		}
-		logger.info("starten proces!");
-		setStatus("Starten proces...");
+		setStatus(Translator.getTranslation(STARTING_PROCESS));
 		processFlow.initialize();
 		if (this.teachThread.isRunning()) {
 			throw new IllegalStateException("Shouldn't be possible!");
 		}
-		//this.teachThread = new TeachThread(processFlow);
 		this.teachThread = new OptimizedTeachThread(processFlow, extraFinishedOffset);
-		ThreadManager.getInstance().submit(teachThread);
+		ThreadManager.submit(teachThread);
 	}
 	
 	public void startFlowTeachAll() {
@@ -216,52 +190,50 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		if (!alarms) {
 			teachStatusView.hideAlarmMessage();
 		}
-		logger.info("starten proces!");
-		setStatus("Starten proces...");
+		setStatus(Translator.getTranslation(STARTING_PROCESS));
 		processFlow.initialize();
 		if (this.teachThread.isRunning()) {
 			throw new IllegalStateException("Shouldn't be possible!");
 		}
 		this.teachThread = new TeachThread(processFlow);
-		ThreadManager.getInstance().submit(teachThread);
+		ThreadManager.submit(teachThread);
 	}
 	
 	public void stopTeaching() {
 		if (teachThread.isRunning()) {
-			ThreadManager.getInstance().stopRunning(teachThread);
+			ThreadManager.stopRunning(teachThread);
 		}
 		stopListening();
 		enable();
 	}
 	
-	public void setStatus(String status) {
+	public void setStatus(final String status) {
 		teachStatusView.setMessage(status);
 	}
 	
-	public void setAlarmStatus(String alarmStatus) {
+	public void setAlarmStatus(final String alarmStatus) {
 		teachStatusView.setAlarmMessage(alarmStatus);
 	}
 	
-	public void exceptionOccured(Exception e){
+	public void exceptionOccured(final Exception e) {
 		logger.error(e);
 		e.printStackTrace();
 		processFlowPresenter.refresh();
-		ThreadManager.getInstance().stopRunning(teachThread);
-		setAlarmStatus("Fout opgetreden: " + e.getMessage() + "\n. Het proces dient opnieuw doorlopen te worden.");
+		ThreadManager.stopRunning(teachThread);
+		setAlarmStatus(Translator.getTranslation(ALARM_OCCURED) + e.getMessage());
 	}
 	
 	@Override
 	public void modeChanged(final ModeChangedEvent e) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
-				logger.info("mode changed: " + e.getMode());
 				switch (e.getMode()) {
 					case TEACH :
 						teachStatusView.setProcessRunning();
 						break;
 					case READY :
 						teachStatusView.setProcessStopped();
-						setStatus(translator.getTranslation("teach-finished"));
+						setStatus(Translator.getTranslation(TEACHING_FINISHED));
 						break;
 					default:
 						teachStatusView.setProcessStopped();
@@ -308,7 +280,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 	}
 
 	@Override
-	public void robotDisconnected(RobotEvent event) {
+	public void robotDisconnected(final RobotEvent event) {
 		if (processFlow.getMode() != Mode.TEACH) {
 			Platform.runLater(new Runnable() {
 				@Override public void run() {
@@ -320,79 +292,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 	
 	@Override
 	public void statusChanged(final StatusChangedEvent e) {
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
-			switch (e.getStatusId()) {
-				case StatusChangedEvent.NONE_ACTIVE:
-					setStatus(translator.getTranslation("none-active"));
-					break;
-				case StatusChangedEvent.PICK_PREPARE_DEVICE:
-					setStatus(translator.getTranslation("pick-prepare-device"));
-					break;
-				case StatusChangedEvent.PICK_EXECUTE_TEACHED:
-					setStatus(translator.getTranslation("pick-execute-teached"));
-					break;
-				case StatusChangedEvent.PICK_EXECUTE_NORMAL:
-					setStatus(translator.getTranslation("pick-execute-normal"));
-					break;
-				case StatusChangedEvent.PICK_FINISHED:
-					//setStatus(translator.getTranslation("pick-finished"));
-					break;
-				case StatusChangedEvent.PUT_PREPARE_DEVICE:
-					setStatus(translator.getTranslation("put-prepare-device"));
-					break;
-				case StatusChangedEvent.PUT_EXECUTE_TEACHED:
-					setStatus(translator.getTranslation("put-execute-teached"));
-					break;
-				case StatusChangedEvent.PUT_EXECUTE_NORMAL:
-					setStatus(translator.getTranslation("put-execute-normal"));
-					break;
-				case StatusChangedEvent.PUT_FINISHED:
-					if (processFlow.getProcessSteps().get(processFlow.getProcessSteps().size() - 1).equals(e.getActiveStep())) {
-						setStatus(translator.getTranslation("teach-finished"));
-					} else {
-						setStatus(translator.getTranslation("put-finished"));
-					}
-					break;
-				case StatusChangedEvent.PROCESSING_PREPARE_DEVICE:
-					setStatus(translator.getTranslation("processing-prepare-device"));
-					break;
-				case StatusChangedEvent.PROCESSING_IN_PROGRESS:
-					teachStatusView.setProcessPaused();
-					setStatus(translator.getTranslation("processing-in-progress"));
-					break;
-				case StatusChangedEvent.PROCESSING_FINISHED:
-					teachStatusView.setProcessRunning();
-					setStatus(translator.getTranslation("processing-finished"));
-					break;
-				case StatusChangedEvent.TEACHING_NEEDED:
-					setStatus(translator.getTranslation("teaching-needed"));
-					teachStatusView.setProcessPaused();
-					break;
-				case StatusChangedEvent.TEACHING_FINISHED:
-					teachStatusView.setProcessRunning();
-					if (e.getActiveStep() instanceof PickStep) {
-						setStatus(translator.getTranslation("pick-execute-normal"));
-					} else if (e.getActiveStep() instanceof PutStep) {
-						setStatus(translator.getTranslation("put-execute-normal"));
-					} else {
-						throw new IllegalStateException("Teaching finished, but no pick or put step");
-					}
-					break;
-				default:
-					throw new IllegalStateException("Unkown process state changed event");
-			}
-		}});
-	}
-
-	@Override
-	public void exceptionOccured(final ExceptionOccuredEvent e) {
-		if (teachThread.isRunning()) {
-			Platform.runLater(new Runnable() {
-				@Override public void run() {
-					exceptionOccured(e.getE());
-				}});
-		}
+		//FIXME needs to be implemented
 	}
 
 	@Override
@@ -400,7 +300,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				teachStatusView.setZRest(event.getSource().getZRest());
-			}});
+			} });
 	}
 	
 	@Override
@@ -408,8 +308,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				if (event.getAlarms().size() > 0) {
-					logger.info("Alarm!!");
-					setAlarmStatus("De robot geeft aan dat zich een alarm heeft voorgedaan!");
+					setAlarmStatus(ALARM_OCCURED);
 					alarms = true;
 				} else {
 					alarms = false;
@@ -420,11 +319,12 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 						exceptionOccured(e);
 					}
 				}
-			}});
+			} });
 	}
 	
 	@Override
-	public void cNCMachineStatusChanged(CNCMachineEvent event) {}
+	public void cNCMachineStatusChanged(final CNCMachineEvent event) {
+	}
 	
 	@Override
 	public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) {
@@ -432,38 +332,40 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 			@Override public void run() {
 				if (event.getAlarms().size() > 0) {
 					alarms = true;
-					setAlarmStatus("De cnc-machine dat zich een of meerdere alarmen hebben voorgedaan: " + event.getAlarms());
+					setAlarmStatus(ALARM_OCCURED);
 				} else {
 					alarms = false;
 					teachStatusView.hideAlarmMessage();
 				}
-			}});
+			} });
 	}
 	
 	@Override
-	public void dataChanged(ProcessFlowEvent e) {}
+	public void dataChanged(final ProcessFlowEvent e) {
+	}
 	@Override
-	public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
+	public void finishedAmountChanged(final FinishedAmountChangedEvent e) {
+	}
 	
 	@Override
 	public TeachView getView() {
 		return view;
 	}
 	
-	public void loadProcessFlow(ProcessFlow processFlow) {
+	public void loadProcessFlow(final ProcessFlow processFlow) {
 		processFlowPresenter.loadProcessFlow(processFlow);
 	}
 
 	@Override
-	public void robotZRestChanged(RobotEvent event) {
-		// TODO Auto-generated method stub
-		
+	public void robotZRestChanged(final RobotEvent event) {
 	}
 
 	@Override
-	public void robotSpeedChanged(RobotEvent event) {
-		// TODO Auto-generated method stub
-		
+	public void robotSpeedChanged(final RobotEvent event) {
+	}
+
+	@Override
+	public void setParent(final MainPresenter mainPresenter) {
 	}
 	
 }

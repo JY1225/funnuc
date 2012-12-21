@@ -1,8 +1,5 @@
 package eu.robojob.irscw.ui.teach;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.ui.controls.AbstractTextField;
 import eu.robojob.irscw.ui.controls.TextFieldListener;
@@ -14,15 +11,11 @@ public class OffsetPresenter implements TextFieldListener, KeyboardParentPresent
 	private OffsetView view;
 	private NumericKeyboardPresenter keyboardPresenter;
 	private TeachPresenter parent;
-	
 	private double offsetLength;
 	private double offsetWidth;
-	
 	private boolean keyboardActive;
 	
-	private static final Logger logger = LogManager.getLogger(OffsetPresenter.class.getName());
-
-	public OffsetPresenter(NumericKeyboardPresenter keyboardPresenter) {
+	public OffsetPresenter(final NumericKeyboardPresenter keyboardPresenter) {
 		this.view = new OffsetView();
 		view.setPresenter(this);
 		view.setTextFieldListener(this);
@@ -33,13 +26,12 @@ public class OffsetPresenter implements TextFieldListener, KeyboardParentPresent
 		this.keyboardActive = false;
 	}
 
-	public void setParent(TeachPresenter parent) {
+	public void setParent(final TeachPresenter parent) {
 		this.parent = parent;
 	}
 	
 	@Override
 	public synchronized void closeKeyboard() {
-		logger.info("closing keyboard");
 		if (keyboardActive) {
 			keyboardActive = false;
 			view.closeKeyboardView(keyboardPresenter.getView());
@@ -48,8 +40,7 @@ public class OffsetPresenter implements TextFieldListener, KeyboardParentPresent
 	}
 
 	@Override
-	public void textFieldFocussed(AbstractTextField<?> textField) {
-		logger.info("focussed");
+	public void textFieldFocussed(final AbstractTextField<?> textField) {
 		keyboardPresenter.setTarget(textField);
 		if (!keyboardActive) {
 			view.setKeyboardView(keyboardPresenter.getView());
@@ -58,8 +49,7 @@ public class OffsetPresenter implements TextFieldListener, KeyboardParentPresent
 	}
 
 	@Override
-	public void textFieldLostFocus(AbstractTextField<?> textField) {
-		logger.info("lost focus");
+	public void textFieldLostFocus(final AbstractTextField<?> textField) {
 	}
 	
 	public OffsetView getView() {
@@ -68,17 +58,14 @@ public class OffsetPresenter implements TextFieldListener, KeyboardParentPresent
 	
 	public void clickedOk() {
 		Coordinates extraOffsetFinished = new Coordinates((float) offsetWidth, (float) -offsetLength, 0, 0, 0, 0);
-		logger.info("passing: " + extraOffsetFinished);
 		parent.startFlow(extraOffsetFinished);
 	}
 	
-	public void setOffsetLength(float offsetLength) {
-		logger.info("set offset length: " + offsetLength);
+	public void setOffsetLength(final float offsetLength) {
 		this.offsetLength = offsetLength;
 	}
 	
-	public void setOffsetWidth(float offsetWidth) {
-		logger.info("set offset width: " + offsetWidth);
+	public void setOffsetWidth(final float offsetWidth) {
 		this.offsetWidth = offsetWidth;
 	}
 }

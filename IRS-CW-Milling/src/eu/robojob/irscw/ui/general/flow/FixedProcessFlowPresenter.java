@@ -41,90 +41,79 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	public void loadProcessFlow(ProcessFlow processFlow) {
 		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		processFlow.addListener(this);
-		view.setProcessFlow(processFlow);
-		view.showQuestionMarks(showQuestionMarks);
-		view.disableClickable();
+		getView().setProcessFlow(processFlow);
+		getView().showQuestionMarks(showQuestionMarks);
+		getView().disableClickable();
 	}
 	
 	public void setNoneActive() {
-		view.setAllProgressNone();
+		getView().setAllProgressNone();
 	}
 	
 	@Override
 	public void refresh() {
 		super.refresh();
-		view.showQuestionMarks(showQuestionMarks);
-		view.disableClickable();
-		AbstractProcessStep step = processFlowAdapter.getProcessFlow().getCurrentStep();
-		if (step != null) {
-			if (step instanceof PickStep) {
-				setPickStepActive(processFlowAdapter.getTransportIndex((PickStep) step));
-			} else if (step instanceof PutStep) {
-				setPutStepActive(processFlowAdapter.getTransportIndex((PutStep) step));
-			} else if (step instanceof ProcessingStep) {
-					setProcessingStepActive(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
-			}
-		} else {
-			setNoneActive();
-		}
+		getView().showQuestionMarks(showQuestionMarks);
+		getView().disableClickable();
+		setNoneActive();
 	}
 	
 	public void setPickStepActive(int transportIndex) {
-		view.setAllProgressNone();
+		getView().setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
-			view.setTransportProgressGreen(i);
-			view.setDeviceProgressGreen(i);
+			getView().setTransportProgressGreen(i);
+			getView().setDeviceProgressGreen(i);
 		}
-		view.setDeviceProgressGreen(transportIndex);
-		view.setTransportProgressFirstYellow(transportIndex);
+		getView().setDeviceProgressGreen(transportIndex);
+		getView().setTransportProgressFirstYellow(transportIndex);
 	}
 	
 	public void setPickStepFinished(int transportIndex) {
-		view.setAllProgressNone();
+		getView().setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
-			view.setTransportProgressGreen(i);
-			view.setDeviceProgressGreen(i);
+			getView().setTransportProgressGreen(i);
+			getView().setDeviceProgressGreen(i);
 		}
-		view.setDeviceProgressGreen(transportIndex);
-		view.setTransportProgressFirstGreen(transportIndex);
+		getView().setDeviceProgressGreen(transportIndex);
+		getView().setTransportProgressFirstGreen(transportIndex);
 	}
 	
 	public void setPutStepActive(int transportIndex) {
-		view.setAllProgressNone();
+		getView().setAllProgressNone();
 		for (int i = 0; i < transportIndex; i++) {
-			view.setTransportProgressGreen(i);
-			view.setDeviceProgressGreen(i);
+			getView().setTransportProgressGreen(i);
+			getView().setDeviceProgressGreen(i);
 		}
-		view.setDeviceProgressGreen(transportIndex);
-		view.setTransportProgressSecondYellow(transportIndex);
+		getView().setDeviceProgressGreen(transportIndex);
+		getView().setTransportProgressSecondYellow(transportIndex);
 	}
 	
 	public void setPutStepFinished(int transportIndex) {
-		view.setAllProgressNone();
+		getView().setAllProgressNone();
 		for (int i = 0; i < transportIndex + 1; i++) {
-			view.setTransportProgressGreen(i);
-			view.setDeviceProgressGreen(i);
+			getView().setTransportProgressGreen(i);
+			getView().setDeviceProgressGreen(i);
 		}
 	}
 	
 	public void setProcessingStepActive(int deviceIndex) {
-		view.setAllProgressNone();
-		view.startDeviceAnimation(deviceIndex);
+		getView().setAllProgressNone();
+		getView().startDeviceAnimation(deviceIndex);
 		for (int i = 0; i < deviceIndex; i++) {
-			view.setDeviceProgressGreen(i);
-			view.setTransportProgressGreen(i);
+			getView().setDeviceProgressGreen(i);
+			getView().setTransportProgressGreen(i);
 		}
-		view.setDeviceProgressYellow(deviceIndex);
+		getView().setDeviceProgressYellow(deviceIndex);
 	}
 	
 	public void setProcessingStepFinished(int deviceIndex) {
-		view.setAllProgressNone();
-		view.stopDeviceAnimation(deviceIndex);
+		getView().setAllProgressNone();
+		getView().stopDeviceAnimation(deviceIndex);
 		for (int i = 0; i < deviceIndex; i++) {
-			view.setDeviceProgressGreen(i);
-			view.setTransportProgressGreen(i);
+			getView().setDeviceProgressGreen(i);
+			getView().setTransportProgressGreen(i);
 		}
-		view.setDeviceProgressGreen(deviceIndex);
+		getView().setDeviceProgressGreen(deviceIndex);
 	}
 
 	@Override
@@ -133,38 +122,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	
 	private void showActiveStepChange(StatusChangedEvent e) {
 		AbstractProcessStep step = e.getActiveStep();
-		if (step == null) {
-			if (processFlowAdapter.getProcessFlow().getMode() != ProcessFlow.Mode.PAUSED) {
-				setNoneActive();
-			}
-		} else {
-			if (step instanceof PickStep) {
-				if (e.getStatusId() != StatusChangedEvent.PICK_FINISHED) {
-					setPickStepActive(processFlowAdapter.getTransportIndex((PickStep) step));
-				} else {
-					//setPickStepFinished(processFlowAdapter.getTransportIndex((PickStep) step));
-				}
-			} else if (step instanceof PutStep) {
-				if (e.getStatusId() != StatusChangedEvent.PUT_FINISHED) {
-					setPutStepActive(processFlowAdapter.getTransportIndex((PutStep) step));
-				} else {
-					int transportIndex = processFlowAdapter.getTransportIndex((PutStep) step);
-					if (!processFlowAdapter.getDeviceInformation(transportIndex + 1).hasProcessingStep()) {
-						setProcessingStepFinished(transportIndex+1);
-					} else {
-						setPutStepFinished(transportIndex);
-					}
-				}
-			} else if (step instanceof ProcessingStep) {
-				if (e.getStatusId() != StatusChangedEvent.PROCESSING_FINISHED) {
-					setProcessingStepActive(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
-				} else {
-					setProcessingStepFinished(processFlowAdapter.getDeviceIndex((ProcessingStep) step));
-				}
-			} else if (step instanceof InterventionStep) {
-				// TODO
-			}
-		}
+		//FIXME implement
 	}
 
 	@Override
@@ -174,12 +132,6 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 				FixedProcessFlowPresenter.this.showActiveStepChange(e);
 			}
 		}); 
-		
-	}
-
-	@Override
-	public void exceptionOccured(ExceptionOccuredEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 

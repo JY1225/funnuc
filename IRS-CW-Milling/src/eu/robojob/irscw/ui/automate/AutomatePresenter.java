@@ -29,7 +29,9 @@ import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.process.execution.AutomateThread;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
+import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
+import eu.robojob.irscw.util.Translator;
 
 public class AutomatePresenter implements MainContentPresenter, CNCMachineListener, RobotListener, ProcessFlowListener {
 
@@ -49,7 +51,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	
 	private static Logger logger = LogManager.getLogger(AutomatePresenter.class.getName());
 	
-	public AutomatePresenter(AutomateView view, FixedProcessFlowPresenter processFlowPresenter, ProcessFlow processFlow, ProcessFlowTimer processFlowTimer) {
+	public AutomatePresenter(final AutomateView view, final FixedProcessFlowPresenter processFlowPresenter, final ProcessFlow processFlow, final ProcessFlowTimer processFlowTimer) {
 		this.view = view;
 		view.setPresenter(this);
 		this.processFlowPresenter = processFlowPresenter;
@@ -68,19 +70,19 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		return view;
 	}
 	
-	public void loadProcessFlow(ProcessFlow processFlow) {
+	public void loadProcessFlow(final ProcessFlow processFlow) {
 		processFlowPresenter.loadProcessFlow(processFlow);
 		view.setTotalAmount(processFlow.getTotalAmount());
 		view.setFinishedAmount(processFlow.getFinishedAmount());
 	}
 	
 	@Override
-	public void setActive(boolean active) {
+	public void setActive(final boolean active) {
 		if (active) {
 			enable();
 		} else {
-			ThreadManager.getInstance().stopRunning(automateThread);
-			ThreadManager.getInstance().stopRunning(automateTimingThread);
+			ThreadManager.stopRunning(automateThread);
+			ThreadManager.stopRunning(automateTimingThread);
 			stopListening();
 			view.setTotalAmount(processFlow.getTotalAmount());
 			view.setFinishedAmount(processFlow.getFinishedAmount());
@@ -144,19 +146,19 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		view.setTotalAmount(processFlow.getTotalAmount());
 		view.setFinishedAmount(processFlow.getFinishedAmount());
 		automateTimingThread = new AutomateTimingThread(this, processFlowTimer);
-		ThreadManager.getInstance().submit(automateTimingThread);
+		ThreadManager.submit(automateTimingThread);
 	}
 	
 	public void clickedStart() {
 		if (automateThread != null) {
-			ThreadManager.getInstance().stopRunning(automateThread);
+			ThreadManager.stopRunning(automateThread);
 		}
 		logger.info("clicked start thread");
 		if (!alarms) {
 			view.hideAlarmMessage();
 		}
 		automateThread = new AutomateThread(processFlow);
-		ThreadManager.getInstance().submit(automateThread);
+		ThreadManager.submit(automateThread);
 	}
 	
 	public void clickedReset() {
@@ -183,12 +185,12 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		automateThread.stopRunning();
 	}
 	
-	public void setAlarmStatus(String alarmStatus) {
+	public void setAlarmStatus(final String alarmStatus) {
 		view.setAlarmStatus(alarmStatus);
 	}
 	
 	public void clickedStop() {
-		ThreadManager.getInstance().stopRunning(automateThread);
+		ThreadManager.stopRunning(automateThread);
 		stopListening();
 		enable();		
 	}
@@ -207,7 +209,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 					case FINISHED :
 						view.setProcessStopped();
 						view.setNotRunningButtons();
-						view.setStatus(translator.getTranslation("process-finished"));
+						view.setStatus(Translator.getTranslation("process-finished"));
 						indicateFinished();
 						break;
 					case PAUSED :
@@ -233,7 +235,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 				} catch (AbstractCommunicationException e) {
 					e.printStackTrace();
 					exceptionOccured(e);
-				} catch(InterruptedException e) {
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
@@ -248,7 +250,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 				} catch (AbstractCommunicationException e) {
 					e.printStackTrace();
 					exceptionOccured(e);
-				} catch(InterruptedException e) {
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
@@ -263,48 +265,29 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 				} catch (AbstractCommunicationException e) {
 					e.printStackTrace();
 					exceptionOccured(e);
-				} catch(InterruptedException e) {
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 	}
 	
-	public void exceptionOccured(Exception e){
+	public void exceptionOccured(final Exception e) {
 		logger.error(e);
 		e.printStackTrace();
 		processFlowPresenter.refresh();
-		ThreadManager.getInstance().stopRunning(automateThread);
+		ThreadManager.stopRunning(automateThread);
 		setAlarmStatus("Fout opgetreden: " + e.getMessage() + ". Het proces dient opnieuw doorlopen te worden.");
 	}
 
-	//TODO REVIEW
+	//FIXME REVIEW
 	@Override
 	public void statusChanged(final StatusChangedEvent e) {
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
-			switch (e.getStatusId()) {
-				case StatusChangedEvent.NONE_ACTIVE:
-					view.setStatus(translator.getTranslation("none-active"));
-					break;
-				case StatusChangedEvent.PREPARE_DEVICE:
-					view.setStatus(translator.getTranslation("intervention-prepare-device"));
-					break;
-				case StatusChangedEvent.INTERVENTION_READY:
-					view.setStatus(translator.getTranslation("intervention-ready"));
-					break;
-				case StatusChangedEvent.TEACHING_NEEDED:
-					throw new IllegalStateException("Teaching not possible when in auto-mode");
-				case StatusChangedEvent.TEACHING_FINISHED:
-					throw new IllegalStateException("Teaching not possible when in auto-mode");
-				default:
-					throw new IllegalStateException("Unkown process state changed event");
-			}
-		}});
 	}
 
 	@Override
-	public void dataChanged(ProcessFlowEvent e) {}
+	public void dataChanged(final ProcessFlowEvent e) {
+	}
 
 	@Override
 	public void finishedAmountChanged(final FinishedAmountChangedEvent e) {
@@ -312,21 +295,23 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 			@Override public void run() {
 				view.setTotalAmount(e.getTotalAmount());
 				view.setFinishedAmount(e.getFinishedAmount());
-			}});
+			} });
 	}
 
 	@Override
-	public void robotConnected(RobotEvent event) {}
+	public void robotConnected(final RobotEvent event) {
+	}
 
 	@Override
-	public void robotDisconnected(RobotEvent event) {}
+	public void robotDisconnected(final RobotEvent event) {
+	}
 
 	@Override
 	public void robotStatusChanged(final RobotEvent event) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				view.setZRest(event.getSource().getZRest());
-			}});
+			} });
 	}
 
 	@Override
@@ -346,14 +331,16 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 						exceptionOccured(e);
 					}
 				}
-			}});
+			} });
 	}
 
 	@Override
-	public void cNCMachineConnected(CNCMachineEvent event) {}
+	public void cNCMachineConnected(final CNCMachineEvent event) {
+	}
 
 	@Override
-	public void cNCMachineDisconnected(CNCMachineEvent event) {}
+	public void cNCMachineDisconnected(final CNCMachineEvent event) {
+	}
 
 	@Override
 	public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) {
@@ -366,24 +353,26 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 					alarms = false;
 					view.hideAlarmMessage();
 				}
-			}});
+			} });
 	}
 
 	@Override
-	public void robotZRestChanged(RobotEvent event) {
+	public void robotZRestChanged(final RobotEvent event) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
-	public void robotSpeedChanged(RobotEvent event) {
-		// TODO Auto-generated method stub
-		
+	public void robotSpeedChanged(final RobotEvent event) {
+		// TODO Auto-generated method stub	
 	}
 
 	@Override
-	public void cNCMachineStatusChanged(CNCMachineEvent event) {
+	public void cNCMachineStatusChanged(final CNCMachineEvent event) {
 		// TODO Auto-generated method stub
-		
+	}
+
+	@Override
+	public void setParent(final MainPresenter mainPresenter) {
+		// TODO Auto-generated method stub
 	}
 }

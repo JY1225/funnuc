@@ -32,7 +32,7 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 	public void deviceClicked(int index) {
 		if (parent.getMode() == Mode.NORMAL) {
 			logger.debug("Clicked device with index: " + index);
-			view.focusDevice(index);
+			getView().focusDevice(index);
 			focussedDevice = index;
 			focussedTransport = -1;
 			parent.configureDevice(index);
@@ -48,13 +48,13 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 	}
 	
 	public void removeFocus() {
-		view.focusAll();
+		getView().focusAll();
 	}
 	
 	public void transportClicked(int index) {
 		if (parent.getMode() == Mode.NORMAL) {
 			logger.debug("Clicked transport with index: " + index);
-			view.focusTransport(index);
+			getView().focusTransport(index);
 			focussedDevice = -1;
 			focussedTransport = index;
 			parent.configureTransport(index);
@@ -72,7 +72,7 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 	public void backgroundClicked() {
 		if (parent.getMode() == Mode.NORMAL) {
 			logger.debug("Clicked process-flow background");
-			view.focusAll();
+			getView().focusAll();
 			parent.configureProcess();
 			focussedDevice = -1;
 			focussedTransport = -1;
@@ -86,19 +86,19 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 	}
 	
 	public void setAddDeviceMode(boolean addPreProcessPossible, boolean addPostProcessPossible) {
-		view.setAddDeviceMode(addPreProcessPossible, addPostProcessPossible);
+		getView().setAddDeviceMode(addPreProcessPossible, addPostProcessPossible);
 		focussedDevice = -1;
 		focussedTransport = -1;
 	}
 	
 	public void setRemoveDeviceMode() {
-		view.setRemoveDeviceMode();
+		getView().setRemoveDeviceMode();
 		focussedDevice = -1;
 		focussedTransport = -1;
 	}
 	
 	public void setNormalMode() {
-		view.setNormalMode();
+		getView().setNormalMode();
 		focussedDevice = -1;
 		focussedTransport = -1;
 	}
@@ -106,9 +106,9 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 	public void refresh() {
 		super.refresh();
 		if (focussedDevice != -1) {
-			view.focusDevice(focussedDevice);
+			getView().focusDevice(focussedDevice);
 		} else if (focussedTransport != -1) {
-			view.focusTransport(focussedTransport);
+			getView().focusTransport(focussedTransport);
 		}
 	}
 	
