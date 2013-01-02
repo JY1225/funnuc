@@ -170,9 +170,6 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btnReset.setDisable(!connected);
 		btnToChange.setDisable(!connected);
 		btnToHome.setDisable(!connected);
-		if (!connected) {
-			refreshSpeed(0);
-		}
 	}
 	
 	public void setProcessActive(final boolean active) {

@@ -41,7 +41,7 @@ public class RobotMonitoringThread extends Thread implements MonitoringThread {
 						this.previousStatus = status;
 						Set<RobotAlarm> alarms = robot.getAlarms();
 						if ((!previousAlarms.containsAll(alarms)) || (!alarms.containsAll(previousAlarms))) {
-							robot.processRobotEvent(new RobotEvent(robot, RobotEvent.ALARMS_OCCURED));
+							robot.processRobotEvent(new RobotAlarmsOccuredEvent(robot, alarms));
 						}
 						this.previousAlarms = alarms;
 						double zrest = robot.getZRest();

@@ -85,7 +85,7 @@ public class ExternalCommunicationThread extends Thread {
 						}
 					} catch (SocketDisconnectedException e) {
 						// we got disconnected, retry connection
-						logger.info("Gotten disconnected during reading, about to retry connection...");
+						logger.info("Disconnected during reading, about to retry connection...");
 					}
 				}
 			}
