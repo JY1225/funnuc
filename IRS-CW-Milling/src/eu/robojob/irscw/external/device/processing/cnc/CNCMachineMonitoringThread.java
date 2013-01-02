@@ -46,9 +46,9 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 					} catch (AbstractCommunicationException | InterruptedException e) {
 						//TODO do something with this exception
 						if (cncMachine.isConnected()) {
+							logger.error(e);
 							cncMachine.disconnect();
 						}
-						logger.error(e);
 					} catch (Exception e) {
 						logger.error(e);
 					}

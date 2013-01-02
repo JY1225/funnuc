@@ -50,9 +50,9 @@ public class RobotMonitoringThread extends Thread implements MonitoringThread {
 						}
 					} catch (AbstractCommunicationException | InterruptedException e) {
 						if (robot.isConnected()) {
+							logger.error(e);
 							robot.disconnect();
 						}
-						logger.error(e);
 					}
 				}
 				try {

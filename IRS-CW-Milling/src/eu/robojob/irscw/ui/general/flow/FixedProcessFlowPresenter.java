@@ -2,7 +2,6 @@ package eu.robojob.irscw.ui.general.flow;
 
 import javafx.application.Platform;
 import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessingStep;
@@ -15,39 +14,37 @@ import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 
 public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter implements ProcessFlowListener {
-
+	
 	private boolean showQuestionMarks;
 	private ProcessFlowAdapter processFlowAdapter;
-			
-	public FixedProcessFlowPresenter(OldProcessFlowView view, boolean showQuestionMarks) {
+	
+	public FixedProcessFlowPresenter(final ProcessFlowView view) {
 		super(view);
 		view.setPresenter(this);
-		this.showQuestionMarks = showQuestionMarks;
-		this.processFlowAdapter = null;
-	}
-
-	@Override
-	public void deviceClicked(int deviceIndex) {
-	}
-
-	@Override
-	public void transportClicked(int transportIndex) {
-	}
-
-	@Override
-	public void backgroundClicked() {
+		this.showQuestionMarks = false;
 	}
 	
-	public void loadProcessFlow(ProcessFlow processFlow) {
-		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
+	public void setShowQuestionMarks(final boolean showQuestionMarks) {
+		this.showQuestionMarks = showQuestionMarks;
+	}
+
+	@Override public void deviceClicked(final int deviceIndex) {
+	}
+	@Override public void transportClicked(final int transportIndex) {
+	}
+	@Override public void backgroundClicked() {
+	}
+	
+	public void loadProcessFlow(final ProcessFlow processFlow) {
+		processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		processFlow.addListener(this);
-		getView().setProcessFlow(processFlow);
+		getView().loadProcessFlow(processFlow);
 		getView().showQuestionMarks(showQuestionMarks);
 		getView().disableClickable();
 	}
 	
 	public void setNoneActive() {
-		getView().setAllProgressNone();
+		getView().setAllProgressBarPiecesModeNone();
 	}
 	
 	@Override
@@ -58,71 +55,62 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 		setNoneActive();
 	}
 	
-	public void setPickStepActive(int transportIndex) {
-		getView().setAllProgressNone();
-		for (int i = 0; i < transportIndex; i++) {
-			getView().setTransportProgressGreen(i);
-			getView().setDeviceProgressGreen(i);
-		}
-		getView().setDeviceProgressGreen(transportIndex);
-		getView().setTransportProgressFirstYellow(transportIndex);
+	public void setPickStepActive(final int activeWorkPieceIndex, final int transportIndex) {
+		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
+		
 	}
 	
-	public void setPickStepFinished(int transportIndex) {
-		getView().setAllProgressNone();
-		for (int i = 0; i < transportIndex; i++) {
-			getView().setTransportProgressGreen(i);
-			getView().setDeviceProgressGreen(i);
-		}
-		getView().setDeviceProgressGreen(transportIndex);
-		getView().setTransportProgressFirstGreen(transportIndex);
+	public void setPickStepFinished(final int activeWorkPieceIndex, final int transportIndex) {
+		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
+		
 	}
 	
-	public void setPutStepActive(int transportIndex) {
-		getView().setAllProgressNone();
-		for (int i = 0; i < transportIndex; i++) {
-			getView().setTransportProgressGreen(i);
-			getView().setDeviceProgressGreen(i);
-		}
-		getView().setDeviceProgressGreen(transportIndex);
-		getView().setTransportProgressSecondYellow(transportIndex);
+	public void setPutStepActive(final int activeWorkPieceIndex, final int transportIndex) {
+		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
+		
 	}
 	
-	public void setPutStepFinished(int transportIndex) {
-		getView().setAllProgressNone();
-		for (int i = 0; i < transportIndex + 1; i++) {
-			getView().setTransportProgressGreen(i);
-			getView().setDeviceProgressGreen(i);
-		}
+	public void setPutStepFinished(final int activeWorkPieceIndex, final int transportIndex) {
+		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
+		
 	}
 	
-	public void setProcessingStepActive(int deviceIndex) {
-		getView().setAllProgressNone();
-		getView().startDeviceAnimation(deviceIndex);
-		for (int i = 0; i < deviceIndex; i++) {
-			getView().setDeviceProgressGreen(i);
-			getView().setTransportProgressGreen(i);
-		}
-		getView().setDeviceProgressYellow(deviceIndex);
+	public void setProcessingStepActive(final int activeWorkPieceIndex, final int deviceIndex) {
+		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
+		//TODO animation
+		
 	}
 	
-	public void setProcessingStepFinished(int deviceIndex) {
-		getView().setAllProgressNone();
-		getView().stopDeviceAnimation(deviceIndex);
-		for (int i = 0; i < deviceIndex; i++) {
-			getView().setDeviceProgressGreen(i);
-			getView().setTransportProgressGreen(i);
-		}
-		getView().setDeviceProgressGreen(deviceIndex);
+	public void setProcessingStepFinished(final int activeWorkPieceIndex, final int deviceIndex) {
+		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
+		//TODO stop animation
+		
 	}
 
-	@Override
-	public void modeChanged(final ModeChangedEvent e) {
-	}
-	
-	private void showActiveStepChange(StatusChangedEvent e) {
+	private void showActiveStepChange(final StatusChangedEvent e) {
 		AbstractProcessStep step = e.getActiveStep();
-		//FIXME implement
+		int activeWorkPieceIndex = e.getWorkPieceId();
+		if (step instanceof PickStep) {
+			if (e.getStatusId() == StatusChangedEvent.ENDED) {
+				setPickStepFinished(activeWorkPieceIndex, processFlowAdapter.getTransportIndex((PickStep) step));
+			} else if (e.getStatusId() == StatusChangedEvent.STARTED) {
+				setPickStepActive(activeWorkPieceIndex, processFlowAdapter.getTransportIndex((PickStep) step));
+			}
+		} else if (step instanceof PutStep) {
+			if (e.getStatusId() == StatusChangedEvent.ENDED) {
+				setPutStepFinished(activeWorkPieceIndex, processFlowAdapter.getTransportIndex((PutStep) step));
+			} else if (e.getStatusId() == StatusChangedEvent.STARTED) {
+				setPutStepActive(activeWorkPieceIndex, processFlowAdapter.getTransportIndex((PutStep) step));
+			}
+		} else if (step instanceof ProcessingStep) {
+			if (e.getStatusId() == StatusChangedEvent.ENDED) {
+				setProcessingStepActive(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step));
+			} else if (e.getStatusId() == StatusChangedEvent.STARTED) {
+				setProcessingStepActive(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step));
+			}
+		} else {
+			throw new IllegalStateException("Unknown step type [" + step + "].");
+		}
 	}
 
 	@Override
@@ -132,19 +120,13 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 				FixedProcessFlowPresenter.this.showActiveStepChange(e);
 			}
 		}); 
-		
 	}
 
-	@Override
-	public void dataChanged(ProcessFlowEvent e) {
-		// TODO Auto-generated method stub
-		
+	@Override public void modeChanged(final ModeChangedEvent e) {
 	}
-
-	@Override
-	public void finishedAmountChanged(FinishedAmountChangedEvent e) {
-		// TODO Auto-generated method stub
-		
+	@Override public void dataChanged(final ProcessFlowEvent e) {
+	}
+	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) {
 	}
 
 }

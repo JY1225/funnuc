@@ -88,6 +88,7 @@ public class TransportButton extends Pane {
 		this.getStyleClass().add("transport-button");
 		
 		this.setPrefWidth(WIDTH);
+		this.setMinWidth(WIDTH);
 		this.setMaxHeight(38.838);
 				
 		handlerPressed = new EventHandler<MouseEvent>() {

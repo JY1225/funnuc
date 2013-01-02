@@ -10,23 +10,25 @@ import javafx.geometry.Pos;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigureView;
 import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 
 public class ProcessFlowView extends GridPane {
 
+	public enum ProgressBarPieceMode {
+		GREEN, YELLOW, NONE
+	}
+	
 	private ProcessFlowAdapter processFlowAdapter;
 	private AbstractProcessFlowPresenter presenter;
 	
 	private List<DeviceButton> deviceButtons;
 	private List<TransportButton> transportButtons;
-	
-	private List<VBox> deviceProgressRegionsWrappers;		// these VBoxes will contain the progress-bar Regions
-	private List<VBox> transportProgressRegionsLeftWrappers;
-	private List<VBox> transportProgressRegionsRightWrappers;
 	
 	private List<List<Region>> deviceProgressRegions;
 	private List<List<Region>> transportProgressRegionsLeft;
@@ -35,30 +37,41 @@ public class ProcessFlowView extends GridPane {
 	private List<List<Region>> allRegions;
 	
 	private static final int GAP = 10; 
+	private static final int PROGRESS_BAR_HEIGHT = 10;
+	private static final int PROGRESS_BAR_MARGIN_BOTTOM = 7;
 	private static final String CSS_CLASS_PROCESSFLOW_VIEW = "process-flow-view";
+	private static final String CSS_CLASS_PROGRESS_BAR_PIECE = "progressbar-piece";
+	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_FIRST = "progressbar-piece-first";
+	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_LAST = "progressbar-piece-last";
 	private static final String CSS_CLASS_PROGRESS_BAR_UNFOCUSSED = "progressbar-piece-unfocussed";
+	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_GREEN = "progressbar-piece-green";
+	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW = "progressbar-piece-yellow";
 	private int progressBarAmount;
 	
-	public ProcessFlowView(final ProcessFlow processFlow, final int progressBarAmount) {
+	public ProcessFlowView(final int progressBarAmount) {
+		this.progressBarAmount = progressBarAmount;
+		refresh();
+	}
+	
+	public void loadProcessFlow(final ProcessFlow processFlow) {
 		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
+		refresh();
+	}
+	
+	public void refresh() {
 		this.deviceButtons = new ArrayList<DeviceButton>();
 		this.transportButtons = new ArrayList<TransportButton>();
-		this.deviceProgressRegionsWrappers = new ArrayList<VBox>();
-		this.transportProgressRegionsLeftWrappers = new ArrayList<VBox>();
-		this.transportProgressRegionsRightWrappers = new ArrayList<VBox>();
 		this.deviceProgressRegions = new ArrayList<List<Region>>();
 		this.transportProgressRegionsLeft = new ArrayList<List<Region>>();
 		this.transportProgressRegionsRight = new ArrayList<List<Region>>();
 		this.allRegions = new ArrayList<List<Region>>();
-		build();
-		this.progressBarAmount = progressBarAmount;
+		if (processFlowAdapter != null) {
+			build();
+		}
 	}
 	
 	private void build() {
 		this.getChildren().clear();
-		deviceProgressRegionsWrappers.clear();
-		transportProgressRegionsLeftWrappers.clear();
-		transportProgressRegionsRightWrappers.clear();
 		setVgap(GAP);
 		setPadding(new Insets(GAP, 0, GAP, 0));
 		int column = 0;
@@ -70,6 +83,7 @@ public class ProcessFlowView extends GridPane {
 			if (i < processFlowAdapter.getTransportStepCount()) {
 				setupTransport(i, column, row);
 			}
+			column++;
 		}
 		this.setAlignment(Pos.CENTER);
 		this.setPrefHeight(ConfigureView.HEIGHT_TOP);
@@ -83,7 +97,6 @@ public class ProcessFlowView extends GridPane {
 				event.consume();
 			}
 		});
-		setupProgressBarRegions();
 		allRegions = new ArrayList<List<Region>>(deviceProgressRegions);
 		allRegions.addAll(transportProgressRegionsLeft);
 		allRegions.addAll(transportProgressRegionsRight);
@@ -102,7 +115,26 @@ public class ProcessFlowView extends GridPane {
 		deviceButtons.add(device);
 		VBox progressVBox = new VBox();
 		this.add(progressVBox, column, (1 + row));
-		deviceProgressRegionsWrappers.add(progressVBox);
+		setupDeviceProgressBarRegions(index, progressVBox);
+	}
+	
+	private void setupDeviceProgressBarRegions(final int index, final VBox vBox) {
+		// device
+		List<Region> regions = new ArrayList<Region>();
+		deviceProgressRegions.add(index, regions);
+		for (int i = 0; i < progressBarAmount; i++) {
+			Region region = new Region();
+			region.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_PIECE);
+			if (index == 0) {
+				region.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_PIECE_FIRST);
+			} else if (index == (processFlowAdapter.getDeviceStepCount() - 1)) {
+				region.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_PIECE_LAST);
+			}
+			region.setPrefHeight(PROGRESS_BAR_HEIGHT);
+			vBox.getChildren().add(region);
+			VBox.setMargin(region, new Insets(0, 0, PROGRESS_BAR_MARGIN_BOTTOM, 0));
+			regions.add(region);
+		}
 	}
 	
 	private void setupTransport(final int index, final int column, final int row) {
@@ -119,16 +151,34 @@ public class ProcessFlowView extends GridPane {
 		this.add(progressHBox, column, (1 + row));
 		//left
 		VBox progress1VBox = new VBox();
+		HBox.setHgrow(progress1VBox, Priority.ALWAYS);
 		progressHBox.getChildren().add(progress1VBox);
-		transportProgressRegionsLeftWrappers.add(progress1VBox);
 		//right
 		VBox progress2VBox = new VBox();
+		HBox.setHgrow(progress2VBox, Priority.ALWAYS);
 		progressHBox.getChildren().add(progress2VBox);
-		transportProgressRegionsRightWrappers.add(progress2VBox);
+		setupTransportProgressBarRegions(index, progress1VBox, progress2VBox);
 	}
 	
-	private void setupProgressBarRegions() {
-		//FIXME implement
+	private void setupTransportProgressBarRegions(final int index, final VBox vbox1, final VBox vbox2) {
+		List<Region> regions1 = new ArrayList<Region>();
+		transportProgressRegionsLeft.add(index, regions1);
+		List<Region> regions2 = new ArrayList<Region>();
+		transportProgressRegionsRight.add(index, regions2);
+		for (int i = 0; i < progressBarAmount; i++) {
+			Region region1 = new Region();
+			region1.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_PIECE);
+			region1.setPrefHeight(PROGRESS_BAR_HEIGHT);
+			vbox1.getChildren().add(region1);
+			VBox.setMargin(region1, new Insets(0, 0, PROGRESS_BAR_MARGIN_BOTTOM, 0));
+			regions1.add(region1);
+			Region region2 = new Region();
+			region2.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_PIECE);
+			region2.setPrefHeight(PROGRESS_BAR_HEIGHT);
+			vbox2.getChildren().add(region2);
+			regions2.add(region2);
+			VBox.setMargin(region2, new Insets(0, 0, PROGRESS_BAR_MARGIN_BOTTOM, 0));
+		}
 	}
 	
 	public void showQuestionMarks(final boolean showQuestionMarks) {
@@ -205,5 +255,124 @@ public class ProcessFlowView extends GridPane {
 	
 	public AbstractProcessFlowPresenter getPresenter() {
 		return presenter;
+	}
+	
+	public void setPresenter(final AbstractProcessFlowPresenter presenter) {
+		this.presenter = presenter;
+	}
+	
+	public void setAllProgressBarPiecesModeNone() {
+		for (List<Region> regions : allRegions) {
+			for (Region region : regions) {
+				region.getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
+			}
+		}
+	}
+	
+	public void setAllProgressBarPiecesModeNone(final int progressBarIndex) {
+		for (List<Region> regions : allRegions) {
+			regions.get(progressBarIndex).getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
+		}
+	}
+		
+	public void setDeviceProgressBarPieceMode(final int deviceIndex, final int progressBarIndex, final ProgressBarPieceMode mode) {
+		String cssClassName = null;
+		switch (mode) {
+			case GREEN:
+				cssClassName = CSS_CLASS_PROGRESS_BAR_PIECE_GREEN;
+				break;
+			case YELLOW:
+				cssClassName = CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW;
+				break;
+			case NONE:
+				break;
+			default:
+				throw new IllegalArgumentException("Unkown ProgressBarPieceMode: " + mode);
+		}
+		deviceProgressRegions.get(deviceIndex).get(progressBarIndex).getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
+		deviceProgressRegions.get(deviceIndex).get(progressBarIndex).getStyleClass().add(cssClassName);
+	}
+	
+	public void setTransportLeftProgressBarPieceMode(final int transportIndex, final int progressBarIndex, final ProgressBarPieceMode mode) {
+		String cssClassName = null;
+		switch (mode) {
+			case GREEN:
+				cssClassName = CSS_CLASS_PROGRESS_BAR_PIECE_GREEN;
+				break;
+			case YELLOW:
+				cssClassName = CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW;
+				break;
+			case NONE:
+				break;
+			default:
+				throw new IllegalArgumentException("Unkown ProgressBarPieceMode: " + mode);
+		}
+		transportProgressRegionsLeft.get(transportIndex).get(progressBarIndex).getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
+		transportProgressRegionsLeft.get(transportIndex).get(progressBarIndex).getStyleClass().add(cssClassName);
+	}
+	
+	public void setTransportRightProgressBarPieceMode(final int transportIndex, final int progressBarIndex, final ProgressBarPieceMode mode) {
+		String cssClassName = null;
+		switch (mode) {
+			case GREEN:
+				cssClassName = CSS_CLASS_PROGRESS_BAR_PIECE_GREEN;
+				break;
+			case YELLOW:
+				cssClassName = CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW;
+				break;
+			case NONE:
+				break;
+			default:
+				throw new IllegalArgumentException("Unkown ProgressBarPieceMode: " + mode);
+		}
+		transportProgressRegionsRight.get(transportIndex).get(progressBarIndex).getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
+		transportProgressRegionsRight.get(transportIndex).get(progressBarIndex).getStyleClass().add(cssClassName);
+	}
+	
+	public void showRemoveDevice() {
+		unfocusAll();
+		for (DeviceButton deviceButton : deviceButtons) {
+			if ((deviceButton.getDeviceInformation().getType() == DeviceType.POST_PROCESSING) || (deviceButton.getDeviceInformation().getType() == DeviceType.PRE_PROCESSING)) {
+				deviceButton.setFocussed(true);
+				deviceButton.setDisable(false);
+			} else {
+				deviceButton.setFocussed(false);
+				deviceButton.setDisable(true);
+			}
+		}
+		for (TransportButton transportButton : transportButtons) {
+			transportButton.setFocussed(false);
+			transportButton.setDisable(true);
+		}
+	}
+	
+	public void showAddDevice(final boolean addPreProcessPossible, final boolean addPostProcessPossible) {
+		unfocusAll();
+		for (int i = 0; i < processFlowAdapter.getTransportStepCount(); i++) {
+			if (i < processFlowAdapter.getCNCMachineIndex()) {
+				if (addPreProcessPossible) {
+					transportButtons.get(i).setFocussed(true);
+					transportButtons.get(i).setDisable(false);
+				}
+			} else {
+				if (addPostProcessPossible) {
+					transportButtons.get(i).setFocussed(true);
+					transportButtons.get(i).setDisable(false);
+				}
+			}
+		}
+	}
+	
+	public void showNormal() {
+		focusAll();
+	}
+	
+	public void disableClickable() {
+		for (DeviceButton deviceButton : deviceButtons) {
+			deviceButton.setClickable(false);
+		}
+		for (TransportButton transportButton : transportButtons) {
+			transportButton.setClickable(false);
+		}
 	}
 }

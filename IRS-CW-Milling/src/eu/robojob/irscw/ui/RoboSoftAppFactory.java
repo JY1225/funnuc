@@ -43,11 +43,11 @@ import eu.robojob.irscw.ui.configure.process.ProcessOpenView;
 import eu.robojob.irscw.ui.configure.transport.TransportMenuFactory;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView;
+import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardView;
-import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
-import eu.robojob.irscw.ui.general.flow.OldProcessFlowView;
+import eu.robojob.irscw.ui.general.flow.ProcessFlowView;
 import eu.robojob.irscw.ui.menu.MenuBarPresenter;
 import eu.robojob.irscw.ui.menu.MenuBarView;
 import eu.robojob.irscw.ui.robot.RobotPopUpPresenter;
@@ -182,7 +182,7 @@ public class RoboSoftAppFactory {
 	
 	public ConfigureProcessFlowPresenter getConfigureProcessFlowPresenter() {
 		if (configureProcessFlowPresenter == null) {
-			OldProcessFlowView processFlowView = new OldProcessFlowView();
+			ProcessFlowView processFlowView = new ProcessFlowView(1);
 			configureProcessFlowPresenter = new ConfigureProcessFlowPresenter(processFlowView);
 		}
 		return configureProcessFlowPresenter;
@@ -190,16 +190,18 @@ public class RoboSoftAppFactory {
 	
 	public FixedProcessFlowPresenter getTeachProcessFlowPresenter() {
 		if (teachProcessFlowPresenter == null) {
-			OldProcessFlowView processFlowView = new OldProcessFlowView();
-			teachProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView, true);
+			ProcessFlowView processFlowView = new ProcessFlowView(1);
+			processFlowView.showQuestionMarks(true);
+			teachProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView);
 		}
 		return teachProcessFlowPresenter;
 	}
 	
 	public FixedProcessFlowPresenter getAutomateProcessFlowPresenter() {
 		if (automateProcessFlowPresenter == null) {
-			OldProcessFlowView processFlowView = new OldProcessFlowView();
-			automateProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView, false);
+			ProcessFlowView processFlowView = new ProcessFlowView(2);
+			processFlowView.showQuestionMarks(false);
+			automateProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView);
 		}
 		return automateProcessFlowPresenter;
 	}

@@ -112,20 +112,20 @@
 	-fx-opacity: 0.2;	
 }
 
-.progressbar-first {
+.progressbar-piece-first {
 	-fx-background-radius: 6 0 0 6, 5 0 0 5, 4 0 0 4;
 }
 
-.progressbar-last {
+.progressbar-piece-last {
 	-fx-background-radius: 0 6 6 0, 0 5 5 0, 0 4 4 0;
 }
 
-.progressbar-green {
+.progressbar-piece-green {
 	-fx-background-color: #296218, #388122, #60b847;
 	-fx-background-insets: 0, 1 0 1 0, 2 0 1 0;
 }
 
-.progressbar-yellow {
+.progressbar-piece-yellow {
 	-fx-background-color: #9d8c00, #c3af00, #fec047;
 	-fx-background-insets: 0, 1 0 1 0, 2 0 1 0;
 }

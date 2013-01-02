@@ -1,37 +1,31 @@
 package eu.robojob.irscw.ui.configure.flow;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter.Mode;
 import eu.robojob.irscw.ui.general.flow.AbstractProcessFlowPresenter;
-import eu.robojob.irscw.ui.general.flow.OldProcessFlowView;
+import eu.robojob.irscw.ui.general.flow.ProcessFlowView;
+import eu.robojob.irscw.ui.general.flow.ProcessFlowView.ProgressBarPieceMode;
 
 public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	
-	private ConfigurePresenter parent;
-	
-	private static Logger logger = LogManager.getLogger(AbstractProcessFlowPresenter.class.getName());
-	
+	private ConfigurePresenter parent;	
 	private int focussedDevice;
 	private int focussedTransport;
 		
-	public ConfigureProcessFlowPresenter(OldProcessFlowView view) {
+	public ConfigureProcessFlowPresenter(final ProcessFlowView view) {
 		super(view);
 		focussedDevice = -1;
 		focussedTransport = -1;
 		view.setPresenter(this);
 	}
 	
-	public void setParent(ConfigurePresenter parent) {
+	public void setParent(final ConfigurePresenter parent) {
 		this.parent = parent;
 	}
 	
-	public void deviceClicked(int index) {
+	public void deviceClicked(final int index) {
 		if (parent.getMode() == Mode.NORMAL) {
-			logger.debug("Clicked device with index: " + index);
 			getView().focusDevice(index);
 			focussedDevice = index;
 			focussedTransport = -1;
@@ -42,7 +36,7 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 			if (parent.getMode() == Mode.REMOVE_DEVICE) {
 				parent.removeDevice(index);
 			} else {
-				throw new IllegalStateException("Device clicked, but state does not allow it");
+				throw new IllegalStateException("Device [" + index + "] clicked, but state does not allow it");
 			}
 		}
 	}
@@ -51,9 +45,8 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 		getView().focusAll();
 	}
 	
-	public void transportClicked(int index) {
+	public void transportClicked(final int index) {
 		if (parent.getMode() == Mode.NORMAL) {
-			logger.debug("Clicked transport with index: " + index);
 			getView().focusTransport(index);
 			focussedDevice = -1;
 			focussedTransport = index;
@@ -64,14 +57,13 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 			if (parent.getMode() == Mode.ADD_DEVICE) {
 				parent.addDevice(index);
 			} else {
-				throw new IllegalStateException("Transport clicked, but state does not allow it.");
+				throw new IllegalStateException("Transport [" + index + "] clicked, but state does not allow it.");
 			}
 		}
 	}
 	
 	public void backgroundClicked() {
 		if (parent.getMode() == Mode.NORMAL) {
-			logger.debug("Clicked process-flow background");
 			getView().focusAll();
 			parent.configureProcess();
 			focussedDevice = -1;
@@ -79,26 +71,26 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 		}
 	}
 	
-	public void loadProcessFlow(ProcessFlow processFlow) {
+	public void loadProcessFlow(final ProcessFlow processFlow) {
 		super.loadProcessFlow(processFlow);
 		focussedDevice = -1;
 		focussedTransport = -1;
 	}
 	
-	public void setAddDeviceMode(boolean addPreProcessPossible, boolean addPostProcessPossible) {
-		getView().setAddDeviceMode(addPreProcessPossible, addPostProcessPossible);
+	public void setAddDeviceMode(final boolean addPreProcessPossible, final boolean addPostProcessPossible) {
+		getView().showAddDevice(addPreProcessPossible, addPostProcessPossible);
 		focussedDevice = -1;
 		focussedTransport = -1;
 	}
 	
 	public void setRemoveDeviceMode() {
-		getView().setRemoveDeviceMode();
+		getView().showRemoveDevice();
 		focussedDevice = -1;
 		focussedTransport = -1;
 	}
 	
 	public void setNormalMode() {
-		getView().setNormalMode();
+		getView().showNormal();
 		focussedDevice = -1;
 		focussedTransport = -1;
 	}
@@ -112,19 +104,21 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 		}
 	}
 	
-	public void setDeviceConfigured(int deviceIndex, boolean configured) {
+	public void setDeviceConfigured(final int deviceIndex, final boolean configured) {
 		if (configured) {
-			setDeviceProgressGreen(deviceIndex);
+			getView().setDeviceProgressBarPieceMode(deviceIndex, 0, ProgressBarPieceMode.GREEN);
 		} else {
-			setDeviceProgressNone(deviceIndex);
+			getView().setDeviceProgressBarPieceMode(deviceIndex, 0, ProgressBarPieceMode.NONE);
 		}
 	}
 	
-	public void setTransportConfigured(int transportIndex, boolean configured) {
+	public void setTransportConfigured(final int transportIndex, final boolean configured) {
 		if (configured) {
-			setTransportProgressGreen(transportIndex);
+			getView().setTransportLeftProgressBarPieceMode(transportIndex, 0, ProgressBarPieceMode.GREEN);
+			getView().setTransportRightProgressBarPieceMode(transportIndex, 0, ProgressBarPieceMode.GREEN);
 		} else {
-			setTransportProgressNone(transportIndex);
+			getView().setTransportLeftProgressBarPieceMode(transportIndex, 0, ProgressBarPieceMode.NONE);
+			getView().setTransportRightProgressBarPieceMode(transportIndex, 0, ProgressBarPieceMode.NONE);
 		}
 	}
 	
