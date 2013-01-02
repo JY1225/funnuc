@@ -28,7 +28,7 @@ public class RobotManager {
 	}
 	
 	private void initialize() {
-		Gripper gripper = new Gripper("Vacuum grip", 270, "Vacuum grip, type 1", "img/grippers/gripper1.png");
+		Gripper gripper = new Gripper("Vacuum grip", 130, "Vacuum grip, type 1", "img/grippers/gripper1.png");
 		Gripper gripper2 = new Gripper("2P clamp grip A", 133, "Clamp grip, two points", "img/grippers/gripper2.png");
 		Gripper gripper3 = new Gripper("2P clamp grip B", 133, "Clamp grip, two points", "img/grippers/gripper2.png");
 		GripperHead head1 = new GripperHead("A", gripper);

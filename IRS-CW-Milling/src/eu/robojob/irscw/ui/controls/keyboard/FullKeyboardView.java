@@ -43,7 +43,6 @@ public class FullKeyboardView extends AbstractKeyboardView {
 		}
 	}
 	
-	//TODO these methods could perhaps be simplified!
 	private void buildViewQwertyDE() {
 		int row = 0;
 		int column = 0;

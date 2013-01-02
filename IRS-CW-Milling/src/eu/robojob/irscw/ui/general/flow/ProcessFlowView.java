@@ -375,4 +375,8 @@ public class ProcessFlowView extends GridPane {
 			transportButton.setClickable(false);
 		}
 	}
+	
+	public void animateDevice(final int deviceIndex, final boolean doAnimation) {
+		deviceButtons.get(deviceIndex).animate(doAnimation);
+	}
 }

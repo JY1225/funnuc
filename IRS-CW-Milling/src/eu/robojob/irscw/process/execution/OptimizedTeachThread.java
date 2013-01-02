@@ -29,7 +29,7 @@ public class OptimizedTeachThread extends TeachThread {
 	private static Logger logger = LogManager.getLogger(OptimizedTeachThread.class.getName());
 	private Coordinates extraFinishedOffset;
 	
-	private static final int WORKPIECE_ID = 1;
+	private static final int WORKPIECE_ID = 0;
 
 	public OptimizedTeachThread(final ProcessFlow processFlow, final Coordinates extraFinishedOffset) {
 		super(processFlow);
@@ -171,6 +171,7 @@ public class OptimizedTeachThread extends TeachThread {
 		FanucRobot fRobot = (FanucRobot) putOnStackerStep.getRobot();
 		FanucRobotPutSettings putSettings = (FanucRobotPutSettings) putOnStackerStep.getRobotSettings();
 		// we set the first work piece as a finished
+		putOnStackerStep.getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(putOnStackerStep.getProcessFlow(), putOnStackerStep, StatusChangedEvent.STARTED, WORKPIECE_ID));
 		stackPlate.getLayout().getStackingPositions().get(0).getWorkPiece().setType(WorkPiece.Type.FINISHED);
 		getProcessFlow().setFinishedAmount(1);
 		Coordinates originalCoordinates = stackPlate.getLocation(putOnStackerStep.getRobotSettings().getWorkArea(), WorkPiece.Type.FINISHED, getProcessFlow().getClampingType());
@@ -183,7 +184,7 @@ public class OptimizedTeachThread extends TeachThread {
 		} else {
 			logger.debug("Original coordinates: " + originalCoordinates + ".");
 			logger.debug("Initiating robot: [" + fRobot + "] move action.");
-			fRobot.initiateMoveWithPiece(putSettings);
+			fRobot.initiateMoveWithPieceNoAction(putSettings);
 			fRobot.continueMoveWithPieceTillAtLocation();
 			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.TEACHING_NEEDED, WORKPIECE_ID));
 			fRobot.continueMoveWithPieceTillWait();

@@ -119,7 +119,7 @@ public final class RobotConstants {
 	// SERVICE HANDLING
 	public static final int SERVICE_HANDLING_PP_MODE_BAR_MOVE 		=	BIT0;
 	public static final int SERVICE_HANDLING_PP_MODE_BAR_BREAK 		=	BIT1;
-	public static final int SERIVCE_HANDLING_PP_MODE_NOT_TAKE_WP	=	BIT2;
+	public static final int SERVICE_HANDLING_PP_MODE_NOT_TAKE_WP	=	BIT2;
 	public static final int SERVICE_HANDLING_PP_MODE_TC_TEST		=	BIT3;
 	public static final int SERVICE_HANDLING_PP_MODE_ORDER_12		=	BIT4;
 	public static final int SERVICE_HANDLING_PP_MODE_ORDER_21		=	0;

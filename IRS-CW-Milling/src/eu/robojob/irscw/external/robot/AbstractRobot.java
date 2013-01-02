@@ -27,7 +27,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	private Object syncObject;
 	
 	private static Logger logger = LogManager.getLogger(AbstractRobot.class.getName());
-	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "FanucRobot.disconnectedWhileWaiting";
+	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "AbstractRobot.disconnectedWhileWaiting";
 	
 	private Set<RobotAlarm> alarms;
 	private int currentStatus;
@@ -266,6 +266,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void finalizePick() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
 	public abstract void initiateMoveWithPiece(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void initiateMoveWithPieceNoAction(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continueMoveWithPieceTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continueMoveWithPieceTillWait() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void performIOAction() throws AbstractCommunicationException, RobotActionException, InterruptedException;

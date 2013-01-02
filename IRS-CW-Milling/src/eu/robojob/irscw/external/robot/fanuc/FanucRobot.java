@@ -54,7 +54,7 @@ public class FanucRobot extends AbstractRobot {
 		
 	private static Logger logger = LogManager.getLogger(FanucRobot.class.getName());
 	
-	private static final String EXCEPTION_IOACTION_TIMEOUT = "FanucRobot.ioactionTimeout";
+	private static final String EXCEPTION_IOACTION_TIMEOUT = "FanucRobot.ioActionTimeout";
 	private static final String EXCEPTION_MOVE_TO_PICK_POSITION_TIMEOUT = "FanucRobot.moveToPickPositionTimeout";
 	private static final String EXCEPTION_MOVE_TO_PUT_POSITION_TIMEOUT = "FanucRobot.moveToPutPositionTimeout";
 	private static final String EXCEPTION_MOVE_TO_IPPOINT_PICK_TIMEOUT = "FanucRobot.moveToIPPointTimeout";
@@ -149,6 +149,9 @@ public class FanucRobot extends AbstractRobot {
 		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
 		if (fPutSettings.isDoMachineAirblow()) {
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
+		}
+		if (fPutSettings.isTeachingNeeded()) {
+			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_TEACH;
 		}
 		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
 		if (fPutSettings.getGripperHead().getGripper().getWorkPiece() == null) {
@@ -278,6 +281,32 @@ public class FanucRobot extends AbstractRobot {
 		if (fPutSettings.getGripperHead().getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException(toString() + " executing move-and-wait with piece , but the gripper [" + fPutSettings.getGripperHead().getGripper() + "] should contain a workpiece.");
 		}
+		if (fPutSettings.isTeachingNeeded()) {
+			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_TEACH;
+		}
+		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
+		writeCommand(RobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
+	}
+	
+	@Override
+	public void initiateMoveWithPieceNoAction(final RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (isExecutionInProgress()) {
+			throw new IllegalStateException("Already performing action, with setting: " + getCurrentActionSettings());
+		} else {
+			setCurrentActionSettings(putSettings);
+		}
+		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
+		writeServiceGripperSet(false, putSettings.getGripperHead().getId(), this.getGripperBody().getGripperHead(HEAD_A_ID), this.getGripperBody().getGripperHead(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT);
+		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
+		ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_PIECE;
+		if (fPutSettings.getGripperHead().getGripper().getWorkPiece() == null) {
+			throw new IllegalStateException(toString() + " executing move-and-wait with piece , but the gripper [" + fPutSettings.getGripperHead().getGripper() + "] should contain a workpiece.");
+		}
+		if (fPutSettings.isTeachingNeeded()) {
+			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_TEACH;
+		}
+		ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_NO_WAIT;
 		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
 		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
@@ -462,6 +491,7 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void recalculateTCPs() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+		logger.debug("About to recalculate TCPs.");
 		writeServiceGripperSet(false, this.getGripperBody().getGripperHead(HEAD_A_ID).getId(), this.getGripperBody().getGripperHead(HEAD_A_ID), this.getGripperBody().getGripperHead(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_JAW_CHANGE);
 		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_RECALC_TCPS, RobotConstants.RESPONSE_RECALC_TCPS, WRITE_VALUES_TIMEOUT);
 	}

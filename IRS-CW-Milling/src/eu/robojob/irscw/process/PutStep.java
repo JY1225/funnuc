@@ -74,6 +74,7 @@ public class PutStep extends AbstractTransportStep {
 				}
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
 				logger.debug("Initiating robot: [" + getRobot() + "] put action.");
+				getRobotSettings().setTeachingNeeded(teached);
 				getRobot().initiatePut(getRobotSettings());		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
 				logger.debug("Preparing [" + getDevice() + "] for put using [" + getRobot() + "].");
 				getDevice().prepareForPut(getDeviceSettings());

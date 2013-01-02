@@ -68,6 +68,7 @@ public class PutAndWaitStep extends PutStep {
 				}
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
 				logger.debug("Initiating robot: [" + getRobot() + "] move-and-wait action.");
+				getRobotSettings().setTeachingNeeded(teached);
 				getRobot().initiateMoveWithPiece(getRobotSettings());		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
 				logger.debug("Preparing [" + getDevice() + "] for move-and-wait using [" + getRobot() + "].");
 				getDevice().prepareForPut(getDeviceSettings());
@@ -90,9 +91,19 @@ public class PutAndWaitStep extends PutStep {
 				logger.debug("Robot move-and-wait action succeeded, about to ask device [" + getDevice() +  "] to grab piece.");
 				getDevice().grabPiece(getDeviceSettings());
 				logger.debug("Device [" + getDevice() + "] grabbed piece, about to finalize put.");				
-				getDevice().grabPiece(getDeviceSettings());
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
 			}
+		}
+	}
+	
+	@Override
+	public void finalizeStep() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (!getRobot().lock(getProcessFlow())) {
+			throw new IllegalStateException("Robot [" + getRobot() + "] was already locked by " + getRobot().getLockingProcess());
+		} else {
+			// no finalize action here, the finalization is to be done by the pick after wait step
+			getRobot().release(getProcessFlow());
+			logger.debug("Finalized put-and-wait.");
 		}
 	}
 	

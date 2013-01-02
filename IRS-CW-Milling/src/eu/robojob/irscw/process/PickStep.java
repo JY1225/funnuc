@@ -57,7 +57,7 @@ public class PickStep extends AbstractTransportStep {
 					if (getRelativeTeachedOffset() == null) {
 						if (!teached) {
 							throw new IllegalStateException("Teaching was needed, but no relative offset value available and 'teach mode' is not active!");
-						}
+						} 
 					} else {
 						logger.debug("The teached offset that will be used: [" + getRelativeTeachedOffset() + "].");
 						Coordinates absoluteOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, getRelativeTeachedOffset());
@@ -73,6 +73,7 @@ public class PickStep extends AbstractTransportStep {
 				}
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
 				logger.debug("Initiating robot: [" + getRobot() + "] pick action.");
+				getRobotSettings().setTeachingNeeded(teached);
 				getRobot().initiatePick(robotPickSettings);		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
 				logger.debug("Preparing [" + getDevice() + "] for pick using [" + getRobot() + "].");
 				getDevice().prepareForPick(pickSettings);

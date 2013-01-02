@@ -77,14 +77,12 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	
 	public void setProcessingStepActive(final int activeWorkPieceIndex, final int deviceIndex) {
 		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
-		//TODO animation
-		
+		getView().animateDevice(deviceIndex, true);
 	}
 	
 	public void setProcessingStepFinished(final int activeWorkPieceIndex, final int deviceIndex) {
 		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
-		//TODO stop animation
-		
+		getView().animateDevice(deviceIndex, false);
 	}
 
 	private void showActiveStepChange(final StatusChangedEvent e) {

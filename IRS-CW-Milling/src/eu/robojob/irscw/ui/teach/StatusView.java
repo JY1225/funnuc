@@ -66,7 +66,7 @@ public class StatusView extends VBox {
 		lblZRest.setPrefSize(100, 40);
 		lblZRest.setMaxSize(100, 40);
 		lblZRest.setMinSize(100, 40);
-		lblZRest.setText(DROPS_ANOTHER);
+		lblZRest.setText(Translator.getTranslation(DROPS_ANOTHER));
 		
 		lblZRestValue = new Label();
 		lblZRestValue.getStyleClass().add(CSS_CLASS_Z_REST);
