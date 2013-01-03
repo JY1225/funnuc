@@ -14,10 +14,12 @@
 	-fx-background-color: #807878, #222222, #807878, linear-gradient(#656161 0%, #4e4a4a 100%);
 	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 	-fx-border-radius: 6, 6, 5, 5;
-	-fx-font-size: 14px;
 	-fx-padding: 1 0 0 0;
-	-fx-font-family: "Helvetica";
+	-fx-text-alignment: center;
+	-fx-font-family: "Open Sans";
 	-fx-font-weight: bold;
+	-fx-font-size: 14px;
+	-fx-font-smoothing-type: lcd;
 }
 
 .header-button-shape {

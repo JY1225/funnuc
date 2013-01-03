@@ -27,9 +27,11 @@
 .left-menu-button .left-menu-item-label {
 	-fx-padding: 0 0 0 5;
 	-fx-text-fill: white;
-	-fx-font-size: 14px;
+	-fx-text-alignment: center;
+	-fx-font-family: "Open Sans";
 	-fx-font-weight: bold;
-	-fx-font-family: "Helvetica";
+	-fx-font-size: 14px;
+	-fx-font-smoothing-type: lcd;
 }
 
 .left-menu-button:disabled {
@@ -73,9 +75,11 @@
 
 .pop-up-btn Text {
 	-fx-fill: white;
-	-fx-font-size: 14px;
+	-fx-text-alignment: center;
+	-fx-font-family: "Open Sans";
 	-fx-font-weight: bold;
-	-fx-font-family: "Helvetica";
+	-fx-font-size: 14px;
+	-fx-font-smoothing-type: lcd;
 	-fx-padding: 0 0 0 5;
 }
 

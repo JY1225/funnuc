@@ -1,10 +1,10 @@
 .form-label, .label {
-	-fx-font-size: 15px;
-	-fx-font-weight: bold;
+	-fx-font-size: 16px;
 	-fx-text-alignment: center;
-	-fx-font-family: "Helvetica";
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
 	-fx-text-fill: white;
-	-fx-padding: 0 5 0 0;
+	-fx-padding: 5 15 0 0;
 }
 
 .form-button {
@@ -12,10 +12,12 @@
 	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 	-fx-border-radius: 6, 6, 5, 5;
 	-fx-text-fill: white;
-	-fx-font-size: 13px;
-	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	-fx-font-family: "Helvetica";
+	-fx-font-family: "Open Sans";
+	-fx-font-size: 14px;
+	-fx-font-weight: bold;
+	-fx-font-smoothing-type: lcd;
+	-fx-padding: 0;
 }
 
 .form-button:pressed, .form-button-active {
@@ -51,10 +53,12 @@
 .form-button-label {
 	-fx-text-fill: white;
 	-fx-fill: white;
-	-fx-font-size: 13px;
-	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	-fx-font-family: "Helvetica";
+	-fx-font-family: "Open Sans";
+	-fx-font-weight: bold;
+	-fx-font-smoothing-type: lcd;
+	-fx-padding: 0;
+	-fx-font-size: 14px;
 }
 
 .form-button-bar-left {
@@ -67,14 +71,14 @@
 }
 
 .form-full-textfield, .text-field {
-	-fx-font-size: 14px;
-	-fx-font-family: "Helvetica";
-	-fx-font-weight: bold;
-	-fx-text-fill: #323232;
+	-fx-font-size: 16px;
+	-fx-font-family: "Open Sans";
+	-fx-font-smoothing-type: lcd;
 	-fx-background-radius: 3px;
 	-fx-padding: 0 0 0 10;
-	-fx-background-color: #8c8888, #222222, #f0f0f0;
-	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1;
+	-fx-background-color: #8c8888, #222222, #4e4a4a;
+	-fx-background-insets: 0, 0 0 1 0, 2 1 2 1;
+	-fx-text-fill: white;
 }
 
 .form-full-textfield:disabled, .text-field:disabled {
@@ -83,7 +87,8 @@
 }
 
 .form-full-textfield:focused, .text-field:focused {
-	-fx-background-color: #8c8888, #0080e2, #f0f0f0;
+	-fx-background-color: #8c8888, #0080e2, #4e4a4a;
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1;
 }
 
 .center-text {
@@ -114,10 +119,10 @@
 
 .combo-box-base .list-cell {
 	-fx-font-size: 14px;
-	-fx-font-weight: bold;
 	-fx-text-alignment: center;
 	-fx-alignment: center-left;
-	-fx-font-family: "Helvetica";
+	-fx-font-family: "Open Sans";
+	-fx-font-weight: bold;
 	-fx-text-fill: white;
 	-fx-padding: 10 10 10 10;
 }
@@ -144,10 +149,9 @@
 	-fx-background-color: #343434, #807878, #5e5a5a;
 	-fx-background-insets: 0, 1 1 0 1, 2 1 0 1;
 	-fx-background-radius: 0;
-	-fx-font-size: 13px;
-	-fx-font-weight: bold;
+	-fx-font-size: 15px;
 	-fx-text-alignment: center;
-	-fx-font-family: "Helvetica";
+	-fx-font-family: "Futura Hv BT";
 	-fx-text-fill: white;
 	-fx-padding: 10 10 10 10;
 }
@@ -161,9 +165,10 @@
 }
 
 .stacker-text {
-	-fx-font-family: "Helvetica";
-	-fx-font-size: 18px;
-	-fx-font-weight: bold;
+	-fx-font-size: 16px;
+	-fx-text-alignment: center;
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
 	-fx-text-alignment: center;
 	-fx-fill: #e9441e;
 }
@@ -246,9 +251,9 @@
 	-fx-text-fill: white;
 	-fx-border-width: 0px;
 	-fx-font-size: 13px;
-	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	-fx-font-family: "Helvetica";
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
 	-fx-alignment: center;
 	-fx-padding: 5 0 0 0;
 }
@@ -337,9 +342,10 @@
 }
 
 .processes-list-view .cell {
-	-fx-font-size: 14px;
-	-fx-font-family: "Helvetica";
-	-fx-font-weight: bold;
+	-fx-text-alignment: center;
+	-fx-font-size: 16px;
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
 	-fx-padding: 10px;
 	-fx-background-color: transparent;
 	-fx-background-insets: 0;

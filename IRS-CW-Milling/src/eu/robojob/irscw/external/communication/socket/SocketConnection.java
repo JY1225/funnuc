@@ -232,6 +232,6 @@ public class SocketConnection {
 	
 	@Override
 	public String toString() {
-		return this.id + "(type: " + type + ", " + ipAddress + ":" + portNumber + ")";
+		return this.id + " (type: " + type + ", " + ipAddress + ":" + portNumber + ")";
 	}
 }

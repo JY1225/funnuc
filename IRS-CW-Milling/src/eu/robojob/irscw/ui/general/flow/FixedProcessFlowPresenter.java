@@ -11,6 +11,7 @@ import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
+import eu.robojob.irscw.ui.general.flow.ProcessFlowView.ProgressBarPieceMode;
 import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 
 public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter implements ProcessFlowListener {
@@ -55,34 +56,48 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 		setNoneActive();
 	}
 	
+	// we assume a process always starts with a PICK - this way for a new WP the progress bar is also initialized correctly
 	public void setPickStepActive(final int activeWorkPieceIndex, final int transportIndex) {
 		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
-		
+		for (int i = 0; i < processFlowAdapter.getDeviceStepCount(); i++) {
+			if (i < transportIndex) {
+				getView().setTransportLeftProgressBarPieceMode(i, activeWorkPieceIndex, ProgressBarPieceMode.GREEN);
+				getView().setTransportRightProgressBarPieceMode(i, activeWorkPieceIndex, ProgressBarPieceMode.GREEN);
+				getView().setDeviceProgressBarPieceMode(i, activeWorkPieceIndex, ProgressBarPieceMode.GREEN);
+			} else if (i == transportIndex) {
+				getView().setDeviceProgressBarPieceMode(i, activeWorkPieceIndex, ProgressBarPieceMode.GREEN);
+				getView().setTransportLeftProgressBarPieceMode(i, activeWorkPieceIndex, ProgressBarPieceMode.YELLOW);
+				getView().setTransportRightProgressBarPieceMode(i, activeWorkPieceIndex, ProgressBarPieceMode.NONE);
+			} else {
+				getView().setDeviceProgressBarPieceMode(i, activeWorkPieceIndex, ProgressBarPieceMode.NONE);
+				if (i < processFlowAdapter.getTransportStepCount()) {
+					getView().setTransportLeftProgressBarPieceMode(i, activeWorkPieceIndex, ProgressBarPieceMode.NONE);
+					getView().setTransportRightProgressBarPieceMode(i, activeWorkPieceIndex, ProgressBarPieceMode.NONE);
+				}
+			}
+		}
 	}
 	
 	public void setPickStepFinished(final int activeWorkPieceIndex, final int transportIndex) {
-		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
-		
+		getView().setTransportLeftProgressBarPieceMode(transportIndex, activeWorkPieceIndex, ProgressBarPieceMode.GREEN);
 	}
 	
 	public void setPutStepActive(final int activeWorkPieceIndex, final int transportIndex) {
-		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
-		
+		getView().setTransportRightProgressBarPieceMode(transportIndex, activeWorkPieceIndex, ProgressBarPieceMode.YELLOW);
 	}
 	
 	public void setPutStepFinished(final int activeWorkPieceIndex, final int transportIndex) {
-		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
-		
+		getView().setTransportRightProgressBarPieceMode(transportIndex, activeWorkPieceIndex, ProgressBarPieceMode.GREEN);
 	}
 	
 	public void setProcessingStepActive(final int activeWorkPieceIndex, final int deviceIndex) {
-		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
 		getView().animateDevice(deviceIndex, true);
+		getView().setDeviceProgressBarPieceMode(deviceIndex, activeWorkPieceIndex, ProgressBarPieceMode.YELLOW);
 	}
 	
 	public void setProcessingStepFinished(final int activeWorkPieceIndex, final int deviceIndex) {
-		getView().setAllProgressBarPiecesModeNone(activeWorkPieceIndex);
 		getView().animateDevice(deviceIndex, false);
+		getView().setDeviceProgressBarPieceMode(deviceIndex, activeWorkPieceIndex, ProgressBarPieceMode.GREEN);
 	}
 
 	private void showActiveStepChange(final StatusChangedEvent e) {
@@ -102,7 +117,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 			}
 		} else if (step instanceof ProcessingStep) {
 			if (e.getStatusId() == StatusChangedEvent.ENDED) {
-				setProcessingStepActive(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step));
+				setProcessingStepFinished(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step));
 			} else if (e.getStatusId() == StatusChangedEvent.STARTED) {
 				setProcessingStepActive(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step));
 			}

@@ -20,7 +20,7 @@ public class TeachThread extends Thread {
 	private boolean running;
 	
 	private static Logger logger = LogManager.getLogger(TeachThread.class.getName());
-	private static final int WORKPIECE_ID = 1;
+	private static final int WORKPIECE_ID = 0;
 	
 	public TeachThread(final ProcessFlow processFlow) {
 		this.processFlow = processFlow;
@@ -67,7 +67,7 @@ public class TeachThread extends Thread {
 					}
 					if (!(step instanceof InterventionStep)) {
 						if (step instanceof AbstractTransportStep) {
-							((AbstractTransportStep) step).executeStep(WORKPIECE_ID);
+							((AbstractTransportStep) step).executeStepTeached(WORKPIECE_ID);
 							((AbstractTransportStep) step).finalizeStep();
 						} else {
 							step.executeStep(WORKPIECE_ID);

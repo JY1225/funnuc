@@ -33,9 +33,7 @@ public class ProcessFlowView extends GridPane {
 	private List<List<Region>> deviceProgressRegions;
 	private List<List<Region>> transportProgressRegionsLeft;
 	private List<List<Region>> transportProgressRegionsRight;
-	
-	private List<List<Region>> allRegions;
-	
+		
 	private static final int GAP = 10; 
 	private static final int PROGRESS_BAR_HEIGHT = 10;
 	private static final int PROGRESS_BAR_MARGIN_BOTTOM = 7;
@@ -64,7 +62,6 @@ public class ProcessFlowView extends GridPane {
 		this.deviceProgressRegions = new ArrayList<List<Region>>();
 		this.transportProgressRegionsLeft = new ArrayList<List<Region>>();
 		this.transportProgressRegionsRight = new ArrayList<List<Region>>();
-		this.allRegions = new ArrayList<List<Region>>();
 		if (processFlowAdapter != null) {
 			build();
 		}
@@ -97,9 +94,6 @@ public class ProcessFlowView extends GridPane {
 				event.consume();
 			}
 		});
-		allRegions = new ArrayList<List<Region>>(deviceProgressRegions);
-		allRegions.addAll(transportProgressRegionsLeft);
-		allRegions.addAll(transportProgressRegionsRight);
 	}
 	
 	private void setupDevice(final int index, final int column, final int row) {
@@ -119,7 +113,6 @@ public class ProcessFlowView extends GridPane {
 	}
 	
 	private void setupDeviceProgressBarRegions(final int index, final VBox vBox) {
-		// device
 		List<Region> regions = new ArrayList<Region>();
 		deviceProgressRegions.add(index, regions);
 		for (int i = 0; i < progressBarAmount; i++) {
@@ -198,7 +191,19 @@ public class ProcessFlowView extends GridPane {
 		for (DeviceButton device : deviceButtons) {
 			device.setFocussed(false);
 		}
-		for (List<Region> regions : allRegions) {
+		for (List<Region> regions : deviceProgressRegions) {
+			for (Region region : regions) {
+				region.getStyleClass().remove(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
+				region.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
+			}
+		}
+		for (List<Region> regions : transportProgressRegionsLeft) {
+			for (Region region : regions) {
+				region.getStyleClass().remove(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
+				region.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
+			}
+		}
+		for (List<Region> regions : transportProgressRegionsRight) {
 			for (Region region : regions) {
 				region.getStyleClass().remove(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
 				region.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
@@ -238,7 +243,17 @@ public class ProcessFlowView extends GridPane {
 		for (TransportButton transport : transportButtons) {
 			transport.setFocussed(true);
 		}
-		for (List<Region> regions : allRegions) {
+		for (List<Region> regions : deviceProgressRegions) {
+			for (Region region : regions) {
+				region.getStyleClass().remove(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
+			}
+		}
+		for (List<Region> regions : transportProgressRegionsLeft) {
+			for (Region region : regions) {
+				region.getStyleClass().remove(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
+			}
+		}
+		for (List<Region> regions : transportProgressRegionsRight) {
 			for (Region region : regions) {
 				region.getStyleClass().remove(CSS_CLASS_PROGRESS_BAR_UNFOCUSSED);
 			}
@@ -262,7 +277,17 @@ public class ProcessFlowView extends GridPane {
 	}
 	
 	public void setAllProgressBarPiecesModeNone() {
-		for (List<Region> regions : allRegions) {
+		for (List<Region> regions : deviceProgressRegions) {
+			for (Region region : regions) {
+				region.getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
+			}
+		}
+		for (List<Region> regions : transportProgressRegionsLeft) {
+			for (Region region : regions) {
+				region.getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
+			}
+		}
+		for (List<Region> regions : transportProgressRegionsRight) {
 			for (Region region : regions) {
 				region.getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
 			}
@@ -270,7 +295,13 @@ public class ProcessFlowView extends GridPane {
 	}
 	
 	public void setAllProgressBarPiecesModeNone(final int progressBarIndex) {
-		for (List<Region> regions : allRegions) {
+		for (List<Region> regions : deviceProgressRegions) {
+			regions.get(progressBarIndex).getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
+		}
+		for (List<Region> regions : transportProgressRegionsLeft) {
+			regions.get(progressBarIndex).getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
+		}
+		for (List<Region> regions : transportProgressRegionsRight) {
 			regions.get(progressBarIndex).getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
 		}
 	}

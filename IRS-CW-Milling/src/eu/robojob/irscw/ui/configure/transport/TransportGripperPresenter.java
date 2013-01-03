@@ -32,7 +32,7 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 
 	public void changedGripperHead(final String id) {
 		// TODO implement
-		throw new IllegalStateException("This method is not supperted for now");
+		//throw new IllegalStateException("This method is not supperted for now");
 	}
 	
 	public void changedGripper(final String id) {

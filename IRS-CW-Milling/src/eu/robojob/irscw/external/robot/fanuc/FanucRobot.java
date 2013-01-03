@@ -41,6 +41,7 @@ public class FanucRobot extends AbstractRobot {
 	private static final int MOVE_FINISH_TIMEOUT = 3 * 60 * 1000;
 	private static final int ASK_POSITION_TIMEOUT = 50000;
 	private static final int ASK_STATUS_TIMEOUT = 5 * 1000;
+	private static final int TEACH_TIMEOUT = 10 * 60 * 1000;
 	
 	private static final int WRITE_REGISTER_TIMEOUT = 5000;
 	private static final int IOACTION_TIMEOUT = 2 * 60 * 1000;
@@ -66,6 +67,7 @@ public class FanucRobot extends AbstractRobot {
 	private static final String EXCEPTION_FINALIZE_PICK_TIMEOUT = "FanucRobot.finalizePickTimeout";
 	private static final String EXCEPTION_FINALIZE_PUT_TIMEOUT = "FanucRobot.finalizePutTimeout";
 	private static final String EXCEPTION_FINALIZE_MOVEWITHPIECE_TIMEOUT = "FanucRobot.finalizeMoveWithPieceTimeout";
+	private static final String EXCEPTION_TEACH_TIMEOUT = "FanucRobot.teachTimeout";
 	
 	public FanucRobot(final String id, final Set<GripperBody> gripperBodies, final GripperBody gripperBody, final SocketConnection socketConnection) {
 		super(id, gripperBodies, gripperBody);
@@ -179,9 +181,16 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void continuePutTillClampAck() throws AbstractCommunicationException, RobotActionException, InterruptedException {
-		boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PUT_CLAMP_REQUEST, CLAMP_ACK_REQUEST_TIMEOUT);
-		if (!waitingForRelease) {
-			throw new RobotActionException(this, EXCEPTION_CLAMP_ACK_REQUEST_TIMEOUT);
+		if (getCurrentActionSettings().isTeachingNeeded()) {
+			boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PUT_CLAMP_REQUEST, TEACH_TIMEOUT);
+			if (!waitingForRelease) {
+				throw new RobotActionException(this, EXCEPTION_TEACH_TIMEOUT);
+			}
+		} else {
+			boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PUT_CLAMP_REQUEST, CLAMP_ACK_REQUEST_TIMEOUT);
+			if (!waitingForRelease) {
+				throw new RobotActionException(this, EXCEPTION_CLAMP_ACK_REQUEST_TIMEOUT);
+			}
 		}
 	}
 
@@ -243,10 +252,18 @@ public class FanucRobot extends AbstractRobot {
 	
 	@Override
 	public void continuePickTillUnclampAck() throws AbstractCommunicationException, RobotActionException, InterruptedException {
-		boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PICK_RELEASE_REQUEST, CLAMP_ACK_REQUEST_TIMEOUT);
-		if (!waitingForRelease) {
-			throw new RobotActionException(this, EXCEPTION_UNCLAMP_ACK_REQUEST_TIMEOUT);
+		if (getCurrentActionSettings().isTeachingNeeded()) {
+			boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PICK_RELEASE_REQUEST, TEACH_TIMEOUT);
+			if (!waitingForRelease) {
+				throw new RobotActionException(this, EXCEPTION_TEACH_TIMEOUT);
+			}
+		} else {
+			boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PICK_RELEASE_REQUEST, CLAMP_ACK_REQUEST_TIMEOUT);
+			if (!waitingForRelease) {
+				throw new RobotActionException(this, EXCEPTION_UNCLAMP_ACK_REQUEST_TIMEOUT);
+			}
 		}
+		
 	}
 
 	@Override
@@ -327,9 +344,16 @@ public class FanucRobot extends AbstractRobot {
 	
 	@Override
 	public void continueMoveWithPieceTillWait() throws AbstractCommunicationException, RobotActionException, InterruptedException {
-		boolean waitingForLocation = waitForStatus(RobotConstants.STATUS_WAITING_AFTER_MOVE, MOVE_TO_LOCATION_TIMEOUT);
-		if (!waitingForLocation) {
-			throw new RobotActionException(this, EXCEPTION_MOVE_TO_POSITION_TIMEOUT);
+		if (getCurrentActionSettings().isTeachingNeeded()) {
+			boolean waitingForLocation = waitForStatus(RobotConstants.STATUS_WAITING_AFTER_MOVE, TEACH_TIMEOUT);
+			if (!waitingForLocation) {
+				throw new RobotActionException(this, EXCEPTION_TEACH_TIMEOUT);
+			}
+		} else {
+			boolean waitingForLocation = waitForStatus(RobotConstants.STATUS_WAITING_AFTER_MOVE, MOVE_TO_LOCATION_TIMEOUT);
+			if (!waitingForLocation) {
+				throw new RobotActionException(this, EXCEPTION_MOVE_TO_POSITION_TIMEOUT);
+			}
 		}
 	}
 

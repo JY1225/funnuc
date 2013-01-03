@@ -5,7 +5,6 @@
 
 .automate-icon {
 	-fx-fill: white;
-	-fx-effect: dropshadow(one-pass-box, #414141, 1, 0, 0, 1);
 }
 
 .circle-back {
@@ -40,9 +39,9 @@
 	-fx-alignment: center;
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
-	-fx-font-family: "Helvetica";
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
 	-fx-font-size: 80px;
-	-fx-font-width: bold;
 	-fx-effect: dropshadow(one-pass-box, #565656, 1, 0, 0, 1);
 }
 
@@ -51,8 +50,9 @@
 	-fx-alignment: center;
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
-	-fx-font-family: "Helvetica";
-	-fx-font-size: 13px;
+	-fx-font-size: 16px;
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
 }
 
 .automate-time-lbl {
@@ -60,10 +60,10 @@
 	-fx-alignment: center;
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
-	-fx-font-family: "Helvetica";
-	-fx-font-size: 20px;
-	-fx-font-width: bold;
-	-fx-padding: 7 0 7 0;
+	-fx-font-size: 16px;
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
+	-fx-padding: 2 0 0 0;
 }
 
 .invisible {
@@ -75,8 +75,9 @@
 	-fx-alignment: center;
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
-	-fx-font-family: "Helvetica";
-	-fx-font-size: 14px;
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
+	-fx-font-size: 16px;
 }
 
 .time-vbox {
@@ -97,15 +98,18 @@
 .automate-btn-text {
 	-fx-text-fill: white;
 	-fx-fill: white;
-	-fx-font-size: 16px;
-	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	-fx-font-family: "Helvetica";
+	-fx-font-family: "Open Sans";
+	-fx-font-weight: bold;
+	-fx-font-size: 14px;
+	-fx-font-smoothing-type: lcd;	
 	-fx-alignment: center;
 }
 
 .status-msg {
-	-fx-font-size: 15px;
+	-fx-font-size: 16px;
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
 	-fx-background-color: #8c8888, #3d3d3d, #6d6c6c, #6d6c6c;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 	-fx-background-radius: 5;

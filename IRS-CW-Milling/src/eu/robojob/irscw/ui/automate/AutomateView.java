@@ -37,7 +37,7 @@ public class AutomateView extends VBox {
 	public static final int PROGRESS_RADIUS_INNER = 0;
 	public static final double ICON_WIDTH = 49.5;
 	public static final double ICON_HEIGHT = 55.813;
-	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
+	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3;
 	private static final double BTN_HEIGHT = 40;
 	
 	private static final String START = "AutomateView.start";
