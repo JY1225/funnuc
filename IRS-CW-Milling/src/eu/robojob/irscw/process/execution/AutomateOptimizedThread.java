@@ -16,8 +16,10 @@ import eu.robojob.irscw.external.robot.GripperHead;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.DeviceStep;
 import eu.robojob.irscw.process.InterventionStep;
+import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
+import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.RobotStep;
 import eu.robojob.irscw.threading.ThreadManager;
 
@@ -57,6 +59,7 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		currentIndices.put(WORKPIECE_1_ID, 0);
 	}
 	
+	//TODO add intervention steps execution
 	@Override
 	public void run() {
 		logger.debug("Started execution, processflow [" + processFlow + "].");
@@ -124,11 +127,24 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		
 		if (!isRunning.get(mainProcessId)) {
 			AbstractProcessStep step = processFlow.getStep(currentStepIndexMain);
+			if ((step instanceof PutStep) && (currentStepIndexMain > 0)) {
+				PickStep previousStep = (PickStep) processFlow.getStep(currentStepIndexMain - 1);	// before put step is always a pick step
+				AbstractProcessStep stepSecondProcess = processFlow.getStep(currentStepIndexSecondary);
+				if (stepSecondProcess instanceof PutStep) {
+					PutStep secondProcessPutStep = (PutStep) stepSecondProcess;
+					if (secondProcessPutStep.getRobotSettings().getWorkArea().equals(previousStep.getDeviceSettings().getWorkArea())) {
+						AbstractProcessStep stepSecond = processFlow.getStep(currentStepIndexSecondary);
+						ProcessStepExecutionThread exThread2 = new ProcessStepExecutionThread(stepSecond, secondProcessId, this);
+						isRunning.put(secondProcessId, true);
+						ThreadManager.submit(exThread2);
+						return;
+					}
+				}
+			}
 			ProcessStepExecutionThread exThread = new ProcessStepExecutionThread(step, mainProcessId, this);
 			isRunning.put(mainProcessId, true);
 			ThreadManager.submit(exThread);
 		}
-		
 		if (!isRunning.get(secondProcessId)) {
 			if (isConcurrentExecutionPossible(currentStepIndexMain, currentStepIndexSecondary) && (processFlow.getFinishedAmount() < processFlow.getTotalAmount() - 1)) {
 				AbstractProcessStep stepSecond = processFlow.getStep(currentStepIndexSecondary);
@@ -148,6 +164,9 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		// - if the second step is a robot step, the first not
 		//   - if the second step is a device step and the device will not be used by the first process, unless if it's a stacking device
 		//   - if the gripper head used by the second step will not be used by the first process
+		if (processFlow.getFinishedAmount() == (processFlow.getTotalAmount() - 1)) {
+			return false;
+		}
 		AbstractProcessStep stepFirst = processFlow.getProcessSteps().get(stepIndexFirst);
 		AbstractProcessStep stepSecond = processFlow.getProcessSteps().get(stepIndexSecond);
 		if ((stepFirst instanceof InterventionStep) || (stepSecond instanceof InterventionStep)) {
