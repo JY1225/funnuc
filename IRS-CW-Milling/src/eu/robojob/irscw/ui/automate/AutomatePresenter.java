@@ -26,7 +26,7 @@ import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.process.execution.AutomateThread;
+import eu.robojob.irscw.process.execution.AutomateOptimizedThread;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
@@ -42,7 +42,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	private Set<AbstractCNCMachine> machines;
 	private Set<FanucRobot> robots;
 	
-	private AutomateThread automateThread;
+	private AutomateOptimizedThread automateThread;
 	
 	private ProcessFlowTimer processFlowTimer;
 	private AutomateTimingThread automateTimingThread;
@@ -60,7 +60,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		this.processFlowTimer = processFlowTimer;
 		this.machines = new HashSet<AbstractCNCMachine>();
 		this.robots = new HashSet<FanucRobot>();
-		this.automateThread = new AutomateThread(processFlow);
+		this.automateThread = new AutomateOptimizedThread(processFlow);
 		this.automateTimingThread = new AutomateTimingThread(this, processFlowTimer);
 		this.alarms = false;
 	}
@@ -158,7 +158,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		if (!alarms) {
 			view.hideAlarmMessage();
 		}
-		automateThread = new AutomateThread(processFlow);
+		automateThread = new AutomateOptimizedThread(processFlow);
 		ThreadManager.submit(automateThread);
 	}
 	

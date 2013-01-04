@@ -16,6 +16,7 @@ import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.RobotStep;
+import eu.robojob.irscw.threading.ThreadManager;
 
 /**
  * This optimized Automate-thread will be able to (sometimes) execute 2 steps in parallel
@@ -96,13 +97,34 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		logger.info(toString() + " ended...");
 	}
 	
-	private void executeProcess(final int mainProcessId, final int secondProcessId) {
+	private void executeProcess(final int mainProcessId, final int secondProcessId) throws InterruptedException {
 		int currentStepIndexMain = currentIndices.get(mainProcessId);
 		int currentStepIndexSecondary = currentIndices.get(secondProcessId);
-		if (isConcurrentExecutionPossible(mainProcessId, secondProcessId)) {
-			
-		} else {
-			
+		AbstractProcessStep step = processFlow.getStep(currentStepIndexMain);
+		ProcessStepExecutionThread exThread = new ProcessStepExecutionThread(step, mainProcessId, this);
+		ThreadManager.submit(exThread);
+		while (exThread.isAlive()) {
+			if (isConcurrentExecutionPossible(currentStepIndexMain, currentStepIndexSecondary) && (processFlow.getFinishedAmount() < processFlow.getTotalAmount() - 1)) {
+				AbstractProcessStep stepSecond = processFlow.getStep(currentStepIndexSecondary);
+				ProcessStepExecutionThread exThread2 = new ProcessStepExecutionThread(stepSecond, secondProcessId, this);
+				ThreadManager.submit(exThread2);
+				exThread2.join();
+				currentStepIndexSecondary++;
+				currentIndices.put(secondProcessId, currentStepIndexSecondary);
+			} else {
+				exThread.join();
+			}
+		}
+		currentStepIndexMain++;
+		if (currentStepIndexMain == processFlow.getProcessSteps().size()) {
+			// main flow has finished, switch
+			processFlow.incrementFinishedAmount();
+			this.mainProcessIndex = secondProcessId;
+			currentIndices.put(mainProcessId, 0);
+			if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
+				running = false;
+				processFlow.setMode(Mode.FINISHED);
+			}
 		}
 	}
 	
@@ -194,14 +216,16 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	}
 
 	@Override
-	public void notifyException(Exception e) {
-		// TODO Auto-generated method stub
-		
+	public void notifyException(final Exception e) {
+		e.printStackTrace();
+		logger.error(e);
+		processFlow.setMode(Mode.STOPPED);
 	}
 
 	@Override
-	public void notifyThrowable(Throwable t) {
-		// TODO Auto-generated method stub
-		
+	public void notifyThrowable(final Throwable t) {
+		t.printStackTrace();
+		logger.error(t);
+		processFlow.setMode(Mode.STOPPED);
 	}
 }
