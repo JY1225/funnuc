@@ -30,7 +30,7 @@ import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.process.execution.OptimizedTeachThread;
+import eu.robojob.irscw.process.execution.TeachOptimizedThread;
 import eu.robojob.irscw.process.execution.TeachThread;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
@@ -70,7 +70,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		this.processFlowPresenter = processFlowPresenter;
 		view.setTop(processFlowPresenter.getView());
 		this.processFlow = processFlow;
-		this.teachThread = new OptimizedTeachThread(processFlow, new Coordinates());
+		this.teachThread = new TeachOptimizedThread(processFlow, new Coordinates());
 		this.teachDisconnectedDevicesView = teachDisconnectedDevicesView;
 		this.teachGeneralInfoView = teachGeneralInfoView;
 		teachGeneralInfoView.setPresenter(this);
@@ -121,6 +121,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 				}
 			}
 		}
+		processFlowPresenter.startListening();
 		checkAllConnected();
 	}
 	
@@ -162,6 +163,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		for (AbstractRobot robot : robots.keySet()) {
 			robot.removeListener(this);
 		}
+		processFlowPresenter.stopListening();
 		machines.clear();
 		robots.clear();
 		processFlow.removeListener(this);
@@ -181,7 +183,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		if (this.teachThread.isRunning()) {
 			throw new IllegalStateException("Shouldn't be possible!");
 		}
-		this.teachThread = new OptimizedTeachThread(processFlow, extraFinishedOffset);
+		this.teachThread = new TeachOptimizedThread(processFlow, extraFinishedOffset);
 		ThreadManager.submit(teachThread);
 	}
 	

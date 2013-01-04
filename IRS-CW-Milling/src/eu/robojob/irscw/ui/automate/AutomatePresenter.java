@@ -83,7 +83,6 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		} else {
 			ThreadManager.stopRunning(automateThread);
 			ThreadManager.stopRunning(automateTimingThread);
-			stopListening();
 			view.setTotalAmount(processFlow.getTotalAmount());
 			view.setFinishedAmount(processFlow.getFinishedAmount());
 			stopIndications();
@@ -97,6 +96,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		for (FanucRobot robot : robots) {
 			robot.removeListener(this);
 		}
+		processFlowPresenter.stopListening();
 		machines.clear();
 		robots.clear();
 		processFlow.removeListener(this);
@@ -142,6 +142,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 				robots.add(fRobot);
 			}
 		}
+		processFlowPresenter.startListening();
 		processFlow.addListener(this);
 		view.setTotalAmount(processFlow.getTotalAmount());
 		view.setFinishedAmount(processFlow.getFinishedAmount());

@@ -160,12 +160,12 @@ public class FanucRobot extends AbstractRobot {
 			throw new IllegalStateException(toString() + " executing put, but the gripper [" + fPutSettings.getGripperHead().getGripper() + "] should contain a workpiece.");
 		}
 		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
-		writeCommand(RobotConstants.PERMISSIONS_COMMAND_PUT);
+		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
 	@Override
 	public void continuePutTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException {
-		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
+		writeCommand(RobotConstants.PERMISSIONS_COMMAND_PUT);
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForTeachingNeeded = waitForStatus(RobotConstants.STATUS_AWAITING_TEACHING, MOVE_TO_LOCATION_TIMEOUT);
 			if (!waitingForTeachingNeeded) {
@@ -231,12 +231,12 @@ public class FanucRobot extends AbstractRobot {
 		writeServiceHandlingSet(pickSettings.isFreeAfter(), ppMode, pickSettings.getWorkPiece().getDimensions());
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
 		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getWorkArea().getActiveClamping());
-		writeCommand(RobotConstants.PERMISSIONS_COMMAND_PICK);
+		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
 	@Override
 	public void continuePickTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException {
-		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
+		writeCommand(RobotConstants.PERMISSIONS_COMMAND_PICK);
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForTeachingNeeded = waitForStatus(RobotConstants.STATUS_AWAITING_TEACHING, MOVE_TO_LOCATION_TIMEOUT);
 			if (!waitingForTeachingNeeded) {
@@ -303,7 +303,7 @@ public class FanucRobot extends AbstractRobot {
 		}
 		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
 		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
-		writeCommand(RobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
+		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
 	@Override
@@ -326,12 +326,12 @@ public class FanucRobot extends AbstractRobot {
 		ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_NO_WAIT;
 		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
 		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
-		writeCommand(RobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
+		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
 	@Override
 	public void continueMoveWithPieceTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException {
-		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
+		writeCommand(RobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForTeachingNeeded = waitForStatus(RobotConstants.STATUS_AWAITING_TEACHING, MOVE_TO_LOCATION_TIMEOUT);
 			if (!waitingForTeachingNeeded) {

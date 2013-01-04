@@ -27,6 +27,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	
 	public void setShowQuestionMarks(final boolean showQuestionMarks) {
 		this.showQuestionMarks = showQuestionMarks;
+		getView().showQuestionMarks(showQuestionMarks);
 	}
 
 	@Override public void deviceClicked(final int deviceIndex) {
@@ -38,10 +39,17 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	
 	public void loadProcessFlow(final ProcessFlow processFlow) {
 		processFlowAdapter = new ProcessFlowAdapter(processFlow);
-		processFlow.addListener(this);
 		getView().loadProcessFlow(processFlow);
 		getView().showQuestionMarks(showQuestionMarks);
 		getView().disableClickable();
+	}
+	
+	public void startListening() {
+		processFlowAdapter.getProcessFlow().addListener(this);
+	}
+	
+	public void stopListening() {
+		processFlowAdapter.getProcessFlow().removeListener(this);
 	}
 	
 	public void setNoneActive() {

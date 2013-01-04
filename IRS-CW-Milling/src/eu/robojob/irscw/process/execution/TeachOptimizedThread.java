@@ -24,14 +24,14 @@ import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.workpiece.WorkPiece;
 
-public class OptimizedTeachThread extends TeachThread {
+public class TeachOptimizedThread extends TeachThread {
 	
-	private static Logger logger = LogManager.getLogger(OptimizedTeachThread.class.getName());
+	private static Logger logger = LogManager.getLogger(TeachOptimizedThread.class.getName());
 	private Coordinates extraFinishedOffset;
 	
 	private static final int WORKPIECE_ID = 0;
 
-	public OptimizedTeachThread(final ProcessFlow processFlow, final Coordinates extraFinishedOffset) {
+	public TeachOptimizedThread(final ProcessFlow processFlow, final Coordinates extraFinishedOffset) {
 		super(processFlow);
 		this.extraFinishedOffset = extraFinishedOffset;
 	}

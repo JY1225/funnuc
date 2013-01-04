@@ -110,19 +110,19 @@ public class ProcessFlow {
 		return mode;
 	}
 
-	public void setMode(final Mode mode) {
+	public synchronized void setMode(final Mode mode) {
 		if (mode != this.mode) { 
 			this.mode = mode;
 			processProcessFlowEvent(new ModeChangedEvent(this, mode));
 		}
 	}
 
-	public void addListener(final ProcessFlowListener listener) {
+	public synchronized void addListener(final ProcessFlowListener listener) {
 		this.listeners.add(listener);
 		logger.debug("Now listening to [" + toString() + "]: " + listener.toString());
 	}
 	
-	public void removeListener(final ProcessFlowListener listener) {
+	public synchronized void removeListener(final ProcessFlowListener listener) {
 		this.listeners.remove(listener);
 		logger.debug("Stopped listening to [" + toString() + "]: " + listener.toString());
 	}

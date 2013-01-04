@@ -93,7 +93,7 @@ public class TransportButton extends Pane {
 				
 		handlerPressed = new EventHandler<MouseEvent>() {
 			@Override
-			public void handle(MouseEvent event) {
+			public void handle(final MouseEvent event) {
 				TransportButton.this.requestFocus();
 				arrowShapePane.getStyleClass().remove("arrow-clicked");
 				arrowShapePane.getStyleClass().add("arrow-clicked");
@@ -103,7 +103,7 @@ public class TransportButton extends Pane {
 		
 		handlerReleased = new EventHandler<MouseEvent>() {
 			@Override
-			public void handle(MouseEvent event) {
+			public void handle(final MouseEvent event) {
 				arrowShapePane.getStyleClass().remove("arrow-clicked");	
 				event.consume();
 			}
@@ -114,7 +114,7 @@ public class TransportButton extends Pane {
 		
 	}
 	
-	public void setTransportInformation(TransportInformation transportInfo) {
+	public void setTransportInformation(final TransportInformation transportInfo) {
 		// TODO this logic should be contained in the steps
 		this.transportInfo = transportInfo;
 		
@@ -149,14 +149,14 @@ public class TransportButton extends Pane {
 	public void setOnAction(final EventHandler<ActionEvent> value) {
 		this.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {			
 			@Override
-			public void handle(MouseEvent event) {
+			public void handle(final MouseEvent event) {
 				value.handle(new ActionEvent());
 				event.consume();
 			}
 		});
 	}
 	
-	public void setLeftQuestionMarkActive(boolean active) {
+	public void setLeftQuestionMarkActive(final boolean active) {
 		this.getChildren().remove(questionMarkLeft);
 		if (active) {
 			this.getChildren().add(questionMarkLeft);
@@ -164,7 +164,7 @@ public class TransportButton extends Pane {
 		}
 	}
 	
-	public void setRightQuestionMarkActive(boolean active) {
+	public void setRightQuestionMarkActive(final boolean active) {
 		this.getChildren().remove(questionMarkRight);
 		if (active) {
 			this.getChildren().add(questionMarkRight);
@@ -172,7 +172,7 @@ public class TransportButton extends Pane {
 		}
 	}
 	
-	public void setLeftPauseActive(boolean active) {
+	public void setLeftPauseActive(final boolean active) {
 		this.getChildren().remove(pauseLeft);
 		if (active) {
 			this.getChildren().add(pauseLeft);
@@ -180,7 +180,7 @@ public class TransportButton extends Pane {
 		}
 	}
 	
-	public void setLeftLabel(String text) {
+	public void setLeftLabel(final String text) {
 		this.getChildren().remove(lblLeft);
 		if (text != null) {
 			lblLeft.setText(text);
@@ -189,7 +189,7 @@ public class TransportButton extends Pane {
 		
 	}
 	
-	public void setRightPauseActive(boolean active) {
+	public void setRightPauseActive(final boolean active) {
 		this.getChildren().remove(pauseRight);
 		if (active) {
 			this.getChildren().add(pauseRight);
@@ -197,7 +197,7 @@ public class TransportButton extends Pane {
 		}
 	}
 	
-	public void setRightLabel(String text)  {
+	public void setRightLabel(final String text)  {
 		this.getChildren().remove(lblRight);
 		if (text != null) {
 			lblRight.setText(text);
@@ -241,14 +241,14 @@ public class TransportButton extends Pane {
 		lblRight.getStyleClass().add("hidden");
 	}
 	
-	public void setFocussed(boolean active) {
+	public void setFocussed(final boolean active) {
 		this.getStyleClass().remove("transport-unfocussed");
 		if (!active) {
 			this.getStyleClass().add("transport-unfocussed");
 		}
 	}
 	
-	public void setClickable(boolean clickable) {
+	public void setClickable(final boolean clickable) {
 		this.removeEventHandler(MouseEvent.MOUSE_PRESSED, handlerPressed);
 		this.removeEventHandler(MouseEvent.MOUSE_RELEASED, handlerReleased);
 		arrowShapePane.getStyleClass().remove("arrow-noclick");

@@ -164,12 +164,12 @@ public class ProcessFlowView extends GridPane {
 			region1.setPrefHeight(PROGRESS_BAR_HEIGHT);
 			vbox1.getChildren().add(region1);
 			VBox.setMargin(region1, new Insets(0, 0, PROGRESS_BAR_MARGIN_BOTTOM, 0));
-			regions1.add(region1);
+			regions1.add(i, region1);
 			Region region2 = new Region();
 			region2.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_PIECE);
 			region2.setPrefHeight(PROGRESS_BAR_HEIGHT);
 			vbox2.getChildren().add(region2);
-			regions2.add(region2);
+			regions2.add(i, region2);
 			VBox.setMargin(region2, new Insets(0, 0, PROGRESS_BAR_MARGIN_BOTTOM, 0));
 		}
 	}
