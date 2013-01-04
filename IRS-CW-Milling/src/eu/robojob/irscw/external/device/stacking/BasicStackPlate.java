@@ -40,14 +40,14 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	private WorkPiece rawWorkPiece;
 	private WorkPiece finishedWorkPiece;
 	
-	private StackingPosition currentPickLocation;
+	private List<StackingPosition> currentPickLocations;
 	
 	public BasicStackPlate(final String id, final List<Zone> zones, final BasicStackPlateLayout layout) {
 		super(id, zones);
 		this.layout = layout;
 		this.rawWorkPiece = null;
 		this.finishedWorkPiece = null;
-		currentPickLocation = null;
+		currentPickLocations = new ArrayList<StackingPosition>();
 	}
 	
 	public BasicStackPlate(final String id, final BasicStackPlateLayout layout) {
@@ -83,7 +83,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public synchronized Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == Type.RAW)) {
-				currentPickLocation = stackingPos;
+				currentPickLocations.add(stackingPos);
 				Coordinates c = new Coordinates(stackingPos.getPosition());
 				return c;
 			}
@@ -105,7 +105,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	@Override
 	public synchronized Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, workPieceDimensions);
-		Coordinates c = new Coordinates(currentPickLocation.getPosition());
+		Coordinates c = new Coordinates(currentPickLocations.get(0).getPosition());
 		return c;
 	}
 
@@ -119,13 +119,12 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public synchronized void pickFinished(final DevicePickSettings pickSettings) {
-		currentPickLocation.setWorkPiece(null);
+		currentPickLocations.get(currentPickLocations.size() - 1).setWorkPiece(null);
 	}
 
 	@Override
 	public synchronized void putFinished(final DevicePutSettings putSettings) {
-		currentPickLocation.setWorkPiece(finishedWorkPiece);
-		currentPickLocation = null;
+		currentPickLocations.remove(0).setWorkPiece(finishedWorkPiece);
 	}
 	
 	@Override

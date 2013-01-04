@@ -96,6 +96,9 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	
 	public void setPutStepFinished(final int activeWorkPieceIndex, final int transportIndex) {
 		getView().setTransportRightProgressBarPieceMode(transportIndex, activeWorkPieceIndex, ProgressBarPieceMode.GREEN);
+		if (transportIndex == (processFlowAdapter.getTransportStepCount() - 1)) {
+			getView().setDeviceProgressBarPieceMode(transportIndex + 1, activeWorkPieceIndex, ProgressBarPieceMode.GREEN);
+		}
 	}
 	
 	public void setProcessingStepActive(final int activeWorkPieceIndex, final int deviceIndex) {
