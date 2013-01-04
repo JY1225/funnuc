@@ -1,8 +1,8 @@
 package eu.robojob.irscw.process.execution;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,17 +33,26 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	private ProcessFlow processFlow;
 	private boolean running;
 	
-	private HashMap<Integer, Integer> currentIndices;
+	private Map<Integer, Integer> currentIndices;
+	private Map<Integer, Boolean> isRunning;
 	private int mainProcessIndex;
+	private int secondProcessIndex;
 
+	private Object syncObject;
+	
 	public AutomateOptimizedThread(final ProcessFlow processFlow) {
 		this.processFlow = processFlow;
+		this.syncObject = new Object();
 		reset();
 	}
 	
 	public void reset() {
 		this.currentIndices = new HashMap<Integer, Integer>();
 		this.mainProcessIndex = WORKPIECE_0_ID;
+		this.secondProcessIndex = WORKPIECE_1_ID;
+		this.isRunning = new HashMap<Integer, Boolean>();
+		isRunning.put(WORKPIECE_0_ID, false);
+		isRunning.put(WORKPIECE_1_ID, false);	
 		currentIndices.put(WORKPIECE_0_ID, 0);
 		currentIndices.put(WORKPIECE_1_ID, 0);
 	}
@@ -64,13 +73,16 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 				while (running) {
 					switch (mainProcessIndex) {
 						case WORKPIECE_0_ID:
-							executeProcess(WORKPIECE_0_ID, WORKPIECE_1_ID);
+							executeProcess(mainProcessIndex, WORKPIECE_1_ID);
 							break;
 						case WORKPIECE_1_ID:
-							executeProcess(WORKPIECE_1_ID, WORKPIECE_0_ID);
+							executeProcess(mainProcessIndex, WORKPIECE_0_ID);
 							break;
 						default:
 							throw new IllegalStateException("Unknown main process index [" + mainProcessIndex + "].");
+					}
+					synchronized (syncObject) {
+						syncObject.wait();
 					}
 				}
 			} catch (AbstractCommunicationException e) {
@@ -100,7 +112,7 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		logger.info(toString() + " ended...");
 	}
 	
-	private void executeProcess(final int mainProcessId, final int secondProcessId) throws InterruptedException, ExecutionException {
+	private synchronized void executeProcess(final int mainProcessId, final int secondProcessId) throws InterruptedException, ExecutionException {
 		int currentStepIndexMain = currentIndices.get(mainProcessId);
 		int currentStepIndexSecondary = currentIndices.get(secondProcessId);
 		
@@ -110,36 +122,19 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		// sometimes, a special optimization is possible: when the first process does a pick and the second process's next step is 
 		// a put in the same WorkArea, this should be allowed, before the first process does it's put
 		
+		if (!isRunning.get(mainProcessId)) {
+			AbstractProcessStep step = processFlow.getStep(currentStepIndexMain);
+			ProcessStepExecutionThread exThread = new ProcessStepExecutionThread(step, mainProcessId, this);
+			isRunning.put(mainProcessId, true);
+			ThreadManager.submit(exThread);
+		}
 		
-		
-		
-		AbstractProcessStep step = processFlow.getStep(currentStepIndexMain);
-		ProcessStepExecutionThread exThread = new ProcessStepExecutionThread(step, mainProcessId, this);
-		Future<?> mainTaskFuture = ThreadManager.submit(exThread);
-		while (!mainTaskFuture.isDone()) {
+		if (!isRunning.get(secondProcessId)) {
 			if (isConcurrentExecutionPossible(currentStepIndexMain, currentStepIndexSecondary) && (processFlow.getFinishedAmount() < processFlow.getTotalAmount() - 1)) {
 				AbstractProcessStep stepSecond = processFlow.getStep(currentStepIndexSecondary);
 				ProcessStepExecutionThread exThread2 = new ProcessStepExecutionThread(stepSecond, secondProcessId, this);
-				Future<?> secondTaskFuture = ThreadManager.submit(exThread2);
-				secondTaskFuture.get();
-				currentStepIndexSecondary++;
-				currentIndices.put(secondProcessId, currentStepIndexSecondary);
-			} else {
-				exThread.join();
-				// special case: check if the next step of the secondary process is a put, if the previous step in the main process was a pick with the same
-				// workarea
-			}
-		}
-		currentStepIndexMain++;
-		currentIndices.put(mainProcessId, currentStepIndexMain);
-		if (currentStepIndexMain == processFlow.getProcessSteps().size()) {
-			// main flow has finished, switch
-			processFlow.incrementFinishedAmount();
-			this.mainProcessIndex = secondProcessId;
-			currentIndices.put(mainProcessId, 0);
-			if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
-				running = false;
-				processFlow.setMode(Mode.FINISHED);
+				isRunning.put(secondProcessId, true);
+				ThreadManager.submit(exThread2);
 			}
 		}
 	}
@@ -245,5 +240,31 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		t.printStackTrace();
 		logger.error(t);
 		processFlow.setMode(Mode.STOPPED);
+	}
+
+	@Override
+	public synchronized void stepExecutionFinished(final int stepProcessId) {
+		isRunning.put(stepProcessId, false);
+		int currentStepIndex = currentIndices.get(stepProcessId);
+		currentStepIndex++;
+		currentIndices.put(stepProcessId, currentStepIndex);
+		if (currentStepIndex == processFlow.getProcessSteps().size()) {
+			if (stepProcessId == mainProcessIndex) {
+				// main flow has finished, switch
+				processFlow.incrementFinishedAmount();
+				currentIndices.put(stepProcessId, 0);
+				this.mainProcessIndex = secondProcessIndex;
+				this.secondProcessIndex = stepProcessId;
+				if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
+					running = false;
+					processFlow.setMode(Mode.FINISHED);
+				}
+			} else {
+				throw new IllegalStateException("Secondary process finished before primary?.");
+			}
+		}
+		synchronized (syncObject) {
+			syncObject.notifyAll();
+		}
 	}
 }

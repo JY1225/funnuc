@@ -148,7 +148,7 @@ public class ProcessFlow {
 		processProcessFlowEvent(new FinishedAmountChangedEvent(this, finishedAmount, totalAmount));
 	}
 
-	public void processProcessFlowEvent(final ProcessFlowEvent event) {
+	public synchronized void processProcessFlowEvent(final ProcessFlowEvent event) {
 		switch(event.getId()) {
 			case ProcessFlowEvent.MODE_CHANGED:
 				for (ProcessFlowListener listener : listeners) {

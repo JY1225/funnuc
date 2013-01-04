@@ -27,6 +27,8 @@ public class ProcessStepExecutionThread extends Thread {
 			if (step instanceof AbstractTransportStep) {
 				((AbstractTransportStep) step).finalizeStep();
 			}
+			parent.stepExecutionFinished(workpieceId);
+			logger.debug("Finished step execution [" + step + "], workpiece id [" + workpieceId + "].");
 		} catch (Exception e) {
 			parent.notifyException(e);
 		} catch (Throwable t) {
