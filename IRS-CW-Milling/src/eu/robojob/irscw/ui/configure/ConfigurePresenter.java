@@ -5,12 +5,13 @@ import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
+import eu.robojob.irscw.external.robot.RobotProcessingWhileWaitingSettings;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobotPickSettings;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobotPutSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessingStep;
+import eu.robojob.irscw.process.ProcessingWhileWaitingStep;
 import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
@@ -278,8 +279,10 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		robotPickSettings.setWorkArea(prageDevice.getWorkAreaById("Präge"));
 		robotPickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		
+		RobotProcessingWhileWaitingSettings procSettings = new RobotProcessingWhileWaitingSettings(prageDevice.getWorkAreaById("Präge"), deviceInfo.getPickStep().getRobotSettings().getGripperHead());
+		
 		PutAndWaitStep putAndWait1 = new PutAndWaitStep(deviceInfo.getPickStep().getRobot(), prageDevice, pragePutSettings, robotPutSettings);
-		ProcessingStep processing2 = new ProcessingStep(prageDevice, prageStartCyclusSettings);
+		ProcessingWhileWaitingStep processing2 = new ProcessingWhileWaitingStep(prageDevice, prageStartCyclusSettings, deviceInfo.getPickStep().getRobot(), procSettings);
 		PickAfterWaitStep pickAfterWait1 = new PickAfterWaitStep(deviceInfo.getPickStep().getRobot(), prageDevice, pragePickSettings, robotPickSettings);
 		
 		DeviceInformation newDeviceInfo = new DeviceInformation((index + 1), processFlowAdapter);

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,14 +24,14 @@ public final class ThreadManager {
 	private ThreadManager() {
 	}
 	
-	public static void submit(final Thread thread) {
+	public static Future<?> submit(final Thread thread) {
 		logger.debug("New thread submitted: [" + thread + "].");
 		if (thread instanceof ExternalCommunicationThread) {
 			communicationThreads.add((ExternalCommunicationThread) thread);
 		} else if (thread instanceof MonitoringThread) {
 			monitoringThreads.add((MonitoringThread) thread);
 		}
-		executorService.submit(thread);
+		return executorService.submit(thread);
 	}
 	
 	public static void shutDown() {

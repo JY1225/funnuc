@@ -16,6 +16,7 @@ import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.external.robot.RobotManager;
+import eu.robojob.irscw.external.robot.RobotProcessingWhileWaitingSettings;
 import eu.robojob.irscw.external.robot.RobotSettings;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobotPickSettings;
@@ -26,6 +27,7 @@ import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlowTimer;
 import eu.robojob.irscw.process.ProcessingStep;
+import eu.robojob.irscw.process.ProcessingWhileWaitingStep;
 import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
@@ -307,9 +309,11 @@ public class RoboSoftAppFactory {
 			robotPickSettings2.setWorkArea(prageDevice.getWorkAreaById("Präge"));
 			robotPickSettings2.setWorkPiece(rawWorkPiece);
 			// Put and wait step
+			RobotProcessingWhileWaitingSettings robotProcSettings = new RobotProcessingWhileWaitingSettings(prageDevice.getWorkAreaById("Präge"), 
+					robot.getGripperBody().getGripperHead("A"));
 			PutAndWaitStep putAndWait1 = new PutAndWaitStep(robot, prageDevice, pragePutSettings, robotPutSettings1);
 			PickAfterWaitStep pickAfterWait1 = new PickAfterWaitStep(robot, prageDevice, pragePickSettings, robotPickSettings2);
-			ProcessingStep processing1 = new ProcessingStep(prageDevice, prageStartCyclusSettings);
+			ProcessingWhileWaitingStep processing1 = new ProcessingWhileWaitingStep(prageDevice, prageStartCyclusSettings, robot, robotProcSettings);
 			
 			
 			// PUT IN CNC VRX 

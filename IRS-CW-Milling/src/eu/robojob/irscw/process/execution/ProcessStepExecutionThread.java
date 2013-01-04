@@ -34,4 +34,9 @@ public class ProcessStepExecutionThread extends Thread {
 		}
 		logger.info(toString() + " ended...");
 	}
+	
+	@Override
+	public String toString() {
+		return "ProcessStepExecutionThread: " + step.toString();
+	}
 }

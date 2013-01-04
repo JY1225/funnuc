@@ -1,6 +1,8 @@
 package eu.robojob.irscw.process.execution;
 
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.GripperHead;
 import eu.robojob.irscw.process.AbstractProcessStep;
@@ -97,25 +100,38 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		logger.info(toString() + " ended...");
 	}
 	
-	private void executeProcess(final int mainProcessId, final int secondProcessId) throws InterruptedException {
+	private void executeProcess(final int mainProcessId, final int secondProcessId) throws InterruptedException, ExecutionException {
 		int currentStepIndexMain = currentIndices.get(mainProcessId);
 		int currentStepIndexSecondary = currentIndices.get(secondProcessId);
+		
+		// if the first process is processing (and not as part of put and wait) the second process can use the robot
+		// if the second process is processing (and not as part of pick and wait) the first process can use the robot
+		// the first process has priority so it can finish first
+		// sometimes, a special optimization is possible: when the first process does a pick and the second process's next step is 
+		// a put in the same WorkArea, this should be allowed, before the first process does it's put
+		
+		
+		
+		
 		AbstractProcessStep step = processFlow.getStep(currentStepIndexMain);
 		ProcessStepExecutionThread exThread = new ProcessStepExecutionThread(step, mainProcessId, this);
-		ThreadManager.submit(exThread);
-		while (exThread.isAlive()) {
+		Future<?> mainTaskFuture = ThreadManager.submit(exThread);
+		while (!mainTaskFuture.isDone()) {
 			if (isConcurrentExecutionPossible(currentStepIndexMain, currentStepIndexSecondary) && (processFlow.getFinishedAmount() < processFlow.getTotalAmount() - 1)) {
 				AbstractProcessStep stepSecond = processFlow.getStep(currentStepIndexSecondary);
 				ProcessStepExecutionThread exThread2 = new ProcessStepExecutionThread(stepSecond, secondProcessId, this);
-				ThreadManager.submit(exThread2);
-				exThread2.join();
+				Future<?> secondTaskFuture = ThreadManager.submit(exThread2);
+				secondTaskFuture.get();
 				currentStepIndexSecondary++;
 				currentIndices.put(secondProcessId, currentStepIndexSecondary);
 			} else {
 				exThread.join();
+				// special case: check if the next step of the secondary process is a put, if the previous step in the main process was a pick with the same
+				// workarea
 			}
 		}
 		currentStepIndexMain++;
+		currentIndices.put(mainProcessId, currentStepIndexMain);
 		if (currentStepIndexMain == processFlow.getProcessSteps().size()) {
 			// main flow has finished, switch
 			processFlow.incrementFinishedAmount();
@@ -135,7 +151,7 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		// - if the first is a robot step, the second not
 		//   - if the second step is a device step and the device will not be used by the first process
 		// - if the second step is a robot step, the first not
-		//   - if the second step is a device step and the device will not be used by the first process
+		//   - if the second step is a device step and the device will not be used by the first process, unless if it's a stacking device
 		//   - if the gripper head used by the second step will not be used by the first process
 		AbstractProcessStep stepFirst = processFlow.getProcessSteps().get(stepIndexFirst);
 		AbstractProcessStep stepSecond = processFlow.getProcessSteps().get(stepIndexSecond);
@@ -150,8 +166,10 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 					return false;
 				}
 				if (stepSecond instanceof DeviceStep) {
-					if (willNeedWorkArea(stepIndexFirst, ((DeviceStep) stepSecond).getDeviceSettings().getWorkArea())) {
-						return false;
+					if (!(((DeviceStep) stepSecond).getDevice() instanceof AbstractStackingDevice)) {
+						if (willNeedWorkArea(stepIndexFirst, ((DeviceStep) stepSecond).getDeviceSettings().getWorkArea())) {
+							return false;
+						}
 					}
 				}
 			}
@@ -170,11 +188,11 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 			AbstractProcessStep step = processFlow.getStep(i);
 			if (step instanceof RobotStep) {
 				if (((RobotStep) step).getRobotSettings().getGripperHead().equals(gripperHead)) {
-					return false;
+					return true;
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 	
 	private boolean willNeedWorkArea(final int stepIndexFirst, final WorkArea workArea) {
@@ -182,11 +200,11 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 			AbstractProcessStep step = processFlow.getStep(i);
 			if (step instanceof DeviceStep) {
 				if (((DeviceStep) step).getDeviceSettings().getWorkArea().equals(workArea)) {
-					return false;
+					return true;
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 	
 	@Override
