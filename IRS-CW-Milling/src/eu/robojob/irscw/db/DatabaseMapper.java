@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.apache.derby.jdbc.ClientDriver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,22 +43,26 @@ public final class DatabaseMapper {
 			logger.info("About to create database connection");
 			URL url = ClassLoader.getSystemResource("jdbc.properties");
 			props.load(url.openStream());
-			Class.forName(props.getProperty("jdbc.driver")).newInstance();
-			new ClientDriver();
-			conn = DriverManager.getConnection(props.getProperty("jdbc.protocol") + "://" + props.getProperty("jdbc.host") + ":" + props.getProperty("jdbc.port") + "/" + props.getProperty("jdbc.database") + ";create=true" + ";user=" 
-					+ props.getProperty("jdbc.user") + ";password=" + props.getProperty("jdbc.password"));
+			System.setProperty("derby.system.home", props.getProperty("derby.system.home"));
+			logger.info("System property derby.system.home: " + System.getProperty("derby.system.home"));
+			Class.forName(props.getProperty("jdbc.driver"));
+			//new ClientDriver();
+			String connectionString = props.getProperty("jdbc.protocol") + ":" + props.getProperty("jdbc.database") + ";create=true" + ";user=" 
+					+ props.getProperty("jdbc.user") + ";password=" + props.getProperty("jdbc.password");
+			logger.info("Connection-string: [" + connectionString + "].");
+			conn = DriverManager.getConnection(connectionString);
 			logger.info("Created database connection");
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 			logger.error(e);
 		} catch (IOException e) {
+			e.printStackTrace();
 			logger.error(e);
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 			logger.error(e);
 		} catch (SQLException e) {
-			logger.error(e);
-		} catch (InstantiationException e) {
-			logger.error(e);
-		} catch (IllegalAccessException e) {
+			e.printStackTrace();
 			logger.error(e);
 		}
 	}
@@ -75,6 +78,7 @@ public final class DatabaseMapper {
 				logger.info("Person: " + name + " from " + city + " with id: " + id);
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
 			logger.error(e);
 		}
 	}

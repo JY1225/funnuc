@@ -29,8 +29,8 @@ import eu.robojob.irscw.threading.ThreadManager;
 public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 
 	private static Logger logger = LogManager.getLogger(AutomateThread.class.getName());
-	private static final int WORKPIECE_0_ID = 1;
-	private static final int WORKPIECE_1_ID = 0;
+	private static final int WORKPIECE_0_ID = 0;
+	private static final int WORKPIECE_1_ID = 1;
 	
 	private ProcessFlow processFlow;
 	private boolean running;

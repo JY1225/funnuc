@@ -48,26 +48,20 @@ public class ProcessMenuView extends AbstractMenuView<ProcessMenuPresenter> {
 				presenter.saveData();
 			}
 		});
-		
-		getMenuItem(SAVE_INDEX).setDisable(true);
-		
+				
 		addMenuItem(OPEN_INDEX, OPEN_ICON, Translator.getTranslation(OPEN), true, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
 				presenter.openProcess();
 			}
 		});
-		
-		getMenuItem(OPEN_INDEX).setDisable(false);
-		
+				
 		addMenuItem(NEW_INDEX, NEW_ICON, Translator.getTranslation(NEW), false, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
 				presenter.newProcess();
 			}
 		});
-		
-		getMenuItem(NEW_INDEX).setDisable(true);
 	}
 	
 	public void setConfigureActive() {
