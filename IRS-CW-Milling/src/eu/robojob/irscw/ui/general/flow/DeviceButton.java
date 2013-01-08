@@ -14,6 +14,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 import eu.robojob.irscw.util.Translator;
@@ -43,7 +47,7 @@ public class DeviceButton extends VBox {
 	private static final String CSS_CLASS_DEVICE_BUTTON = "device-button";
 	private static final String CSS_CLASS_DEVICE_LABEL = "device-label";
 	private static final String CSS_CLASS_DEVICE_BUTTON_WRAPPER = "device-button-wrapper";
-	
+		
 	private Button mainButton;
 	private SVGPath imagePath;
 	private Label deviceName;

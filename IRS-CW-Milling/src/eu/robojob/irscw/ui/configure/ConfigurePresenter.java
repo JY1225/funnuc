@@ -96,7 +96,6 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	
 	public boolean isConfigured() {
 		boolean configured = true;
-		processFlowPresenter.refresh();
 		if (processFlowAdapter != null) {
 			for (int i = 0; i < processFlowAdapter.getDeviceStepCount(); i++) {
 				AbstractMenuPresenter<?> menu = deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i));

@@ -96,12 +96,8 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 	}
 	
 	public void refresh() {
+		setNormalMode();
 		super.refresh();
-		if (focussedDevice != -1) {
-			getView().focusDevice(focussedDevice);
-		} else if (focussedTransport != -1) {
-			getView().focusTransport(focussedTransport);
-		}
 	}
 	
 	public void setDeviceConfigured(final int deviceIndex, final boolean configured) {

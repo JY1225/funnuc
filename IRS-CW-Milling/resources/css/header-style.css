@@ -18,7 +18,7 @@
 	-fx-text-alignment: center;
 	-fx-font-family: "Open Sans";
 	-fx-font-weight: bold;
-	-fx-font-size: 14px;
+	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
 }
 
@@ -32,7 +32,7 @@
     -fx-fill: white;
     -fx-font-family: "Open Sans";
 	-fx-font-weight: bold;
-	-fx-font-size: 14px;
+	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
 }
 
