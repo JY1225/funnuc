@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class DeviceSettings {
 
+	//TODO add ProcessFlow
 	private Map<WorkArea, Clamping> clampings;
 	
 	public DeviceSettings() {

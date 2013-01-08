@@ -286,4 +286,8 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 			syncObject.notifyAll();
 		}
 	}
+	
+	public int getMainProcessFlowId() {
+		return mainProcessIndex;
+	}
 }

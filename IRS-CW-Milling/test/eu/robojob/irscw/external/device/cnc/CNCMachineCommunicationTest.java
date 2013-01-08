@@ -2,7 +2,6 @@ package eu.robojob.irscw.external.device.cnc;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -36,7 +35,7 @@ public class CNCMachineCommunicationTest {
 	private static Logger logger = LogManager.getLogger(CNCMachineCommunicationTest.class.getName());
 	
 	@Before
-	public void setup() throws FileNotFoundException, IOException {
+	public void setup() throws IOException {
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
 		this.robotManager = new RobotManager(properties);

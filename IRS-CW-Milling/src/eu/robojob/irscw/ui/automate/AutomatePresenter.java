@@ -102,6 +102,10 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		processFlow.removeListener(this);
 	}
 	
+	public int getMainProcessFlowId() {
+		return automateThread.getMainProcessFlowId();
+	}
+	
 	public void setTimers(final String cycleTime, final String cycleTimePassed, final String timeTillPause, final String timeTillFinished) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
