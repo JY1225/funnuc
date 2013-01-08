@@ -1,31 +1,31 @@
 .form-label, .label {
-	-fx-font-size: 16px;
+	-fx-font-size: 15px;
 	-fx-text-alignment: center;
 	-fx-font-family: "Open Sans Semibold";
 	-fx-font-smoothing-type: lcd;
 	-fx-text-fill: white;
-	-fx-padding: 5 15 0 0;
+	-fx-padding: 0 15 0 0;
 }
 
 .form-button {
-	-fx-background-color: #8c8888, #222222, #807878, linear-gradient(#656161 0%, #4e4a4a 100%);
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
-	-fx-border-radius: 6, 6, 5, 5;
+	-fx-background-color: #8c8888, #222222, #807878, #353333, linear-gradient(#656161 0%, #4e4a4a 100%);
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 3 1;
+	-fx-background-radius: 3, 3, 2, 2, 2;
 	-fx-text-fill: white;
 	-fx-text-alignment: center;
 	-fx-font-family: "Open Sans";
-	-fx-font-size: 14px;
+	-fx-font-size: 13px;
 	-fx-font-weight: bold;
 	-fx-font-smoothing-type: lcd;
 	-fx-padding: 0;
 }
 
 .form-button:pressed, .form-button-active {
-	-fx-background-color: #8c8888, #222222, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
+	-fx-background-color: #8c8888, #222222, #6696e7, #3a4250, linear-gradient(#5078bc 0%, #3e6099 100%);
 }
 
 .form-button:disabled {
-	-fx-background-color: #8c8888, #5d5d5d, #888484, #7b7b7b;
+	-fx-background-color: #8c8888, #5d5d5d, #888484, #7b7b7b, #7b7b7b;
 	-fx-opacity: 1;
 }
 
@@ -58,23 +58,23 @@
 	-fx-font-weight: bold;
 	-fx-font-smoothing-type: lcd;
 	-fx-padding: 0;
-	-fx-font-size: 14px;
+	-fx-font-size: 13px;
 }
 
 .form-button-bar-left {
-	-fx-background-radius: 6 0 0 6, 6 0 0 6, 5 0 0 5, 5 0 0 5;
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 2 0 2 1;
+	-fx-background-radius: 3 0 0 3, 3 0 0 3, 2 0 0 2, 2 0 0 2, 2 0 0 2;
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 2 0 2 1, 2 0 3 1;
 }
 
 .form-button-bar-right {
-	-fx-background-radius: 0 6 6 0, 0 6 6 0, 0 5 5 0, 0 5 5 0;
+	-fx-background-radius: 0 3 3 0, 0 3 3 0, 0 2 2 0, 0 2 2 0, 0 2 2 0;
 }
 
 .form-full-textfield, .text-field {
-	-fx-font-size: 16px;
+	-fx-font-size: 14px;
 	-fx-font-family: "Open Sans";
 	-fx-font-smoothing-type: lcd;
-	-fx-background-radius: 3px;
+	-fx-background-radius: 3, 3, 2;
 	-fx-padding: 0 0 0 10;
 	-fx-background-color: #8c8888, #222222, #4e4a4a;
 	-fx-background-insets: 0, 0 0 1 0, 2 1 2 1;
@@ -106,7 +106,7 @@
 .combo-box-base, .arrow-button {
 	-fx-background-color: #8c8888, #222222, #807878, linear-gradient(#656161 0%, #4e4a4a 100%);
 	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
-	-fx-border-radius: 6, 5, 5, 5;
+	-fx-border-radius: 3, 2, 2, 2;
 }
 
 .arrow {
@@ -114,11 +114,11 @@
 }
 
 .arrow-button {
-	-fx-background-radius: 0 6 6 0,  0 5 5 0, 0 5 5 0, 0 5 5 0;
+	-fx-background-radius: 0 3 3 0,  0 2 2 0, 0 2 2 0, 0 2 2 0;
 }
 
 .combo-box-base .list-cell {
-	-fx-font-size: 14px;
+	-fx-font-size: 13px;
 	-fx-text-alignment: center;
 	-fx-alignment: center-left;
 	-fx-font-family: "Open Sans";
@@ -128,7 +128,7 @@
 }
 
 .combo-box-base {
-	-fx-background-radius: 6, 5, 5, 5;
+	-fx-background-radius: 3, 2, 2, 2;
 }
 
 .combo-box-popup {
@@ -149,7 +149,7 @@
 	-fx-background-color: #343434, #807878, #5e5a5a;
 	-fx-background-insets: 0, 1 1 0 1, 2 1 0 1;
 	-fx-background-radius: 0;
-	-fx-font-size: 15px;
+	-fx-font-size: 13px;
 	-fx-text-alignment: center;
 	-fx-font-family: "Futura Hv BT";
 	-fx-text-fill: white;
@@ -165,9 +165,10 @@
 }
 
 .stacker-text {
-	-fx-font-size: 16px;
+	-fx-font-size: 18px;
 	-fx-text-alignment: center;
 	-fx-font-family: "Open Sans Semibold";
+	-fx-font-weight: bold;
 	-fx-font-smoothing-type: lcd;
 	-fx-text-alignment: center;
 	-fx-fill: #e9441e;
@@ -343,7 +344,7 @@
 
 .processes-list-view .cell {
 	-fx-text-alignment: center;
-	-fx-font-size: 16px;
+	-fx-font-size: 14px;
 	-fx-font-family: "Open Sans Semibold";
 	-fx-font-smoothing-type: lcd;
 	-fx-padding: 10px;

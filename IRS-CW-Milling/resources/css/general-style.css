@@ -16,7 +16,7 @@
 .left-menu-button {
 	-fx-padding: 0;
 	-fx-background-radius: 0;
-	-fx-background-color: #343434, #807878, #5e5a5a;
+	-fx-background-color: #343434, #726c6c, #5e5a5a;
 	-fx-background-insets: 0 0 0 0, 1 1 1 1, 2 1 0 1;
 }
 
@@ -30,7 +30,7 @@
 	-fx-text-alignment: center;
 	-fx-font-family: "Open Sans";
 	-fx-font-weight: bold;
-	-fx-font-size: 14px;
+	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
 }
 
@@ -48,16 +48,16 @@
 }
 
 .left-menu-top {
-	-fx-background-radius: 5 5 0 0;
+	-fx-background-radius: 3 3 0 0;
 }
 
 .left-menu-bottom {
-	-fx-background-radius: 0 0 5 5;
+	-fx-background-radius: 0 0 3 3;
 	-fx-background-insets: 0 0 0 0, 1 1 1 1, 2 1 1 1;
 }
 
 .left-menu-both {
-	-fx-background-radius: 5;
+	-fx-background-radius: 3;
 }
 
 .popup {
@@ -68,7 +68,7 @@
 }
 
 .pop-up-btn {
-	-fx-background-color: #343434, #807878, #5e5a5a;
+	-fx-background-color: #343434, #726c6c, #5e5a5a;
 	-fx-background-insets: 0, 0 1 1 1, 1 1 1 1;
 	-fx-background-radius: 0;
 }
@@ -78,7 +78,7 @@
 	-fx-text-alignment: center;
 	-fx-font-family: "Open Sans";
 	-fx-font-weight: bold;
-	-fx-font-size: 14px;
+	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
 	-fx-padding: 0 0 0 5;
 }

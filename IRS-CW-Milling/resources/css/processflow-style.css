@@ -1,12 +1,12 @@
 /* ---------- DEVICE BUTTON ---------- */
 
 .device-button {
-	-fx-background-insets: 0, 1, 2 1 1 1;
-	-fx-background-radius: 5, 4, 4;
+	-fx-background-insets: 0, 1, 5, 6, 7;
+	-fx-shape: "M 34.03125 0.03125 C 15.253569 0.03125 0.03125 15.253568 0.03125 34.03125 C 0.03125 52.808932 15.253569 68.03125 34.03125 68.03125 C 52.808931 68.03125 68.03125 52.808932 68.03125 34.03125 C 68.03125 15.253568 52.808931 0.03125 34.03125 0.03125 z";
 }
 
 .btn-pre {
-	-fx-background-color: #a55015, #ffb327, linear-gradient(#fb8e05 0%, #e07d01 100%);
+	-fx-background-color: #a0a0a0, linear-gradient(white 0%, #f4f4f4 100%), #a55015, #ce7300, linear-gradient(#fc981b 0%, #ce7300 100%);
 }
 
 .pre-process {
@@ -14,7 +14,7 @@
 }
 
 .btn-cnc {
-	-fx-background-color: #2b0e60, #b789f6, linear-gradient(#935ddc 0%, #4b278d 100%);
+	-fx-background-color: #a0a0a0, linear-gradient(white 0%, #f4f4f4 100%), #2b0e60, #5a2fa8, linear-gradient(#935ddc 0%, #4b278d 100%);
 }
 
 .cnc-machine {
@@ -22,7 +22,7 @@
 }
 
 .btn-post {
-	-fx-background-color: #205c0f, #a3f08c, linear-gradient(#6fc955 0%, #409228 100%);
+	-fx-background-color: #a0a0a0, linear-gradient(white 0%, #f4f4f4 100%), #205c0f, #46932f, linear-gradient(#6fc955 0%, #46932f 100%);
 }
 
 .post-process {
@@ -42,7 +42,7 @@
 }
 
 .device-label {
-	-fx-font-size: 14px;
+	-fx-font-size: 13px;
 	-fx-font-family: "Open Sans Semibold";
 	-fx-font-smoothing-type: lcd;
 	-fx-text-alignment: right;

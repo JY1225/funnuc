@@ -2,6 +2,7 @@ package eu.robojob.irscw.process;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +25,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	private Map<Integer, AbstractProcessStep> lastActiveSteps;
 	private ProcessFlow processFlow;
 	private boolean isPaused;
+	private long timeWon;
 	
 	private static Logger logger = LogManager.getLogger(ProcessFlowTimer.class.getName());
 		
@@ -32,6 +34,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		processFlow.addListener(this);
 		stepDurations = new HashMap<AbstractProcessStep, Long>();
 		waitingTimeAfterStepDurations = new HashMap<AbstractProcessStep, Long>();
+		timeWon = 0;
 		reset();
 	}
 	
@@ -43,6 +46,37 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		lastActiveSteps = new HashMap<Integer, AbstractProcessStep>();
 		startingTimeCurrentProcessFlow = new HashMap<Integer, Long>();
 		otherTimeCurrentProcessFlow = new HashMap<Integer, Long>();
+	}
+	
+	public long getProcessFlowDuration() {
+		if (stepDurations.keySet().containsAll(processFlow.getProcessSteps())) {
+			long duration = 0;
+			for (long time : stepDurations.values()) {
+				duration = duration + time;
+			}
+			for (long time : waitingTimeAfterStepDurations.values()) {
+				duration = duration + time;
+			}
+			return duration;
+		} else {
+			return -1;
+		}
+	}
+	
+	public long getRemainingTime(final int currentMainWorkPieceId) {
+		long processFlowDuration = getProcessFlowDuration();
+		if (processFlowDuration != -1) {
+			long remainingTime = 0;
+			int remainingAmount = processFlow.getTotalAmount() - processFlow.getFinishedAmount();
+			if (remainingAmount > 1) {
+				remainingTime = (remainingAmount - 1) * (processFlowDuration - getTimeWon());
+			}
+			if (remainingAmount > 0) {
+				remainingTime += processFlowDuration - getProcessTimeMeasurement(currentMainWorkPieceId);
+			}
+			return remainingTime;
+		}
+		return -1;
 	}
 	
 	@Override
@@ -91,6 +125,19 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 					startPauseTimeMeasurement(workPieceId, e.getActiveStep());
 				} else {
 					stopProcessTimeMeasurement(workPieceId);
+					// use earliest starting time as time won for next process
+					long minStartTime = -1;
+					int nextWorkpieceIndex = -1;
+					for (Entry<Integer, Long> entry : startingTimeCurrentProcessFlow.entrySet()) {
+						if ((minStartTime == -1) || (entry.getValue() < minStartTime)) {
+							minStartTime = entry.getValue();
+							nextWorkpieceIndex = entry.getKey();
+						}
+					}
+					if (nextWorkpieceIndex != -1) {
+						timeWon = getProcessTimeMeasurement(nextWorkpieceIndex);
+						logger.debug("-- TIME WON: " + timeWon);
+					}
 				}
 				break;
 			default:
@@ -106,6 +153,10 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	private void stopProcessTimeMeasurement(final int workPieceId) {
 		startingTimeCurrentProcessFlow.remove(workPieceId);
 		otherTimeCurrentProcessFlow.remove(workPieceId);
+	}
+	
+	public long getTimeWon() {
+		return timeWon;
 	}
 	
 	public long getProcessTimeMeasurement(final int workPieceId) {
@@ -129,6 +180,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 			totalTime = otherTimeCurrentSteps.get(workPieceId);
 		}
 		totalTime += (System.currentTimeMillis() - startingTimeCurrentSteps.get(workPieceId));
+		logger.debug("TIME STEP [" + step + "]: " + totalTime);
 		startingTimeCurrentSteps.remove(workPieceId);
 		otherTimeCurrentSteps.remove(workPieceId);
 		stepDurations.put(step, totalTime);
@@ -144,6 +196,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 			throw new IllegalStateException("No starting time for: " + workPieceId);
 		}
 		waitingTimeAfterStepDurations.put(lastActiveSteps.get(workPieceId), System.currentTimeMillis() - startingTimePauseAfterSteps.get(workPieceId));
+		startingTimePauseAfterSteps.remove(workPieceId);
 	}
 	
 	private void pauseTimeMeasurements() {

@@ -49,6 +49,8 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	
 	private boolean alarms;
 	
+	private static final String PROCESS_FINISHED = "AutomatePresenter.processFinished";
+	
 	private static Logger logger = LogManager.getLogger(AutomatePresenter.class.getName());
 	
 	public AutomatePresenter(final AutomateView view, final FixedProcessFlowPresenter processFlowPresenter, final ProcessFlow processFlow, final ProcessFlowTimer processFlowTimer) {
@@ -214,7 +216,7 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 					case FINISHED :
 						view.setProcessStopped();
 						view.setNotRunningButtons();
-						view.setStatus(Translator.getTranslation("process-finished"));
+						view.setStatus(Translator.getTranslation(PROCESS_FINISHED));
 						indicateFinished();
 						break;
 					case PAUSED :

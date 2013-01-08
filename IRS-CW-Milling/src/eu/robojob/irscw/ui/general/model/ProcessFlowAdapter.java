@@ -149,7 +149,7 @@ public class ProcessFlowAdapter {
 			}
 			processFlow.processProcessFlowEvent(new DataChangedEvent(processFlow, deviceInfo.getPickStep(), true));
 		} else {
-			throw new IllegalStateException("Amount of device-steps would be greater than maximum.");
+			throw new IllegalStateException("Amount of device-steps " + (getDeviceStepCount() + 1) + " would be greater than maximum: " + MAX_DEVICE_AMOUNT);
 		}
 	}
 	

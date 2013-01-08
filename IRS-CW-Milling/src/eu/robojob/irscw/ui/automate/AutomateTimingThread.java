@@ -27,7 +27,8 @@ public class AutomateTimingThread extends Thread {
 		try {
 			while (running) {
 				long timeInCurrentFlow = processFlowTimer.getProcessTimeMeasurement(automatePresenter.getMainProcessFlowId());
-				automatePresenter.setTimers("?", toTimeString(timeInCurrentFlow), "?", "?");
+				long remainingTime = processFlowTimer.getRemainingTime(automatePresenter.getMainProcessFlowId());
+				automatePresenter.setTimers(toTimeString(processFlowTimer.getProcessFlowDuration()), toTimeString(timeInCurrentFlow), "?", toTimeString(remainingTime));
 				Thread.sleep(SLEEP_INTERVAL);
 			}
 		} catch (Exception e) {
