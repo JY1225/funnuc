@@ -46,8 +46,11 @@ public class ProcessFlowView extends GridPane {
 	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW = "progressbar-piece-yellow";
 	private int progressBarAmount;
 	
+	private boolean showQuestionMarks;
+	
 	public ProcessFlowView(final int progressBarAmount) {
 		this.progressBarAmount = progressBarAmount;
+		this.showQuestionMarks = false;
 		refresh();
 	}
 	
@@ -65,6 +68,7 @@ public class ProcessFlowView extends GridPane {
 		if (processFlowAdapter != null) {
 			build();
 		}
+		this.showQuestionMarks(showQuestionMarks);
 	}
 	
 	private void build() {
@@ -175,6 +179,7 @@ public class ProcessFlowView extends GridPane {
 	}
 	
 	public void showQuestionMarks(final boolean showQuestionMarks) {
+		this.showQuestionMarks = showQuestionMarks;
 		for (TransportButton transportButton : transportButtons) {
 			if (showQuestionMarks) {
 				transportButton.showTeach();

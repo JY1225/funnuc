@@ -22,9 +22,9 @@ public class GeneralInfoView extends VBox {
 	private Label lblStartTeachAll;			
 	private TeachPresenter presenter;
 	
-	private static final double BUTTON_WIDTH = UIConstants.BUTTON_HEIGHT * 5;
+	private static final double BUTTON_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
 	private static final double BUTTON_HEIGHT = 40;
-	private static final int PREF_WIDTH = 520;
+	private static final int PREF_WIDTH = 650;
 	private static final int PREF_HEIGHT = 300;
 	private static final int INFO_MESSAGE_HEIGHT = 50;
 	

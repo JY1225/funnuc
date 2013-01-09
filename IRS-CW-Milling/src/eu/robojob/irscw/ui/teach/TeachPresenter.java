@@ -38,16 +38,15 @@ import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.util.Translator;
 
-//TODO review!
 public class TeachPresenter implements CNCMachineListener, RobotListener, ProcessFlowListener, MainContentPresenter {
 
 	private TeachView view;
 	private FixedProcessFlowPresenter processFlowPresenter;
 	
-	private GeneralInfoView teachGeneralInfoView;
 	private DisconnectedDevicesView teachDisconnectedDevicesView;
-	private StatusView teachStatusView;
+	private GeneralInfoView teachGeneralInfoView;
 	private OffsetPresenter offsetPresenter;
+	private StatusView teachStatusView;
 	
 	private TeachThread teachThread;
 	

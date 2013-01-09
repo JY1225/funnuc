@@ -16,20 +16,13 @@ import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 
 public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter implements ProcessFlowListener {
 	
-	private boolean showQuestionMarks;
 	private ProcessFlowAdapter processFlowAdapter;
 	
 	public FixedProcessFlowPresenter(final ProcessFlowView view) {
 		super(view);
 		view.setPresenter(this);
-		this.showQuestionMarks = false;
 	}
 	
-	public void setShowQuestionMarks(final boolean showQuestionMarks) {
-		this.showQuestionMarks = showQuestionMarks;
-		getView().showQuestionMarks(showQuestionMarks);
-	}
-
 	@Override public void deviceClicked(final int deviceIndex) {
 	}
 	@Override public void transportClicked(final int transportIndex) {
@@ -40,7 +33,6 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	public void loadProcessFlow(final ProcessFlow processFlow) {
 		processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		getView().loadProcessFlow(processFlow);
-		getView().showQuestionMarks(showQuestionMarks);
 		getView().disableClickable();
 	}
 	
@@ -59,7 +51,6 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	@Override
 	public void refresh() {
 		super.refresh();
-		getView().showQuestionMarks(showQuestionMarks);
 		getView().disableClickable();
 		setNoneActive();
 	}
