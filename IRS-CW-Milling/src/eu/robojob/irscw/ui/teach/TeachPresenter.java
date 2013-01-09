@@ -167,7 +167,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		processFlow.removeListener(this);
 	}
 	
-	public void startOptimized() {
+	public void startTeachOptimal() {
 		view.setBottom(offsetPresenter.getView());
 	}
 
@@ -185,7 +185,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		ThreadManager.submit(teachThread);
 	}
 	
-	public void startFlowTeachAll() {
+	public void startTeachAll() {
 		view.setBottom(teachStatusView);
 		if (!alarms) {
 			teachStatusView.hideAlarmMessage();

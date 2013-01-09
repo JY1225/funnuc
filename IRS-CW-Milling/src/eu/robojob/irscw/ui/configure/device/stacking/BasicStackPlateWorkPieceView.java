@@ -155,7 +155,7 @@ public class BasicStackPlateWorkPieceView extends AbstractFormView<BasicStackPla
 		});
 		add(ntxtWorkPieceHeight, column++, row);
 		spacer = new Region();
-		spacer.setPrefSize(HGAP, BTN_HEIGHT);
+		spacer.setPrefSize(20, BTN_HEIGHT);
 		add(spacer, 3, 0);
 		lblOrientation = new Label(Translator.getTranslation(ORIENTATION));
 		orientationsBox = new HBox();

@@ -4,7 +4,7 @@
 	-fx-font-family: "Open Sans Semibold";
 	-fx-font-smoothing-type: lcd;
 	-fx-text-fill: white;
-	-fx-padding: 0 15 0 0;
+	-fx-padding: 0 5 0 0;
 }
 
 .form-button {

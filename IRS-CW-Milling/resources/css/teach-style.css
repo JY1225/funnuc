@@ -1,5 +1,5 @@
 .teach-bottom {
-	-fx-background-color: #4c4c4c, #807c7c, #7b7b7b;
+	-fx-background-color: #4c4c4c, #807c7c, #6d6c6c;
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
 }
 
@@ -9,19 +9,21 @@
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
 	-fx-font-size: 15px;
-	-fx-font-family: "Open Sans";
+	-fx-font-family: "Open Sans Semibold";
 	-fx-font-smoothing-type: lcd;
 	-fx-background-color: transparent;
 } 
 
-.general-info-msg-title {
+.info-msg-title {
 	-fx-font-family: "Open Sans";
 	-fx-font-weight: bold;
-	-fx-font-size: 17px;
+	-fx-font-size: 18px;
 }
 
 .general-info-msg {
+	-fx-font-family: "Open Sans";
 	-fx-text-alignment: left;
+	-fx-padding: 0 20 0 0;
 }
 
 .message-normal {
@@ -76,9 +78,21 @@
 	-fx-alignment: center-left;
 }
 
+.lbl-disconnected {
+	-fx-alignment: top-left;
+	-fx-text-alignment: left;
+	-fx-font-family: "Open Sans";
+	-fx-padding: 5 0 0 0;
+}
+
 .lbl-disconnected-list {
-	-fx-text-size: 18px;
+	-fx-font-size: 16px;
 	-fx-text-alignment: center;
+	-fx-alignment: center;
+}
+
+.warning-icon {
+	-fx-fill: #ffe829;
 }
 
 .loading {

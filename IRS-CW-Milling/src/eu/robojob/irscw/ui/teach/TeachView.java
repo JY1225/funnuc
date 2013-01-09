@@ -21,6 +21,8 @@ public class TeachView extends VBox {
 	protected static final String CSS_CLASS_TEACH_MESSAGE = "teach-msg";
 	protected static final String CSS_CLASS_TEACH_BUTTON_TEXT = "teach-btn-text";
 	protected static final String CSS_CLASS_TEACH_BUTTON = "teach-btn";
+	protected static final String CSS_CLASS_INFO_MESSAGE_TITLE = "info-msg-title";
+	protected static final String CSS_CLASS_WARNING_ICON = "warning-icon";
 	
 	public TeachView() {
 		build();
