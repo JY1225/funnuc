@@ -5,14 +5,24 @@
 
 .teach-msg {
 	-fx-text-alignment: center;
-	-fx-alignment: center;
+	-fx-alignment: top-center;
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
-	-fx-font-size: 16px;
+	-fx-font-size: 15px;
 	-fx-font-family: "Open Sans";
 	-fx-font-smoothing-type: lcd;
 	-fx-background-color: transparent;
 } 
+
+.general-info-msg-title {
+	-fx-font-family: "Open Sans";
+	-fx-font-weight: bold;
+	-fx-font-size: 17px;
+}
+
+.general-info-msg {
+	-fx-text-alignment: left;
+}
 
 .message-normal {
 	-fx-font-size: 16px;
