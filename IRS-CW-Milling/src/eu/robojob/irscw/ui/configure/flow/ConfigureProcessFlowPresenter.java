@@ -10,13 +10,9 @@ import eu.robojob.irscw.ui.general.flow.ProcessFlowView.ProgressBarPieceMode;
 public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	
 	private ConfigurePresenter parent;	
-	private int focussedDevice;
-	private int focussedTransport;
 		
 	public ConfigureProcessFlowPresenter(final ProcessFlowView view) {
 		super(view);
-		focussedDevice = -1;
-		focussedTransport = -1;
 		view.setPresenter(this);
 	}
 	
@@ -27,12 +23,8 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 	public void deviceClicked(final int index) {
 		if (parent.getMode() == Mode.NORMAL) {
 			getView().focusDevice(index);
-			focussedDevice = index;
-			focussedTransport = -1;
 			parent.configureDevice(index);
 		} else {
-			focussedDevice = -1;
-			focussedTransport = -1;
 			if (parent.getMode() == Mode.REMOVE_DEVICE) {
 				parent.removeDevice(index);
 			} else {
@@ -48,12 +40,8 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 	public void transportClicked(final int index) {
 		if (parent.getMode() == Mode.NORMAL) {
 			getView().focusTransport(index);
-			focussedDevice = -1;
-			focussedTransport = index;
 			parent.configureTransport(index);
 		} else {
-			focussedDevice = -1;
-			focussedTransport = -1;
 			if (parent.getMode() == Mode.ADD_DEVICE) {
 				parent.addDevice(index);
 			} else {
@@ -66,33 +54,23 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 		if (parent.getMode() == Mode.NORMAL) {
 			getView().focusAll();
 			parent.configureProcess();
-			focussedDevice = -1;
-			focussedTransport = -1;
-		}
+			}
 	}
 	
 	public void loadProcessFlow(final ProcessFlow processFlow) {
 		super.loadProcessFlow(processFlow);
-		focussedDevice = -1;
-		focussedTransport = -1;
-	}
+		}
 	
 	public void setAddDeviceMode(final boolean addPreProcessPossible, final boolean addPostProcessPossible) {
 		getView().showAddDevice(addPreProcessPossible, addPostProcessPossible);
-		focussedDevice = -1;
-		focussedTransport = -1;
-	}
+		}
 	
 	public void setRemoveDeviceMode() {
 		getView().showRemoveDevice();
-		focussedDevice = -1;
-		focussedTransport = -1;
-	}
+		}
 	
 	public void setNormalMode() {
 		getView().showNormal();
-		focussedDevice = -1;
-		focussedTransport = -1;
 	}
 	
 	public void refresh() {

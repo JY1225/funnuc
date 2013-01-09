@@ -121,6 +121,9 @@ public class TeachThread extends Thread {
 		}
 	}
 
+	/**
+	 * Resets the relative teached offsets for all transport steps
+	 */
 	protected void resetOffsets() {
 		for (AbstractProcessStep step: getProcessFlow().getProcessSteps()) {
 			if (step instanceof AbstractTransportStep) {

@@ -70,7 +70,6 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		this.processFlowPresenter = processFlowPresenter;
 		view.setTop(processFlowPresenter.getView());
 		this.processFlow = processFlow;
-		this.teachThread = new TeachOptimizedThread(processFlow, new Coordinates());
 		this.teachDisconnectedDevicesView = teachDisconnectedDevicesView;
 		this.teachGeneralInfoView = teachGeneralInfoView;
 		teachGeneralInfoView.setPresenter(this);
@@ -88,7 +87,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		if (active) {
 			enable();
 		} else {
-			if (teachThread.isRunning()) {
+			if ((teachThread != null) && (teachThread.isRunning())) {
 				ThreadManager.stopRunning(teachThread);
 			}
 			stopListening();

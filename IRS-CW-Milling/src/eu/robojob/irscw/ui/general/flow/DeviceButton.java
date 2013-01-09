@@ -14,10 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.irscw.external.device.DeviceType;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 import eu.robojob.irscw.util.Translator;

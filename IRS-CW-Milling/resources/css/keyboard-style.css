@@ -1,32 +1,34 @@
 .keyboard-background {
-	-fx-background-color: rgba(109, 109, 109, 0.9);
+	-fx-background-color: rgba(90, 90, 90, 0.93);
 }
 
 .keyboard-button {
-	-fx-background-color: #8a8484, #222222, #807878, linear-gradient(#656161 0%, #4e4a4a 100%);
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
+	-fx-background-color: #6f6a6a, #222222, #807878, #353333, linear-gradient(#656161 0%, #4e4a4a 100%);
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 3 1;
 	-fx-text-alignment: center;
-	-fx-font-family: "Open Sans";
-	-fx-font-weight: bold;
+	-fx-font-family: "Open Sans Semibold";
 	-fx-font-size: 16px;
 	-fx-font-smoothing-type: lcd;
 	-fx-padding: 0;
-	-fx-border-radius: 5, 4, 3;
+	-fx-background-radius: 3, 3, 2, 2, 2;
 }
 
 .keyboard-button Text {
     -fx-fill: white;
+    -fx-font-family: "Open Sans Semibold";
+	-fx-font-size: 16px;
+	-fx-font-smoothing-type: lcd;
 }
 
 .keyboard-button:pressed {
-	-fx-background-color: #807878, #222222, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
+	-fx-background-color: #6f6a6a, #222222, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
 }
 
 .keyboard-button:pressed Text {
 }
 
 #key-OK {
-	-fx-background-color: #807878, #222222, #a3f08c, linear-gradient(#6fc955 0%, #409228 100%);
+	-fx-background-color: #6f6a6a, #222222, #a3f08c, #255317, linear-gradient(#6fc955 0%, #409228 100%);
 }
 
 #key-OK Text {
