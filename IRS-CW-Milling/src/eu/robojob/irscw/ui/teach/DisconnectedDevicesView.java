@@ -9,7 +9,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
 
 public class DisconnectedDevicesView extends VBox {
 
