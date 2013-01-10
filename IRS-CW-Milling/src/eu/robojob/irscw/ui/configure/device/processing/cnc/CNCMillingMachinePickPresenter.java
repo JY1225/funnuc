@@ -2,6 +2,8 @@ package eu.robojob.irscw.ui.configure.device.processing.cnc;
 
 import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
@@ -60,22 +62,61 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 		}
 	}
 	
-	public void changedHeight(final float height) {
-		if (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null) {
-			pickStep.getRobotSettings().getWorkPiece().getDimensions().setHeight(height);
-		} else {
-			WorkPieceDimensions dimensions = new WorkPieceDimensions();
-			dimensions.setHeight(height);
-			pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
-		}
+	public void changedWidth(final float width) {
+		pickStep.getRobotSettings().getWorkPiece().getDimensions().setWidth(width);
 		pickStep.setRelativeTeachedOffset(null);
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+	}
+	
+	public void resetWidth() {
+		WorkPieceDimensions prevPickDimensions = getPreviousPickDimensions();
+		changedWidth(prevPickDimensions.getWidth());
+		getView().refresh();
+	}
+	
+	public void changedLength(final float length) {
+		pickStep.getRobotSettings().getWorkPiece().getDimensions().setLength(length);
+		pickStep.setRelativeTeachedOffset(null);
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+	}
+	
+	public void resetLength() {
+		WorkPieceDimensions prevPickDimensions = getPreviousPickDimensions();
+		changedLength(prevPickDimensions.getLength());
+		getView().refresh();
+	}
+	
+	public void changedHeight(final float height) {
+		pickStep.getRobotSettings().getWorkPiece().getDimensions().setHeight(height);
+		pickStep.setRelativeTeachedOffset(null);
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+	}
+	
+	public void resetHeight() {
+		WorkPieceDimensions prevPickDimensions = getPreviousPickDimensions();
+		changedHeight(prevPickDimensions.getHeight());
+		getView().refresh();
+	}
+	
+	private WorkPieceDimensions getPreviousPickDimensions() {
+		int pickIndex = pickStep.getProcessFlow().getStepIndex(pickStep);
+		for (int i = pickIndex - 1; i >= 0; i--) {
+			AbstractProcessStep step = pickStep.getProcessFlow().getStep(i);
+			if ((step instanceof PickStep) && !(step instanceof PickAfterWaitStep)) {
+				return ((PickStep) step).getRobotSettings().getWorkPiece().getDimensions();
+			}
+		}
+		throw new IllegalArgumentException("Couldn't find previous pick step");
 	}
 
 	@Override
 	public boolean isConfigured() {
 		if ((pickStep.getRobotSettings().getSmoothPoint() != null) && (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null)) {
-			return true;
+			WorkPieceDimensions myDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
+			WorkPieceDimensions prevDimensions = getPreviousPickDimensions();
+			if ((myDimensions.getWidth() <= prevDimensions.getWidth()) && (myDimensions.getLength() <= prevDimensions.getLength())) {
+				return true;
+			}
 		}
 		return false;
 	}

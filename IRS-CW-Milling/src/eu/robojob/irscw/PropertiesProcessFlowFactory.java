@@ -123,7 +123,7 @@ public class PropertiesProcessFlowFactory {
 		BasicStackPlate stackPlate = (BasicStackPlate) deviceManager.getStackingFromDeviceById("IRS M Basic");
 		BasicStackPlateSettings stackPlateSettings = (BasicStackPlateSettings) stackPlate.getDeviceSettings();
 		stackPlateSettings.setAmount(amount);
-		stackPlateSettings.setDimensions(rawDimensions);
+		stackPlateSettings.setRawWorkPieceDimensions(rawDimensions);
 		if (tilted) {
 			stackPlateSettings.setOrientation(WorkPieceOrientation.TILTED);
 		} else {

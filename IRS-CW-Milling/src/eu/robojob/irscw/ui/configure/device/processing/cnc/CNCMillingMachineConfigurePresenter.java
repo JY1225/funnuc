@@ -14,30 +14,19 @@ import eu.robojob.irscw.external.robot.RobotPickSettings;
 import eu.robojob.irscw.external.robot.RobotPutSettings;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.AbstractTransportStep;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
-import eu.robojob.irscw.process.event.ModeChangedEvent;
-import eu.robojob.irscw.process.event.ProcessFlowEvent;
-import eu.robojob.irscw.process.event.ProcessFlowListener;
-import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
-public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<CNCMillingMachineConfigureView, CNCMillingMachineMenuPresenter> implements ProcessFlowListener {
+public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<CNCMillingMachineConfigureView, CNCMillingMachineMenuPresenter> {
 
 	private DeviceInformation deviceInfo;
 	
 	private static Logger logger = LogManager.getLogger(CNCMillingMachineConfigurePresenter.class.getName());
-	private ProcessFlow processFlow;
 	
 	public CNCMillingMachineConfigurePresenter(final CNCMillingMachineConfigureView view, final DeviceInformation deviceInfo, final DeviceManager deviceManager) {
 		super(view);
 		this.deviceInfo = deviceInfo;
-		this.processFlow = deviceInfo.getPickStep().getProcessFlow();
-		processFlow.addListener(this);
 		view.setDeviceInfo(deviceInfo);
 		view.setCNCMillingMachineIds(deviceManager.getCNCMachineIds());
 		view.build();
@@ -157,46 +146,5 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			return true;
 		}
 		return false;
-	}
-
-	@Override
-	public void modeChanged(final ModeChangedEvent e) {
-	}
-	@Override
-	public void statusChanged(final StatusChangedEvent e) {
-	}
-	@Override
-	public void finishedAmountChanged(final FinishedAmountChangedEvent e) {
-	}
-	@Override
-	public void dataChanged(final ProcessFlowEvent e) {
-		DataChangedEvent de = (DataChangedEvent) e;
-		if (de.getStep() instanceof PickStep) {
-			int changedStepIndex = processFlow.getStepIndex(de.getStep());
-			int currentStepIndex = processFlow.getStepIndex(deviceInfo.getPutStep());
-			//FIXME REVIEW!
-			if (changedStepIndex >= 0) {
-				if (changedStepIndex < currentStepIndex) {
-					boolean invasiveSteps = false;
-					for (int i = changedStepIndex; i < currentStepIndex; i++) {
-						AbstractProcessStep step = processFlow.getStep(i);
-						if (step instanceof ProcessingStep) {
-							if (((ProcessingStep) step).getDevice().isInvasive()) {
-								invasiveSteps = true;
-							}
-								
-						}
-					}
-					if (!invasiveSteps) {
-						PickStep prevPickStep = (PickStep) de.getStep();
-						deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getDimensions().setLength(prevPickStep.getRobotSettings().getWorkPiece().getDimensions().getLength());
-						deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getDimensions().setWidth(prevPickStep.getRobotSettings().getWorkPiece().getDimensions().getWidth());
-						if (deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getDimensions().getHeight() > prevPickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight()) {
-							deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getDimensions().setHeight(prevPickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight());
-						}
-					}
-				}
-			}
-		}
 	}
 }

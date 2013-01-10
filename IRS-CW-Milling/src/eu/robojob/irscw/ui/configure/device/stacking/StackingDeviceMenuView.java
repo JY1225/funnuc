@@ -36,7 +36,7 @@ public class StackingDeviceMenuView extends AbstractMenuView<AbstractStackingDev
 		// - layout
 		int index = 0;
 		String iconPath = null;
-		boolean from = true;
+		boolean putStep = false;
 		if (deviceInfo.hasPickStep())  {
 			iconPath = FROM_ICON;
 			if (deviceInfo.hasPutStep()) {
@@ -44,7 +44,7 @@ public class StackingDeviceMenuView extends AbstractMenuView<AbstractStackingDev
 			}
 		} else {
 			iconPath = TO_ICON;
-			from = false;
+			putStep = true;
 			if (!deviceInfo.hasPutStep()) {
 				throw new IllegalStateException("No pick or put step found for [" + deviceInfo.getDevice() + "]");
 			}
@@ -57,7 +57,7 @@ public class StackingDeviceMenuView extends AbstractMenuView<AbstractStackingDev
 			}
 		});
 		index++;
-		if (from)  {
+		if (!putStep) {
 			workpieceIndex = index;
 			addMenuItem(index, WORKPIECE_ICON, Translator.getTranslation(CONFIGURE_WORKPIECE), true, new EventHandler<ActionEvent>() {
 				@Override

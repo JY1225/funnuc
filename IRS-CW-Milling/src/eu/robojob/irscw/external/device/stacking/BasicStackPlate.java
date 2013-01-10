@@ -35,10 +35,10 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 		
 	private static Logger logger = LogManager.getLogger(BasicStackPlate.class.getName());
-	private BasicStackPlateLayout layout;
-		
+	private BasicStackPlateLayout layout;	
 	private WorkPiece rawWorkPiece;
 	private WorkPiece finishedWorkPiece;
+	private Coordinates finishedWorkPieceRelativeCentrumDislocation;
 	
 	private List<StackingPosition> currentPickLocations;
 	
@@ -47,7 +47,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		this.layout = layout;
 		this.rawWorkPiece = null;
 		this.finishedWorkPiece = null;
-		currentPickLocations = new ArrayList<StackingPosition>();
+		this.finishedWorkPieceRelativeCentrumDislocation = null;
+		this.currentPickLocations = new ArrayList<StackingPosition>();
 	}
 	
 	public BasicStackPlate(final String id, final BasicStackPlateLayout layout) {
@@ -137,8 +138,9 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		if (deviceSettings instanceof BasicStackPlateSettings) {
 			BasicStackPlateSettings settings = (BasicStackPlateSettings) deviceSettings;
 			try {
-				layout.configureStackingPositions(settings.getWorkPiece(), settings.getOrientation());
-				this.rawWorkPiece = settings.getWorkPiece();
+				layout.configureStackingPositions(settings.getRawWorkPiece(), settings.getOrientation());
+				this.rawWorkPiece = settings.getRawWorkPiece();
+				this.finishedWorkPiece = settings.getFinishedWorkPiece();
 				layout.placeRawWorkPieces(rawWorkPiece, settings.getAmount());
 			} catch (IncorrectWorkPieceDataException e) {
 				logger.error(e);
@@ -150,7 +152,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public DeviceSettings getDeviceSettings() {
-		return new BasicStackPlateSettings(rawWorkPiece, layout.getOrientation(), layout.getRawWorkPieceAmount());
+		return new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, finishedWorkPieceRelativeCentrumDislocation, layout.getOrientation(), layout.getRawWorkPieceAmount());
 	}
 
 	@Override

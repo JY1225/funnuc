@@ -10,6 +10,7 @@ import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineConfigurePresenter;
 import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineConfigureView;
@@ -26,8 +27,8 @@ import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateConfigureVie
 import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateLayoutPresenter;
 import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateLayoutView;
 import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateMenuPresenter;
-import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateWorkPiecePresenter;
-import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateWorkPieceView;
+import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateRawWorkPiecePresenter;
+import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateRawWorkPieceView;
 import eu.robojob.irscw.ui.configure.device.stacking.StackingDeviceMenuView;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
@@ -119,10 +120,10 @@ public class DeviceMenuFactory {
 		return basicStackPlateConfigurePresenter;
 	}
 	
-	public BasicStackPlateWorkPiecePresenter getBasicStackPlateWorkPiecePresenter(final DeviceInformation deviceInfo) {
+	public AbstractFormPresenter<?, BasicStackPlateMenuPresenter> getBasicStackPlateWorkPiecePresenter(final DeviceInformation deviceInfo) {
 		if (deviceInfo.getPickStep() != null) {
-			BasicStackPlateWorkPieceView view = new BasicStackPlateWorkPieceView();
-			BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter = new BasicStackPlateWorkPiecePresenter(view, deviceInfo.getPickStep(), (BasicStackPlateSettings) deviceInfo.getDeviceSettings());
+			BasicStackPlateRawWorkPieceView view = new BasicStackPlateRawWorkPieceView();
+			BasicStackPlateRawWorkPiecePresenter basicStackPlateWorkPiecePresenter = new BasicStackPlateRawWorkPiecePresenter(view, deviceInfo.getPickStep(), (BasicStackPlateSettings) deviceInfo.getDeviceSettings());
 			return basicStackPlateWorkPiecePresenter;
 		} else {
 			return null;

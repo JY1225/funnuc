@@ -11,16 +11,16 @@ import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
-public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<BasicStackPlateWorkPieceView, BasicStackPlateMenuPresenter> {
+public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<BasicStackPlateRawWorkPieceView, BasicStackPlateMenuPresenter> {
 
 	private BasicStackPlateSettings deviceSettings;
 	private PickStep pickStep;
 	private WorkPieceDimensions dimensions;
 	private WorkPieceOrientation orientation;
 		
-	private static Logger logger = LogManager.getLogger(BasicStackPlateWorkPiecePresenter.class.getName());
+	private static Logger logger = LogManager.getLogger(BasicStackPlateRawWorkPiecePresenter.class.getName());
 	
-	public BasicStackPlateWorkPiecePresenter(final BasicStackPlateWorkPieceView view, final PickStep pickStep, final BasicStackPlateSettings deviceSettings) {
+	public BasicStackPlateRawWorkPiecePresenter(final BasicStackPlateRawWorkPieceView view, final PickStep pickStep, final BasicStackPlateSettings deviceSettings) {
 		super(view);
 		this.pickStep = pickStep;	
 		this.deviceSettings = deviceSettings;
@@ -29,7 +29,7 @@ public class BasicStackPlateWorkPiecePresenter extends AbstractFormPresenter<Bas
 			dimensions = new WorkPieceDimensions();
 			pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
 		}
-		deviceSettings.setDimensions(dimensions);		
+		deviceSettings.setRawWorkPieceDimensions(dimensions);		
 		orientation = deviceSettings.getOrientation();
 		if (orientation == null) {
 			orientation = WorkPieceOrientation.HORIZONTAL;

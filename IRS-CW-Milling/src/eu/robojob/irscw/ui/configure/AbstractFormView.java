@@ -32,6 +32,7 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	protected static final String CSS_CLASS_FORM_ICON = "form-icon";
 	protected static final String CSS_CLASS_FORM_BUTTON_BAR_LEFT = "form-button-bar-left";
 	protected static final String CSS_CLASS_FORM_BUTTON_BAR_RIGHT = "form-button-bar-right";
+	protected static final String CSS_CLASS_CENTER_TEXT = "center-text";
 	
 	public AbstractFormView() {
 		super();

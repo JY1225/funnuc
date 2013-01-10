@@ -21,7 +21,7 @@
 }
 
 .keyboard-button:pressed {
-	-fx-background-color: #6f6a6a, #222222, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
+	-fx-background-color: #6f6a6a, #222222, #6696e7, #1d355d, linear-gradient(#5078bc 0%, #3e6099 100%);
 }
 
 .keyboard-button:pressed Text {

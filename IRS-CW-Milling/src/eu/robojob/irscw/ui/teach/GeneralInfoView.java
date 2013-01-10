@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 
+//TODO disable optimal when processflow has different structure
 public class GeneralInfoView extends GridPane {
 
 	private Label lblInfoMessageOptimalTitle;

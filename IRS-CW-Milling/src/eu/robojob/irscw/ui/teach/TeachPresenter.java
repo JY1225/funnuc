@@ -42,26 +42,21 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 
 	private TeachView view;
 	private FixedProcessFlowPresenter processFlowPresenter;
-	
 	private DisconnectedDevicesView teachDisconnectedDevicesView;
 	private GeneralInfoView teachGeneralInfoView;
 	private OffsetPresenter offsetPresenter;
 	private StatusView teachStatusView;
-	
 	private TeachThread teachThread;
-	
 	private ProcessFlow processFlow;
-		
-	private static Logger logger = LogManager.getLogger(TeachPresenter.class.getName());
-	
 	private Map<AbstractCNCMachine, Boolean> machines;
 	private Map<AbstractRobot, Boolean> robots;
-	
+	private boolean alarms;
+
+	private static Logger logger = LogManager.getLogger(TeachPresenter.class.getName());
+
 	private static final String STARTING_PROCESS = "TeachPresenter.startingProcess";
 	private static final String ALARM_OCCURED = "TeachPresenter.alarmOccured";
 	private static final String TEACHING_FINISHED = "TeachPresenter.teachingFinished";
-	
-	private boolean alarms;
 	
 	public TeachPresenter(final TeachView view, final FixedProcessFlowPresenter processFlowPresenter, final ProcessFlow processFlow, final DisconnectedDevicesView teachDisconnectedDevicesView,
 			final GeneralInfoView teachGeneralInfoView, final StatusView teachStatusView, final OffsetPresenter offsetPresenter) {
@@ -91,6 +86,19 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 			}
 			stopListening();
 		}
+	}
+	
+	private void stopListening() {
+		for (AbstractCNCMachine machine : machines.keySet()) {
+			machine.removeListener(this);
+		}
+		for (AbstractRobot robot : robots.keySet()) {
+			robot.removeListener(this);
+		}
+		processFlowPresenter.stopListening();
+		machines.clear();
+		robots.clear();
+		processFlow.removeListener(this);
 	}
 	
 	private void enable() {
@@ -152,19 +160,6 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 	
 	public void showInfoMessage() {
 		view.setBottom(teachGeneralInfoView);
-	}
-	
-	private void stopListening() {
-		for (AbstractCNCMachine machine : machines.keySet()) {
-			machine.removeListener(this);
-		}
-		for (AbstractRobot robot : robots.keySet()) {
-			robot.removeListener(this);
-		}
-		processFlowPresenter.stopListening();
-		machines.clear();
-		robots.clear();
-		processFlow.removeListener(this);
 	}
 	
 	public void startTeachOptimal() {
@@ -323,10 +318,6 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 	}
 	
 	@Override
-	public void cNCMachineStatusChanged(final CNCMachineEvent event) {
-	}
-	
-	@Override
 	public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
@@ -341,13 +332,6 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 	}
 	
 	@Override
-	public void dataChanged(final ProcessFlowEvent e) {
-	}
-	@Override
-	public void finishedAmountChanged(final FinishedAmountChangedEvent e) {
-	}
-	
-	@Override
 	public TeachView getView() {
 		return view;
 	}
@@ -356,16 +340,10 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		processFlowPresenter.loadProcessFlow(processFlow);
 	}
 
-	@Override
-	public void robotZRestChanged(final RobotEvent event) {
-	}
-
-	@Override
-	public void robotSpeedChanged(final RobotEvent event) {
-	}
-
-	@Override
-	public void setParent(final MainPresenter mainPresenter) {
-	}
-	
+	@Override public void dataChanged(final ProcessFlowEvent e) { }
+	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) { }
+	@Override public void robotZRestChanged(final RobotEvent event) { }
+	@Override public void robotSpeedChanged(final RobotEvent event) { }
+	@Override public void setParent(final MainPresenter mainPresenter) { }
+	@Override public void cNCMachineStatusChanged(final CNCMachineEvent event) { }
 }

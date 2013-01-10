@@ -197,7 +197,7 @@
 }
 
 .workpiece {
-	-fx-fill: linear-gradient(#ffb327 0%, #ffb327 2%, #fb8e05 4%, #e07d01 100%);
+	-fx-fill: linear-gradient(#ffb327 0%, #ffb327 2%, #fc981b 4%, #ce7300 100%);
 	-fx-stroke-width: 1px;
 	-fx-stroke: #a55015;
 }

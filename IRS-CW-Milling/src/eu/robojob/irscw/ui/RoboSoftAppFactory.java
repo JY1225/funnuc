@@ -258,7 +258,8 @@ public class RoboSoftAppFactory {
 			BasicStackPlate stackPlate = (BasicStackPlate) deviceMgr.getStackingFromDeviceById("IRS M Basic");
 			BasicStackPlateSettings stackPlateSettings = (BasicStackPlateSettings) stackPlate.getDeviceSettings();
 			stackPlateSettings.setAmount(totalAmount);
-			stackPlateSettings.setDimensions(rawDimensions);
+			stackPlateSettings.setRawWorkPieceDimensions(rawDimensions);
+			stackPlateSettings.setFinishedWorkPieceDimensions(finishedDimensions);
 			stackPlateSettings.setOrientation(WorkPieceOrientation.TILTED);
 			processFlow.setDeviceSettings(stackPlate, stackPlateSettings);
 			

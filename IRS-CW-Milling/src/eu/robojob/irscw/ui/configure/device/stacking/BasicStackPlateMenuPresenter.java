@@ -1,21 +1,22 @@
 package eu.robojob.irscw.ui.configure.device.stacking;
 
+import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 	
 	private BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
-	private BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter;
+	private AbstractFormPresenter<?, BasicStackPlateMenuPresenter> basicStackPlateWorkPiecePresenter;
 	private BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter;
 	
 	public BasicStackPlateMenuPresenter(final StackingDeviceMenuView view, final DeviceInformation deviceInfo, final BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter,
-			final BasicStackPlateWorkPiecePresenter basicStackPlateWorkPiecePresenter, final BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter) {
+			final AbstractFormPresenter<?, BasicStackPlateMenuPresenter> basicStackPlateWorkPiecePresenter, final BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter) {
 		super(view, deviceInfo);
 		this.basicStackPlateConfigurePresenter = basicStackPlateConfigurePresenter;
 		basicStackPlateConfigurePresenter.setMenuPresenter(this);
-		this.basicStackPlateWorkPiecePresenter = basicStackPlateWorkPiecePresenter;
 		if (basicStackPlateWorkPiecePresenter != null) {
+			this.basicStackPlateWorkPiecePresenter = basicStackPlateWorkPiecePresenter;
 			basicStackPlateWorkPiecePresenter.setMenuPresenter(this);
 		}
 		this.basicStackPlateLayoutPresenter = basicStackPlateLayoutPresenter;
@@ -31,6 +32,8 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 	@Override
 	public void configureWorkPiece() {
 		getView().setConfigureWorkPieceActive();
+		// check if it's a pick (raw workpiece) or put (finished workpiece)	
+		//TODO in the future: add 'partly-finished workpieces'
 		getParent().setBottomRightView(basicStackPlateWorkPiecePresenter.getView());
 	}
 
