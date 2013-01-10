@@ -6,6 +6,7 @@ import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
@@ -137,11 +138,9 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 		}); 
 	}
 
-	@Override public void modeChanged(final ModeChangedEvent e) {
-	}
-	@Override public void dataChanged(final ProcessFlowEvent e) {
-	}
-	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) {
-	}
+	@Override public void modeChanged(final ModeChangedEvent e) { }
+	@Override public void dataChanged(final ProcessFlowEvent e) { }
+	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) { }
+	@Override public void exceptionOccured(final ExceptionOccuredEvent e) { }
 
 }

@@ -10,8 +10,9 @@ public class ProcessFlowEvent {
 	
 	public static final int MODE_CHANGED = 1;
 	public static final int ACTIVE_STEP_CHANGED = 2;
-	public static final int DATA_CHANGED = 5;
-	public static final int FINISHED_AMOUNT_CHANGED = 6;
+	public static final int DATA_CHANGED = 3;
+	public static final int FINISHED_AMOUNT_CHANGED = 4;
+	public static final int EXCEPTION_OCCURED = 5;
 	
 	public ProcessFlowEvent(final ProcessFlow source, final int id) {
 		this.source = source;

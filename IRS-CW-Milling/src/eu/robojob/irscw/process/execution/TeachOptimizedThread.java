@@ -27,13 +27,11 @@ import eu.robojob.irscw.workpiece.WorkPiece;
 public class TeachOptimizedThread extends TeachThread {
 	
 	private static Logger logger = LogManager.getLogger(TeachOptimizedThread.class.getName());
-	private Coordinates extraFinishedOffset;
 	
 	private static final int WORKPIECE_ID = 0;
 
-	public TeachOptimizedThread(final ProcessFlow processFlow, final Coordinates extraFinishedOffset) {
+	public TeachOptimizedThread(final ProcessFlow processFlow) {
 		super(processFlow);
-		this.extraFinishedOffset = extraFinishedOffset;
 	}
 
 	//TODO generalize this method for more complex ProcessFlows
@@ -84,7 +82,6 @@ public class TeachOptimizedThread extends TeachThread {
 				// before doing this, we fake the gripper holding a workpiece
 				putOnStackerStep.getRobotSettings().getGripperHead().getGripper().setWorkPiece(pickFromMachineStep.getRobotSettings().getWorkPiece());
 				relTeachedOffsetFinishedWp = getFinishedWorkPieceTeachedOffset(putOnStackerStep);
-				relTeachedOffsetFinishedWp.offset(extraFinishedOffset);
 				//TODO review if this offset needs formatting (depending on clamp manner...)
 				logger.info("Relative offset finished work piece after added extra offset: [" + relTeachedOffsetFinishedWp + "].");
 				pickFromMachineStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);

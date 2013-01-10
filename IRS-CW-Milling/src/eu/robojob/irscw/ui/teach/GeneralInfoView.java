@@ -36,7 +36,8 @@ public class GeneralInfoView extends GridPane {
 	private static final int PREF_WIDTH = 700;
 	private static final int PREF_HEIGHT = 400;
 	private static final int PREF_LBL_WIDTH = 470;
-	private static final int PREF_LBL_HEIGHT = 80;
+	private static final int PREF_LBL1_HEIGHT = 80;
+	private static final int PREF_LBL2_HEIGHT = 60;
 	private static final int PREF_LBL_TITLE_HEIGHT = 30;
 	
 	private static final String CSS_CLASS_BUTTON_START_LABEL = "btn-start-label";
@@ -71,7 +72,7 @@ public class GeneralInfoView extends GridPane {
 		
 		lblInfoMessageOptimal = new Label(Translator.getTranslation(TEACH_OPTIMAL));
 		lblInfoMessageOptimal.getStyleClass().addAll(TeachView.CSS_CLASS_TEACH_MESSAGE, CSS_CLASS_GENERAL_INFO_MESSAGE);
-		lblInfoMessageOptimal.setPrefSize(PREF_LBL_WIDTH, PREF_LBL_HEIGHT);
+		lblInfoMessageOptimal.setPrefSize(PREF_LBL_WIDTH, PREF_LBL1_HEIGHT);
 		lblInfoMessageOptimal.setWrapText(true);
 				
 		btnStartOptimal = new Button();
@@ -99,7 +100,7 @@ public class GeneralInfoView extends GridPane {
 		
 		lblInfoMessageAll = new Label(Translator.getTranslation(TEACH_ALL));
 		lblInfoMessageAll.getStyleClass().addAll(TeachView.CSS_CLASS_TEACH_MESSAGE, CSS_CLASS_GENERAL_INFO_MESSAGE);
-		lblInfoMessageAll.setPrefSize(PREF_LBL_WIDTH, PREF_LBL_HEIGHT);
+		lblInfoMessageAll.setPrefSize(PREF_LBL_WIDTH, PREF_LBL2_HEIGHT);
 		lblInfoMessageAll.setWrapText(true);
 				
 		btnStartAll = new Button();

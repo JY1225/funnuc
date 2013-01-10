@@ -17,6 +17,7 @@ import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotSettings;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
@@ -168,6 +169,11 @@ public class ProcessFlow {
 			case ProcessFlowEvent.FINISHED_AMOUNT_CHANGED:
 				for (ProcessFlowListener listener : listeners) {
 					listener.finishedAmountChanged((FinishedAmountChangedEvent) event);
+				}
+				break;
+			case ProcessFlowEvent.EXCEPTION_OCCURED:
+				for (ProcessFlowListener listener : listeners) {
+					listener.exceptionOccured((ExceptionOccuredEvent) event);
 				}
 				break;
 			default:

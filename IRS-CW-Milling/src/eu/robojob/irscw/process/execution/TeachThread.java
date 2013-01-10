@@ -13,6 +13,7 @@ import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 
 public class TeachThread extends Thread {
 
@@ -47,9 +48,6 @@ public class TeachThread extends Thread {
 				while ((currentStepIndex < getProcessFlow().getProcessSteps().size()) && isRunning()) {
 					AbstractProcessStep step = getProcessFlow().getProcessSteps().get(currentStepIndex);
 					AbstractProcessStep nextStep = null;				
-					if (step instanceof AbstractTransportStep) {
-						((AbstractTransportStep) step).getRobotSettings().setFreeAfter(true);
-					}
 					if (currentStepIndex < (processFlow.getProcessSteps().size() - 1)) {
 						nextStep = processFlow.getProcessSteps().get(1 + currentStepIndex);
 					}
@@ -82,6 +80,7 @@ public class TeachThread extends Thread {
 					processFlow.setMode(Mode.STOPPED);
 				}
 			} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
+				processFlow.processProcessFlowEvent(new ExceptionOccuredEvent(processFlow, e));
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);

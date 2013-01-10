@@ -93,6 +93,11 @@
 
 .warning-icon {
 	-fx-fill: #ffe829;
+	-fx-effect: dropshadow(one-pass-box, #3b3b3b, 1, 0.0, 0, 1);
+}
+
+.warning-title {
+	-fx-text-fill: white;
 }
 
 .loading {

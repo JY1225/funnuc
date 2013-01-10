@@ -21,6 +21,7 @@ import eu.robojob.irscw.external.robot.RobotListener;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlowTimer;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
@@ -381,5 +382,11 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 	@Override
 	public void setParent(final MainPresenter mainPresenter) {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void exceptionOccured(final ExceptionOccuredEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

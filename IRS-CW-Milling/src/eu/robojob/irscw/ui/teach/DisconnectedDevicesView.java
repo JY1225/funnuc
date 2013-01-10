@@ -21,6 +21,7 @@ public class DisconnectedDevicesView extends VBox {
 	private static final String DISCONNECTED_DEVICES = "DisconnectedDevicesView.disconnectedDevices";
 	private static final String CSS_CLASS_DISCONNECTED = "lbl-disconnected";
 	private static final String CSS_CLASS_DISCONNECTED_LIST = "lbl-disconnected-list";
+	private static final String CSS_CLASS_WARNING_TITLE = "warning-title";
 	
 	private static final String WARNING_ICON_PATH = "M 12.53125 0 C 12.024848 -0.00011109284 11.509368 0.28555607 11.125 0.875 L 0.3125 17.40625 C -0.45649646 18.585582 0.23029693 19.59375 1.8125 19.59375 L 23.1875 19.59375 C 24.769964 19.59375 25.455456 18.586026 24.6875 17.40625 L 13.90625 0.875 C 13.522402 0.28511238 13.037652 0.00011075102 12.53125 0 z M 10.90625 5.21875 L 14.09375 5.21875 L 14.09375 7.40625 L 13.40625 13.375 L 11.59375 13.375 L 10.90625 7.40625 L 10.90625 5.21875 z M 11.0625 14.71875 L 13.9375 14.71875 L 13.9375 17.1875 L 11.0625 17.1875 L 11.0625 14.71875 z";
 	
@@ -37,7 +38,7 @@ public class DisconnectedDevicesView extends VBox {
 		warningIcon.getStyleClass().add(TeachView.CSS_CLASS_WARNING_ICON);
 		
 		lblDisconnectedDevicesTitle = new Label(Translator.getTranslation(DISCONNECTED_DEVICES_TITLE));
-		lblDisconnectedDevicesTitle.getStyleClass().add(TeachView.CSS_CLASS_INFO_MESSAGE_TITLE);
+		lblDisconnectedDevicesTitle.getStyleClass().addAll(TeachView.CSS_CLASS_INFO_MESSAGE_TITLE, CSS_CLASS_WARNING_TITLE);
 		
 		lblDisconnectedDevices = new Label(Translator.getTranslation(DISCONNECTED_DEVICES));
 		lblDisconnectedDevices.getStyleClass().addAll(TeachView.CSS_CLASS_TEACH_MESSAGE, CSS_CLASS_DISCONNECTED);

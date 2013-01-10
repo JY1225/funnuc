@@ -7,5 +7,6 @@ public interface ProcessFlowListener {
 	void statusChanged(StatusChangedEvent e);
 	void dataChanged(ProcessFlowEvent e);
 	void finishedAmountChanged(FinishedAmountChangedEvent e);
+	void exceptionOccured(ExceptionOccuredEvent e);
 	
 }

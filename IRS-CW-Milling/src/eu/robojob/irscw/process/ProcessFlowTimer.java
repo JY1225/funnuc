@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
@@ -256,13 +257,8 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		return processFlow;
 	}
 	
-	@Override
-	public void dataChanged(final ProcessFlowEvent e) {
-		//TODO reset needed here?
-	}
-	
-	@Override
-	public void finishedAmountChanged(final FinishedAmountChangedEvent e) {
-	}
+	@Override public void dataChanged(final ProcessFlowEvent e) { }
+	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) { }
+	@Override public void exceptionOccured(final ExceptionOccuredEvent e) {	 }
 
 }
