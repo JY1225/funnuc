@@ -55,8 +55,8 @@ import eu.robojob.irscw.ui.menu.MenuBarView;
 import eu.robojob.irscw.ui.robot.RobotPopUpPresenter;
 import eu.robojob.irscw.ui.robot.RobotPopUpView;
 import eu.robojob.irscw.ui.teach.DisconnectedDevicesView;
+import eu.robojob.irscw.ui.teach.GeneralInfoPresenter;
 import eu.robojob.irscw.ui.teach.GeneralInfoView;
-import eu.robojob.irscw.ui.teach.OffsetPresenter;
 import eu.robojob.irscw.ui.teach.StatusView;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
 import eu.robojob.irscw.ui.teach.TeachView;
@@ -132,12 +132,16 @@ public class RoboSoftAppFactory {
 		if (teachPresenter == null) {
 			TeachView view = new TeachView();
 			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
-			GeneralInfoView generalInfoView = new GeneralInfoView();
 			StatusView statusView = new StatusView();
-			OffsetPresenter offsetPresenter = new OffsetPresenter(getNumericKeyboardPresenter());
-			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, generalInfoView, statusView, offsetPresenter);
+			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, getGeneralInfoPresenter(), statusView);
 		}
 		return teachPresenter;
+	}
+	
+	private GeneralInfoPresenter getGeneralInfoPresenter() {
+		GeneralInfoView generalInfoView = new GeneralInfoView(getProcessFlow());
+		GeneralInfoPresenter generalInfoPresenter = new GeneralInfoPresenter(generalInfoView);
+		return generalInfoPresenter;
 	}
 	
 	public AutomatePresenter getAutomatePresenter() {

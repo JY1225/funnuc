@@ -9,12 +9,18 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.irscw.process.PickAfterWaitStep;
+import eu.robojob.irscw.process.PickStep;
+import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 //TODO disable optimal when processflow has different structure
 public class GeneralInfoView extends GridPane {
-
+	
+	private ProcessFlow processFlow;
 	private Label lblInfoMessageOptimalTitle;
 	private Label lblInfoMessageOptimal;
 	private Label lblInfoMessageAllTitle;
@@ -23,14 +29,14 @@ public class GeneralInfoView extends GridPane {
 	private Label lblStartOptimal;
 	private Button btnStartAll;
 	private Label lblStartAll;			
-	private TeachPresenter presenter;
+	private GeneralInfoPresenter presenter;
 	
 	private static final double BUTTON_WIDTH = UIConstants.BUTTON_HEIGHT * 4;
 	private static final double BUTTON_HEIGHT = 40;
 	private static final int PREF_WIDTH = 700;
-	private static final int PREF_HEIGHT = 500;
-	private static final int PREF_LBL_WIDTH = 420;
-	private static final int PREF_LBL_HEIGHT = 75;
+	private static final int PREF_HEIGHT = 400;
+	private static final int PREF_LBL_WIDTH = 470;
+	private static final int PREF_LBL_HEIGHT = 80;
 	private static final int PREF_LBL_TITLE_HEIGHT = 30;
 	
 	private static final String CSS_CLASS_BUTTON_START_LABEL = "btn-start-label";
@@ -43,12 +49,14 @@ public class GeneralInfoView extends GridPane {
 	private static final String TEACH_ALL_TITLE = "GeneralInfoView.teachAllTitle";
 	private static final String TEACH_ALL = "GeneralInfoView.teachAll";
 	private static final String START_ALL = "GeneralInfoView.startTeachAll";
-	
-	public GeneralInfoView() {
+		
+	public GeneralInfoView(final ProcessFlow processFlow) {
+		this.processFlow = processFlow;
 		build();
+		refresh();
 	}
 	
-	public void setPresenter(final TeachPresenter presenter) {
+	public void setPresenter(final GeneralInfoPresenter presenter) {
 		this.presenter = presenter;
 	}
 	
@@ -79,7 +87,7 @@ public class GeneralInfoView extends GridPane {
 		btnStartOptimal.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				presenter.startTeachOptimal();
+				presenter.startTeachingOptimal();
 			}
 		});
 		btnStartOptimal.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -107,7 +115,7 @@ public class GeneralInfoView extends GridPane {
 		btnStartAll.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				presenter.startTeachAll();
+				presenter.startTeachingAll();
 			}
 		});
 		btnStartAll.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -125,5 +133,33 @@ public class GeneralInfoView extends GridPane {
 		add(btnStartOptimal, 1, 0);
 		add(vBoxAllLabels, 0, 1);
 		add(btnStartAll, 1, 1);
+	}
+	
+	public void refresh() {
+		// get first Pick Step
+		boolean disable = true;
+		if (isOptimalPossible()) {
+			disable = false;
+		}
+		lblInfoMessageOptimal.setDisable(disable);
+		lblInfoMessageOptimalTitle.setDisable(disable);
+		btnStartOptimal.setDisable(disable);
+	}
+
+	private boolean isOptimalPossible() {
+		WorkPieceDimensions firstPickStepDimensions = null;
+		WorkPieceDimensions lastPickStepDimensions = null;
+		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
+			if ((step instanceof PickStep) && !(step instanceof PickAfterWaitStep)) {
+				if (firstPickStepDimensions == null) {
+					firstPickStepDimensions = ((PickStep) step).getRobotSettings().getWorkPiece().getDimensions();
+				}
+				lastPickStepDimensions = ((PickStep) step).getRobotSettings().getWorkPiece().getDimensions();
+			}
+		}
+		if ((firstPickStepDimensions.getWidth() != lastPickStepDimensions.getWidth()) || (firstPickStepDimensions.getLength() != lastPickStepDimensions.getLength())) {
+			return false;
+		} 
+		return true;
 	}
 }

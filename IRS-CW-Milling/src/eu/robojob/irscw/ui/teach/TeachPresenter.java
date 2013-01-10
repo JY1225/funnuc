@@ -43,8 +43,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 	private TeachView view;
 	private FixedProcessFlowPresenter processFlowPresenter;
 	private DisconnectedDevicesView teachDisconnectedDevicesView;
-	private GeneralInfoView teachGeneralInfoView;
-	private OffsetPresenter offsetPresenter;
+	private GeneralInfoPresenter generalInfoPresenter;
 	private StatusView teachStatusView;
 	private TeachThread teachThread;
 	private ProcessFlow processFlow;
@@ -59,18 +58,16 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 	private static final String TEACHING_FINISHED = "TeachPresenter.teachingFinished";
 	
 	public TeachPresenter(final TeachView view, final FixedProcessFlowPresenter processFlowPresenter, final ProcessFlow processFlow, final DisconnectedDevicesView teachDisconnectedDevicesView,
-			final GeneralInfoView teachGeneralInfoView, final StatusView teachStatusView, final OffsetPresenter offsetPresenter) {
+			final GeneralInfoPresenter generalInfoPresenter, final StatusView teachStatusView) {
 		this.view = view;
 		this.processFlowPresenter = processFlowPresenter;
 		view.setTop(processFlowPresenter.getView());
 		this.processFlow = processFlow;
 		this.teachDisconnectedDevicesView = teachDisconnectedDevicesView;
-		this.teachGeneralInfoView = teachGeneralInfoView;
-		teachGeneralInfoView.setPresenter(this);
+		this.generalInfoPresenter = generalInfoPresenter;
+		generalInfoPresenter.setParent(this);
 		this.teachStatusView = teachStatusView;
 		teachStatusView.setPresenter(this);
-		this.offsetPresenter = offsetPresenter;
-		offsetPresenter.setParent(this);
 		machines = new HashMap<AbstractCNCMachine, Boolean>();
 		robots = new HashMap<AbstractRobot, Boolean>();
 		this.alarms = false;
@@ -102,7 +99,6 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 	}
 	
 	private void enable() {
-		view.setBottom(teachDisconnectedDevicesView);
 		processFlow.addListener(this);
 		processFlowPresenter.refresh();
 		for (AbstractDevice device : processFlow.getDevices()) {
@@ -159,11 +155,12 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 	}
 	
 	public void showInfoMessage() {
-		view.setBottom(teachGeneralInfoView);
+		view.setBottom(generalInfoPresenter.getView());
 	}
 	
+	
 	public void startTeachOptimal() {
-		view.setBottom(offsetPresenter.getView());
+		//TODO implement
 	}
 
 	public void startFlow(final Coordinates extraFinishedOffset) {
@@ -286,19 +283,6 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 	}
 	
 	@Override
-	public void statusChanged(final StatusChangedEvent e) {
-		//FIXME needs to be implemented
-	}
-
-	@Override
-	public void robotStatusChanged(final RobotEvent event) {
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
-				teachStatusView.setZRest(event.getSource().getZRest());
-			} });
-	}
-	
-	@Override
 	public void robotAlarmsOccured(final RobotAlarmsOccuredEvent event) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
@@ -340,6 +324,12 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, Proces
 		processFlowPresenter.loadProcessFlow(processFlow);
 	}
 
+	@Override
+	public void statusChanged(final StatusChangedEvent e) {
+		//FIXME needs to be implemented
+	}
+	
+	@Override public void robotStatusChanged(final RobotEvent event) { }
 	@Override public void dataChanged(final ProcessFlowEvent e) { }
 	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) { }
 	@Override public void robotZRestChanged(final RobotEvent event) { }
