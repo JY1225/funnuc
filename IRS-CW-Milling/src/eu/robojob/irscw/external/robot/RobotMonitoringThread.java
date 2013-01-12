@@ -18,6 +18,7 @@ public class RobotMonitoringThread extends Thread implements MonitoringThread {
 	private double previousZRest;
 	private int previousStatus;
 	private Set<RobotAlarm> previousAlarms;
+	private boolean wasConnected;
 	
 	private static Logger logger = LogManager.getLogger(RobotMonitoringThread.class.getName());
 	
@@ -25,6 +26,7 @@ public class RobotMonitoringThread extends Thread implements MonitoringThread {
 		this.robot = robot;
 		this.alive = true;
 		this.previousAlarms = new HashSet<RobotAlarm>();
+		this.wasConnected = false;
 	}
 	
 	@Override
@@ -33,6 +35,10 @@ public class RobotMonitoringThread extends Thread implements MonitoringThread {
 			while (alive) {
 				if (robot.isConnected()) {
 					try {
+						if (!wasConnected) {
+							robot.restartProgram();
+							wasConnected = true;
+						}
 						robot.updateStatusZRestAndAlarms();
 						int status = robot.getStatus();
 						if (status != previousStatus) {
@@ -41,6 +47,10 @@ public class RobotMonitoringThread extends Thread implements MonitoringThread {
 						this.previousStatus = status;
 						Set<RobotAlarm> alarms = robot.getAlarms();
 						if ((!previousAlarms.containsAll(alarms)) || (!alarms.containsAll(previousAlarms))) {
+							if (alarms.size() == 0) {
+								logger.debug("No more alarms, so sending reset command!");
+								robot.continueProgram();
+							}
 							robot.processRobotEvent(new RobotAlarmsOccuredEvent(robot, alarms));
 						}
 						this.previousAlarms = alarms;
@@ -53,6 +63,10 @@ public class RobotMonitoringThread extends Thread implements MonitoringThread {
 							logger.error(e);
 							robot.disconnect();
 						}
+					}
+				} else {
+					if (wasConnected) {
+						wasConnected = false;
 					}
 				}
 				try {

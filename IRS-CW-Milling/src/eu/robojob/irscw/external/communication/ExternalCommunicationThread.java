@@ -137,7 +137,7 @@ public class ExternalCommunicationThread extends Thread {
 		socketConnection.send(message);
 	}
 	
-	public synchronized boolean isConnected() {
+	public boolean isConnected() {
 		return socketConnection.isConnected();
 	}
 	

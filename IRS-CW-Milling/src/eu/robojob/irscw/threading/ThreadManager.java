@@ -21,7 +21,10 @@ public final class ThreadManager {
 	private static Set<ExternalCommunicationThread> communicationThreads = new HashSet<ExternalCommunicationThread>();
 	private static Set<MonitoringThread> monitoringThreads = new HashSet<MonitoringThread>();
 	
+	private static boolean isShuttingDown;
+	
 	private ThreadManager() {
+		ThreadManager.isShuttingDown = false;
 	}
 	
 	public static Future<?> submit(final Thread thread) {
@@ -35,6 +38,7 @@ public final class ThreadManager {
 	}
 	
 	public static void shutDown() {
+		ThreadManager.isShuttingDown = true;
 		for (ExternalCommunicationThread thread : communicationThreads) {
 			thread.disconnectAndStop();
 		}
@@ -57,6 +61,10 @@ public final class ThreadManager {
 		} else {
 			thread.interrupt();
 		}
+	}
+	
+	public static boolean isShuttingDown() {
+		return ThreadManager.isShuttingDown;
 	}
 
 }

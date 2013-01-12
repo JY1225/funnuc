@@ -29,7 +29,7 @@ public abstract class ExternalSocketCommunication {
 		return extCommThread;
 	}
 	
-	public synchronized boolean isConnected() {
+	public boolean isConnected() {
 		return extCommThread.isConnected();
 	}
 	

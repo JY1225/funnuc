@@ -117,6 +117,7 @@ public class FanucRobot extends AbstractRobot {
 	public void abort() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
 		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_ABORT, RobotConstants.RESPONSE_ABORT, WRITE_VALUES_TIMEOUT);
 		setCurrentActionSettings(null);
+		restartProgram();
 	}
 	
 	public synchronized void disconnect() {

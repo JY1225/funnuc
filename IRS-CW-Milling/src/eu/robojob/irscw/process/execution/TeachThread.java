@@ -14,6 +14,8 @@ import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
+import eu.robojob.irscw.threading.ThreadManager;
 
 public class TeachThread extends Thread {
 
@@ -40,6 +42,7 @@ public class TeachThread extends Thread {
 			try {
 				for (AbstractRobot robot : getProcessFlow().getRobots()) {
 					robot.recalculateTCPs();
+					robot.moveToHome();
 				}
 				for (AbstractDevice device: getProcessFlow().getDevices()) {
 					device.prepareForProcess(getProcessFlow());
@@ -81,21 +84,27 @@ public class TeachThread extends Thread {
 				}
 			} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
 				processFlow.processProcessFlowEvent(new ExceptionOccuredEvent(processFlow, e));
+				processFlow.initialize();
+				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);
 			} catch (InterruptedException e) {
-				if (!isRunning()) {
+				if ((!isRunning()) || ThreadManager.isShuttingDown()) {
 					logger.info("Execution of one or more steps got interrupted, so let't just stop");
 				} else {
 					e.printStackTrace();
 					logger.error(e);
 				}
 				getProcessFlow().setMode(Mode.STOPPED);
+				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
+				processFlow.initialize();
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);
+				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
+				processFlow.initialize();
 			}
 		} catch (Exception e) {
 			logger.error(e);
@@ -110,13 +119,14 @@ public class TeachThread extends Thread {
 	@Override
 	public void interrupt() {
 		if (running) {
+			running = false;
 			for (AbstractRobot robot :processFlow.getRobots()) {
 				robot.interruptCurrentAction();
 			}
 			for (AbstractDevice device :processFlow.getDevices()) {
 				device.interruptCurrentAction();
 			}
-			running = false;
+			processFlow.initialize();
 		}
 	}
 

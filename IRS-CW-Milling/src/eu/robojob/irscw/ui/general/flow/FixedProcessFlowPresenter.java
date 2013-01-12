@@ -106,26 +106,30 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	private void showActiveStepChange(final StatusChangedEvent e) {
 		AbstractProcessStep step = e.getActiveStep();
 		int activeWorkPieceIndex = e.getWorkPieceId();
-		if (step instanceof PickStep) {
-			if (e.getStatusId() == StatusChangedEvent.ENDED) {
-				setPickStepFinished(activeWorkPieceIndex, processFlowAdapter.getTransportIndex((PickStep) step));
-			} else if (e.getStatusId() == StatusChangedEvent.STARTED) {
-				setPickStepActive(activeWorkPieceIndex, processFlowAdapter.getTransportIndex((PickStep) step));
-			}
-		} else if (step instanceof PutStep) {
-			if (e.getStatusId() == StatusChangedEvent.ENDED) {
-				setPutStepFinished(activeWorkPieceIndex, processFlowAdapter.getTransportIndex((PutStep) step));
-			} else if (e.getStatusId() == StatusChangedEvent.STARTED) {
-				setPutStepActive(activeWorkPieceIndex, processFlowAdapter.getTransportIndex((PutStep) step));
-			}
-		} else if (step instanceof ProcessingStep) {
-			if (e.getStatusId() == StatusChangedEvent.ENDED) {
-				setProcessingStepFinished(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step));
-			} else if (e.getStatusId() == StatusChangedEvent.STARTED) {
-				setProcessingStepActive(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step));
+		if (step != null) {
+			if (step instanceof PickStep) {
+				if (e.getStatusId() == StatusChangedEvent.ENDED) {
+					setPickStepFinished(activeWorkPieceIndex, processFlowAdapter.getTransportIndex((PickStep) step));
+				} else if (e.getStatusId() == StatusChangedEvent.STARTED) {
+					setPickStepActive(activeWorkPieceIndex, processFlowAdapter.getTransportIndex((PickStep) step));
+				}
+			} else if (step instanceof PutStep) {
+				if (e.getStatusId() == StatusChangedEvent.ENDED) {
+					setPutStepFinished(activeWorkPieceIndex, processFlowAdapter.getTransportIndex((PutStep) step));
+				} else if (e.getStatusId() == StatusChangedEvent.STARTED) {
+					setPutStepActive(activeWorkPieceIndex, processFlowAdapter.getTransportIndex((PutStep) step));
+				}
+			} else if (step instanceof ProcessingStep) {
+				if (e.getStatusId() == StatusChangedEvent.ENDED) {
+					setProcessingStepFinished(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step));
+				} else if (e.getStatusId() == StatusChangedEvent.STARTED) {
+					setProcessingStepActive(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step));
+				}
+			} else {
+				throw new IllegalStateException("Unknown step type [" + step + "].");
 			}
 		} else {
-			throw new IllegalStateException("Unknown step type [" + step + "].");
+			setNoneActive();
 		}
 	}
 

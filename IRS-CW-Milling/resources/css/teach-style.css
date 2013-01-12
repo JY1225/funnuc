@@ -4,14 +4,15 @@
 }
 
 .teach-msg {
-	-fx-text-alignment: center;
-	-fx-alignment: top-center;
+	-fx-text-alignment: left;
+	-fx-alignment: top-left;
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
 	-fx-font-size: 15px;
 	-fx-font-family: "Open Sans Semibold";
 	-fx-font-smoothing-type: lcd;
 	-fx-background-color: transparent;
+	-fx-padding: 0;
 } 
 
 .info-msg-title {
@@ -89,11 +90,6 @@
 	-fx-font-size: 16px;
 	-fx-text-alignment: center;
 	-fx-alignment: center;
-}
-
-.warning-icon {
-	-fx-fill: #ffe829;
-	-fx-effect: dropshadow(one-pass-box, #3b3b3b, 1, 0.0, 0, 1);
 }
 
 .warning-title {

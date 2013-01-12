@@ -91,3 +91,28 @@
 .pop-up-btn-pressed, .pop-up-btn:pressed {
 	-fx-background-color: #343c48, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
 }
+
+.warning-bg-icon {
+	-fx-fill: #ffe829;
+}
+
+.error-bg-icon {
+	-fx-fill: #ff462d;
+}
+
+.info-bg-icon {
+	-fx-fill: #008aeb;
+}
+
+.warning-icon {
+	-fx-fill: #000000;
+}
+
+.error-icon {
+	-fx-fill: #ffffff;
+}
+
+.info-icon {
+	-fx-fill: #ffffff;
+}
+

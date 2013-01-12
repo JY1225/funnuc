@@ -9,22 +9,24 @@ import java.util.Set;
 import javafx.application.Platform;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarm;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.irscw.external.device.processing.cnc.CNCMachineListener;
 import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.external.robot.RobotAlarm;
 import eu.robojob.irscw.external.robot.RobotAlarmsOccuredEvent;
 import eu.robojob.irscw.external.robot.RobotEvent;
 import eu.robojob.irscw.external.robot.RobotListener;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.execution.TeachOptimizedThread;
 import eu.robojob.irscw.process.execution.TeachThread;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
+import eu.robojob.irscw.util.Translator;
 
 public class TeachPresenter implements CNCMachineListener, RobotListener, MainContentPresenter {
 
@@ -37,6 +39,8 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, MainCo
 	private ProcessFlow processFlow;
 	private Map<AbstractCNCMachine, Boolean> machines;
 	private Map<AbstractRobot, Boolean> robots;
+	
+	private static final String NOT_CONNECTED_TO = "TeachPresenter.notConnectedTo";
 	
 	public TeachPresenter(final TeachView view, final FixedProcessFlowPresenter processFlowPresenter, final ProcessFlow processFlow, final DisconnectedDevicesView teachDisconnectedDevicesView,
 			final GeneralInfoPresenter generalInfoPresenter, final StatusPresenter statusPresenter) {
@@ -148,13 +152,15 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, MainCo
 	}
 	
 	private void startTeaching(final TeachThread teachThread) {
+		statusPresenter.initializeView();
 		view.setBottom(statusPresenter.getView());
+		updateAlarms();
 		processFlow.initialize();
 		if ((this.teachThread != null) && (this.teachThread.isRunning())) {
 			throw new IllegalStateException("Teach thread was already running: " + teachThread);
 		}
-		this.teachThread = new TeachThread(processFlow);
-		//ThreadManager.submit(teachThread);
+		this.teachThread = teachThread;
+		ThreadManager.submit(teachThread);
 	}
 	
 	public void stopTeaching() {
@@ -169,7 +175,9 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, MainCo
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				machines.put(event.getSource(), true);
-				if (processFlow.getMode() != Mode.TEACH) {
+				if ((teachThread != null) && (teachThread.isRunning())) {
+					updateAlarms();
+				} else {
 					checkAllConnected();
 				}
 			}
@@ -181,7 +189,9 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, MainCo
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				machines.put(event.getSource(), false);
-				if (processFlow.getMode() != Mode.TEACH) {
+				if ((teachThread != null) && (teachThread.isRunning())) {
+					updateAlarms();
+				} else {
 					checkAllConnected();
 				}
 			}
@@ -193,7 +203,9 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, MainCo
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				robots.put(event.getSource(), true);
-				if (processFlow.getMode() != Mode.TEACH) {
+				if ((teachThread != null) && (teachThread.isRunning())) {
+					updateAlarms();
+				} else {
 					checkAllConnected();
 				}
 			}
@@ -205,7 +217,9 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, MainCo
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				robots.put(event.getSource(), false);
-				if (processFlow.getMode() != Mode.TEACH) {
+				if ((teachThread != null) && (teachThread.isRunning())) {
+					updateAlarms();
+				} else {
 					checkAllConnected();
 				}
 			}
@@ -221,12 +235,49 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, MainCo
 		processFlowPresenter.loadProcessFlow(processFlow);
 	}
 	
+	private void updateAlarms() {
+		Set<String> alarmStrings = new HashSet<String>();
+		for (AbstractDevice device : processFlow.getDevices()) {
+			if (!device.isConnected()) {
+				alarmStrings.add(Translator.getTranslation(NOT_CONNECTED_TO) + " " + device.getId() + ".");
+			} else if (device instanceof AbstractCNCMachine) {
+				Set<CNCMachineAlarm> alarms = ((AbstractCNCMachine) device).getAlarms();
+				for (CNCMachineAlarm alarm : alarms) {
+					alarmStrings.add(alarm.getLocalizedMessage());
+				}
+			}
+			
+		}
+		for (AbstractRobot robot : processFlow.getRobots()) {
+			if (!robot.isConnected()) {
+				alarmStrings.add(Translator.getTranslation(NOT_CONNECTED_TO) + " " + robot.getId() + ".");
+			} else {
+				for (RobotAlarm alarm : robot.getAlarms()) {
+					alarmStrings.add(alarm.getLocalizedMessage());
+				}
+			}
+		}
+		statusPresenter.updateAlarms(alarmStrings);
+	}
+	
 	@Override public void robotStatusChanged(final RobotEvent event) { }
 	@Override public void robotZRestChanged(final RobotEvent event) { }
 	@Override public void robotSpeedChanged(final RobotEvent event) { }
 	@Override public void setParent(final MainPresenter mainPresenter) { }
 	@Override public void cNCMachineStatusChanged(final CNCMachineEvent event) { }
-	@Override public void robotAlarmsOccured(final RobotAlarmsOccuredEvent event) { }
-	@Override public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) { }
+	@Override public void robotAlarmsOccured(final RobotAlarmsOccuredEvent event) {
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				updateAlarms();
+			}
+		});
+	}
+	@Override public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) { 
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				updateAlarms();
+			}
+		});
+	}
 	
 }

@@ -7,8 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
@@ -23,32 +22,50 @@ public class StatusView extends VBox {
 	
 	private StatusPresenter presenter;
 	
-	private Label lblInfoMessage;
-	private Label lblAlarmMessage;
-	private Label lblErrorMessage;
-	private Button btnRestart;
-	
+	private SVGPath infoBgPath;
 	private SVGPath infoPath;
-	private SVGPath warningPath;
+	private SVGPath errorBgPath;
 	private SVGPath errorPath;
+	private SVGPath alarmBgPath;
+	private SVGPath alarmPath;
+	private Label lblInfoTitle;
+	private Label lblInfoMessage;
+	private Label lblErrorTitle;
+	private Label lblErrorMessage;
+	private Label lblAlarmTitle;
+	private Label lblAlarmMessage;
+	private VBox vBoxMessages;
+	private VBox vBoxInfo;
+	private VBox vBoxError;
+	private VBox vBoxAlarm;
+	private Button btnCancel;
 	
 	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
 	private static final double BTN_HEIGHT = 40;
+	private static final int LBL_WIDTH = 550;
+	private static final int MESSAGES_HEIGHT = 220;
 	
-	private static final String CSS_CLASS_LOADING = "loading";
-	private static final String CSS_CLASS_LOADING_INACTIVE = "loading-inactive";
-	private static final String CSS_CLASS_Z_REST = "lbl-z-rest";
-	private static final String CSS_CLASS_Z_REST_VAL = "lbl-z-rest-val";
-	private static final String CSS_CLASS_MSG_NORMAL = "message-normal";
-	private static final String CSS_CLASS_MSG_ERROR = "message-error";
-	
-	private static final String DROPS_ANOTHER = "StatusView.dropsAnother";
 	private static final String STOP = "StatusView.stop";
 	
-	private static final String INFO_ICON = "M 12.5,-1.9089388e-8 C 5.5964999,-1.9089388e-8 0,5.5965009 0,12.5 0,19.4035 5.5964999,25 12.5,25 19.4035,25 25,19.4035 25,12.5 25,5.5965009 19.4035,-1.9089388e-8 12.5,-1.9089388e-8 z M 14.6875,3.0625 c 0.328999,0 0.59325,0.10575 0.78125,0.3125 C 15.65675,3.58175 15.75,3.86475 15.75,4.25 15.74975,4.77625 15.59625,5.2055 15.28125,5.5625 14.966251,5.91975 14.6225,6.125 14.21875,6.125 13.88975,6.125 13.59125,6.00225 13.375,5.78125 13.15875,5.5605 13.0625,5.2605 13.0625,4.875 c 0,-0.47925 0.16225,-0.91475 0.5,-1.28125 0.3385,-0.3665 0.71125,-0.53125 1.125,-0.53125 z m -0.875,5.5 c 0.2245,0 0.40925,0.0605 0.53125,0.1875 0.1215,0.12675 0.1875,0.31825 0.1875,0.5625 0,0.592 -0.224,1.6865 -0.65625,3.3125 -1.101,4.1445 -1.65625,6.648 -1.65625,7.53125 0,0.31975 0.146,0.5 0.4375,0.5 0.3385,0 1.106,-0.435 2.28125,-1.28125 l 0.28125,0.5625 c -1.343749,1.0815 -2.4695,1.855 -3.34375,2.34375 -0.35775,0.2065 -0.69,0.3125 -1,0.3125 -0.254,0 -0.47325,-0.118 -0.65625,-0.34375 -0.18325,-0.2255 -0.25,-0.54575 -0.25,-0.96875 0,-0.61075 0.25175,-1.836 0.75,-3.6875 0.98275,-3.6275 1.46875,-5.81975 1.46875,-6.5625 0,-0.357 -0.13375,-0.53125 -0.40625,-0.53125 -0.301,0 -1.0565,0.40125 -2.25,1.21875 L 9.25,11.15625 C 11.572,9.417751 13.082,8.5625 13.8125,8.5625 z";
-	private static final String WARNING_ICON_PATH = "M 12.53125 0 C 12.024848 -0.00011109284 11.509368 0.28555607 11.125 0.875 L 0.3125 17.40625 C -0.45649646 18.585582 0.23029693 19.59375 1.8125 19.59375 L 23.1875 19.59375 C 24.769964 19.59375 25.455456 18.586026 24.6875 17.40625 L 13.90625 0.875 C 13.522402 0.28511238 13.037652 0.00011075102 12.53125 0 z M 10.90625 5.21875 L 14.09375 5.21875 L 14.09375 7.40625 L 13.40625 13.375 L 11.59375 13.375 L 10.90625 7.40625 L 10.90625 5.21875 z M 11.0625 14.71875 L 13.9375 14.71875 L 13.9375 17.1875 L 11.0625 17.1875 L 11.0625 14.71875 z";
-	private static final String ERROR_ICON = "M 12.3125 0 A 12.498959 12.498959 0 0 0 3.90625 3.40625 A 12.498959 12.498959 0 0 0 3.65625 21.34375 A 12.498959 12.498959 0 1 0 21.34375 3.65625 A 12.498959 12.498959 0 0 0 12.3125 0 z M 8.78125 6.3125 L 12.5 10.03125 L 16.21875 6.3125 L 18.6875 8.78125 L 14.96875 12.5 L 18.6875 16.21875 L 16.21875 18.6875 L 12.5 14.96875 L 8.78125 18.6875 L 6.3125 16.21875 L 10.03125 12.5 L 6.3125 8.78125 L 8.78125 6.3125 z";
+	private static final String CIRCLE_ICON = "M 12.5,3e-7 C 5.5964408,3e-7 0,5.5964411 0,12.5 0,19.40356 5.5964408,25 12.5,25 19.403559,25 25,19.40356 25,12.5 25,5.5964411 19.403559,3e-7 12.5,3e-7 z";
+	private static final String TRIANGLE_ICON = "M 12.5,1.03125 C 11.993062,1.0311198 11.509776,1.3702678 11.125,2.0625 L 0.3125,21.46875 C -0.45731218,22.853735 0.22861858,24 1.8125,24 l 21.375,0 c 1.584142,0 2.268771,-1.145744 1.5,-2.53125 L 13.90625,2.0625 C 13.521995,1.3697471 13.006938,1.0313802 12.5,1.03125 z";
+	private static final String WARNING_ICON = "m 10.9375,7.15625 0,2.59375 0.625,6.96875 1.875,0 0.625,-6.96875 0,-2.59375 z m 0.125,11.15625 0,2.875 2.875,0 0,-2.875 z";
+	private static final String INFO_ICON = "m 14.6875,3.0625 c -0.41375,0 -0.7865,0.16475 -1.125,0.53125 -0.33775,0.3665 -0.5,0.802 -0.5,1.28125 0,0.3855 0.09625,0.6855 0.3125,0.90625 0.21625,0.221 0.51475,0.34375 0.84375,0.34375 0.40375,0 0.747501,-0.20525 1.0625,-0.5625 0.315,-0.357 0.4685,-0.78625 0.46875,-1.3125 0,-0.38525 -0.09325,-0.66825 -0.28125,-0.875 -0.188,-0.20675 -0.452251,-0.3125 -0.78125,-0.3125 z m -0.875,5.5 c -0.7305,0 -2.2405,0.855251 -4.5625,2.59375 l 0.28125,0.5625 c 1.1935,-0.8175 1.949,-1.21875 2.25,-1.21875 0.2725,0 0.40625,0.17425 0.40625,0.53125 0,0.74275 -0.486,2.935 -1.46875,6.5625 -0.49825,1.8515 -0.75,3.07675 -0.75,3.6875 0,0.423 0.06675,0.74325 0.25,0.96875 0.183,0.22575 0.40225,0.34375 0.65625,0.34375 0.31,0 0.64225,-0.106 1,-0.3125 0.87425,-0.48875 2.000001,-1.26225 3.34375,-2.34375 L 14.9375,19.375 c -1.17525,0.84625 -1.94275,1.28125 -2.28125,1.28125 -0.2915,0 -0.4375,-0.18025 -0.4375,-0.5 0,-0.88325 0.55525,-3.38675 1.65625,-7.53125 0.43225,-1.626 0.65625,-2.7205 0.65625,-3.3125 0,-0.24425 -0.066,-0.43575 -0.1875,-0.5625 C 14.22175,8.623 14.037,8.5625 13.8125,8.5625 z";
+	private static final String ERROR_ICON = "M 8.78125,6.3125 6.3125,8.78125 10.03125,12.5 6.3125,16.21875 8.78125,18.6875 12.5,14.96875 16.21875,18.6875 18.6875,16.21875 14.96875,12.5 18.6875,8.78125 16.21875,6.3125 12.5,10.03125 z";
 			
+	private static final String CSS_CLASS_INFO_BG_ICON = "info-bg-icon";
+	private static final String CSS_CLASS_INFO_ICON = "info-icon";
+	private static final String CSS_CLASS_WARNING_ICON = "warning-icon";
+	private static final String CSS_CLASS_WARNING_BG_ICON = "warning-bg-icon";
+	private static final String CSS_CLASS_ERROR_ICON = "error-icon";
+	private static final String CSS_CLASS_ERROR_BG_ICON = "error-bg-icon";
+	private static final String CSS_CLASS_TEACH_BUTTON = "teach-btn";
+	private static final String CSS_CLASS_TEACH_BUTTON_TEXT = "teach-btn-text";
+	
+	private static final String STATUS_TITLE = "StatusView.statusTitle";
+	private static final String ERROR_TITLE = "StatusView.errorTitle";
+	private static final String ALARM_TITLE = "StatusView.alarmTitle";
+	
 	public StatusView() {
 		build();
 	}
@@ -60,19 +77,133 @@ public class StatusView extends VBox {
 	private void build() {
 		
 		this.setFillWidth(true);
-		this.setPrefSize(520, 300);
+		this.setPrefSize(LBL_WIDTH, 300);
 		this.setAlignment(Pos.CENTER);
 		
+		infoBgPath = new SVGPath();
+		infoBgPath.setContent(CIRCLE_ICON);
+		infoBgPath.getStyleClass().add(CSS_CLASS_INFO_BG_ICON);
+		infoPath = new SVGPath();
+		infoPath.setContent(INFO_ICON);
+		infoPath.getStyleClass().add(CSS_CLASS_INFO_ICON);
+		Pane infoIconPane = new Pane();
+		infoIconPane.getChildren().addAll(infoBgPath, infoPath);
+		HBox.setMargin(infoIconPane, new Insets(0, 10, 0, 0));
+		lblInfoTitle = new Label();
+		lblInfoTitle.getStyleClass().add(TeachView.CSS_CLASS_INFO_MESSAGE_TITLE);
+		lblInfoTitle.setText(Translator.getTranslation(STATUS_TITLE));
+		lblInfoMessage = new Label();
+		lblInfoMessage.setPrefWidth(LBL_WIDTH);
+		lblInfoMessage.setWrapText(true);
+		lblInfoMessage.getStyleClass().add(TeachView.CSS_CLASS_TEACH_MESSAGE);
+		HBox hBoxInfo = new HBox();
+		hBoxInfo.getChildren().addAll(infoIconPane, lblInfoTitle);
+		vBoxInfo =  new VBox();
+		vBoxInfo.getChildren().addAll(hBoxInfo, lblInfoMessage);
+		VBox.setMargin(vBoxInfo, new Insets(0, 0, 20, 0));
 		
+		errorBgPath = new SVGPath();
+		errorBgPath.setContent(CIRCLE_ICON);
+		errorBgPath.getStyleClass().add(CSS_CLASS_ERROR_BG_ICON);
+		errorPath = new SVGPath();
+		errorPath.setContent(ERROR_ICON);
+		errorPath.getStyleClass().add(CSS_CLASS_ERROR_ICON);
+		Pane errorIconPane = new Pane();
+		errorIconPane.getChildren().addAll(errorBgPath, errorPath);
+		HBox.setMargin(errorIconPane, new Insets(0, 10, 0, 0));
+		lblErrorTitle = new Label();
+		lblErrorTitle.getStyleClass().add(TeachView.CSS_CLASS_INFO_MESSAGE_TITLE);
+		lblErrorTitle.setText(Translator.getTranslation(ERROR_TITLE));
+		lblErrorMessage = new Label();
+		lblErrorMessage.setPrefWidth(LBL_WIDTH);
+		lblErrorMessage.setWrapText(true);
+		lblErrorMessage.getStyleClass().add(TeachView.CSS_CLASS_TEACH_MESSAGE);
+		HBox hBoxError = new HBox();
+		hBoxError.getChildren().addAll(errorIconPane, lblErrorTitle);
+		vBoxError = new VBox();
+		vBoxError.getChildren().addAll(hBoxError, lblErrorMessage);
+		VBox.setMargin(vBoxError, new Insets(0, 0, 20, 0));
+		
+		alarmBgPath = new SVGPath();
+		alarmBgPath.setContent(TRIANGLE_ICON);
+		alarmBgPath.getStyleClass().add(CSS_CLASS_WARNING_BG_ICON);
+		alarmPath = new SVGPath();
+		alarmPath.setContent(WARNING_ICON);
+		alarmPath.getStyleClass().add(CSS_CLASS_WARNING_ICON);
+		Pane alarmIconPane = new Pane();
+		alarmIconPane.getChildren().addAll(alarmBgPath, alarmPath);
+		HBox.setMargin(alarmIconPane, new Insets(0, 10, 0, 0));
+		lblAlarmTitle = new Label();
+		lblAlarmTitle.getStyleClass().add(TeachView.CSS_CLASS_INFO_MESSAGE_TITLE);
+		lblAlarmTitle.setText(Translator.getTranslation(ALARM_TITLE));
+		lblAlarmMessage = new Label();
+		lblAlarmMessage.setPrefWidth(LBL_WIDTH);
+		lblAlarmMessage.setWrapText(true);
+		lblAlarmMessage.getStyleClass().add(TeachView.CSS_CLASS_TEACH_MESSAGE);
+		HBox hBoxAlarm = new HBox();
+		hBoxAlarm.getChildren().addAll(alarmIconPane, lblAlarmTitle);
+		vBoxAlarm = new VBox();
+		vBoxAlarm.getChildren().addAll(hBoxAlarm, lblAlarmMessage);
+		VBox.setMargin(vBoxAlarm, new Insets(0, 0, 20, 0));
+		
+		btnCancel = new Button();
+		btnCancel.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
+		Text txtRestart = new Text(Translator.getTranslation(STOP));
+		txtRestart.getStyleClass().add(CSS_CLASS_TEACH_BUTTON_TEXT);
+		btnCancel.setGraphic(txtRestart);
+		btnCancel.getStyleClass().add(CSS_CLASS_TEACH_BUTTON);
+		btnCancel.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				presenter.stopTeaching();
+			}
+		});
+		
+		vBoxMessages = new VBox();
+		vBoxMessages.setPrefHeight(MESSAGES_HEIGHT);
+		vBoxMessages.setAlignment(Pos.CENTER);
+		
+		vBoxMessages.getChildren().add(vBoxInfo);
+		vBoxMessages.getChildren().add(vBoxError);
+		vBoxMessages.getChildren().add(vBoxAlarm);
+		getChildren().add(vBoxMessages);
+		getChildren().add(btnCancel);
+		
+		setErrorMessage(null);
+		setAlarmMessage(null);
 	}
 	
 	public void setInfoMessage(final String message) {
+		if (message == null) {
+			vBoxInfo.setVisible(false);
+			vBoxInfo.setManaged(false);
+		} else {
+			vBoxInfo.setVisible(true);
+			vBoxInfo.setManaged(true);
+			lblInfoMessage.setText(message);
+		}
 	}
 	
 	public void setAlarmMessage(final String message) {
+		if (message == null) {
+			vBoxAlarm.setVisible(false);
+			vBoxAlarm.setManaged(false);
+		} else {
+			vBoxAlarm.setVisible(true);
+			vBoxAlarm.setManaged(true);
+			lblAlarmMessage.setText(message);
+		}
 	}
 	
 	public void setErrorMessage(final String message) {
+		if (message == null) {
+			vBoxError.setVisible(false);
+			vBoxError.setManaged(false);
+		} else {
+			vBoxError.setVisible(true);
+			vBoxError.setManaged(true);
+			lblErrorMessage.setText(message);
+		}
 	}
 	
 	public void setZRest(final double zrest) {

@@ -136,7 +136,7 @@ public class SocketConnection {
 		this.portNumber = portNumber;
 	}
 	
-	public synchronized boolean isConnected() {
+	public boolean isConnected() {
 		if (connected) {
 			if ((socket == null) || (out == null) || (in == null)) {
 				throw new IllegalStateException("Status indicates connection, but one or more objects are null");
@@ -232,6 +232,6 @@ public class SocketConnection {
 	
 	@Override
 	public String toString() {
-		return this.id + " (type: " + type + ", " + ipAddress + ":" + portNumber + ")";
+		return this.id;
 	}
 }
