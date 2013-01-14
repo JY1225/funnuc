@@ -16,6 +16,7 @@ import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.threading.ThreadManager;
+import eu.robojob.irscw.util.Translator;
 
 public class TeachThread extends Thread {
 
@@ -24,6 +25,8 @@ public class TeachThread extends Thread {
 	
 	private static Logger logger = LogManager.getLogger(TeachThread.class.getName());
 	private static final int WORKPIECE_ID = 0;
+	
+	protected static final String OTHER_EXCEPTION = "Exception.otherException";
 	
 	public TeachThread(final ProcessFlow processFlow) {
 		this.processFlow = processFlow;
@@ -93,6 +96,7 @@ public class TeachThread extends Thread {
 				if ((!isRunning()) || ThreadManager.isShuttingDown()) {
 					logger.info("Execution of one or more steps got interrupted, so let't just stop");
 				} else {
+					processFlow.processProcessFlowEvent(new ExceptionOccuredEvent(processFlow, new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
 					e.printStackTrace();
 					logger.error(e);
 				}
@@ -100,11 +104,12 @@ public class TeachThread extends Thread {
 				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
 				processFlow.initialize();
 			} catch (Exception e) {
+				processFlow.processProcessFlowEvent(new ExceptionOccuredEvent(processFlow, new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
+				processFlow.initialize();
+				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);
-				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
-				processFlow.initialize();
 			}
 		} catch (Exception e) {
 			logger.error(e);

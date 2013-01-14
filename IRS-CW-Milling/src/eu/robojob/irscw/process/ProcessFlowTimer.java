@@ -193,11 +193,10 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	}
 	
 	private void stopPauseTimeMeasurement(final int workPieceId) {
-		if (!startingTimePauseAfterSteps.containsKey(workPieceId) || !lastActiveSteps.containsKey(workPieceId)) {
-			throw new IllegalStateException("No starting time for: " + workPieceId);
+		if (startingTimePauseAfterSteps.containsKey(workPieceId) && lastActiveSteps.containsKey(workPieceId)) {
+			waitingTimeAfterStepDurations.put(lastActiveSteps.get(workPieceId), System.currentTimeMillis() - startingTimePauseAfterSteps.get(workPieceId));
+			startingTimePauseAfterSteps.remove(workPieceId);
 		}
-		waitingTimeAfterStepDurations.put(lastActiveSteps.get(workPieceId), System.currentTimeMillis() - startingTimePauseAfterSteps.get(workPieceId));
-		startingTimePauseAfterSteps.remove(workPieceId);
 	}
 	
 	private void pauseTimeMeasurements() {

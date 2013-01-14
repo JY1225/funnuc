@@ -21,7 +21,10 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
+import eu.robojob.irscw.threading.ThreadManager;
+import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.workpiece.WorkPiece;
 
 public class TeachOptimizedThread extends TeachThread {
@@ -136,21 +139,30 @@ public class TeachOptimizedThread extends TeachThread {
 					getProcessFlow().setMode(Mode.STOPPED);
 				}
 			} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
+				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), e));
+				getProcessFlow().initialize();
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
 				e.printStackTrace();
 				logger.error(e);
 				getProcessFlow().setMode(Mode.STOPPED);
 			} catch (InterruptedException e) {
-				if (!isRunning()) {
+				if ((!isRunning()) || ThreadManager.isShuttingDown()) {
 					logger.info("Execution of one or more steps got interrupted, so let't just stop");
 				} else {
+					getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
 					e.printStackTrace();
 					logger.error(e);
 				}
 				getProcessFlow().setMode(Mode.STOPPED);
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
+				getProcessFlow().initialize();
 			} catch (Exception e) {
+				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
 				e.printStackTrace();
 				logger.error(e);
 				getProcessFlow().setMode(Mode.STOPPED);
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
+				getProcessFlow().initialize();
 			}
 		} catch (Exception e) {
 			logger.error(e);
@@ -179,9 +191,12 @@ public class TeachOptimizedThread extends TeachThread {
 		if (!fRobot.lock(getProcessFlow())) {
 			throw new IllegalStateException("Robot [" + fRobot + "] was already locked by [" + fRobot.getLockingProcess() + "].");
 		} else {
+			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.PREPARE_DEVICE, WORKPIECE_ID));
+			stackPlate.prepareForPut(putOnStackerStep.getDeviceSettings());
 			logger.debug("Original coordinates: " + originalCoordinates + ".");
 			logger.debug("Initiating robot: [" + fRobot + "] move action.");
 			fRobot.initiateMoveWithPieceNoAction(putSettings);
+			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.EXECUTE_TEACHED, WORKPIECE_ID));
 			fRobot.continueMoveWithPieceTillAtLocation();
 			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.TEACHING_NEEDED, WORKPIECE_ID));
 			fRobot.continueMoveWithPieceTillWait();
@@ -191,6 +206,7 @@ public class TeachOptimizedThread extends TeachThread {
 			logger.info("The relative teached offset (finished workpiece): [" + relTeachedOffsetFinishedWp + "].");
 			fRobot.continueMoveWithPieceTillIPPoint();
 			fRobot.finalizeMoveWithPiece();
+			putOnStackerStep.getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(putOnStackerStep.getProcessFlow(), putOnStackerStep, StatusChangedEvent.ENDED, WORKPIECE_ID));
 			return relTeachedOffsetFinishedWp;
 		}
 	}

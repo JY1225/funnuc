@@ -113,20 +113,8 @@ public class AutomatePresenter implements MainContentPresenter, CNCMachineListen
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				view.setCycleTime(cycleTime);
-			}
-		});
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
 				view.setCycleTimePassed(cycleTimePassed);
-			}
-		});
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
 				view.setTimeTillPause(timeTillPause);
-			}
-		});
-		Platform.runLater(new Runnable() {
-			@Override public void run() {
 				view.setTimeTillFinished(timeTillFinished);
 			}
 		});

@@ -63,7 +63,11 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, MainCo
 			enable();
 		} else {
 			if ((teachThread != null) && (teachThread.isRunning())) {
-				ThreadManager.stopRunning(teachThread);
+				ThreadManager.submit(new Thread() {
+					@Override public void run() {
+						ThreadManager.stopRunning(teachThread);
+					}
+				});
 			}
 			stopListening();
 		}

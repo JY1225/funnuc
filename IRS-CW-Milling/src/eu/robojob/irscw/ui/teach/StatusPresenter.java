@@ -22,6 +22,7 @@ public class StatusPresenter implements ProcessFlowListener {
 	private TeachPresenter parent;
 	
 	private static final String PROCESS_TEACH_STARTED = "Status.processTeachStarted";
+	private static final String PROCESS_TEACH_FINISHED = "Status.processTeachFinished";
 	private static final String PREPARE_PICK = "Status.prepareDevicePick";
 	private static final String PREPARE_PUT = "Status.prepareDevicePut";
 	private static final String EXECUTE_PICK = "Status.executePick";
@@ -62,9 +63,9 @@ public class StatusPresenter implements ProcessFlowListener {
 						break;
 					case StatusChangedEvent.STARTED:
 						if (e.getActiveStep() instanceof PickStep) {
-							view.setInfoMessage(Translator.getTranslation(EXECUTE_PICK));
+							view.setInfoMessage(Translator.getTranslation(EXECUTE_PICK) + ((DeviceStep) e.getActiveStep()).getDevice().getId() + ".");
 						} else if (e.getActiveStep() instanceof PutStep) {
-							view.setInfoMessage(Translator.getTranslation(EXECUTE_PUT));
+							view.setInfoMessage(Translator.getTranslation(EXECUTE_PUT) + ((DeviceStep) e.getActiveStep()).getDevice().getId() + ".");
 						}
 						break;
 					case StatusChangedEvent.PREPARE_DEVICE:
@@ -77,9 +78,9 @@ public class StatusPresenter implements ProcessFlowListener {
 					case StatusChangedEvent.EXECUTE_TEACHED:
 					case StatusChangedEvent.EXECUTE_NORMAL:
 						if (e.getActiveStep() instanceof PickStep) {
-							view.setInfoMessage(Translator.getTranslation(EXECUTE_PICK) + ((PickStep) e.getActiveStep()).getDevice().getId() + ".");
+							view.setInfoMessage(Translator.getTranslation(EXECUTE_PICK) + ((DeviceStep) e.getActiveStep()).getDevice().getId() + ".");
 						} else if (e.getActiveStep() instanceof PutStep) {
-							view.setInfoMessage(Translator.getTranslation(EXECUTE_PUT) + ((PutStep) e.getActiveStep()).getDevice().getId() + ".");
+							view.setInfoMessage(Translator.getTranslation(EXECUTE_PUT) + ((DeviceStep) e.getActiveStep()).getDevice().getId() + ".");
 						}
 						break;
 					case StatusChangedEvent.INTERVENTION_READY:
@@ -107,7 +108,9 @@ public class StatusPresenter implements ProcessFlowListener {
 			@Override public void run() {
 				if (e.getMode() == Mode.TEACH) {
 					view.setInfoMessage(Translator.getTranslation(PROCESS_TEACH_STARTED));
-				} 
+				} else if (e.getMode() == Mode.READY) {
+					view.setInfoMessage(Translator.getTranslation(PROCESS_TEACH_FINISHED));
+				}
 			}
 		});
 	}
