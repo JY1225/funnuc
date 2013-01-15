@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.teach;
+package eu.robojob.irscw.ui.general.status;
 
 import java.util.Set;
 
@@ -14,6 +14,7 @@ import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
+import eu.robojob.irscw.ui.teach.TeachPresenter;
 import eu.robojob.irscw.util.Translator;
 
 public class StatusPresenter implements ProcessFlowListener {

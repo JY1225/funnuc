@@ -29,12 +29,24 @@ import eu.robojob.irscw.workpiece.WorkPiece;
 
 public class TeachOptimizedThread extends TeachThread {
 	
-	private static Logger logger = LogManager.getLogger(TeachOptimizedThread.class.getName());
-	
-	private static final int WORKPIECE_ID = 0;
+	private PickStep pickFromStackerStep = null;
+	private PutAndWaitStep putAndWaitOnPrageStep = null;
+	private PickAfterWaitStep pickAfterWaitOnPrageStep = null;
+	private PutStep putInMachineStep = null;
+	private PickStep pickFromMachineStep = null;
+	private PutStep putOnStackerStep = null;
 
+	private static Logger logger = LogManager.getLogger(TeachOptimizedThread.class.getName());
+	private static final int WORKPIECE_ID = 0;
+	
 	public TeachOptimizedThread(final ProcessFlow processFlow) {
 		super(processFlow);
+		pickFromStackerStep = null;
+		putAndWaitOnPrageStep = null;
+		pickAfterWaitOnPrageStep = null;
+		putInMachineStep = null;
+		pickFromMachineStep = null;
+		putOnStackerStep = null;
 	}
 
 	//TODO generalize this method for more complex ProcessFlows
@@ -53,35 +65,13 @@ public class TeachOptimizedThread extends TeachThread {
 			try {
 				for (AbstractRobot robot : getProcessFlow().getRobots()) {
 					robot.recalculateTCPs();
+					robot.moveToHome();
 				}
 				for (AbstractDevice device: getProcessFlow().getDevices()) {
 					device.prepareForProcess(getProcessFlow());
 				}
-				PickStep pickFromStackerStep = null;
-				PutAndWaitStep putAndWaitOnPrageStep = null;
-				PickAfterWaitStep pickAfterWaitOnPrageStep = null;
-				PutStep putInMachineStep = null;
-				PickStep pickFromMachineStep = null;
-				PutStep putOnStackerStep = null;
-				
+				initializeSteps();
 				Coordinates relTeachedOffsetFinishedWp = null;
-		
-				for (AbstractProcessStep step : getProcessFlow().getProcessSteps()) {
-					if ((step instanceof PickStep) && ((PickStep) step).getDevice().getId().equals(DeviceManager.IRS_M_BASIC)) {
-						pickFromStackerStep = (PickStep) step;
-					} else if ((step instanceof PutAndWaitStep) && ((PutAndWaitStep) step).getDevice().getId().equals(DeviceManager.PRAGE_DEVICE)) {
-						putAndWaitOnPrageStep = (PutAndWaitStep) step;
-					} else if ((step instanceof PickAfterWaitStep) && ((PickAfterWaitStep) step).getDevice().getId().equals(DeviceManager.PRAGE_DEVICE)) {
-						pickAfterWaitOnPrageStep = (PickAfterWaitStep) step;
-					} else if ((step instanceof PutStep) && ((PutStep) step).getDevice().getId().equals(DeviceManager.MAZAK_VRX)) {
-						putInMachineStep = (PutStep) step;
-					} else if ((step instanceof PickStep) && ((PickStep) step).getDevice().getId().equals(DeviceManager.MAZAK_VRX)) {
-						pickFromMachineStep = (PickStep) step;
-					} else if ((step instanceof PutStep) && ((PutStep) step).getDevice().getId().equals(DeviceManager.IRS_M_BASIC)) {
-						putOnStackerStep = (PutStep) step;
-					}
-				}
-				
 				// before doing this, we fake the gripper holding a workpiece
 				putOnStackerStep.getRobotSettings().getGripperHead().getGripper().setWorkPiece(pickFromMachineStep.getRobotSettings().getWorkPiece());
 				relTeachedOffsetFinishedWp = getFinishedWorkPieceTeachedOffset(putOnStackerStep);
@@ -89,10 +79,8 @@ public class TeachOptimizedThread extends TeachThread {
 				logger.info("Relative offset finished work piece after added extra offset: [" + relTeachedOffsetFinishedWp + "].");
 				pickFromMachineStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
 				putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
-				
 				Coordinates relTeachedOffsetRawWp = null;
 				Coordinates relTeachedOffsetMachineClamping = null;
-				
 				boolean knowEnough = false;
 				int currentStepIndex = 0;
 				while ((currentStepIndex < getProcessFlow().getProcessSteps().size()) && !knowEnough && isRunning()) {
@@ -158,11 +146,11 @@ public class TeachOptimizedThread extends TeachThread {
 				getProcessFlow().initialize();
 			} catch (Exception e) {
 				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
+				getProcessFlow().initialize();
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
 				e.printStackTrace();
 				logger.error(e);
 				getProcessFlow().setMode(Mode.STOPPED);
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
-				getProcessFlow().initialize();
 			}
 		} catch (Exception e) {
 			logger.error(e);
@@ -211,4 +199,21 @@ public class TeachOptimizedThread extends TeachThread {
 		}
 	}
 	
+	private void initializeSteps() {
+		for (AbstractProcessStep step : getProcessFlow().getProcessSteps()) {
+			if ((step instanceof PickStep) && ((PickStep) step).getDevice().getId().equals(DeviceManager.IRS_M_BASIC)) {
+				pickFromStackerStep = (PickStep) step;
+			} else if ((step instanceof PutAndWaitStep) && ((PutAndWaitStep) step).getDevice().getId().equals(DeviceManager.PRAGE_DEVICE)) {
+				putAndWaitOnPrageStep = (PutAndWaitStep) step;
+			} else if ((step instanceof PickAfterWaitStep) && ((PickAfterWaitStep) step).getDevice().getId().equals(DeviceManager.PRAGE_DEVICE)) {
+				pickAfterWaitOnPrageStep = (PickAfterWaitStep) step;
+			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice().getId().equals(DeviceManager.MAZAK_VRX)) {
+				putInMachineStep = (PutStep) step;
+			} else if ((step instanceof PickStep) && ((PickStep) step).getDevice().getId().equals(DeviceManager.MAZAK_VRX)) {
+				pickFromMachineStep = (PickStep) step;
+			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice().getId().equals(DeviceManager.IRS_M_BASIC)) {
+				putOnStackerStep = (PutStep) step;
+			}
+		}
+	}
 }

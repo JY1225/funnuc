@@ -86,30 +86,30 @@ public class TeachThread extends Thread {
 					processFlow.setMode(Mode.STOPPED);
 				}
 			} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
-				processFlow.processProcessFlowEvent(new ExceptionOccuredEvent(processFlow, e));
-				processFlow.initialize();
-				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
+				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), e));
+				getProcessFlow().initialize();
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
 				e.printStackTrace();
 				logger.error(e);
-				processFlow.setMode(Mode.STOPPED);
+				getProcessFlow().setMode(Mode.STOPPED);
 			} catch (InterruptedException e) {
 				if ((!isRunning()) || ThreadManager.isShuttingDown()) {
 					logger.info("Execution of one or more steps got interrupted, so let't just stop");
 				} else {
-					processFlow.processProcessFlowEvent(new ExceptionOccuredEvent(processFlow, new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
+					getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
 					e.printStackTrace();
 					logger.error(e);
 				}
 				getProcessFlow().setMode(Mode.STOPPED);
-				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
-				processFlow.initialize();
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
+				getProcessFlow().initialize();
 			} catch (Exception e) {
-				processFlow.processProcessFlowEvent(new ExceptionOccuredEvent(processFlow, new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
-				processFlow.initialize();
-				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
+				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
+				getProcessFlow().initialize();
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
 				e.printStackTrace();
 				logger.error(e);
-				processFlow.setMode(Mode.STOPPED);
+				getProcessFlow().setMode(Mode.STOPPED);
 			}
 		} catch (Exception e) {
 			logger.error(e);

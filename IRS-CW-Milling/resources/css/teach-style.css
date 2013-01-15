@@ -15,16 +15,16 @@
 	-fx-padding: 0;
 } 
 
-.info-msg-title {
-	-fx-font-family: "Open Sans";
-	-fx-font-weight: bold;
-	-fx-font-size: 18px;
-}
-
 .general-info-msg {
 	-fx-font-family: "Open Sans";
 	-fx-text-alignment: left;
 	-fx-padding: 0 20 0 0;
+}
+
+.info-msg-title {
+	-fx-font-family: "Open Sans";
+	-fx-font-weight: bold;
+	-fx-font-size: 18px;
 }
 
 .message-normal {

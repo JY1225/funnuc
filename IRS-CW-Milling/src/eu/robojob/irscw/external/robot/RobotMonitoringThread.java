@@ -46,14 +46,20 @@ public class RobotMonitoringThread extends Thread implements MonitoringThread {
 						}
 						this.previousStatus = status;
 						Set<RobotAlarm> alarms = robot.getAlarms();
-						if ((!previousAlarms.containsAll(alarms)) || (!alarms.containsAll(previousAlarms))) {
+						Set<RobotAlarm> prevAlarmsBuffer = new HashSet<RobotAlarm>(previousAlarms);
+						this.previousAlarms = alarms;
+						if ((!prevAlarmsBuffer.containsAll(alarms)) || (!alarms.containsAll(prevAlarmsBuffer))) {
 							if (alarms.size() == 0) {
-								logger.debug("No more alarms, so sending reset command!");
-								robot.continueProgram();
+								for (RobotAlarm alarm : prevAlarmsBuffer) {
+									if (alarm.getId() == RobotAlarm.FAULT_LED) {
+										logger.debug("No more alarms (previously: " + prevAlarmsBuffer + "), so sending continue command!");
+										robot.continueProgram();
+										break;
+									}
+								}
 							}
 							robot.processRobotEvent(new RobotAlarmsOccuredEvent(robot, alarms));
 						}
-						this.previousAlarms = alarms;
 						double zrest = robot.getZRest();
 						if (zrest != previousZRest) {
 							robot.processRobotEvent(new RobotEvent(robot, RobotEvent.ZREST_CHANGED));

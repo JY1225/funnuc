@@ -116,3 +116,20 @@
 	-fx-fill: #ffffff;
 }
 
+.info-msg {
+	-fx-text-alignment: left;
+	-fx-alignment: top-left;
+	-fx-text-wrap: true;
+	-fx-text-fill: white;
+	-fx-font-size: 15px;
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
+	-fx-background-color: transparent;
+	-fx-padding: 0;
+} 
+
+.info-msg-title {
+	-fx-font-family: "Open Sans";
+	-fx-font-weight: bold;
+	-fx-font-size: 18px;
+}

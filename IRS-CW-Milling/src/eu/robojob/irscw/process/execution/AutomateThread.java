@@ -14,6 +14,10 @@ import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
+import eu.robojob.irscw.threading.ThreadManager;
+import eu.robojob.irscw.util.Translator;
 
 /**
  * This simple Automate-thread will execute the ProcessSteps sequentially
@@ -22,7 +26,8 @@ public class AutomateThread extends Thread {
 
 	private static Logger logger = LogManager.getLogger(AutomateThread.class.getName());
 	private static final int WORKPIECE_ID = 1;
-	
+	protected static final String OTHER_EXCEPTION = "Exception.otherException";
+
 	private ProcessFlow processFlow;
 	private boolean running;
 	
@@ -37,22 +42,28 @@ public class AutomateThread extends Thread {
 	public void run() {
 		logger.debug("Started execution, processflow [" + processFlow + "].");
 		try {
+			// don't initialize ProcessFlow, because could be paused
 			processFlow.setMode(ProcessFlow.Mode.AUTO);
-			this.running = true;
+			setRunning(true);
 			try {
 				for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
 					robot.recalculateTCPs();
+					if (currentStepIndex == -1) {
+						robot.moveToHome();
+					}
 				}
 				for (AbstractDevice device: processFlow.getDevices()) {	// prepare devices for this processflow
 					device.prepareForProcess(processFlow);
 				}
-				currentStepIndex = 0;
-				while (processFlow.getFinishedAmount() < processFlow.getTotalAmount() && running) {
+				if (currentStepIndex == -1) {
+					currentStepIndex = 0;
+				}
+				while ((processFlow.getFinishedAmount() < processFlow.getTotalAmount()) && running) {
 					while ((currentStepIndex < processFlow.getProcessSteps().size()) && running) {
 						AbstractProcessStep step = processFlow.getProcessSteps().get(currentStepIndex);
 						AbstractProcessStep nextStep = null;
 						if (currentStepIndex < (processFlow.getProcessSteps().size() - 1)) {
-							nextStep = processFlow.getProcessSteps().get(1 + currentStepIndex);
+							nextStep = processFlow.getProcessSteps().get(1 + currentStepIndex);		// looks fine: if next step is intervention: free after is true
 						}
 						if (step instanceof AbstractTransportStep) {
 							((AbstractTransportStep) step).getRobotSettings().setFreeAfter(true);
@@ -68,7 +79,7 @@ public class AutomateThread extends Thread {
 						}
 						if (step instanceof InterventionStep) {
 							if (((InterventionStep) step).isInterventionNeeded(processFlow.getFinishedAmount())) {
-								for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
+								for (AbstractRobot robot : processFlow.getRobots()) {
 									robot.moveToHome();	// send robots to home
 								}
 								step.executeStep(WORKPIECE_ID);
@@ -83,8 +94,9 @@ public class AutomateThread extends Thread {
 						currentStepIndex++;
 					}
 					currentStepIndex = 0;
+					//TODO review
 					for (AbstractDevice device: processFlow.getDevices()) {
-						device.prepareForProcess(processFlow);
+						device.prepareForProcess(processFlow);	// reset signal, sometimes needed to reset cycle finished!!
 					}
 				}
 				if (running) {
@@ -99,18 +111,25 @@ public class AutomateThread extends Thread {
 					processFlow.setMode(Mode.PAUSED);
 				}
 			} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
+				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), e));
+				getProcessFlow().initialize();
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);
 			} catch (InterruptedException e) {
-				if (!running) {
+				if ((!isRunning()) || ThreadManager.isShuttingDown()) {
 					logger.info("Execution of one or more steps got interrupted, so let't just stop");
 				} else {
+					getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
 					e.printStackTrace();
 					logger.error(e);
 				}
 				processFlow.setMode(Mode.STOPPED);
 			} catch (Exception e) {
+				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
+				getProcessFlow().initialize();
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);
@@ -130,12 +149,16 @@ public class AutomateThread extends Thread {
 		return "AutomateThread: " + processFlow.toString();
 	}
 	
-	public void stopRunning() {
-		running = false;
-	}
-	
 	public boolean isRunning() {
 		return running;
+	}
+	
+	public void setRunning(final boolean running) {
+		this.running = running;
+	}
+	
+	public ProcessFlow getProcessFlow() {
+		return processFlow;
 	}
 	
 	@Override
@@ -148,6 +171,7 @@ public class AutomateThread extends Thread {
 			for (AbstractDevice device :processFlow.getDevices()) {
 				device.interruptCurrentAction();
 			}
+			processFlow.initialize();
 		}
 	}
 	

@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.teach;
+package eu.robojob.irscw.ui.general.status;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -61,6 +61,8 @@ public class StatusView extends VBox {
 	private static final String CSS_CLASS_ERROR_BG_ICON = "error-bg-icon";
 	private static final String CSS_CLASS_TEACH_BUTTON = "teach-btn";
 	private static final String CSS_CLASS_TEACH_BUTTON_TEXT = "teach-btn-text";
+	private static final String CSS_CLASS_INFO_MESSAGE_TITLE = "info-msg-title";
+	private static final String CSS_CLASS_INFO_MESSAGE = "info-msg";
 	
 	private static final String STATUS_TITLE = "StatusView.statusTitle";
 	private static final String ERROR_TITLE = "StatusView.errorTitle";
@@ -90,12 +92,12 @@ public class StatusView extends VBox {
 		infoIconPane.getChildren().addAll(infoBgPath, infoPath);
 		HBox.setMargin(infoIconPane, new Insets(0, 10, 0, 0));
 		lblInfoTitle = new Label();
-		lblInfoTitle.getStyleClass().add(TeachView.CSS_CLASS_INFO_MESSAGE_TITLE);
+		lblInfoTitle.getStyleClass().add(CSS_CLASS_INFO_MESSAGE_TITLE);
 		lblInfoTitle.setText(Translator.getTranslation(STATUS_TITLE));
 		lblInfoMessage = new Label();
 		lblInfoMessage.setPrefWidth(LBL_WIDTH);
 		lblInfoMessage.setWrapText(true);
-		lblInfoMessage.getStyleClass().add(TeachView.CSS_CLASS_TEACH_MESSAGE);
+		lblInfoMessage.getStyleClass().add(CSS_CLASS_INFO_MESSAGE);
 		HBox hBoxInfo = new HBox();
 		hBoxInfo.getChildren().addAll(infoIconPane, lblInfoTitle);
 		vBoxInfo =  new VBox();
@@ -112,12 +114,12 @@ public class StatusView extends VBox {
 		errorIconPane.getChildren().addAll(errorBgPath, errorPath);
 		HBox.setMargin(errorIconPane, new Insets(0, 10, 0, 0));
 		lblErrorTitle = new Label();
-		lblErrorTitle.getStyleClass().add(TeachView.CSS_CLASS_INFO_MESSAGE_TITLE);
+		lblErrorTitle.getStyleClass().add(CSS_CLASS_INFO_MESSAGE_TITLE);
 		lblErrorTitle.setText(Translator.getTranslation(ERROR_TITLE));
 		lblErrorMessage = new Label();
 		lblErrorMessage.setPrefWidth(LBL_WIDTH);
 		lblErrorMessage.setWrapText(true);
-		lblErrorMessage.getStyleClass().add(TeachView.CSS_CLASS_TEACH_MESSAGE);
+		lblErrorMessage.getStyleClass().add(CSS_CLASS_INFO_MESSAGE);
 		HBox hBoxError = new HBox();
 		hBoxError.getChildren().addAll(errorIconPane, lblErrorTitle);
 		vBoxError = new VBox();
@@ -134,12 +136,12 @@ public class StatusView extends VBox {
 		alarmIconPane.getChildren().addAll(alarmBgPath, alarmPath);
 		HBox.setMargin(alarmIconPane, new Insets(0, 10, 0, 0));
 		lblAlarmTitle = new Label();
-		lblAlarmTitle.getStyleClass().add(TeachView.CSS_CLASS_INFO_MESSAGE_TITLE);
+		lblAlarmTitle.getStyleClass().add(CSS_CLASS_INFO_MESSAGE_TITLE);
 		lblAlarmTitle.setText(Translator.getTranslation(ALARM_TITLE));
 		lblAlarmMessage = new Label();
 		lblAlarmMessage.setPrefWidth(LBL_WIDTH);
 		lblAlarmMessage.setWrapText(true);
-		lblAlarmMessage.getStyleClass().add(TeachView.CSS_CLASS_TEACH_MESSAGE);
+		lblAlarmMessage.getStyleClass().add(CSS_CLASS_INFO_MESSAGE);
 		HBox hBoxAlarm = new HBox();
 		hBoxAlarm.getChildren().addAll(alarmIconPane, lblAlarmTitle);
 		vBoxAlarm = new VBox();
