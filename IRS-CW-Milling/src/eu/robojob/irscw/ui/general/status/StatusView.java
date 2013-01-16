@@ -1,26 +1,16 @@
 package eu.robojob.irscw.ui.general.status;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
-import javafx.scene.text.Text;
 import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
 
 public class StatusView extends VBox {
-
-	public enum Status {
-		OK, ERROR, WARNING
-	}
-	
-	private StatusPresenter presenter;
 	
 	private SVGPath infoBgPath;
 	private SVGPath infoPath;
@@ -28,24 +18,18 @@ public class StatusView extends VBox {
 	private SVGPath errorPath;
 	private SVGPath alarmBgPath;
 	private SVGPath alarmPath;
-	private Label lblInfoTitle;
+	private Label lblZRest;
 	private Label lblInfoMessage;
-	private Label lblErrorTitle;
 	private Label lblErrorMessage;
-	private Label lblAlarmTitle;
 	private Label lblAlarmMessage;
-	private VBox vBoxMessages;
-	private VBox vBoxInfo;
-	private VBox vBoxError;
-	private VBox vBoxAlarm;
-	private Button btnCancel;
+	private HBox hBoxInfo;
+	private HBox hBoxError;
+	private HBox hBoxAlarm;
 	
-	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
-	private static final double BTN_HEIGHT = 40;
-	private static final int LBL_WIDTH = 550;
-	private static final int MESSAGES_HEIGHT = 220;
-	
-	private static final String STOP = "StatusView.stop";
+	private static final int MSG_MIN_HEIGHT = 30;
+	private static final int PADDING_BOTTOM = 10;
+	private static final int ICON_WIDTH = 25;
+	private static final int ICON_PADDING = 10;
 	
 	private static final String CIRCLE_ICON = "M 12.5,3e-7 C 5.5964408,3e-7 0,5.5964411 0,12.5 0,19.40356 5.5964408,25 12.5,25 19.403559,25 25,19.40356 25,12.5 25,5.5964411 19.403559,3e-7 12.5,3e-7 z";
 	private static final String TRIANGLE_ICON = "M 12.5,1.03125 C 11.993062,1.0311198 11.509776,1.3702678 11.125,2.0625 L 0.3125,21.46875 C -0.45731218,22.853735 0.22861858,24 1.8125,24 l 21.375,0 c 1.584142,0 2.268771,-1.145744 1.5,-2.53125 L 13.90625,2.0625 C 13.521995,1.3697471 13.006938,1.0313802 12.5,1.03125 z";
@@ -55,33 +39,29 @@ public class StatusView extends VBox {
 			
 	private static final String CSS_CLASS_INFO_BG_ICON = "info-bg-icon";
 	private static final String CSS_CLASS_INFO_ICON = "info-icon";
-	private static final String CSS_CLASS_WARNING_ICON = "warning-icon";
-	private static final String CSS_CLASS_WARNING_BG_ICON = "warning-bg-icon";
+	protected static final String CSS_CLASS_WARNING_ICON = "warning-icon";
+	protected static final String CSS_CLASS_WARNING_BG_ICON = "warning-bg-icon";
 	private static final String CSS_CLASS_ERROR_ICON = "error-icon";
 	private static final String CSS_CLASS_ERROR_BG_ICON = "error-bg-icon";
-	private static final String CSS_CLASS_TEACH_BUTTON = "teach-btn";
-	private static final String CSS_CLASS_TEACH_BUTTON_TEXT = "teach-btn-text";
-	private static final String CSS_CLASS_INFO_MESSAGE_TITLE = "info-msg-title";
-	private static final String CSS_CLASS_INFO_MESSAGE = "info-msg";
+	protected static final String CSS_CLASS_INFO_MESSAGE_TITLE = "info-msg-title";
+	protected static final String CSS_CLASS_INFO_MESSAGE = "info-msg";
+	protected static final String CSS_CLASS_STATUS_MESSAGE = "status-msg";
+	private static final String CSS_CLASS_INFO_BORDER_BOTTOM = "info-border-bottom";
 	
-	private static final String STATUS_TITLE = "StatusView.statusTitle";
-	private static final String ERROR_TITLE = "StatusView.errorTitle";
-	private static final String ALARM_TITLE = "StatusView.alarmTitle";
+	private static final String NO_ERRORS = "StatusView.noErrors";
+	private static final String NO_ALARMS = "StatusView.noAlarms";
+	private static final String DROPS_ANOTHER = "StatusView.dropsAnother";
 	
 	public StatusView() {
 		build();
 	}
 	
-	public void setPresenter(final StatusPresenter presenter) {
-		this.presenter = presenter;
-	}
-	
 	private void build() {
 		
-		this.setFillWidth(true);
-		this.setPrefSize(LBL_WIDTH, 300);
-		this.setAlignment(Pos.CENTER);
+		setFillWidth(true);
+		setAlignment(Pos.CENTER);
 		
+		// icon
 		infoBgPath = new SVGPath();
 		infoBgPath.setContent(CIRCLE_ICON);
 		infoBgPath.getStyleClass().add(CSS_CLASS_INFO_BG_ICON);
@@ -90,20 +70,26 @@ public class StatusView extends VBox {
 		infoPath.getStyleClass().add(CSS_CLASS_INFO_ICON);
 		Pane infoIconPane = new Pane();
 		infoIconPane.getChildren().addAll(infoBgPath, infoPath);
-		HBox.setMargin(infoIconPane, new Insets(0, 10, 0, 0));
-		lblInfoTitle = new Label();
-		lblInfoTitle.getStyleClass().add(CSS_CLASS_INFO_MESSAGE_TITLE);
-		lblInfoTitle.setText(Translator.getTranslation(STATUS_TITLE));
+		// label
 		lblInfoMessage = new Label();
-		lblInfoMessage.setPrefWidth(LBL_WIDTH);
 		lblInfoMessage.setWrapText(true);
-		lblInfoMessage.getStyleClass().add(CSS_CLASS_INFO_MESSAGE);
-		HBox hBoxInfo = new HBox();
-		hBoxInfo.getChildren().addAll(infoIconPane, lblInfoTitle);
-		vBoxInfo =  new VBox();
-		vBoxInfo.getChildren().addAll(hBoxInfo, lblInfoMessage);
-		VBox.setMargin(vBoxInfo, new Insets(0, 0, 20, 0));
+		lblInfoMessage.getStyleClass().addAll(CSS_CLASS_INFO_MESSAGE, CSS_CLASS_STATUS_MESSAGE);
+		lblZRest = new Label();
+		lblZRest.getStyleClass().addAll(CSS_CLASS_INFO_MESSAGE, CSS_CLASS_STATUS_MESSAGE);
+		lblZRest.setText("");
+		FlowPane fPaneMessage = new FlowPane();
+		fPaneMessage.setAlignment(Pos.CENTER_LEFT);
+		fPaneMessage.getChildren().addAll(lblInfoMessage, lblZRest);
+		// hbox
+		hBoxInfo = new HBox();
+		hBoxInfo.setMinHeight(MSG_MIN_HEIGHT);
+		hBoxInfo.getChildren().addAll(infoIconPane, fPaneMessage);
+		HBox.setMargin(infoIconPane, new Insets(0, ICON_PADDING, 0, 0));
+		hBoxInfo.getStyleClass().add(CSS_CLASS_INFO_BORDER_BOTTOM);
+		hBoxInfo.setAlignment(Pos.TOP_LEFT);
+		hBoxInfo.setPadding(new Insets(0, 0, PADDING_BOTTOM, 0));
 		
+		// icon
 		errorBgPath = new SVGPath();
 		errorBgPath.setContent(CIRCLE_ICON);
 		errorBgPath.getStyleClass().add(CSS_CLASS_ERROR_BG_ICON);
@@ -112,20 +98,20 @@ public class StatusView extends VBox {
 		errorPath.getStyleClass().add(CSS_CLASS_ERROR_ICON);
 		Pane errorIconPane = new Pane();
 		errorIconPane.getChildren().addAll(errorBgPath, errorPath);
-		HBox.setMargin(errorIconPane, new Insets(0, 10, 0, 0));
-		lblErrorTitle = new Label();
-		lblErrorTitle.getStyleClass().add(CSS_CLASS_INFO_MESSAGE_TITLE);
-		lblErrorTitle.setText(Translator.getTranslation(ERROR_TITLE));
+		// label
 		lblErrorMessage = new Label();
-		lblErrorMessage.setPrefWidth(LBL_WIDTH);
 		lblErrorMessage.setWrapText(true);
-		lblErrorMessage.getStyleClass().add(CSS_CLASS_INFO_MESSAGE);
-		HBox hBoxError = new HBox();
-		hBoxError.getChildren().addAll(errorIconPane, lblErrorTitle);
-		vBoxError = new VBox();
-		vBoxError.getChildren().addAll(hBoxError, lblErrorMessage);
-		VBox.setMargin(vBoxError, new Insets(0, 0, 20, 0));
+		lblErrorMessage.getStyleClass().addAll(CSS_CLASS_INFO_MESSAGE, CSS_CLASS_STATUS_MESSAGE);
+		// hbox
+		hBoxError = new HBox();
+		hBoxError.setMinHeight(MSG_MIN_HEIGHT);
+		HBox.setMargin(errorIconPane, new Insets(0, ICON_PADDING, 0, 0));
+		hBoxError.getChildren().addAll(errorIconPane, lblErrorMessage);
+		hBoxError.getStyleClass().add(CSS_CLASS_INFO_BORDER_BOTTOM);
+		hBoxError.setAlignment(Pos.TOP_LEFT);
+		hBoxError.setPadding(new Insets(0, 0, PADDING_BOTTOM, 0));
 		
+		// icon
 		alarmBgPath = new SVGPath();
 		alarmBgPath.setContent(TRIANGLE_ICON);
 		alarmBgPath.getStyleClass().add(CSS_CLASS_WARNING_BG_ICON);
@@ -134,80 +120,85 @@ public class StatusView extends VBox {
 		alarmPath.getStyleClass().add(CSS_CLASS_WARNING_ICON);
 		Pane alarmIconPane = new Pane();
 		alarmIconPane.getChildren().addAll(alarmBgPath, alarmPath);
-		HBox.setMargin(alarmIconPane, new Insets(0, 10, 0, 0));
-		lblAlarmTitle = new Label();
-		lblAlarmTitle.getStyleClass().add(CSS_CLASS_INFO_MESSAGE_TITLE);
-		lblAlarmTitle.setText(Translator.getTranslation(ALARM_TITLE));
+		// label
 		lblAlarmMessage = new Label();
-		lblAlarmMessage.setPrefWidth(LBL_WIDTH);
 		lblAlarmMessage.setWrapText(true);
-		lblAlarmMessage.getStyleClass().add(CSS_CLASS_INFO_MESSAGE);
-		HBox hBoxAlarm = new HBox();
-		hBoxAlarm.getChildren().addAll(alarmIconPane, lblAlarmTitle);
-		vBoxAlarm = new VBox();
-		vBoxAlarm.getChildren().addAll(hBoxAlarm, lblAlarmMessage);
-		VBox.setMargin(vBoxAlarm, new Insets(0, 0, 20, 0));
+		lblAlarmMessage.getStyleClass().addAll(CSS_CLASS_INFO_MESSAGE, CSS_CLASS_STATUS_MESSAGE);
+		// hbox
+		hBoxAlarm = new HBox();
+		hBoxAlarm.setMinHeight(MSG_MIN_HEIGHT);
+		HBox.setMargin(alarmIconPane, new Insets(0, ICON_PADDING, 0, 0));
+		hBoxAlarm.getChildren().addAll(alarmIconPane, lblAlarmMessage);
+		hBoxAlarm.getStyleClass().add(CSS_CLASS_INFO_BORDER_BOTTOM);
+		hBoxAlarm.setAlignment(Pos.TOP_LEFT);
+		hBoxAlarm.setPadding(new Insets(0, 0, PADDING_BOTTOM, 0));
 		
-		btnCancel = new Button();
-		btnCancel.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
-		Text txtRestart = new Text(Translator.getTranslation(STOP));
-		txtRestart.getStyleClass().add(CSS_CLASS_TEACH_BUTTON_TEXT);
-		btnCancel.setGraphic(txtRestart);
-		btnCancel.getStyleClass().add(CSS_CLASS_TEACH_BUTTON);
-		btnCancel.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent arg0) {
-				presenter.stopTeaching();
-			}
-		});
+		setSpacing(PADDING_BOTTOM);
+		setAlignment(Pos.CENTER);
 		
-		vBoxMessages = new VBox();
-		vBoxMessages.setPrefHeight(MESSAGES_HEIGHT);
-		vBoxMessages.setAlignment(Pos.CENTER);
-		
-		vBoxMessages.getChildren().add(vBoxInfo);
-		vBoxMessages.getChildren().add(vBoxError);
-		vBoxMessages.getChildren().add(vBoxAlarm);
-		getChildren().add(vBoxMessages);
-		getChildren().add(btnCancel);
+		getChildren().add(hBoxInfo);
+		getChildren().add(hBoxError);
+		getChildren().add(hBoxAlarm);
 		
 		setErrorMessage(null);
 		setAlarmMessage(null);
 	}
 	
+	public void setWidth(final double width) {
+		this.setMinWidth(width);
+		this.setPrefWidth(width);
+		this.setMaxWidth(width);
+		lblInfoMessage.setMaxWidth(width - ICON_WIDTH - ICON_PADDING);
+		hBoxInfo.setPrefWidth(width);
+		hBoxInfo.setMinWidth(width);
+		lblAlarmMessage.setMaxWidth(width - ICON_WIDTH - ICON_PADDING);
+		hBoxAlarm.setPrefWidth(width);
+		hBoxAlarm.setMinWidth(width);
+		lblErrorMessage.setMaxWidth(width - ICON_WIDTH - ICON_PADDING);
+		hBoxError.setPrefWidth(width);
+		hBoxError.setMinWidth(width);
+	}
+	
 	public void setInfoMessage(final String message) {
 		if (message == null) {
-			vBoxInfo.setVisible(false);
-			vBoxInfo.setManaged(false);
+			hBoxInfo.setVisible(false);
+			hBoxInfo.setManaged(false);
 		} else {
-			vBoxInfo.setVisible(true);
-			vBoxInfo.setManaged(true);
+			hBoxInfo.setVisible(true);
+			hBoxInfo.setManaged(true);
 			lblInfoMessage.setText(message);
 		}
 	}
 	
 	public void setAlarmMessage(final String message) {
 		if (message == null) {
-			vBoxAlarm.setVisible(false);
-			vBoxAlarm.setManaged(false);
+			hBoxAlarm.setVisible(false);
+			hBoxAlarm.setManaged(false);
+			lblAlarmMessage.setText(Translator.getTranslation(NO_ALARMS));
 		} else {
-			vBoxAlarm.setVisible(true);
-			vBoxAlarm.setManaged(true);
+			hBoxAlarm.setVisible(true);
+			hBoxAlarm.setManaged(true);
 			lblAlarmMessage.setText(message);
 		}
 	}
 	
 	public void setErrorMessage(final String message) {
 		if (message == null) {
-			vBoxError.setVisible(false);
-			vBoxError.setManaged(false);
+			hBoxError.setVisible(false);
+			hBoxError.setManaged(false);
+			lblErrorMessage.setText(Translator.getTranslation(NO_ERRORS));
 		} else {
-			vBoxError.setVisible(true);
-			vBoxError.setManaged(true);
+			hBoxError.setVisible(true);
+			hBoxError.setManaged(true);
 			lblErrorMessage.setText(message);
 		}
 	}
 	
 	public void setZRest(final double zrest) {
+		if (zrest > 1) {
+			lblZRest.setText(" (" + Translator.getTranslation(DROPS_ANOTHER) + " " + zrest + ")");
+		} else {
+			lblZRest.setText("");
+		}
 	}
 }

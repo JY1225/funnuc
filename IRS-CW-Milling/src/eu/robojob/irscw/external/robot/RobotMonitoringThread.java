@@ -11,7 +11,7 @@ import eu.robojob.irscw.threading.MonitoringThread;
 
 public class RobotMonitoringThread extends Thread implements MonitoringThread {
 
-	private static final int REFRESH_TIME = 150;
+	private static final int REFRESH_TIME = 100;
 	
 	private AbstractRobot robot;
 	private boolean alive;

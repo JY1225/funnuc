@@ -31,7 +31,7 @@ public class GeneralInfoView extends GridPane {
 	private Label lblStartAll;			
 	private GeneralInfoPresenter presenter;
 	
-	private static final double BUTTON_WIDTH = UIConstants.BUTTON_HEIGHT * 4;
+	private static final double BUTTON_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
 	private static final double BUTTON_HEIGHT = 40;
 	private static final int PREF_WIDTH = 700;
 	private static final int PREF_HEIGHT = 400;

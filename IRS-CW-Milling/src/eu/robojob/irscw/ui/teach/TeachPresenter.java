@@ -26,7 +26,7 @@ import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
-import eu.robojob.irscw.ui.general.status.StatusPresenter;
+import eu.robojob.irscw.ui.general.status.DisconnectedDevicesView;
 import eu.robojob.irscw.util.Translator;
 
 public class TeachPresenter implements CNCMachineListener, RobotListener, MainContentPresenter {
@@ -35,7 +35,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, MainCo
 	private FixedProcessFlowPresenter processFlowPresenter;
 	private DisconnectedDevicesView teachDisconnectedDevicesView;
 	private GeneralInfoPresenter generalInfoPresenter;
-	private StatusPresenter statusPresenter;
+	private TeachStatusPresenter statusPresenter;
 	private TeachThread teachThread;
 	private ProcessFlow processFlow;
 	private Map<AbstractCNCMachine, Boolean> machines;
@@ -44,7 +44,7 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, MainCo
 	private static final String NOT_CONNECTED_TO = "TeachPresenter.notConnectedTo";
 	
 	public TeachPresenter(final TeachView view, final FixedProcessFlowPresenter processFlowPresenter, final ProcessFlow processFlow, final DisconnectedDevicesView teachDisconnectedDevicesView,
-			final GeneralInfoPresenter generalInfoPresenter, final StatusPresenter statusPresenter) {
+			final GeneralInfoPresenter generalInfoPresenter, final TeachStatusPresenter statusPresenter) {
 		this.view = view;
 		this.processFlowPresenter = processFlowPresenter;
 		view.setTop(processFlowPresenter.getView());
@@ -84,11 +84,11 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, MainCo
 		processFlowPresenter.stopListening();
 		machines.clear();
 		robots.clear();
-		processFlow.removeListener(statusPresenter);
+		processFlow.removeListener(statusPresenter.getStatusPresenter());
 	}
 	
 	private void enable() {
-		processFlow.addListener(statusPresenter);
+		processFlow.addListener(statusPresenter.getStatusPresenter());
 		processFlowPresenter.refresh();
 		for (AbstractDevice device : processFlow.getDevices()) {
 			if (device instanceof AbstractCNCMachine) {
@@ -266,7 +266,17 @@ public class TeachPresenter implements CNCMachineListener, RobotListener, MainCo
 	}
 	
 	@Override public void robotStatusChanged(final RobotEvent event) { }
-	@Override public void robotZRestChanged(final RobotEvent event) { }
+	@Override public void robotZRestChanged(final RobotEvent event) { 
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				if ((teachThread != null) && (teachThread.isRunning())) {
+					statusPresenter.setZRest(event.getSource().getZRest());
+				} else {
+					statusPresenter.setZRest(-1);
+				}
+			}
+		});
+	}
 	@Override public void robotSpeedChanged(final RobotEvent event) { }
 	@Override public void setParent(final MainPresenter mainPresenter) { }
 	@Override public void cNCMachineStatusChanged(final CNCMachineEvent event) { }

@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.teach;
+package eu.robojob.irscw.ui.general.status;
 
 import java.util.Set;
 
@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
+import eu.robojob.irscw.ui.teach.TeachView;
 import eu.robojob.irscw.util.Translator;
 
 public class DisconnectedDevicesView extends VBox {
@@ -39,22 +40,22 @@ public class DisconnectedDevicesView extends VBox {
 		Pane warningIconPane = new Pane();
 		warningBgIcon = new SVGPath();
 		warningBgIcon.setContent(WARNING_BG_PATH);
-		warningBgIcon.getStyleClass().add(TeachView.CSS_CLASS_WARNING_BG_ICON);
+		warningBgIcon.getStyleClass().add(StatusView.CSS_CLASS_WARNING_BG_ICON);
 		warningIcon = new SVGPath();
 		warningIcon.setContent(WARNING_ICON);
-		warningIcon.getStyleClass().add(TeachView.CSS_CLASS_WARNING_ICON);
+		warningIcon.getStyleClass().add(StatusView.CSS_CLASS_WARNING_ICON);
 		warningIconPane.getChildren().addAll(warningBgIcon, warningIcon);
 		
 		lblDisconnectedDevicesTitle = new Label(Translator.getTranslation(DISCONNECTED_DEVICES_TITLE));
-		lblDisconnectedDevicesTitle.getStyleClass().addAll(TeachView.CSS_CLASS_INFO_MESSAGE_TITLE, CSS_CLASS_WARNING_TITLE);
+		lblDisconnectedDevicesTitle.getStyleClass().addAll(StatusView.CSS_CLASS_INFO_MESSAGE_TITLE, CSS_CLASS_WARNING_TITLE);
 		
 		lblDisconnectedDevices = new Label(Translator.getTranslation(DISCONNECTED_DEVICES));
-		lblDisconnectedDevices.getStyleClass().addAll(TeachView.CSS_CLASS_TEACH_MESSAGE, CSS_CLASS_DISCONNECTED);
+		lblDisconnectedDevices.getStyleClass().addAll(StatusView.CSS_CLASS_INFO_MESSAGE, CSS_CLASS_DISCONNECTED);
 		lblDisconnectedDevices.setPrefSize(470, 60);
 		lblDisconnectedDevices.setWrapText(true);
 		
 		lblDisconnectedList = new Label("");
-		lblDisconnectedList.getStyleClass().addAll(TeachView.CSS_CLASS_TEACH_MESSAGE, CSS_CLASS_DISCONNECTED_LIST);
+		lblDisconnectedList.getStyleClass().addAll(StatusView.CSS_CLASS_INFO_MESSAGE, CSS_CLASS_DISCONNECTED_LIST);
 		lblDisconnectedList.setPrefSize(470, 70);
 		
 		HBox titleHBox = new HBox();

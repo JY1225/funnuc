@@ -3,7 +3,6 @@ package eu.robojob.irscw.ui.general.status;
 import java.util.Set;
 
 import javafx.application.Platform;
-import eu.robojob.irscw.external.robot.RobotEvent;
 import eu.robojob.irscw.process.DeviceStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
@@ -14,13 +13,11 @@ import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.ui.teach.TeachPresenter;
 import eu.robojob.irscw.util.Translator;
 
 public class StatusPresenter implements ProcessFlowListener {
 
 	private StatusView view;
-	private TeachPresenter parent;
 	
 	private static final String PROCESS_TEACH_STARTED = "Status.processTeachStarted";
 	private static final String PROCESS_TEACH_FINISHED = "Status.processTeachFinished";
@@ -35,15 +32,6 @@ public class StatusPresenter implements ProcessFlowListener {
 	
 	public StatusPresenter(final StatusView view) {
 		this.view = view;
-		view.setPresenter(this);
-	}
-	
-	public void setParent(final TeachPresenter parent) {
-		this.parent = parent;
-	}
-	
-	public void stopTeaching() {
-		parent.stopTeaching();
 	}
 	
 	public StatusView getView() {
@@ -133,7 +121,9 @@ public class StatusPresenter implements ProcessFlowListener {
 		}
 	}
 		
-	public void robotZRestChanged(final RobotEvent event) { }
+	public void setZRest(final double zRest) {
+		view.setZRest(zRest);
+	}
 
 	@Override public void dataChanged(final ProcessFlowEvent e) { }
 	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) { }

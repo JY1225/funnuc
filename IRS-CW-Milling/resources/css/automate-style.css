@@ -1,5 +1,5 @@
 .automate-bottom {
-	-fx-background-color: #4c4c4c, #807c7c, #7b7b7b;
+	-fx-background-color: #4c4c4c, #807c7c, #6d6c6c;
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
 }
 
@@ -104,15 +104,6 @@
 	-fx-font-size: 14px;
 	-fx-font-smoothing-type: lcd;	
 	-fx-alignment: center;
-}
-
-.status-msg {
-	-fx-font-size: 16px;
-	-fx-font-family: "Open Sans Semibold";
-	-fx-font-smoothing-type: lcd;
-	-fx-background-color: #8c8888, #3d3d3d, #6d6c6c, #6d6c6c;
-	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
-	-fx-background-radius: 5;
 }
 
 .yellow {

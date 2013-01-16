@@ -47,6 +47,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	
 	public void setNoneActive() {
 		getView().setAllProgressBarPiecesModeNone();
+		getView().stopAllAnimations();
 	}
 	
 	@Override

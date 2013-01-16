@@ -299,6 +299,12 @@ public class ProcessFlowView extends GridPane {
 		}
 	}
 	
+	public void stopAllAnimations() {
+		for (DeviceButton deviceButton : deviceButtons) {
+			deviceButton.animate(false);
+		}
+	}
+	
 	public void setAllProgressBarPiecesModeNone(final int progressBarIndex) {
 		for (List<Region> regions : deviceProgressRegions) {
 			regions.get(progressBarIndex).getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
