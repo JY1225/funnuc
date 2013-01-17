@@ -2,18 +2,22 @@ package eu.robojob.irscw.ui.automate;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
+import javafx.scene.text.Text;
 import eu.robojob.irscw.ui.general.flow.ProcessFlowView;
 import eu.robojob.irscw.ui.general.status.StatusView;
+import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 
 public class AutomateView extends VBox {
@@ -25,10 +29,10 @@ public class AutomateView extends VBox {
 	public static final int HEIGHT_BOTTOM_RIGHT_TOP = 230;
 	public static final int HEIGHT_BOTTOM_LEFT_TOP = 230;
 	public static final int PROGRESS_RADIUS = 70;
-	public static final int PROGRESS_RADIUS_INNER = 65;
+	public static final int PROGRESS_RADIUS_INNER = 66;
 	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3;
 	private static final double BTN_HEIGHT = 40;
-	private static final int STATUS_WIDTH = 500;
+	private static final int TIMING_STATUS_WIDTH = 500;
 	
 	private int totalAmount;
 	private int finishedAmount;
@@ -43,12 +47,23 @@ public class AutomateView extends VBox {
 	private TimingView timingView;
 	private Button btnCancel;
 	private ProcessFlowView processFlowView;
-	private Label lblAmountFinished;
+	private Label lblFinishedAmount;
 	private Label lblTotalAmount;
+	private Region circleBack;
+	private Region circleFront;
 	private Path piePiecePath;
 	private AutomatePresenter presenter;
 	
 	private static final String CSS_CLASS_AUTOMATE_BOTTOM = "automate-bottom";
+	protected static final String CSS_CLASS_AUTOMATE_BUTTON_TEXT = "automate-btn-text";
+	protected static final String CSS_CLASS_AUTOMATE_BUTTON = "automate-btn";
+	private static final String CSS_CLASS_CIRCLE_BACK = "circle-back";
+	private static final String CSS_CLASS_CIRCLE_FRONT = "circle-front";
+	private static final String CSS_CLASS_PROGRESS = "progress";
+	private static final String CSS_CLASS_TOTAL_AMOUNT = "total-amount";
+	private static final String CSS_CLASS_FINISHED_AMOUNT = "finished-amount";
+	
+	private static final String STOP = "StatusView.stop";
 	
 	public AutomateView() {
 	}
@@ -75,16 +90,15 @@ public class AutomateView extends VBox {
 		top.getChildren().add(processFlowView);
 		bottom = new HBox();
 		bottom.setPrefSize(WIDTH, HEIGHT_BOTTOM);
-		bottom.setMinSize(WIDTH, HEIGHT_BOTTOM);
 		bottom.getStyleClass().add(CSS_CLASS_AUTOMATE_BOTTOM);
+		bottom.setAlignment(Pos.CENTER_LEFT);
 		bottomRight = new StackPane();
 		bottomRight.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM);
-		bottomRight.setMinSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM);
 		bottomLeft = new StackPane();
 		bottomLeft.setPrefSize(WIDTH - WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM);
-		bottomLeft.setMinSize(WIDTH - WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM);
 		bottom.getChildren().add(bottomLeft);
 		bottom.getChildren().add(bottomRight);
+		
 		getChildren().add(top);
 		getChildren().add(bottom);
 		
@@ -92,26 +106,60 @@ public class AutomateView extends VBox {
 		vboxBottomLeft.setPrefSize(WIDTH - WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM);
 		vboxBottomLeft.getChildren().add(statusView);
 		vboxBottomLeft.getChildren().add(timingView);
-		vboxBottomLeft.setAlignment(Pos.CENTER);
-		bottomLeft.getChildren().add(vboxBottomLeft);
-		
-		timingView.setPrefSize(WIDTH - WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM - HEIGHT_BOTTOM_LEFT_TOP);
-		timingView.setMinSize(WIDTH - WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM - HEIGHT_BOTTOM_LEFT_TOP);
-		statusView.setWidth(STATUS_WIDTH);
+		vboxBottomLeft.setAlignment(Pos.TOP_CENTER);
+		statusView.setWidth(TIMING_STATUS_WIDTH);
 		statusView.setPrefHeight(HEIGHT_BOTTOM_LEFT_TOP);
 		statusView.setMinHeight(HEIGHT_BOTTOM_LEFT_TOP);
+		bottomLeft.getChildren().clear();
+		bottomLeft.getChildren().add(vboxBottomLeft);
+		bottomLeft.setAlignment(Pos.CENTER);
+		timingView.setWidth(TIMING_STATUS_WIDTH);
+		timingView.setPrefHeight(HEIGHT_BOTTOM - HEIGHT_BOTTOM_LEFT_TOP);
+		timingView.setMinHeight(HEIGHT_BOTTOM - HEIGHT_BOTTOM_LEFT_TOP);
 		
 		StackPane spAmount = new StackPane();
+		StackPane spAmountContents = new StackPane();
+		circleBack = new Region();
+		circleBack.setPrefSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		circleBack.setMinSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		circleBack.setMaxSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		circleBack.getStyleClass().add(CSS_CLASS_CIRCLE_BACK);
+		circleFront = new Region();
+		circleFront.setPrefSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
+		circleFront.setMinSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
+		circleFront.setMaxSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
+		circleFront.getStyleClass().add(CSS_CLASS_CIRCLE_FRONT);
 		piePiecePath = new Path();
+		piePiecePath.getStyleClass().add(CSS_CLASS_PROGRESS);
+		StackPane.setAlignment(piePiecePath, Pos.TOP_RIGHT);
+		StackPane.setAlignment(circleFront, Pos.TOP_RIGHT);
+		StackPane.setAlignment(circleBack, Pos.TOP_RIGHT);
+		StackPane.setMargin(circleFront, new Insets((PROGRESS_RADIUS - PROGRESS_RADIUS_INNER), (PROGRESS_RADIUS - PROGRESS_RADIUS_INNER), 0, 0));
+		spAmountContents.setAlignment(Pos.CENTER);
+		spAmountContents.setPrefSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
+		spAmountContents.setMaxSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
+		spAmountContents.setMinSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
 		spAmount.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM_RIGHT_TOP);
-		spAmount.setMinSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM_RIGHT_TOP);
 		spAmount.setAlignment(Pos.CENTER);
-		spAmount.getChildren().add(piePiecePath);
+		spAmountContents.getChildren().add(circleBack);
+		spAmountContents.getChildren().add(circleFront);
+		spAmountContents.getChildren().add(piePiecePath);
+		spAmount.getChildren().add(spAmountContents);
+		lblTotalAmount = new Label();
+		spAmount.getChildren().add(lblTotalAmount);
+		lblTotalAmount.getStyleClass().add(CSS_CLASS_TOTAL_AMOUNT);
+		lblFinishedAmount = new Label();
+		lblFinishedAmount.getStyleClass().add(CSS_CLASS_FINISHED_AMOUNT);
+		spAmount.getChildren().add(lblFinishedAmount);
+		StackPane.setMargin(lblTotalAmount, new Insets(75, 0, 0, 50));
 		
 		StackPane spCancel = new StackPane();
 		spCancel.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM - HEIGHT_BOTTOM_RIGHT_TOP);
-		spCancel.setMinSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM - HEIGHT_BOTTOM_RIGHT_TOP);
 		btnCancel = new Button();
+		Text txtCancel = new Text(Translator.getTranslation(STOP));
+		txtCancel.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON_TEXT);
+		btnCancel.setGraphic(txtCancel);
+		btnCancel.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON);
 		btnCancel.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
 		btnCancel.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -135,7 +183,7 @@ public class AutomateView extends VBox {
 	
 	public void setFinishedAmount(final int amount) {
 		finishedAmount = amount;
-		lblAmountFinished.setText("" + amount);
+		lblFinishedAmount.setText("" + amount);
 		if ((totalAmount >= 0) && (finishedAmount >= 0)) {
 			setPercentage((int) Math.floor(((double) finishedAmount / (double) totalAmount) * 100));
 		}

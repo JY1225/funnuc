@@ -8,41 +8,33 @@
 }
 
 .circle-back {
-	-fx-smooth: true; 
 	-fx-shape: "M 39.75 -0.03125 C 18.043861 -0.03125 0.40625 17.606358 0.40625 39.3125 C 0.40625 61.01864 18.043861 78.53125 39.75 78.53125 C 61.456141 78.53125 79 61.01864 79 39.3125 C 79 17.606358 61.456141 -0.03125 39.75 -0.03125 z";
-	-fx-background-color: linear-gradient(#7b7b7b 0%, #7b7b7b 50%, #8c8888 80%, #8c8888 100%), #3d3d3d, linear-gradient(#6d6c6c 0%, #6d6c6c 20%, #6d6c6c 50%, #6d6c6c 100%), #6d6c6c;
-	-fx-background-insets: 0, 1, 2, 3;
+	-fx-background-color: #565656;
 }
 
-.automate-progress {
+.circle-front {
+	-fx-shape: "M 39.75 -0.03125 C 18.043861 -0.03125 0.40625 17.606358 0.40625 39.3125 C 0.40625 61.01864 18.043861 78.53125 39.75 78.53125 C 61.456141 78.53125 79 61.01864 79 39.3125 C 79 17.606358 61.456141 -0.03125 39.75 -0.03125 z";
+	-fx-background-color: #6d6c6c;
+}
+
+.progress {
 	-fx-smooth: true; 
 	-fx-stroke: null;
-}
-
-.automate-progress-green {
-	-fx-stroke: #1a4d0b;
-	-fx-fill: radial-gradient(center 0px -120px, radius 100px, #6fc955, #409228);
-}
-
-.automate-progress-gray {
-	-fx-fill: #dadada;
-	-fx-fill: radial-gradient(center 0px -120px, radius 100px, #c5c5c5, #8b8b8b);
-}
-
-.automate-progress-red {
-	-fx-fill: #e33d27;
-	-fx-fill: radial-gradient(center 0px -120px, radius 100px, #e33d27, #dc341d);
+	-fx-fill: #58e900;
+	-fx-stroke-line-cap: round;
+	-fx-effect: dropshadow(gaussian, #58e900, 3, 0, 0, 0);
 }
 
 .finished-amount {
-	-fx-text-alignment: center;
-	-fx-alignment: center;
-	-fx-text-wrap: true;
-	-fx-text-fill: white;
 	-fx-font-family: "Open Sans Semibold";
 	-fx-font-smoothing-type: lcd;
-	-fx-font-size: 80px;
-	-fx-effect: dropshadow(one-pass-box, #565656, 1, 0, 0, 1);
+	-fx-font-size: 60px;
+}
+
+.total-amount {
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
+	-fx-font-size: 16px;
 }
 
 .automate-info-lbl {
@@ -86,24 +78,39 @@
 }
 
 .automate-btn {
-	-fx-background-color: #807878, #222222, #807878, linear-gradient(#656161 0%, #4e4a4a 100%);
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
-	-fx-border-radius: 6, 6, 5, 5;
+	-fx-background-color: #8c8888, #222222, #807878, #353333, linear-gradient(#656161 0%, #4e4a4a 100%);
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 3 1;
+	-fx-background-radius: 3, 3, 2, 2, 2;
 }
 
 .automate-btn:pressed {
-	-fx-background-color: #807878, #222222, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
+	-fx-background-color: #8c8888, #222222, #6696e7, #1d355d, linear-gradient(#5078bc 0%, #3e6099 100%);
 }
 
 .automate-btn-text {
 	-fx-text-fill: white;
 	-fx-fill: white;
-	-fx-text-alignment: center;
 	-fx-font-family: "Open Sans";
 	-fx-font-weight: bold;
 	-fx-font-size: 14px;
 	-fx-font-smoothing-type: lcd;	
+	-fx-text-alignment: center;
 	-fx-alignment: center;
+}
+
+.timing-title {
+	-fx-text-alignment: left;
+	-fx-alignment: center-left;
+	-fx-font-family: "Open Sans";
+	-fx-font-smoothing-type: lcd;	
+	-fx-font-size: 12px;
+}
+
+.timing-value {
+	-fx-font-family: "Open Sans";
+	-fx-font-weight: bold;
+	-fx-font-size: 18px;
+	-fx-font-smoothing-type: lcd;	
 }
 
 .yellow {

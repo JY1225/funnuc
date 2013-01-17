@@ -41,6 +41,9 @@ public class AutomatePresenter implements MainContentPresenter {
 		statusPresenter.initializeView();
 		view.setStatusView(statusPresenter.getView());
 		view.build();
+		view.setTotalAmount(processFlow.getTotalAmount());
+		//view.setFinishedAmount(processFlow.getFinishedAmount());
+		view.setFinishedAmount(3);
 	}
 	
 	public void setParent(final MainPresenter parent) {
