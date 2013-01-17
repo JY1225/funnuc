@@ -20,9 +20,9 @@
 .progress {
 	-fx-smooth: true; 
 	-fx-stroke: null;
-	-fx-fill: #58e900;
+	-fx-fill: #65dc31;
 	-fx-stroke-line-cap: round;
-	-fx-effect: dropshadow(gaussian, #58e900, 3, 0, 0, 0);
+	-fx-effect: dropshadow(gaussian, #65dc31, 3, 0, 0, 0);
 }
 
 .finished-amount {

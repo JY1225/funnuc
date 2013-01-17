@@ -1,7 +1,5 @@
 package eu.robojob.irscw.ui.teach;
 
-import java.util.Set;
-
 import eu.robojob.irscw.ui.general.status.StatusPresenter;
 
 public class TeachStatusPresenter {
@@ -36,13 +34,5 @@ public class TeachStatusPresenter {
 	
 	public void initializeView() {
 		statusPresenter.initializeView();
-	}
-	
-	public void updateAlarms(final Set<String> alarms) {
-		statusPresenter.updateAlarms(alarms);
-	}
-	
-	public void setZRest(final double zRest) {
-		statusPresenter.setZRest(zRest);
 	}
 }

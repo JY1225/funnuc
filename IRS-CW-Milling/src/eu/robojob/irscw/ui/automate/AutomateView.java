@@ -45,7 +45,9 @@ public class AutomateView extends VBox {
 	private VBox vboxBottomRight;
 	private StatusView statusView;
 	private TimingView timingView;
+	private StackPane spButton;
 	private Button btnCancel;
+	private Button btnStart;
 	private ProcessFlowView processFlowView;
 	private Label lblFinishedAmount;
 	private Label lblTotalAmount;
@@ -64,6 +66,7 @@ public class AutomateView extends VBox {
 	private static final String CSS_CLASS_FINISHED_AMOUNT = "finished-amount";
 	
 	private static final String STOP = "StatusView.stop";
+	private static final String START = "AutomateView.start";
 	
 	public AutomateView() {
 	}
@@ -152,9 +155,10 @@ public class AutomateView extends VBox {
 		lblFinishedAmount.getStyleClass().add(CSS_CLASS_FINISHED_AMOUNT);
 		spAmount.getChildren().add(lblFinishedAmount);
 		StackPane.setMargin(lblTotalAmount, new Insets(75, 0, 0, 50));
+		StackPane.setMargin(lblFinishedAmount, new Insets(10, 0, 0, 0));
 		
-		StackPane spCancel = new StackPane();
-		spCancel.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM - HEIGHT_BOTTOM_RIGHT_TOP);
+		spButton = new StackPane();
+		spButton.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM - HEIGHT_BOTTOM_RIGHT_TOP);
 		btnCancel = new Button();
 		Text txtCancel = new Text(Translator.getTranslation(STOP));
 		txtCancel.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON_TEXT);
@@ -164,16 +168,38 @@ public class AutomateView extends VBox {
 		btnCancel.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				presenter.stopExecution();
+				presenter.stopRunning();
 			}
 		});
-		spCancel.getChildren().add(btnCancel);
-		spCancel.setAlignment(Pos.CENTER);
+		btnStart = new Button();
+		Text txtStart = new Text(Translator.getTranslation(START));
+		txtStart.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON_TEXT);
+		btnStart.setGraphic(txtStart);
+		btnStart.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON);
+		btnStart.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
+		btnStart.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				presenter.startAutomate();
+			}
+		});
+		spButton.setAlignment(Pos.CENTER);
+		activateStartButton();
 		
 		vboxBottomRight = new VBox();
 		vboxBottomRight.getChildren().add(spAmount);
-		vboxBottomRight.getChildren().add(spCancel);
+		vboxBottomRight.getChildren().add(spButton);
 		bottomRight.getChildren().add(vboxBottomRight);
+	}
+	
+	public void activateStartButton() {
+		spButton.getChildren().clear();
+		spButton.getChildren().add(btnStart);
+	}
+	
+	public void activeStopButton() {
+		spButton.getChildren().clear();
+		spButton.getChildren().add(btnCancel);
 	}
 	
 	public void setTotalAmount(final int amount) {
