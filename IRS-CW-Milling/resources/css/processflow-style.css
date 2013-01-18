@@ -1,38 +1,36 @@
 /* ---------- DEVICE BUTTON ---------- */
 
 .device-button {
-	-fx-background-insets: 0, 1 1 2 1, 5, 6, 7;
+	-fx-background-insets: 0, 5, 6, 7;
 	-fx-shape: "M 34.03125 0.03125 C 15.253569 0.03125 0.03125 15.253568 0.03125 34.03125 C 0.03125 52.808932 15.253569 68.03125 34.03125 68.03125 C 52.808931 68.03125 68.03125 52.808932 68.03125 34.03125 C 68.03125 15.253568 52.808931 0.03125 34.03125 0.03125 z";
+	-fx-effect: innershadow(one-pass-box, #b5b5b5, 1, 0, 0, 1);
 }
 
 .btn-pre {
-	-fx-background-color: #a0a0a0, linear-gradient(white 0%, #f4f4f4 100%), #a55015, #ce7300, linear-gradient(#fc981b 0%, #ce7300 100%);
+	-fx-background-color: #d3d3d3, #ad5609, linear-gradient(#ffa452 0%, #d76d0e 100%), linear-gradient(#f27e17 100%, #e7740e 100%);
 }
 
 .pre-process {
-	-fx-effect: dropshadow(one-pass-box, #a55015, 1, 0, 0, 1);
 }
 
 .btn-cnc {
-	-fx-background-color: #a0a0a0, linear-gradient(white 0%, #f4f4f4 100%), #2b0e60, #5a2fa8, linear-gradient(#935ddc 0%, #4b278d 100%);
+	-fx-background-color: #d3d3d3, #4b1465, linear-gradient(#bc36fb 0%, #611a82 100%), linear-gradient(#932ec3 100%, #8723b6 100%);
 }
 
 .cnc-machine {
-	-fx-effect: dropshadow(one-pass-box, #2b0e60, 1, 0, 0, 1);
 }
 
 .btn-post {
-	-fx-background-color: #a0a0a0, linear-gradient(white 0%, #f4f4f4 100%), #205c0f, #46932f, linear-gradient(#6fc955 0%, #46932f 100%);
+	-fx-background-color: #d3d3d3, #146016, linear-gradient(#2bd92f 0%, #1d9320 100%), linear-gradient(#2bb52e 100%, #21a524 100%);
 }
 
 .post-process {
-	-fx-effect: dropshadow(one-pass-box, #205c0f, 1, 0, 0, 1);
 }
 
 .button-shape {
 	-fx-fill: white;
-	-fx-scale-x: 0.85;
-	-fx-scale-y: 0.85;
+	-fx-scale-x: 0.82;
+	-fx-scale-y: 0.82;
 }
 
 .device-button-wrapper {
@@ -61,18 +59,10 @@
 
 /* ---------- TRANSPORT BUTTON ---------- */
 
-.arrow-shine {
-	-fx-fill: #9ecdff;
-}
-
-.arrow-shape {
-	-fx-fill: linear-gradient(#4b9bff 0%, #2a89d2 100%);
-	-fx-stroke-width: 1px;
-	-fx-stroke: #204b7a;
-}
-
 .transport-button {
 	-fx-opacity: 1;
+	-fx-background-color: #d3d3d3;
+	-fx-effect: innershadow(one-pass-box, #b5b5b5, 1, 0, 0, 1);
 }
 
 .transport-unfocussed {
@@ -108,8 +98,8 @@
 /* ----------PROGRESSBAR---------- */
 
 .progressbar-piece {
-	-fx-background-color: #a9a9a9, #bfbfbf, #dadada;
-	-fx-background-insets: 0, 1 0 1 0, 2 0 1 0;
+	-fx-background-color: #cbcbcb, #d9d9d9;
+	-fx-background-insets: 0, 1 0 0 0;
 	-fx-opacity: 1;
 }
 
@@ -118,21 +108,19 @@
 }
 
 .progressbar-piece-first {
-	-fx-background-radius: 6 0 0 6, 5 0 0 5, 4 0 0 4;
-	-fx-background-insets: 0, 1 0 1 1, 2 0 1 1;
+	-fx-background-radius: 4 0 0 4;
 }
 
 .progressbar-piece-last {
-	-fx-background-radius: 0 6 6 0, 0 5 5 0, 0 4 4 0;
-	-fx-background-insets: 0, 1 1 1 0, 2 1 1 0;
+	-fx-background-radius: 0 4 4 0;
 }
 
 .progressbar-piece-green {
-	-fx-background-color: #378d1e, #4cb030, #5bc83c;
+	-fx-background-color: #1e8f20, #21a524;
 }
 
 .progressbar-piece-yellow {
-	-fx-background-color: #9d8c00, #c3af00, #fec047;
+	-fx-background-color: #1ab71d, #1bc81f;
 }
 
 .hide {

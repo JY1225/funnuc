@@ -187,7 +187,7 @@ public class RoboSoftAppFactory {
 	
 	public FullKeyboardPresenter getKeyboardPresenter() {
 		if (keyboardPresenter == null) {
-			FullKeyboardView keyboardView = new FullKeyboardView(KeyboardType.AZERTY);
+			FullKeyboardView keyboardView = new FullKeyboardView(KeyboardType.QWERTZ_DE);
 			keyboardPresenter = new FullKeyboardPresenter(keyboardView);
 		}
 		return keyboardPresenter;

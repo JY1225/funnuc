@@ -22,7 +22,7 @@
 
 .left-menu-button:pressed, .menu-item-selected {
 	-fx-background-color: #343c48, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
-	-fx-background-color: #343c48, #e6624a, linear-gradient(#c54b35 0%, #be3c1a 100%);
+	-fx-background-color: #343c48, #e6624a, #be3c1a;
 }
 
 .left-menu-button .left-menu-item-label {

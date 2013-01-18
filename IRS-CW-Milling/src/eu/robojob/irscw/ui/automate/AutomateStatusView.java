@@ -122,7 +122,7 @@ public class AutomateStatusView extends HBox {
 		StackPane.setAlignment(circleFront, Pos.TOP_RIGHT);
 		StackPane.setAlignment(circleBack, Pos.TOP_RIGHT);
 		StackPane.setMargin(circleFront, new Insets((PROGRESS_RADIUS - PROGRESS_RADIUS_INNER), (PROGRESS_RADIUS - PROGRESS_RADIUS_INNER), 0, 0));
-		spAmountContents.setAlignment(Pos.CENTER);
+		spAmountContents.setAlignment(Pos.TOP_RIGHT);
 		spAmountContents.setPrefSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
 		spAmountContents.setMaxSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
 		spAmountContents.setMinSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
@@ -131,15 +131,20 @@ public class AutomateStatusView extends HBox {
 		spAmountContents.getChildren().add(circleBack);
 		spAmountContents.getChildren().add(circleFront);
 		spAmountContents.getChildren().add(piePiecePath);
-		spAmount.getChildren().add(spAmountContents);
 		lblTotalAmount = new Label();
-		spAmount.getChildren().add(lblTotalAmount);
 		lblTotalAmount.getStyleClass().add(CSS_CLASS_TOTAL_AMOUNT);
 		lblFinishedAmount = new Label();
 		lblFinishedAmount.getStyleClass().add(CSS_CLASS_FINISHED_AMOUNT);
-		spAmount.getChildren().add(lblFinishedAmount);
-		StackPane.setMargin(lblTotalAmount, new Insets(75, 0, 0, 50));
-		StackPane.setMargin(lblFinishedAmount, new Insets(10, 0, 0, 0));
+		lblFinishedAmount.setPrefSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		lblFinishedAmount.setMinSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		lblFinishedAmount.setMaxSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		StackPane.setAlignment(lblFinishedAmount, Pos.TOP_RIGHT);
+		StackPane.setAlignment(lblTotalAmount, Pos.CENTER);
+		spAmountContents.getChildren().add(lblFinishedAmount);
+		spAmountContents.getChildren().add(lblTotalAmount);
+		spAmount.getChildren().add(spAmountContents);
+		
+		StackPane.setMargin(lblTotalAmount, new Insets(85, 0, 0, 25));
 		
 		spButton = new StackPane();
 		spButton.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM - HEIGHT_BOTTOM_RIGHT_TOP);

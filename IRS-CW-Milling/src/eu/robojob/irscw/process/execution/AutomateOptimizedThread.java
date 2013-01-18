@@ -97,13 +97,19 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 				}
 				if (finished) {
 					processFlow.setMode(Mode.FINISHED);
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
 				} else {
 					processFlow.setMode(Mode.STOPPED);
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
 				}
 			} catch (AbstractCommunicationException e) {
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
 				getProcessFlow().initialize();
 			} catch (InterruptedException e) {
 				if (!running) {
@@ -114,10 +120,14 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 					getProcessFlow().initialize();
 				}
 				processFlow.setMode(Mode.STOPPED);
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
 			}
 		} catch (Exception e) {
 			logger.error(e);

@@ -35,7 +35,7 @@ public class ProcessFlowView extends GridPane {
 	private List<List<Region>> transportProgressRegionsRight;
 		
 	private static final int GAP = 10; 
-	private static final int PROGRESS_BAR_HEIGHT = 7;
+	private static final int PROGRESS_BAR_HEIGHT = 6;
 	private static final int PROGRESS_BAR_MARGIN_BOTTOM = 7;
 	private static final int PROGRESS_BAR_REGION_HEIGHT = 30;
 	private static final String CSS_CLASS_PROCESSFLOW_VIEW = "process-flow-view";
