@@ -92,6 +92,7 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 			}
 		}
 		processFlowPresenter.startListening();
+		startListening(processFlow);
 		checkAllConnected();
 	}
 	
@@ -117,6 +118,8 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 		}
 	}
 	
+	public abstract void startListening(ProcessFlow processFlow);
+	public abstract void stopListening(ProcessFlow processFlow);
 	public abstract void stopRunning();
 	public abstract void allConnected();
 	public abstract void disconnectedDevices(Set<String> disconnectedDevices);
@@ -133,6 +136,7 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 		machines.clear();
 		robots.clear();
 		processFlow.removeListener(statusPresenter);
+		stopListening(processFlow);
 	}
 
 	@Override

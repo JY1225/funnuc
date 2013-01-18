@@ -31,6 +31,8 @@
 
 .button-shape {
 	-fx-fill: white;
+	-fx-scale-x: 0.85;
+	-fx-scale-y: 0.85;
 }
 
 .device-button-wrapper {
@@ -126,7 +128,7 @@
 }
 
 .progressbar-piece-green {
-	-fx-background-color: #296218, #388122, #60b847;
+	-fx-background-color: #378d1e, #4cb030, #5bc83c;
 }
 
 .progressbar-piece-yellow {

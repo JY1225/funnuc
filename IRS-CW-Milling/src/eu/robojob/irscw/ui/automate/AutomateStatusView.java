@@ -15,30 +15,27 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Text;
-import eu.robojob.irscw.ui.general.flow.ProcessFlowView;
 import eu.robojob.irscw.ui.general.status.StatusView;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 
-public class AutomateView extends VBox {
-
-	public static final int HEIGHT_TOP = 245;
-	public static final int HEIGHT_BOTTOM = 300;
+public class AutomateStatusView extends HBox {
+	
 	public static final int WIDTH = 800;
+	public static final int HEIGHT_BOTTOM = 300;
 	public static final int WIDTH_BOTTOM_RIGHT = 230;
 	public static final int HEIGHT_BOTTOM_RIGHT_TOP = 230;
 	public static final int HEIGHT_BOTTOM_LEFT_TOP = 230;
 	public static final int PROGRESS_RADIUS = 70;
-	public static final int PROGRESS_RADIUS_INNER = 66;
+	public static final int PROGRESS_RADIUS_INNER = 64;
 	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3;
 	private static final double BTN_HEIGHT = 40;
 	private static final int TIMING_STATUS_WIDTH = 500;
 	
 	private int totalAmount;
 	private int finishedAmount;
-	
-	private StackPane top;
-	private HBox bottom;
+	private AutomateStatusPresenter presenter;
+
 	private StackPane bottomRight;
 	private StackPane bottomLeft;
 	private VBox vboxBottomLeft;
@@ -48,13 +45,11 @@ public class AutomateView extends VBox {
 	private StackPane spButton;
 	private Button btnCancel;
 	private Button btnStart;
-	private ProcessFlowView processFlowView;
+	private Path piePiecePath;
 	private Label lblFinishedAmount;
 	private Label lblTotalAmount;
 	private Region circleBack;
 	private Region circleFront;
-	private Path piePiecePath;
-	private AutomatePresenter presenter;
 	
 	private static final String CSS_CLASS_AUTOMATE_BOTTOM = "automate-bottom";
 	protected static final String CSS_CLASS_AUTOMATE_BUTTON_TEXT = "automate-btn-text";
@@ -68,15 +63,7 @@ public class AutomateView extends VBox {
 	private static final String STOP = "StatusView.stop";
 	private static final String START = "AutomateView.start";
 	
-	public AutomateView() {
-	}
-	
-	public void setPresenter(final AutomatePresenter presenter) {
-		this.presenter = presenter;
-	}
-	
-	public void setProcessFlowView(final ProcessFlowView processFlowView) {
-		this.processFlowView = processFlowView;
+	public AutomateStatusView() {
 	}
 	
 	public void setStatusView(final StatusView statusView) {
@@ -87,23 +74,20 @@ public class AutomateView extends VBox {
 		this.timingView = timingView;
 	}
 	
+	public void setPresenter(final AutomateStatusPresenter presenter) {
+		this.presenter = presenter;
+	}
+	
 	public void build() {
-		top = new StackPane();
-		top.setPrefSize(WIDTH, HEIGHT_TOP);
-		top.getChildren().add(processFlowView);
-		bottom = new HBox();
-		bottom.setPrefSize(WIDTH, HEIGHT_BOTTOM);
-		bottom.getStyleClass().add(CSS_CLASS_AUTOMATE_BOTTOM);
-		bottom.setAlignment(Pos.CENTER_LEFT);
+		setPrefSize(WIDTH, HEIGHT_BOTTOM);
+		getStyleClass().add(CSS_CLASS_AUTOMATE_BOTTOM);
+		setAlignment(Pos.CENTER_LEFT);
 		bottomRight = new StackPane();
 		bottomRight.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM);
 		bottomLeft = new StackPane();
 		bottomLeft.setPrefSize(WIDTH - WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM);
-		bottom.getChildren().add(bottomLeft);
-		bottom.getChildren().add(bottomRight);
-		
-		getChildren().add(top);
-		getChildren().add(bottom);
+		getChildren().add(bottomLeft);
+		getChildren().add(bottomRight);
 		
 		vboxBottomLeft = new VBox();
 		vboxBottomLeft.setPrefSize(WIDTH - WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM);
@@ -197,7 +181,7 @@ public class AutomateView extends VBox {
 		spButton.getChildren().add(btnStart);
 	}
 	
-	public void activeStopButton() {
+	public void activateStopButton() {
 		spButton.getChildren().clear();
 		spButton.getChildren().add(btnCancel);
 	}
@@ -275,5 +259,4 @@ public class AutomateView extends VBox {
 		piePiecePath.getElements().add(moveTo2);
 		piePiecePath.getElements().add(arc);
 	}
-	
 }

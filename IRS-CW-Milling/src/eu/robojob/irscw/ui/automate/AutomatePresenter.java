@@ -3,51 +3,41 @@ package eu.robojob.irscw.ui.automate;
 import java.util.Set;
 
 import javafx.scene.Node;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlowTimer;
 import eu.robojob.irscw.process.execution.AutomateOptimizedThread;
 import eu.robojob.irscw.threading.ThreadManager;
-import eu.robojob.irscw.ui.MainPresenter;
+import eu.robojob.irscw.ui.MainContentView;
 import eu.robojob.irscw.ui.general.ExecutionPresenter;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.ui.general.status.DisconnectedDevicesView;
-import eu.robojob.irscw.ui.general.status.StatusPresenter;
 
 public class AutomatePresenter extends ExecutionPresenter {
 	
-	private static final String PROCESS_FINISHED = "AutomatePresenter.processFinished";
-	private static Logger logger = LogManager.getLogger(AutomatePresenter.class.getName());
-	
-	private AutomateView view;
+	private MainContentView view;
 	private ProcessFlowTimer processFlowTimer;
-	private TimingView timingView;
-	private MainPresenter parent;
+	private DisconnectedDevicesView disconnectedDevicesView;
+	private AutomateStatusPresenter statusPresenter;
+	private AutomateTimingThread automateTimingThread;
+	
+	private boolean running;
 	
 	private AutomateOptimizedThread automateThread;
 	
-	public AutomatePresenter(final AutomateView view, final FixedProcessFlowPresenter processFlowPresenter, final ProcessFlow processFlow, 
-			final ProcessFlowTimer processFlowTimer, final TimingView timingView, 
-			final StatusPresenter statusPresenter) {
-		super(processFlowPresenter, processFlow, statusPresenter);
+	public AutomatePresenter(final MainContentView view, final FixedProcessFlowPresenter processFlowPresenter, final DisconnectedDevicesView disconnectedDevicesView,
+			final ProcessFlow processFlow, final ProcessFlowTimer processFlowTimer, final AutomateStatusPresenter statusPresenter) {
+		super(processFlowPresenter, processFlow, statusPresenter.getStatusPresenter());
 		this.view = view;
-		view.setProcessFlowView(processFlowPresenter.getView());
+		view.setTop(processFlowPresenter.getView());
+		this.disconnectedDevicesView = disconnectedDevicesView;
+		this.statusPresenter = statusPresenter;
+		statusPresenter.setParent(this);
 		this.processFlowTimer = processFlowTimer;
-		this.timingView = timingView;
-		view.setTimingView(timingView);
-		statusPresenter.initializeView();
-		view.setStatusView(statusPresenter.getView());
-		view.build();
-		view.setTotalAmount(processFlow.getTotalAmount());
-		view.setFinishedAmount(processFlow.getFinishedAmount());
-		this.automateThread = new AutomateOptimizedThread(processFlow);
-	}
-	
-	public void setParent(final MainPresenter parent) {
-		this.parent = parent;
+		statusPresenter.setTotalAmount(processFlow.getTotalAmount());
+		statusPresenter.setFinishedAmount(processFlow.getFinishedAmount());
+		this.running = false;
+		//view.setBottom(statusPresenter.getView());
+		automateThread = new AutomateOptimizedThread(processFlow);
 	}
 	
 	public int getMainProcessFlowId() {
@@ -55,10 +45,7 @@ public class AutomatePresenter extends ExecutionPresenter {
 	}
 	
 	public void setTimers(final String cycleTime, final String timeInCycle, final String timeTillIntervention, final String timeTillFinished) {
-		timingView.setCycleTime(cycleTime);
-		timingView.setTimeInCycle(timeInCycle);
-		timingView.setTimeTillIntervention(timeTillIntervention);
-		timingView.setTimeTillFinished(timeTillFinished);
+		statusPresenter.setTimers(cycleTime, timeInCycle, timeTillIntervention, timeTillFinished);
 	}
 
 	@Override
@@ -68,31 +55,57 @@ public class AutomatePresenter extends ExecutionPresenter {
 
 	@Override
 	public void stopRunning() {
+		running = false;
 		automateThread.interrupt();
-		view.activeStopButton();
+		statusPresenter.initializeView();
+		statusPresenter.getView().activateStartButton();
 	}
 	
 	public void startAutomate() {
+		running = true;
+		automateThread = new AutomateOptimizedThread(getProcessFlow());
 		ThreadManager.submit(automateThread);
-		view.activeStopButton();
+		statusPresenter.getView().activateStopButton();
 	}
 
 	@Override
 	public void allConnected() {
 		if (!isRunning()) {
+			view.setBottom(statusPresenter.getView());
+			updateAlarms();
 		}
 	}
 
 	@Override
 	public void disconnectedDevices(final Set<String> disconnectedDevices) {
-		//TODO show disconnected devices view!
+		if (!isRunning()) {
+			disconnectedDevicesView.setDisconnectedDevices(disconnectedDevices);
+			view.setBottom(disconnectedDevicesView);
+		}
 	}
 
 	@Override
 	public boolean isRunning() {
-		if ((automateThread != null) && (automateThread.isRunning())) {
+		if ((automateThread != null) && (automateThread.isRunning()) && running) {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void startListening(final ProcessFlow processFlow) {
+		statusPresenter.initializeView();
+		automateTimingThread = new AutomateTimingThread(this, processFlowTimer);
+		processFlow.addListener(statusPresenter);
+		//TODO review: doesn't look so clean
+		statusPresenter.setTotalAmount(processFlow.getTotalAmount());
+		statusPresenter.setFinishedAmount(processFlow.getFinishedAmount());
+		ThreadManager.submit(automateTimingThread);
+	}
+
+	@Override
+	public void stopListening(final ProcessFlow processFlow) {
+		processFlow.removeListener(statusPresenter);
+		ThreadManager.stopRunning(automateTimingThread);
 	}
 }

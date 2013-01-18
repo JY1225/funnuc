@@ -6,19 +6,20 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.execution.TeachOptimizedThread;
 import eu.robojob.irscw.process.execution.TeachThread;
 import eu.robojob.irscw.threading.ThreadManager;
+import eu.robojob.irscw.ui.MainContentView;
 import eu.robojob.irscw.ui.general.ExecutionPresenter;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.ui.general.status.DisconnectedDevicesView;
 
 public class TeachPresenter extends ExecutionPresenter {
 
-	private TeachView view;
+	private MainContentView view;
 	private DisconnectedDevicesView teachDisconnectedDevicesView;
 	private GeneralInfoPresenter generalInfoPresenter;
 	private TeachStatusPresenter statusPresenter;
 	private TeachThread teachThread;
 		
-	public TeachPresenter(final TeachView view, final FixedProcessFlowPresenter processFlowPresenter, final ProcessFlow processFlow, final DisconnectedDevicesView disconnectedDevicesView,
+	public TeachPresenter(final MainContentView view, final FixedProcessFlowPresenter processFlowPresenter, final ProcessFlow processFlow, final DisconnectedDevicesView disconnectedDevicesView,
 			final GeneralInfoPresenter generalInfoPresenter, final TeachStatusPresenter statusPresenter) {
 		super(processFlowPresenter, processFlow, statusPresenter.getStatusPresenter());
 		this.view = view;
@@ -62,7 +63,7 @@ public class TeachPresenter extends ExecutionPresenter {
 	}
 	
 	@Override
-	public TeachView getView() {
+	public MainContentView getView() {
 		return view;
 	}
 
@@ -93,5 +94,8 @@ public class TeachPresenter extends ExecutionPresenter {
 		}
 		return false;
 	}
+
+	@Override public void startListening(final ProcessFlow processFlow) { }
+	@Override public void stopListening(final ProcessFlow processFlow) { }
 	
 }

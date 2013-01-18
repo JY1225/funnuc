@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.teach;
+package eu.robojob.irscw.ui;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -7,7 +7,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-public class TeachView extends VBox {
+public class MainContentView extends VBox {
 
 	private StackPane top;
 	private GridPane bottom;
@@ -17,14 +17,13 @@ public class TeachView extends VBox {
 	public static final int WIDTH = 800;
 	
 	private static final String CSS_CLASS_TOP_PANEL = "top-panel";
-	private static final String CSS_CLASS_TEACH_BOTTOM = "teach-bottom";
-	protected static final String CSS_CLASS_TEACH_MESSAGE = "teach-msg";
-	protected static final String CSS_CLASS_TEACH_BUTTON_TEXT = "teach-btn-text";
-	protected static final String CSS_CLASS_TEACH_BUTTON = "teach-btn";
-	protected static final String CSS_CLASS_INFO_MESSAGE_TITLE = "info-msg-title";
+	private static final String CSS_CLASS_TEACH_BOTTOM = "content-bottom";
+	public static final String CSS_CLASS_TEACH_MESSAGE = "content-msg";
+	public static final String CSS_CLASS_TEACH_BUTTON_TEXT = "content-btn-text";
+	public static final String CSS_CLASS_TEACH_BUTTON = "content-btn";
+	public static final String CSS_CLASS_INFO_MESSAGE_TITLE = "info-msg-title";
 
-	
-	public TeachView() {
+	public MainContentView() {
 		build();
 	}
 	

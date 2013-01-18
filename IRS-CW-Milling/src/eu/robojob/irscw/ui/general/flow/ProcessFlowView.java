@@ -37,6 +37,7 @@ public class ProcessFlowView extends GridPane {
 	private static final int GAP = 10; 
 	private static final int PROGRESS_BAR_HEIGHT = 7;
 	private static final int PROGRESS_BAR_MARGIN_BOTTOM = 7;
+	private static final int PROGRESS_BAR_REGION_HEIGHT = 30;
 	private static final String CSS_CLASS_PROCESSFLOW_VIEW = "process-flow-view";
 	private static final String CSS_CLASS_PROGRESS_BAR_PIECE = "progressbar-piece";
 	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_FIRST = "progressbar-piece-first";
@@ -112,6 +113,8 @@ public class ProcessFlowView extends GridPane {
 		this.add(device, column, row);
 		deviceButtons.add(device);
 		VBox progressVBox = new VBox();
+		progressVBox.setMinHeight(PROGRESS_BAR_REGION_HEIGHT);
+		progressVBox.setPrefHeight(PROGRESS_BAR_REGION_HEIGHT);
 		this.add(progressVBox, column, (1 + row));
 		setupDeviceProgressBarRegions(index, progressVBox);
 	}
@@ -148,10 +151,14 @@ public class ProcessFlowView extends GridPane {
 		this.add(progressHBox, column, (1 + row));
 		//left
 		VBox progress1VBox = new VBox();
+		progress1VBox.setMinHeight(PROGRESS_BAR_REGION_HEIGHT);
+		progress1VBox.setPrefHeight(PROGRESS_BAR_REGION_HEIGHT);
 		HBox.setHgrow(progress1VBox, Priority.ALWAYS);
 		progressHBox.getChildren().add(progress1VBox);
 		//right
 		VBox progress2VBox = new VBox();
+		progress2VBox.setMinHeight(PROGRESS_BAR_REGION_HEIGHT);
+		progress2VBox.setPrefHeight(PROGRESS_BAR_REGION_HEIGHT);
 		HBox.setHgrow(progress2VBox, Priority.ALWAYS);
 		progressHBox.getChildren().add(progress2VBox);
 		setupTransportProgressBarRegions(index, progress1VBox, progress2VBox);

@@ -31,7 +31,8 @@ import eu.robojob.irscw.process.ProcessingWhileWaitingStep;
 import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
-import eu.robojob.irscw.ui.automate.AutomateView;
+import eu.robojob.irscw.ui.automate.AutomateStatusPresenter;
+import eu.robojob.irscw.ui.automate.AutomateStatusView;
 import eu.robojob.irscw.ui.automate.TimingView;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.ConfigureView;
@@ -63,7 +64,6 @@ import eu.robojob.irscw.ui.teach.GeneralInfoView;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
 import eu.robojob.irscw.ui.teach.TeachStatusPresenter;
 import eu.robojob.irscw.ui.teach.TeachStatusView;
-import eu.robojob.irscw.ui.teach.TeachView;
 import eu.robojob.irscw.workpiece.WorkPiece;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
@@ -134,7 +134,7 @@ public class RoboSoftAppFactory {
 	
 	public TeachPresenter getTeachPresenter() {
 		if (teachPresenter == null) {
-			TeachView view = new TeachView();
+			MainContentView view = new MainContentView();
 			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
 			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, getGeneralInfoPresenter(), getTeachStatusPresenter());
 		}
@@ -159,11 +159,19 @@ public class RoboSoftAppFactory {
 		return statusPresenter;
 	}
 	
+	private AutomateStatusPresenter getAutomateStatusPresenter() {
+		AutomateStatusView automateStatusView = new AutomateStatusView();
+		TimingView timingView = new TimingView();
+		AutomateStatusPresenter automateStatusPresenter = new AutomateStatusPresenter(automateStatusView, getStatusPresenter(), timingView);
+		return automateStatusPresenter;
+	}
+	
 	public AutomatePresenter getAutomatePresenter() {
 		if (automatePresenter == null) {
-			AutomateView view = new AutomateView();
-			TimingView timingView = new TimingView();
-			automatePresenter = new AutomatePresenter(view, getAutomateProcessFlowPresenter(), getProcessFlow(), getProcessFlowTimer(), timingView, getStatusPresenter());
+			MainContentView view = new MainContentView();
+			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
+			automatePresenter = new AutomatePresenter(view, getAutomateProcessFlowPresenter(), disconnectedDevicesView,
+					getProcessFlow(), getProcessFlowTimer(), getAutomateStatusPresenter());
 		}
 		return automatePresenter;
 	}

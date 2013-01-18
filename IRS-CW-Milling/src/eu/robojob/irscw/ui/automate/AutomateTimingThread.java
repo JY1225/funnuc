@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlowTimer;
+import eu.robojob.irscw.threading.ThreadManager;
 
 public class AutomateTimingThread extends Thread {
 
@@ -30,6 +31,13 @@ public class AutomateTimingThread extends Thread {
 				long remainingTime = processFlowTimer.getRemainingTime(automatePresenter.getMainProcessFlowId());
 				automatePresenter.setTimers(toTimeString(processFlowTimer.getProcessFlowDuration()), toTimeString(timeInCurrentFlow), "?", toTimeString(remainingTime));
 				Thread.sleep(SLEEP_INTERVAL);
+			}
+		} catch (InterruptedException e) {
+			if (!running || ThreadManager.isShuttingDown()) {
+				logger.debug("Execution got interrupted, so let't just stop");
+			} else {
+				logger.error(e);
+				e.printStackTrace();
 			}
 		} catch (Exception e) {
 			logger.error(e);

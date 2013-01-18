@@ -78,7 +78,7 @@ public class CNCMachineSocketCommunication extends ExternalSocketCommunication {
 		return parseResult(awaitResponse(command.toString(), timeout), command.toString());
 	}
 	
-	public List<Integer> parseResult(final String message, final String command) {
+	private List<Integer> parseResult(final String message, final String command) {
 		List<Integer> results = new ArrayList<Integer>();
 		if (!message.startsWith(command)) {
 			throw new IllegalArgumentException("message does not start with command");

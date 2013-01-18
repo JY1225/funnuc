@@ -13,6 +13,7 @@ import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.ui.MainContentView;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
@@ -68,10 +69,10 @@ public class GeneralInfoView extends GridPane {
 		
 		lblInfoMessageOptimalTitle = new Label(Translator.getTranslation(TEACH_OPTIMAL_TITLE));
 		lblInfoMessageOptimalTitle.setPrefSize(PREF_LBL_WIDTH, PREF_LBL_TITLE_HEIGHT);
-		lblInfoMessageOptimalTitle.getStyleClass().add(TeachView.CSS_CLASS_INFO_MESSAGE_TITLE);
+		lblInfoMessageOptimalTitle.getStyleClass().add(MainContentView.CSS_CLASS_INFO_MESSAGE_TITLE);
 		
 		lblInfoMessageOptimal = new Label(Translator.getTranslation(TEACH_OPTIMAL));
-		lblInfoMessageOptimal.getStyleClass().addAll(TeachView.CSS_CLASS_TEACH_MESSAGE, CSS_CLASS_GENERAL_INFO_MESSAGE);
+		lblInfoMessageOptimal.getStyleClass().addAll(MainContentView.CSS_CLASS_TEACH_MESSAGE, CSS_CLASS_GENERAL_INFO_MESSAGE);
 		lblInfoMessageOptimal.setPrefSize(PREF_LBL_WIDTH, PREF_LBL1_HEIGHT);
 		lblInfoMessageOptimal.setWrapText(true);
 				
@@ -96,10 +97,10 @@ public class GeneralInfoView extends GridPane {
 		
 		lblInfoMessageAllTitle = new Label(Translator.getTranslation(TEACH_ALL_TITLE));
 		lblInfoMessageAllTitle.setPrefSize(PREF_LBL_WIDTH, PREF_LBL_TITLE_HEIGHT);
-		lblInfoMessageAllTitle.getStyleClass().add(TeachView.CSS_CLASS_INFO_MESSAGE_TITLE);
+		lblInfoMessageAllTitle.getStyleClass().add(MainContentView.CSS_CLASS_INFO_MESSAGE_TITLE);
 		
 		lblInfoMessageAll = new Label(Translator.getTranslation(TEACH_ALL));
-		lblInfoMessageAll.getStyleClass().addAll(TeachView.CSS_CLASS_TEACH_MESSAGE, CSS_CLASS_GENERAL_INFO_MESSAGE);
+		lblInfoMessageAll.getStyleClass().addAll(MainContentView.CSS_CLASS_TEACH_MESSAGE, CSS_CLASS_GENERAL_INFO_MESSAGE);
 		lblInfoMessageAll.setPrefSize(PREF_LBL_WIDTH, PREF_LBL2_HEIGHT);
 		lblInfoMessageAll.setWrapText(true);
 				

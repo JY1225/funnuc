@@ -10,31 +10,37 @@
 .circle-back {
 	-fx-shape: "M 39.75 -0.03125 C 18.043861 -0.03125 0.40625 17.606358 0.40625 39.3125 C 0.40625 61.01864 18.043861 78.53125 39.75 78.53125 C 61.456141 78.53125 79 61.01864 79 39.3125 C 79 17.606358 61.456141 -0.03125 39.75 -0.03125 z";
 	-fx-background-color: #565656;
+	-fx-background-color: linear-gradient(#6d6c6c 0%, #8c8888 100%), linear-gradient(#222222 0%, #4e4a4a 100%), #4e4a4a;
+	-fx-background-insets: 0, 1, 2;
 }
 
 .circle-front {
 	-fx-shape: "M 39.75 -0.03125 C 18.043861 -0.03125 0.40625 17.606358 0.40625 39.3125 C 0.40625 61.01864 18.043861 78.53125 39.75 78.53125 C 61.456141 78.53125 79 61.01864 79 39.3125 C 79 17.606358 61.456141 -0.03125 39.75 -0.03125 z";
-	-fx-background-color: #6d6c6c;
+	-fx-background-color: linear-gradient(#4e4a4a 0%, #222222 100%), linear-gradient(#807c7c 0%, #6d6c6c 100%), #6d6c6c;
+	-fx-background-insets: 0, 1, 2;
 }
 
 .progress {
 	-fx-smooth: true; 
 	-fx-stroke: null;
-	-fx-fill: #65dc31;
+	-fx-fill: #5bc83c;
 	-fx-stroke-line-cap: round;
-	-fx-effect: dropshadow(gaussian, #65dc31, 3, 0, 0, 0);
+	-fx-effect: dropshadow(gaussian, #5bc83c, 3, 0, 0, 0);
 }
 
 .finished-amount {
 	-fx-font-family: "Open Sans Semibold";
 	-fx-font-smoothing-type: lcd;
-	-fx-font-size: 60px;
+	-fx-font-size: 70px;
+	-fx-text-alignment: center;
+	-fx-alignment: center;
 }
 
 .total-amount {
 	-fx-font-family: "Open Sans Semibold";
 	-fx-font-smoothing-type: lcd;
-	-fx-font-size: 16px;
+	-fx-font-size: 12px;
+	-fx-text-alignment: left;
 }
 
 .automate-info-lbl {

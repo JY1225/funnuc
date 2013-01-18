@@ -21,7 +21,10 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.RobotStep;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.threading.ThreadManager;
+import eu.robojob.irscw.util.Translator;
 
 /**
  * This optimized Automate-thread will be able to (sometimes) execute 2 steps in parallel
@@ -31,9 +34,11 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	private static Logger logger = LogManager.getLogger(AutomateThread.class.getName());
 	private static final int WORKPIECE_0_ID = 0;
 	private static final int WORKPIECE_1_ID = 1;
+	protected static final String OTHER_EXCEPTION = "Exception.otherException";
 	
 	private ProcessFlow processFlow;
 	private boolean running;
+	private boolean finished;
 	
 	private Map<Integer, Integer> currentIndices;
 	private Map<Integer, Boolean> isRunning;
@@ -45,6 +50,7 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	public AutomateOptimizedThread(final ProcessFlow processFlow) {
 		this.processFlow = processFlow;
 		this.syncObject = new Object();
+		this.finished = false;
 		reset();
 	}
 	
@@ -63,9 +69,10 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	@Override
 	public void run() {
 		logger.debug("Started execution, processflow [" + processFlow + "].");
+		this.finished = false;
 		try {
 			processFlow.setMode(ProcessFlow.Mode.AUTO);
-			this.running = true;
+			setRunning(true);
 			try {
 				for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
 					robot.recalculateTCPs();
@@ -73,7 +80,7 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 				for (AbstractDevice device: processFlow.getDevices()) {	// prepare devices for this processflow
 					device.prepareForProcess(processFlow);
 				}
-				while (running) {
+				while (isRunning()) {
 					switch (mainProcessIndex) {
 						case WORKPIECE_0_ID:
 							executeProcess(mainProcessIndex, WORKPIECE_1_ID);
@@ -88,16 +95,23 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 						syncObject.wait();
 					}
 				}
+				if (finished) {
+					processFlow.setMode(Mode.FINISHED);
+				} else {
+					processFlow.setMode(Mode.STOPPED);
+				}
 			} catch (AbstractCommunicationException e) {
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);
+				getProcessFlow().initialize();
 			} catch (InterruptedException e) {
 				if (!running) {
 					logger.info("Execution of one or more steps got interrupted, so let't just stop.");
 				} else {
 					e.printStackTrace();
 					logger.error(e);
+					getProcessFlow().initialize();
 				}
 				processFlow.setMode(Mode.STOPPED);
 			} catch (Exception e) {
@@ -234,6 +248,10 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		return running;
 	}
 	
+	public void setRunning(final boolean running) {
+		this.running = running;
+	}
+	
 	@Override
 	public void interrupt() {
 		if (running) {
@@ -245,20 +263,41 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 				device.interruptCurrentAction();
 			}
 		}
+		synchronized (syncObject) {
+			syncObject.notifyAll();
+		}
 	}
 
 	@Override
 	public void notifyException(final Exception e) {
+		getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), e));
+		processFlow.initialize();
+		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
+		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
+		interrupt();
 		e.printStackTrace();
 		logger.error(e);
 		processFlow.setMode(Mode.STOPPED);
 	}
-
+	
 	@Override
-	public void notifyThrowable(final Throwable t) {
-		t.printStackTrace();
-		logger.error(t);
-		processFlow.setMode(Mode.STOPPED);
+	public void notifyInterruptedException(final InterruptedException e) {
+		if ((!isRunning()) || ThreadManager.isShuttingDown()) {
+			running = false;
+			logger.info("Execution of one or more steps got interrupted, so let't just stop");
+		} else {
+			getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
+			e.printStackTrace();
+			logger.error(e);
+		}
+		getProcessFlow().initialize();
+		getProcessFlow().setMode(Mode.STOPPED);
+		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
+		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
+	}
+
+	public ProcessFlow getProcessFlow() {
+		return processFlow;
 	}
 
 	@Override
@@ -276,7 +315,7 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 				this.secondProcessIndex = stepProcessId;
 				if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
 					running = false;
-					processFlow.setMode(Mode.FINISHED);
+					finished = true;
 				}
 			} else {
 				throw new IllegalStateException("Secondary process finished before primary?.");
@@ -290,4 +329,5 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	public int getMainProcessFlowId() {
 		return mainProcessIndex;
 	}
+
 }
