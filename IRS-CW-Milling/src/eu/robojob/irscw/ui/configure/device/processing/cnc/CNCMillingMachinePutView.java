@@ -112,9 +112,9 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		
 		hBoxSmoothPoint = new HBox();
 		hBoxSmoothPoint.getChildren().addAll(lblSmoothX, ntxtSmoothX, lblSmoothY, ntxtSmoothY, lblSmoothZ, ntxtSmoothZ, btnResetSmooth);
-		HBox.setMargin(ntxtSmoothX, new Insets(0, 20, 0, 0));
-		HBox.setMargin(ntxtSmoothY, new Insets(0, 20, 0, 0));
-		HBox.setMargin(ntxtSmoothZ, new Insets(0, 20, 0, 0));
+		HBox.setMargin(ntxtSmoothX, new Insets(0, 20, 0, 10));
+		HBox.setMargin(ntxtSmoothY, new Insets(0, 20, 0, 10));
+		HBox.setMargin(ntxtSmoothZ, new Insets(0, 20, 0, 10));
 		hBoxSmoothPoint.setFillHeight(false);
 		hBoxSmoothPoint.setAlignment(Pos.CENTER_LEFT);
 

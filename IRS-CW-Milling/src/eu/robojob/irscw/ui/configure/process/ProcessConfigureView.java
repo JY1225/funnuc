@@ -71,6 +71,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		fulltxtName.getStyleClass().addAll(CSS_CLASS_FORM_FULLTEXTFIELD, CSS_CLASS_FORM_FULLTEXTFIELD_NAME);
 		hbox.getChildren().add(fulltxtName);
 		hbox.setAlignment(Pos.CENTER_LEFT);
+		hbox.setSpacing(HGAP);
 		add(hbox, 0, 0, 2, 1);
 		
 		btnAddDeviceStep = createButton(ADD_ICON_PATH, CSS_CLASS_ADD_ICON, Translator.getTranslation(ADD), BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {

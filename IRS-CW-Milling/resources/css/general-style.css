@@ -159,3 +159,8 @@
 	-fx-font-weight: bold;
 	-fx-font-size: 18px;
 }
+
+.context-menu {
+	visibility: hidden;
+	-fx-opacity: 0;
+}

@@ -124,8 +124,8 @@ public class AutomateStatusView extends HBox {
 		piePiecePath.getStyleClass().add(CSS_CLASS_PROGRESS);
 		piePiecePane = new Pane();
 		piePiecePane.getChildren().add(circleBack);
-		piePiecePane.getChildren().add(piePiecePath);
 		piePiecePane.getChildren().add(circleFront);
+		piePiecePane.getChildren().add(piePiecePath);
 		piePiecePane.setPrefSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
 		piePiecePane.setMinSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
 		piePiecePane.setMaxSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);

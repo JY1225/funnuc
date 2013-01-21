@@ -37,7 +37,7 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 			@Override
 			public void handle(final MouseEvent event) {
 				if ((AbstractTextField.this.getCaretPosition() < AbstractTextField.this.getText().length())
-						&& (AbstractTextField.this.getSelectedText().length() == 0)) {
+						&& (AbstractTextField.this.getSelection().getLength() == 0)) {
 					AbstractTextField.this.selectAll();
 				}
 			}

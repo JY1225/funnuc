@@ -30,6 +30,8 @@ public class StatusPresenter implements ProcessFlowListener {
 	private static final String NONE_ACTIVE = "Status.noneActive";
 	private static final String TEACHING_NEEDED = "Status.teachingNeeded";
 	private static final String TEACHING_FINISHED = "Status.teachingFinished";
+	private static final String ENDED_PICK = "Status.endedPick";
+	private static final String ENDED_PUT = "Status.endedPut";
 	
 	public StatusPresenter(final StatusView view) {
 		this.view = view;
@@ -79,6 +81,11 @@ public class StatusPresenter implements ProcessFlowListener {
 						view.setInfoMessage(((DeviceStep) e.getActiveStep()).getDevice().getId() + " " + Translator.getTranslation(PROCESSING));
 						break;
 					case StatusChangedEvent.ENDED:
+						if (e.getActiveStep() instanceof PickStep) {
+							view.setInfoMessage(Translator.getTranslation(ENDED_PICK) + ((DeviceStep) e.getActiveStep()).getDevice().getId() + ".");
+						} else if (e.getActiveStep() instanceof PutStep) {
+							view.setInfoMessage(Translator.getTranslation(ENDED_PUT) + ((DeviceStep) e.getActiveStep()).getDevice().getId() + ".");
+						}
 						break;
 					case StatusChangedEvent.TEACHING_NEEDED:
 						view.setInfoMessage(Translator.getTranslation(TEACHING_NEEDED));
