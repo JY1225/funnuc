@@ -258,7 +258,7 @@ public class RoboSoftAppFactory {
 			
 			//---------GENERAL---------
 			
-			Integer totalAmount = 4;
+			Integer totalAmount = 15;
 			
 			processFlow = new ProcessFlow("MAZAK OPEN HOUSE");
 			processFlow.setTotalAmount(totalAmount);
@@ -286,7 +286,7 @@ public class RoboSoftAppFactory {
 			stackPlateSettings.setAmount(totalAmount);
 			stackPlateSettings.setRawWorkPieceDimensions(rawDimensions);
 			stackPlateSettings.setFinishedWorkPieceDimensions(finishedDimensions);
-			stackPlateSettings.setOrientation(WorkPieceOrientation.TILTED);
+			stackPlateSettings.setOrientation(WorkPieceOrientation.HORIZONTAL);
 			processFlow.setDeviceSettings(stackPlate, stackPlateSettings);
 			
 			// Präge Device
@@ -417,7 +417,6 @@ public class RoboSoftAppFactory {
 			processFlow.addStep(put2);
 			
 			processFlow.loadAllSettings();
-						
 			processFlowTimer = new ProcessFlowTimer(processFlow);
 
 		}

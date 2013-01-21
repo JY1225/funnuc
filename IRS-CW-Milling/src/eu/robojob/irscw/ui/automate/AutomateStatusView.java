@@ -7,14 +7,16 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.ArcTo;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Translate;
 import eu.robojob.irscw.ui.general.status.StatusView;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
@@ -46,10 +48,11 @@ public class AutomateStatusView extends HBox {
 	private Button btnCancel;
 	private Button btnStart;
 	private Path piePiecePath;
+	private Pane piePiecePane;
 	private Label lblFinishedAmount;
 	private Label lblTotalAmount;
-	private Region circleBack;
-	private Region circleFront;
+	private Circle circleBack;
+	private Circle circleFront;
 	private StackPane spAmountContents;
 	
 	private static final String CSS_CLASS_AUTOMATE_BOTTOM = "automate-bottom";
@@ -107,31 +110,32 @@ public class AutomateStatusView extends HBox {
 		
 		StackPane spAmount = new StackPane();
 		spAmountContents = new StackPane();
-		circleBack = new Region();
-		circleBack.setPrefSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
-		circleBack.setMinSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
-		circleBack.setMaxSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		circleBack = new Circle();
+		circleBack.setCenterX(PROGRESS_RADIUS);
+		circleBack.setCenterY(PROGRESS_RADIUS);
+		circleBack.setRadius(PROGRESS_RADIUS);
 		circleBack.getStyleClass().add(CSS_CLASS_CIRCLE_BACK);
-		circleFront = new Region();
-		circleFront.setPrefSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
-		circleFront.setMinSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
-		circleFront.setMaxSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
+		circleFront = new Circle();
+		circleFront.setCenterX(PROGRESS_RADIUS);
+		circleFront.setCenterY(PROGRESS_RADIUS);
+		circleFront.setRadius(PROGRESS_RADIUS_INNER);
 		circleFront.getStyleClass().add(CSS_CLASS_CIRCLE_FRONT);
 		piePiecePath = new Path();
 		piePiecePath.getStyleClass().add(CSS_CLASS_PROGRESS);
-		StackPane.setAlignment(piePiecePath, Pos.TOP_RIGHT);
-		StackPane.setAlignment(circleFront, Pos.TOP_RIGHT);
-		StackPane.setAlignment(circleBack, Pos.TOP_RIGHT);
-		StackPane.setMargin(circleFront, new Insets((PROGRESS_RADIUS - PROGRESS_RADIUS_INNER), (PROGRESS_RADIUS - PROGRESS_RADIUS_INNER), 0, 0));
-		spAmountContents.setAlignment(Pos.TOP_RIGHT);
-		spAmountContents.setPrefSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
-		spAmountContents.setMaxSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
-		spAmountContents.setMinSize(PROGRESS_RADIUS_INNER * 2, PROGRESS_RADIUS_INNER * 2);
+		piePiecePane = new Pane();
+		piePiecePane.getChildren().add(circleBack);
+		piePiecePane.getChildren().add(piePiecePath);
+		piePiecePane.getChildren().add(circleFront);
+		piePiecePane.setPrefSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		piePiecePane.setMinSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		piePiecePane.setMaxSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		spAmountContents.setPrefSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		spAmountContents.setMaxSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		spAmountContents.setMinSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
+		spAmountContents.setAlignment(Pos.CENTER);
 		spAmount.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM_RIGHT_TOP);
 		spAmount.setAlignment(Pos.CENTER);
-		spAmountContents.getChildren().add(circleBack);
-		spAmountContents.getChildren().add(circleFront);
-		spAmountContents.getChildren().add(piePiecePath);
+		spAmountContents.getChildren().add(piePiecePane);
 		lblTotalAmount = new Label();
 		lblTotalAmount.getStyleClass().add(CSS_CLASS_TOTAL_AMOUNT);
 		lblFinishedAmount = new Label();
@@ -145,7 +149,7 @@ public class AutomateStatusView extends HBox {
 		spAmountContents.getChildren().add(lblTotalAmount);
 		spAmount.getChildren().add(spAmountContents);
 		
-		StackPane.setMargin(lblTotalAmount, new Insets(85, 0, 0, 25));
+		StackPane.setMargin(lblTotalAmount, new Insets(95, 0, 0, 30));
 		
 		spButton = new StackPane();
 		spButton.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM - HEIGHT_BOTTOM_RIGHT_TOP);
@@ -220,6 +224,7 @@ public class AutomateStatusView extends HBox {
 		}
 		
 		piePiecePath.getElements().clear();
+		piePiecePath.getTransforms().clear();
 		
 		double endX = 0;
 		double endY = 0;
@@ -266,15 +271,6 @@ public class AutomateStatusView extends HBox {
 		piePiecePath.getElements().add(dLine);
 		piePiecePath.getElements().add(moveTo2);
 		piePiecePath.getElements().add(arc);
-		
-		if (percentage <= 25) {
-			System.out.println("test!");
-			//TODO Review!
-			spAmountContents.setAlignment(Pos.TOP_LEFT);
-			StackPane.setMargin(piePiecePath, new Insets(0, 0, 0, PROGRESS_RADIUS));
-		} else {
-			spAmountContents.setAlignment(Pos.TOP_RIGHT);
-			StackPane.setMargin(piePiecePath, new Insets(0, 0, 0, 0));
-		}
+		piePiecePath.getTransforms().add(new Translate(PROGRESS_RADIUS, PROGRESS_RADIUS));
 	}
 }

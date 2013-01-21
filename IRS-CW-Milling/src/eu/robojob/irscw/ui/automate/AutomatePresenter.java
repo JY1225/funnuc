@@ -36,7 +36,6 @@ public class AutomatePresenter extends ExecutionPresenter {
 		statusPresenter.setTotalAmount(processFlow.getTotalAmount());
 		statusPresenter.setFinishedAmount(processFlow.getFinishedAmount());
 		this.running = false;
-		//view.setBottom(statusPresenter.getView());
 		automateThread = new AutomateOptimizedThread(processFlow);
 	}
 	
@@ -57,6 +56,7 @@ public class AutomatePresenter extends ExecutionPresenter {
 	public void stopRunning() {
 		running = false;
 		automateThread.interrupt();
+		getProcessFlow().initialize();
 		statusPresenter.initializeView();
 		statusPresenter.getView().activateStartButton();
 	}

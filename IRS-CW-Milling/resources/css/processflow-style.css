@@ -7,21 +7,21 @@
 }
 
 .btn-pre {
-	-fx-background-color: #c5c5c5, #ad5609, linear-gradient(#ffa452 0%, #d76d0e 100%), linear-gradient(#f27e17 100%, #e7740e 100%);
+	-fx-background-color: #c5c5c5, #ad5609, linear-gradient(#ffa452 0%, #d76d0e 100%), linear-gradient(#f27e17 100%, #db6d0c 100%);
 }
 
 .pre-process {
 }
 
 .btn-cnc {
-	-fx-background-color: #c5c5c5, #4b1465, linear-gradient(#bc36fb 0%, #611a82 100%), linear-gradient(#932ec3 100%, #8723b6 100%);
+	-fx-background-color: #c5c5c5, #4b1465, linear-gradient(#bc36fb 0%, #611a82 100%), linear-gradient(#932ec3 100%, #791ea4 100%);
 }
 
 .cnc-machine {
 }
 
 .btn-post {
-	-fx-background-color: #c5c5c5, #146016, linear-gradient(#2bd92f 0%, #1d9320 100%), linear-gradient(#2bb52e 100%, #21a524 100%);
+	-fx-background-color: #c5c5c5, #146016, linear-gradient(#2bd92f 0%, #1d9320 100%), linear-gradient(#2bb52e 100%, #1b951e 100%);
 }
 
 .post-process {
@@ -68,11 +68,6 @@
 
 .transport-unfocussed {
 	-fx-opacity: 0.2;
-}
-
-.question-mark-shape {
-	-fx-fill: linear-gradient(white 0%, #e6e6e6 100%);
-	-fx-effect: dropshadow(one-pass-box, #204b7a, 1, 0, 0, 1);
 }
 
 .pause-shape {
