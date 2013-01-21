@@ -14,6 +14,7 @@ import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.GripperHead;
 import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.DeviceStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickStep;
@@ -151,6 +152,14 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		// a put in the same WorkArea, this should be allowed, before the first process does it's put
 		
 		if (!isRunning.get(mainProcessId)) {
+			// first take care of setting the free after value:
+						
+			if (isConcurrentExecutionPossible(currentStepIndexMain, currentStepIndexSecondary)) {
+				if (!isFreeAfter(currentStepIndexMain, currentStepIndexSecondary) && (processFlow.getFinishedAmount() < processFlow.getTotalAmount() - 1)) {
+					AbstractTransportStep step = (AbstractTransportStep) processFlow.getStep(currentStepIndexMain);
+					step.getRobotSettings().setFreeAfter(false);
+				}
+			}
 			AbstractProcessStep step = processFlow.getStep(currentStepIndexMain);
 			if ((step instanceof PutStep) && (currentStepIndexMain > 0)) {
 				PickStep previousStep = (PickStep) processFlow.getStep(currentStepIndexMain - 1);	// before put step is always a pick step
@@ -172,12 +181,26 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		}
 		if (!isRunning.get(secondProcessId)) {
 			if (isConcurrentExecutionPossible(currentStepIndexMain, currentStepIndexSecondary) && (processFlow.getFinishedAmount() < processFlow.getTotalAmount() - 1)) {
+				
 				AbstractProcessStep stepSecond = processFlow.getStep(currentStepIndexSecondary);
 				ProcessStepExecutionThread exThread2 = new ProcessStepExecutionThread(stepSecond, secondProcessId, this);
 				isRunning.put(secondProcessId, true);
 				ThreadManager.submit(exThread2);
 			}
 		}
+	}
+	
+	private boolean isFreeAfter(final int stepIndex, final int possibleNextStepIndex) {
+		AbstractProcessStep step = processFlow.getStep(stepIndex);
+		AbstractProcessStep nextStep = processFlow.getStep(possibleNextStepIndex);
+		if ((step instanceof AbstractTransportStep) && (nextStep instanceof AbstractTransportStep)) {
+			AbstractTransportStep trStep = (AbstractTransportStep) step;
+			AbstractTransportStep trNextStep = (AbstractTransportStep) nextStep;
+			if (trStep.getRobotSettings().getWorkArea().equals(trNextStep.getRobotSettings().getWorkArea())) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	private boolean isConcurrentExecutionPossible(final int stepIndexFirst, final int stepIndexSecond) {

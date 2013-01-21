@@ -7,7 +7,7 @@
 }
 
 .btn-pre {
-	-fx-background-color: #c5c5c5, #d25900, linear-gradient(#ffaa66 0%, #ec7500 100%), linear-gradient(#ff8b24 0%, #fb8720 100%);
+	-fx-background-color: #c5c5c5, #d25900, linear-gradient(#ffc18f 0%, #ec7500 100%), linear-gradient(#ff8b24 0%, #fb8720 100%);
 }
 
 .pre-process {
@@ -21,7 +21,7 @@
 }
 
 .btn-post {
-	-fx-background-color: #c5c5c5, #146016, linear-gradient(#2bd92f 0%, #1d9320 100%), linear-gradient(#2bb52e 0%, #27a22a 100%);
+	-fx-background-color: #c5c5c5, #146016, linear-gradient(#55f358 0%, #1d9320 100%), linear-gradient(#2bb52e 0%, #27a22a 100%);
 }
 
 .post-process {

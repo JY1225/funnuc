@@ -5,6 +5,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 
 public abstract class AbstractTextField<T> extends javafx.scene.control.TextField {
 
@@ -29,6 +30,14 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 						setText(originalText);
 						listener.closeKeyboard();
 					}
+				}
+			}
+		});
+		this.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(final MouseEvent event) {
+				if (AbstractTextField.this.getCaretPosition() < AbstractTextField.this.getText().length()) {
+					AbstractTextField.this.selectAll();
 				}
 			}
 		});

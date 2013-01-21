@@ -19,7 +19,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		this.gripperHead = gripperHead;
 		this.smoothPoint = smoothPoint;
 		this.location = location;
-		this.freeAfter = false;
+		this.freeAfter = true;
 		this.teachingNeeded = false;
 	}
 	

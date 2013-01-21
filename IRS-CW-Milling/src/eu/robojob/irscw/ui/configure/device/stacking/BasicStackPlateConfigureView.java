@@ -68,10 +68,12 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	public void refreshStackers() {
 		cbbStacker.getItems().clear();
 		cbbStacker.getItems().addAll(stackingDeviceIds);
+		lblStacker.setDisable(false);
 		cbbStacker.setDisable(false);
 		if (cbbStacker.getItems().size() == 1) {
 			cbbStacker.setValue(cbbStacker.getItems().get(0));
 			cbbStacker.setDisable(true);
+			lblStacker.setDisable(true);
 		} else if (deviceInfo.getDevice() != null) {
 			cbbStacker.setValue(deviceInfo.getDevice().getId());
 		}		

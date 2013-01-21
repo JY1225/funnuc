@@ -63,6 +63,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 				}
 			}
 		});
+		lblGripperHead.setDisable(true);
 		cbbGripperHeads.setDisable(true);
 		
 		column = 0;

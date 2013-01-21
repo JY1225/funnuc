@@ -146,9 +146,11 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	public void refreshMachines() {
 		cbbMachine.getItems().clear();
 		cbbMachine.getItems().addAll(cncMillingMachineIds);
+		lblMachine.setDisable(false);
 		cbbMachine.setDisable(false);
 		if (cbbMachine.getItems().size() == 1) {
 			cbbMachine.setValue(cbbMachine.getItems().get(0));
+			lblMachine.setDisable(true);
 			cbbMachine.setDisable(true);
 		} else if (deviceInfo.getDevice() != null) {
 			cbbMachine.setValue(deviceInfo.getDevice().getId());
@@ -160,9 +162,11 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			cbbWorkArea.getItems().clear();
 			cbbWorkArea.getItems().addAll(deviceInfo.getDevice().getWorkAreaIds());
 			cbbWorkArea.setDisable(false);
+			lblWorkArea.setDisable(false);
 			if (cbbWorkArea.getItems().size() == 1) {
 				cbbWorkArea.setValue(cbbWorkArea.getItems().get(0));
 				cbbWorkArea.setDisable(true);
+				lblWorkArea.setDisable(true);
 			} else if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)
 					&& (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 				cbbWorkArea.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getId());
@@ -175,9 +179,11 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			cbbClamping.getItems().clear();
 			cbbClamping.getItems().addAll(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getClampingIds());
 			cbbClamping.setDisable(false);
+			lblClampingName.setDisable(false);
 			if (cbbClamping.getItems().size() == 1) {
 				cbbClamping.setValue(cbbClamping.getItems().get(0));
 				cbbClamping.setDisable(true);
+				lblClampingName.setDisable(true);
 			} else if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)
 					&& (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 				if (deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping() != null) {
