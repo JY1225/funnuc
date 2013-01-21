@@ -50,6 +50,7 @@ public class AutomateStatusView extends HBox {
 	private Label lblTotalAmount;
 	private Region circleBack;
 	private Region circleFront;
+	private StackPane spAmountContents;
 	
 	private static final String CSS_CLASS_AUTOMATE_BOTTOM = "automate-bottom";
 	protected static final String CSS_CLASS_AUTOMATE_BUTTON_TEXT = "automate-btn-text";
@@ -105,7 +106,7 @@ public class AutomateStatusView extends HBox {
 		timingView.setMinHeight(HEIGHT_BOTTOM - HEIGHT_BOTTOM_LEFT_TOP);
 		
 		StackPane spAmount = new StackPane();
-		StackPane spAmountContents = new StackPane();
+		spAmountContents = new StackPane();
 		circleBack = new Region();
 		circleBack.setPrefSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
 		circleBack.setMinSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
@@ -179,6 +180,8 @@ public class AutomateStatusView extends HBox {
 		vboxBottomRight.getChildren().add(spAmount);
 		vboxBottomRight.getChildren().add(spButton);
 		bottomRight.getChildren().add(vboxBottomRight);
+		
+		setPercentage(0);
 	}
 	
 	public void activateStartButton() {
@@ -263,5 +266,15 @@ public class AutomateStatusView extends HBox {
 		piePiecePath.getElements().add(dLine);
 		piePiecePath.getElements().add(moveTo2);
 		piePiecePath.getElements().add(arc);
+		
+		if (percentage <= 25) {
+			System.out.println("test!");
+			//TODO Review!
+			spAmountContents.setAlignment(Pos.TOP_LEFT);
+			StackPane.setMargin(piePiecePath, new Insets(0, 0, 0, PROGRESS_RADIUS));
+		} else {
+			spAmountContents.setAlignment(Pos.TOP_RIGHT);
+			StackPane.setMargin(piePiecePath, new Insets(0, 0, 0, 0));
+		}
 	}
 }

@@ -2,22 +2,39 @@ package eu.robojob.irscw.ui.general.flow;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.SVGPath;
 import eu.robojob.irscw.ui.general.model.TransportInformation;
 
 public class TransportButton extends StackPane {
 
 	private Region shapeRegion;
+	private SVGPath svgPauseLeft;
+	private HBox hboxPauseLeft;
 	private Label lblLeft;
+	private SVGPath svgPauseRight;
+	private HBox hboxPauseRight;
 	private Label lblRight;
 	
 	public static final double WIDTH = 120;
 	private static final double SHAPE_HEIGHT = 7;
-	
+	private static final String PAUSE_ICON = "M 0,0 0,10 2.5,10 2.5,0 0,0 z M 5,0 5,10 7.5,10 7.5,0 5,0 z";
 	private TransportInformation transportInfo;
+	private static final double PAUSE_ICON_WIDTH = 7.5;
+	private static final double PAUSE_ICON_LENGTH = 10;
+	private static final double PAUSE_HBOX_WIDTH = 50;
+	private static final double PAUSE_HBOX_HEIGHT = 20;
+	private static final double PAUSE_LBL_MARGIN = 30;
+	
+	private static final String CSS_CLASS_TRANSPORT_LABEL = "transport-label";
+	private static final String CSS_CLASS_PAUSE_SHAPE = "pause-shape";
 	
 	private EventHandler<MouseEvent> handlerPressed;
 	private EventHandler<MouseEvent> handlerReleased;
@@ -42,8 +59,6 @@ public class TransportButton extends StackPane {
 			@Override
 			public void handle(final MouseEvent event) {
 				TransportButton.this.requestFocus();
-				shapeRegion.getStyleClass().remove("arrow-clicked");
-				shapeRegion.getStyleClass().add("arrow-clicked");
 				event.consume();
 			}
 		};
@@ -51,7 +66,6 @@ public class TransportButton extends StackPane {
 		handlerReleased = new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(final MouseEvent event) {
-				shapeRegion.getStyleClass().remove("arrow-clicked");	
 				event.consume();
 			}
 		};
@@ -59,26 +73,61 @@ public class TransportButton extends StackPane {
 		this.addEventHandler(MouseEvent.MOUSE_PRESSED, handlerPressed);
 		this.addEventHandler(MouseEvent.MOUSE_RELEASED, handlerReleased);
 		
+		svgPauseLeft = new SVGPath();
+		svgPauseLeft.setContent(PAUSE_ICON);
+		svgPauseLeft.getStyleClass().add(CSS_CLASS_PAUSE_SHAPE);
+		Pane paneIconLeft = new Pane();
+		paneIconLeft.getChildren().add(svgPauseLeft);
+		paneIconLeft.setPrefSize(PAUSE_ICON_WIDTH, PAUSE_ICON_LENGTH);
+		paneIconLeft.setMinSize(PAUSE_ICON_WIDTH, PAUSE_ICON_LENGTH);
+		paneIconLeft.setMaxSize(PAUSE_ICON_WIDTH, PAUSE_ICON_LENGTH);
+		lblLeft = new Label();
+		lblLeft.getStyleClass().add(CSS_CLASS_TRANSPORT_LABEL);
+		this.getChildren().add(lblLeft);
+		hboxPauseLeft = new HBox();
+		hboxPauseLeft.getChildren().add(paneIconLeft);
+		hboxPauseLeft.getChildren().add(lblLeft);
+		hboxPauseLeft.setPrefSize(PAUSE_HBOX_WIDTH, PAUSE_HBOX_HEIGHT);
+		hboxPauseLeft.setMaxSize(PAUSE_HBOX_WIDTH, PAUSE_HBOX_HEIGHT);
+		hboxPauseLeft.setMinSize(PAUSE_HBOX_WIDTH, PAUSE_HBOX_HEIGHT);
+		hboxPauseLeft.setAlignment(Pos.CENTER_LEFT);
+		StackPane.setMargin(hboxPauseLeft, new Insets(0, 0, PAUSE_LBL_MARGIN, 5));
+		
+		svgPauseRight = new SVGPath();
+		svgPauseRight.setContent(PAUSE_ICON);
+		svgPauseRight.getStyleClass().add(CSS_CLASS_PAUSE_SHAPE);
+		Pane paneIconRight = new Pane();
+		paneIconRight.getChildren().add(svgPauseRight);
+		paneIconRight.setPrefSize(PAUSE_ICON_WIDTH, PAUSE_ICON_LENGTH);
+		paneIconRight.setMinSize(PAUSE_ICON_WIDTH, PAUSE_ICON_LENGTH);
+		paneIconRight.setMaxSize(PAUSE_ICON_WIDTH, PAUSE_ICON_LENGTH);
+		lblRight = new Label();
+		lblRight.getStyleClass().add(CSS_CLASS_TRANSPORT_LABEL);
+		this.getChildren().add(lblRight);
+		hboxPauseRight = new HBox();
+		hboxPauseRight.getChildren().add(paneIconRight);
+		hboxPauseRight.getChildren().add(lblRight);
+		hboxPauseRight.setPrefSize(PAUSE_HBOX_WIDTH, PAUSE_HBOX_HEIGHT);
+		hboxPauseRight.setMaxSize(PAUSE_HBOX_WIDTH, PAUSE_HBOX_HEIGHT);
+		hboxPauseRight.setMinSize(PAUSE_HBOX_WIDTH, PAUSE_HBOX_HEIGHT);
+		hboxPauseRight.setAlignment(Pos.CENTER_RIGHT);
+		StackPane.setMargin(hboxPauseRight, new Insets(0, 5, PAUSE_LBL_MARGIN, 0));
+		
+		this.getChildren().add(hboxPauseLeft);
+		this.getChildren().add(hboxPauseRight);
+		StackPane.setAlignment(hboxPauseLeft, Pos.CENTER_LEFT);
+		StackPane.setAlignment(hboxPauseRight, Pos.CENTER_RIGHT);
+		
+		setLeftPauseActive(false);
+		setRightPauseActive(false);
 	}
 	
 	public void setTransportInformation(final TransportInformation transportInfo) {
-		// TODO this logic should be contained in the steps
 		this.transportInfo = transportInfo;
-		
-		if (transportInfo.getPickStep().getDeviceSettings() != null) {
-			if (transportInfo.getPickStep().needsTeaching()) {
-				setLeftQuestionMarkActive(true);
-			} else {
-				setLeftQuestionMarkActive(false);
-			}
-		}
-		if (transportInfo.getPutStep().getDeviceSettings() != null) {
-			if (transportInfo.getPutStep().needsTeaching()) {
-				setRightQuestionMarkActive(true);
-			} else {
-				setRightQuestionMarkActive(false);
-			}
-		}
+		checkTransportInfo();
+	}
+	
+	private void checkTransportInfo() {
 		if (transportInfo.getInterventionBeforePick() != null) {
 			setLeftPauseActive(true);
 			setLeftLabel("" + transportInfo.getInterventionBeforePick().getFrequency());
@@ -103,55 +152,32 @@ public class TransportButton extends StackPane {
 		});
 	}
 	
-	public void setLeftQuestionMarkActive(final boolean active) {
-		
-	}
-	
-	public void setRightQuestionMarkActive(final boolean active) {
-		
-	}
-	
 	public void setLeftPauseActive(final boolean active) {
-		
+		hboxPauseLeft.setVisible(active);
 	}
 	
 	public void setLeftLabel(final String text) {
-		
-		
+		lblLeft.setText(text);		
 	}
 	
 	public void setRightPauseActive(final boolean active) {
-		
+		hboxPauseRight.setVisible(active);
 	}
 	
 	public void setRightLabel(final String text)  {
-		
+		lblRight.setText(text);
 	}
 	
 	public void showPause() {
-		showPauseLeft();
-		showPauseRight();
-	}
-	
-	public void showTeach() {
-		showQuestionMarkLeft();
-		showQuestionMarkRight();
+		checkTransportInfo();
 	}
 	
 	public void showPauseLeft() {
-		
+		hboxPauseLeft.setVisible(true);
 	}
 	
 	public void showPauseRight() {
-		
-	}
-	
-	public void showQuestionMarkLeft() {
-		
-	}
-	
-	public void showQuestionMarkRight() {
-		
+		hboxPauseRight.setVisible(true);
 	}
 	
 	public void setFocussed(final boolean active) {
@@ -167,8 +193,7 @@ public class TransportButton extends StackPane {
 		if (clickable) {
 			this.setEventHandler(MouseEvent.MOUSE_PRESSED, handlerPressed);
 			this.setEventHandler(MouseEvent.MOUSE_RELEASED, handlerReleased);
-		} else {
-		}
+		} 
 	}
 	
 }

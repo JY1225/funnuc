@@ -221,7 +221,6 @@ public class RoboSoftAppFactory {
 	public FixedProcessFlowPresenter getTeachProcessFlowPresenter() {
 		if (teachProcessFlowPresenter == null) {
 			ProcessFlowView processFlowView = new ProcessFlowView(1);
-			processFlowView.showQuestionMarks(true);
 			teachProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView);
 		}
 		return teachProcessFlowPresenter;
@@ -230,7 +229,6 @@ public class RoboSoftAppFactory {
 	public FixedProcessFlowPresenter getAutomateProcessFlowPresenter() {
 		if (automateProcessFlowPresenter == null) {
 			ProcessFlowView processFlowView = new ProcessFlowView(2);
-			processFlowView.showQuestionMarks(false);
 			automateProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView);
 		}
 		return automateProcessFlowPresenter;

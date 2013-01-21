@@ -3,25 +3,25 @@
 .device-button {
 	-fx-background-insets: 0, 5, 6, 7;
 	-fx-shape: "M 34.03125 0.03125 C 15.253569 0.03125 0.03125 15.253568 0.03125 34.03125 C 0.03125 52.808932 15.253569 68.03125 34.03125 68.03125 C 52.808931 68.03125 68.03125 52.808932 68.03125 34.03125 C 68.03125 15.253568 52.808931 0.03125 34.03125 0.03125 z";
-	-fx-effect: innershadow(one-pass-box, #b5b5b5, 1, 0, 0, 1);
+	-fx-effect: innershadow(one-pass-box, #999999, 1, 0, 0, 1);
 }
 
 .btn-pre {
-	-fx-background-color: #d3d3d3, #ad5609, linear-gradient(#ffa452 0%, #d76d0e 100%), linear-gradient(#f27e17 100%, #e7740e 100%);
+	-fx-background-color: #c5c5c5, #ad5609, linear-gradient(#ffa452 0%, #d76d0e 100%), linear-gradient(#f27e17 100%, #e7740e 100%);
 }
 
 .pre-process {
 }
 
 .btn-cnc {
-	-fx-background-color: #d3d3d3, #4b1465, linear-gradient(#bc36fb 0%, #611a82 100%), linear-gradient(#932ec3 100%, #8723b6 100%);
+	-fx-background-color: #c5c5c5, #4b1465, linear-gradient(#bc36fb 0%, #611a82 100%), linear-gradient(#932ec3 100%, #8723b6 100%);
 }
 
 .cnc-machine {
 }
 
 .btn-post {
-	-fx-background-color: #d3d3d3, #146016, linear-gradient(#2bd92f 0%, #1d9320 100%), linear-gradient(#2bb52e 100%, #21a524 100%);
+	-fx-background-color: #c5c5c5, #146016, linear-gradient(#2bd92f 0%, #1d9320 100%), linear-gradient(#2bb52e 100%, #21a524 100%);
 }
 
 .post-process {
@@ -61,8 +61,9 @@
 
 .transport-button {
 	-fx-opacity: 1;
-	-fx-background-color: #d3d3d3;
-	-fx-effect: innershadow(one-pass-box, #b5b5b5, 1, 0, 0, 1);
+	-fx-background-color: #c5c5c5;
+	-fx-effect: innershadow(one-pass-box, #999999, 1, 0, 0, 1);
+	-fx-padding: 0 -2 0 -2;
 }
 
 .transport-unfocussed {
@@ -75,19 +76,18 @@
 }
 
 .pause-shape {
-	-fx-fill: linear-gradient(white 0%, #e6e6e6 100%);
-	-fx-effect: dropshadow(one-pass-box, #204b7a, 1, 0, 0, 1);
+	-fx-fill: black;
 }
 
 .transport-label {
-	-fx-font-size: 16px;
-	-fx-font-weight: bold;
 	-fx-text-alignment: center;
-	
-	-fx-font-family: "Helvetica";
+	-fx-font-size: 13px;
+	-fx-font-family: "Open Sans";
+	-fx-font-weight: bold;
+	-fx-font-smoothing-type: lcd;
 	-fx-alignment: center;
 	-fx-text-fill: black;
-	-fx-padding: 0;
+	-fx-padding: 0 0 0 4;
 }
 
 .process-flow-view {

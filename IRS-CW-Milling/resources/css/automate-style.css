@@ -9,8 +9,7 @@
 
 .circle-back {
 	-fx-shape: "M 39.75 -0.03125 C 18.043861 -0.03125 0.40625 17.606358 0.40625 39.3125 C 0.40625 61.01864 18.043861 78.53125 39.75 78.53125 C 61.456141 78.53125 79 61.01864 79 39.3125 C 79 17.606358 61.456141 -0.03125 39.75 -0.03125 z";
-	-fx-background-color: #565656;
-	-fx-background-color: #4e4a4a;
+	-fx-background-color: #595959;
 	-fx-effect: innershadow(one-pass-box, #424242, 1, 0, 0, 1);
 	-fx-background-insets: 0;
 }
