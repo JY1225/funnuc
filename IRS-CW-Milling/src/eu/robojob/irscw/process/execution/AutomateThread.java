@@ -46,6 +46,7 @@ public class AutomateThread extends Thread {
 			processFlow.setMode(ProcessFlow.Mode.AUTO);
 			setRunning(true);
 			try {
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.PREPARE, WORKPIECE_ID));
 				for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
 					robot.recalculateTCPs();
 					if (currentStepIndex == -1) {
@@ -113,7 +114,7 @@ public class AutomateThread extends Thread {
 			} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
 				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), e));
 				getProcessFlow().initialize();
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_ID));
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);
@@ -129,7 +130,7 @@ public class AutomateThread extends Thread {
 			} catch (Exception e) {
 				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
 				getProcessFlow().initialize();
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_ID));
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);

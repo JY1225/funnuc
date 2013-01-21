@@ -48,7 +48,8 @@
 }
 
 .btn-start:pressed, .teach-btn:pressed {
-	-fx-background-color: #8c8888, #222222, #6696e7, #1d355d, linear-gradient(#5078bc 0%, #3e6099 100%);
+	-fx-background-color: #8c8888, #222222, #6696e7, #36568c, linear-gradient(#5078bc 0%, #4368a6 100%);
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 1 1 2 1, 2 1 2 1;
 }
 
 .btn-start-label, .teach-btn-text {

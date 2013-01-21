@@ -62,13 +62,13 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 		icon.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_ICON, iconClass);
 		hbox.setAlignment(Pos.CENTER_LEFT);
 		iconPane.getChildren().add(icon);
-		iconPane.setPrefSize(iconWidth + 2 * ICON_MARGIN, height);
+		iconPane.setPrefSize(iconWidth, height);
+		HBox.setMargin(iconPane, new Insets(0, 0, 0, ICON_MARGIN));
 		hbox.getChildren().add(iconPane);
 		Label label = new Label(text);
 		label.getStyleClass().add(CSS_CLASS_FORM_BUTTON_LABEL);
 		label.setPrefSize(width - iconWidth - 3 * ICON_MARGIN, height);
 		label.setAlignment(Pos.CENTER);
-		HBox.setMargin(label, new Insets(0, ICON_MARGIN, 0, 0));
 		hbox.getChildren().add(label);
 		HBox.setHgrow(label, Priority.ALWAYS);
 		hbox.setPrefSize(width, height);

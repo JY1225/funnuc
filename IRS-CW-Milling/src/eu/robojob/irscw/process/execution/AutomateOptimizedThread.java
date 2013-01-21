@@ -50,11 +50,11 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	public AutomateOptimizedThread(final ProcessFlow processFlow) {
 		this.processFlow = processFlow;
 		this.syncObject = new Object();
-		this.finished = false;
 		reset();
 	}
 	
 	public void reset() {
+		this.finished = false;
 		this.currentIndices = new HashMap<Integer, Integer>();
 		this.mainProcessIndex = WORKPIECE_0_ID;
 		this.secondProcessIndex = WORKPIECE_1_ID;
@@ -74,6 +74,7 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 			processFlow.setMode(ProcessFlow.Mode.AUTO);
 			setRunning(true);
 			try {
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.PREPARE, WORKPIECE_0_ID));
 				for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
 					robot.recalculateTCPs();
 				}
@@ -97,19 +98,19 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 				}
 				if (finished) {
 					processFlow.setMode(Mode.FINISHED);
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
 				} else {
 					processFlow.setMode(Mode.STOPPED);
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
 				}
 			} catch (AbstractCommunicationException e) {
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
 				getProcessFlow().initialize();
 			} catch (InterruptedException e) {
 				if (!running) {
@@ -120,14 +121,14 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 					getProcessFlow().initialize();
 				}
 				processFlow.setMode(Mode.STOPPED);
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error(e);
 				processFlow.setMode(Mode.STOPPED);
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
 			}
 		} catch (Exception e) {
 			logger.error(e);
@@ -282,8 +283,8 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	public void notifyException(final Exception e) {
 		getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), e));
 		processFlow.initialize();
-		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
-		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
+		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
+		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
 		interrupt();
 		e.printStackTrace();
 		logger.error(e);
@@ -302,8 +303,8 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		}
 		getProcessFlow().initialize();
 		getProcessFlow().setMode(Mode.STOPPED);
-		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_0_ID));
-		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_1_ID));
+		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
+		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
 	}
 
 	public ProcessFlow getProcessFlow() {

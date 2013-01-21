@@ -19,6 +19,7 @@ public class StatusPresenter implements ProcessFlowListener {
 
 	private StatusView view;
 	
+	private static final String INITIALIZING_PROCESS = "Status.initializingProcess";
 	private static final String PROCESS_TEACH_STARTED = "Status.processTeachStarted";
 	private static final String PROCESS_TEACH_FINISHED = "Status.processTeachFinished";
 	private static final String PREPARE_PICK = "Status.prepareDevicePick";
@@ -47,7 +48,7 @@ public class StatusPresenter implements ProcessFlowListener {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				switch (e.getStatusId()) {
-					case StatusChangedEvent.NONE_ACTIVE:
+					case StatusChangedEvent.INACTIVE:
 						view.setInfoMessage(Translator.getTranslation(NONE_ACTIVE));
 						break;
 					case StatusChangedEvent.STARTED:
@@ -84,6 +85,9 @@ public class StatusPresenter implements ProcessFlowListener {
 						break;
 					case StatusChangedEvent.TEACHING_FINISHED:
 						view.setInfoMessage(Translator.getTranslation(TEACHING_FINISHED));
+						break;
+					case StatusChangedEvent.PREPARE:
+						view.setInfoMessage(Translator.getTranslation(INITIALIZING_PROCESS));
 						break;
 					default:
 						throw new IllegalArgumentException("Unknown status id: " + e.getStatusId());

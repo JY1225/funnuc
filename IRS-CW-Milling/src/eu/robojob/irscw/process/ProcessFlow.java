@@ -77,6 +77,7 @@ public class ProcessFlow {
 	
 	public void initialize() {
 		logger.info("Initializing [" + toString() + "].");
+		//TODO add none active notification?
 		loadAllSettings();
 		setFinishedAmount(0);
 	}

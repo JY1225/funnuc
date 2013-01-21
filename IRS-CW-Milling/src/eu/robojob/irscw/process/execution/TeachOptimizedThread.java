@@ -63,6 +63,7 @@ public class TeachOptimizedThread extends TeachThread {
 			setRunning(true);
 			resetOffsets();
 			try {
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.PREPARE, WORKPIECE_ID));
 				for (AbstractRobot robot : getProcessFlow().getRobots()) {
 					robot.recalculateTCPs();
 					robot.moveToHome();
@@ -129,7 +130,7 @@ public class TeachOptimizedThread extends TeachThread {
 			} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
 				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), e));
 				getProcessFlow().initialize();
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_ID));
 				e.printStackTrace();
 				logger.error(e);
 				getProcessFlow().setMode(Mode.STOPPED);
@@ -142,12 +143,12 @@ public class TeachOptimizedThread extends TeachThread {
 					logger.error(e);
 				}
 				getProcessFlow().setMode(Mode.STOPPED);
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_ID));
 				getProcessFlow().initialize();
 			} catch (Exception e) {
 				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
 				getProcessFlow().initialize();
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.NONE_ACTIVE, WORKPIECE_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_ID));
 				e.printStackTrace();
 				logger.error(e);
 				getProcessFlow().setMode(Mode.STOPPED);

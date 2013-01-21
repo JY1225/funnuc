@@ -21,7 +21,7 @@
 }
 
 .form-button:pressed, .form-button-active {
-	-fx-background-color: #8c8888, #222222, #6696e7, #1d355d, linear-gradient(#5078bc 0%, #4368a6 100%);
+	-fx-background-color: #8c8888, #222222, #6696e7, #36568c, linear-gradient(#5078bc 0%, #4368a6 100%);
 	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 1 1 2 1, 2 1 2 1;
 }
 
@@ -206,9 +206,9 @@
 }
 
 .workpiece {
-	-fx-fill: linear-gradient(#ffb327 0%, #ffb327 2%, #fc981b 4%, #ce7300 100%);
+	-fx-fill: linear-gradient(#ffa452 0%, #f27e17 3%, #db6d0c 100%);
 	-fx-stroke-width: 1px;
-	-fx-stroke: #a55015;
+	-fx-stroke: #ad5609;
 }
 
 .workpiece-mark {
@@ -240,7 +240,7 @@
 }
 
 .iconflow-selector {
-	-fx-background-color: #8c8888, #222222, #5b5b5b, #6d6c6c;
+	-fx-background-color: #8c8888, #3b3b3b, #5b5b5b, #6d6c6c;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 	-fx-background-radius: 3px;
 }
@@ -254,7 +254,7 @@
 }
 
 .iconflow-item-selected {
-	-fx-border-color: #1770da;
+	-fx-border-color: #1470ce;
 }
 
 .iconflow-item-lbl {
@@ -270,7 +270,7 @@
 
 .iconflow-item-icon {
 	-fx-border-width: 0px;
-	-fx-opacity: 0.5;
+	-fx-opacity: 0.3;
 }
 
 .iconflow-item-icon-selected {

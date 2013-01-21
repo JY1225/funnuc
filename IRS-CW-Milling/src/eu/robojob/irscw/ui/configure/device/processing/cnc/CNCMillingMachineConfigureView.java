@@ -38,9 +38,9 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
-	private static final int COMBO_WIDTH = 200;
+	private static final int COMBO_WIDTH = 220;
 	private static final int COMBO_HEIGHT = 40;
-	private static final double BTN_WIDTH = 100;
+	private static final double BTN_WIDTH = 110;
 	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
 	
 	private static final String DEVICE = "CNCMillingMachineConfigureView.machine";

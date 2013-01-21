@@ -7,7 +7,7 @@ public class StatusChangedEvent extends ProcessFlowEvent {
 
 	private AbstractProcessStep activeStep;
 	
-	public static final int NONE_ACTIVE = 0;
+	public static final int INACTIVE = 0;
 	
 	public static final int STARTED = 1;
 	public static final int PREPARE_DEVICE = 2;
@@ -19,6 +19,9 @@ public class StatusChangedEvent extends ProcessFlowEvent {
 	
 	public static final int TEACHING_NEEDED = 21;
 	public static final int TEACHING_FINISHED = 22;
+	
+	public static final int PREPARE = 30;
+	public static final int FINISHED = 31;
 	
 	private int statusId;
 	

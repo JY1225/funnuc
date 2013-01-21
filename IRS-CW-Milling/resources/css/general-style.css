@@ -89,7 +89,7 @@
 }
 
 .pop-up-btn-pressed, .pop-up-btn:pressed {
-	-fx-background-color: #343c48, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
+	-fx-background-color: #222222, #36568c, #4368a6;
 }
 
 .warning-bg-icon {
