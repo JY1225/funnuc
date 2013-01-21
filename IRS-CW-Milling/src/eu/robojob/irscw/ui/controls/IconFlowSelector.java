@@ -15,7 +15,7 @@ public class IconFlowSelector extends ScrollPane {
 	private HBox box;
 	
 	private static final int PREF_HEIGHT = 145;
-	private static final int SPACING = 0;
+	private static final int SPACING = 5;
 	private static final int PADDING = 10;
 	
 	private static final String CSS_CLASS_ICONFLOW_SELECTOR = "iconflow-selector";

@@ -329,7 +329,7 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 					finished = true;
 				}
 			} else {
-				throw new IllegalStateException("Secondary process finished before primary?.");
+				throw new IllegalStateException("Secondary process finished before primary?");
 			}
 		}
 		synchronized (syncObject) {

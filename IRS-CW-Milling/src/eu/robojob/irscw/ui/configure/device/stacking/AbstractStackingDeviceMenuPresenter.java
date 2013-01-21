@@ -26,7 +26,11 @@ public abstract class AbstractStackingDeviceMenuPresenter extends AbstractMenuPr
 
 	@Override
 	public void openFirst() {
-		configureDevice();
+		if (deviceInfo.hasPickStep()) {
+			configureWorkPiece();
+		} else {
+			showLayout();
+		}
 	}
 
 	public DeviceInformation getDeviceInfo() {

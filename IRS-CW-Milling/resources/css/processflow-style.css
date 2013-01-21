@@ -7,7 +7,7 @@
 }
 
 .btn-pre {
-	-fx-background-color: #c5c5c5, #d25900, linear-gradient(#ffaa66 0%, #ec7500 100%), linear-gradient(#ff8b24 0%, #f87f13 100%);
+	-fx-background-color: #c5c5c5, #d25900, linear-gradient(#ffaa66 0%, #ec7500 100%), linear-gradient(#ff8b24 0%, #fb8720 100%);
 }
 
 .pre-process {
@@ -31,6 +31,18 @@
 	-fx-fill: white;
 	-fx-scale-x: 0.82;
 	-fx-scale-y: 0.82;
+}
+
+.btn-pre .button-shape {
+	-fx-effect: dropshadow(one-pass-box, #a64600, 1, 0, 0, 1);
+}
+
+.btn-cnc .button-shape {
+	-fx-effect: dropshadow(one-pass-box, #0b3488, 1, 0, 0, 1);
+}
+
+.btn-post .button-shape {
+	-fx-effect: dropshadow(one-pass-box, #0a450b, 1, 0, 0, 1);
 }
 
 .device-button-wrapper {
@@ -64,6 +76,7 @@
 	-fx-background-color: #c5c5c5;
 	-fx-effect: innershadow(one-pass-box, #999999, 1, 0, 0, 1);
 	-fx-padding: 0 -2 0 -2;
+	-fx-shape: "m 236.67304,254.67726 1.76147,2.51639 1.85583,2.57929 -54.19659,0 0,5.03277 54.16514,0 -1.82438,2.54783 -1.76147,2.54784 2.42202,-1.00655 10.1599,-4.08912 56.83879,0 0,-5.03277 -56.77588,0 -10.22281,-4.12058 -2.42202,-0.9751 z";
 }
 
 .transport-unfocussed {

@@ -242,15 +242,23 @@
 .iconflow-selector {
 	-fx-background-color: #8c8888, #3b3b3b, #5b5b5b, #6d6c6c;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
-	-fx-background-radius: 3px;
+	-fx-background-radius: 2px;
 }
 
 .iconflow-item {	
 	-fx-background-color: transparent;
-	-fx-background-radius: 3px;
+	-fx-background-radius: 2px;
 	-fx-border-color: transparent;
 	-fx-border-width: 2px;
-	-fx-border-radius: 5px;
+	-fx-border-radius: 2px;
+}
+
+.iconflow-item .iconflow-item-lbl {
+	-fx-opacity: 0.3;
+}
+
+.iconflow-item-selected .iconflow-item-lbl {
+	-fx-opacity: 1;
 }
 
 .iconflow-item-selected {
@@ -271,6 +279,8 @@
 .iconflow-item-icon {
 	-fx-border-width: 0px;
 	-fx-opacity: 0.3;
+	-fx-scale-x: 0.9;
+	-fx-scale-y: 0.9;
 }
 
 .iconflow-item-icon-selected {

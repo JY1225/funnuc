@@ -1,5 +1,6 @@
 package eu.robojob.irscw.ui.controls;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -49,6 +50,7 @@ public class IconFlowSelectorItem extends VBox {
 			this.getChildren().add(lblName);
 		}
 		this.getStyleClass().remove(CSS_CLASS_ICONFLOW_ITEM_SELECTED);
+		this.setPadding(new Insets(3, 3, 3, 3));
 	}
 
 	public void setSelected(final boolean selected) {

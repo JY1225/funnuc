@@ -42,5 +42,10 @@ public class PrageDeviceMenuPresenter extends AbstractDeviceMenuPresenter {
 	public boolean isConfigured() {
 		return true;
 	}
+	
+	@Override
+	public void openFirst() {
+		configureDevice();
+	}
 
 }

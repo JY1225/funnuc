@@ -21,20 +21,23 @@
 }
 
 .keyboard-button:pressed {
-	-fx-background-color: #6f6a6a, #222222, #6696e7, #1d355d, linear-gradient(#5078bc 0%, #3e6099 100%);
+	-fx-background-color: #6f6a6a, #222222, #6696e7, #36568c, linear-gradient(#5078bc 0%, #4368a6 100%);
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 1 1 2 1, 2 1 2 1;
 }
 
 .keyboard-button:pressed Text {
 }
 
 #key-OK {
-	-fx-background-color: #6f6a6a, #222222, #a3f08c, #255317, linear-gradient(#6fc955 0%, #409228 100%);
+	-fx-background-color: #6f6a6a, #222222, #6696e7, #36568c, linear-gradient(#5078bc 0%, #4368a6 100%);
 }
 
 #key-OK Text {
 }
 
 #key-OK:pressed {
+	-fx-background-color: #6f6a6a, #222222, #6696e7, #36568c, linear-gradient(#5078bc 0%, #4368a6 100%);
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 1 1 2 1, 2 1 2 1;
 }
 
 #key-OK:pressed Text {
