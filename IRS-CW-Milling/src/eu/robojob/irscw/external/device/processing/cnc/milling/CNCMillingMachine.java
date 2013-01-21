@@ -128,7 +128,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		//FIXME review! potential problems with reset in double processflow execution
-		nCReset();
 		clearIndications();
 	}
 
@@ -153,6 +152,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			if (!cycleFinished) {
 				throw new DeviceActionException(this, EXCEPTION_CYCLE_END_TIMEOUT);
 			}
+			nCReset();
 		}
 	}
 

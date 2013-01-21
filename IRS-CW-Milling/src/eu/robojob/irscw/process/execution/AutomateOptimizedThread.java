@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.GripperHead;
@@ -101,6 +102,14 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 					processFlow.setMode(Mode.FINISHED);
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
+					for (AbstractDevice device : processFlow.getDevices()) {
+						if (device instanceof CNCMillingMachine) {
+							((CNCMillingMachine) device).indicateAllProcessed();
+						}
+					}
+					for (AbstractRobot robot : processFlow.getRobots()) {
+						robot.moveToHome();
+					}
 				} else {
 					processFlow.setMode(Mode.STOPPED);
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
