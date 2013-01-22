@@ -85,18 +85,18 @@
 	-fx-font-smoothing-type: lcd;
 	-fx-background-radius: 3, 3, 2;
 	-fx-padding: 0 0 0 10;
-	-fx-background-color: #8c8888, #222222, #4e4a4a;
-	-fx-background-insets: 0, 0 0 1 0, 2 1 2 1;
+	-fx-background-color: #8c8888, #222222, #373737, #4e4a4a;
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 	-fx-text-fill: white;
 }
 
 .form-full-textfield:disabled, .text-field:disabled {
 	-fx-text-fill: white;
-	-fx-background-color: #8c8888, #3d3d3d, #7b7b7b;
+	-fx-background-color: #8c8888, #3d3d3d, #4f4f4f, #7b7b7b;
 }
 
 .form-full-textfield:focused, .text-field:focused {
-	-fx-background-color: #8c8888, #0080e2, #4e4a4a;
+	-fx-background-color: #8c8888, #0080e2, #4e4a4a, #4e4a4a;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1;
 }
 
