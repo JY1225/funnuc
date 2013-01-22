@@ -120,7 +120,7 @@ public class FanucRobot extends AbstractRobot {
 		restartProgram();
 	}
 	
-	public synchronized void disconnect() {
+	public void disconnect() {
 		fanucRobotCommunication.disconnect();
 	}
 	
@@ -167,6 +167,9 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public void continuePutTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_PUT);
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForTeachingNeeded = waitForStatus(RobotConstants.STATUS_AWAITING_TEACHING, MOVE_TO_LOCATION_TIMEOUT);
 			if (!waitingForTeachingNeeded) {
@@ -182,6 +185,9 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void continuePutTillClampAck() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PUT_CLAMP_REQUEST, TEACH_TIMEOUT);
 			if (!waitingForRelease) {
@@ -197,6 +203,9 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void continuePutTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_PUT_CLAMP_ACK);
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PUT_OUT_OF_MACHINE, MOVE_FINISH_TIMEOUT);
 		if (!waitingForPickFinished) {
@@ -206,6 +215,9 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void finalizePut() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PUT_FINISHED, MOVE_FINISH_TIMEOUT);
 		if (!waitingForPickFinished) {
 			throw new RobotActionException(this, EXCEPTION_FINALIZE_PUT_TIMEOUT);
@@ -238,6 +250,9 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public void continuePickTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_PICK);
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForTeachingNeeded = waitForStatus(RobotConstants.STATUS_AWAITING_TEACHING, MOVE_TO_LOCATION_TIMEOUT);
 			if (!waitingForTeachingNeeded) {
@@ -253,6 +268,9 @@ public class FanucRobot extends AbstractRobot {
 	
 	@Override
 	public void continuePickTillUnclampAck() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PICK_RELEASE_REQUEST, TEACH_TIMEOUT);
 			if (!waitingForRelease) {
@@ -269,6 +287,9 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void continuePickTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PICK_OUT_OF_MACHINE, MOVE_TO_IPPOINT_TIMEOUT);
 		if (!waitingForPickFinished) {
@@ -278,6 +299,9 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void finalizePick() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PICK_FINISHED, MOVE_FINISH_TIMEOUT);
 		if (!waitingForPickFinished) {
 			throw new RobotActionException(this, EXCEPTION_FINALIZE_PICK_TIMEOUT);
@@ -333,6 +357,9 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public void continueMoveWithPieceTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForTeachingNeeded = waitForStatus(RobotConstants.STATUS_AWAITING_TEACHING, MOVE_TO_LOCATION_TIMEOUT);
 			if (!waitingForTeachingNeeded) {
@@ -345,6 +372,9 @@ public class FanucRobot extends AbstractRobot {
 	
 	@Override
 	public void continueMoveWithPieceTillWait() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForLocation = waitForStatus(RobotConstants.STATUS_WAITING_AFTER_MOVE, TEACH_TIMEOUT);
 			if (!waitingForLocation) {
@@ -369,6 +399,9 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void continueMoveWithPieceTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_MOVEWAIT_CONTINUE);
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PICK_OUT_OF_MACHINE, MOVE_TO_IPPOINT_TIMEOUT);
 		if (!waitingForPickFinished) {
@@ -378,6 +411,9 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public void finalizeMoveWithPiece() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_MOVEWAIT_FINISHED, MOVE_FINISH_TIMEOUT);
 		if (!waitingForPickFinished) {
 			throw new RobotActionException(this, EXCEPTION_FINALIZE_MOVEWITHPIECE_TIMEOUT);
@@ -493,7 +529,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public synchronized void moveToHome() throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException {
+	public void moveToHome() throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException {
 		if ((getSpeed() < 10) || (getSpeed() > 100)) {
 			throw new IllegalStateException("The current speed value: [" + getSpeed() + "] is illegal.");
 		}
@@ -502,7 +538,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public synchronized void moveToChangePoint() throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException {
+	public void moveToChangePoint() throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException {
 		if ((getSpeed() < 10) || (getSpeed() > 100)) {
 			throw new IllegalStateException("The current speed value: [" + getSpeed() + "] is illegal.");
 		}

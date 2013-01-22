@@ -29,6 +29,7 @@ public class StatusView extends VBox {
 	private static final int MSG_MIN_HEIGHT = 30;
 	private static final int PADDING_BOTTOM = 10;
 	private static final int ICON_WIDTH = 25;
+	private static final int ICON_HEIGHT = 25;
 	private static final int ICON_PADDING = 10;
 	
 	private static final String CIRCLE_ICON = "M 12.5,3e-7 C 5.5964408,3e-7 0,5.5964411 0,12.5 0,19.40356 5.5964408,25 12.5,25 19.403559,25 25,19.40356 25,12.5 25,5.5964411 19.403559,3e-7 12.5,3e-7 z";
@@ -69,6 +70,9 @@ public class StatusView extends VBox {
 		infoPath.setContent(INFO_ICON);
 		infoPath.getStyleClass().add(CSS_CLASS_INFO_ICON);
 		Pane infoIconPane = new Pane();
+		infoIconPane.setPrefSize(ICON_WIDTH, ICON_HEIGHT);
+		infoIconPane.setMinSize(ICON_WIDTH, ICON_HEIGHT);
+		infoIconPane.setMaxSize(ICON_WIDTH, ICON_HEIGHT);
 		infoIconPane.getChildren().addAll(infoBgPath, infoPath);
 		// label
 		lblInfoMessage = new Label();

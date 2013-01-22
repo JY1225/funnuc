@@ -86,7 +86,10 @@ public class AutomateStatusPresenter implements ProcessFlowListener {
 		});
 	}
 
-	@Override public void modeChanged(final ModeChangedEvent e) { }
+	@Override public void modeChanged(final ModeChangedEvent e) { 
+		
+	}
+	
 	@Override public void statusChanged(final StatusChangedEvent e) { }
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) { }
 }

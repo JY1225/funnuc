@@ -47,7 +47,6 @@ public class TeachPresenter extends ExecutionPresenter {
 		statusPresenter.initializeView();
 		view.setBottom(statusPresenter.getView());
 		updateAlarms();
-		getProcessFlow().initialize();
 		if ((this.teachThread != null) && (this.teachThread.isRunning())) {
 			throw new IllegalStateException("Teach thread was already running: " + teachThread);
 		}
@@ -69,7 +68,9 @@ public class TeachPresenter extends ExecutionPresenter {
 
 	@Override
 	public void stopRunning() {
-		teachThread.interrupt();
+		if (teachThread.isRunning()) {
+			teachThread.interrupt();
+		}
 	}
 
 	@Override

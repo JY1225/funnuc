@@ -11,7 +11,7 @@ import eu.robojob.irscw.threading.MonitoringThread;
 
 public class RobotMonitoringThread extends Thread implements MonitoringThread {
 
-	private static final int REFRESH_TIME = 100;
+	private static final int REFRESH_TIME = 250;
 	
 	private AbstractRobot robot;
 	private boolean alive;
@@ -67,6 +67,7 @@ public class RobotMonitoringThread extends Thread implements MonitoringThread {
 					} catch (AbstractCommunicationException | InterruptedException e) {
 						if (robot.isConnected()) {
 							logger.error(e);
+							e.printStackTrace();
 							robot.disconnect();
 						}
 					}

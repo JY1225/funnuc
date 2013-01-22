@@ -263,8 +263,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void prepareForIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException {
-		//TODO for now we don't take action here
+	public void prepareForIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, InterruptedException {
+		indicateOperatorRequested(true);
 	}
 	
 	// these are not taken into account by the machine for now...

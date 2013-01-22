@@ -126,8 +126,6 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 				} else if (e.getStatusId() == StatusChangedEvent.STARTED) {
 					setProcessingStepActive(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step));
 				}
-			} else {
-				throw new IllegalStateException("Unknown step type [" + step + "].");
 			}
 		} else {
 			setNoneActive();

@@ -88,7 +88,7 @@ public abstract class ExternalSocketCommunication {
 			}
 			waitedTime += timeToWait;
 		}
-		throw new SocketResponseTimedOutException(getExternalCommunicationThread().getSocketConnection());
+		throw new SocketResponseTimedOutException(getExternalCommunicationThread().getSocketConnection(), command);
 	}
 	
 	/**

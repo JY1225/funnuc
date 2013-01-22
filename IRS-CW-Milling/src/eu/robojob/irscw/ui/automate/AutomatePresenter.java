@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javafx.scene.Node;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.ProcessFlowTimer;
 import eu.robojob.irscw.process.execution.AutomateOptimizedThread;
 import eu.robojob.irscw.threading.ThreadManager;
@@ -55,15 +56,18 @@ public class AutomatePresenter extends ExecutionPresenter {
 	@Override
 	public void stopRunning() {
 		running = false;
-		automateThread.interrupt();
-		getProcessFlow().initialize();
+		if (automateThread.isRunning()) {
+			automateThread.interrupt();
+		} else {
+			getProcessFlow().initialize();
+			getProcessFlow().setMode(Mode.STOPPED);
+		}
 		statusPresenter.initializeView();
 		statusPresenter.getView().activateStartButton();
 	}
 	
 	public void startAutomate() {
 		running = true;
-		automateThread = new AutomateOptimizedThread(getProcessFlow());
 		ThreadManager.submit(automateThread);
 		statusPresenter.getView().activateStopButton();
 	}

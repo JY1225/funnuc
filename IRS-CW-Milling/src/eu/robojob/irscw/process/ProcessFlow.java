@@ -49,7 +49,12 @@ public class ProcessFlow {
 	private Set<ProcessFlowListener> listeners;
 	private Mode mode;
 	
+	private Map<Integer, Integer> currentIndices;
+	
 	private static Logger logger = LogManager.getLogger(ProcessFlow.class.getName());
+	
+	private static final int WORKPIECE_0_ID = 0;
+	private static final int WORKPIECE_1_ID = 1;
 	
 	private ClampingManner clampingManner;
 	
@@ -63,6 +68,7 @@ public class ProcessFlow {
 		this.totalAmount = totalAmount;
 		this.finishedAmount = 0;
 		this.mode = Mode.CONFIG;
+		this.currentIndices = new HashMap<Integer, Integer>();
 		setUpProcess(processSteps);
 		initialize();
 	}
@@ -77,7 +83,10 @@ public class ProcessFlow {
 	
 	public void initialize() {
 		logger.info("Initializing [" + toString() + "].");
-		//TODO add none active notification?
+		this.currentIndices = new HashMap<Integer, Integer>();
+		//TODO more than two concurrent steps possible?
+		setCurrentIndex(WORKPIECE_0_ID, -1);
+		setCurrentIndex(WORKPIECE_1_ID, -1);
 		loadAllSettings();
 		setFinishedAmount(0);
 	}
@@ -98,6 +107,14 @@ public class ProcessFlow {
 				((BasicStackPlate) device).placeFinishedWorkPieces(processFlow.getFinishedAmount());
 			}
 		}
+	}
+	
+	public int getCurrentIndex(final int workpieceId) {
+		return currentIndices.get(workpieceId);
+	}
+	
+	public void setCurrentIndex(final int workpieceId, final int index) {
+		currentIndices.put(workpieceId, index);
 	}
 	
 	public Map<AbstractDevice, DeviceSettings> getDeviceSettings() {
@@ -158,8 +175,14 @@ public class ProcessFlow {
 				}
 				break;
 			case ProcessFlowEvent.ACTIVE_STEP_CHANGED:
+				StatusChangedEvent scEvent = (StatusChangedEvent) event;
+				if (scEvent.getActiveStep() != null) {
+					setCurrentIndex(scEvent.getWorkPieceId(), getStepIndex(scEvent.getActiveStep()));
+				} else {
+					setCurrentIndex(scEvent.getWorkPieceId(), -1);
+				}
 				for (ProcessFlowListener listener : listeners) {
-					listener.statusChanged((StatusChangedEvent) event);
+					listener.statusChanged(scEvent);
 				}
 				break;
 			case ProcessFlowEvent.DATA_CHANGED:

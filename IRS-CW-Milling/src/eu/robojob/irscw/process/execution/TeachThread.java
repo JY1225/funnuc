@@ -37,12 +37,13 @@ public class TeachThread extends Thread {
 	public void run() {
 		// A basic teach thread which will iterate all process steps and request teaching whenever needed.
 		logger.debug("Started execution, processflow [" + getProcessFlow() + "].");
+		setRunning(true);
 		try {
 			getProcessFlow().initialize();
 			getProcessFlow().setMode(Mode.TEACH);
-			setRunning(true);
 			resetOffsets();
 			try {
+				// process-initialization
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.PREPARE, WORKPIECE_ID));
 				for (AbstractRobot robot : getProcessFlow().getRobots()) {
 					robot.recalculateTCPs();
@@ -51,12 +52,16 @@ public class TeachThread extends Thread {
 				for (AbstractDevice device: getProcessFlow().getDevices()) {
 					device.prepareForProcess(getProcessFlow());
 				}
-				int currentStepIndex = 0;
-				while ((currentStepIndex < getProcessFlow().getProcessSteps().size()) && isRunning()) {
-					AbstractProcessStep step = getProcessFlow().getProcessSteps().get(currentStepIndex);
+				getProcessFlow().setCurrentIndex(WORKPIECE_ID, 0);
+				while ((getProcessFlow().getCurrentIndex(WORKPIECE_ID) < getProcessFlow().getProcessSteps().size()) && isRunning()) {
+					AbstractProcessStep step = getProcessFlow().getProcessSteps().get(getProcessFlow().getCurrentIndex(WORKPIECE_ID));
 					AbstractProcessStep nextStep = null;				
-					if (currentStepIndex < (processFlow.getProcessSteps().size() - 1)) {
-						nextStep = processFlow.getProcessSteps().get(1 + currentStepIndex);
+					if (getProcessFlow().getCurrentIndex(WORKPIECE_ID) < (processFlow.getProcessSteps().size() - 1)) {
+						nextStep = processFlow.getProcessSteps().get(1 + getProcessFlow().getCurrentIndex(WORKPIECE_ID));
+					}
+					// check if next step would be an intervention step
+					if ((nextStep != null) && (nextStep instanceof InterventionStep) && (getProcessFlow().getCurrentIndex(WORKPIECE_ID) < (processFlow.getProcessSteps().size() - 2))) {
+						nextStep = processFlow.getProcessSteps().get(2 + getProcessFlow().getCurrentIndex(WORKPIECE_ID));
 					}
 					if (step instanceof AbstractTransportStep) {
 						((AbstractTransportStep) step).getRobotSettings().setFreeAfter(true);
@@ -78,39 +83,29 @@ public class TeachThread extends Thread {
 							step.executeStep(WORKPIECE_ID);
 						}
 					}
-					currentStepIndex++;
+					getProcessFlow().setCurrentIndex(WORKPIECE_ID, getProcessFlow().getCurrentIndex(WORKPIECE_ID) + 1);
 				}
 				if (running) {
+					// everything went as it should
 					processFlow.setMode(Mode.READY);
+					getProcessFlow().setCurrentIndex(WORKPIECE_ID, 0);
+					processFlow.incrementFinishedAmount();
 					this.running = false;
 				} else {
+					// flow got interrupted
 					processFlow.setMode(Mode.STOPPED);
 				}
 			} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
-				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), e));
-				getProcessFlow().initialize();
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_ID));
-				e.printStackTrace();
-				logger.error(e);
-				getProcessFlow().setMode(Mode.STOPPED);
+				handleException(e);
 			} catch (InterruptedException e) {
 				if ((!isRunning()) || ThreadManager.isShuttingDown()) {
 					logger.info("Execution of one or more steps got interrupted, so let't just stop");
+					indicateStopped();
 				} else {
-					getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
-					e.printStackTrace();
-					logger.error(e);
+					handleException(new Exception(Translator.getTranslation(OTHER_EXCEPTION)));
 				}
-				getProcessFlow().setMode(Mode.STOPPED);
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_ID));
-				getProcessFlow().initialize();
 			} catch (Exception e) {
-				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
-				getProcessFlow().initialize();
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_ID));
-				e.printStackTrace();
-				logger.error(e);
-				getProcessFlow().setMode(Mode.STOPPED);
+				handleException(new Exception(Translator.getTranslation(OTHER_EXCEPTION)));
 			}
 		} catch (Exception e) {
 			logger.error(e);
@@ -120,6 +115,19 @@ public class TeachThread extends Thread {
 			t.printStackTrace();
 		}
 		logger.info(toString() + " ended...");
+	}
+	
+	protected void handleException(final Exception e) {
+		getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), e));
+		e.printStackTrace();
+		logger.error(e);
+		indicateStopped();
+	}
+	
+	protected void indicateStopped() {
+		getProcessFlow().initialize();
+		getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_ID));
+		getProcessFlow().setMode(Mode.STOPPED);
 	}
 	
 	@Override
@@ -136,9 +144,6 @@ public class TeachThread extends Thread {
 		}
 	}
 
-	/**
-	 * Resets the relative teached offsets for all transport steps
-	 */
 	protected void resetOffsets() {
 		for (AbstractProcessStep step: getProcessFlow().getProcessSteps()) {
 			if (step instanceof AbstractTransportStep) {

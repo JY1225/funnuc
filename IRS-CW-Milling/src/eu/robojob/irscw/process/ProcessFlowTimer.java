@@ -86,6 +86,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 			case STOPPED:
 				reset();
 				break;
+			case READY:
 			case PAUSED:
 				pauseTimeMeasurements();
 				isPaused = true;

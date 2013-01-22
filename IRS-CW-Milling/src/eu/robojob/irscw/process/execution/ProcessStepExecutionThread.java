@@ -8,6 +8,7 @@ import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.AbstractTransportStep;
+import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.util.Translator;
 
 public class ProcessStepExecutionThread extends Thread {
@@ -32,6 +33,11 @@ public class ProcessStepExecutionThread extends Thread {
 			step.executeStep(workpieceId);
 			if (step instanceof AbstractTransportStep) {
 				((AbstractTransportStep) step).finalizeStep();
+			} else if (step instanceof InterventionStep) {
+				InterventionStep iStep = (InterventionStep) step;
+				if (iStep.isInterventionNeeded(step.getProcessFlow().getFinishedAmount())) {
+					parent.pause();
+				}
 			}
 			parent.stepExecutionFinished(workpieceId);
 			logger.debug("Finished step execution [" + step + "], workpiece id [" + workpieceId + "].");

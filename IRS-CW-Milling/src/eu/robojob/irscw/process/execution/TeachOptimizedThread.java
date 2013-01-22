@@ -15,13 +15,13 @@ import eu.robojob.irscw.external.robot.fanuc.FanucRobotPutSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.TeachedCoordinatesCalculator;
 import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.util.Translator;
@@ -57,12 +57,13 @@ public class TeachOptimizedThread extends TeachThread {
 		//    or 
 		// -  BasicStackPlate - CNCMillingMachine - BasicStackPlate
 		logger.debug("Started execution, processflow [" + getProcessFlow() + "].");
+		setRunning(true);
 		try {
 			getProcessFlow().initialize();
 			getProcessFlow().setMode(Mode.TEACH);
-			setRunning(true);
 			resetOffsets();
 			try {
+				// process-initialization
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.PREPARE, WORKPIECE_ID));
 				for (AbstractRobot robot : getProcessFlow().getRobots()) {
 					robot.recalculateTCPs();
@@ -83,9 +84,9 @@ public class TeachOptimizedThread extends TeachThread {
 				Coordinates relTeachedOffsetRawWp = null;
 				Coordinates relTeachedOffsetMachineClamping = null;
 				boolean knowEnough = false;
-				int currentStepIndex = 0;
-				while ((currentStepIndex < getProcessFlow().getProcessSteps().size()) && !knowEnough && isRunning()) {
-					AbstractProcessStep step = getProcessFlow().getProcessSteps().get(currentStepIndex);
+				getProcessFlow().setCurrentIndex(WORKPIECE_ID, 0);
+				while ((getProcessFlow().getCurrentIndex(WORKPIECE_ID) < getProcessFlow().getProcessSteps().size()) && !knowEnough && isRunning()) {
+					AbstractProcessStep step = getProcessFlow().getProcessSteps().get((getProcessFlow().getCurrentIndex(WORKPIECE_ID)));
 					if (step.equals(pickFromStackerStep)) {
 						pickFromStackerStep.executeStepTeached(WORKPIECE_ID);
 						pickFromStackerStep.finalizeStep();
@@ -109,49 +110,39 @@ public class TeachOptimizedThread extends TeachThread {
 						knowEnough = true;
 					} else if (step.equals(pickAfterWaitOnPrageStep)) {
 						pickAfterWaitOnPrageStep.executeStep(WORKPIECE_ID);
+						pickAfterWaitOnPrageStep.finalizeStep();
 						knowEnough = true;
-					} else {
+					} else if (!(step instanceof InterventionStep)) {
 						step.executeStep(WORKPIECE_ID);
 					}
-					currentStepIndex++;
+					getProcessFlow().setCurrentIndex(WORKPIECE_ID, getProcessFlow().getCurrentIndex(WORKPIECE_ID) + 1);
 				}
 				if (isRunning()) {
 					Coordinates pickFromMachineOffset = new Coordinates(relTeachedOffsetMachineClamping);
 					pickFromMachineOffset.minus(relTeachedOffsetRawWp);
 					pickFromMachineOffset.plus(relTeachedOffsetFinishedWp);
 					pickFromMachineStep.setRelativeTeachedOffset(pickFromMachineOffset);
-					putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);			
+					putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);		
+					/*for (AbstractRobot robot : getProcessFlow().getRobots()) {
+						robot.moveToHome();
+					}*/
 					setRunning(false);
 					getProcessFlow().setMode(Mode.READY);
-					logger.info(toString() + " ended...");
 				} else {
 					getProcessFlow().setMode(Mode.STOPPED);
 				}
 			} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
-				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), e));
-				getProcessFlow().initialize();
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_ID));
-				e.printStackTrace();
-				logger.error(e);
-				getProcessFlow().setMode(Mode.STOPPED);
+				handleException(e);
 			} catch (InterruptedException e) {
 				if ((!isRunning()) || ThreadManager.isShuttingDown()) {
 					logger.info("Execution of one or more steps got interrupted, so let't just stop");
+					indicateStopped();
 				} else {
-					getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
-					e.printStackTrace();
-					logger.error(e);
+					handleException(new Exception(Translator.getTranslation(OTHER_EXCEPTION)));
+
 				}
-				getProcessFlow().setMode(Mode.STOPPED);
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_ID));
-				getProcessFlow().initialize();
 			} catch (Exception e) {
-				getProcessFlow().processProcessFlowEvent(new ExceptionOccuredEvent(getProcessFlow(), new Exception(Translator.getTranslation(OTHER_EXCEPTION))));
-				getProcessFlow().initialize();
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_ID));
-				e.printStackTrace();
-				logger.error(e);
-				getProcessFlow().setMode(Mode.STOPPED);
+				handleException(new Exception(Translator.getTranslation(OTHER_EXCEPTION)));
 			}
 		} catch (Exception e) {
 			logger.error(e);

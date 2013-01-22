@@ -71,10 +71,12 @@ public class SocketConnection {
 			} else {
 				throw new IllegalStateException("Unknown connection type.");
 			}
+		} else {
+			logger.info(toString() + " was already connected.");
 		}
 	}
 	
-	private void connectInOut() throws IOException {
+	private synchronized void connectInOut() throws IOException {
 		out = new PrintWriter(socket.getOutputStream(), true);
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 	}
@@ -139,6 +141,7 @@ public class SocketConnection {
 	public boolean isConnected() {
 		if (connected) {
 			if ((socket == null) || (out == null) || (in == null)) {
+				disconnect();
 				throw new IllegalStateException("Status indicates connection, but one or more objects are null");
 			} else {
 				return true;

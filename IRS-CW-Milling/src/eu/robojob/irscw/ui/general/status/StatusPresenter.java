@@ -32,6 +32,7 @@ public class StatusPresenter implements ProcessFlowListener {
 	private static final String TEACHING_FINISHED = "Status.teachingFinished";
 	private static final String ENDED_PICK = "Status.endedPick";
 	private static final String ENDED_PUT = "Status.endedPut";
+	private static final String INTERVENTION_READY = "Status.interventionReady";
 	
 	public StatusPresenter(final StatusView view) {
 		this.view = view;
@@ -76,7 +77,8 @@ public class StatusPresenter implements ProcessFlowListener {
 						}
 						break;
 					case StatusChangedEvent.INTERVENTION_READY:
-						throw new IllegalStateException("Intervention not supported while teaching");
+						view.setInfoMessage(Translator.getTranslation(INTERVENTION_READY));
+						break;
 					case StatusChangedEvent.PROCESSING_STARTED:
 						view.setInfoMessage(((DeviceStep) e.getActiveStep()).getDevice().getId() + " " + Translator.getTranslation(PROCESSING));
 						break;

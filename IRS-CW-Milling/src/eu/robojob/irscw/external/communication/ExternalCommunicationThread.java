@@ -78,8 +78,9 @@ public class ExternalCommunicationThread extends Thread {
 						putMessage(icommingMessage);
 					} catch (IOException e) {
 						if (alive) {
-							logger.error("IOException detected: " + e.getMessage() + " so disconnectiong...");
-							// exception occurred, spread the word (disconnection occurs automatically)
+							logger.error("IOException detected: " + e.getMessage() + " so disconnecting...");
+							logger.error("Current messages: " + incommingMessages);
+							e.printStackTrace();
 							externalCommunication.iOExceptionOccured(e);
 						}
 					} catch (SocketDisconnectedException e) {
@@ -117,23 +118,23 @@ public class ExternalCommunicationThread extends Thread {
 		}
 	}
 	
-	public synchronized void clearIncommingBuffer() {
+	public void clearIncommingBuffer() {
 		incommingMessages.clear();
 	}
 	
-	private synchronized void putMessage(final String message) {
+	private void putMessage(final String message) {
 		incommingMessages.addLast(message);
 	}
 	
-	public synchronized void writeMessage(final String message) throws SocketDisconnectedException {
+	public void writeMessage(final String message) throws SocketDisconnectedException {
 		socketConnection.send(message);
 	}
 	
-	public synchronized void writeCharacter(final char character) throws SocketDisconnectedException {
+	public void writeCharacter(final char character) throws SocketDisconnectedException {
 		socketConnection.send(character);
 	}
 	
-	public synchronized void writeString(final String message) throws SocketDisconnectedException {
+	public void writeString(final String message) throws SocketDisconnectedException {
 		socketConnection.send(message);
 	}
 	

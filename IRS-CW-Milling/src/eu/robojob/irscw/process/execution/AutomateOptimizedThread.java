@@ -42,10 +42,10 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	private boolean running;
 	private boolean finished;
 	
-	private Map<Integer, Integer> currentIndices;
 	private Map<Integer, Boolean> isRunning;
 	private int mainProcessIndex;
 	private int secondProcessIndex;
+	private boolean paused;
 
 	private Object syncObject;
 	
@@ -57,14 +57,18 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	
 	public void reset() {
 		this.finished = false;
-		this.currentIndices = new HashMap<Integer, Integer>();
 		this.mainProcessIndex = WORKPIECE_0_ID;
 		this.secondProcessIndex = WORKPIECE_1_ID;
 		this.isRunning = new HashMap<Integer, Boolean>();
 		isRunning.put(WORKPIECE_0_ID, false);
 		isRunning.put(WORKPIECE_1_ID, false);	
-		currentIndices.put(WORKPIECE_0_ID, 0);
-		currentIndices.put(WORKPIECE_1_ID, 0);
+		getProcessFlow().setCurrentIndex(WORKPIECE_0_ID, 0);
+		getProcessFlow().setCurrentIndex(WORKPIECE_1_ID, 0);
+	}
+	
+	public void setCurrentIndices(final int workPiece0Index, final int workPiece1Index) {
+		getProcessFlow().setCurrentIndex(WORKPIECE_0_ID, workPiece0Index);
+		getProcessFlow().setCurrentIndex(WORKPIECE_1_ID, workPiece1Index);
 	}
 	
 	//TODO add intervention steps execution
@@ -72,17 +76,23 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	public void run() {
 		logger.debug("Started execution, processflow [" + processFlow + "].");
 		this.finished = false;
+		this.running = true;
+		this.paused = false;
 		try {
 			processFlow.setMode(ProcessFlow.Mode.AUTO);
 			setRunning(true);
 			try {
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.PREPARE, WORKPIECE_0_ID));
-				for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
-					robot.recalculateTCPs();
+				if (getProcessFlow().getCurrentIndex(WORKPIECE_0_ID) == -1) {
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.PREPARE, WORKPIECE_0_ID));
+					for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
+						robot.recalculateTCPs();
+					}
+					for (AbstractDevice device: processFlow.getDevices()) {	// prepare devices for this processflow
+						device.prepareForProcess(processFlow);
+					}
+					getProcessFlow().setCurrentIndex(WORKPIECE_0_ID, 0);
 				}
-				for (AbstractDevice device: processFlow.getDevices()) {	// prepare devices for this processflow
-					device.prepareForProcess(processFlow);
-				}
+				getProcessFlow().setCurrentIndex(WORKPIECE_1_ID, 0);
 				while (isRunning()) {
 					switch (mainProcessIndex) {
 						case WORKPIECE_0_ID:
@@ -110,6 +120,8 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 					for (AbstractRobot robot : processFlow.getRobots()) {
 						robot.moveToHome();
 					}
+				} else if (paused) {
+					processFlow.setMode(Mode.PAUSED);
 				} else {
 					processFlow.setMode(Mode.STOPPED);
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
@@ -150,9 +162,15 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		logger.info(toString() + " ended...");
 	}
 	
+	@Override
+	public void pause() {
+		this.paused = true;
+		this.running = false;
+	}
+	
 	private synchronized void executeProcess(final int mainProcessId, final int secondProcessId) throws InterruptedException, ExecutionException {
-		int currentStepIndexMain = currentIndices.get(mainProcessId);
-		int currentStepIndexSecondary = currentIndices.get(secondProcessId);
+		int currentStepIndexMain = getProcessFlow().getCurrentIndex(mainProcessId);
+		int currentStepIndexSecondary = getProcessFlow().getCurrentIndex(secondProcessId);
 		
 		// if the first process is processing (and not as part of put and wait) the second process can use the robot
 		// if the second process is processing (and not as part of pick and wait) the first process can use the robot
@@ -336,14 +354,14 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	@Override
 	public synchronized void stepExecutionFinished(final int stepProcessId) {
 		isRunning.put(stepProcessId, false);
-		int currentStepIndex = currentIndices.get(stepProcessId);
+		int currentStepIndex = getProcessFlow().getCurrentIndex(stepProcessId);
 		currentStepIndex++;
-		currentIndices.put(stepProcessId, currentStepIndex);
+		getProcessFlow().setCurrentIndex(stepProcessId, currentStepIndex);
 		if (currentStepIndex == processFlow.getProcessSteps().size()) {
 			if (stepProcessId == mainProcessIndex) {
 				// main flow has finished, switch
 				processFlow.incrementFinishedAmount();
-				currentIndices.put(stepProcessId, 0);
+				getProcessFlow().setCurrentIndex(stepProcessId, 0);
 				this.mainProcessIndex = secondProcessIndex;
 				this.secondProcessIndex = stepProcessId;
 				if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {

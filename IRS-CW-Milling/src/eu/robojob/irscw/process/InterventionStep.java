@@ -48,7 +48,7 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 	}
 	
 	public boolean isInterventionNeeded(final int finishedAmount) {
-		return (finishedAmount % frequency == 0);
+		return ((finishedAmount > 0) && (finishedAmount % frequency == 0));
 	}
 
 	public void setDeviceSettings(final DeviceInterventionSettings interventionSettings) {

@@ -7,4 +7,5 @@ public interface ProcessExecutor {
 	void notifyException(Exception e);
 	void notifyInterruptedException(InterruptedException e);
 	boolean isRunning();
+	void pause();
 }
