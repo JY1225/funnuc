@@ -179,6 +179,30 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	private synchronized void executeProcess(final int mainProcessId, final int secondProcessId) throws InterruptedException, ExecutionException {
 		int currentStepIndexMain = getProcessFlow().getCurrentIndex(mainProcessId);
 		int currentStepIndexSecondary = getProcessFlow().getCurrentIndex(secondProcessId);
+		int mainProcId = mainProcessId;
+		int secondProcId = secondProcessId;
+		// update indices for intervention steps
+		AbstractProcessStep step1 = getProcessFlow().getStep(currentStepIndexMain);
+		AbstractProcessStep secStep = getProcessFlow().getStep(currentStepIndexSecondary);
+		if (step1 instanceof InterventionStep) {
+			if (!((InterventionStep) step1).isInterventionNeeded(getProcessFlow().getFinishedAmount())) {
+				currentStepIndexMain++;
+			}
+		}
+		if (secStep instanceof InterventionStep) {
+			if (!((InterventionStep) secStep).isInterventionNeeded(getProcessFlow().getFinishedAmount())) {
+				currentStepIndexSecondary++;
+			}
+		}
+		if (currentStepIndexMain == processFlow.getProcessSteps().size()) {
+			currentStepIndexMain = currentStepIndexSecondary;
+			currentStepIndexSecondary = 0;
+			int temp = secondProcessId;
+			secondProcId = mainProcessId;
+			mainProcId = temp;
+		}
+		processFlow.setCurrentIndex(mainProcId, currentStepIndexMain);
+		processFlow.setCurrentIndex(secondProcId, currentStepIndexSecondary);
 		
 		// if the first process is processing (and not as part of put and wait) the second process can use the robot
 		// if the second process is processing (and not as part of pick and wait) the first process can use the robot
@@ -186,7 +210,7 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		// sometimes, a special optimization is possible: when the first process does a pick and the second process's next step is 
 		// a put in the same WorkArea, this should be allowed, before the first process does it's put
 		
-		if (!isRunning.get(mainProcessId)) {
+		if (!isRunning.get(mainProcId)) {
 			AbstractProcessStep step = processFlow.getStep(currentStepIndexMain);
 			if ((step instanceof PutStep) && (currentStepIndexMain > 0)) {
 				PickStep previousStep = (PickStep) processFlow.getStep(currentStepIndexMain - 1);	// before put step is always a pick step
@@ -195,22 +219,22 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 					PutStep secondProcessPutStep = (PutStep) stepSecondProcess;
 					if (secondProcessPutStep.getRobotSettings().getWorkArea().equals(previousStep.getDeviceSettings().getWorkArea())) {
 						AbstractProcessStep stepSecond = processFlow.getStep(currentStepIndexSecondary);
-						ProcessStepExecutionThread exThread2 = new ProcessStepExecutionThread(stepSecond, secondProcessId, this);
-						isRunning.put(secondProcessId, true);
+						ProcessStepExecutionThread exThread2 = new ProcessStepExecutionThread(stepSecond, secondProcId, this);
+						isRunning.put(secondProcId, true);
 						ThreadManager.submit(exThread2);
 						return;
 					}
 				}
 			}
-			ProcessStepExecutionThread exThread = new ProcessStepExecutionThread(step, mainProcessId, this);
-			isRunning.put(mainProcessId, true);
+			ProcessStepExecutionThread exThread = new ProcessStepExecutionThread(step, mainProcId, this);
+			isRunning.put(mainProcId, true);
 			ThreadManager.submit(exThread);
 		}
-		if (!isRunning.get(secondProcessId)) {
+		if (!isRunning.get(secondProcId)) {
 			if (isConcurrentExecutionPossible(currentStepIndexMain, currentStepIndexSecondary) && (processFlow.getFinishedAmount() < processFlow.getTotalAmount() - 1)) {
 				AbstractProcessStep stepSecond = processFlow.getStep(currentStepIndexSecondary);
-				ProcessStepExecutionThread exThread2 = new ProcessStepExecutionThread(stepSecond, secondProcessId, this);
-				isRunning.put(secondProcessId, true);
+				ProcessStepExecutionThread exThread2 = new ProcessStepExecutionThread(stepSecond, secondProcId, this);
+				isRunning.put(secondProcId, true);
 				ThreadManager.submit(exThread2);
 			} else {
 				AbstractProcessStep step = processFlow.getStep(currentStepIndexMain);
