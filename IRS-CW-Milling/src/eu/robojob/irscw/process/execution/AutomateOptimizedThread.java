@@ -187,7 +187,6 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		// a put in the same WorkArea, this should be allowed, before the first process does it's put
 		
 		if (!isRunning.get(mainProcessId)) {
-			// first take care of setting the free after value:
 			AbstractProcessStep step = processFlow.getStep(currentStepIndexMain);
 			if ((step instanceof PutStep) && (currentStepIndexMain > 0)) {
 				PickStep previousStep = (PickStep) processFlow.getStep(currentStepIndexMain - 1);	// before put step is always a pick step

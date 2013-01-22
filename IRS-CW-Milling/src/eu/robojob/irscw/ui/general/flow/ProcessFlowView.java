@@ -108,6 +108,7 @@ public class ProcessFlowView extends GridPane {
 		});
 		this.add(device, column, row);
 		deviceButtons.add(device);
+		device.toBack();
 		VBox progressVBox = new VBox();
 		progressVBox.setMinHeight(PROGRESS_BAR_REGION_HEIGHT);
 		progressVBox.setPrefHeight(PROGRESS_BAR_REGION_HEIGHT);
@@ -142,6 +143,7 @@ public class ProcessFlowView extends GridPane {
 			}
 		});
 		this.add(transport, column, row);
+		GridPane.setMargin(transport, new Insets(0, -1.8, 0, -1.8));
 		transportButtons.add(transport);
 		HBox progressHBox = new HBox();
 		this.add(progressHBox, column, (1 + row));

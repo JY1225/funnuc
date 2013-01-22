@@ -1,27 +1,26 @@
 /* ---------- DEVICE BUTTON ---------- */
 
 .device-button {
-	-fx-background-insets: 0, 5, 6, 7;
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 3 1 2 1, 6, 7, 8;
 	-fx-shape: "M 34.03125 0.03125 C 15.253569 0.03125 0.03125 15.253568 0.03125 34.03125 C 0.03125 52.808932 15.253569 68.03125 34.03125 68.03125 C 52.808931 68.03125 68.03125 52.808932 68.03125 34.03125 C 68.03125 15.253568 52.808931 0.03125 34.03125 0.03125 z";
-	-fx-effect: innershadow(one-pass-box, #cbcbcb, 1, 0, 0, 1);
 }
 
 .btn-pre {
-	-fx-background-color: #d9d9d9, #d25900, linear-gradient(#ffc18f 0%, #ec7500 100%), linear-gradient(#ff8b24 0%, #fb8720 100%);
+	-fx-background-color: #f9f9f9, #c8c8c8, #cecece, #d8d8d8, #dfdfdf, #d25900, linear-gradient(#ffc18f 0%, #ec7500 100%), linear-gradient(#ff8b24 0%, #fb8720 100%);
 }
 
 .pre-process {
 }
 
 .btn-cnc {
-	-fx-background-color: #d9d9d9, #174bb5, linear-gradient(#7fa9ff 0%, #215bd1 100%), linear-gradient(#3073fb 0%, #2767ea 100%);
+	-fx-background-color: #f9f9f9, #c8c8c8, #cecece, #d8d8d8, #dfdfdf, #174bb5, linear-gradient(#7fa9ff 0%, #215bd1 100%), linear-gradient(#3073fb 0%, #2767ea 100%);
 }
 
 .cnc-machine {
 }
 
 .btn-post {
-	-fx-background-color: #d9d9d9, #146016, linear-gradient(#55f358 0%, #1d9320 100%), linear-gradient(#2bb52e 0%, #27a22a 100%);
+	-fx-background-color: #f9f9f9, #c8c8c8, #cecece, #d8d8d8, #dfdfdf, #146016, linear-gradient(#55f358 0%, #1d9320 100%), linear-gradient(#2bb52e 0%, #27a22a 100%);
 }
 
 .post-process {
@@ -34,15 +33,12 @@
 }
 
 .btn-pre .button-shape {
-	-fx-effect: dropshadow(one-pass-box, #a64600, 1, 0, 0, 1);
 }
 
 .btn-cnc .button-shape {
-	-fx-effect: dropshadow(one-pass-box, #0b3488, 1, 0, 0, 1);
 }
 
 .btn-post .button-shape {
-	-fx-effect: dropshadow(one-pass-box, #0a450b, 1, 0, 0, 1);
 }
 
 .device-button-wrapper {
@@ -73,9 +69,9 @@
 
 .transport-button {
 	-fx-opacity: 1;
-	-fx-effect: innershadow(one-pass-box, #cbcbcb, 1, 0, 0, 1);
-	-fx-background-color: #d9d9d9;
-	-fx-shape: "m 236.67304,254.67726 1.76147,2.51639 1.85583,2.57929 -54.19659,0 0,5.03277 54.16514,0 -1.82438,2.54783 -1.76147,2.54784 2.42202,-1.00655 10.1599,-4.08912 56.83879,0 0,-5.03277 -56.77588,0 -10.22281,-4.12058 -2.42202,-0.9751 z";
+	-fx-background-color: #f9f9f9, #c8c8c8, #cecece, #d8d8d8, #dfdfdf;
+	-fx-background-insets: 0 2 0 2, 0 1 1 1, 1 1 2 1, 2 2 2 2, 3 0 2 0;
+	/*-fx-shape: "m 236.67304,254.67726 1.76147,2.51639 1.85583,2.57929 -54.19659,0 0,5.03277 54.16514,0 -1.82438,2.54783 -1.76147,2.54784 2.42202,-1.00655 10.1599,-4.08912 56.83879,0 0,-5.03277 -56.77588,0 -10.22281,-4.12058 -2.42202,-0.9751 z";*/
 }
 
 .transport-unfocussed {
