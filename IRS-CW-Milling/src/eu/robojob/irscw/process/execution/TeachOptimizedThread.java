@@ -123,9 +123,9 @@ public class TeachOptimizedThread extends TeachThread {
 					pickFromMachineOffset.plus(relTeachedOffsetFinishedWp);
 					pickFromMachineStep.setRelativeTeachedOffset(pickFromMachineOffset);
 					putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);		
-					/*for (AbstractRobot robot : getProcessFlow().getRobots()) {
+					for (AbstractRobot robot : getProcessFlow().getRobots()) {
 						robot.moveToHome();
-					}*/
+					}
 					setRunning(false);
 					getProcessFlow().setMode(Mode.READY);
 				} else {

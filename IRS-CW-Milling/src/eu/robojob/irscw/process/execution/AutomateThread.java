@@ -22,6 +22,7 @@ import eu.robojob.irscw.util.Translator;
 /**
  * This simple Automate-thread will execute the ProcessSteps sequentially
  */
+@Deprecated
 public class AutomateThread extends Thread {
 
 	private static Logger logger = LogManager.getLogger(AutomateThread.class.getName());

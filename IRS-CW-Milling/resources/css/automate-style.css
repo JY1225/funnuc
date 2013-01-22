@@ -9,13 +9,13 @@
 
 .circle-back {
 	-fx-fill: #595959;
-	-fx-effect: innershadow(one-pass-box, #424242, 1, 0, 0, 1);
+	-fx-effect: innershadow(one-pass-box, #5e5e5e, 1, 0, 0, 1);
 	-fx-background-insets: 0;
 }
 
 .circle-front {
 	-fx-fill: #6d6c6c;
-	-fx-effect: dropshadow(one-pass-box, #424242, 1, 0, 0, 1);
+	-fx-effect: dropshadow(one-pass-box, #5e5e5e, 1, 0, 0, 1);
 	-fx-background-insets: 0;
 }
 
@@ -24,13 +24,13 @@
 	-fx-stroke: null;
 	-fx-fill: #21a524;
 	-fx-stroke-line-cap: round;
-	-fx-effect: innershadow(one-pass-box, #1b851e, 1, 0, 0, 1);
+	-fx-effect: innershadow(one-pass-box, #1f9921, 1, 0, 0, 1);
 }
 
 .finished-amount {
 	-fx-font-family: "Open Sans Semibold";
 	-fx-font-smoothing-type: lcd;
-	-fx-font-size: 50px;
+	-fx-font-size: 60px;
 	-fx-text-alignment: center;
 	-fx-alignment: center;
 }

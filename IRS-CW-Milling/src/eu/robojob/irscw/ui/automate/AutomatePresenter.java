@@ -71,6 +71,12 @@ public class AutomatePresenter extends ExecutionPresenter {
 		ThreadManager.submit(automateThread);
 		statusPresenter.getView().activateStopButton();
 	}
+	
+	public void continueAutomate() {
+		running = true;
+		ThreadManager.submit(automateThread);
+		statusPresenter.getView().activateStopButton();
+	}
 
 	@Override
 	public void allConnected() {

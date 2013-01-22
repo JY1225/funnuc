@@ -24,7 +24,7 @@ public class TransportButton extends StackPane {
 	private Label lblRight;
 	
 	public static final double WIDTH = 120;
-	private static final double SHAPE_HEIGHT = 15;
+	private static final double SHAPE_HEIGHT = 20;
 	private static final String PAUSE_ICON = "M 0,0 0,10 2.5,10 2.5,0 0,0 z M 5,0 5,10 7.5,10 7.5,0 5,0 z";
 	private TransportInformation transportInfo;
 	private static final double PAUSE_ICON_WIDTH = 7.5;

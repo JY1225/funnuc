@@ -28,8 +28,8 @@ public class AutomateStatusView extends HBox {
 	public static final int WIDTH_BOTTOM_RIGHT = 230;
 	public static final int HEIGHT_BOTTOM_RIGHT_TOP = 230;
 	public static final int HEIGHT_BOTTOM_LEFT_TOP = 230;
-	public static final int PROGRESS_RADIUS = 70;
-	public static final int PROGRESS_RADIUS_INNER = 64;
+	public static final int PROGRESS_RADIUS = 80;
+	public static final int PROGRESS_RADIUS_INNER = 74;
 	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3;
 	private static final double BTN_HEIGHT = 40;
 	private static final int TIMING_STATUS_WIDTH = 500;
@@ -47,6 +47,7 @@ public class AutomateStatusView extends HBox {
 	private StackPane spButton;
 	private Button btnCancel;
 	private Button btnStart;
+	private Button btnContinue;
 	private Path piePiecePath;
 	private Pane piePiecePane;
 	private Label lblFinishedAmount;
@@ -66,6 +67,7 @@ public class AutomateStatusView extends HBox {
 	
 	private static final String STOP = "StatusView.stop";
 	private static final String START = "AutomateView.start";
+	private static final String CONTINUE = "AutomateView.continue";
 	
 	public AutomateStatusView() {
 	}
@@ -177,6 +179,18 @@ public class AutomateStatusView extends HBox {
 				presenter.startAutomate();
 			}
 		});
+		btnContinue = new Button();
+		Text txtContinue = new Text(Translator.getTranslation(CONTINUE));
+		txtContinue.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON_TEXT);
+		btnContinue.setGraphic(txtContinue);
+		btnContinue.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON);
+		btnContinue.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
+		btnContinue.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				presenter.continueAutomate();
+			}
+		});
 		spButton.setAlignment(Pos.CENTER);
 		activateStartButton();
 		
@@ -191,6 +205,11 @@ public class AutomateStatusView extends HBox {
 	public void activateStartButton() {
 		spButton.getChildren().clear();
 		spButton.getChildren().add(btnStart);
+	}
+	
+	public void activateContinueButton() {
+		spButton.getChildren().clear();
+		spButton.getChildren().add(btnContinue);
 	}
 	
 	public void activateStopButton() {

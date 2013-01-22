@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.irscw.external.robot.AbstractRobot;
@@ -33,7 +34,7 @@ import eu.robojob.irscw.util.Translator;
  */
 public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 
-	private static Logger logger = LogManager.getLogger(AutomateThread.class.getName());
+	private static Logger logger = LogManager.getLogger(AutomateOptimizedThread.class.getName());
 	private static final int WORKPIECE_0_ID = 0;
 	private static final int WORKPIECE_1_ID = 1;
 	protected static final String OTHER_EXCEPTION = "Exception.otherException";
@@ -92,7 +93,14 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 					}
 					getProcessFlow().setCurrentIndex(WORKPIECE_0_ID, 0);
 				}
-				getProcessFlow().setCurrentIndex(WORKPIECE_1_ID, 0);
+				if (getProcessFlow().getCurrentIndex(WORKPIECE_1_ID) == -1) {
+					getProcessFlow().setCurrentIndex(WORKPIECE_1_ID, 0);
+				}
+				for (AbstractDevice device : getProcessFlow().getDevices()) {
+					if (device instanceof AbstractCNCMachine) {
+						((AbstractCNCMachine) device).indicateOperatorRequested(false);
+					}
+				}
 				while (isRunning()) {
 					switch (mainProcessIndex) {
 						case WORKPIECE_0_ID:

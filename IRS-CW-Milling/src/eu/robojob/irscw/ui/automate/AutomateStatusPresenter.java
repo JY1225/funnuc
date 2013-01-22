@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.automate;
 
 import javafx.application.Platform;
+import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
@@ -54,6 +55,10 @@ public class AutomateStatusPresenter implements ProcessFlowListener {
 		parent.startAutomate();
 	}
 	
+	public void continueAutomate() {
+		parent.continueAutomate();
+	}
+	
 	public StatusPresenter getStatusPresenter() {
 		return statusPresenter;
 	}
@@ -87,7 +92,13 @@ public class AutomateStatusPresenter implements ProcessFlowListener {
 	}
 
 	@Override public void modeChanged(final ModeChangedEvent e) { 
-		
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				if (e.getMode() == Mode.PAUSED) {
+					view.activateContinueButton();
+				}
+			}
+		});
 	}
 	
 	@Override public void statusChanged(final StatusChangedEvent e) { }

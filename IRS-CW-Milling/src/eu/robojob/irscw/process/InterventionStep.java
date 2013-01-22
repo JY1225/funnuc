@@ -7,6 +7,7 @@ import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DeviceInterventionSettings;
+import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
 
@@ -40,6 +41,11 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
 				logger.debug("About to prepare device: [" + getDevice() + "] for intervention.");
 				getDevice().prepareForIntervention(interventionSettings);
+				for (AbstractDevice device : getProcessFlow().getDevices()) {
+					if (device instanceof AbstractCNCMachine) {
+						((AbstractCNCMachine) device).indicateOperatorRequested(true);
+					}
+				}
 				logger.debug("Device: [" + getDevice() + "] prepared for intervention.");
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.INTERVENTION_READY, workPieceId));
 			}
