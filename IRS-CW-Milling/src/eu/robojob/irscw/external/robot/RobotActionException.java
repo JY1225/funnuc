@@ -18,11 +18,11 @@ public class RobotActionException extends Exception {
 
 	@Override
 	public String getMessage() {
-		return "Error during the executing of an action of: " + robot.getId() + ", " + super.getMessage();
+		return "Error during the executing of an action of: " + robot.getName() + ", " + super.getMessage();
 	}
 	
 	@Override
 	public String getLocalizedMessage() {
-		return Translator.getTranslation(EXCEPTION_DURING_ROBOT_ACTION) + ": " + robot.getId() + ", " + Translator.getTranslation(errorId);
+		return Translator.getTranslation(EXCEPTION_DURING_ROBOT_ACTION) + ": " + robot.getName() + ", " + Translator.getTranslation(errorId);
 	}
 }

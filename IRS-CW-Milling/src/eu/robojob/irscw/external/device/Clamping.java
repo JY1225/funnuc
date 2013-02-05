@@ -11,7 +11,8 @@ public class Clamping {
 		CENTRUM, FIXED, NONE
 	}
 	
-	private String id;
+	private int id;
+	private String name;
 	private Coordinates relativePosition;
 	private Coordinates smoothToPoint;
 	private Coordinates smoothFromPoint;
@@ -21,9 +22,9 @@ public class Clamping {
 	
 	private Set<Clamping> relatedClampings;
 	
-	public Clamping(final Type type, final String id, final float height, final Coordinates relativePosition, final Coordinates smoothToPoint,
+	public Clamping(final Type type, final String name, final float height, final Coordinates relativePosition, final Coordinates smoothToPoint,
 				final Coordinates smoothFromPoint, final String imageURL) {
-		this.id = id;
+		this.name = name;
 		this.height = height;
 		this.relativePosition = relativePosition;
 		this.smoothToPoint = smoothToPoint;
@@ -33,10 +34,18 @@ public class Clamping {
 		this.type = type;
 	}
 	
-	public Clamping(final Type type, final String id, final float height, final Coordinates relativePosition, final Coordinates smoothPoint, final String imageURL) {
-		this(type, id, height, relativePosition, smoothPoint, smoothPoint, imageURL);
+	public Clamping(final Type type, final String name, final float height, final Coordinates relativePosition, final Coordinates smoothPoint, final String imageURL) {
+		this(type, name, height, relativePosition, smoothPoint, smoothPoint, imageURL);
 	}
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
 	public Type getType() {
 		return type;
 	}
@@ -57,11 +66,11 @@ public class Clamping {
 		return relatedClampings;
 	}
 	
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(final String id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 

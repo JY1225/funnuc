@@ -74,7 +74,7 @@ public class RobotManager {
 	}
 	
 	public void addRobot(final AbstractRobot robot) {
-		robots.put(robot.getId(), robot);
+		robots.put(robot.getName(), robot);
 	}
 	
 	public Set<String> getRobotIds() {

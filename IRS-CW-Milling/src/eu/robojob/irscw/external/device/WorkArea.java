@@ -7,33 +7,42 @@ import eu.robojob.irscw.positioning.UserFrame;
 
 public class WorkArea {
 	
-	private String id;
+	private int id;
+	private String name;
 	private Zone zone;
 	private UserFrame userFrame;
 	private Clamping activeClamping;
 	private List<Clamping> clampings;
 	
-	public WorkArea(final String id, final UserFrame userFrame, final Clamping activeClamping, final List<Clamping> clampings) {
-		this.id = id;
+	public WorkArea(final String name, final UserFrame userFrame, final Clamping activeClamping, final List<Clamping> clampings) {
+		this.name = name;
 		this.userFrame = userFrame;
 		this.activeClamping = activeClamping;
 		this.clampings = clampings;
 	}
 	
-	public WorkArea(final String id, final UserFrame userFrame, final List<Clamping> clampings) {
-		this(id, userFrame, null, clampings);
+	public WorkArea(final String name, final UserFrame userFrame, final List<Clamping> clampings) {
+		this(name, userFrame, null, clampings);
 	}
 	
-	public WorkArea(final String id, final UserFrame userFrame) {
-		this(id, userFrame, null, new ArrayList<Clamping>());
+	public WorkArea(final String name, final UserFrame userFrame) {
+		this(name, userFrame, null, new ArrayList<Clamping>());
 	}
 
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(final String id) {
+	public void setId(final int id) {
 		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
 	}
 
 	public Zone getZone() {
@@ -61,7 +70,7 @@ public class WorkArea {
 	}
 	
 	public String toString() {
-		return "WorkArea " + id;
+		return "WorkArea " + name;
 	}
 
 	public List<Clamping> getClampings() {
@@ -83,17 +92,17 @@ public class WorkArea {
 		clampings.remove(clamping);
 	}
 	
-	public List<String> getClampingIds() {
+	public List<String> getClampingNames() {
 		List<String> clampingIds = new ArrayList<String>();
 		for (Clamping clamping: clampings) {
-			clampingIds.add(clamping.getId());
+			clampingIds.add(clamping.getName());
 		}
 		return clampingIds;
 	}
 	
-	public Clamping getClampingById(final String id) {
+	public Clamping getClampingByName(final String name) {
 		for (Clamping clamping : clampings) {
-			if (clamping.getId().equals(id)) {
+			if (clamping.getName().equals(name)) {
 				return clamping;
 			}
 		}

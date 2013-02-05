@@ -69,8 +69,8 @@ public class FanucRobot extends AbstractRobot {
 	private static final String EXCEPTION_FINALIZE_MOVEWITHPIECE_TIMEOUT = "FanucRobot.finalizeMoveWithPieceTimeout";
 	private static final String EXCEPTION_TEACH_TIMEOUT = "FanucRobot.teachTimeout";
 	
-	public FanucRobot(final String id, final Set<GripperBody> gripperBodies, final GripperBody gripperBody, final SocketConnection socketConnection) {
-		super(id, gripperBodies, gripperBody);
+	public FanucRobot(final String name, final Set<GripperBody> gripperBodies, final GripperBody gripperBody, final SocketConnection socketConnection) {
+		super(name, gripperBodies, gripperBody);
 		this.fanucRobotCommunication = new RobotSocketCommunication(socketConnection, this);
 		RobotMonitoringThread monitoringThread = new RobotMonitoringThread(this);
 		ThreadManager.submit(monitoringThread);
@@ -81,8 +81,8 @@ public class FanucRobot extends AbstractRobot {
 		df.setDecimalFormatSymbols(custom);
 	}
 	
-	public FanucRobot(final String id, final SocketConnection socketConnection) {
-		this(id, null, null, socketConnection);
+	public FanucRobot(final String name, final SocketConnection socketConnection) {
+		this(name, null, null, socketConnection);
 	}
 	
 	@Override
@@ -490,7 +490,7 @@ public class FanucRobot extends AbstractRobot {
 		List<String> values = new ArrayList<String>();
 		// user frame location ; x offset ; y offset ; z offset ; r offset ; z-safe plane offset ; safety add z ; smooth x ; smooth y ; smooth z ; tangent to/from ; xyz allowed ;
 		// clamp height ; bar break iterations ; bar break main axis ; bar break angle ; bar move length
-		int userFrameId = workArea.getUserFrame().getIdNumber();
+		int userFrameId = workArea.getUserFrame().getNumber();
 		//UF: stacker = 1; Machine = 3
 		if (!VALID_USERFRAMES.contains(userFrameId)) {
 			throw new IllegalArgumentException("Illegal Userframe id: " + userFrameId + " should be 1 or 3.");

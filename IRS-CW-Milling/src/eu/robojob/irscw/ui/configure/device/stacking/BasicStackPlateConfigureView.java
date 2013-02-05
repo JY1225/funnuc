@@ -75,7 +75,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 			cbbStacker.setDisable(true);
 			lblStacker.setDisable(true);
 		} else if (deviceInfo.getDevice() != null) {
-			cbbStacker.setValue(deviceInfo.getDevice().getId());
+			cbbStacker.setValue(deviceInfo.getDevice().getName());
 		}		
 	}
 	

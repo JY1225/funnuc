@@ -2,20 +2,29 @@ package eu.robojob.irscw.positioning;
 
 public class UserFrame {
 
-	private int idNumber;
+	private int id; 
+	private int number;
 	private float zSafeDistance;
 	
-	public UserFrame(final int idNumber, final float zSafeDistance) {
-		this.idNumber = idNumber;
+	public UserFrame(final int number, final float zSafeDistance) {
+		this.number = number;
 		this.zSafeDistance = zSafeDistance;
 	}
 
-	public int getIdNumber() {
-		return idNumber;
+	public int getId() {
+		return id;
 	}
 
-	public void setIdNumber(final int idNumber) {
-		this.idNumber = idNumber;
+	public void setId(final int id) {
+		this.id = id;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(final int number) {
+		this.number = number;
 	}
 
 	public float getzSafeDistance() {

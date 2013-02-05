@@ -34,8 +34,8 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "AbstractCNCMachine.disconnectedWhileWaiting";
 	
-	public AbstractCNCMachine(final String id, final List<Zone> zones) {
-		super(id, zones, true);
+	public AbstractCNCMachine(final String name, final List<Zone> zones) {
+		super(name, zones, true);
 		this.statusChanged = false;
 		syncObject = new Object();
 		this.alarms = new HashSet<CNCMachineAlarm>();
@@ -44,13 +44,13 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.stopAction = false;
 	}
 	
-	public AbstractCNCMachine(final String id) {
-		this(id, new ArrayList<Zone>());
+	public AbstractCNCMachine(final String name) {
+		this(name, new ArrayList<Zone>());
 	}
 	
 	@Override
 	public void interruptCurrentAction() {
-		logger.debug("Interrupting current action of: " + getId());
+		logger.debug("Interrupting current action of: " + getName());
 		stopAction = true;
 		synchronized (syncObject) {
 			syncObject.notifyAll();
@@ -182,14 +182,14 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 
 	@Override
 	public String toString() {
-		return "AbstractCNCMachine: " + getId();
+		return "AbstractCNCMachine: " + getName();
 	}
 	
 	@Override
 	public void loadDeviceSettings(final DeviceSettings deviceSettings) {
 		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
-			if (!getWorkAreaIds().contains(entry.getKey().getId())) {
-				getWorkAreaById(entry.getKey().getId()).setActiveClamping(entry.getValue());
+			if (!getWorkAreaNames().contains(entry.getKey().getName())) {
+				getWorkAreaByName(entry.getKey().getName()).setActiveClamping(entry.getValue());
 			}
 		}
 	}

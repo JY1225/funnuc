@@ -6,14 +6,23 @@ public abstract class AbstractServiceProvider {
 	
 	private boolean isLocked;
 	private ProcessFlow ownerProcess;
-	private String id;
+	private String name;
+	private int id;
 	
-	public AbstractServiceProvider(final String id) {
+	public AbstractServiceProvider(final String name) {
 		isLocked = false;
 		ownerProcess = null;
-		this.id = id;
+		this.name = name;
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(final int id) {
+		this.id = id;
+	}
+
 	//TODO: add timer to auto-expire the lock after a certain delay
 	public synchronized boolean lock(final ProcessFlow ownerProcess) {
 		if (isLocked) {
@@ -53,12 +62,12 @@ public abstract class AbstractServiceProvider {
 		return ownerProcess;
 	}
 
-	public String getId() {
-		return id;
+	public String getName() {
+		return name;
 	}
 
-	public void setId(final String id) {
-		this.id = id;
+	public void setName(final String name) {
+		this.name = name;
 	}
 	
 	public abstract String toString();

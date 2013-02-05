@@ -102,13 +102,13 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 		for (Entry<AbstractCNCMachine, Boolean> entry : machines.entrySet()) {
 			if (!entry.getValue()) {
 				allConnected = false;
-				disconnectedDevices.add(entry.getKey().getId());
+				disconnectedDevices.add(entry.getKey().getName());
 			}
 		}
 		for (Entry<AbstractRobot, Boolean> entry : robots.entrySet()) {
 			if (!entry.getValue()) {
 				allConnected = false;
-				disconnectedDevices.add(entry.getKey().getId());
+				disconnectedDevices.add(entry.getKey().getName());
 			}
 		}
 		if (!allConnected) {
@@ -155,7 +155,7 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 		Set<String> alarmStrings = new HashSet<String>();
 		for (AbstractDevice device : processFlow.getDevices()) {
 			if (!device.isConnected()) {
-				alarmStrings.add(Translator.getTranslation(NOT_CONNECTED_TO) + " " + device.getId() + ".");
+				alarmStrings.add(Translator.getTranslation(NOT_CONNECTED_TO) + " " + device.getName() + ".");
 			} else if (device instanceof AbstractCNCMachine) {
 				Set<CNCMachineAlarm> alarms = ((AbstractCNCMachine) device).getAlarms();
 				for (CNCMachineAlarm alarm : alarms) {
@@ -166,7 +166,7 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 		}
 		for (AbstractRobot robot : processFlow.getRobots()) {
 			if (!robot.isConnected()) {
-				alarmStrings.add(Translator.getTranslation(NOT_CONNECTED_TO) + " " + robot.getId() + ".");
+				alarmStrings.add(Translator.getTranslation(NOT_CONNECTED_TO) + " " + robot.getName() + ".");
 			} else {
 				for (RobotAlarm alarm : robot.getAlarms()) {
 					alarmStrings.add(alarm.getLocalizedMessage());

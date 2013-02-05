@@ -68,7 +68,7 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 			lblMachine.setDisable(true);
 			cbbMachine.setDisable(true);
 		} else if (deviceInfo.getDevice() != null) {
-			cbbMachine.setValue(deviceInfo.getDevice().getId());
+			cbbMachine.setValue(deviceInfo.getDevice().getName());
 		}
 	}
 

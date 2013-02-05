@@ -12,12 +12,12 @@ import eu.robojob.irscw.workpiece.WorkPiece.Type;
 
 public abstract class AbstractStackingDevice extends AbstractDevice {
 
-	public AbstractStackingDevice(final String id, final List<Zone> zones) {
-		super(id, zones);
+	public AbstractStackingDevice(final String name, final List<Zone> zones) {
+		super(name, zones);
 	}
 	
-	public AbstractStackingDevice(final String id) {
-		super(id);
+	public AbstractStackingDevice(final String name) {
+		super(name);
 	}
 	
 	public abstract Coordinates getLocation(WorkArea workArea, Type type, ClampingManner clampType);

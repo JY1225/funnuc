@@ -30,13 +30,13 @@ public class PrageDevice extends AbstractProcessingDevice {
 	private static final float LENGTH_CLAMP_LOCATION_R = 90;
 	private static final float WIDTH_CLAMP_LOCATION_R = 0;
 	
-	public PrageDevice(final String id, final AbstractRobot robot) {
-		super(id, false);
+	public PrageDevice(final String name, final AbstractRobot robot) {
+		super(name, false);
 		this.robot = robot;
 	}
 	
-	public PrageDevice(final String id, final List<Zone> zones, final AbstractRobot robot) {
-		super(id, zones, false);
+	public PrageDevice(final String name, final List<Zone> zones, final AbstractRobot robot) {
+		super(name, zones, false);
 		this.robot = robot;
 	}
 
@@ -82,7 +82,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	
 	@Override
 	public boolean validateStartCyclusSettings(final ProcessingDeviceStartCyclusSettings startCyclusSettings) {
-		if (getWorkAreaIds().contains(startCyclusSettings.getWorkArea().getId())) {
+		if (getWorkAreaNames().contains(startCyclusSettings.getWorkArea().getName())) {
 			return true;
 		}
 		return false;
@@ -90,7 +90,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	
 	@Override
 	public boolean validatePickSettings(final DevicePickSettings pickSettings) {
-		if (getWorkAreaIds().contains(pickSettings.getWorkArea().getId())) {
+		if (getWorkAreaNames().contains(pickSettings.getWorkArea().getName())) {
 			return true;
 		}
 		return false;
@@ -98,7 +98,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	
 	@Override
 	public boolean validatePutSettings(final DevicePutSettings putSettings) {
-		if (getWorkAreaIds().contains(putSettings.getWorkArea().getId())) {
+		if (getWorkAreaNames().contains(putSettings.getWorkArea().getName())) {
 			return true;
 		}
 		return false;
@@ -106,7 +106,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	
 	@Override
 	public boolean validateInterventionSettings(final DeviceInterventionSettings interventionSettings) {
-		if (getWorkAreaIds().contains(interventionSettings.getWorkArea().getId())) {
+		if (getWorkAreaNames().contains(interventionSettings.getWorkArea().getName())) {
 			return true;
 		}
 		return false;

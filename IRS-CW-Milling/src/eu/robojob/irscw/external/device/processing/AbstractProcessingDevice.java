@@ -11,13 +11,13 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 	
 	private boolean isInvasive;
 	
-	public AbstractProcessingDevice(final String id, final List<Zone> zones, final boolean isInvasive) {
-		super(id, zones);
+	public AbstractProcessingDevice(final String name, final List<Zone> zones, final boolean isInvasive) {
+		super(name, zones);
 		this.isInvasive = isInvasive;
 	}
 	
-	public AbstractProcessingDevice(final String id, final boolean isInvasive) {
-		super(id);
+	public AbstractProcessingDevice(final String name, final boolean isInvasive) {
+		super(name);
 		this.isInvasive = isInvasive;
 	}
 		
@@ -29,11 +29,11 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 	public abstract void prepareForStartCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException;
 		
 	public String toString() {
-		return "ProcessingDevice: " + getId();
+		return "ProcessingDevice: " + getName();
 	}
 	
 	public boolean validateStartCyclusSettings(final ProcessingDeviceStartCyclusSettings startCyclusSettings) {
-		if ((startCyclusSettings != null) && (startCyclusSettings.getWorkArea() != null) && (getWorkAreaIds().contains(startCyclusSettings.getWorkArea().getId())) 
+		if ((startCyclusSettings != null) && (startCyclusSettings.getWorkArea() != null) && (getWorkAreaNames().contains(startCyclusSettings.getWorkArea().getName())) 
 				&& (startCyclusSettings.getWorkArea().getActiveClamping() != null)) {
 			return true;
 		}

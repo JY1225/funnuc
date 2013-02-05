@@ -18,11 +18,11 @@ public class DeviceActionException extends Exception {
 
 	@Override
 	public String getMessage() {
-		return "Error during the executing of an action of: " + device.getId() + ", " + super.getMessage();
+		return "Error during the executing of an action of: " + device.getName() + ", " + super.getMessage();
 	}
 	
 	@Override
 	public String getLocalizedMessage() {
-		return Translator.getTranslation(EXCEPTION_DURING_DEVICE_ACTION) + ": " + device.getId() + ", " + Translator.getTranslation(errorId);
+		return Translator.getTranslation(EXCEPTION_DURING_DEVICE_ACTION) + ": " + device.getName() + ", " + Translator.getTranslation(errorId);
 	}
 }

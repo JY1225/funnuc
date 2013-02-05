@@ -264,23 +264,23 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		PrageDevice prageDevice = (PrageDevice) deviceManager.getPreProcessingDeviceById("Präge");
 		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
 		
-		DevicePickSettings pragePickSettings = new DevicePickSettings(prageDevice.getWorkAreaById("Präge"));
-		ProcessingDeviceStartCyclusSettings prageStartCyclusSettings = new ProcessingDeviceStartCyclusSettings(prageDevice.getWorkAreaById("Präge"));
-		DevicePutSettings pragePutSettings = new DevicePutSettings(prageDevice.getWorkAreaById("Präge"));
+		DevicePickSettings pragePickSettings = new DevicePickSettings(prageDevice.getWorkAreaByName("Präge"));
+		ProcessingDeviceStartCyclusSettings prageStartCyclusSettings = new ProcessingDeviceStartCyclusSettings(prageDevice.getWorkAreaByName("Präge"));
+		DevicePutSettings pragePutSettings = new DevicePutSettings(prageDevice.getWorkAreaByName("Präge"));
 		
 		FanucRobotPutSettings robotPutSettings = new FanucRobotPutSettings();
 		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
-		robotPutSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getActiveClamping().getSmoothToPoint()));
-		robotPutSettings.setWorkArea(prageDevice.getWorkAreaById("Präge"));
+		robotPutSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaByName("Präge").getActiveClamping().getSmoothToPoint()));
+		robotPutSettings.setWorkArea(prageDevice.getWorkAreaByName("Präge"));
 		robotPutSettings.setDoMachineAirblow(false);	
 		
 		FanucRobotPickSettings robotPickSettings = new FanucRobotPickSettings();
 		robotPickSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
-		robotPickSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getActiveClamping().getSmoothFromPoint()));
-		robotPickSettings.setWorkArea(prageDevice.getWorkAreaById("Präge"));
+		robotPickSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaByName("Präge").getActiveClamping().getSmoothFromPoint()));
+		robotPickSettings.setWorkArea(prageDevice.getWorkAreaByName("Präge"));
 		robotPickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		
-		RobotProcessingWhileWaitingSettings procSettings = new RobotProcessingWhileWaitingSettings(prageDevice.getWorkAreaById("Präge"), deviceInfo.getPickStep().getRobotSettings().getGripperHead());
+		RobotProcessingWhileWaitingSettings procSettings = new RobotProcessingWhileWaitingSettings(prageDevice.getWorkAreaByName("Präge"), deviceInfo.getPickStep().getRobotSettings().getGripperHead());
 		
 		PutAndWaitStep putAndWait1 = new PutAndWaitStep(deviceInfo.getPickStep().getRobot(), prageDevice, pragePutSettings, robotPutSettings);
 		ProcessingWhileWaitingStep processing2 = new ProcessingWhileWaitingStep(prageDevice, prageStartCyclusSettings, deviceInfo.getPickStep().getRobot(), procSettings);

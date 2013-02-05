@@ -35,8 +35,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	private AbstractRobotActionSettings<?> currentActionSettings;
 
-	public AbstractRobot(final String id, final Set<GripperBody> possibleGripperBodies, final GripperBody activeGripperBody) {
-		super(id);
+	public AbstractRobot(final String name, final Set<GripperBody> possibleGripperBodies, final GripperBody activeGripperBody) {
+		super(name);
 		this.speed = 50;
 		this.listeners = new HashSet<RobotListener>();
 		this.statusChanged = false;
@@ -56,8 +56,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		}
 	}
 	
-	public AbstractRobot(final String id) {
-		this(id, null, null);
+	public AbstractRobot(final String name) {
+		this(name, null, null);
 	}
 	
 	public void addListener(final RobotListener listener) {
@@ -117,13 +117,13 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 
 	public void interruptCurrentAction() {
-		logger.debug("Interrupting current action of: " + getId());
+		logger.debug("Interrupting current action of: " + getName());
 		stopAction = true;
 		try {
 			abort();
 		} catch (AbstractCommunicationException | InterruptedException e) {
 			e.printStackTrace();
-			logger.error("Could not abort current action of [" + getId() + "] because of " + e.getMessage());
+			logger.error("Could not abort current action of [" + getName() + "] because of " + e.getMessage());
 		}
 		synchronized (syncObject) {
 			syncObject.notifyAll();
@@ -275,7 +275,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	
 	public String toString() {
-		return "Robot: " + getId();
+		return "Robot: " + getName();
 	}
 	
 	public GripperBody getGripperBody() {

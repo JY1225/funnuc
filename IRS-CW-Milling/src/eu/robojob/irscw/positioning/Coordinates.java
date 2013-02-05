@@ -3,6 +3,7 @@ package eu.robojob.irscw.positioning;
 
 public class Coordinates {
 	
+	private int id;
 	private float x;
 	private float y;
 	private float z;
@@ -28,6 +29,14 @@ public class Coordinates {
 		this.r = c.getR();
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(final int id) {
+		this.id = id;
+	}
+
 	public Coordinates() {
 		this(0f, 0f, 0f, 0f, 0f, 0f);
 	}

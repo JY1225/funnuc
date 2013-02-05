@@ -49,16 +49,16 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final String EXCEPTION_UNCLAMP_TIMEOUT = "CNCMillingMachine.unclampTimeout";
 	private static final String EXCEPTION_CLAMP_TIMEOUT = "CNCMillingMachine.clampTimeout";
 			
-	public CNCMillingMachine(final String id, final List<Zone> zones, final SocketConnection socketConnection) {
-		super(id, zones);
+	public CNCMillingMachine(final String name, final List<Zone> zones, final SocketConnection socketConnection) {
+		super(name, zones);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
 		// start monitoring thread at creation of this object
 		ThreadManager.submit(cncMachineMonitoringThread);
 	}
 	
-	public CNCMillingMachine(final String id, final SocketConnection socketConnection) {
-		this(id, new ArrayList<Zone>(), socketConnection);
+	public CNCMillingMachine(final String name, final SocketConnection socketConnection) {
+		this(name, new ArrayList<Zone>(), socketConnection);
 		
 	}
 	
@@ -134,8 +134,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws SocketResponseTimedOutException, SocketDisconnectedException, DeviceActionException, InterruptedException {
 		// check a valid workarea is selected 
-		if (!getWorkAreaIds().contains(startCylusSettings.getWorkArea().getId())) {
-			throw new IllegalArgumentException("Unknown workarea: " + startCylusSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaIds());
+		if (!getWorkAreaNames().contains(startCylusSettings.getWorkArea().getId())) {
+			throw new IllegalArgumentException("Unknown workarea: " + startCylusSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaNames());
 		}
 		int command = 0;
 		command = command | CNCMachineConstants.IPC_CYCLESTART_WA1_REQUEST;
@@ -159,8 +159,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void prepareForPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check a valid workarea is selected 
-		if (!getWorkAreaIds().contains(pickSettings.getWorkArea().getId())) {
-			throw new IllegalArgumentException("Unknown workarea: " + pickSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaIds());
+		if (!getWorkAreaNames().contains(pickSettings.getWorkArea().getId())) {
+			throw new IllegalArgumentException("Unknown workarea: " + pickSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaNames());
 		}
 		int command = 0;
 		//TODO for now WA1 is always used
@@ -179,8 +179,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void prepareForPut(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check a valid workarea is selected 
-		if (!getWorkAreaIds().contains(putSettings.getWorkArea().getId())) {
-			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaIds());
+		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getId())) {
+			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaNames());
 		}
 		int command = 0;
 		//TODO for now WA1 is always used
@@ -203,8 +203,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void releasePiece(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check a valid workarea is selected 
-		if (!getWorkAreaIds().contains(pickSettings.getWorkArea().getId())) {
-			throw new IllegalArgumentException("Unknown workarea: " + pickSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaIds());
+		if (!getWorkAreaNames().contains(pickSettings.getWorkArea().getId())) {
+			throw new IllegalArgumentException("Unknown workarea: " + pickSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaNames());
 		}
 		int command = 0;
 		//TODO for now WA1 is always used
@@ -222,8 +222,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void grabPiece(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check a valid workarea is selected 
-		if (!getWorkAreaIds().contains(putSettings.getWorkArea().getId())) {
-			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaIds());
+		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getId())) {
+			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaNames());
 		}
 		int command = 0;
 		//TODO for now WA1 is always used
@@ -241,8 +241,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public boolean canPut(final DevicePutSettings putSettings) throws InterruptedException, DeviceActionException {
 		// check first workarea is selected 
-		if (!getWorkAreaIds().contains(putSettings.getWorkArea().getId())) {
-			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaIds());
+		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getId())) {
+			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getId() + " valid workareas are: " + getWorkAreaNames());
 		}
 		boolean canPut =  waitForStatus(CNCMachineConstants.R_PUT_WA1_ALLOWED, PUT_ALLOWED_TIMEOUT);
 		if (canPut) {

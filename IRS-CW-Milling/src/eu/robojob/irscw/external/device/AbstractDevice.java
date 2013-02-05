@@ -34,7 +34,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	public abstract DeviceSettings getDeviceSettings();
 	
 	public boolean validatePickSettings(final DevicePickSettings pickSettings) {
-		if ((pickSettings != null) && (pickSettings.getWorkArea() != null) && (getWorkAreaIds().contains(pickSettings.getWorkArea().getId())) 
+		if ((pickSettings != null) && (pickSettings.getWorkArea() != null) && (getWorkAreaNames().contains(pickSettings.getWorkArea().getName())) 
 				&& (pickSettings.getWorkArea().getActiveClamping() != null)) {
 			return true;
 		}
@@ -64,13 +64,13 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public abstract boolean isConnected();
 	
-	public AbstractDevice(final String id) {
-		super(id);
+	public AbstractDevice(final String name) {
+		super(name);
 		zones = new ArrayList<Zone>();
 	}
 	
-	public AbstractDevice(final String id, final List<Zone> zones) {
-		this(id);
+	public AbstractDevice(final String name, final List<Zone> zones) {
+		this(name);
 		for (Zone zone : zones) {
 			addZone(zone);
 		}
@@ -81,9 +81,9 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		zone.setDevice(this);
 	}
 	
-	public Zone getZoneById(final String id) {
+	public Zone getZoneByName(final String name) {
 		for (Zone zone : zones) {
-			if (zone.getId().equals(id)) {
+			if (zone.getName().equals(name)) {
 				return zone;
 			}
 		}
@@ -94,10 +94,10 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		this.zones.remove(zone);
 	}
 	
-	public WorkArea getWorkAreaById(final String id) {
+	public WorkArea getWorkAreaByName(final String name) {
 		for (Zone zone : zones) {
 			for (WorkArea workArea : zone.getWorkAreas()) {
-				if (workArea.getId().equals(id)) {
+				if (workArea.getName().equals(name)) {
 					return workArea;
 				}
 			}
@@ -113,16 +113,16 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return workAreas;
 	}
 	
-	public List<String> getWorkAreaIds() {
-		List<String> workAreaIds = new ArrayList<String>();
+	public List<String> getWorkAreaNames() {
+		List<String> workAreaNames = new ArrayList<String>();
 		for (Zone zone : zones) {
-			workAreaIds.addAll(zone.getWorkAreaIds());
+			workAreaNames.addAll(zone.getWorkAreaNames());
 		}
-		return workAreaIds;
+		return workAreaNames;
 	}
 	
 	public String toString() {
-		return "Device: " + getId();
+		return "Device: " + getName();
 	}
 	
 	public abstract DeviceType getType();

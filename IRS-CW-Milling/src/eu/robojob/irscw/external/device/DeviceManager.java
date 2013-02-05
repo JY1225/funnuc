@@ -72,7 +72,7 @@ public class DeviceManager {
 		SocketConnection cncSocketCon = new SocketConnection(Type.CLIENT, "Mazak VRX J500", properties.getProperty(CNC_IP), Integer.parseInt(properties.getProperty(CNC_PORT)));  // other: 6
 		CNCMillingMachine cncMillingMachine = new CNCMillingMachine("Mazak VRX J500", cncSocketCon);
 		cncMillingMachine.addZone(machineMainZone);
-		cncMachines.put(cncMillingMachine.getId(), cncMillingMachine);
+		cncMachines.put(cncMillingMachine.getName(), cncMillingMachine);
 		
 		// Basic Stacker
 		Clamping stackerClamping = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.NONE, "Stacker", BasicStackPlate.STUD_HEIGHT, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
@@ -86,8 +86,8 @@ public class DeviceManager {
 		BasicStackPlateLayout basicStackPlateLayout = new BasicStackPlateLayout(27, 7, 10f, 15f, 45f, 40f, 26f, 35f, 1f, 0.5f);
 		BasicStackPlate basicStackPlate = new BasicStackPlate("IRS M Basic", basicStackPlateLayout);
 		basicStackPlate.addZone(stackerMainZone);
-		stackingFromDevices.put(basicStackPlate.getId(), basicStackPlate);
-		stackingToDevices.put(basicStackPlate.getId(), basicStackPlate);
+		stackingFromDevices.put(basicStackPlate.getName(), basicStackPlate);
+		stackingToDevices.put(basicStackPlate.getName(), basicStackPlate);
 		
 		// Praege Device
 		float x = Float.parseFloat(properties.getProperty("prage-x"));
@@ -104,7 +104,7 @@ public class DeviceManager {
 		Zone praegeZone = new Zone("Zone 3", praegeWAs);
 		PrageDevice prageDevice = new PrageDevice("Präge", robotManager.getRobotById("Fanuc M20iA"));
 		prageDevice.addZone(praegeZone);
-		preProcessingDevices.put(prageDevice.getId(), prageDevice);
+		preProcessingDevices.put(prageDevice.getName(), prageDevice);
 		
 	}
 	

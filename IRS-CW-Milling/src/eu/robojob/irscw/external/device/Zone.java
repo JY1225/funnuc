@@ -5,44 +5,53 @@ import java.util.List;
 
 public class Zone {
 	
-	private String id;
+	private int id; 
+	private String name;
 	private List<WorkArea> workAreas;
 	private AbstractDevice device;
 
-	public Zone(final String id, final List<WorkArea> workAreas) {
-		this.id = id;
+	public Zone(final String name, final List<WorkArea> workAreas) {
+		this.name = name;
 		this.workAreas =  new ArrayList<WorkArea>();
 		for (WorkArea workArea : workAreas) {
 			addWorkArea(workArea);
 		}
 	}
 	
-	public Zone(final String id) {
-		this(id, new ArrayList<WorkArea>());
+	public Zone(final String name) {
+		this(name, new ArrayList<WorkArea>());
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(final int id) {
+		this.id = id;
+	}
+
 	public void setDevice(final AbstractDevice device) {
 		this.device = device;
 	}
 
-	public String getId() {
-		return id;
+	public String getName() {
+		return name;
 	}
 
-	public void setId(final String id) {
-		this.id = id;
+	public void setName(final String name) {
+		this.name = name;
 	}
 
 	public List<WorkArea> getWorkAreas() {
 		return workAreas;
 	}
 	
-	public List<String> getWorkAreaIds() {
-		List<String> workAreaIds = new ArrayList<String>();
+	public List<String> getWorkAreaNames() {
+		List<String> workAreaNames = new ArrayList<String>();
 		for (WorkArea workArea : workAreas) {
-			workAreaIds.add(workArea.getId());
+			workAreaNames.add(workArea.getName());
 		}
-		return workAreaIds;
+		return workAreaNames;
 	}
 
 	public void setWorkAreas(final List<WorkArea> workAreas) {
@@ -50,7 +59,7 @@ public class Zone {
 	}
 	
 	public void addWorkArea(final WorkArea workArea) {
-		if (getWorkAreaById(workArea.getId()) != null) {
+		if (getWorkAreaByName(workArea.getName()) != null) {
 			throw new IllegalArgumentException("A workArea with the same id already exists within this zone.");
 		} else {
 			this.workAreas.add(workArea);
@@ -62,9 +71,9 @@ public class Zone {
 		this.workAreas.remove(workArea);
 	}
 	
-	public WorkArea getWorkAreaById(final String id) {
+	public WorkArea getWorkAreaByName(final String name) {
 		for (WorkArea workArea : workAreas) {
-			if (workArea.getId().equals(id)) {
+			if (workArea.getName().equals(name)) {
 				return workArea;
 			}
 		}

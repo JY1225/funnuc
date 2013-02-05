@@ -60,7 +60,7 @@ public class DeviceButton extends VBox {
 	public void setDeviceInformation(final DeviceInformation deviceInfo) {
 		this.deviceInfo = deviceInfo;
 		if (deviceInfo.getDevice() != null) {
-			deviceName.setText(deviceInfo.getDevice().getId());
+			deviceName.setText(deviceInfo.getDevice().getName());
 		} else {
 			deviceName.setText(Translator.getTranslation(UNKNOWN_DEVICE));
 			deviceName.getStyleClass().add(CSS_CLASS_UNKNOWN_DEVICE);

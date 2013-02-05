@@ -139,8 +139,8 @@ public class PropertiesProcessFlowFactory {
 		// CNC Milling Machine
 		CNCMillingMachine cncMilling = (CNCMillingMachine) deviceManager.getCNCMachineById("Mazak VRX J500");
 		DeviceSettings cncMillingSetting = cncMilling.getDeviceSettings();
-		WorkArea mainWorkArea = cncMilling.getWorkAreaById("Mazak VRX Main");
-		cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingById(clampingId));
+		WorkArea mainWorkArea = cncMilling.getWorkAreaByName("Mazak VRX Main");
+		cncMillingSetting.setClamping(mainWorkArea, mainWorkArea.getClampingByName(clampingId));
 		processFlow.setDeviceSettings(cncMilling, cncMillingSetting);
 		processFlow.setClampingType(new ClampingManner());
 		if (clampLength) {
@@ -153,12 +153,12 @@ public class PropertiesProcessFlowFactory {
 		
 		// PICK FROM STACKER
 		// Device: Basic stack plate
-		DevicePickSettings stackPlatePickSettings = new DevicePickSettings(stackPlate.getWorkAreaById("IRS M Basic"));
+		DevicePickSettings stackPlatePickSettings = new DevicePickSettings(stackPlate.getWorkAreaByName("IRS M Basic"));
 		// Robot: Fanuc Robot
 		FanucRobotPickSettings robotPickSettings1 = new FanucRobotPickSettings();
 		robotPickSettings1.setGripperHead(robot.getGripperBody().getGripperHead(robotHeadIdBefore));
-		robotPickSettings1.setSmoothPoint(new Coordinates(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getSmoothFromPoint()));
-		robotPickSettings1.setWorkArea(stackPlate.getWorkAreaById("IRS M Basic"));
+		robotPickSettings1.setSmoothPoint(new Coordinates(stackPlate.getWorkAreaByName("IRS M Basic").getActiveClamping().getSmoothFromPoint()));
+		robotPickSettings1.setWorkArea(stackPlate.getWorkAreaByName("IRS M Basic"));
 		WorkPiece rawWorkPiece = new WorkPiece(eu.robojob.irscw.workpiece.WorkPiece.Type.RAW, rawDimensions);
 		robotPickSettings1.setWorkPiece(rawWorkPiece);		
 		// Pick step
@@ -166,20 +166,20 @@ public class PropertiesProcessFlowFactory {
 		
 		// PUT AND WAIT ON PRÄGE DEVICE
 		// Device: Präge device
-		DevicePickSettings pragePickSettings = new DevicePickSettings(prageDevice.getWorkAreaById("Präge"));
-		ProcessingDeviceStartCyclusSettings prageStartCyclusSettings = new ProcessingDeviceStartCyclusSettings(prageDevice.getWorkAreaById("Präge"));
-		DevicePutSettings pragePutSettings = new DevicePutSettings(prageDevice.getWorkAreaById("Präge"));
+		DevicePickSettings pragePickSettings = new DevicePickSettings(prageDevice.getWorkAreaByName("Präge"));
+		ProcessingDeviceStartCyclusSettings prageStartCyclusSettings = new ProcessingDeviceStartCyclusSettings(prageDevice.getWorkAreaByName("Präge"));
+		DevicePutSettings pragePutSettings = new DevicePutSettings(prageDevice.getWorkAreaByName("Präge"));
 		// Robot: Fanuc Robot
 		// put and wait
 		FanucRobotPutSettings robotPutSettings1 = new FanucRobotPutSettings();
 		robotPutSettings1.setGripperHead(robot.getGripperBody().getGripperHead(robotHeadIdBefore));
-		robotPutSettings1.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getClampingById("Clamping 5").getSmoothToPoint()));
-		robotPutSettings1.setWorkArea(prageDevice.getWorkAreaById("Präge"));
+		robotPutSettings1.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaByName("Präge").getClampingByName("Clamping 5").getSmoothToPoint()));
+		robotPutSettings1.setWorkArea(prageDevice.getWorkAreaByName("Präge"));
 		// pick after wait
 		FanucRobotPickSettings robotPickSettings2 = new FanucRobotPickSettings();
 		robotPickSettings2.setGripperHead(robot.getGripperBody().getGripperHead(robotHeadIdBefore));
-		robotPickSettings2.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaById("Präge").getClampingById("Clamping 5").getSmoothFromPoint()));
-		robotPickSettings2.setWorkArea(prageDevice.getWorkAreaById("Präge"));
+		robotPickSettings2.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaByName("Präge").getClampingByName("Clamping 5").getSmoothFromPoint()));
+		robotPickSettings2.setWorkArea(prageDevice.getWorkAreaByName("Präge"));
 		robotPickSettings2.setWorkPiece(rawWorkPiece);
 		// Put and wait step
 		PutAndWaitStep putAndWait1 = new PutAndWaitStep(robot, prageDevice, pragePutSettings, robotPutSettings1);
@@ -188,28 +188,28 @@ public class PropertiesProcessFlowFactory {
 		
 		// PUT IN CNC VRX 
 		// Device: CNCMilling Machine
-		DevicePutSettings cncPutSettings = new DevicePutSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
+		DevicePutSettings cncPutSettings = new DevicePutSettings(cncMilling.getWorkAreaByName("Mazak VRX Main"));
 		// Robot: Fanuc Robot
 		FanucRobotPutSettings robotPutSettings2 = new FanucRobotPutSettings();
 		robotPutSettings2.setGripperHead(robot.getGripperBody().getGripperHead(robotHeadIdBefore));
-		robotPutSettings2.setSmoothPoint(new Coordinates(cncMilling.getWorkAreaById("Mazak VRX Main").getClampingById("Clamping 1").getSmoothToPoint()));
-		robotPutSettings2.setWorkArea(cncMilling.getWorkAreaById("Mazak VRX Main"));
+		robotPutSettings2.setSmoothPoint(new Coordinates(cncMilling.getWorkAreaByName("Mazak VRX Main").getClampingByName("Clamping 1").getSmoothToPoint()));
+		robotPutSettings2.setWorkArea(cncMilling.getWorkAreaByName("Mazak VRX Main"));
 		robotPutSettings2.setDoMachineAirblow(true);
 		// Put step
 		PutStep put1 = new PutStep(robot, cncMilling, cncPutSettings, robotPutSettings2);
 
 		// PROCESSING (CNC VRX)
-		ProcessingDeviceStartCyclusSettings cncStartCyclusSettings =  new ProcessingDeviceStartCyclusSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
+		ProcessingDeviceStartCyclusSettings cncStartCyclusSettings =  new ProcessingDeviceStartCyclusSettings(cncMilling.getWorkAreaByName("Mazak VRX Main"));
 		ProcessingStep processing2 = new ProcessingStep(cncMilling, cncStartCyclusSettings);
 		
 		// PICK FROM CNC VRX
 		// Device: CNCMilling Machine
-		DevicePickSettings cncPickSettings = new DevicePickSettings(cncMilling.getWorkAreaById("Mazak VRX Main"));
+		DevicePickSettings cncPickSettings = new DevicePickSettings(cncMilling.getWorkAreaByName("Mazak VRX Main"));
 		// Robot: Fanuc Robot
 		FanucRobotPickSettings robotPickSettings3 = new FanucRobotPickSettings();
 		robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead(robotHeadIdAfter));
 		//robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead("A"));
-		robotPickSettings3.setSmoothPoint(new Coordinates(cncMilling.getWorkAreaById("Mazak VRX Main").getClampingById("Clamping 1").getSmoothFromPoint()));
+		robotPickSettings3.setSmoothPoint(new Coordinates(cncMilling.getWorkAreaByName("Mazak VRX Main").getClampingByName("Clamping 1").getSmoothFromPoint()));
 		robotPickSettings3.setWorkArea(mainWorkArea);
 		robotPickSettings3.setDoMachineAirblow(true);
 		WorkPiece finishedWorkPiece = new WorkPiece(eu.robojob.irscw.workpiece.WorkPiece.Type.FINISHED, finishedDimensions);
@@ -219,13 +219,13 @@ public class PropertiesProcessFlowFactory {
 
 		// PUT ON BASIC STACKER
 		// Device: Basic Stacker
-		DevicePutSettings stackPlatePutSettings = new DevicePutSettings(stackPlate.getWorkAreaById("IRS M Basic"));
+		DevicePutSettings stackPlatePutSettings = new DevicePutSettings(stackPlate.getWorkAreaByName("IRS M Basic"));
 		// Robot: Fanuc Robot
 		FanucRobotPutSettings robotPutSettings3 = new FanucRobotPutSettings();
 		robotPutSettings3.setGripperHead(robot.getGripperBody().getGripperHead(robotHeadIdAfter));
 		//robotPutSettings3.setGripperHead(robot.getGripperBody().getGripperHead("A"));
-		robotPutSettings3.setSmoothPoint(new Coordinates(stackPlate.getWorkAreaById("IRS M Basic").getActiveClamping().getSmoothToPoint()));
-		robotPutSettings3.setWorkArea(stackPlate.getWorkAreaById("IRS M Basic"));			
+		robotPutSettings3.setSmoothPoint(new Coordinates(stackPlate.getWorkAreaByName("IRS M Basic").getActiveClamping().getSmoothToPoint()));
+		robotPutSettings3.setWorkArea(stackPlate.getWorkAreaByName("IRS M Basic"));			
 		PutStep put2 = new PutStep(robot, stackPlate, stackPlatePutSettings, robotPutSettings3);
 		
 

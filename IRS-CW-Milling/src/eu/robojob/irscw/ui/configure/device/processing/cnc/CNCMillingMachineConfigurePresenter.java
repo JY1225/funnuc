@@ -45,7 +45,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		logger.debug("Changed workarea [" + workAreaId + "].");
 		WorkArea workArea = null;
 		if (workAreaId != null) {
-			workArea = deviceInfo.getDevice().getWorkAreaById(workAreaId);
+			workArea = deviceInfo.getDevice().getWorkAreaByName(workAreaId);
 			if (workArea == null) {
 				throw new IllegalArgumentException("Unknown workarea-id [" + workAreaId + "].");
 			} else {
@@ -62,7 +62,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		logger.debug("Changed clamping [" + clampingId + "].");
 		Clamping clamping = null;
 		if (clampingId != null) {
-			clamping = deviceInfo.getPickStep().getDeviceSettings().getWorkArea().getClampingById(clampingId);
+			clamping = deviceInfo.getPickStep().getDeviceSettings().getWorkArea().getClampingByName(clampingId);
 			if (clamping == null) {
 				throw new IllegalArgumentException("Unknown clamping-id [" + clampingId + "].");
 			} else {
