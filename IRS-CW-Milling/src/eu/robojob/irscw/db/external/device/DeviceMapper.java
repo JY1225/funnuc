@@ -1,56 +1,37 @@
 package eu.robojob.irscw.db.external.device;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import eu.robojob.irscw.db.ConnectionManager;
+import eu.robojob.irscw.db.external.util.ConnectionMapper;
+import eu.robojob.irscw.external.communication.socket.SocketConnection;
+import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.Clamping;
+import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.device.Zone;
+import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlateLayout;
+import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.irscw.positioning.UserFrame;
 
 public final class DeviceMapper {
 
-	private static Logger logger = LogManager.getLogger(DeviceMapper.class.getName());
 	private static DeviceMapper instance;
 	
-	private Connection conn = null;
+	private static final int DEVICE_TYPE_CNCMILLING = 1;
+	private static final int DEVICE_TYPE_STACKPLATE = 2;
+	private static final int DEVICE_TYPE_PRAGE = 3;
+	private static final int CLAMPING_TYPE_CENTRUM = 1;
+	private static final int CLAMPING_TYPE_FIXED = 2;
 	
 	private DeviceMapper() {
-		connect();
-	}
-	
-	private void connect() {
-		Properties props = new Properties();
-		try {
-			logger.info("About to create database connection.");
-			URL url = ClassLoader.getSystemResource("jdbc.properties");
-			props.load(url.openStream());
-			System.setProperty("derby.system.home", props.getProperty("derby.system.home"));
-			logger.info("System property derby.system.home [" + System.getProperty("derby.system.home") + "].");
-			Class.forName(props.getProperty("jdbc.driver"));
-			String connectionString = props.getProperty("jdbc.protocol") + ":" + props.getProperty("jdbc.database") + ";create=true" + ";user=" 
-					+ props.getProperty("jdbc.user") + ";password=" + props.getProperty("jdbc.password");
-			logger.info("Connection-string: [" + connectionString + "].");
-			conn = DriverManager.getConnection(connectionString);
-			logger.info("Successfully created database connection.");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			logger.error(e);
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.error(e);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			logger.error(e);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
 	}
 	
 	public static DeviceMapper getInstance() {
@@ -60,8 +41,189 @@ public final class DeviceMapper {
 		return instance;
 	}
 	
-	public void getAllDevices() throws SQLException {
-		Statement stmt = conn.createStatement();
-		ResultSet results = stmt.executeQuery("SELECT * FROM DEVICES");
+	public Set<AbstractDevice> getAllDevices() throws SQLException {
+		Statement stmt = ConnectionManager.getConnection().createStatement();
+		ResultSet results = stmt.executeQuery("SELECT * FROM DEVICE");
+		HashSet<AbstractDevice> devices = new HashSet<AbstractDevice>();
+		while (results.next()) {
+			int id = results.getInt("ID");
+			String name = results.getString("NAME");
+			int type = results.getInt("TYPE");
+			Set<Zone> zones = getAllZonesByDeviceId(id);
+			switch (type) {
+				case DEVICE_TYPE_CNCMILLING:
+					CNCMillingMachine cncMillingMachine = getCNCMillingMachine(id, name, zones);
+					devices.add(cncMillingMachine);
+					break;
+				case DEVICE_TYPE_STACKPLATE:
+					BasicStackPlate basicStackPlate = getBasicStackPlate(id, name, zones);
+					devices.add(basicStackPlate);
+					break;
+				case DEVICE_TYPE_PRAGE:
+					PrageDevice prageDevice = new PrageDevice(name, zones);
+					devices.add(prageDevice);
+					break;
+				default:
+					throw new IllegalStateException("Unknown device type: [" + type + "].");
+			}
+		}
+		return devices;
+	}
+	
+	private BasicStackPlate getBasicStackPlate(final int id, final String name, final Set<Zone> zones) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM STACKPLATE WHERE ID = ?");
+		stmt.setInt(1, id);
+		ResultSet results = stmt.executeQuery();
+		BasicStackPlate stackPlate = null;
+		if (results.next()) {
+			int horizontalHoleAmount = results.getInt("HORIZONTALHOLEAMOUNT");
+			int verticalHoleAmount = results.getInt("VERTICALHOLEAMOUNT");
+			float holeDiameter = results.getFloat("HOLEDIAMETER");
+			float studDiameter = results.getFloat("STUDDIAMETER");
+			float horizontalPadding = results.getFloat("HORIZONTALPADDING");
+			float verticalPaddingTop = results.getFloat("VERTICALPADDINGTOP");
+			float verticalPaddingBottom = results.getFloat("VERTICALPADDINGBOTTOM");
+			float horizontalHoleDistance = results.getFloat("HORIZONTALHOLEDISTANCE");
+			float interferenceDistance = results.getFloat("INTERFERENCEDISTANCE");
+			float overflowPercentage = results.getFloat("OVERFLOWPERCENTAGE");
+			BasicStackPlateLayout layout = new BasicStackPlateLayout(horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, horizontalPadding, verticalPaddingTop, 
+					verticalPaddingBottom, horizontalHoleDistance, interferenceDistance, overflowPercentage);
+			stackPlate = new BasicStackPlate(name, zones, layout);
+		}
+		return stackPlate;
+	}
+	
+	private CNCMillingMachine getCNCMillingMachine(final int id, final String name, final Set<Zone> zones) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CNCMILLINGMACHINE WHERE ID = ?");
+		stmt.setInt(1, id);
+		ResultSet results = stmt.executeQuery();
+		CNCMillingMachine cncMillingMachine = null;
+		if (results.next()) {
+			int deviceInterfaceId = results.getInt("DEVICEINTERFACE");
+			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICEINTERFACE WHERE ID = ?");
+			stmt2.setInt(1, deviceInterfaceId);
+			ResultSet results2 = stmt2.executeQuery();
+			if (results2.next()) {
+				int socketConnectionId = results2.getInt("SOCKETCONNECTION");
+				SocketConnection socketConnection = ConnectionMapper.getSocketConnectionById(socketConnectionId);
+				cncMillingMachine = new CNCMillingMachine(name, zones, socketConnection);
+				cncMillingMachine.setId(id);
+			}
+		}
+		return cncMillingMachine;
+	}
+	
+	private Set<Zone> getAllZonesByDeviceId(final int deviceId) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ZONE WHERE DEVICE = ?");
+		stmt.setInt(1, deviceId);
+		ResultSet results = stmt.executeQuery();
+		Set<Zone> zones = new HashSet<Zone>();
+		while (results.next()) {
+			int id = results.getInt("ID");
+			String name = results.getString("NAME");
+			Set<WorkArea> workAreas = getAllWorkAreasByZoneId(id);
+			Zone zone = new Zone(name, workAreas);
+			zone.setId(id);
+			zones.add(zone);
+		}
+		return zones;
+	}
+	
+	private Set<WorkArea> getAllWorkAreasByZoneId(final int zoneId) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM WORKAREA WHERE ZONE = ?");
+		stmt.setInt(1, zoneId);
+		ResultSet results = stmt.executeQuery();
+		Set<WorkArea> workAreas = new HashSet<WorkArea>();
+		while (results.next()) {
+			int id = results.getInt("ID");
+			String name = results.getString("NAME");
+			int userFrameId = results.getInt("USERFRAME");
+			UserFrame userFrame = getUserFrameById(userFrameId);
+			Set<Clamping> possibleClampings = getClampingsByWorkAreaId(id);
+			WorkArea workArea = new WorkArea(name, userFrame, possibleClampings);
+			workArea.setId(id);
+			workAreas.add(workArea);
+		}
+		return workAreas;
+	}
+	
+	private UserFrame getUserFrameById(final int userFrameId) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM USERFRAME WHERE ID = ?");
+		stmt.setInt(1, userFrameId);
+		ResultSet results = stmt.executeQuery();
+		UserFrame userFrame = null;
+		while (results.next()) {
+			int number = results.getInt("NUMBER");
+			float zsafe = results.getFloat("ZSAFE");
+			int locationId = results.getInt("LOCATION");
+			Coordinates location = getCoordinatesById(locationId);
+			userFrame = new UserFrame(number, zsafe, location);
+			userFrame.setId(userFrameId);
+		}
+		stmt.close();
+		return userFrame;
+	}
+	
+	private Coordinates getCoordinatesById(final int coordinatesId) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM COORDINATES WHERE ID = ?");
+		stmt.setInt(1, coordinatesId);
+		ResultSet results = stmt.executeQuery();
+		Coordinates coordinates = null;
+		if (results.next()) {
+			float x = results.getFloat("X");
+			float y = results.getFloat("Y");
+			float z = results.getFloat("Z");
+			float w = results.getFloat("W");
+			float p = results.getFloat("P");
+			float r = results.getFloat("R");
+			coordinates = new Coordinates(x, y, z, w, p, r);
+			coordinates.setId(coordinatesId);
+		}
+		stmt.close();
+		return coordinates;
+	}
+	
+	private Set<Clamping> getClampingsByWorkAreaId(final int workAreaId) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM WORKAREA_CLAMPING WHERE WORKAREA = ?");
+		stmt.setInt(1, workAreaId);
+		ResultSet results = stmt.executeQuery();
+		Set<Clamping> clampings = new HashSet<Clamping>();
+		while (results.next()) {
+			int clampingId = results.getInt("CLAMPING");
+			Clamping clamping = getClampingById(clampingId);
+			clampings.add(clamping);
+		}
+		return clampings;
+	}
+	
+	private Clamping getClampingById(final int clampingId) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CLAMPING WHERE ID = ?");
+		stmt.setInt(1, clampingId);
+		ResultSet results = stmt.executeQuery();
+		Clamping clamping = null;
+		if (results.next()) {
+			int type = results.getInt("TYPE");
+			int relativePositionId = results.getInt("RELATIVE_POSITION");
+			Coordinates relativePosition = getCoordinatesById(relativePositionId);
+			int smoothToId = results.getInt("SMOOTH_TO");
+			Coordinates smoothTo = getCoordinatesById(smoothToId);
+			int smoothFromId = results.getInt("SMOOTH_FROM");
+			Coordinates smoothFrom = getCoordinatesById(smoothFromId);
+			float height = results.getFloat("HEIGHT");
+			String imageUrl = results.getString("IMAGE_URL");
+			String name = results.getString("NAME");
+			switch(type) {
+				case CLAMPING_TYPE_CENTRUM:
+					clamping = new Clamping(Clamping.Type.CENTRUM, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+					break;
+				case CLAMPING_TYPE_FIXED:
+					clamping = new Clamping(Clamping.Type.FIXED, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+					break;
+				default:
+					throw new IllegalStateException("Unknown clamping type: [" + type + "].");
+			}
+			clamping.setId(clampingId);
+		}
+		return clamping;
 	}
 }

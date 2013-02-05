@@ -1,7 +1,9 @@
 package eu.robojob.irscw.external.device;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import eu.robojob.irscw.positioning.UserFrame;
 
@@ -12,21 +14,21 @@ public class WorkArea {
 	private Zone zone;
 	private UserFrame userFrame;
 	private Clamping activeClamping;
-	private List<Clamping> clampings;
+	private Set<Clamping> clampings;
 	
-	public WorkArea(final String name, final UserFrame userFrame, final Clamping activeClamping, final List<Clamping> clampings) {
+	public WorkArea(final String name, final UserFrame userFrame, final Clamping activeClamping, final Set<Clamping> clampings) {
 		this.name = name;
 		this.userFrame = userFrame;
 		this.activeClamping = activeClamping;
 		this.clampings = clampings;
 	}
 	
-	public WorkArea(final String name, final UserFrame userFrame, final List<Clamping> clampings) {
+	public WorkArea(final String name, final UserFrame userFrame, final Set<Clamping> clampings) {
 		this(name, userFrame, null, clampings);
 	}
 	
 	public WorkArea(final String name, final UserFrame userFrame) {
-		this(name, userFrame, null, new ArrayList<Clamping>());
+		this(name, userFrame, null, new HashSet<Clamping>());
 	}
 
 	public int getId() {
@@ -73,12 +75,12 @@ public class WorkArea {
 		return "WorkArea " + name;
 	}
 
-	public List<Clamping> getClampings() {
+	public Set<Clamping> getClampings() {
 		return clampings;
 	}
 
-	public void setClampings(final List<Clamping> clampings) {
-		this.clampings = new ArrayList<Clamping>();
+	public void setClampings(final Set<Clamping> clampings) {
+		this.clampings = new HashSet<Clamping>();
 		for (Clamping clamping : clampings) {
 			addClamping(clamping);
 		}

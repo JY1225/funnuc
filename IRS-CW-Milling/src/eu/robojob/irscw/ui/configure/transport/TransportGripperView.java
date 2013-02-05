@@ -87,11 +87,11 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		GripperBody body = transportInfo.getRobot().getGripperBody();
 		cbbGripperHeads.getItems().clear();
 		for (GripperHead head : body.getGripperHeads()) {
-			cbbGripperHeads.getItems().add(head.getId());
+			cbbGripperHeads.getItems().add(head.getName());
 		}
 		if (transportInfo.getPickStep().getRobotSettings() != null) {
 			if (transportInfo.getPickStep().getRobotSettings().getGripperHead() != null) {
-				cbbGripperHeads.setValue(transportInfo.getPickStep().getRobotSettings().getGripperHead().getId());
+				cbbGripperHeads.setValue(transportInfo.getPickStep().getRobotSettings().getGripperHead().getName());
 			}
 		}
 	}
@@ -100,7 +100,8 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		ifsGrippers.clearItems();
 		GripperBody body = transportInfo.getRobot().getGripperBody();
 		int itemIndex = 0;
-		for (final Gripper gripper : body.getPossibleGrippers()) {
+		//FIXME review
+	/*	for (final Gripper gripper : body.getPossibleGrippers()) {
 			ifsGrippers.addItem(itemIndex, gripper.getId(), gripper.getImageUrl(), new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(final MouseEvent event) {
@@ -108,7 +109,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 				}
 			});
 			itemIndex++;
-		}
+		}*/
 		setSelectedGripper();
 	}
 	
@@ -116,7 +117,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		ifsGrippers.deselectAll();
 		if (transportInfo.getPickStep().getRobotSettings() != null) {
 			if (transportInfo.getPickStep().getRobotSettings().getGripperHead().getGripper() != null) {
-				ifsGrippers.setSelected(transportInfo.getPickStep().getRobotSettings().getGripperHead().getGripper().getId());
+				ifsGrippers.setSelected(transportInfo.getPickStep().getRobotSettings().getGripperHead().getGripper().getName());
 			} 
 		} 
 	}

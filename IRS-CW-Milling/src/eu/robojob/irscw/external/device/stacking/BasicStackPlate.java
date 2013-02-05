@@ -1,7 +1,9 @@
 package eu.robojob.irscw.external.device.stacking;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +43,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	
 	private List<StackingPosition> currentPickLocations;
 	
-	public BasicStackPlate(final String name, final List<Zone> zones, final BasicStackPlateLayout layout) {
+	public BasicStackPlate(final String name, final Set<Zone> zones, final BasicStackPlateLayout layout) {
 		super(name, zones);
 		this.layout = layout;
 		this.rawWorkPiece = null;
@@ -50,7 +52,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	public BasicStackPlate(final String name, final BasicStackPlateLayout layout) {
-		this(name, new ArrayList<Zone>(), layout);
+		this(name, new HashSet<Zone>(), layout);
 	}
 
 	@Override

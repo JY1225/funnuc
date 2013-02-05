@@ -5,10 +5,12 @@ public class UserFrame {
 	private int id; 
 	private int number;
 	private float zSafeDistance;
+	private Coordinates location;
 	
-	public UserFrame(final int number, final float zSafeDistance) {
+	public UserFrame(final int number, final float zSafeDistance, final Coordinates location) {
 		this.number = number;
 		this.zSafeDistance = zSafeDistance;
+		this.location = location;
 	}
 
 	public int getId() {
@@ -34,5 +36,13 @@ public class UserFrame {
 	public void setzSafeDistance(final float zSafeDistance) {
 		this.zSafeDistance = zSafeDistance;
 	}
-		
+
+	public Coordinates getLocation() {
+		return location;
+	}
+
+	public void setLocation(final Coordinates location) {
+		this.location = location;
+	}
+
 }

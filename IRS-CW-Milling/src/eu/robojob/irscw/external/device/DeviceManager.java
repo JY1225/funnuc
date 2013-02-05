@@ -1,10 +1,8 @@
 package eu.robojob.irscw.external.device;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -62,8 +60,8 @@ public class DeviceManager {
 		
 		// CNC Milling machine
 		Clamping shunkClamping = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.CENTRUM, "Shunk", 0, new Coordinates(1, -1f, 2.5f, 0, 0, 0), new Coordinates(0, 0, 10, 0, 0, 0), null);
-		UserFrame machineUserFrame = new UserFrame(3, 20);
-		List<WorkArea> machineWAs = new ArrayList<WorkArea>();
+		UserFrame machineUserFrame = new UserFrame(3, 20, null);
+		Set<WorkArea> machineWAs = new HashSet<WorkArea>();
 		WorkArea machineMainWA = new WorkArea("Mazak VRX J500 Main", machineUserFrame);
 		machineMainWA.addClamping(shunkClamping);
 		machineMainWA.setActiveClamping(shunkClamping);
@@ -75,9 +73,9 @@ public class DeviceManager {
 		cncMachines.put(cncMillingMachine.getName(), cncMillingMachine);
 		
 		// Basic Stacker
-		Clamping stackerClamping = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.NONE, "Stacker", BasicStackPlate.STUD_HEIGHT, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
-		UserFrame stackerUserFrame = new UserFrame(1, 20);
-		List<WorkArea> stackerWAs = new ArrayList<WorkArea>();
+		Clamping stackerClamping = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Stacker", BasicStackPlate.STUD_HEIGHT, new Coordinates(0, 0, 0, 0, 0, 0), new Coordinates(2, 10, 10, 0, 0, 0), null);
+		UserFrame stackerUserFrame = new UserFrame(1, 20, null);
+		Set<WorkArea> stackerWAs = new HashSet<WorkArea>();
 		WorkArea stackerWA = new WorkArea("IRS M Basic", stackerUserFrame);
 		stackerWA.addClamping(stackerClamping);
 		stackerWA.setActiveClamping(stackerClamping);
@@ -94,7 +92,7 @@ public class DeviceManager {
 		float y = Float.parseFloat(properties.getProperty("prage-y"));
 		float z = Float.parseFloat(properties.getProperty("prage-z"));
 		Clamping praegeClamping = new Clamping(eu.robojob.irscw.external.device.Clamping.Type.FIXED, "Clamping 5", 25, new Coordinates(x, y, z, 0, 0, 90), new Coordinates(0, 2, 5, 0, 0, 0), null);
-		List<WorkArea> praegeWAs = new ArrayList<WorkArea>();
+		Set<WorkArea> praegeWAs = new HashSet<WorkArea>();
 		WorkArea praegeWA = new WorkArea("Präge", stackerUserFrame);
 		praegeWAs.add(praegeWA);
 		praegeClamping.addRelatedClamping(shunkClamping);
@@ -102,7 +100,7 @@ public class DeviceManager {
 		praegeWA.addClamping(praegeClamping);
 		praegeWA.setActiveClamping(praegeClamping);
 		Zone praegeZone = new Zone("Zone 3", praegeWAs);
-		PrageDevice prageDevice = new PrageDevice("Präge", robotManager.getRobotById("Fanuc M20iA"));
+		PrageDevice prageDevice = new PrageDevice("Präge");
 		prageDevice.addZone(praegeZone);
 		preProcessingDevices.put(prageDevice.getName(), prageDevice);
 		

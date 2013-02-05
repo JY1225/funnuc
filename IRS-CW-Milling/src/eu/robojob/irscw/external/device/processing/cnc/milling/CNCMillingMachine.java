@@ -1,7 +1,8 @@
 package eu.robojob.irscw.external.device.processing.cnc.milling;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.communication.socket.SocketConnection;
@@ -49,7 +50,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final String EXCEPTION_UNCLAMP_TIMEOUT = "CNCMillingMachine.unclampTimeout";
 	private static final String EXCEPTION_CLAMP_TIMEOUT = "CNCMillingMachine.clampTimeout";
 			
-	public CNCMillingMachine(final String name, final List<Zone> zones, final SocketConnection socketConnection) {
+	public CNCMillingMachine(final String name, final Set<Zone> zones, final SocketConnection socketConnection) {
 		super(name, zones);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
@@ -58,7 +59,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	public CNCMillingMachine(final String name, final SocketConnection socketConnection) {
-		this(name, new ArrayList<Zone>(), socketConnection);
+		this(name, new HashSet<Zone>(), socketConnection);
 		
 	}
 	
@@ -303,6 +304,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void disconnect() {
 		cncMachineCommunication.disconnect();
+	}
+	
+	@Override
+	public String toString() {
+		return "CNCMillingMachine: " + getName();
 	}
 
 }

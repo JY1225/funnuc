@@ -1,6 +1,6 @@
 package eu.robojob.irscw.external.device.stacking;
 
-import java.util.List;
+import java.util.Set;
 
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.ClampingManner;
@@ -12,7 +12,7 @@ import eu.robojob.irscw.workpiece.WorkPiece.Type;
 
 public abstract class AbstractStackingDevice extends AbstractDevice {
 
-	public AbstractStackingDevice(final String name, final List<Zone> zones) {
+	public AbstractStackingDevice(final String name, final Set<Zone> zones) {
 		super(name, zones);
 	}
 	

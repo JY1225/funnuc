@@ -113,8 +113,8 @@ public class PropertiesProcessFlowFactory {
 		// Fanuc M20iA
 		FanucRobot robot = (FanucRobot) robotManager.getRobotById("Fanuc M20iA");
 		RobotSettings robotSettings = robot.getRobotSettings();
-		robotSettings.setGripper(robot.getGripperBody().getGripperHead("A"), robot.getGripperBody().getGripper(gripperHeadAId));
-		robotSettings.setGripper(robot.getGripperBody().getGripperHead("B"), robot.getGripperBody().getGripper(gripperHeadBId));
+		robotSettings.setGripper(robot.getGripperBody().getGripperHead("A"), null);
+		robotSettings.setGripper(robot.getGripperBody().getGripperHead("B"), null);
 		processFlow.setRobotSettings(robot, robotSettings);
 		
 		//----------DEVICES----------

@@ -1,6 +1,6 @@
 package eu.robojob.irscw.external.device.processing;
 
-import java.util.List;
+import java.util.Set;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
@@ -11,7 +11,7 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 	
 	private boolean isInvasive;
 	
-	public AbstractProcessingDevice(final String name, final List<Zone> zones, final boolean isInvasive) {
+	public AbstractProcessingDevice(final String name, final Set<Zone> zones, final boolean isInvasive) {
 		super(name, zones);
 		this.isInvasive = isInvasive;
 	}

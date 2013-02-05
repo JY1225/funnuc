@@ -4,15 +4,16 @@ import eu.robojob.irscw.workpiece.WorkPiece;
 
 public class Gripper {
 	
-	private String id;
+	private int id;
+	private String name;
 	private float height;
 	private boolean fixedHeight;
 	private String description;
 	private String imageUrl;
 	private WorkPiece workPiece;
 	
-	public Gripper(final String id, final float height, final String description, final String imageUrl) {
-		this.id = id;
+	public Gripper(final String name, final float height, final String description, final String imageUrl) {
+		this.name = name;
 		this.height = height;
 		this.description = description;
 		this.imageUrl = imageUrl;
@@ -20,6 +21,14 @@ public class Gripper {
 		this.workPiece = null;
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(final int id) {
+		this.id = id;
+	}
+
 	public WorkPiece getWorkPiece() {
 		return workPiece;
 	}
@@ -28,12 +37,12 @@ public class Gripper {
 		this.workPiece = workPiece;
 	}
 
-	public String getId() {
-		return id;
+	public String getName() {
+		return name;
 	}
 
-	public void setId(final String id) {
-		this.id = id;
+	public void setName(final String name) {
+		this.name = name;
 	}
 
 	public float getHeight() {

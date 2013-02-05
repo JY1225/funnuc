@@ -1,7 +1,9 @@
 package eu.robojob.irscw.external.device;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import eu.robojob.irscw.external.AbstractServiceProvider;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
@@ -11,7 +13,7 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractDevice extends AbstractServiceProvider {
 	
-	private List<Zone> zones;
+	private Set<Zone> zones;
 	
 	public abstract void prepareForProcess(ProcessFlow process) throws AbstractCommunicationException, InterruptedException;
 		
@@ -66,10 +68,10 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public AbstractDevice(final String name) {
 		super(name);
-		zones = new ArrayList<Zone>();
+		zones = new HashSet<Zone>();
 	}
 	
-	public AbstractDevice(final String name, final List<Zone> zones) {
+	public AbstractDevice(final String name, final Set<Zone> zones) {
 		this(name);
 		for (Zone zone : zones) {
 			addZone(zone);

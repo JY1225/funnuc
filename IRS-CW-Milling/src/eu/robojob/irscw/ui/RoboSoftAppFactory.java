@@ -273,8 +273,8 @@ public class RoboSoftAppFactory {
 			// Fanuc M20iA
 			FanucRobot robot = (FanucRobot) robotMgr.getRobotById("Fanuc M20iA");
 			RobotSettings robotSettings = robot.getRobotSettings();
-			robotSettings.setGripper(robot.getGripperBody().getGripperHead("A"), robot.getGripperBody().getGripper("2P clamp grip A"));
-			robotSettings.setGripper(robot.getGripperBody().getGripperHead("B"), robot.getGripperBody().getGripper("Vacuum grip"));
+			robotSettings.setGripper(robot.getGripperBody().getGripperHead("A"), null);
+			robotSettings.setGripper(robot.getGripperBody().getGripperHead("B"), null);
 			processFlow.setRobotSettings(robot, robotSettings);
 			
 			

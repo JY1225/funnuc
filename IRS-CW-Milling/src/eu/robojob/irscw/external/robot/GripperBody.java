@@ -1,30 +1,35 @@
 package eu.robojob.irscw.external.robot;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class GripperBody {
 
-	private String id;
+	private int id;
+	private String name;
 	private String description;
 	
-	private List<GripperHead> gripperHeads;
-	private Set<Gripper> possibleGrippers;
+	private Set<GripperHead> gripperHeads;
 	
-	public GripperBody(final String id, final String description, final List<GripperHead> gripperHeads, final Set<Gripper> possibleGrippers) {
-		this.id = id;
+	public GripperBody(final String name, final String description, final Set<GripperHead> gripperHeads) {
+		this.name = name;
 		this.description = description;
 		this.gripperHeads = gripperHeads;
-		if (possibleGrippers != null) {
-			this.possibleGrippers = possibleGrippers;
-		} else {
-			this.possibleGrippers = new HashSet<Gripper>();
-		}
 	}
 
-	public String getId() {
+	public int getId() {
 		return id;
+	}
+	
+	public void setId(final int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
 	}
 
 	public String getDescription() {
@@ -40,7 +45,7 @@ public class GripperBody {
 	}
 	
 	public void addGripperHead(final GripperHead gripperHead) {
-		if (getGripperHead(gripperHead.getId()) != null) {
+		if (getGripperHead(gripperHead.getName()) != null) {
 			throw new IllegalArgumentException("A GripperHead with the same id already exists");
 		} else {
 			gripperHeads.add(gripperHead);
@@ -49,44 +54,20 @@ public class GripperBody {
 	
 	public GripperHead getGripperHead(final String id) {
 		for (GripperHead gripperHead : gripperHeads) {
-			if (gripperHead.getId().equals(id)) {
+			if (gripperHead.getName().equals(id)) {
 				return gripperHead;
 			}
 		}
 		return null;
 	}
 	
-	public List<GripperHead> getGripperHeads() {
+	public Set<GripperHead> getGripperHeads() {
 		return gripperHeads;
-	}
-
-	public Set<Gripper> getPossibleGrippers() {
-		return possibleGrippers;
-	}
-
-	public Gripper getGripper(final String id) {
-		for (Gripper gripper : possibleGrippers) {
-			if (gripper.getId().equals(id)) {
-				return gripper;
-			}
-		}
-		return null;
-	}
-	
-	public void setPossibleGrippers(final Set<Gripper> possibleGrippers) {
-		this.possibleGrippers = possibleGrippers;
-	}
-	
-	public void addPossibleGripper(final Gripper gripper) {
-		possibleGrippers.add(gripper);
 	}
 	
 	public void setActiveGripper(final GripperHead head, final Gripper gripper) {
 		if (!gripperHeads.contains(head)) {
 			throw new IllegalArgumentException("Wrong GripperHead value");
-		}
-		if (!possibleGrippers.contains(gripper)) {
-			throw new IllegalArgumentException("Wrong gripper value");
 		}
 		for (GripperHead head2 : gripperHeads) {
 			if ((head2.getGripper() == gripper) && (head2 == head)) {

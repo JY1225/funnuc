@@ -17,7 +17,8 @@ public class SocketConnection {
 		CLIENT, SERVER
 	}
 	
-	private String id;
+	private int id;
+	private String name;
 	private String ipAddress;
 	private int portNumber;
 	private Type type;
@@ -31,18 +32,26 @@ public class SocketConnection {
 		
 	private static Logger logger = LogManager.getLogger(SocketConnection.class.getName());
 		
-	public SocketConnection(final Type type, final String id, final String ipAddress, final int portNumber) {
+	public SocketConnection(final Type type, final String name, final String ipAddress, final int portNumber) {
 		this.type = type;
-		this.id = id;
+		this.name = name;
 		this.ipAddress = ipAddress;
 		this.portNumber = portNumber;
 		this.connected = false;
 	}
 	
-	public SocketConnection(final Type type, final String id, final int portNumber) {
-		this(type, id, "127.0.0.1", portNumber);
+	public SocketConnection(final Type type, final String name, final int portNumber) {
+		this(type, name, "127.0.0.1", portNumber);
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(final int id) {
+		this.id = id;
+	}
+
 	public synchronized void connect() throws IOException {
 		if (!connected) {
 			if (type == Type.CLIENT) {
@@ -119,7 +128,7 @@ public class SocketConnection {
 	}
 	
 	public String getName() {
-		return id;
+		return name;
 	}
 
 	public String getIpAddress() {
@@ -235,6 +244,6 @@ public class SocketConnection {
 	
 	@Override
 	public String toString() {
-		return this.id;
+		return this.name;
 	}
 }

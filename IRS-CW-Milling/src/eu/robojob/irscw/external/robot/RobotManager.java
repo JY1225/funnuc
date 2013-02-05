@@ -1,6 +1,5 @@
 package eu.robojob.irscw.external.robot;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,16 +30,16 @@ public class RobotManager {
 		Gripper gripper = new Gripper("Vacuum grip", 130, "Vacuum grip, type 1", "img/grippers/gripper1.png");
 		Gripper gripper2 = new Gripper("2P clamp grip A", 133, "Clamp grip, two points", "img/grippers/gripper2.png");
 		Gripper gripper3 = new Gripper("2P clamp grip B", 133, "Clamp grip, two points", "img/grippers/gripper2.png");
-		GripperHead head1 = new GripperHead("A", gripper);
-		GripperHead head2 = new GripperHead("B", gripper2);
-		List<GripperHead> gripperHeads = new ArrayList<GripperHead>();
+		GripperHead head1 = new GripperHead("A", null, null);
+		GripperHead head2 = new GripperHead("B", null, null);
+		Set<GripperHead> gripperHeads = new HashSet<GripperHead>();
 		gripperHeads.add(head1);
 		gripperHeads.add(head2);
 		Set<Gripper> grippers = new HashSet<Gripper>();
 		grippers.add(gripper);
 		grippers.add(gripper2);
 		grippers.add(gripper3);
-		GripperBody gripperBody = new GripperBody("2", "Standard Body", gripperHeads, grippers);
+		GripperBody gripperBody = new GripperBody("2", "Standard Body", gripperHeads);
 		Set<GripperBody> gripperBodies = new HashSet<GripperBody>();
 		gripperBodies.add(gripperBody);
 		SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", properties.getProperty(ROBOT_IP), Integer.parseInt(properties.getProperty(ROBOT_PORT)));
@@ -49,11 +48,13 @@ public class RobotManager {
 	}
 	
 	public List<GripperHead> getGripperHeads(final String robotId) {
-		return robots.get(robotId).getGripperBody().getGripperHeads();
+		//return robots.get(robotId).getGripperBody().getGripperHeads();
+		return null;
 	}
 	
 	public Set<Gripper> getGrippers(final GripperBody gripperBody) {
-		return gripperBody.getPossibleGrippers();
+		//return gripperBody.getPossibleGrippers();
+		return null;
 	}
 	
 	public Set<GripperBody> getGripperBodies(final AbstractRobot robot) {
@@ -63,11 +64,11 @@ public class RobotManager {
 	public Gripper getGripper(final String id) {
 		for (AbstractRobot robot : robots.values()) {
 			for (GripperBody body : robot.getPossibleGripperBodies()) {
-				for (Gripper gripper : body.getPossibleGrippers()) {
-					if (gripper.getId().equals(id)) {
+				/*for (Gripper gripper : body.getPossibleGrippers()) {
+					if (gripper.getName().equals(id)) {
 						return gripper;
 					}
-				}
+				}*/
 			}
 		}
 		return null;

@@ -1,8 +1,6 @@
 package eu.robojob.irscw.external.device.processing.cnc;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -34,7 +32,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "AbstractCNCMachine.disconnectedWhileWaiting";
 	
-	public AbstractCNCMachine(final String name, final List<Zone> zones) {
+	public AbstractCNCMachine(final String name, final Set<Zone> zones) {
 		super(name, zones, true);
 		this.statusChanged = false;
 		syncObject = new Object();
@@ -45,7 +43,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	}
 	
 	public AbstractCNCMachine(final String name) {
-		this(name, new ArrayList<Zone>());
+		this(name, new HashSet<Zone>());
 	}
 	
 	@Override

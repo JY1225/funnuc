@@ -1,25 +1,27 @@
 package eu.robojob.irscw.external.device;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Zone {
 	
 	private int id; 
 	private String name;
-	private List<WorkArea> workAreas;
+	private Set<WorkArea> workAreas;
 	private AbstractDevice device;
 
-	public Zone(final String name, final List<WorkArea> workAreas) {
+	public Zone(final String name, final Set<WorkArea> workAreas) {
 		this.name = name;
-		this.workAreas =  new ArrayList<WorkArea>();
+		this.workAreas =  new HashSet<WorkArea>();
 		for (WorkArea workArea : workAreas) {
 			addWorkArea(workArea);
 		}
 	}
 	
 	public Zone(final String name) {
-		this(name, new ArrayList<WorkArea>());
+		this(name, new HashSet<WorkArea>());
 	}
 	
 	public int getId() {
@@ -42,7 +44,7 @@ public class Zone {
 		this.name = name;
 	}
 
-	public List<WorkArea> getWorkAreas() {
+	public Set<WorkArea> getWorkAreas() {
 		return workAreas;
 	}
 	
@@ -54,7 +56,7 @@ public class Zone {
 		return workAreaNames;
 	}
 
-	public void setWorkAreas(final List<WorkArea> workAreas) {
+	public void setWorkAreas(final Set<WorkArea> workAreas) {
 		this.workAreas = workAreas;
 	}
 	

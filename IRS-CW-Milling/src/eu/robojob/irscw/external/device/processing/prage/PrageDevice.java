@@ -1,6 +1,6 @@
 package eu.robojob.irscw.external.device.processing.prage;
 
-import java.util.List;
+import java.util.Set;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.ClampingManner;
@@ -15,29 +15,24 @@ import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
 import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
-import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class PrageDevice extends AbstractProcessingDevice {
-	
-	private AbstractRobot robot;
 		
 	private static final String EXCEPTION_PRAGE_TIMEOUT = "PrageDevice.prageTimeout";
 	
 	private static final float LENGTH_CLAMP_LOCATION_R = 90;
 	private static final float WIDTH_CLAMP_LOCATION_R = 0;
 	
-	public PrageDevice(final String name, final AbstractRobot robot) {
+	public PrageDevice(final String name) {
 		super(name, false);
-		this.robot = robot;
 	}
 	
-	public PrageDevice(final String name, final List<Zone> zones, final AbstractRobot robot) {
+	public PrageDevice(final String name, final Set<Zone> zones) {
 		super(name, zones, false);
-		this.robot = robot;
 	}
 
 	@Override public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
@@ -69,7 +64,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	@Override
 	public void grabPiece(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		try {
-			robot.performIOAction();
+			putSettings.getStep().getRobot().performIOAction();
 		} catch (RobotActionException e) {
 			throw new DeviceActionException(this, EXCEPTION_PRAGE_TIMEOUT);
 		}
@@ -132,7 +127,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	
 	@Override
 	public boolean isConnected() {
-		return robot.isConnected();
+		return true;
 	}
 	
 	@Override

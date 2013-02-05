@@ -148,7 +148,7 @@ public class FanucRobot extends AbstractRobot {
 			setCurrentActionSettings(putSettings);
 		}
 		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
-		writeServiceGripperSet(false, putSettings.getGripperHead().getId(), this.getGripperBody().getGripperHead(HEAD_A_ID), this.getGripperBody().getGripperHead(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
+		writeServiceGripperSet(false, putSettings.getGripperHead().getName(), this.getGripperBody().getGripperHead(HEAD_A_ID), this.getGripperBody().getGripperHead(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
 		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
 		if (fPutSettings.isDoMachineAirblow()) {
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
@@ -233,7 +233,7 @@ public class FanucRobot extends AbstractRobot {
 			setCurrentActionSettings(pickSettings);
 		}
 		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;		
-		writeServiceGripperSet(false, pickSettings.getGripperHead().getId(), this.getGripperBody().getGripperHead(HEAD_A_ID), this.getGripperBody().getGripperHead(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
+		writeServiceGripperSet(false, pickSettings.getGripperHead().getName(), this.getGripperBody().getGripperHead(HEAD_A_ID), this.getGripperBody().getGripperHead(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
 		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
 		if (fPickSettings.isDoMachineAirblow()) {
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
@@ -317,7 +317,7 @@ public class FanucRobot extends AbstractRobot {
 			setCurrentActionSettings(putSettings);
 		}
 		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
-		writeServiceGripperSet(false, putSettings.getGripperHead().getId(), this.getGripperBody().getGripperHead(HEAD_A_ID), this.getGripperBody().getGripperHead(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT);
+		writeServiceGripperSet(false, putSettings.getGripperHead().getName(), this.getGripperBody().getGripperHead(HEAD_A_ID), this.getGripperBody().getGripperHead(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT);
 		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
 		ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_PIECE;
 		if (fPutSettings.getGripperHead().getGripper().getWorkPiece() == null) {
@@ -339,7 +339,7 @@ public class FanucRobot extends AbstractRobot {
 			setCurrentActionSettings(putSettings);
 		}
 		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
-		writeServiceGripperSet(false, putSettings.getGripperHead().getId(), this.getGripperBody().getGripperHead(HEAD_A_ID), this.getGripperBody().getGripperHead(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT);
+		writeServiceGripperSet(false, putSettings.getGripperHead().getName(), this.getGripperBody().getGripperHead(HEAD_A_ID), this.getGripperBody().getGripperHead(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT);
 		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
 		ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_PIECE;
 		if (fPutSettings.getGripperHead().getGripper().getWorkPiece() == null) {
@@ -553,7 +553,7 @@ public class FanucRobot extends AbstractRobot {
 	@Override
 	public void recalculateTCPs() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
 		logger.debug("About to recalculate TCPs.");
-		writeServiceGripperSet(false, this.getGripperBody().getGripperHead(HEAD_A_ID).getId(), this.getGripperBody().getGripperHead(HEAD_A_ID), this.getGripperBody().getGripperHead(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_JAW_CHANGE);
+		writeServiceGripperSet(false, this.getGripperBody().getGripperHead(HEAD_A_ID).getName(), this.getGripperBody().getGripperHead(HEAD_A_ID), this.getGripperBody().getGripperHead(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_JAW_CHANGE);
 		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_RECALC_TCPS, RobotConstants.RESPONSE_RECALC_TCPS, WRITE_VALUES_TIMEOUT);
 	}
 
