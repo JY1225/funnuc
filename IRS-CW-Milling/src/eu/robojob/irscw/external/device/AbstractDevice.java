@@ -141,11 +141,19 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	public abstract DeviceType getType();
 	
 	public DevicePickSettings getDefaultPickSettings() {
-		return new DevicePickSettings(this, null);
+		WorkArea workArea = null;
+		if (getWorkAreas().size() == 1) {
+			workArea = getWorkAreas().iterator().next();
+		}
+		return new DevicePickSettings(this, workArea);
 	}
 	
 	public DevicePutSettings getDefaultPutSettings() {
-		return new DevicePutSettings(this, null);
+		WorkArea workArea = null;
+		if (getWorkAreas().size() == 1) {
+			workArea = getWorkAreas().iterator().next();
+		}
+		return new DevicePutSettings(this, workArea);
 	}
 	
 }

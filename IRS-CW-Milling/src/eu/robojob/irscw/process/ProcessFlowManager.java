@@ -81,6 +81,13 @@ public class ProcessFlowManager {
 		if (stackingToDevice instanceof BasicStackPlate) {
 			((BasicStackPlateSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPieceDimensions(finishedWorkPiece.getDimensions());
 		}
+		for (AbstractProcessStep step : processSteps) {
+			if ((step instanceof DeviceStep) && (step instanceof RobotStep)) {
+				if (((DeviceStep) step).getDeviceSettings().getWorkArea() != null) {
+					((RobotStep) step).getRobotSettings().setWorkArea(((DeviceStep) step).getDeviceSettings().getWorkArea());
+				}
+			}
+		}
 		deviceSettings.put(cncMachine, cncMachine.getDeviceSettings());
 		deviceSettings.put(stackingToDevice, stackingToDevice.getDeviceSettings());
 		Map<AbstractRobot, RobotSettings> robotSettings = new HashMap<AbstractRobot, RobotSettings>();
