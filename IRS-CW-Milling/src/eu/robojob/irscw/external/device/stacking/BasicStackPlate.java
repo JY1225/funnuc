@@ -46,8 +46,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public BasicStackPlate(final String name, final Set<Zone> zones, final BasicStackPlateLayout layout) {
 		super(name, zones);
 		this.layout = layout;
-		this.rawWorkPiece = null;
-		this.finishedWorkPiece = null;
+		this.rawWorkPiece = new WorkPiece(Type.RAW, new WorkPieceDimensions());
 		this.currentPickLocations = new ArrayList<StackingPosition>();
 	}
 	
@@ -138,10 +137,12 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		if (deviceSettings instanceof BasicStackPlateSettings) {
 			BasicStackPlateSettings settings = (BasicStackPlateSettings) deviceSettings;
 			try {
-				layout.configureStackingPositions(settings.getRawWorkPiece(), settings.getOrientation());
-				this.rawWorkPiece = settings.getRawWorkPiece();
-				this.finishedWorkPiece = settings.getFinishedWorkPiece();
-				layout.placeRawWorkPieces(rawWorkPiece, settings.getAmount());
+				if (settings.getRawWorkPiece() != null) {
+					layout.configureStackingPositions(settings.getRawWorkPiece(), settings.getOrientation());
+					this.rawWorkPiece = settings.getRawWorkPiece();
+					this.finishedWorkPiece = settings.getFinishedWorkPiece();
+					layout.placeRawWorkPieces(rawWorkPiece, settings.getAmount());
+				}
 			} catch (IncorrectWorkPieceDataException e) {
 				logger.error(e);
 			}

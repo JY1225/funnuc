@@ -48,6 +48,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.zrest = -1;
 		if (possibleGripperBodies != null) {
 			this.possibleGripperBodies = possibleGripperBodies;
+			this.activeGripperBody = possibleGripperBodies.iterator().next();
 		} else {
 			this.possibleGripperBodies = new HashSet<GripperBody>();
 		}
@@ -350,4 +351,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		return false;
 	}
 
+	public abstract RobotPickSettings getDefaultPickSettings();
+	public abstract RobotPutSettings getDefaultPutSettings();
+	
 }

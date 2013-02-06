@@ -153,10 +153,12 @@ public class GeneralInfoView extends GridPane {
 		WorkPieceDimensions lastPickStepDimensions = null;
 		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
 			if ((step instanceof PickStep) && !(step instanceof PickAfterWaitStep)) {
-				if (firstPickStepDimensions == null) {
-					firstPickStepDimensions = ((PickStep) step).getRobotSettings().getWorkPiece().getDimensions();
+				if (((PickStep) step).getRobotSettings().getWorkPiece() != null) {
+					if (firstPickStepDimensions == null) {
+						firstPickStepDimensions = ((PickStep) step).getRobotSettings().getWorkPiece().getDimensions();
+					}
+					lastPickStepDimensions = ((PickStep) step).getRobotSettings().getWorkPiece().getDimensions();
 				}
-				lastPickStepDimensions = ((PickStep) step).getRobotSettings().getWorkPiece().getDimensions();
 			}
 		}
 		if ((firstPickStepDimensions.getWidth() != lastPickStepDimensions.getWidth()) || (firstPickStepDimensions.getLength() != lastPickStepDimensions.getLength())) {

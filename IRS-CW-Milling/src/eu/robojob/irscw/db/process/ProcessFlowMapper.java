@@ -6,10 +6,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import eu.robojob.irscw.db.ConnectionManager;
 import eu.robojob.irscw.db.GeneralMapper;
@@ -74,11 +72,11 @@ public class ProcessFlowMapper {
 		this.robotManager = robotManager;
 	} 
 	
-	public Set<ProcessFlow> getLastOpenedProcessFlows(final int amount) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW ORDER BY LASTOPENED DESC LIMIT ?");
-		stmt.setInt(1, amount);
+	public List<ProcessFlow> getLastOpenedProcessFlows(final int amount) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW ORDER BY LASTOPENED DESC");
+		stmt.setMaxRows(amount);
 		ResultSet results = stmt.executeQuery();
-		Set<ProcessFlow> processFlows = new HashSet<ProcessFlow>();
+		List<ProcessFlow> processFlows = new ArrayList<ProcessFlow>();
 		while (results.next()) {
 			int id = results.getInt("ID");
 			ProcessFlow processFlow = getProcessFlowById(id);

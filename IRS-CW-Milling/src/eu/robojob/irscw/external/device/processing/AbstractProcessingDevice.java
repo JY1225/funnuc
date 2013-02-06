@@ -40,4 +40,8 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 		return false;
 	}
 	
+	public ProcessingDeviceStartCyclusSettings getDefaultStartCyclusSettings() {
+		return new ProcessingDeviceStartCyclusSettings(this, null);
+	}
+	
 }

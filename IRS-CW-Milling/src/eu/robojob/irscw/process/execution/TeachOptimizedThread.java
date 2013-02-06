@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;

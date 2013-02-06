@@ -251,6 +251,9 @@ public class ProcessFlow {
 	
 	private void setUpProcess(final List<AbstractProcessStep> processSteps) {
 		this.processSteps = processSteps;
+		for (AbstractProcessStep step : processSteps) {
+			step.setProcessFlow(this);
+		}
 	}
 	
 	public void addStep(final int index, final AbstractProcessStep newStep) {

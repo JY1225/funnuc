@@ -64,8 +64,8 @@ public class DeviceManager {
 		}
 	}
 	
-	public Collection<AbstractCNCMachine> getCNCMachines() {
-		return cncMachinesByName.values();
+	public Set<AbstractCNCMachine> getCNCMachines() {
+		return new HashSet<AbstractCNCMachine>(cncMachinesByName.values());
 	}
 	
 	public Set<String> getCNCMachineNames() {

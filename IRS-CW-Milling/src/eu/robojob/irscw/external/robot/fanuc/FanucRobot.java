@@ -573,4 +573,14 @@ public class FanucRobot extends AbstractRobot {
 		return false;
 	}
 
+	@Override
+	public RobotPickSettings getDefaultPickSettings() {
+		return new FanucRobotPickSettings(this, null, null, null, null, null, false);
+	}
+
+	@Override
+	public RobotPutSettings getDefaultPutSettings() {
+		return new FanucRobotPutSettings(this, null, null, null, null, false);
+	}
+
 }

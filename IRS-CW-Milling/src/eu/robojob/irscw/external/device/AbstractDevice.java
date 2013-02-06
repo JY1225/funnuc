@@ -140,4 +140,12 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public abstract DeviceType getType();
 	
+	public DevicePickSettings getDefaultPickSettings() {
+		return new DevicePickSettings(this, null);
+	}
+	
+	public DevicePutSettings getDefaultPutSettings() {
+		return new DevicePutSettings(this, null);
+	}
+	
 }

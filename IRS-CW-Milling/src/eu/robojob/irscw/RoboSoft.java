@@ -13,6 +13,14 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.robojob.irscw.db.GeneralMapper;
+import eu.robojob.irscw.db.external.device.DeviceMapper;
+import eu.robojob.irscw.db.external.robot.RobotMapper;
+import eu.robojob.irscw.db.external.util.ConnectionMapper;
+import eu.robojob.irscw.db.process.ProcessFlowMapper;
+import eu.robojob.irscw.external.device.DeviceManager;
+import eu.robojob.irscw.external.robot.RobotManager;
+import eu.robojob.irscw.process.ProcessFlowManager;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.RoboSoftAppFactory;
@@ -32,7 +40,17 @@ public class RoboSoft extends Application {
 		logger.info("Started application.");
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
-		RoboSoftAppFactory factory = new RoboSoftAppFactory(properties);
+		
+		GeneralMapper generalMapper = new GeneralMapper();
+		ConnectionMapper connectionMapper = new ConnectionMapper();
+		DeviceMapper deviceMapper = new DeviceMapper(generalMapper, connectionMapper);
+		DeviceManager deviceManager = new DeviceManager(deviceMapper);
+		RobotMapper robotMapper = new RobotMapper(connectionMapper);
+		RobotManager robotManager = new RobotManager(robotMapper);
+		ProcessFlowMapper processFlowMapper = new ProcessFlowMapper(generalMapper, deviceManager, robotManager);
+		ProcessFlowManager processFlowManager = new ProcessFlowManager(processFlowMapper, deviceManager, robotManager);
+		
+		RoboSoftAppFactory factory = new RoboSoftAppFactory(deviceManager, robotManager, processFlowManager);
 		MainPresenter mainPresenter = factory.getMainPresenter();
 		mainPresenter.showConfigure();
 		Scene scene = new Scene(mainPresenter.getView(), WIDTH, HEIGHT);
