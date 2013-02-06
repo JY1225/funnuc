@@ -14,21 +14,18 @@ import eu.robojob.irscw.process.event.StatusChangedEvent;
 public class InterventionStep extends AbstractProcessStep implements DeviceStep {
 
 	private int frequency;
-	
-	private AbstractDevice device;
 	private DeviceInterventionSettings interventionSettings;
 	
 	private static Logger logger = LogManager.getLogger(InterventionStep.class.getName());
 		
-	public InterventionStep(final ProcessFlow processFlow, final AbstractDevice device, final DeviceInterventionSettings interventionSettings, final int frequency) {
+	public InterventionStep(final ProcessFlow processFlow, final DeviceInterventionSettings interventionSettings, final int frequency) {
 		super(processFlow);
 		this.frequency = frequency;
-		this.device = device;
 		setDeviceSettings(interventionSettings);
 	}
 	
-	public InterventionStep(final AbstractDevice device, final DeviceInterventionSettings interventionSettings, final int frequency) {
-		this(null, device, interventionSettings, frequency);
+	public InterventionStep(final DeviceInterventionSettings interventionSettings, final int frequency) {
+		this(null, interventionSettings, frequency);
 	}
 	
 	@Override
@@ -89,7 +86,7 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 
 	@Override
 	public AbstractDevice getDevice() {
-		return device;
+		return interventionSettings.getDevice();
 	}
 
 }

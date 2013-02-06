@@ -1,5 +1,6 @@
 package eu.robojob.irscw.process;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,6 +46,9 @@ public class ProcessFlow {
 	private Integer finishedAmount;
 	
 	private String name;
+	private String description; 
+	private Timestamp creation;
+	private Timestamp lastOpened;
 	
 	private Set<ProcessFlowListener> listeners;
 	private Mode mode;
@@ -58,9 +62,10 @@ public class ProcessFlow {
 	
 	private ClampingManner clampingManner;
 	
-	public ProcessFlow(final String name, final List<AbstractProcessStep>processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, 
-			RobotSettings> robotSettings, final int totalAmount, final ClampingManner clampingManner) {
+	public ProcessFlow(final String name, final String description, final List<AbstractProcessStep>processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, 
+			RobotSettings> robotSettings, final int totalAmount, final ClampingManner clampingManner, final Timestamp creation, final Timestamp lastOpened) {
 		this.name = name;
+		this.description = description;
 		this.clampingManner = clampingManner;
 		this.deviceSettings = deviceSettings;
 		this.robotSettings = robotSettings;
@@ -69,16 +74,19 @@ public class ProcessFlow {
 		this.finishedAmount = 0;
 		this.mode = Mode.CONFIG;
 		this.currentIndices = new HashMap<Integer, Integer>();
+		this.creation = creation;
+		this.lastOpened = lastOpened;
 		setUpProcess(processSteps);
 		initialize();
 	}
 	
-	public ProcessFlow(final String name, final List<AbstractProcessStep> processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, RobotSettings> robotSettings) {
-		this(name, processSteps, deviceSettings, robotSettings, 0, new ClampingManner());
+	public ProcessFlow(final String name, final String description, final List<AbstractProcessStep> processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, RobotSettings> robotSettings,
+			final Timestamp creation, final Timestamp lastOpened) {
+		this(name, description, processSteps, deviceSettings, robotSettings, 0, new ClampingManner(), creation, lastOpened);
 	}
 	
 	public ProcessFlow(final String name) {
-		this(name, new ArrayList<AbstractProcessStep>(), new HashMap<AbstractDevice, DeviceSettings>(), new HashMap<AbstractRobot, RobotSettings>());
+		this(name, null, new ArrayList<AbstractProcessStep>(), new HashMap<AbstractDevice, DeviceSettings>(), new HashMap<AbstractRobot, RobotSettings>(), null, null);
 	}
 	
 	public void initialize() {
@@ -125,6 +133,30 @@ public class ProcessFlow {
 		return robotSettings;
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(final String description) {
+		this.description = description;
+	}
+
+	public Timestamp getCreation() {
+		return creation;
+	}
+
+	public void setCreation(final Timestamp creation) {
+		this.creation = creation;
+	}
+
+	public Timestamp getLastOpened() {
+		return lastOpened;
+	}
+
+	public void setLastOpened(final Timestamp lastOpened) {
+		this.lastOpened = lastOpened;
+	}
+
 	public Mode getMode() {
 		return mode;
 	}

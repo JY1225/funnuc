@@ -7,6 +7,7 @@ public class GripperHead {
 	
 	private int id;
 	private String name;
+	private GripperBody gripperBody;
 	private Gripper gripper;
 	
 	private Set<Gripper> possibleGrippers;
@@ -21,6 +22,14 @@ public class GripperHead {
 		setGripper(gripper);
 	}
 	
+	public GripperBody getGripperBody() {
+		return gripperBody;
+	}
+
+	public void setGripperBody(final GripperBody gripperBody) {
+		this.gripperBody = gripperBody;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -49,9 +58,18 @@ public class GripperHead {
 		return possibleGrippers;
 	}
 
-	public Gripper getGripper(final String id) {
+	public Gripper getGripperByName(final String name) {
 		for (Gripper gripper : possibleGrippers) {
-			if (gripper.getName().equals(id)) {
+			if (gripper.getName().equals(name)) {
+				return gripper;
+			}
+		}
+		return null;
+	}
+	
+	public Gripper getGripperById(final int id) {
+		for (Gripper gripper : possibleGrippers) {
+			if (gripper.getId() == id) {
 				return gripper;
 			}
 		}

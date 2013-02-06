@@ -16,18 +16,13 @@ import eu.robojob.irscw.external.robot.GripperBody;
 import eu.robojob.irscw.external.robot.GripperHead;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 
-public final class RobotMapper {
+public class RobotMapper {
 
-	private static RobotMapper instance;
 	private static final int ROBOT_TYPE_FANUC = 1;
+	private ConnectionMapper connectionMapper;
 	
-	private RobotMapper() { }
-	
-	public static RobotMapper getInstance() {
-		if (instance == null) {
-			instance = new RobotMapper();
-		}
-		return instance;
+	public RobotMapper(final ConnectionMapper connectionMapper) {
+		this.connectionMapper = connectionMapper;
 	}
 	
 	public Set<AbstractRobot> getAllRobots() throws SQLException {
@@ -51,20 +46,20 @@ public final class RobotMapper {
 		return robots;
 	}
 	
-	public FanucRobot getFanucRobot(final int id, final String name, final Set<GripperBody> gripperBodies) throws SQLException {
+	private FanucRobot getFanucRobot(final int id, final String name, final Set<GripperBody> gripperBodies) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM FANUCROBOT WHERE ID = ?");
 		stmt.setInt(1, id);
 		ResultSet results = stmt.executeQuery();
 		FanucRobot fanucRobot = null;
 		if (results.next()) {
 			int socketConnectionId = results.getInt("SOCKETCONNECTION");
-			SocketConnection socketConnection = ConnectionMapper.getSocketConnectionById(socketConnectionId);
+			SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
 			fanucRobot = new FanucRobot(name, gripperBodies, null, socketConnection);
 		}
 		return fanucRobot;
 	}
 	
-	public Set<GripperBody> getAllGripperBodiesByRobotId(final int id) throws SQLException {
+	private Set<GripperBody> getAllGripperBodiesByRobotId(final int id) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT GRIPPERBODY FROM ROBOT_GRIPPERBODY WHERE ROBOT = ?");
 		stmt.setInt(1, id);
 		ResultSet results = stmt.executeQuery();
@@ -77,7 +72,7 @@ public final class RobotMapper {
 		return gripperBodies;
 	}
 	
-	public GripperBody getGripperBodyById(final int id) throws SQLException {
+	private GripperBody getGripperBodyById(final int id) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM GRIPPERBODY WHERE ID = ?");
 		stmt.setInt(1, id);
 		ResultSet results = stmt.executeQuery();
@@ -92,7 +87,7 @@ public final class RobotMapper {
 		return gripperBody;
 	}
 	
-	public Set<GripperHead> getGripperHeadsByGripperBodyId(final int gripperBodyId) throws SQLException {
+	private Set<GripperHead> getGripperHeadsByGripperBodyId(final int gripperBodyId) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM GRIPPERHEAD WHERE GRIPPERBODY = ?");
 		stmt.setInt(1, gripperBodyId);
 		ResultSet results = stmt.executeQuery();
@@ -108,7 +103,7 @@ public final class RobotMapper {
 		return gripperHeads;
 	}
 	
-	public Set<Gripper> getGrippersByGripperHeadId(final int gripperBodyId) throws SQLException {
+	private Set<Gripper> getGrippersByGripperHeadId(final int gripperBodyId) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT GRIPPER FROM GRIPPERHEAD_GRIPPER WHERE GRIPPERHEAD = ?");
 		stmt.setInt(1, gripperBodyId);
 		ResultSet results = stmt.executeQuery();
@@ -121,7 +116,7 @@ public final class RobotMapper {
 		return grippers;
 	}
 	
-	public Gripper getGripperById(final int id) throws SQLException {
+	private Gripper getGripperById(final int id) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM GRIPPER WHERE ID = ?");
 		stmt.setInt(1, id);
 		ResultSet results = stmt.executeQuery();

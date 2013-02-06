@@ -238,6 +238,25 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public void setPossibleGripperBodies(final Set<GripperBody> possibleGripperBodies) {
 		this.possibleGripperBodies = possibleGripperBodies;
 	}
+	
+	public GripperBody getGripperBodyById(final int id) {
+		for (GripperBody gripperBody : possibleGripperBodies) {
+			if (gripperBody.getId() == id) {
+				return gripperBody;
+			}
+		}
+		return null;
+	}
+	
+	public GripperHead getGripperHeadById(final int id) {
+		for (GripperBody gripperBody : possibleGripperBodies) {
+			GripperHead head = gripperBody.getGripperHeadById(id);
+			if (head != null) {
+				return head;
+			}
+		}
+		return null;
+	}
 		
 	public abstract void updateStatusZRestAndAlarms() throws AbstractCommunicationException, InterruptedException;
 	public abstract void restartProgram() throws AbstractCommunicationException, InterruptedException;

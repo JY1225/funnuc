@@ -107,6 +107,17 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return null;
 	}
 	
+	public WorkArea getWorkAreaById(final int id) {
+		for (Zone zone : zones) {
+			for (WorkArea workArea : zone.getWorkAreas()) {
+				if (workArea.getId() == id) {
+					return workArea;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public List<WorkArea> getWorkAreas() {
 		List<WorkArea> workAreas = new ArrayList<WorkArea>();
 		for (Zone zone : zones) {

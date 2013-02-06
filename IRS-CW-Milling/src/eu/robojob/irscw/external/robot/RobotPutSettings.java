@@ -6,7 +6,7 @@ import eu.robojob.irscw.process.PutStep;
 
 public abstract class RobotPutSettings extends AbstractRobotActionSettings<PutStep> {
 		
-	public RobotPutSettings(final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location) {
-		super(workArea, gripperHead, smoothPoint, location);
+	public RobotPutSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location) {
+		super(robot, workArea, gripperHead, smoothPoint, location);
 	}
 }

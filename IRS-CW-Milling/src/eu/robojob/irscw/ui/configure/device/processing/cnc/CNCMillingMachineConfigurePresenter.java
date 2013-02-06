@@ -28,7 +28,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		super(view);
 		this.deviceInfo = deviceInfo;
 		view.setDeviceInfo(deviceInfo);
-		view.setCNCMillingMachineIds(deviceManager.getCNCMachineIds());
+		view.setCNCMillingMachineIds(deviceManager.getCNCMachineNames());
 		view.build();
 	}
 

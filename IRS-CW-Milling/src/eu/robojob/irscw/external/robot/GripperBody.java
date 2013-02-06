@@ -1,5 +1,6 @@
 package eu.robojob.irscw.external.robot;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class GripperBody {
@@ -13,7 +14,10 @@ public class GripperBody {
 	public GripperBody(final String name, final String description, final Set<GripperHead> gripperHeads) {
 		this.name = name;
 		this.description = description;
-		this.gripperHeads = gripperHeads;
+		this.gripperHeads = new HashSet<GripperHead>();
+		for (GripperHead head : gripperHeads) {
+			addGripperHead(head);
+		}
 	}
 
 	public int getId() {
@@ -45,16 +49,26 @@ public class GripperBody {
 	}
 	
 	public void addGripperHead(final GripperHead gripperHead) {
-		if (getGripperHead(gripperHead.getName()) != null) {
+		if (getGripperHeadByName(gripperHead.getName()) != null) {
 			throw new IllegalArgumentException("A GripperHead with the same id already exists");
 		} else {
+			gripperHead.setGripperBody(this);
 			gripperHeads.add(gripperHead);
 		}
 	}
 	
-	public GripperHead getGripperHead(final String id) {
+	public GripperHead getGripperHeadByName(final String name) {
 		for (GripperHead gripperHead : gripperHeads) {
-			if (gripperHead.getName().equals(id)) {
+			if (gripperHead.getName().equals(name)) {
+				return gripperHead;
+			}
+		}
+		return null;
+	}
+	
+	public GripperHead getGripperHeadById(final int id) {
+		for (GripperHead gripperHead : gripperHeads) {
+			if (gripperHead.getId() == id) {
 				return gripperHead;
 			}
 		}

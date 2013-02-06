@@ -10,23 +10,22 @@ import org.apache.logging.log4j.Logger;
 
 public final class ConnectionManager {
 
-	private static Connection conn = null;
+	private static Connection conn;
 	private static Logger logger = LogManager.getLogger(ConnectionManager.class.getName());
 	
 	private ConnectionManager() {
-		connect();
 	}
 	
 	private static void connect() {
 		Properties props = new Properties();
 		try {
-			logger.info("About to create database connection.");
 			URL url = ClassLoader.getSystemResource("jdbc.properties");
 			props.load(url.openStream());
 			System.setProperty("derby.system.home", props.getProperty("derby.system.home"));
 			Class.forName(props.getProperty("jdbc.driver"));
 			String connectionString = props.getProperty("jdbc.protocol") + ":" + props.getProperty("jdbc.database") + ";create=true" + ";user=" 
 					+ props.getProperty("jdbc.user") + ";password=" + props.getProperty("jdbc.password");
+			logger.info("About to create database connection.");
 			conn = DriverManager.getConnection(connectionString);
 			logger.info("Successfully created database connection.");
 		} catch (Exception e) {
@@ -35,11 +34,10 @@ public final class ConnectionManager {
 		} 
 	}
 	
-	public static void reconnect() {
-		connect();
-	}
-	
 	public static Connection getConnection() {
+		if (conn == null) {
+			connect();
+		}
 		return conn;
 	}
 	

@@ -12,18 +12,16 @@ import eu.robojob.irscw.process.event.StatusChangedEvent;
 public class ProcessingStep extends AbstractProcessStep implements DeviceStep {
 
 	private ProcessingDeviceStartCyclusSettings startCyclusSettings;
-	private AbstractProcessingDevice device;
 	
 	private static Logger logger = LogManager.getLogger(ProcessingStep.class.getName());
 	
-	public ProcessingStep(final ProcessFlow processFlow, final AbstractProcessingDevice processingDevice, final ProcessingDeviceStartCyclusSettings startCyclusSettings) {
+	public ProcessingStep(final ProcessFlow processFlow, final ProcessingDeviceStartCyclusSettings startCyclusSettings) {
 		super(processFlow);
-		this.device = processingDevice;
 		setDeviceSettings(startCyclusSettings);
 	}
 	
-	public ProcessingStep(final AbstractProcessingDevice processingDevice, final ProcessingDeviceStartCyclusSettings startCyclusSettings) {
-		this(null, processingDevice, startCyclusSettings);
+	public ProcessingStep(final ProcessingDeviceStartCyclusSettings startCyclusSettings) {
+		this(null, startCyclusSettings);
 	}
 	
 	@Override
@@ -58,7 +56,7 @@ public class ProcessingStep extends AbstractProcessStep implements DeviceStep {
 	
 	@Override
 	public AbstractProcessingDevice getDevice() {
-		return device;
+		return startCyclusSettings.getDevice();
 	}
 
 	@Override

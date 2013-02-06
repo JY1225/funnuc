@@ -2,7 +2,6 @@ package eu.robojob.irscw.process;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobotActionSettings;
@@ -11,18 +10,15 @@ import eu.robojob.irscw.external.robot.RobotProcessingWhileWaitingSettings;
 public class ProcessingWhileWaitingStep extends ProcessingStep implements RobotStep {
 
 	private RobotProcessingWhileWaitingSettings robotSettings;
-	private AbstractRobot robot;
 	
-	public ProcessingWhileWaitingStep(final ProcessFlow processFlow, final AbstractProcessingDevice processingDevice, 
-			final ProcessingDeviceStartCyclusSettings startCyclusSettings, final AbstractRobot robot, final RobotProcessingWhileWaitingSettings robotSettings) {
-		super(processFlow, processingDevice, startCyclusSettings);
+	public ProcessingWhileWaitingStep(final ProcessFlow processFlow, final ProcessingDeviceStartCyclusSettings startCyclusSettings, 
+			final RobotProcessingWhileWaitingSettings robotSettings) {
+		super(processFlow, startCyclusSettings);
 		this.robotSettings = robotSettings;
-		this.robot = robot;
 	}
 	
-	public ProcessingWhileWaitingStep(final AbstractProcessingDevice processingDevice, final ProcessingDeviceStartCyclusSettings startCyclusSettings, 
-			final AbstractRobot robot, final RobotProcessingWhileWaitingSettings robotSettings) {
-		this(null, processingDevice, startCyclusSettings, robot, robotSettings);
+	public ProcessingWhileWaitingStep(final ProcessingDeviceStartCyclusSettings startCyclusSettings, final RobotProcessingWhileWaitingSettings robotSettings) {
+		this(null, startCyclusSettings, robotSettings);
 	}
 	
 	@Override
@@ -32,7 +28,7 @@ public class ProcessingWhileWaitingStep extends ProcessingStep implements RobotS
 	
 	@Override
 	public AbstractRobot getRobot() {
-		return robot;
+		return robotSettings.getRobot();
 	}
 
 	@Override

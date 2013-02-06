@@ -110,4 +110,13 @@ public class WorkArea {
 		}
 		return null;
 	}
+	
+	public Clamping getClampingById(final int id) {
+		for (Clamping clamping : clampings) {
+			if (clamping.getId() == id) {
+				return clamping;
+			}
+		}
+		return null;
+	}
 }

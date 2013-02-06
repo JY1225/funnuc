@@ -18,17 +18,17 @@ public class PickStep extends AbstractTransportStep {
 
 	private static Logger logger = LogManager.getLogger(PickStep.class.getName());
 	
-	private DevicePickSettings pickSettings;
+	private DevicePickSettings devicePickSettings;
 	private RobotPickSettings robotPickSettings;
 			
-	public PickStep(final ProcessFlow processFlow, final AbstractRobot robot, final AbstractDevice deviceFrom, final DevicePickSettings pickSettings, final RobotPickSettings robotPickSettings) {
-		super(processFlow, deviceFrom, robot);
-		setDeviceSettings(pickSettings);
+	public PickStep(final ProcessFlow processFlow, final DevicePickSettings devicePickSettings, final RobotPickSettings robotPickSettings) {
+		super(processFlow);
+		setDeviceSettings(devicePickSettings);
 		setRobotSettings(robotPickSettings);
 	}
 	
-	public PickStep(final AbstractRobot robot, final AbstractDevice deviceFrom, final DevicePickSettings pickSettings, final RobotPickSettings robotPickSettings) {
-		this(null, robot, deviceFrom, pickSettings, robotPickSettings);
+	public PickStep(final DevicePickSettings devicePickSettings, final RobotPickSettings robotPickSettings) {
+		this(null, devicePickSettings, robotPickSettings);
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class PickStep extends AbstractTransportStep {
 				throw new IllegalStateException("Robot [" + getRobot() + "] was already locked by [" + getRobot().getLockingProcess() + "].");
 			} else {
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, workPieceId));
-				Coordinates originalPosition = new Coordinates(getDevice().getPickLocation(pickSettings.getWorkArea(), getProcessFlow().getClampingType()));
+				Coordinates originalPosition = new Coordinates(getDevice().getPickLocation(devicePickSettings.getWorkArea(), getProcessFlow().getClampingType()));
 				if (needsTeaching()) {
 					Coordinates position = new Coordinates(originalPosition);
 					logger.debug("Original coordinates: " + position + ".");
@@ -76,7 +76,7 @@ public class PickStep extends AbstractTransportStep {
 				getRobotSettings().setTeachingNeeded(teached);
 				getRobot().initiatePick(robotPickSettings);		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
 				logger.debug("Preparing [" + getDevice() + "] for pick using [" + getRobot() + "].");
-				getDevice().prepareForPick(pickSettings);
+				getDevice().prepareForPick(devicePickSettings);
 				logger.debug("Device [" + getDevice() + "] prepared for pick.");
 				if (teached && needsTeaching()) {
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_TEACHED, workPieceId));
@@ -94,11 +94,11 @@ public class PickStep extends AbstractTransportStep {
 					getRobot().continuePickTillUnclampAck();
 				}
 				logger.debug("Robot pick action succeeded, about to ask device [" + getDevice() +  "] to release piece.");
-				getDevice().releasePiece(pickSettings);
+				getDevice().releasePiece(devicePickSettings);
 				logger.debug("Device [" + getDevice() + "] released piece, about to finalize pick.");
 				robotPickSettings.getGripperHead().getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
 				getRobot().continuePickTillIPPoint();
-				getDevice().pickFinished(pickSettings);
+				getDevice().pickFinished(devicePickSettings);
 				getDevice().release(getProcessFlow());
 				getRobot().release(getProcessFlow());
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
@@ -125,7 +125,7 @@ public class PickStep extends AbstractTransportStep {
 
 	@Override
 	public DevicePickSettings getDeviceSettings() {
-		return pickSettings;
+		return devicePickSettings;
 	}
 
 	@Override
@@ -139,9 +139,9 @@ public class PickStep extends AbstractTransportStep {
 	}
 	
 	public void setDeviceSettings(final DevicePickSettings settings) {
-		this.pickSettings = settings;
-		if (pickSettings != null) {
-			pickSettings.setStep(this);
+		this.devicePickSettings = settings;
+		if (devicePickSettings != null) {
+			devicePickSettings.setStep(this);
 		}
 	}
 
@@ -156,6 +156,16 @@ public class PickStep extends AbstractTransportStep {
 	public boolean needsTeaching() {
 		//TODO implement
 		return true;
+	}
+
+	@Override
+	public AbstractRobot getRobot() {
+		return robotPickSettings.getRobot();
+	}
+
+	@Override
+	public AbstractDevice getDevice() {
+		return devicePickSettings.getDevice();
 	}
 
 }

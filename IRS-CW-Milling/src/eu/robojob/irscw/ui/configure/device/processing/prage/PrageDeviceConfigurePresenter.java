@@ -8,7 +8,7 @@ public class PrageDeviceConfigurePresenter extends AbstractFormPresenter<PrageDe
 	
 	public PrageDeviceConfigurePresenter(final PrageDeviceConfigureView view, final DeviceInformation deviceInfo, final DeviceManager deviceManager) {
 		super(view);
-		view.setPreProcessingDeviceIds(deviceManager.getPreProcessingDeviceIds());
+		view.setPreProcessingDeviceIds(deviceManager.getPreProcessingDeviceNames());
 		view.build();
 	}
 	

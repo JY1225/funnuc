@@ -16,20 +16,20 @@ import eu.robojob.irscw.process.event.StatusChangedEvent;
 
 public class PutStep extends AbstractTransportStep {
 
-	private DevicePutSettings putSettings;
+	private DevicePutSettings devicePutSettings;
 	private RobotPutSettings robotPutSettings;
 	
 	private static Logger logger = LogManager.getLogger(PutStep.class.getName());
 	
-	public PutStep(final ProcessFlow processFlow, final AbstractRobot robot, final AbstractDevice deviceTo, final DevicePutSettings putSettings, final RobotPutSettings robotPutSettings) {
-		super(processFlow, deviceTo, robot);
-		this.putSettings = putSettings;
-		setDeviceSettings(putSettings);
+	public PutStep(final ProcessFlow processFlow, final DevicePutSettings devicePutSettings, final RobotPutSettings robotPutSettings) {
+		super(processFlow);
+		this.devicePutSettings = devicePutSettings;
+		setDeviceSettings(devicePutSettings);
 		setRobotSettings(robotPutSettings);
 	}
 	
-	public PutStep(final AbstractRobot robot, final AbstractDevice deviceTo, final DevicePutSettings putSettings, final RobotPutSettings robotPutSettings) {
-		this(null, robot, deviceTo, putSettings, robotPutSettings);
+	public PutStep(final DevicePutSettings devicePutSettings, final RobotPutSettings robotPutSettings) {
+		this(null, devicePutSettings, robotPutSettings);
 	}
 	
 	@Override
@@ -126,7 +126,7 @@ public class PutStep extends AbstractTransportStep {
 
 	@Override
 	public DevicePutSettings getDeviceSettings() {
-		return putSettings;
+		return devicePutSettings;
 	}
 
 	@Override
@@ -147,9 +147,9 @@ public class PutStep extends AbstractTransportStep {
 	}
 	
 	public void setDeviceSettings(final DevicePutSettings settings) {
-		this.putSettings = settings;
-		if (putSettings != null) {
-			putSettings.setStep(this);
+		this.devicePutSettings = settings;
+		if (devicePutSettings != null) {
+			devicePutSettings.setStep(this);
 		}
 	}
 
@@ -157,6 +157,16 @@ public class PutStep extends AbstractTransportStep {
 	public boolean needsTeaching() {
 		//TODO implement
 		return true;
+	}
+
+	@Override
+	public AbstractRobot getRobot() {
+		return robotPutSettings.getRobot();
+	}
+
+	@Override
+	public AbstractDevice getDevice() {
+		return devicePutSettings.getDevice();
 	}
 
 }

@@ -5,8 +5,8 @@ import eu.robojob.irscw.process.ProcessingWhileWaitingStep;
 
 public class RobotProcessingWhileWaitingSettings extends AbstractRobotActionSettings<ProcessingWhileWaitingStep> {
 
-	public RobotProcessingWhileWaitingSettings(final WorkArea workArea, final GripperHead gripperHead) {
-		super(workArea, gripperHead, null, null);
+	public RobotProcessingWhileWaitingSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead) {
+		super(robot, workArea, gripperHead, null, null);
 	}
 
 }

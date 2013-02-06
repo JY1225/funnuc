@@ -261,7 +261,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	//TODO review, for now this is hard coded
 	public void addDevice(final int index) {
 		
-		PrageDevice prageDevice = (PrageDevice) deviceManager.getPreProcessingDeviceById("Präge");
+		PrageDevice prageDevice = (PrageDevice) deviceManager.getPreProcessingDeviceByName("Präge");
 		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
 		
 		DevicePickSettings pragePickSettings = new DevicePickSettings(prageDevice.getWorkAreaByName("Präge"));

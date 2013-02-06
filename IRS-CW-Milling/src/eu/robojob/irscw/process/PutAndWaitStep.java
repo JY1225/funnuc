@@ -4,10 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.DevicePutSettings;
-import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.external.robot.RobotPutSettings;
 import eu.robojob.irscw.positioning.Coordinates;
@@ -18,12 +16,12 @@ public class PutAndWaitStep extends PutStep {
 	
 	private static Logger logger = LogManager.getLogger(PutAndWaitStep.class.getName());
 
-	public PutAndWaitStep(final ProcessFlow processFlow, final AbstractRobot robot, final AbstractDevice deviceTo, final DevicePutSettings putSettings, final RobotPutSettings robotPutSettings) {
-		super(processFlow, robot, deviceTo, putSettings, robotPutSettings);
+	public PutAndWaitStep(final ProcessFlow processFlow, final DevicePutSettings putSettings, final RobotPutSettings robotPutSettings) {
+		super(processFlow, putSettings, robotPutSettings);
 	}
 
-	public PutAndWaitStep(final AbstractRobot robot, final AbstractDevice deviceTo, final DevicePutSettings putSettings, final RobotPutSettings robotPutSettings) {
-		super(robot, deviceTo, putSettings, robotPutSettings);
+	public PutAndWaitStep(final DevicePutSettings putSettings, final RobotPutSettings robotPutSettings) {
+		super(putSettings, robotPutSettings);
 	}
 	
 	@Override

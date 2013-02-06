@@ -3,19 +3,28 @@ package eu.robojob.irscw.db.external.util;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import eu.robojob.irscw.db.ConnectionManager;
 import eu.robojob.irscw.external.communication.socket.SocketConnection;
 
-public final class ConnectionMapper {	
+public class ConnectionMapper {	
 	
-	private ConnectionMapper() { }
+	private Map<Integer, SocketConnection> socketConnectionBuffer;
+	
+	public ConnectionMapper() {
+		this.socketConnectionBuffer = new HashMap<Integer, SocketConnection>();
+	}
 
-	public static SocketConnection getSocketConnectionById(final int id) throws SQLException {
+	public SocketConnection getSocketConnectionById(final int socketConnectionId) throws SQLException {
+		SocketConnection socketConnection = socketConnectionBuffer.get(socketConnectionId);
+		if (socketConnection != null) {
+			return socketConnection;
+		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM SOCKETCONNECTION WHERE ID = ?");
-		stmt.setInt(1, id);
+		stmt.setInt(1, socketConnectionId);
 		ResultSet results = stmt.executeQuery();
-		SocketConnection socketConnection = null;
 		if (results.next()) {
 			String ipAddress = results.getString("IPADDRESS");
 			int portNumber = results.getInt("PORTNR");
@@ -26,8 +35,10 @@ public final class ConnectionMapper {
 			} else {
 				socketConnection = new SocketConnection(SocketConnection.Type.SERVER, name, ipAddress, portNumber);
 			}
-			socketConnection.setId(id);
+			socketConnection.setId(socketConnectionId);
 		}
+		stmt.close();
+		socketConnectionBuffer.put(socketConnectionId, socketConnection);
 		return socketConnection;
 	}
 	

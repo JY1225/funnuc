@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import eu.robojob.irscw.db.ConnectionManager;
+import eu.robojob.irscw.db.GeneralMapper;
 import eu.robojob.irscw.db.external.util.ConnectionMapper;
 import eu.robojob.irscw.external.communication.socket.SocketConnection;
 import eu.robojob.irscw.external.device.AbstractDevice;
@@ -21,9 +22,7 @@ import eu.robojob.irscw.external.device.stacking.BasicStackPlateLayout;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
 
-public final class DeviceMapper {
-
-	private static DeviceMapper instance;
+public class DeviceMapper {
 	
 	private static final int DEVICE_TYPE_CNCMILLING = 1;
 	private static final int DEVICE_TYPE_STACKPLATE = 2;
@@ -31,14 +30,12 @@ public final class DeviceMapper {
 	private static final int CLAMPING_TYPE_CENTRUM = 1;
 	private static final int CLAMPING_TYPE_FIXED = 2;
 	
-	private DeviceMapper() {
-	}
+	private GeneralMapper generalMapper;
+	private ConnectionMapper connectionMapper;
 	
-	public static DeviceMapper getInstance() {
-		if (instance == null) {
-			instance = new DeviceMapper();
-		}
-		return instance;
+	public DeviceMapper(final GeneralMapper generalMapper, final ConnectionMapper connectionMapper) {
+		this.generalMapper = generalMapper;
+		this.connectionMapper = connectionMapper;
 	}
 	
 	public Set<AbstractDevice> getAllDevices() throws SQLException {
@@ -105,7 +102,7 @@ public final class DeviceMapper {
 			ResultSet results2 = stmt2.executeQuery();
 			if (results2.next()) {
 				int socketConnectionId = results2.getInt("SOCKETCONNECTION");
-				SocketConnection socketConnection = ConnectionMapper.getSocketConnectionById(socketConnectionId);
+				SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
 				cncMillingMachine = new CNCMillingMachine(name, zones, socketConnection);
 				cncMillingMachine.setId(id);
 			}
@@ -138,49 +135,13 @@ public final class DeviceMapper {
 			int id = results.getInt("ID");
 			String name = results.getString("NAME");
 			int userFrameId = results.getInt("USERFRAME");
-			UserFrame userFrame = getUserFrameById(userFrameId);
+			UserFrame userFrame = generalMapper.getUserFrameById(userFrameId);
 			Set<Clamping> possibleClampings = getClampingsByWorkAreaId(id);
 			WorkArea workArea = new WorkArea(name, userFrame, possibleClampings);
 			workArea.setId(id);
 			workAreas.add(workArea);
 		}
 		return workAreas;
-	}
-	
-	private UserFrame getUserFrameById(final int userFrameId) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM USERFRAME WHERE ID = ?");
-		stmt.setInt(1, userFrameId);
-		ResultSet results = stmt.executeQuery();
-		UserFrame userFrame = null;
-		while (results.next()) {
-			int number = results.getInt("NUMBER");
-			float zsafe = results.getFloat("ZSAFE");
-			int locationId = results.getInt("LOCATION");
-			Coordinates location = getCoordinatesById(locationId);
-			userFrame = new UserFrame(number, zsafe, location);
-			userFrame.setId(userFrameId);
-		}
-		stmt.close();
-		return userFrame;
-	}
-	
-	private Coordinates getCoordinatesById(final int coordinatesId) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM COORDINATES WHERE ID = ?");
-		stmt.setInt(1, coordinatesId);
-		ResultSet results = stmt.executeQuery();
-		Coordinates coordinates = null;
-		if (results.next()) {
-			float x = results.getFloat("X");
-			float y = results.getFloat("Y");
-			float z = results.getFloat("Z");
-			float w = results.getFloat("W");
-			float p = results.getFloat("P");
-			float r = results.getFloat("R");
-			coordinates = new Coordinates(x, y, z, w, p, r);
-			coordinates.setId(coordinatesId);
-		}
-		stmt.close();
-		return coordinates;
 	}
 	
 	private Set<Clamping> getClampingsByWorkAreaId(final int workAreaId) throws SQLException {
@@ -204,11 +165,11 @@ public final class DeviceMapper {
 		if (results.next()) {
 			int type = results.getInt("TYPE");
 			int relativePositionId = results.getInt("RELATIVE_POSITION");
-			Coordinates relativePosition = getCoordinatesById(relativePositionId);
+			Coordinates relativePosition = generalMapper.getCoordinatesById(relativePositionId);
 			int smoothToId = results.getInt("SMOOTH_TO");
-			Coordinates smoothTo = getCoordinatesById(smoothToId);
+			Coordinates smoothTo = generalMapper.getCoordinatesById(smoothToId);
 			int smoothFromId = results.getInt("SMOOTH_FROM");
-			Coordinates smoothFrom = getCoordinatesById(smoothFromId);
+			Coordinates smoothFrom = generalMapper.getCoordinatesById(smoothFromId);
 			float height = results.getFloat("HEIGHT");
 			String imageUrl = results.getString("IMAGE_URL");
 			String name = results.getString("NAME");

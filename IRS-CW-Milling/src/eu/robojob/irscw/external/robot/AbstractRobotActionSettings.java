@@ -6,7 +6,9 @@ import eu.robojob.irscw.process.AbstractProcessStep;
 
 public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep> {
 	
+	private int id;
 	private T step;
+	private AbstractRobot robot;
 	private WorkArea workArea;
 	private GripperHead gripperHead;
 	private Coordinates smoothPoint;
@@ -14,7 +16,8 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 	private boolean freeAfter;
 	private boolean teachingNeeded;
 	
-	public AbstractRobotActionSettings(final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location) {
+	public AbstractRobotActionSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location) {
+		this.robot = robot;
 		this.workArea = workArea;
 		this.gripperHead = gripperHead;
 		this.smoothPoint = smoothPoint;
@@ -23,6 +26,22 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		this.teachingNeeded = false;
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(final int id) {
+		this.id = id;
+	}
+	
+	public AbstractRobot getRobot() {
+		return robot;
+	}
+
+	public void setRobot(final AbstractRobot robot) {
+		this.robot = robot;
+	}
+
 	public void setStep(final T step) {
 		this.step = step;
 	}

@@ -12,7 +12,7 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 		super(view);
 		this.deviceInfo = deviceInfo;
 		view.setDeviceInfo(deviceInfo);
-		view.setStackingDeviceIds(deviceManager.getStackingDeviceIds());
+		view.setStackingDeviceIds(deviceManager.getStackingDeviceNames());
 		view.build();
 	}
 

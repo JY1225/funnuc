@@ -1,92 +1,58 @@
 package eu.robojob.irscw.external.robot;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
-import eu.robojob.irscw.external.communication.socket.SocketConnection;
-import eu.robojob.irscw.external.communication.socket.SocketConnection.Type;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import eu.robojob.irscw.db.external.robot.RobotMapper;
 
 public class RobotManager {
 	
-	private Map<String, AbstractRobot> robots;
-	private Properties properties;
+	private Map<String, AbstractRobot> robotsByName;
+	private Map<Integer, AbstractRobot> robotsById;
+	private RobotMapper robotMapper;
 	
-	private static final String ROBOT_IP = "robot-ip";
-	private static final String ROBOT_PORT = "robot-port";
+	private static Logger logger = LogManager.getLogger(RobotManager.class.getName());
 	
-	public RobotManager(final Properties properties) {
-		robots = new HashMap<String, AbstractRobot>();
-		this.properties = properties;
+	public RobotManager(final RobotMapper robotMapper) {
+		this.robotMapper = robotMapper;
+		robotsByName = new HashMap<String, AbstractRobot>();
+		robotsById = new HashMap<Integer, AbstractRobot>();
 		initialize();
 	}
 	
 	private void initialize() {
-		Gripper gripper = new Gripper("Vacuum grip", 130, "Vacuum grip, type 1", "img/grippers/gripper1.png");
-		Gripper gripper2 = new Gripper("2P clamp grip A", 133, "Clamp grip, two points", "img/grippers/gripper2.png");
-		Gripper gripper3 = new Gripper("2P clamp grip B", 133, "Clamp grip, two points", "img/grippers/gripper2.png");
-		GripperHead head1 = new GripperHead("A", null, null);
-		GripperHead head2 = new GripperHead("B", null, null);
-		Set<GripperHead> gripperHeads = new HashSet<GripperHead>();
-		gripperHeads.add(head1);
-		gripperHeads.add(head2);
-		Set<Gripper> grippers = new HashSet<Gripper>();
-		grippers.add(gripper);
-		grippers.add(gripper2);
-		grippers.add(gripper3);
-		GripperBody gripperBody = new GripperBody("2", "Standard Body", gripperHeads);
-		Set<GripperBody> gripperBodies = new HashSet<GripperBody>();
-		gripperBodies.add(gripperBody);
-		SocketConnection connection = new SocketConnection(Type.CLIENT, "Fanuc M20iA", properties.getProperty(ROBOT_IP), Integer.parseInt(properties.getProperty(ROBOT_PORT)));
-		FanucRobot fanucRobot = new FanucRobot("Fanuc M20iA", gripperBodies, gripperBody, connection);
-		addRobot(fanucRobot);
-	}
-	
-	public List<GripperHead> getGripperHeads(final String robotId) {
-		//return robots.get(robotId).getGripperBody().getGripperHeads();
-		return null;
-	}
-	
-	public Set<Gripper> getGrippers(final GripperBody gripperBody) {
-		//return gripperBody.getPossibleGrippers();
-		return null;
-	}
-	
-	public Set<GripperBody> getGripperBodies(final AbstractRobot robot) {
-		return robot.getPossibleGripperBodies();
-	}
-	
-	public Gripper getGripper(final String id) {
-		for (AbstractRobot robot : robots.values()) {
-			for (GripperBody body : robot.getPossibleGripperBodies()) {
-				/*for (Gripper gripper : body.getPossibleGrippers()) {
-					if (gripper.getName().equals(id)) {
-						return gripper;
-					}
-				}*/
+		Set<AbstractRobot> allRobots;
+		try {
+			allRobots = robotMapper.getAllRobots();
+			for (AbstractRobot robot : allRobots) {
+				robotsById.put(robot.getId(), robot);
+				robotsByName.put(robot.getName(), robot);
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.error(e);
 		}
-		return null;
 	}
 	
-	public void addRobot(final AbstractRobot robot) {
-		robots.put(robot.getName(), robot);
-	}
-	
-	public Set<String> getRobotIds() {
-		return robots.keySet();
+	public Set<String> getRobotNames() {
+		return robotsByName.keySet();
 	}
 
 	public Collection<AbstractRobot> getRobots() {
-		return robots.values();
+		return robotsByName.values();
 	}
 	
-	public AbstractRobot getRobotById(final String robotId) {
-		return robots.get(robotId);
+	public AbstractRobot getRobotByName(final String robotName) {
+		return robotsByName.get(robotName);
+	}
+	
+	public AbstractRobot getRobotById(final int id) {
+		return robotsById.get(id);
 	}
 }
