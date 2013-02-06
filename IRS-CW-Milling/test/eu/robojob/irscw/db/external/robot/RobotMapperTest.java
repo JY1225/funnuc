@@ -6,6 +6,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.robojob.irscw.db.external.util.ConnectionMapper;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 
 public class RobotMapperTest {
@@ -14,7 +15,7 @@ public class RobotMapperTest {
 	
 	@Before
 	public void setup() {
-		robotMapper = RobotMapper.getInstance();
+		robotMapper = new RobotMapper(new ConnectionMapper());
 	}
 	
 	@Test

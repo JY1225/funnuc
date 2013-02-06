@@ -6,6 +6,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.robojob.irscw.db.GeneralMapper;
+import eu.robojob.irscw.db.external.util.ConnectionMapper;
 import eu.robojob.irscw.external.device.AbstractDevice;
 
 public class DeviceMapperTest {
@@ -14,7 +16,7 @@ public class DeviceMapperTest {
 	
 	@Before
 	public void setup() {
-		deviceMapper = DeviceMapper.getInstance();
+		deviceMapper = new DeviceMapper(new GeneralMapper(), new ConnectionMapper());
 	}
 	
 	@Test

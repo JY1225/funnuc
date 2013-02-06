@@ -264,9 +264,9 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		PrageDevice prageDevice = (PrageDevice) deviceManager.getPreProcessingDeviceByName("Präge");
 		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
 		
-		DevicePickSettings pragePickSettings = new DevicePickSettings(prageDevice.getWorkAreaByName("Präge"));
-		ProcessingDeviceStartCyclusSettings prageStartCyclusSettings = new ProcessingDeviceStartCyclusSettings(prageDevice.getWorkAreaByName("Präge"));
-		DevicePutSettings pragePutSettings = new DevicePutSettings(prageDevice.getWorkAreaByName("Präge"));
+		DevicePickSettings pragePickSettings = new DevicePickSettings(prageDevice, prageDevice.getWorkAreaByName("Präge"));
+		ProcessingDeviceStartCyclusSettings prageStartCyclusSettings = new ProcessingDeviceStartCyclusSettings(prageDevice, prageDevice.getWorkAreaByName("Präge"));
+		DevicePutSettings pragePutSettings = new DevicePutSettings(prageDevice, prageDevice.getWorkAreaByName("Präge"));
 		
 		FanucRobotPutSettings robotPutSettings = new FanucRobotPutSettings();
 		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
@@ -280,11 +280,11 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		robotPickSettings.setWorkArea(prageDevice.getWorkAreaByName("Präge"));
 		robotPickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		
-		RobotProcessingWhileWaitingSettings procSettings = new RobotProcessingWhileWaitingSettings(prageDevice.getWorkAreaByName("Präge"), deviceInfo.getPickStep().getRobotSettings().getGripperHead());
+		RobotProcessingWhileWaitingSettings procSettings = new RobotProcessingWhileWaitingSettings(deviceInfo.getPickStep().getRobotSettings().getRobot(), prageDevice.getWorkAreaByName("Präge"), deviceInfo.getPickStep().getRobotSettings().getGripperHead());
 		
-		PutAndWaitStep putAndWait1 = new PutAndWaitStep(deviceInfo.getPickStep().getRobot(), prageDevice, pragePutSettings, robotPutSettings);
-		ProcessingWhileWaitingStep processing2 = new ProcessingWhileWaitingStep(prageDevice, prageStartCyclusSettings, deviceInfo.getPickStep().getRobot(), procSettings);
-		PickAfterWaitStep pickAfterWait1 = new PickAfterWaitStep(deviceInfo.getPickStep().getRobot(), prageDevice, pragePickSettings, robotPickSettings);
+		PutAndWaitStep putAndWait1 = new PutAndWaitStep(pragePutSettings, robotPutSettings);
+		ProcessingWhileWaitingStep processing2 = new ProcessingWhileWaitingStep(prageStartCyclusSettings, procSettings);
+		PickAfterWaitStep pickAfterWait1 = new PickAfterWaitStep(pragePickSettings, robotPickSettings);
 		
 		DeviceInformation newDeviceInfo = new DeviceInformation((index + 1), processFlowAdapter);
 		newDeviceInfo.setPickStep(pickAfterWait1);
