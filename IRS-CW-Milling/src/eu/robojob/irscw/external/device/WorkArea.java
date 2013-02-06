@@ -95,11 +95,11 @@ public class WorkArea {
 	}
 	
 	public List<String> getClampingNames() {
-		List<String> clampingIds = new ArrayList<String>();
+		List<String> clampingNames = new ArrayList<String>();
 		for (Clamping clamping: clampings) {
-			clampingIds.add(clamping.getName());
+			clampingNames.add(clamping.getName());
 		}
-		return clampingIds;
+		return clampingNames;
 	}
 	
 	public Clamping getClampingByName(final String name) {

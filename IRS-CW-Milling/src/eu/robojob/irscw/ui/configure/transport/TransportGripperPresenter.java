@@ -30,14 +30,14 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 		getView().setPresenter(this);
 	}
 
-	public void changedGripperHead(final String id) {
-		// TODO implement
-		//throw new IllegalStateException("This method is not supported for now");
+	public void changedGripperHead(final String gripperHeadName) {
+		logger.debug("Changed gripper head: " + gripperHeadName);
+		transportInfo.getPickStep().getRobotSettings().setGripperHead(transportInfo.getRobot().getGripperBody().getGripperHeadByName(gripperHeadName));
+		transportInfo.getPutStep().getRobotSettings().setGripperHead(transportInfo.getRobot().getGripperBody().getGripperHeadByName(gripperHeadName));
+		getView().refresh();
 	}
 	
-	public void changedGripper(final String id) {
-		//Gripper gripper = transportInfo.getRobot().getGripperBody().getGripper(id);
-		Gripper gripper = null;
+	public void changedGripper(final Gripper gripper) {
 		//FIXME REVIEW
 		boolean found = false;
 		for (GripperHead head : transportInfo.getRobot().getGripperBody().getGripperHeads()) {

@@ -143,6 +143,14 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		refresh();
 	}
 	
+	@Override
+	public void refresh() {
+		refreshMachines();
+		refreshWorkAreas();
+		refreshClampings();
+		refreshClampType();
+	}
+	
 	public void refreshMachines() {
 		cbbMachine.getItems().clear();
 		cbbMachine.getItems().addAll(cncMillingMachineIds);
@@ -161,12 +169,8 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		if ((deviceInfo.getDevice() != null) && (deviceInfo.getDevice().getWorkAreas() != null)) {
 			cbbWorkArea.getItems().clear();
 			cbbWorkArea.getItems().addAll(deviceInfo.getDevice().getWorkAreaNames());
-			cbbWorkArea.setDisable(false);
-			lblWorkArea.setDisable(false);
 			if (cbbWorkArea.getItems().size() == 1) {
 				cbbWorkArea.setValue(cbbWorkArea.getItems().get(0));
-				cbbWorkArea.setDisable(true);
-				lblWorkArea.setDisable(true);
 			} else if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)
 					&& (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 				cbbWorkArea.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getName());
@@ -178,18 +182,12 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		if ((deviceInfo.getPutStep().getDeviceSettings() != null) && (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 			cbbClamping.getItems().clear();
 			cbbClamping.getItems().addAll(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getClampingNames());
-			cbbClamping.setDisable(false);
-			lblClampingName.setDisable(false);
 			if (cbbClamping.getItems().size() == 1) {
 				cbbClamping.setValue(cbbClamping.getItems().get(0));
-				cbbClamping.setDisable(true);
-				lblClampingName.setDisable(true);
 			} else if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)
 					&& (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 				if (deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping() != null) {
 					cbbClamping.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping().getName());
-				} else {
-					cbbClamping.setValue(cbbClamping.getItems().get(0));
 				}
 			}
 		}
@@ -210,14 +208,6 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	
 	@Override
 	public void setTextFieldListener(final TextFieldListener listener) {
-	}
-
-	@Override
-	public void refresh() {
-		refreshMachines();
-		refreshWorkAreas();
-		refreshClampings();
-		refreshClampType();
 	}
 
 }

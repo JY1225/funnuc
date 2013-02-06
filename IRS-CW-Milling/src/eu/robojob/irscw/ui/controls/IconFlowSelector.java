@@ -22,17 +22,21 @@ public class IconFlowSelector extends ScrollPane {
 	
 	public IconFlowSelector() {
 		super();
+		this.setFitToHeight(true);
+		this.setFitToWidth(true);
+		this.getStyleClass().add(CSS_CLASS_ICONFLOW_SELECTOR);
 		box = new HBox();
 		box.setPadding(new Insets(PADDING, PADDING, PADDING, PADDING));
 		items = new HashMap<Integer, IconFlowSelectorItem>();
 		setPrefHeight(PREF_HEIGHT);
+		box.setPrefHeight(PREF_HEIGHT);
+		box.setFillHeight(true);
 		box.setSpacing(SPACING);
 		setContent(box);
 		clearItems();
 	}
 	
 	public void addItem(final int index, final String name, final String iconUrl, final EventHandler<MouseEvent> handler) {
-		this.getStyleClass().add(CSS_CLASS_ICONFLOW_SELECTOR);
 		IconFlowSelectorItem item = new IconFlowSelectorItem(index, name, iconUrl);
 		item.addEventHandler(MouseEvent.MOUSE_CLICKED, handler);
 		items.put(index, item);

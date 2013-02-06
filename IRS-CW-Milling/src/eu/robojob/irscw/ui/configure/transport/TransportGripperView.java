@@ -58,13 +58,11 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		cbbGripperHeads.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-				if ((oldValue != null) && (!oldValue.equals(newValue))) {
+				if ((oldValue == null) || (!oldValue.equals(newValue))) {
 					getPresenter().changedGripperHead(newValue);
 				}
 			}
 		});
-		lblGripperHead.setDisable(true);
-		cbbGripperHeads.setDisable(true);
 		
 		column = 0;
 		row++;
@@ -79,12 +77,18 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		add(ifsGrippers, column++, row, 3, 1);
 		
 		row++;
-		
 	}
+	
 
+	@Override
+	public void refresh() {
+		refreshGripperHeads();
+		refreshGrippers();
+	}
+	
 	private void refreshGripperHeads() {
 		// as we assume the robot and robotBody are fixed, we can take the following values directly from the used robot
-		GripperBody body = transportInfo.getRobot().getGripperBody();
+		GripperBody body = transportInfo.getRobotSettings().getGripperBody();
 		cbbGripperHeads.getItems().clear();
 		for (GripperHead head : body.getGripperHeads()) {
 			cbbGripperHeads.getItems().add(head.getName());
@@ -98,19 +102,20 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 	
 	private void refreshGrippers() {
 		ifsGrippers.clearItems();
-		GripperBody body = transportInfo.getRobot().getGripperBody();
-		int itemIndex = 0;
-		//FIXME review
-	/*	for (final Gripper gripper : body.getPossibleGrippers()) {
-			ifsGrippers.addItem(itemIndex, gripper.getId(), gripper.getImageUrl(), new EventHandler<MouseEvent>() {
-				@Override
-				public void handle(final MouseEvent event) {
-					getPresenter().changedGripper(gripper.getId());
-				}
-			});
-			itemIndex++;
-		}*/
-		setSelectedGripper();
+		GripperHead gripperHead = transportInfo.getPickStep().getRobotSettings().getGripperHead();
+		if (gripperHead != null) {
+			int itemIndex = 0;
+			for (final Gripper gripper : gripperHead.getPossibleGrippers()) {
+				ifsGrippers.addItem(itemIndex, gripper.getName(), gripper.getImageUrl(), new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(final MouseEvent event) {
+						getPresenter().changedGripper(gripper);
+					}
+				});
+				itemIndex++;
+			}
+			setSelectedGripper();
+		}
 	}
 	
 	public void setSelectedGripper() {
@@ -124,13 +129,6 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 	
 	@Override
 	public void setTextFieldListener(final TextFieldListener listener) {
-	}
-
-	@Override
-	public void refresh() {
-		refreshGripperHeads();
-		refreshGrippers();
-		setSelectedGripper();
 	}
 
 }

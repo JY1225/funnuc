@@ -186,9 +186,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	@Override
 	public void loadDeviceSettings(final DeviceSettings deviceSettings) {
 		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
-			if (!getWorkAreaNames().contains(entry.getKey().getName())) {
-				getWorkAreaByName(entry.getKey().getName()).setActiveClamping(entry.getValue());
-			}
+			getWorkAreaByName(entry.getKey().getName()).setActiveClamping(entry.getValue());
 		}
 	}
 
