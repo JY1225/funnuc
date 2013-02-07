@@ -220,7 +220,8 @@ public class ProcessFlowMapper {
 					processSteps.add(pickAfterWaitStep);
 					break;
 				case STEP_TYPE_PROCESSINGWHILEWAITING:
-					
+					ProcessingWhileWaitingStep processingWhileWaitingStep = getProcessingWhileWaitingStep(id);
+					processSteps.add(processingWhileWaitingStep);
 					break;
 				default:
 					throw new IllegalStateException("Unkown step type: [" + type + "].");

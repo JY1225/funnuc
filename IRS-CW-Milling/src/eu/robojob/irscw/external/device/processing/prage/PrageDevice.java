@@ -2,6 +2,7 @@ package eu.robojob.irscw.external.device.processing.prage;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
@@ -47,7 +48,11 @@ public class PrageDevice extends AbstractProcessingDevice {
 	@Override public void putFinished(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException { }
 	@Override public void interventionFinished(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException { }
 	@Override public void releasePiece(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
-	@Override public void loadDeviceSettings(final DeviceSettings deviceSettings) { }
+	@Override public void loadDeviceSettings(final DeviceSettings deviceSettings) {
+		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
+			entry.getKey().setActiveClamping(entry.getValue());
+		}
+	}
 	@Override public void interruptCurrentAction() { }
 	@Override public void prepareForProcess(final ProcessFlow process) throws AbstractCommunicationException, InterruptedException { }
 	

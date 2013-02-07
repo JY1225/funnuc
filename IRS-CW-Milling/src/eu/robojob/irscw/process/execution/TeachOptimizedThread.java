@@ -141,6 +141,7 @@ public class TeachOptimizedThread extends TeachThread {
 
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				handleException(new Exception(Translator.getTranslation(OTHER_EXCEPTION)));
 			}
 		} catch (Exception e) {
@@ -194,9 +195,9 @@ public class TeachOptimizedThread extends TeachThread {
 		for (AbstractProcessStep step : getProcessFlow().getProcessSteps()) {
 			if ((step instanceof PickStep) && ((PickStep) step).getDevice().getName().equals("IRS M Basic")) {
 				pickFromStackerStep = (PickStep) step;
-			} else if ((step instanceof PutAndWaitStep) && ((PutAndWaitStep) step).getDevice().getName().equals("Prage")) {
+			} else if ((step instanceof PutAndWaitStep) && ((PutAndWaitStep) step).getDevice().getName().equals("Präge Device")) {
 				putAndWaitOnPrageStep = (PutAndWaitStep) step;
-			} else if ((step instanceof PickAfterWaitStep) && ((PickAfterWaitStep) step).getDevice().getName().equals("Prage")) {
+			} else if ((step instanceof PickAfterWaitStep) && ((PickAfterWaitStep) step).getDevice().getName().equals("Präge Device")) {
 				pickAfterWaitOnPrageStep = (PickAfterWaitStep) step;
 			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice().getName().equals("Mazak VRX J500")) {
 				putInMachineStep = (PutStep) step;
