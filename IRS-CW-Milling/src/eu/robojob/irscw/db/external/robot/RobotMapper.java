@@ -55,6 +55,7 @@ public class RobotMapper {
 			int socketConnectionId = results.getInt("SOCKETCONNECTION");
 			SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
 			fanucRobot = new FanucRobot(name, gripperBodies, null, socketConnection);
+			fanucRobot.setId(id);
 		}
 		return fanucRobot;
 	}

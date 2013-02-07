@@ -239,7 +239,7 @@ public class AutomateStatusView extends HBox {
 		}
 		
 		if ((percentaged < 0) || (percentaged > 100)) {
-			throw new IllegalArgumentException("Illegal percentage value");
+			throw new IllegalArgumentException("Illegal percentage value: [" + percentage + "]");
 		}
 		
 		piePiecePath.getElements().clear();

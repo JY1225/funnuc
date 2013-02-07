@@ -33,8 +33,6 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 		} else {
 			if (parent.getMode() == Mode.REMOVE_DEVICE) {
 				parent.removeDevice(index);
-			} else {
-				throw new IllegalStateException("Device [" + index + "] clicked, but state does not allow it");
 			}
 		}
 	}
@@ -52,8 +50,6 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 		} else {
 			if (parent.getMode() == Mode.ADD_DEVICE) {
 				parent.addDevice(index);
-			} else {
-				throw new IllegalStateException("Transport [" + index + "] clicked, but state does not allow it.");
 			}
 		}
 	}

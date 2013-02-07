@@ -16,6 +16,7 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotSettings;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
@@ -42,7 +43,6 @@ public class ProcessFlow {
 	private Map<AbstractDevice, DeviceSettings> deviceSettings;		// device settings that are independent of the process steps
 	private Map<AbstractRobot, RobotSettings> robotSettings;		// robot settings that are independent of the process steps
 		
-	private Integer totalAmount;
 	private Integer finishedAmount;
 	
 	private String name;
@@ -63,14 +63,13 @@ public class ProcessFlow {
 	private ClampingManner clampingManner;
 	
 	public ProcessFlow(final String name, final String description, final List<AbstractProcessStep>processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, 
-			RobotSettings> robotSettings, final int totalAmount, final ClampingManner clampingManner, final Timestamp creation, final Timestamp lastOpened) {
+			RobotSettings> robotSettings, final ClampingManner clampingManner, final Timestamp creation, final Timestamp lastOpened) {
 		this.name = name;
 		this.description = description;
 		this.clampingManner = clampingManner;
 		this.deviceSettings = deviceSettings;
 		this.robotSettings = robotSettings;
 		this.listeners = new HashSet<ProcessFlowListener>();
-		this.totalAmount = totalAmount;
 		this.finishedAmount = 0;
 		this.mode = Mode.CONFIG;
 		this.currentIndices = new HashMap<Integer, Integer>();
@@ -82,7 +81,7 @@ public class ProcessFlow {
 	
 	public ProcessFlow(final String name, final String description, final List<AbstractProcessStep> processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, RobotSettings> robotSettings,
 			final Timestamp creation, final Timestamp lastOpened) {
-		this(name, description, processSteps, deviceSettings, robotSettings, 0, new ClampingManner(), creation, lastOpened);
+		this(name, description, processSteps, deviceSettings, robotSettings, new ClampingManner(), creation, lastOpened);
 	}
 	
 	public ProcessFlow(final String name) {
@@ -107,7 +106,6 @@ public class ProcessFlow {
 		this.deviceSettings = processFlow.getDeviceSettings();
 		this.robotSettings = processFlow.getRobotSettings();
 		initialize();
-		this.totalAmount = processFlow.getTotalAmount();
 		this.finishedAmount = processFlow.getFinishedAmount();
 		this.clampingManner.setType(processFlow.getClampingType().getType());
 		for (AbstractDevice device : getDevices()) {
@@ -178,15 +176,17 @@ public class ProcessFlow {
 		logger.debug("Stopped listening to [" + toString() + "]: " + listener.toString());
 	}
 	
-	public Integer getTotalAmount() {
-		return totalAmount;
+	public int getTotalAmount() {
+		for (AbstractDevice device : deviceSettings.keySet()) {
+			if (device instanceof BasicStackPlate) {
+				BasicStackPlateSettings basicStackPlateSettings = (BasicStackPlateSettings) deviceSettings.get(device);
+				return basicStackPlateSettings.getAmount();
+			}
+		}
+		return 0;
 	}
 
-	public void setTotalAmount(final Integer totalAmount) {
-		this.totalAmount = totalAmount;
-	}
-
-	public Integer getFinishedAmount() {
+	public int getFinishedAmount() {
 		return finishedAmount;
 	}
 	
@@ -196,7 +196,7 @@ public class ProcessFlow {
 
 	public void setFinishedAmount(final int finishedAmount) {
 		this.finishedAmount = finishedAmount;
-		processProcessFlowEvent(new FinishedAmountChangedEvent(this, finishedAmount, totalAmount));
+		processProcessFlowEvent(new FinishedAmountChangedEvent(this, finishedAmount, getTotalAmount()));
 	}
 
 	public synchronized void processProcessFlowEvent(final ProcessFlowEvent event) {

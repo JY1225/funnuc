@@ -72,7 +72,6 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		logger.info("Set amount [" + amount + "].");
 		deviceSettings.setAmount(amount);
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
-		pickStep.getProcessFlow().setTotalAmount(amount);
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
@@ -99,7 +98,6 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
 		deviceSettings.setAmount(plate.getLayout().getStackingPositions().size());
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
-		pickStep.getProcessFlow().setTotalAmount(plate.getLayout().getStackingPositions().size());
 		getView().refresh();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}

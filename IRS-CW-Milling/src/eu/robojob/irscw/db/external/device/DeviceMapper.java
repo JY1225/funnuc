@@ -59,6 +59,7 @@ public class DeviceMapper {
 					break;
 				case DEVICE_TYPE_PRAGE:
 					PrageDevice prageDevice = new PrageDevice(name, zones);
+					prageDevice.setId(id);
 					devices.add(prageDevice);
 					break;
 				default:
@@ -87,6 +88,7 @@ public class DeviceMapper {
 			BasicStackPlateLayout layout = new BasicStackPlateLayout(horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, horizontalPadding, verticalPaddingTop, 
 					verticalPaddingBottom, horizontalHoleDistance, interferenceDistance, overflowPercentage);
 			stackPlate = new BasicStackPlate(name, zones, layout);
+			stackPlate.setId(id);
 		}
 		return stackPlate;
 	}

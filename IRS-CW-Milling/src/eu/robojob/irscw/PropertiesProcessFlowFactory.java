@@ -106,7 +106,7 @@ public class PropertiesProcessFlowFactory {
 			final String robotHeadIdAfter, final String gripperHeadAId, final String gripperHeadBId, final Coordinates relativeTeachedPickStacker, final Coordinates relativeTeachedPutPrage, 
 				final Coordinates relativeTeachedPutMachine, final Coordinates relativeTeachedPickMachine, final Coordinates relativeTeachedPutStacker) {
 		ProcessFlow processFlow = new ProcessFlow(processFlowId);
-		processFlow.setTotalAmount(amount);
+		//processFlow.setTotalAmount(amount);
 		
 		//----------ROBOT----------
 		

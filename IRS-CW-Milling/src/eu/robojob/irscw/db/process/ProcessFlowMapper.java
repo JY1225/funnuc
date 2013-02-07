@@ -182,6 +182,7 @@ public class ProcessFlowMapper {
 				throw new IllegalStateException("Unknown workpiece orientation: [" + orientation + "].");
 			}
 		}
+		basicStackPlateSettings.setClampings(clampings);
 		return basicStackPlateSettings;
 	}
 	
@@ -380,17 +381,15 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int gripperHeadId = results.getInt("GRIPPERHEAD");
 			int smoothPointId = results.getInt("SMOOTHPOINT");
-			int locationId = results.getInt("LOCATION");
 			int robotId = results.getInt("ROBOT");
 			int workPieceId = results.getInt("WORKPIECE");
 			boolean airblow = results.getBoolean("AIRBLOW");
 			AbstractRobot robot = robotManager.getRobotById(robotId);
 			GripperHead gripperHead = robot.getGripperHeadById(gripperHeadId);
 			Coordinates smoothPoint = generalMapper.getCoordinatesById(smoothPointId);
-			Coordinates location = generalMapper.getCoordinatesById(locationId);
 			WorkPiece workPiece = generalMapper.getWorkPieceById(workPieceId);
 			if (robot instanceof FanucRobot) {
-				robotPickSettings = new FanucRobotPickSettings(robot, workArea, gripperHead, smoothPoint, location, workPiece, airblow);
+				robotPickSettings = new FanucRobotPickSettings(robot, workArea, gripperHead, smoothPoint, null, workPiece, airblow);
 				robotPickSettings.setId(id);
 			} else {
 				throw new IllegalStateException("Unknown robot type: " + robot);
@@ -408,15 +407,13 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int gripperHeadId = results.getInt("GRIPPERHEAD");
 			int smoothPointId = results.getInt("SMOOTHPOINT");
-			int locationId = results.getInt("LOCATION");
 			int robotId = results.getInt("ROBOT");
 			boolean airblow = results.getBoolean("AIRBLOW");
 			AbstractRobot robot = robotManager.getRobotById(robotId);
 			GripperHead gripperHead = robot.getGripperHeadById(gripperHeadId);
 			Coordinates smoothPoint = generalMapper.getCoordinatesById(smoothPointId);
-			Coordinates location = generalMapper.getCoordinatesById(locationId);
 			if (robot instanceof FanucRobot) {
-				robotPutSettings = new FanucRobotPutSettings(robot, workArea, gripperHead, smoothPoint, location, airblow);
+				robotPutSettings = new FanucRobotPutSettings(robot, workArea, gripperHead, smoothPoint, null, airblow);
 				robotPutSettings.setId(id);
 			} else {
 				throw new IllegalStateException("Unknown robot type: " + robot);
