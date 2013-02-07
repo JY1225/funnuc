@@ -1,8 +1,12 @@
 	package eu.robojob.irscw.ui.configure;
 
+import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
+import eu.robojob.irscw.external.device.DeviceSettings;
+import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.robot.RobotProcessingWhileWaitingSettings;
@@ -10,9 +14,12 @@ import eu.robojob.irscw.external.robot.fanuc.FanucRobotPickSettings;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobotPutSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PickAfterWaitStep;
+import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.ProcessingWhileWaitingStep;
 import eu.robojob.irscw.process.PutAndWaitStep;
+import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.configure.device.DeviceMenuFactory;
@@ -258,42 +265,92 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		mode = Mode.NORMAL;
 	}
 	
-	//TODO review, for now this is hard coded
+	//TODO review
 	public void addDevice(final int index) {
 		
-		PrageDevice prageDevice = (PrageDevice) deviceManager.getPreProcessingDeviceByName("Präge");
-		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
+		AbstractProcessingDevice device = null;
 		
-		DevicePickSettings pragePickSettings = new DevicePickSettings(prageDevice, prageDevice.getWorkAreaByName("Präge"));
-		ProcessingDeviceStartCyclusSettings prageStartCyclusSettings = new ProcessingDeviceStartCyclusSettings(prageDevice, prageDevice.getWorkAreaByName("Präge"));
-		DevicePutSettings pragePutSettings = new DevicePutSettings(prageDevice, prageDevice.getWorkAreaByName("Präge"));
+		if (index < processFlowAdapter.getCNCMachineIndex()) {
+			// pre-processing device
+			if (deviceManager.getPreProcessingDevices().size() > 0) {
+				device = deviceManager.getPreProcessingDevices().iterator().next();
+			}
+		} else {
+			// post-processing device
+			if (deviceManager.getPostProcessingDevices().size() > 0) {
+				device = deviceManager.getPostProcessingDevices().iterator().next();
+			}
+		}
+		
+		if (device == null) {
+			throw new IllegalArgumentException("Not possible: no device to use");
+		}
+		
+		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
+		WorkArea workArea = null;
+		Clamping clamping = null;
+		if (device.getWorkAreas().size() >= 1) {
+			workArea = device.getWorkAreas().iterator().next();
+			if (workArea == null) {
+				throw new IllegalArgumentException("Device [" + device + "] does not contain workarea");
+			}
+			if (workArea.getClampings().size() >= 1) {
+				clamping = workArea.getClampings().iterator().next();
+				if (clamping == null) {
+					throw new IllegalArgumentException("Device [" + device + "] with workarea [" + workArea + "] does not contain workarea");
+				}
+			}
+		}
+		
+		DevicePickSettings devicePickSettings = device.getDefaultPickSettings();
+		devicePickSettings.setWorkArea(workArea);
+		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = device.getDefaultStartCyclusSettings();
+		deviceStartCyclusSettings.setWorkArea(workArea);
+		DevicePutSettings devicePutSettings = device.getDefaultPutSettings();
+		devicePutSettings.setWorkArea(workArea);
+		DeviceSettings deviceSettings = device.getDeviceSettings();
+		deviceSettings.setClamping(workArea, clamping);
+		device.loadDeviceSettings(deviceSettings);
 		
 		FanucRobotPutSettings robotPutSettings = new FanucRobotPutSettings();
+		robotPutSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
 		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
-		robotPutSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaByName("Präge").getActiveClamping().getSmoothToPoint()));
-		robotPutSettings.setWorkArea(prageDevice.getWorkAreaByName("Präge"));
+		robotPutSettings.setSmoothPoint(new Coordinates(clamping.getSmoothToPoint()));
+		robotPutSettings.setWorkArea(workArea);
 		robotPutSettings.setDoMachineAirblow(false);	
 		
 		FanucRobotPickSettings robotPickSettings = new FanucRobotPickSettings();
+		robotPickSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
 		robotPickSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
-		robotPickSettings.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaByName("Präge").getActiveClamping().getSmoothFromPoint()));
-		robotPickSettings.setWorkArea(prageDevice.getWorkAreaByName("Präge"));
+		robotPickSettings.setSmoothPoint(new Coordinates(clamping.getSmoothFromPoint()));
+		robotPickSettings.setWorkArea(workArea);
 		robotPickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		
-		RobotProcessingWhileWaitingSettings procSettings = new RobotProcessingWhileWaitingSettings(deviceInfo.getPickStep().getRobotSettings().getRobot(), prageDevice.getWorkAreaByName("Präge"), deviceInfo.getPickStep().getRobotSettings().getGripperHead());
-		
-		PutAndWaitStep putAndWait1 = new PutAndWaitStep(pragePutSettings, robotPutSettings);
-		ProcessingWhileWaitingStep processing2 = new ProcessingWhileWaitingStep(prageStartCyclusSettings, procSettings);
-		PickAfterWaitStep pickAfterWait1 = new PickAfterWaitStep(pragePickSettings, robotPickSettings);
-		
 		DeviceInformation newDeviceInfo = new DeviceInformation((index + 1), processFlowAdapter);
-		newDeviceInfo.setPickStep(pickAfterWait1);
-		newDeviceInfo.setPutStep(putAndWait1);
-		newDeviceInfo.setProcessingStep(processing2);
+
+		if (device instanceof PrageDevice) {
+			RobotProcessingWhileWaitingSettings procSettings = new RobotProcessingWhileWaitingSettings(deviceInfo.getPickStep().getRobotSettings().getRobot(), workArea, deviceInfo.getPickStep().getRobotSettings().getGripperHead());		
+			PutAndWaitStep putAndWait1 = new PutAndWaitStep(devicePutSettings, robotPutSettings);
+			ProcessingWhileWaitingStep processing2 = new ProcessingWhileWaitingStep(deviceStartCyclusSettings, procSettings);
+			PickAfterWaitStep pickAfterWait1 = new PickAfterWaitStep(devicePickSettings, robotPickSettings);
+			
+			newDeviceInfo.setPickStep(pickAfterWait1);
+			newDeviceInfo.setPutStep(putAndWait1);
+			newDeviceInfo.setProcessingStep(processing2);
+		} else {
+			PutStep putStep = new PutStep(devicePutSettings, robotPutSettings);
+			ProcessingStep processingStep = new ProcessingStep(deviceStartCyclusSettings);
+			PickStep pickStep = new PickStep(devicePickSettings, robotPickSettings);
+			
+			newDeviceInfo.setPickStep(pickStep);
+			newDeviceInfo.setPutStep(putStep);
+			newDeviceInfo.setProcessingStep(processingStep);
+		}
 		
 		processFlowAdapter.addDeviceSteps(index, newDeviceInfo);
 		
-		deviceMenuFactory.reset();
+		deviceMenuFactory.clearBuffer();
+		transportMenuFactory.clearBuffer();
 		refresh();
 	}
 	

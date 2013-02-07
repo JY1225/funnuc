@@ -1,8 +1,11 @@
 package eu.robojob.irscw.external.device.processing.prage;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
+import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.ClampingManner.Type;
 import eu.robojob.irscw.external.device.DeviceActionException;
@@ -72,7 +75,11 @@ public class PrageDevice extends AbstractProcessingDevice {
 	
 	@Override
 	public DeviceSettings getDeviceSettings() {
-		return null;
+		Map<WorkArea, Clamping> clampings = new HashMap<WorkArea, Clamping>();
+		for (WorkArea workArea : getWorkAreas()) {
+			clampings.put(workArea, workArea.getActiveClamping());
+		}
+		return new DeviceSettings();
 	}
 	
 	@Override
