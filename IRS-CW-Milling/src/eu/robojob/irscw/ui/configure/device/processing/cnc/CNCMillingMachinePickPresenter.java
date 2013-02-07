@@ -114,7 +114,8 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 		if ((pickStep.getRobotSettings().getSmoothPoint() != null) && (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null)) {
 			WorkPieceDimensions myDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
 			WorkPieceDimensions prevDimensions = getPreviousPickDimensions();
-			if ((myDimensions.getWidth() <= prevDimensions.getWidth()) && (myDimensions.getLength() <= prevDimensions.getLength())) {
+			if ((myDimensions.getWidth() > 0) && (myDimensions.getLength() > 0) && (myDimensions.getHeight() > 0) && (myDimensions.getWidth() <= prevDimensions.getWidth()) && (myDimensions.getLength() <= prevDimensions.getLength()) 
+					&& (myDimensions.getHeight() <= prevDimensions.getHeight())) {
 				return true;
 			}
 		}

@@ -106,6 +106,7 @@ public class TeachThread extends Thread {
 				}
 			} catch (Exception e) {
 				handleException(new Exception(Translator.getTranslation(OTHER_EXCEPTION)));
+				e.printStackTrace();
 			}
 		} catch (Exception e) {
 			logger.error(e);

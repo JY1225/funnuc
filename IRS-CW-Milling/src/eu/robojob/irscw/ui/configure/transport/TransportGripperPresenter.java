@@ -34,7 +34,7 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 		logger.debug("Changed gripper head: " + gripperHeadName);
 		transportInfo.getPickStep().getRobotSettings().setGripperHead(transportInfo.getRobot().getGripperBody().getGripperHeadByName(gripperHeadName));
 		transportInfo.getPutStep().getRobotSettings().setGripperHead(transportInfo.getRobot().getGripperBody().getGripperHeadByName(gripperHeadName));
-		getView().refresh();
+		getView().refreshGrippers();
 	}
 	
 	public void changedGripper(final Gripper gripper) {

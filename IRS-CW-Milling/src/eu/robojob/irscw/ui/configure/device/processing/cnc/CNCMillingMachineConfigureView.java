@@ -75,8 +75,10 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		cbbMachine.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> arg0, final String oldValue, final String newValue) {
-				if ((oldValue == null) || (!oldValue.equals(newValue))) {
-					getPresenter().changedDevice(newValue);
+				if (newValue != null) {
+					if ((oldValue == null) || (!oldValue.equals(newValue))) {
+						getPresenter().changedDevice(newValue);
+					}
 				}
 			}
 		});
@@ -90,9 +92,11 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		cbbWorkArea.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-				if ((oldValue == null) || (!oldValue.equals(newValue))) {
-					if ((deviceInfo.getPickStep().getDeviceSettings().getWorkArea() == null) || (!newValue.equals(deviceInfo.getPickStep().getDeviceSettings().getWorkArea().getName()))) {
-						getPresenter().changedWorkArea(newValue);
+				if (newValue != null) {
+					if ((oldValue == null) || (!oldValue.equals(newValue))) {
+						if ((deviceInfo.getPickStep().getDeviceSettings().getWorkArea() == null) || (!newValue.equals(deviceInfo.getPickStep().getDeviceSettings().getWorkArea().getName()))) {
+							getPresenter().changedWorkArea(newValue);
+						}
 					}
 				}
 			}
@@ -108,11 +112,13 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		cbbClamping.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-				if ((oldValue == null) || (!oldValue.equals(newValue))) {
-					DeviceSettings deviceSettings = deviceInfo.getDeviceSettings();
-					Clamping currentClamping = deviceSettings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
-					if ((currentClamping == null) || (!newValue.equals(currentClamping.getName()))) {
-						getPresenter().changedClamping(newValue);
+				if (newValue != null) {
+					if ((oldValue == null) || (!oldValue.equals(newValue))) {
+						DeviceSettings deviceSettings = deviceInfo.getDeviceSettings();
+						Clamping currentClamping = deviceSettings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
+						if ((currentClamping == null) || (!newValue.equals(currentClamping.getName()))) {
+							getPresenter().changedClamping(newValue);
+						}
 					}
 				}
 			}
@@ -169,8 +175,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		if ((deviceInfo.getDevice() != null) && (deviceInfo.getDevice().getWorkAreas() != null)) {
 			cbbWorkArea.getItems().clear();
 			cbbWorkArea.getItems().addAll(deviceInfo.getDevice().getWorkAreaNames());
-			if (cbbWorkArea.getItems().size() == 1) {
-			} else if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)
+			if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)
 					&& (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 				cbbWorkArea.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getName());
 			}
@@ -182,8 +187,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		if ((deviceInfo.getPutStep().getDeviceSettings() != null) && (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 			cbbClamping.getItems().clear();
 			cbbClamping.getItems().addAll(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getClampingNames());
-			if (cbbClamping.getItems().size() == 1) {
-			} else if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)
+			if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)
 					&& (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 				if (deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping() != null) {
 					cbbClamping.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping().getName());

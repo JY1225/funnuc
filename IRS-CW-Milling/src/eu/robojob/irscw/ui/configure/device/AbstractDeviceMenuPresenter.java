@@ -26,13 +26,13 @@ public abstract class AbstractDeviceMenuPresenter extends AbstractMenuPresenter<
 	
 	@Override
 	public void openFirst() {
-		if (deviceInfo.getPutStep() != null) {
+		if (deviceInfo.getProcessingStep() != null) {
+			configureDevice();
+		} else if (deviceInfo.getPutStep() != null) {
 			configurePut();
 		} else if (deviceInfo.getPickStep() != null) {
 			configurePick();
-		} else if (deviceInfo.getProcessingStep() != null) {
-			configureDevice();
-		} 
+		}
 	}
 	
 	public DeviceInformation getDeviceInformation() {

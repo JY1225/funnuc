@@ -58,8 +58,11 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		cbbGripperHeads.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-				if ((oldValue == null) || (!oldValue.equals(newValue))) {
-					getPresenter().changedGripperHead(newValue);
+				// selecting null is not possible
+				if (newValue != null) {
+					if ((oldValue == null) || (!oldValue.equals(newValue))) {
+						getPresenter().changedGripperHead(newValue);
+					}
 				}
 			}
 		});
@@ -86,7 +89,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		refreshGrippers();
 	}
 	
-	private void refreshGripperHeads() {
+	public void refreshGripperHeads() {
 		// as we assume the robot and robotBody are fixed, we can take the following values directly from the used robot
 		GripperBody body = transportInfo.getRobotSettings().getGripperBody();
 		cbbGripperHeads.getItems().clear();
@@ -100,7 +103,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		}
 	}
 	
-	private void refreshGrippers() {
+	public void refreshGrippers() {
 		ifsGrippers.clearItems();
 		GripperHead gripperHead = transportInfo.getPickStep().getRobotSettings().getGripperHead();
 		if (gripperHead != null) {

@@ -29,6 +29,7 @@ public class DeviceMapper {
 	private static final int DEVICE_TYPE_PRAGE = 3;
 	private static final int CLAMPING_TYPE_CENTRUM = 1;
 	private static final int CLAMPING_TYPE_FIXED = 2;
+	private static final int CLAMPING_TYPE_NONE = 3;
 	
 	private GeneralMapper generalMapper;
 	private ConnectionMapper connectionMapper;
@@ -179,6 +180,9 @@ public class DeviceMapper {
 					break;
 				case CLAMPING_TYPE_FIXED:
 					clamping = new Clamping(Clamping.Type.FIXED, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+					break;
+				case CLAMPING_TYPE_NONE:
+					clamping = new Clamping(Clamping.Type.NONE, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
 					break;
 				default:
 					throw new IllegalStateException("Unknown clamping type: [" + type + "].");

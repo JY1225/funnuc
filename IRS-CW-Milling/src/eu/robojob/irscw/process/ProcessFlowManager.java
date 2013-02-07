@@ -12,8 +12,10 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.db.process.ProcessFlowMapper;
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.DeviceSettings;
+import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
@@ -81,17 +83,33 @@ public class ProcessFlowManager {
 		if (stackingToDevice instanceof BasicStackPlate) {
 			((BasicStackPlateSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPieceDimensions(finishedWorkPiece.getDimensions());
 		}
-		for (AbstractProcessStep step : processSteps) {
-			if ((step instanceof DeviceStep) && (step instanceof RobotStep)) {
-				if (((DeviceStep) step).getDeviceSettings().getWorkArea() != null) {
-					((RobotStep) step).getRobotSettings().setWorkArea(((DeviceStep) step).getDeviceSettings().getWorkArea());
-				}
-			}
-		}
 		deviceSettings.put(cncMachine, cncMachine.getDeviceSettings());
 		deviceSettings.put(stackingToDevice, stackingToDevice.getDeviceSettings());
 		Map<AbstractRobot, RobotSettings> robotSettings = new HashMap<AbstractRobot, RobotSettings>();
 		robotSettings.put(robot, robot.getRobotSettings());
+		for (AbstractProcessStep step : processSteps) {
+			if (step instanceof DeviceStep) {
+				// if only one work area present: use it
+				DeviceStep deviceStep = (DeviceStep) step;
+				if (deviceStep.getDevice().getWorkAreas().size() == 1) {
+					WorkArea workArea = deviceStep.getDevice().getWorkAreas().get(0);
+					deviceStep.getDeviceSettings().setWorkArea(workArea);
+					if (step instanceof RobotStep) {
+						((RobotStep) step).getRobotSettings().setWorkArea(workArea);
+					}
+					// if only one clamping present: use it
+					if (workArea.getClampings().size() == 1) {
+						Clamping clamping = workArea.getClampings().iterator().next();
+						deviceSettings.get(deviceStep.getDevice()).setClamping(workArea, clamping);
+						if (step instanceof PickStep) {
+							((PickStep) step).getRobotSettings().setSmoothPoint(clamping.getSmoothFromPoint());
+						} else if (step instanceof PutStep) {
+							((PutStep) step).getRobotSettings().setSmoothPoint(clamping.getSmoothToPoint());
+						}
+					}
+				}
+			}
+		}
 		ProcessFlow processFlow = new ProcessFlow("", "", processSteps, deviceSettings, robotSettings, new Timestamp(System.currentTimeMillis()), null);
 		return processFlow;
 	}

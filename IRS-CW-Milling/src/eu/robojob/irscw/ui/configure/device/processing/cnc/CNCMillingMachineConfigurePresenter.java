@@ -10,6 +10,7 @@ import eu.robojob.irscw.external.device.DevicePickSettings;
 import eu.robojob.irscw.external.device.DevicePutSettings;
 import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.external.device.WorkArea;
+import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.external.robot.RobotPickSettings;
 import eu.robojob.irscw.external.robot.RobotPutSettings;
 import eu.robojob.irscw.process.AbstractProcessStep;
@@ -131,12 +132,15 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		DevicePutSettings putSettings = deviceInfo.getPutStep().getDeviceSettings();
 		RobotPutSettings robotPutSettings = deviceInfo.getPutStep().getRobotSettings();
 		DeviceSettings deviceSettings = (DeviceSettings) deviceInfo.getDeviceSettings();
+		ProcessingDeviceStartCyclusSettings startCyclusSettings = deviceInfo.getProcessingStep().getDeviceSettings();
 		// TODO take into account start cycle settings
 		if ((pickSettings.getWorkArea() != null)
 				&& (robotPickSettings.getWorkArea() != null)
 				&& (pickSettings.getWorkArea().equals(robotPickSettings.getWorkArea()))
 				&& (pickSettings.getWorkArea().getActiveClamping() != null)
 				&& (deviceSettings.getClamping(pickSettings.getWorkArea()).equals(pickSettings.getWorkArea().getActiveClamping()))
+				&& (startCyclusSettings.getWorkArea() != null)
+				&& (startCyclusSettings.getWorkArea().getActiveClamping() != null)
 				&& (putSettings.getWorkArea() != null)
 				&& (robotPutSettings.getWorkArea() != null)
 				&& (putSettings.getWorkArea().equals(robotPutSettings.getWorkArea()))
