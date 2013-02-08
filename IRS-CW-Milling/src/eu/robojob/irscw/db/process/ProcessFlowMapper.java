@@ -85,6 +85,40 @@ public class ProcessFlowMapper {
 		return processFlows;
 	}
 	
+	public void updateProcessFlow(final ProcessFlow processFlow) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE PROCESSFLOW SET NAME = ?, DESCRIPTION = ?, LASTOPENED = ? WHERE ID = ?");
+		stmt.setString(1, processFlow.getName());
+		stmt.setString(2, processFlow.getDescription());
+		stmt.setTimestamp(3, processFlow.getLastOpened());
+		stmt.setInt(4, processFlow.getId());
+		try {
+			stmt.executeUpdate();
+			deleteProcessFlowStepsAndSettings(processFlow.getId());
+			saveProcessFlowStepsAndSettings(processFlow);
+			ConnectionManager.getConnection().commit();
+		} catch (SQLException e) {
+			ConnectionManager.getConnection().rollback();
+		}
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	private void deleteProcessFlowStepsAndSettings(final int processFlowId) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM DEVICESETTINGS WHERE PROCESSFLOW = ?");
+		stmt.setInt(1, processFlowId);
+		stmt.executeUpdate();	// note the cascade delete settings take care of deleting all referenced rows
+		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("DELETE FROM ROBOTSETTINGS WHERE PROCESSFLOW = ?");
+		stmt2.setInt(1, processFlowId);
+		stmt2.executeUpdate();	// note the cascade delete settings take care of deleting all referenced rows
+		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("DELETE FROM STEPS WHERE PROCESSFLOW = ?");
+		stmt3.setInt(1, processFlowId);
+		stmt3.executeUpdate();	// note the cascade delete settings take care of deleting all referenced rows
+	}
+	
+	private void saveProcessFlowStepsAndSettings(final ProcessFlow processFlow) {
+		//FIXME: implement
+	}
+	
 	public ProcessFlow getProcessFlowById(final int id) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PROCESSFLOW WHERE ID = ?");
 		stmt.setInt(1, id);
@@ -99,6 +133,7 @@ public class ProcessFlowMapper {
 			Map<AbstractDevice, DeviceSettings> deviceSettings = getDeviceSettings(id);
 			Map<AbstractRobot, RobotSettings> robotSettings = getRobotSettings(id);
 			processFlow = new ProcessFlow(name, description, processSteps, deviceSettings, robotSettings, creation, lastOpened);
+			processFlow.setId(id);
 		}
 		return processFlow;
 	}

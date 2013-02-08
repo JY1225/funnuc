@@ -45,6 +45,8 @@ public class ProcessFlow {
 		
 	private Integer finishedAmount;
 	
+	private int id;
+	
 	private String name;
 	private String description; 
 	private Timestamp creation;
@@ -96,6 +98,14 @@ public class ProcessFlow {
 		setCurrentIndex(WORKPIECE_1_ID, -1);
 		loadAllSettings();
 		setFinishedAmount(0);
+	}
+	
+	public void setId(final int id) {
+		this.id = id;
+	}
+	
+	public int getId() {
+		return id;
 	}
 	
 	public void loadFromOtherProcessFlow(final ProcessFlow processFlow) {
