@@ -16,6 +16,7 @@ import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.external.robot.RobotManager;
+import eu.robojob.irscw.external.robot.RobotPickSettings;
 import eu.robojob.irscw.external.robot.RobotSettings;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobotPickSettings;
@@ -155,7 +156,7 @@ public class PropertiesProcessFlowFactory {
 		// Device: Basic stack plate
 		DevicePickSettings stackPlatePickSettings = new DevicePickSettings(stackPlate, stackPlate.getWorkAreaByName("IRS M Basic"));
 		// Robot: Fanuc Robot
-		FanucRobotPickSettings robotPickSettings1 = new FanucRobotPickSettings();
+		RobotPickSettings robotPickSettings1 = new FanucRobotPickSettings();
 		robotPickSettings1.setGripperHead(robot.getGripperBody().getGripperHeadByName(robotHeadIdBefore));
 		robotPickSettings1.setSmoothPoint(new Coordinates(stackPlate.getWorkAreaByName("IRS M Basic").getActiveClamping().getSmoothFromPoint()));
 		robotPickSettings1.setWorkArea(stackPlate.getWorkAreaByName("IRS M Basic"));
@@ -176,7 +177,7 @@ public class PropertiesProcessFlowFactory {
 		robotPutSettings1.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaByName("Präge").getClampingByName("Clamping 5").getSmoothToPoint()));
 		robotPutSettings1.setWorkArea(prageDevice.getWorkAreaByName("Präge"));
 		// pick after wait
-		FanucRobotPickSettings robotPickSettings2 = new FanucRobotPickSettings();
+		RobotPickSettings robotPickSettings2 = new FanucRobotPickSettings();
 		robotPickSettings2.setGripperHead(robot.getGripperBody().getGripperHeadByName(robotHeadIdBefore));
 		robotPickSettings2.setSmoothPoint(new Coordinates(prageDevice.getWorkAreaByName("Präge").getClampingByName("Clamping 5").getSmoothFromPoint()));
 		robotPickSettings2.setWorkArea(prageDevice.getWorkAreaByName("Präge"));
@@ -206,7 +207,7 @@ public class PropertiesProcessFlowFactory {
 		// Device: CNCMilling Machine
 		DevicePickSettings cncPickSettings = new DevicePickSettings(cncMilling, cncMilling.getWorkAreaByName("Mazak VRX Main"));
 		// Robot: Fanuc Robot
-		FanucRobotPickSettings robotPickSettings3 = new FanucRobotPickSettings();
+		RobotPickSettings robotPickSettings3 = new FanucRobotPickSettings();
 		robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHeadByName(robotHeadIdAfter));
 		//robotPickSettings3.setGripperHead(robot.getGripperBody().getGripperHead("A"));
 		robotPickSettings3.setSmoothPoint(new Coordinates(cncMilling.getWorkAreaByName("Mazak VRX Main").getClampingByName("Clamping 1").getSmoothFromPoint()));

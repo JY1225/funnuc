@@ -6,6 +6,8 @@ public class WorkPiece {
 		RAW, FINISHED
 	}
 	
+	private int id;
+	
 	private Type type;
 	private WorkPieceDimensions dimensions;
 	
@@ -14,6 +16,14 @@ public class WorkPiece {
 		this.dimensions = dimensions;
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(final int id) {
+		this.id = id;
+	}
+
 	public WorkPiece(final WorkPiece wp) {
 		this.type = wp.getType();
 		this.dimensions = new WorkPieceDimensions(wp.getDimensions().getLength(), wp.getDimensions().getWidth(), wp.getDimensions().getHeight());

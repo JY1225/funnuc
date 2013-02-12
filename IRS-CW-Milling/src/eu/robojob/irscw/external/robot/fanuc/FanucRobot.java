@@ -232,7 +232,7 @@ public class FanucRobot extends AbstractRobot {
 		} else {
 			setCurrentActionSettings(pickSettings);
 		}
-		FanucRobotPickSettings fPickSettings = (FanucRobotPickSettings) pickSettings;		
+		RobotPickSettings fPickSettings = (RobotPickSettings) pickSettings;		
 		writeServiceGripperSet(false, pickSettings.getGripperHead().getName(), this.getGripperBody().getGripperHeadByName(HEAD_A_ID), this.getGripperBody().getGripperHeadByName(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK);
 		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
 		if (fPickSettings.isDoMachineAirblow()) {

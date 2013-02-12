@@ -96,9 +96,35 @@ public class GeneralMapper {
 			} else {
 				throw new IllegalStateException("Unknown workpiece shape: [" + shapeId + "].");
 			}
+			workPiece.setId(workPieceId);
 		}
 		stmt.close();
 		workPieceBuffer.put(workPieceId, workPiece);
 		return workPiece;
 	}
+	
+	public void saveWorkPiece(final WorkPiece workPiece) throws SQLException {
+		int type = 0;
+		if (workPiece.getType().equals(WorkPiece.Type.RAW)) {
+			type = WORKPIECE_TYPE_RAW;
+		} else if (workPiece.getType().equals(WorkPiece.Type.FINISHED)) {
+			type = WORKPIECE_TYPE_FINISHED;
+		} else {
+			throw new IllegalStateException("Unkown workpiece type: [" + workPiece.getType() + "].");
+		}
+		//TODO: for now shape is always cuboid!
+		int shape = WORKPIECE_SHAPE_CUBOID;
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO WORKPIECE (TYPE, SHAPE, LENGTH, WIDTH, HEIGHT) VALUES (?, ?, ?, ?, ?)");
+		stmt.setInt(1, type);
+		stmt.setInt(2, shape);
+		stmt.setFloat(3, workPiece.getDimensions().getLength());
+		stmt.setFloat(4, workPiece.getDimensions().getWidth());
+		stmt.setFloat(5, workPiece.getDimensions().getHeight());
+		stmt.executeUpdate();
+		ResultSet keys = stmt.getGeneratedKeys();
+		if ((keys != null) && (keys.next())) {
+			workPiece.setId(keys.getInt("ID"));
+		}
+	}
+	
 }

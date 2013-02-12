@@ -7,24 +7,13 @@ import eu.robojob.irscw.external.robot.RobotPutSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 
 public class FanucRobotPutSettings extends RobotPutSettings {
-
-	private boolean doMachineAirblow;
 	
 	public FanucRobotPutSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location,
 			final boolean doMachineAirblow) {
-		super(robot, workArea, gripperHead, smoothPoint, location);
-		this.doMachineAirblow = doMachineAirblow;
+		super(robot, workArea, gripperHead, smoothPoint, location, doMachineAirblow);
 	}
 	
-	public boolean isDoMachineAirblow() {
-		return doMachineAirblow;
-	}
-
-	public void setDoMachineAirblow(final boolean doMachineAirblow) {
-		this.doMachineAirblow = doMachineAirblow;
-	}
-
 	public FanucRobotPutSettings() {
-		super(null, null, null, null, null);
+		super(null, null, null, null, null, false);
 	}
 }

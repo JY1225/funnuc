@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class DeviceSettings {
 
+	private int id;
 	private Map<WorkArea, Clamping> clampings;
 	
 	public DeviceSettings() {
@@ -23,6 +24,14 @@ public class DeviceSettings {
 		}
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(final int id) {
+		this.id = id;
+	}
+
 	public void setClamping(final WorkArea workArea, final Clamping clamping) {
 		clampings.put(workArea, clamping);
 	}

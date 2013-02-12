@@ -8,10 +8,12 @@ import eu.robojob.irscw.workpiece.WorkPiece;
 public abstract class RobotPickSettings extends AbstractRobotActionSettings<PickStep> {
 	
 	private WorkPiece workPiece;
+	private boolean doMachineAirblow;
 
-	public RobotPickSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final WorkPiece workPiece) {
+	public RobotPickSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final WorkPiece workPiece, final boolean doMachineAirblow) {
 		super(robot, workArea, gripperHead, smoothPoint, location);
 		this.workPiece = workPiece;
+		this.doMachineAirblow = doMachineAirblow;
 	}
 
 	public WorkPiece getWorkPiece() {
@@ -20,6 +22,14 @@ public abstract class RobotPickSettings extends AbstractRobotActionSettings<Pick
 
 	public void setWorkPiece(final WorkPiece workPiece) {
 		this.workPiece = workPiece;
+	}
+
+	public boolean isDoMachineAirblow() {
+		return doMachineAirblow;
+	}
+
+	public void setDoMachineAirblow(final boolean doMachineAirblow) {
+		this.doMachineAirblow = doMachineAirblow;
 	}
 	
 }

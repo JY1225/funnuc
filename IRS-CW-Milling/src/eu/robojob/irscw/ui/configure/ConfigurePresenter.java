@@ -9,6 +9,7 @@ import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
+import eu.robojob.irscw.external.robot.RobotPickSettings;
 import eu.robojob.irscw.external.robot.RobotProcessingWhileWaitingSettings;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobotPickSettings;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobotPutSettings;
@@ -319,7 +320,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		robotPutSettings.setWorkArea(workArea);
 		robotPutSettings.setDoMachineAirblow(false);	
 		
-		FanucRobotPickSettings robotPickSettings = new FanucRobotPickSettings();
+		RobotPickSettings robotPickSettings = new FanucRobotPickSettings();
 		robotPickSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
 		robotPickSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
 		robotPickSettings.setSmoothPoint(new Coordinates(clamping.getSmoothFromPoint()));
