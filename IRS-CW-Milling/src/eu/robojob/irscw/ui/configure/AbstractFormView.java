@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
-import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
 public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> extends GridPane {
 
@@ -43,7 +43,7 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	protected abstract void build();
 	
-	public abstract void setTextFieldListener(TextFieldListener listener);
+	public abstract void setTextFieldListener(TextInputControlListener listener);
 	
 	public void setPresenter(final T presenter) {
 		this.presenter = presenter;

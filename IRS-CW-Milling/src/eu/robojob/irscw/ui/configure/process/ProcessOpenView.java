@@ -12,7 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
-import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 
@@ -77,7 +77,7 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 	}
 
 	@Override
-	public void setTextFieldListener(final TextFieldListener listener) {
+	public void setTextFieldListener(final TextInputControlListener listener) {
 	}
 
 	@Override

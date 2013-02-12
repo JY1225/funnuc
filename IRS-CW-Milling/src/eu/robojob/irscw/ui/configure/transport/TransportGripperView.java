@@ -11,7 +11,7 @@ import eu.robojob.irscw.external.robot.GripperBody;
 import eu.robojob.irscw.external.robot.GripperHead;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.IconFlowSelector;
-import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.general.model.TransportInformation;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
@@ -131,7 +131,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 	}
 	
 	@Override
-	public void setTextFieldListener(final TextFieldListener listener) {
+	public void setTextFieldListener(final TextInputControlListener listener) {
 	}
 
 }

@@ -18,7 +18,7 @@ import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
-import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
@@ -211,7 +211,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	}
 
 	@Override
-	public void setTextFieldListener(final TextFieldListener listener) {
+	public void setTextFieldListener(final TextInputControlListener listener) {
 		itxtWorkPieceAmount.setFocusListener(listener);
 		ntxtWorkPieceHeight.setFocusListener(listener);
 		ntxtWorkPieceLength.setFocusListener(listener);

@@ -1,27 +1,23 @@
 package eu.robojob.irscw.ui.configure.process;
 
-import eu.robojob.irscw.process.DuplicateProcessFlowNameException;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessFlowManager;
 import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 
 public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView> {
 	
-	private ProcessFlow processFlow;
-	private ProcessFlowManager processFlowManager;
 	private ProcessConfigurePresenter configurePresenter;
+	private ProcessSavePresenter savePresenter;
 	private ProcessOpenPresenter openPresenter;
 			
-	public ProcessMenuPresenter(final ProcessMenuView view, final ProcessConfigurePresenter configurePresenter, final ProcessOpenPresenter openPresenter, 
-			final ProcessFlow processFlow, final ProcessFlowManager processFlowManager) {
+	public ProcessMenuPresenter(final ProcessMenuView view, final ProcessConfigurePresenter configurePresenter, final ProcessSavePresenter savePresenter,
+			final ProcessOpenPresenter openPresenter) {
 		super(view);
 		this.configurePresenter = configurePresenter;
 		configurePresenter.setMenuPresenter(this);
+		this.savePresenter = savePresenter;
+		savePresenter.setMenuPresenter(this);
 		this.openPresenter = openPresenter;
 		openPresenter.setMenuPresenter(this);
-		this.processFlow = processFlow;
-		this.processFlowManager = processFlowManager;
 	}
 
 	@Override
@@ -30,12 +26,8 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	}
 	
 	public void saveData() {
-		// check if another process exists with the same name (other id), if not: save data, else: show message: first delete data
-		try {
-			processFlowManager.saveProcessFlow(processFlow);
-		} catch (DuplicateProcessFlowNameException e) {
-			e.printStackTrace();
-		}
+		getView().setSaveActive();
+		getParent().setBottomRightView(savePresenter.getView());
 	}
 	
 	public void configureProcess() {
@@ -80,6 +72,7 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	@Override
 	public void setTextFieldListener(final ConfigurePresenter parent) {
 		configurePresenter.setTextFieldListener(parent);
+		savePresenter.setTextFieldListener(parent);
 	}
 
 	@Override

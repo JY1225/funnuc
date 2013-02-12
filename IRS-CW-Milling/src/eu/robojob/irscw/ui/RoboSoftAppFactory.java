@@ -20,6 +20,8 @@ import eu.robojob.irscw.ui.configure.process.ProcessMenuPresenter;
 import eu.robojob.irscw.ui.configure.process.ProcessMenuView;
 import eu.robojob.irscw.ui.configure.process.ProcessOpenPresenter;
 import eu.robojob.irscw.ui.configure.process.ProcessOpenView;
+import eu.robojob.irscw.ui.configure.process.ProcessSavePresenter;
+import eu.robojob.irscw.ui.configure.process.ProcessSaveView;
 import eu.robojob.irscw.ui.configure.transport.TransportMenuFactory;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView;
@@ -56,6 +58,7 @@ public class RoboSoftAppFactory {
 	private RobotPopUpPresenter robotPopUpPresenter;
 	private ProcessMenuPresenter processConfigurationMenuPresenter;
 	private ProcessOpenPresenter processOpenPresenter;
+	private ProcessSavePresenter processSavePresenter;
 	
 	private ProcessFlow processFlow;
 	private ProcessFlowTimer processFlowTimer;
@@ -212,10 +215,18 @@ public class RoboSoftAppFactory {
 	public ProcessMenuPresenter getProcessConfigurationMenuPresenter() {
 		if (processConfigurationMenuPresenter == null) {
 			ProcessMenuView processConfigurationMenuView = new ProcessMenuView();
-			processConfigurationMenuPresenter = new ProcessMenuPresenter(processConfigurationMenuView, getProcessConfigurePresenter(), getProcessOpenPresenter(),
-					getProcessFlow(), processFlowManager);
+			processConfigurationMenuPresenter = new ProcessMenuPresenter(processConfigurationMenuView, getProcessConfigurePresenter(), getProcessSavePresenter(), 
+					getProcessOpenPresenter());
 		}
 		return processConfigurationMenuPresenter;
+	}
+	
+	public ProcessSavePresenter getProcessSavePresenter() {
+		if (processSavePresenter == null) {
+			ProcessSaveView processSaveView = new ProcessSaveView();
+			processSavePresenter = new ProcessSavePresenter(processSaveView, processFlowManager, getProcessFlow());
+		}
+		return processSavePresenter;
 	}
 	
 	public ProcessOpenPresenter getProcessOpenPresenter() {

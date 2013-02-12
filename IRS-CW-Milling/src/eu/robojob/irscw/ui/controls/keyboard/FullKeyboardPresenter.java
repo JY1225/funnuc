@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui.controls.keyboard;
 
 import javafx.scene.input.KeyCode;
 import eu.robojob.irscw.ui.controls.FullTextField;
+import eu.robojob.irscw.ui.controls.TextArea;
 
 public class FullKeyboardPresenter extends AbstractKeyboardPresenter {
 	
@@ -36,6 +37,10 @@ public class FullKeyboardPresenter extends AbstractKeyboardPresenter {
 	}
 	
 	public void setTarget(final FullTextField target) {
+		super.setTarget(target);
+	}
+	
+	public void setTarget(final TextArea target) {
 		super.setTarget(target);
 	}
 }

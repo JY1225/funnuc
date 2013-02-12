@@ -1,6 +1,6 @@
 package eu.robojob.irscw.ui.configure;
 
-import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
 public abstract class AbstractFormPresenter<T extends AbstractFormView<?>, S extends AbstractMenuPresenter<?>> {
 
@@ -16,7 +16,7 @@ public abstract class AbstractFormPresenter<T extends AbstractFormView<?>, S ext
 		this.menuPresenter = menuPresenter;
 	}
 	
-	public void setTextFieldListener(final TextFieldListener listener) {
+	public void setTextFieldListener(final TextInputControlListener listener) {
 		view.setTextFieldListener(listener);
 	}
 	

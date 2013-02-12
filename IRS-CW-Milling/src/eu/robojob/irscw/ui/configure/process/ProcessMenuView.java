@@ -42,7 +42,7 @@ public class ProcessMenuView extends AbstractMenuView<ProcessMenuPresenter> {
 			}
 		});
 		
-		addMenuItem(SAVE_INDEX, SAVE_ICON, Translator.getTranslation(SAVE), false, new EventHandler<ActionEvent>() {
+		addMenuItem(SAVE_INDEX, SAVE_ICON, Translator.getTranslation(SAVE), true, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
 				presenter.saveData();

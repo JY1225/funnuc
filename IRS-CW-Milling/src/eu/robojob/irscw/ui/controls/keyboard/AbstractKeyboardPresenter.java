@@ -1,13 +1,13 @@
 package eu.robojob.irscw.ui.controls.keyboard;
 
+import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCode;
-import eu.robojob.irscw.ui.controls.AbstractTextField;
 
 public abstract class AbstractKeyboardPresenter {
 
 	private AbstractKeyboardView view;
 	private KeyboardParentPresenter parent;
-	private AbstractTextField<?> target;
+	private TextInputControl target;
 	
 	private String originalText;
 		
@@ -20,13 +20,13 @@ public abstract class AbstractKeyboardPresenter {
 		this.parent = parent;
 	}
 	
-	public void setTarget(final AbstractTextField<?> target) {
+	public void setTarget(final TextInputControl target) {
 		this.target = target;
 		originalText = target.getText();
 		target.requestFocus();
 	}
 	
-	public AbstractTextField<?> getTarget() {
+	public TextInputControl getTarget() {
 		return target;
 	}
 	

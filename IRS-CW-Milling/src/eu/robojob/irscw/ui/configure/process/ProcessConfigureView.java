@@ -12,7 +12,7 @@ import javafx.scene.layout.Priority;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.FullTextField;
-import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
@@ -105,7 +105,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 	}
 	
 	@Override
-	public void setTextFieldListener(final TextFieldListener listener) {
+	public void setTextFieldListener(final TextInputControlListener listener) {
 		fulltxtName.setFocusListener(listener);
 	}
 	

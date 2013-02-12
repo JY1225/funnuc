@@ -10,7 +10,7 @@ import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
-import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.general.model.TransportInformation;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
@@ -110,7 +110,7 @@ public class TransportInterventionView extends AbstractFormView<TransportInterve
 	}
 
 	@Override
-	public void setTextFieldListener(final TextFieldListener listener) {
+	public void setTextFieldListener(final TextInputControlListener listener) {
 		itfInterventionAfterPutFrequency.setFocusListener(listener);
 		itfInterventionBeforePickFrequency.setFocusListener(listener);
 	}

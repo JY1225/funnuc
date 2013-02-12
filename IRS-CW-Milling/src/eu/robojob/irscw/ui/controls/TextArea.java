@@ -7,16 +7,15 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
-public abstract class AbstractTextField<T> extends javafx.scene.control.TextField {
+public class TextArea extends javafx.scene.control.TextArea {
 
-	private TextInputControlListener listener;
-	private ChangeListener<T> changeListener;
-	private String originalText;
-	
 	private int maxLength;
+	private String originalText;
+	private TextInputControlListener listener;
+	private ChangeListener<String> changeListener;
 	
-	public AbstractTextField(final int maxLength) {
-		this.focusedProperty().addListener(new TextFieldFocusListener(this));
+	public TextArea(final int maxLength) {
+		this.focusedProperty().addListener(new TextAreaFocusListener(this));
 		this.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(final KeyEvent event) {
@@ -36,9 +35,9 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 		this.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(final MouseEvent event) {
-				if ((AbstractTextField.this.getCaretPosition() < AbstractTextField.this.getText().length())
-						&& (AbstractTextField.this.getSelection().getLength() == 0)) {
-					AbstractTextField.this.selectAll();
+				if ((TextArea.this.getCaretPosition() < TextArea.this.getText().length())
+						&& (TextArea.this.getSelection().getLength() == 0)) {
+					TextArea.this.selectAll();
 				}
 			}
 		});
@@ -49,11 +48,33 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 		this.listener = listener;
 	}
 	
-	public void setOnChange(final ChangeListener<T> changeListener) {
+	public void setOnChange(final ChangeListener<String> changeListener) {
 		this.changeListener = changeListener;
 	}
 	
-	// These methods are overridden to make sure the entered text is valid
+	private class TextAreaFocusListener implements ChangeListener<Boolean> {
+
+		private TextArea textArea;
+		
+		public TextAreaFocusListener(final TextArea textArea) {
+			this.textArea = textArea;
+		}
+		
+		@Override
+		public void changed(final ObservableValue<? extends Boolean> observable, final Boolean oldValue, final Boolean newValue) {
+			if (newValue) {
+				originalText = textArea.getText();
+				listener.textFieldFocussed(textArea);
+			} else {
+				cleanText();
+				listener.textFieldLostFocus(textArea);
+				if (changeListener != null) {
+					changeListener.changed(null, originalText, textArea.getText());
+				}
+			}
+		}
+	}
+	
 	@Override
 	public void replaceText(final int start, final int end, final String text) {
 		String currentText = getText();
@@ -63,6 +84,7 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 			super.replaceText(start, end, text);
 		}
 	}
+	
 	@Override
 	public void replaceSelection(final String text) {
 		String currentText = getText();
@@ -73,35 +95,15 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 		}
 	}
 	
-	public abstract String getMatchingExpression();
-	public abstract int calculateLength(String string);
-	
-
-	private class TextFieldFocusListener implements ChangeListener<Boolean> {
-
-		private AbstractTextField<?> textField;
-		
-		public TextFieldFocusListener(final AbstractTextField<?> textField) {
-			this.textField = textField;
-		}
-		
-		@Override
-		public void changed(final ObservableValue<? extends Boolean> observable, final Boolean oldValue, final Boolean newValue) {
-			if (newValue) {
-				originalText = textField.getText();
-				listener.textFieldFocussed(textField);
-			} else {
-				cleanText();
-				listener.textFieldLostFocus(textField);
-				if (changeListener != null) {
-					changeListener.changed(null, convertString(originalText), convertString(textField.getText()));
-				}
-			}
-		}
+	public String getMatchingExpression() {
+		return "[A-Z0-9ÖÜÄ_ \\.\\r-]*$";
 	}
 	
-	public abstract void cleanText();
+	public int calculateLength(final String string) {
+		return string.length();
+	}
 	
-	public abstract T convertString(String text);
-	
+	public void cleanText() {
+		// not necessary
+	}
 }

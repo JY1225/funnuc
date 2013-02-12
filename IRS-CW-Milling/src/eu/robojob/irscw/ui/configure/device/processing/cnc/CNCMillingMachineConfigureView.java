@@ -14,7 +14,7 @@ import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.ClampingManner.Type;
 import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
-import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
@@ -210,7 +210,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	}
 	
 	@Override
-	public void setTextFieldListener(final TextFieldListener listener) {
+	public void setTextFieldListener(final TextInputControlListener listener) {
 	}
 
 }

@@ -7,7 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
-import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
@@ -73,7 +73,7 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	}
 
 	@Override
-	public void setTextFieldListener(final TextFieldListener listener) {
+	public void setTextFieldListener(final TextInputControlListener listener) {
 	}
 
 	@Override

@@ -23,7 +23,7 @@ import eu.robojob.irscw.external.device.stacking.StackingPosition;
 import eu.robojob.irscw.external.device.stacking.StudPosition;
 import eu.robojob.irscw.external.device.stacking.StudPosition.StudType;
 import eu.robojob.irscw.ui.configure.AbstractFormView;
-import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.workpiece.WorkPiece.Type;
 
 public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateLayoutPresenter> {
@@ -268,7 +268,7 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	}
 
 	@Override
-	public void setTextFieldListener(final TextFieldListener listener) {
+	public void setTextFieldListener(final TextInputControlListener listener) {
 	}
 
 	@Override

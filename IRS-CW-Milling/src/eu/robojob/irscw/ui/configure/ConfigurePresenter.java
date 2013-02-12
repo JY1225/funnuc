@@ -1,5 +1,6 @@
 	package eu.robojob.irscw.ui.configure;
 
+import javafx.scene.control.TextInputControl;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.DeviceManager;
 import eu.robojob.irscw.external.device.DevicePickSettings;
@@ -27,17 +28,17 @@ import eu.robojob.irscw.ui.configure.device.DeviceMenuFactory;
 import eu.robojob.irscw.ui.configure.flow.ConfigureProcessFlowPresenter;
 import eu.robojob.irscw.ui.configure.process.ProcessMenuPresenter;
 import eu.robojob.irscw.ui.configure.transport.TransportMenuFactory;
-import eu.robojob.irscw.ui.controls.AbstractTextField;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
-import eu.robojob.irscw.ui.controls.TextFieldListener;
+import eu.robojob.irscw.ui.controls.TextArea;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 
-public class ConfigurePresenter implements TextFieldListener, MainContentPresenter {
+public class ConfigurePresenter implements TextInputControlListener, MainContentPresenter {
 
 	public enum Mode {
 		NORMAL, ADD_DEVICE, REMOVE_DEVICE
@@ -169,15 +170,25 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 		view.setBottomRight(bottomRight);
 	}
 
-	public void textFieldFocussed(final AbstractTextField<?> textField) {
-		if (textField instanceof FullTextField) {
-			this.textFieldFocussed((FullTextField) textField);
-		} else if (textField instanceof NumericTextField) {
-			this.textFieldFocussed((NumericTextField) textField);
-		} else if (textField instanceof IntegerTextField) {
-			this.textFieldFocussed((IntegerTextField) textField);
+	public void textFieldFocussed(final TextInputControl textInputControl) {
+		if (textInputControl instanceof FullTextField) {
+			this.textFieldFocussed((FullTextField) textInputControl);
+		} else if (textInputControl instanceof NumericTextField) {
+			this.textFieldFocussed((NumericTextField) textInputControl);
+		} else if (textInputControl instanceof IntegerTextField) {
+			this.textFieldFocussed((IntegerTextField) textInputControl);
+		} else if (textInputControl instanceof TextArea) {
+			this.textAreaFocussed((TextArea) textInputControl);
 		} else {
-			throw new IllegalArgumentException("Unknown keyboard-type [" + textField + "].");
+			throw new IllegalArgumentException("Unknown keyboard-type [" + textInputControl + "].");
+		}
+	}
+	
+	private void textAreaFocussed(final TextArea textArea) {
+		keyboardPresenter.setTarget(textArea);
+		if (!keyboardActive) {
+			view.addNodeToTop(keyboardPresenter.getView());
+			keyboardActive = true;
 		}
 	}
 	
@@ -206,7 +217,7 @@ public class ConfigurePresenter implements TextFieldListener, MainContentPresent
 	}
 
 	@Override
-	public void textFieldLostFocus(final AbstractTextField<?> textField) {
+	public void textFieldLostFocus(final TextInputControl textInputControl) {
 		closeKeyboard();
 	}
 	
