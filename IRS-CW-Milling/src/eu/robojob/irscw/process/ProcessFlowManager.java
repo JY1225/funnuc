@@ -110,11 +110,11 @@ public class ProcessFlowManager {
 				}
 			}
 		}
-		ProcessFlow processFlow = new ProcessFlow("", "", processSteps, deviceSettings, robotSettings, new Timestamp(System.currentTimeMillis()), null);
+		ProcessFlow processFlow = new ProcessFlow("", processSteps, deviceSettings, robotSettings, new Timestamp(System.currentTimeMillis()), null);
 		return processFlow;
 	}
 	
-	public void saveProcessFlow(final ProcessFlow processFlow) throws DuplicateProcessFlowNameException {
+	public void updateProcessFlow(final ProcessFlow processFlow) throws DuplicateProcessFlowNameException {
 		try {
 			int idForName = processFlowMapper.getProcessFlowIdForName(processFlow.getName());
 			if ((idForName == 0) || (idForName == processFlow.getId())) {
@@ -123,10 +123,24 @@ public class ProcessFlowManager {
 					logger.info("Updating processflow with id: [" + processFlow.getId() + "] and name: [" + processFlow.getName() + "].");
 					processFlowMapper.updateProcessFlow(processFlow);
 				} else {
-					// save
-					logger.info("Saving processflow with name: [" + processFlow.getName() + "].");
-					processFlowMapper.saveProcessFlow(processFlow);
+					throw new IllegalArgumentException("ProcessFlow should have a valid id for save");
 				}
+			} else {
+				throw new DuplicateProcessFlowNameException();
+			}
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+	
+	public void saveProcessFlow(final ProcessFlow processFlow) throws DuplicateProcessFlowNameException {
+		try {
+			int idForName = processFlowMapper.getProcessFlowIdForName(processFlow.getName());
+			if (idForName == 0) {
+				logger.info("Saving processflow with name: [" + processFlow.getName() + "].");
+				processFlow.setId(0);
+				processFlowMapper.saveProcessFlow(processFlow);
 			} else {
 				throw new DuplicateProcessFlowNameException();
 			}

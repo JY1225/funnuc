@@ -31,7 +31,6 @@ import eu.robojob.irscw.ui.configure.transport.TransportMenuFactory;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
-import eu.robojob.irscw.ui.controls.TextArea;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
@@ -177,21 +176,11 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			this.textFieldFocussed((NumericTextField) textInputControl);
 		} else if (textInputControl instanceof IntegerTextField) {
 			this.textFieldFocussed((IntegerTextField) textInputControl);
-		} else if (textInputControl instanceof TextArea) {
-			this.textAreaFocussed((TextArea) textInputControl);
 		} else {
 			throw new IllegalArgumentException("Unknown keyboard-type [" + textInputControl + "].");
 		}
 	}
-	
-	private void textAreaFocussed(final TextArea textArea) {
-		keyboardPresenter.setTarget(textArea);
-		if (!keyboardActive) {
-			view.addNodeToTop(keyboardPresenter.getView());
-			keyboardActive = true;
-		}
-	}
-	
+
 	private void textFieldFocussed(final FullTextField textField) {
 		keyboardPresenter.setTarget(textField);
 		if (!keyboardActive) {

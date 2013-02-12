@@ -37,11 +37,17 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 		processFlow.setName(name);
 	}
 	
-	public void descriptionChanged(final String description) {
-		processFlow.setDescription(description);
+	public void overwrite() {
+		try {
+			processFlowManager.updateProcessFlow(processFlow);
+		} catch (DuplicateProcessFlowNameException e) {
+			//FIXME handle this exception
+			logger.error(e);
+			e.printStackTrace();
+		}
 	}
 	
-	public void overwrite() {
+	public void saveAsNew() {
 		try {
 			processFlowManager.saveProcessFlow(processFlow);
 		} catch (DuplicateProcessFlowNameException e) {

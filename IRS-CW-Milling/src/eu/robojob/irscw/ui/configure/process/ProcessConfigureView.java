@@ -140,6 +140,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		} else {
 			btnRemoveDeviceStep.setDisable(false);
 		}
+		fulltxtName.setText(processFlowAdapter.getProcessFlow().getName());
 	}
 
 }

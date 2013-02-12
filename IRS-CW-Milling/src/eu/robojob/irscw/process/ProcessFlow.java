@@ -48,7 +48,6 @@ public class ProcessFlow {
 	private int id;
 	
 	private String name;
-	private String description; 
 	private Timestamp creation;
 	private Timestamp lastOpened;
 	
@@ -64,10 +63,9 @@ public class ProcessFlow {
 	
 	private ClampingManner clampingManner;
 	
-	public ProcessFlow(final String name, final String description, final List<AbstractProcessStep>processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, 
+	public ProcessFlow(final String name, final List<AbstractProcessStep>processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, 
 			RobotSettings> robotSettings, final ClampingManner clampingManner, final Timestamp creation, final Timestamp lastOpened) {
 		this.name = name;
-		this.description = description;
 		this.clampingManner = clampingManner;
 		this.deviceSettings = deviceSettings;
 		this.robotSettings = robotSettings;
@@ -81,13 +79,13 @@ public class ProcessFlow {
 		initialize();
 	}
 	
-	public ProcessFlow(final String name, final String description, final List<AbstractProcessStep> processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, RobotSettings> robotSettings,
+	public ProcessFlow(final String name, final List<AbstractProcessStep> processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, RobotSettings> robotSettings,
 			final Timestamp creation, final Timestamp lastOpened) {
-		this(name, description, processSteps, deviceSettings, robotSettings, new ClampingManner(), creation, lastOpened);
+		this(name, processSteps, deviceSettings, robotSettings, new ClampingManner(), creation, lastOpened);
 	}
 	
 	public ProcessFlow(final String name) {
-		this(name, null, new ArrayList<AbstractProcessStep>(), new HashMap<AbstractDevice, DeviceSettings>(), new HashMap<AbstractRobot, RobotSettings>(), null, null);
+		this(name, new ArrayList<AbstractProcessStep>(), new HashMap<AbstractDevice, DeviceSettings>(), new HashMap<AbstractRobot, RobotSettings>(), null, null);
 	}
 	
 	public void initialize() {
@@ -139,14 +137,6 @@ public class ProcessFlow {
 	
 	public Map<AbstractRobot, RobotSettings> getRobotSettings() {
 		return robotSettings;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(final String description) {
-		this.description = description;
 	}
 
 	public Timestamp getCreation() {

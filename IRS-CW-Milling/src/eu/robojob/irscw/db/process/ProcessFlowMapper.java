@@ -84,7 +84,7 @@ public class ProcessFlowMapper {
 	} 
 	
 	public List<ProcessFlow> getLastOpenedProcessFlows(final int amount) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW ORDER BY LASTOPENED DESC");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW ORDER BY LASTOPENED ASC");
 		stmt.setMaxRows(amount);
 		ResultSet results = stmt.executeQuery();
 		List<ProcessFlow> processFlows = new ArrayList<ProcessFlow>();
@@ -98,11 +98,10 @@ public class ProcessFlowMapper {
 	
 	public void updateProcessFlow(final ProcessFlow processFlow) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE PROCESSFLOW SET NAME = ?, DESCRIPTION = ?, LASTOPENED = ? WHERE ID = ?");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE PROCESSFLOW SET NAME = ?, LASTOPENED = ? WHERE ID = ?");
 		stmt.setString(1, processFlow.getName());
-		stmt.setString(2, processFlow.getDescription());
-		stmt.setTimestamp(3, processFlow.getLastOpened());
-		stmt.setInt(4, processFlow.getId());
+		stmt.setTimestamp(2, processFlow.getLastOpened());
+		stmt.setInt(3, processFlow.getId());
 		try {
 			stmt.executeUpdate();
 			deleteProcessFlowStepsAndSettings(processFlow.getId());
@@ -118,11 +117,12 @@ public class ProcessFlowMapper {
 	
 	public void saveProcessFlow(final ProcessFlow processFlow) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO PROCESSFLOW VALUES(NAME, DESCRIPTION, CREATION, LASTOPENED) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		processFlow.setCreation(new Timestamp(System.currentTimeMillis()));
+		processFlow.setLastOpened(new Timestamp(System.currentTimeMillis()));
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO PROCESSFLOW (NAME, CREATION, LASTOPENED) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setString(1, processFlow.getName());
-		stmt.setString(2, processFlow.getDescription());
-		stmt.setTimestamp(3, processFlow.getCreation());
-		stmt.setTimestamp(4, processFlow.getLastOpened());
+		stmt.setTimestamp(2, processFlow.getCreation());
+		stmt.setTimestamp(3, processFlow.getLastOpened());
 		try {
 			stmt.executeUpdate();
 			ResultSet resultSet = stmt.getGeneratedKeys();
@@ -357,13 +357,12 @@ public class ProcessFlowMapper {
 		ProcessFlow processFlow = null;
 		if (results.next()) {
 			String name = results.getString("NAME");
-			String description = results.getString("DESCRIPTION");
 			Timestamp creation = results.getTimestamp("CREATION");
 			Timestamp lastOpened = results.getTimestamp("LASTOPENED");
 			List<AbstractProcessStep> processSteps = getProcessSteps(id);
 			Map<AbstractDevice, DeviceSettings> deviceSettings = getDeviceSettings(id);
 			Map<AbstractRobot, RobotSettings> robotSettings = getRobotSettings(id);
-			processFlow = new ProcessFlow(name, description, processSteps, deviceSettings, robotSettings, creation, lastOpened);
+			processFlow = new ProcessFlow(name, processSteps, deviceSettings, robotSettings, creation, lastOpened);
 			processFlow.setId(id);
 		}
 		return processFlow;
