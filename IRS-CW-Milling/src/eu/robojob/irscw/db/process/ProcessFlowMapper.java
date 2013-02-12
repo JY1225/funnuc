@@ -204,6 +204,13 @@ public class ProcessFlowMapper {
 		if (step instanceof RobotStep) {
 			saveRobotActionSettings((RobotStep) step);
 		}
+		if (step instanceof InterventionStep) {
+			InterventionStep iStep = (InterventionStep) step;
+			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO INTERVENTIONSTEP (ID, FREQUENCY) VALUES (?, ?)");
+			stmt2.setInt(1, step.getId());
+			stmt2.setInt(2, iStep.getFrequency());
+			stmt2.executeUpdate();
+		}
 	}
 	
 	private void saveDeviceActionSettings(final DeviceStep deviceStep) throws SQLException {
