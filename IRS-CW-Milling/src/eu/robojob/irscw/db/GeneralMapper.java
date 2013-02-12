@@ -3,6 +3,7 @@ package eu.robojob.irscw.db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -114,16 +115,27 @@ public class GeneralMapper {
 		}
 		//TODO: for now shape is always cuboid!
 		int shape = WORKPIECE_SHAPE_CUBOID;
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO WORKPIECE (TYPE, SHAPE, LENGTH, WIDTH, HEIGHT) VALUES (?, ?, ?, ?, ?)");
-		stmt.setInt(1, type);
-		stmt.setInt(2, shape);
-		stmt.setFloat(3, workPiece.getDimensions().getLength());
-		stmt.setFloat(4, workPiece.getDimensions().getWidth());
-		stmt.setFloat(5, workPiece.getDimensions().getHeight());
-		stmt.executeUpdate();
-		ResultSet keys = stmt.getGeneratedKeys();
-		if ((keys != null) && (keys.next())) {
-			workPiece.setId(keys.getInt("ID"));
+		if (workPiece.getId() >= 0) {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE WORKPIECE SET TYPE = ?, SHAPE = ?, LENGTH = ?, WIDTH = ?, HEIGHT = ? WHERE ID = ?");
+			stmt.setInt(1, type);
+			stmt.setInt(2, shape);
+			stmt.setFloat(3, workPiece.getDimensions().getLength());
+			stmt.setFloat(4, workPiece.getDimensions().getWidth());
+			stmt.setFloat(5, workPiece.getDimensions().getHeight());
+			stmt.setInt(6, workPiece.getId());
+			stmt.executeUpdate();
+		} else {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO WORKPIECE (TYPE, SHAPE, LENGTH, WIDTH, HEIGHT) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			stmt.setInt(1, type);
+			stmt.setInt(2, shape);
+			stmt.setFloat(3, workPiece.getDimensions().getLength());
+			stmt.setFloat(4, workPiece.getDimensions().getWidth());
+			stmt.setFloat(5, workPiece.getDimensions().getHeight());
+			stmt.executeUpdate();
+			ResultSet keys = stmt.getGeneratedKeys();
+			if ((keys != null) && (keys.next())) {
+				workPiece.setId(keys.getInt(1));
+			}
 		}
 	}
 	

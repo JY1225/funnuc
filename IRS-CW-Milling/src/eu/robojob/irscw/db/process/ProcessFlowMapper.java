@@ -118,7 +118,7 @@ public class ProcessFlowMapper {
 	
 	public void saveProcessFlow(final ProcessFlow processFlow) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO PROCESSFLOW VALUES(NAME, DESCRIPTION, CREATION, LASTOPENED) VALUES (?, ?, ?)");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO PROCESSFLOW VALUES(NAME, DESCRIPTION, CREATION, LASTOPENED) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setString(1, processFlow.getName());
 		stmt.setString(2, processFlow.getDescription());
 		stmt.setTimestamp(3, processFlow.getCreation());
@@ -127,7 +127,7 @@ public class ProcessFlowMapper {
 			stmt.executeUpdate();
 			ResultSet resultSet = stmt.getGeneratedKeys();
 			if (resultSet.next()) {
-				processFlow.setId(resultSet.getInt("ID"));
+				processFlow.setId(resultSet.getInt(1));
 				saveProcessFlowStepsAndSettings(processFlow);
 				ConnectionManager.getConnection().commit();
 			}
@@ -238,9 +238,7 @@ public class ProcessFlowMapper {
 		}
 		if (robotStep instanceof PickStep) {
 			RobotPickSettings robotPickSettings = ((PickStep) robotStep).getRobotSettings();
-			if (robotPickSettings.getWorkPiece().getId() <= 0) {
-				generalMapper.saveWorkPiece(robotPickSettings.getWorkPiece());
-			}
+			generalMapper.saveWorkPiece(robotPickSettings.getWorkPiece());
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPICKSETTINGS (ID, WORKPIECE, AIRBLOW) VALUES (?, ?, ?)");
 			stmt2.setInt(1, robotStep.getRobotSettings().getId());
 			stmt2.setInt(2, robotPickSettings.getWorkPiece().getId());
@@ -297,12 +295,8 @@ public class ProcessFlowMapper {
 		}
 		if (deviceSettings instanceof BasicStackPlateSettings) {
 			BasicStackPlateSettings bspSettings = (BasicStackPlateSettings) deviceSettings;
-			if (bspSettings.getRawWorkPiece().getId() <= 0) {
-				generalMapper.saveWorkPiece(bspSettings.getRawWorkPiece());
-			}
-			if (bspSettings.getFinishedWorkPiece().getId() <= 0) {
-				generalMapper.saveWorkPiece(bspSettings.getFinishedWorkPiece());
-			}
+			generalMapper.saveWorkPiece(bspSettings.getRawWorkPiece());
+			generalMapper.saveWorkPiece(bspSettings.getFinishedWorkPiece());
 			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO STACKPLATESETTINGS (ID, AMOUNT, ORIENTATION, RAWWORKPIECE, FINISHEDWORKPIECE) VALUES (?, ?, ?, ?, ?)");
 			stmt4.setInt(1, bspSettings.getId());
 			stmt4.setInt(2, bspSettings.getAmount());
