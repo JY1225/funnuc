@@ -114,4 +114,25 @@ public class ProcessFlowManager {
 		return processFlow;
 	}
 	
+	public void saveProcessFlow(final ProcessFlow processFlow) throws DuplicateProcessFlowNameException {
+		try {
+			int idForName = processFlowMapper.getProcessFlowIdForName(processFlow.getName());
+			if ((idForName == 0) || (idForName == processFlow.getId())) {
+				if (processFlow.getId() > 0) {
+					// update
+					logger.info("Updating processflow with id: [" + processFlow.getId() + "] and name: [" + processFlow.getName() + "].");
+					processFlowMapper.updateProcessFlow(processFlow);
+				} else {
+					// save
+					logger.info("Saving processflow with name: [" + processFlow.getName() + "].");
+					processFlowMapper.saveProcessFlow(processFlow);
+				}
+			} else {
+				throw new DuplicateProcessFlowNameException();
+			}
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
 }

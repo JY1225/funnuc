@@ -5,11 +5,13 @@ import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 
 public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConfigureView, ProcessMenuPresenter> {
 	
+	private ProcessFlow processFlow;
 	private boolean addDeviceActive;
 	private boolean removeDeviceActive;
 		
 	public ProcessConfigurePresenter(final ProcessConfigureView view, final ProcessFlow processFlow) {
 		super(view);
+		this.processFlow = processFlow;
 		view.setProcessFlow(processFlow);
 		view.build();
 		addDeviceActive = false;
@@ -26,6 +28,10 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 			getMenuPresenter().setNormalMode();
 		}
 		updateActiveParts();
+	}
+	
+	public void nameChanged(final String name) {
+		processFlow.setName(name);
 	}
 	
 	public void removeDeviceStep() {

@@ -3,12 +3,18 @@ package eu.robojob.irscw.db.process;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.sun.xml.internal.ws.org.objectweb.asm.Type;
 
 import eu.robojob.irscw.db.ConnectionManager;
 import eu.robojob.irscw.db.GeneralMapper;
@@ -64,6 +70,8 @@ public class ProcessFlowMapper {
 	private static final int STACKPLATE_ORIENTATION_HORIZONTAL = 1;
 	private static final int STACKPLATE_ORIENTATION_TILTED = 2;
 	
+	private static Logger logger = LogManager.getLogger(ProcessFlowMapper.class.getName());
+	
 	private DeviceManager deviceManager;
 	private RobotManager robotManager;
 	
@@ -101,9 +109,39 @@ public class ProcessFlowMapper {
 			saveProcessFlowStepsAndSettings(processFlow);
 			ConnectionManager.getConnection().commit();
 		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.error(e);
 			ConnectionManager.getConnection().rollback();
 		}
 		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void saveProcessFlow(final ProcessFlow processFlow) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO PROCESSFLOW VALUES(NAME, DESCRIPTION, CREATION, LASTOPENED) VALUES (?, ?, ?)");
+		stmt.setString(1, processFlow.getName());
+		stmt.setString(2, processFlow.getDescription());
+		stmt.setTimestamp(3, processFlow.getCreation());
+		stmt.setTimestamp(4, processFlow.getLastOpened());
+		try {
+			stmt.executeUpdate();
+			ResultSet resultSet = stmt.getGeneratedKeys();
+			if (resultSet.next()) {
+				processFlow.setId(resultSet.getInt("ID"));
+				saveProcessFlowStepsAndSettings(processFlow);
+				ConnectionManager.getConnection().commit();
+			}
+		} catch (SQLException e) {
+			ConnectionManager.getConnection().rollback();
+		}
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void deleteProcessFlow(final ProcessFlow processFlow) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM PROCESSFLOW WHERE ID = ?");
+		stmt.setInt(1, processFlow.getId());
+		stmt.executeUpdate();
 	}
 	
 	private void deleteProcessFlowStepsAndSettings(final int processFlowId) throws SQLException {
@@ -113,7 +151,7 @@ public class ProcessFlowMapper {
 		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("DELETE FROM ROBOTSETTINGS WHERE PROCESSFLOW = ?");
 		stmt2.setInt(1, processFlowId);
 		stmt2.executeUpdate();	// note the cascade delete settings take care of deleting all referenced rows
-		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("DELETE FROM STEPS WHERE PROCESSFLOW = ?");
+		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("DELETE FROM STEP WHERE PROCESSFLOW = ?");
 		stmt3.setInt(1, processFlowId);
 		stmt3.executeUpdate();	// note the cascade delete settings take care of deleting all referenced rows
 	}
@@ -134,31 +172,31 @@ public class ProcessFlowMapper {
 	
 	private void saveStep(final AbstractProcessStep step, final int index) throws SQLException {
 		int type = 0;
-		if (step instanceof PickStep) {
-			type = STEP_TYPE_PICK;
-		} else if (step instanceof PickAfterWaitStep) {
+		if (step instanceof PickAfterWaitStep) {	// note: these have to go first!
 			type = STEP_TYPE_PICKAFTERWAIT;
-		} else if (step instanceof InterventionStep) {
-			type = STEP_TYPE_INTERVENTION;
-		} else if (step instanceof PutStep) {
-			type = STEP_TYPE_PUT;
 		} else if (step instanceof PutAndWaitStep) {
 			type = STEP_TYPE_PUTANDWAIT;
-		} else if (step instanceof ProcessingStep) {
-			type = STEP_TYPE_PROCESSING;
 		} else if (step instanceof ProcessingWhileWaitingStep) {
 			type = STEP_TYPE_PROCESSINGWHILEWAITING;
+		} else if (step instanceof PutStep) {
+			type = STEP_TYPE_PUT;
+		} else if (step instanceof PickStep) {
+			type = STEP_TYPE_PICK;
+		} else if (step instanceof InterventionStep) {
+			type = STEP_TYPE_INTERVENTION;
+		} else if (step instanceof ProcessingStep) {
+			type = STEP_TYPE_PROCESSING;
 		} else {
 			throw new IllegalStateException("Unknown step type: " + step);
 		}
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO STEP (PROCESSFLOW, TYPE, INDEX) VALUES ?, ?, ?");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO STEP (PROCESSFLOW, TYPE, INDEX) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, step.getProcessFlow().getId());
 		stmt.setInt(2, type);
 		stmt.setInt(3, index);
 		stmt.executeUpdate();
 		ResultSet keys = stmt.getGeneratedKeys();
 		if ((keys != null) && (keys.next())) {
-			step.setId(keys.getInt("ID"));
+			step.setId(keys.getInt(1));
 		}
 		if (step instanceof DeviceStep) {
 			saveDeviceActionSettings((DeviceStep) step);
@@ -169,26 +207,34 @@ public class ProcessFlowMapper {
 	}
 	
 	private void saveDeviceActionSettings(final DeviceStep deviceStep) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICEACTIONSETTINGS (DEVICE, WORKAREA, STEP) VALUES (?, ?, ?)");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICEACTIONSETTINGS (DEVICE, WORKAREA, STEP) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, deviceStep.getDevice().getId());
 		stmt.setInt(2, deviceStep.getDeviceSettings().getWorkArea().getId());
 		stmt.setInt(3, ((AbstractProcessStep) deviceStep).getId());
+		stmt.executeUpdate();
 		ResultSet keys = stmt.getGeneratedKeys();
 		if ((keys != null) && (keys.next())) {
-			deviceStep.getDeviceSettings().setId(keys.getInt("ID"));
+			deviceStep.getDeviceSettings().setId(keys.getInt(1));
 		}
 	}
 	
 	private void saveRobotActionSettings(final RobotStep robotStep) throws SQLException {
-		saveCoordinates(robotStep.getRobotSettings().getSmoothPoint());
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTACTIONSETTINGS (STEP, GRIPPERHEAD, SMOOTHPOINT, ROBOT) VALUES (?, ?, ?, ?)");
+		if (robotStep.getRobotSettings().getSmoothPoint() != null) {
+			saveCoordinates(robotStep.getRobotSettings().getSmoothPoint());
+		}
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTACTIONSETTINGS (STEP, GRIPPERHEAD, SMOOTHPOINT, ROBOT) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, ((AbstractProcessStep) robotStep).getId());
 		stmt.setInt(2, robotStep.getRobotSettings().getGripperHead().getId());
-		stmt.setInt(3, robotStep.getRobotSettings().getSmoothPoint().getId());
+		if (robotStep.getRobotSettings().getSmoothPoint() != null) {
+			stmt.setInt(3, robotStep.getRobotSettings().getSmoothPoint().getId());
+		} else {
+			stmt.setNull(3, Type.INT);
+		}
 		stmt.setInt(4, robotStep.getRobot().getId());
+		stmt.executeUpdate();
 		ResultSet keys = stmt.getGeneratedKeys();
 		if ((keys != null) && (keys.next())) {
-			robotStep.getRobotSettings().setId(keys.getInt("ID"));
+			robotStep.getRobotSettings().setId(keys.getInt(1));
 		}
 		if (robotStep instanceof PickStep) {
 			RobotPickSettings robotPickSettings = ((PickStep) robotStep).getRobotSettings();
@@ -210,7 +256,7 @@ public class ProcessFlowMapper {
 	}
 	
 	private void saveCoordinates(final Coordinates coordinates) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO COORDINATES (X, Y, Z, W, P, R) VALUES (?, ?, ?, ?, ?, ?)");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO COORDINATES (X, Y, Z, W, P, R) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setFloat(1, coordinates.getX());
 		stmt.setFloat(2, coordinates.getY());
 		stmt.setFloat(3, coordinates.getZ());
@@ -220,18 +266,18 @@ public class ProcessFlowMapper {
 		stmt.executeUpdate();
 		ResultSet keys = stmt.getGeneratedKeys();
 		if ((keys != null) && (keys.next())) {
-			coordinates.setId(keys.getInt("ID"));
+			coordinates.setId(keys.getInt(1));
 		}
 	}
 	
 	private void saveDeviceSettings(final int processFlowId, final AbstractDevice device, final DeviceSettings deviceSettings) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICESETTINGS (DEVICE, PROCESSFLOW) VALUES (?, ?)");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICESETTINGS (DEVICE, PROCESSFLOW) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, device.getId());
 		stmt.setInt(2, processFlowId);
 		stmt.executeUpdate();
 		ResultSet keys = stmt.getGeneratedKeys();
 		if ((keys != null) && (keys.next())) {
-			deviceSettings.setId(keys.getInt("ID"));
+			deviceSettings.setId(keys.getInt(1));
 		}
 		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM WORKAREA_CLAMPING WHERE WORKAREA = ? AND CLAMPING = ?");
@@ -244,7 +290,7 @@ public class ProcessFlowMapper {
 				PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICESETTINGS_WORKAREA_CLAMPING (DEVICESETTINGS, WORKAREA_CLAMPING) VALUES (?, ?)");
 				stmt3.setInt(1, deviceSettings.getId());
 				stmt3.setInt(2, id);
-				stmt.executeUpdate();
+				stmt3.executeUpdate();
 			} else {
 				throw new IllegalStateException("Couldn't find entry for workarea: [" + entry.getKey() + "] and clamping: [" + entry.getValue() + "].");
 			}
@@ -271,19 +317,19 @@ public class ProcessFlowMapper {
 			stmt4.setInt(3, orientation);
 			stmt4.setInt(4, bspSettings.getRawWorkPiece().getId());
 			stmt4.setInt(5, bspSettings.getFinishedWorkPiece().getId());
-			stmt.executeUpdate();
+			stmt4.executeUpdate();
 		}
 	}
 	
 	private void saveRobotSettings(final int processFlowId, final AbstractRobot robot, final RobotSettings robotSettings) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTSETTINGS (ROBOT, ACTIVEGRIPPERBODY, PROCESSFLOW) VALUES (?, ?, ?)");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTSETTINGS (ROBOT, ACTIVEGRIPPERBODY, PROCESSFLOW) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, robot.getId());
 		stmt.setInt(2, robotSettings.getGripperBody().getId());
 		stmt.setInt(3, processFlowId);
 		stmt.executeUpdate();
 		ResultSet keys = stmt.getGeneratedKeys();
 		if ((keys != null) && (keys.next())) {
-			robotSettings.setId(keys.getInt("ID"));
+			robotSettings.setId(keys.getInt(1));
 		}
 		for (Entry<GripperHead, Gripper> entry : robotSettings.getGrippers().entrySet()) {
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM GRIPPERHEAD_GRIPPER WHERE GRIPPERHEAD = ? AND GRIPPER = ?");
@@ -641,4 +687,16 @@ public class ProcessFlowMapper {
 		}
 		return robotPutSettings;
 	}
+	
+	public int getProcessFlowIdForName(final String name) throws SQLException {
+		int id = 0;
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW WHERE NAME = ?");
+		stmt.setString(1, name);
+		ResultSet resultSet = stmt.executeQuery();
+		if (resultSet.next()) {
+			id = resultSet.getInt("ID");
+		}
+		return id;
+	}
+	
 }

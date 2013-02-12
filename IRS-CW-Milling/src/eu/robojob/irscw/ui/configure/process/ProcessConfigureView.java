@@ -1,5 +1,7 @@
 package eu.robojob.irscw.ui.configure.process;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -67,6 +69,12 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		fulltxtName.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
 		fulltxtName.setAlignment(Pos.CENTER_LEFT);
 		fulltxtName.setText(processFlowAdapter.getProcessFlow().getName());
+		fulltxtName.setOnChange(new ChangeListener<String>() {
+			@Override
+			public void changed(final ObservableValue<? extends String> arg0, final String oldValue, final String newValue) {
+				getPresenter().nameChanged(newValue);
+			}
+		});
 		HBox.setHgrow(fulltxtName, Priority.ALWAYS);
 		fulltxtName.getStyleClass().addAll(CSS_CLASS_FORM_FULLTEXTFIELD, CSS_CLASS_FORM_FULLTEXTFIELD_NAME);
 		hbox.getChildren().add(fulltxtName);
