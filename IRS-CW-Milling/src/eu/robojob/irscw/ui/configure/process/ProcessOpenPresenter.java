@@ -18,12 +18,14 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 	private List<ProcessFlow> allProcessFlows;
 	private ObservableList<ProcessFlow> filteredProcessFlows;
 	private ProcessFlowManager processFlowManager;	
+	private ProcessFlow activeProcessFlow;
 	
-	public ProcessOpenPresenter(final ProcessOpenView view, final ProcessFlowManager processFlowManager) {
+	public ProcessOpenPresenter(final ProcessOpenView view, final ProcessFlow processFlow, final ProcessFlowManager processFlowManager) {
 		super(view);
 		getView().build();
 		this.allProcessFlows = processFlowManager.getProcessFlows();
 		this.processFlowManager = processFlowManager;
+		this.activeProcessFlow = processFlow;
 		this.filteredProcessFlows = FXCollections.observableArrayList();
 		getView().setProcessFlows(filteredProcessFlows);
 		filterChanged("");
@@ -54,5 +56,6 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 	
 	public void openProcess(final ProcessFlow processFlow) {
 		logger.info("loading process: " + processFlow.getId());
+		activeProcessFlow.loadFromOtherProcessFlow(processFlow);
 	}
 }

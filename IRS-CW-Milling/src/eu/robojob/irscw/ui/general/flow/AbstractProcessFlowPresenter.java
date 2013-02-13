@@ -20,6 +20,7 @@ public abstract class AbstractProcessFlowPresenter {
 	
 	public void loadProcessFlow(final ProcessFlow processFlow) {
 		view.loadProcessFlow(processFlow);
+		refresh();
 	}
 	
 	public ProcessFlowView getView() {

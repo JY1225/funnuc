@@ -84,7 +84,7 @@ public class ProcessFlowMapper {
 	} 
 	
 	public List<ProcessFlow> getAllProcessFlows() throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW ORDER BY LASTOPENED ASC");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW ORDER BY LASTOPENED DESC");
 		ResultSet results = stmt.executeQuery();
 		List<ProcessFlow> processFlows = new ArrayList<ProcessFlow>();
 		while (results.next()) {
@@ -96,7 +96,7 @@ public class ProcessFlowMapper {
 	}
 	
 	public List<ProcessFlow> getLastOpenedProcessFlows(final int amount) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW ORDER BY LASTOPENED ASC");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW ORDER BY LASTOPENED DESC");
 		stmt.setMaxRows(amount);
 		ResultSet results = stmt.executeQuery();
 		List<ProcessFlow> processFlows = new ArrayList<ProcessFlow>();

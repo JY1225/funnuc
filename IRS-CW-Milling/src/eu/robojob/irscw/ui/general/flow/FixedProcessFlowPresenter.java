@@ -6,10 +6,10 @@ import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
-import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.ui.general.flow.ProcessFlowView.ProgressBarPieceMode;
@@ -142,7 +142,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	}
 
 	@Override public void modeChanged(final ModeChangedEvent e) { }
-	@Override public void dataChanged(final ProcessFlowEvent e) { }
+	@Override public void dataChanged(final DataChangedEvent e) { }
 	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) { }
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) { }
 

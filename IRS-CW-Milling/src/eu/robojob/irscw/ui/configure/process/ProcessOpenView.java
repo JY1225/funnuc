@@ -87,7 +87,7 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		    		 return null;
 		    	 } else {
 		    		 Date date = new Date(p.getValue().getLastOpened().getTime());
-		    		 return new SimpleStringProperty(new SimpleDateFormat("yyyy-MM-dd").format(date));
+		    		 return new SimpleStringProperty(new SimpleDateFormat("yyyy-MM-dd, HH:mm").format(date));
 		    	 }
 		     }
 		  });

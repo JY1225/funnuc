@@ -229,6 +229,8 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	public void loadProcessFlow(final ProcessFlow processFlow) {
 		processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		processFlowPresenter.loadProcessFlow(processFlow);
+		transportMenuFactory.clearBuffer();
+		deviceMenuFactory.clearBuffer();
 		refreshProgressBar();
 	}
 	

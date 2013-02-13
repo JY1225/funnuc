@@ -2,10 +2,11 @@ package eu.robojob.irscw.ui;
 
 import javafx.application.Platform;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
-import eu.robojob.irscw.process.event.ProcessFlowEvent;
+import eu.robojob.irscw.process.event.ProcessChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
@@ -160,8 +161,14 @@ public class MainPresenter implements ProcessFlowListener {
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) { }
 
 	@Override
-	public void dataChanged(final ProcessFlowEvent e) {
-		refreshStatus();
+	public void dataChanged(final DataChangedEvent e) {
+		if (e instanceof ProcessChangedEvent) {
+			configurePresenter.loadProcessFlow(e.getSource());
+			teachPresenter.loadProcessFlow(e.getSource());
+			automatePresenter.loadProcessFlow(e.getSource());
+ 		} else {
+ 			refreshStatus();
+ 		}
 	}
 	
 }

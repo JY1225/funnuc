@@ -19,9 +19,11 @@ import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotSettings;
+import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
+import eu.robojob.irscw.process.event.ProcessChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
@@ -111,6 +113,9 @@ public class ProcessFlow {
 		for (AbstractProcessStep step : this.processSteps) {
 			step.setProcessFlow(this);
 		}
+		this.name = processFlow.getName();
+		this.creation = processFlow.getCreation();
+		this.lastOpened = new Timestamp(System.currentTimeMillis());
 		this.deviceSettings = processFlow.getDeviceSettings();
 		this.robotSettings = processFlow.getRobotSettings();
 		initialize();
@@ -121,6 +126,7 @@ public class ProcessFlow {
 				((BasicStackPlate) device).placeFinishedWorkPieces(processFlow.getFinishedAmount());
 			}
 		}
+		this.processProcessFlowEvent(new ProcessChangedEvent(this));
 	}
 	
 	public int getCurrentIndex(final int workpieceId) {
@@ -219,7 +225,7 @@ public class ProcessFlow {
 				break;
 			case ProcessFlowEvent.DATA_CHANGED:
 				for (ProcessFlowListener listener : listeners) {
-					listener.dataChanged(event);
+					listener.dataChanged((DataChangedEvent) event);
 				}
 				break;
 			case ProcessFlowEvent.FINISHED_AMOUNT_CHANGED:
