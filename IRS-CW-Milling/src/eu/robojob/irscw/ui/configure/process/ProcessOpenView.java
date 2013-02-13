@@ -163,5 +163,8 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 
 	@Override
 	public void refresh() {
+		getPresenter().refreshProcessFlowList();
+		fulltxtFilter.setText("");
+		getPresenter().filterChanged("");
 	}
 }

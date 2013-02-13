@@ -127,6 +127,7 @@ public class ProcessFlowMapper {
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
+	//TODO: delete all id s (work piece, coordinates, ...)
 	public void saveProcessFlow(final ProcessFlow processFlow) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		processFlow.setCreation(new Timestamp(System.currentTimeMillis()));

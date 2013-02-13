@@ -17,11 +17,13 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 	private static Logger logger = LogManager.getLogger(ProcessOpenPresenter.class.getName());
 	private List<ProcessFlow> allProcessFlows;
 	private ObservableList<ProcessFlow> filteredProcessFlows;
-		
+	private ProcessFlowManager processFlowManager;	
+	
 	public ProcessOpenPresenter(final ProcessOpenView view, final ProcessFlowManager processFlowManager) {
 		super(view);
 		getView().build();
 		this.allProcessFlows = processFlowManager.getProcessFlows();
+		this.processFlowManager = processFlowManager;
 		this.filteredProcessFlows = FXCollections.observableArrayList();
 		getView().setProcessFlows(filteredProcessFlows);
 		filterChanged("");
@@ -35,6 +37,10 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 	@Override
 	public boolean isConfigured() {
 		return false;
+	}
+	
+	public void refreshProcessFlowList() {
+		allProcessFlows = processFlowManager.getProcessFlows();
 	}
 	
 	public void filterChanged(final String filter) {
