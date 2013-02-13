@@ -1,7 +1,9 @@
 package eu.robojob.irscw.ui.configure.process;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,16 +15,14 @@ import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView, ProcessMenuPresenter> {
 	
 	private static Logger logger = LogManager.getLogger(ProcessOpenPresenter.class.getName());
-	private ProcessFlowManager processFlowManager;
 	private List<ProcessFlow> allProcessFlows;
-	private List<ProcessFlow> filteredProcessFlows;
+	private ObservableList<ProcessFlow> filteredProcessFlows;
 		
 	public ProcessOpenPresenter(final ProcessOpenView view, final ProcessFlowManager processFlowManager) {
 		super(view);
 		getView().build();
-		this.processFlowManager = processFlowManager;
 		this.allProcessFlows = processFlowManager.getProcessFlows();
-		this.filteredProcessFlows = new ArrayList<ProcessFlow>();
+		this.filteredProcessFlows = FXCollections.observableArrayList();
 		getView().setProcessFlows(filteredProcessFlows);
 		filterChanged("");
 	}
@@ -39,11 +39,10 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 	
 	public void filterChanged(final String filter) {
 		filteredProcessFlows.clear();
-		for (int i = 0; i < 4; i++) {
-			for (ProcessFlow processFlow : allProcessFlows) {
-				if (processFlow.getName().contains(filter)) {
-					filteredProcessFlows.add(processFlow);
-				}
+		logger.info("Filter changed: " + filter);
+		for (ProcessFlow processFlow : allProcessFlows) {
+			if (processFlow.getName().contains(filter)) {
+				filteredProcessFlows.add(processFlow);
 			}
 		}
 	}

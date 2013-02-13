@@ -2,19 +2,16 @@ package eu.robojob.irscw.ui.configure.process;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -93,15 +90,19 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		    	 }
 		     }
 		  });
+		nameColumn.setMinWidth(350);
+		nameColumn.setMaxWidth(350);
 		nameColumn.setPrefWidth(350);
 		nameColumn.setResizable(false);
 		lastOpenedColumn.setPrefWidth(150);
+		lastOpenedColumn.setMinWidth(150);
+		lastOpenedColumn.setMaxWidth(150);
 		lastOpenedColumn.setResizable(false);
 		table.getColumns().add(nameColumn);
 		table.getColumns().add(lastOpenedColumn);
-		table.setPrefSize(501, 230);
-		table.setMinSize(501, 230);
-		table.setMaxSize(501, 230);
+		table.setPrefSize(502, 230);
+		table.setMinSize(502, 230);
+		table.setMaxSize(502, 230);
 		table.setTableMenuButtonVisible(false);	
 		table.getStyleClass().add(CSS_CLASS_TABLE);
 		table.setPlaceholder(new Label(Translator.getTranslation(NO_CONTENT)));
@@ -139,8 +140,8 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		setPadding(new Insets(15, 0, 0, 0));
 	}
 	
-	public void setProcessFlows(final List<ProcessFlow> processflows) {
-		table.setItems(FXCollections.observableList(processflows));
+	public void setProcessFlows(final ObservableList<ProcessFlow> processflows) {
+		table.setItems(processflows);
 	}
 
 	@Override

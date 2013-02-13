@@ -393,39 +393,40 @@
 }
 
 .table {
-	-fx-background-color: #8c8888, #3b3b3b, #5b5b5b, #4e4a4a;
+	-fx-background-color: #8c8888, #3b3b3b, #5b5b5b, #6d6c6c;
 	-fx-background-insets: 0, 0 0 0 0, 1 1 0 1, 2 1 0 1;
-	-fx-padding: 1px 2 1 1;
+	-fx-padding: 1 1 1 1;
 }
 
-.table .column-resize-line {
-	-background-color: green;
-	-fx-border-color: red;
-	-fx-stroke: red;
-	-fx-padding: 0;
+.table .column-overlay, .filler, .placeholder, .column-resize-line {
+	-fx-background-color: #343434;
+	-fx-fill: #343434;
+	-fx-border-color: #343434;
+	-fx-stroke: #343434;
 }
 
 .table .column-header-background {
 	-fx-border-width: 0px;
 	-fx-background-radius: 0px;
 	-fx-background-color: rgba(0, 0, 0, 0.2), #343434, #726c6c, #5e5a5a;
-	-fx-background-insets: 0, 0 0 1 0, 0 0 2 0, 1 0 2 2;
+	-fx-background-insets: 0, 0 0 1 0, 0 0 2 0, 1 0 2 0;
 }
 
 .table .column-header-background .column-header {
-	-fx-background-color: null;
+	-fx-background-color: transparent;
 	-fx-border-width: 0px;
-	-fx-padding: 0 1 0 -1;
 }
 
 .table .column-header-background .column-header .label {
 	-fx-padding: 10px;
 	-fx-background-color: rgba(0, 0, 0, 0), #343434, #726c6c, #5e5a5a;
-	-fx-background-insets: 0, 0 0 1 0, 0 0 2 1, 1 0 2 1;
+	-fx-background-insets: 0, 0 0 1 0, 0 0 2 0, 1 0 2 0;
 	-fx-font-family: "Open Sans";
 	-fx-font-weight: bold;
 	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
+	-fx-text-alignment: left;
+	-fx-alignment: center-left;
 }
 
 .table .column-header-background .column-drag-header {
@@ -438,6 +439,7 @@
 	-fx-font-weight: bold;
 	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
+	-fx-text-alignment: left;
 }
 
 .table .column-header-background .nested-column-header {
@@ -446,28 +448,42 @@
 	-fx-background-insets: 0, 0 0 1 0, 0 0 2 0, 1 0 2 0;
 }
 
-.indexed-cell:even, .table .indexed-cell:odd {
+.table .column-header-background .nested-column-header .column-header {
+	-fx-padding: -2 5 0 5;
+}
+
+.table .indexed-cell:even, .table .indexed-cell:odd {
 	-fx-cell-size: 30px;
 	-fx-border-width: 0px;
-	-fx-padding: 0 0 0 10px;
+	-fx-padding: 0px;
 	-fx-text-fill: white;
 	-fx-font-family: "Open Sans";
+	-fx-text-alignment: left;
+	-fx-alignment: center-left;
 	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
-	-fx-background-color: #767676, #646262;
+	-fx-background-color: #625e5e, #565252;
 	-fx-background-insets: 0 0 0 0, 1 0 0 0;
 	-fx-border-width: 0 0 1 0;
 	-fx-border-color: #343434;
 }
 
-.indexed-cell:even > .indexed-cell > .cell {
+.table .indexed-cell:even > .indexed-cell > .cell {
 	-fx-background-color: transparent;
 	-fx-border-width: 0;
+	-fx-font-family: "Open Sans";
+	-fx-text-alignment: left;
+	-fx-alignment: center-left;
+	-fx-padding: 7px 0px 5px 20px;
 }
 
-.indexed-cell:odd > .indexed-cell > .cell {
+.table .indexed-cell:odd > .indexed-cell > .cell {
 	-fx-background-color: transparent;
 	-fx-border-width: 0;
+	-fx-font-family: "Open Sans";
+	-fx-text-alignment: left;
+	-fx-alignment: center-left;
+	-fx-padding: 7px 0px 5px 20px;
 }
 
 .table .indexed-cell:even:empty, .table .indexed-cell:odd:empty {
@@ -475,7 +491,7 @@
 	-fx-border-width: 0;
 }
 
-.table .indexed-cell:even:selected, .table .indexed-cell:odd:selected, .table .cell:selected, .table .indexed-cell:selected,  .table .indexed-cell:selected *, .cell:selected, .cell:selected .cell {
+.table .indexed-cell:even:selected, .table .indexed-cell:odd:selected, .table .cell:selected, .table .indexed-cell:selected,  .table .indexed-cell:selected *, .table .cell:selected, .table .cell:selected .cell {
 	-fx-background-color: #6696e7, #5078bc;
 	-fx-background-insets: 0 0 0 0, 1 0 0 0;
 	-fx-border-width: 0 0 1 0;
