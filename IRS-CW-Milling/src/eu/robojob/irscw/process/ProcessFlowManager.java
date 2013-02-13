@@ -54,6 +54,17 @@ public class ProcessFlowManager {
 		return null;
 	}
 	
+	//TODO add buffer!
+	public List<ProcessFlow> getProcessFlows() {
+		try {
+			return processFlowMapper.getAllProcessFlows();
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public ProcessFlow createNewProcessFlow() {
 		//TODO add checks if the needed devices are in the database
 		AbstractDevice stackingFromDevice = deviceManager.getStackingFromDevices().iterator().next();

@@ -233,7 +233,7 @@ public class RoboSoftAppFactory {
 		if (processOpenPresenter == null) {
 			ProcessOpenView processOpenView = new ProcessOpenView();
 			//TODO update!
-			processOpenPresenter = new ProcessOpenPresenter(processOpenView, getProcessFlow(), null);
+			processOpenPresenter = new ProcessOpenPresenter(processOpenView, processFlowManager);
 		}
 		return processOpenPresenter;
 	}

@@ -83,6 +83,18 @@ public class ProcessFlowMapper {
 		this.robotManager = robotManager;
 	} 
 	
+	public List<ProcessFlow> getAllProcessFlows() throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW ORDER BY LASTOPENED ASC");
+		ResultSet results = stmt.executeQuery();
+		List<ProcessFlow> processFlows = new ArrayList<ProcessFlow>();
+		while (results.next()) {
+			int id = results.getInt("ID");
+			ProcessFlow processFlow = getProcessFlowById(id);
+			processFlows.add(processFlow);
+		}
+		return processFlows;
+	}
+	
 	public List<ProcessFlow> getLastOpenedProcessFlows(final int amount) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW ORDER BY LASTOPENED ASC");
 		stmt.setMaxRows(amount);

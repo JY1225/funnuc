@@ -72,6 +72,7 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	@Override
 	public void setTextFieldListener(final ConfigurePresenter parent) {
 		configurePresenter.setTextFieldListener(parent);
+		openPresenter.setTextFieldListener(parent);
 		savePresenter.setTextFieldListener(parent);
 	}
 

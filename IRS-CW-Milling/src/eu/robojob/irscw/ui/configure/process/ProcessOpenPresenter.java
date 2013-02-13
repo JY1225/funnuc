@@ -1,30 +1,30 @@
 package eu.robojob.irscw.ui.configure.process;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.PropertiesProcessFlowFactory;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.ProcessFlowManager;
 import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
 
 public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView, ProcessMenuPresenter> {
 	
 	private static Logger logger = LogManager.getLogger(ProcessOpenPresenter.class.getName());
-	private ProcessFlow processFlow;
-	private PropertiesProcessFlowFactory propertiesProcessFlowFactory;
-	
-	private static final String DEMO_2A_URL = "C:\\RoboJob\\demo2a.properties";
-	private static final String DEMO_2B_URL = "C:\\RoboJob\\demo2b.properties";
+	private ProcessFlowManager processFlowManager;
+	private List<ProcessFlow> allProcessFlows;
+	private List<ProcessFlow> filteredProcessFlows;
 		
-	public ProcessOpenPresenter(final ProcessOpenView view, final ProcessFlow propcessFlow, final PropertiesProcessFlowFactory propertiesProcessFlowFactory) {
+	public ProcessOpenPresenter(final ProcessOpenView view, final ProcessFlowManager processFlowManager) {
 		super(view);
-		this.processFlow = propcessFlow;
-		this.propertiesProcessFlowFactory = propertiesProcessFlowFactory;
+		getView().build();
+		this.processFlowManager = processFlowManager;
+		this.allProcessFlows = processFlowManager.getProcessFlows();
+		this.filteredProcessFlows = new ArrayList<ProcessFlow>();
+		getView().setProcessFlows(filteredProcessFlows);
+		filterChanged("");
 	}
 
 	@Override
@@ -37,25 +37,19 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 		return false;
 	}
 	
-	public void openProcess(final String processId) {
-		logger.info("loading process: " + processId);
-		if (processId.equals(ProcessOpenView.DEMO_2_A)) {
-			Properties properties = new Properties();
-			try {
-				properties.load(new FileInputStream(new File(DEMO_2A_URL)));
-				processFlow.loadFromOtherProcessFlow(propertiesProcessFlowFactory.loadProcessFlow(properties));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else if (processId.equals(ProcessOpenView.DEMO_2_B)) {
-			Properties properties = new Properties();
-			try {
-				properties.load(new FileInputStream(new File(DEMO_2B_URL)));
-				processFlow.loadFromOtherProcessFlow(propertiesProcessFlowFactory.loadProcessFlow(properties));
-			} catch (IOException e) {
-				e.printStackTrace();
+	public void filterChanged(final String filter) {
+		filteredProcessFlows.clear();
+		for (int i = 0; i < 4; i++) {
+			for (ProcessFlow processFlow : allProcessFlows) {
+				if (processFlow.getName().contains(filter)) {
+					filteredProcessFlows.add(processFlow);
+				}
 			}
 		}
-		getMenuPresenter().processOpened();
+	}
+	
+	public void openProcess(final String processId) {
+		logger.info("loading process: " + processId);
+		
 	}
 }
