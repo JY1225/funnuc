@@ -398,11 +398,17 @@
 	-fx-padding: 1 1 1 1;
 }
 
-.table .column-overlay, .filler, .placeholder, .column-resize-line {
+.table .column-overlay, .filler, .column-resize-line {
 	-fx-background-color: #343434;
 	-fx-fill: #343434;
 	-fx-border-color: #343434;
 	-fx-stroke: #343434;
+}
+
+.table .placeholder {
+	-fx-background-color: transparent;
+	-fx-font-family: "Open Sans";
+	-fx-font-size: 13px;
 }
 
 .table .column-header-background {

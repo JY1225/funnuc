@@ -39,7 +39,6 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 	
 	public void filterChanged(final String filter) {
 		filteredProcessFlows.clear();
-		logger.info("Filter changed: " + filter);
 		for (ProcessFlow processFlow : allProcessFlows) {
 			if (processFlow.getName().contains(filter)) {
 				filteredProcessFlows.add(processFlow);

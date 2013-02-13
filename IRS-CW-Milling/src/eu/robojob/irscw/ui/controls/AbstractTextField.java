@@ -14,6 +14,7 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 	private String originalText;
 	
 	private int maxLength;
+	private boolean notifyEveryChange;
 	
 	public AbstractTextField(final int maxLength) {
 		this.focusedProperty().addListener(new TextFieldFocusListener(this));
@@ -43,6 +44,11 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 			}
 		});
 		this.maxLength = maxLength;
+		this.notifyEveryChange = false;
+	}
+	
+	public void setNotifyEveryChange(final boolean notify) {
+		this.notifyEveryChange = notify;
 	}
 	
 	public void setFocusListener(final TextInputControlListener listener) {
@@ -62,6 +68,10 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 		if (newString.matches(getMatchingExpression()) && calculateLength(newString) <= maxLength) {
 			super.replaceText(start, end, text);
 		}
+		
+		if (notifyEveryChange) {
+			changeListener.changed(null, convertString(currentText), convertString(getText()));
+		}
 	}
 	@Override
 	public void replaceSelection(final String text) {
@@ -70,6 +80,10 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 		
 		if (newString.matches(getMatchingExpression()) && calculateLength(newString) <= maxLength) {
 			super.replaceSelection(text);
+		}
+		
+		if (notifyEveryChange) {
+			changeListener.changed(null, convertString(currentText), convertString(getText()));
 		}
 	}
 	
@@ -99,7 +113,7 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 			}
 		}
 	}
-	
+		
 	public abstract void cleanText();
 	
 	public abstract T convertString(String text);

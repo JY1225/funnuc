@@ -64,6 +64,7 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		fulltxtFilter = new FullTextField(MAX_FILTER_LENGTH);
 		fulltxtFilter.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
 		fulltxtFilter.setPrefWidth(NAME_TEXTFIELD_WIDTH);
+		fulltxtFilter.setNotifyEveryChange(true);
 		fulltxtFilter.setOnChange(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> arg0, final String oldValue, final String newValue) {
