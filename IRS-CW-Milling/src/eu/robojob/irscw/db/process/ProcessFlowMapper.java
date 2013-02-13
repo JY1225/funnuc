@@ -32,6 +32,7 @@ import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.external.robot.AbstractRobotActionSettings;
 import eu.robojob.irscw.external.robot.Gripper;
 import eu.robojob.irscw.external.robot.GripperBody;
 import eu.robojob.irscw.external.robot.GripperHead;
@@ -109,6 +110,7 @@ public class ProcessFlowMapper {
 	}
 	
 	public void updateProcessFlow(final ProcessFlow processFlow) throws SQLException {
+		clearReferenceIds(processFlow);
 		ConnectionManager.getConnection().setAutoCommit(false);
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE PROCESSFLOW SET NAME = ?, LASTOPENED = ? WHERE ID = ?");
 		stmt.setString(1, processFlow.getName());
@@ -116,7 +118,7 @@ public class ProcessFlowMapper {
 		stmt.setInt(3, processFlow.getId());
 		try {
 			stmt.executeUpdate();
-			deleteProcessFlowStepsAndSettings(processFlow.getId());
+			deleteProcessFlowStepsAndSettings(processFlow);
 			saveProcessFlowStepsAndSettings(processFlow);
 			ConnectionManager.getConnection().commit();
 		} catch (SQLException e) {
@@ -152,21 +154,55 @@ public class ProcessFlowMapper {
 	
 	public void deleteProcessFlow(final ProcessFlow processFlow) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
+		deleteProcessFlowStepsAndSettings(processFlow);
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM PROCESSFLOW WHERE ID = ?");
 		stmt.setInt(1, processFlow.getId());
 		stmt.executeUpdate();
 	}
 	
-	private void deleteProcessFlowStepsAndSettings(final int processFlowId) throws SQLException {
+	private void deleteProcessFlowStepsAndSettings(final ProcessFlow processFlow) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM DEVICESETTINGS WHERE PROCESSFLOW = ?");
-		stmt.setInt(1, processFlowId);
+		stmt.setInt(1, processFlow.getId());
 		stmt.executeUpdate();	// note the cascade delete settings take care of deleting all referenced rows
 		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("DELETE FROM ROBOTSETTINGS WHERE PROCESSFLOW = ?");
-		stmt2.setInt(1, processFlowId);
+		stmt2.setInt(1, processFlow.getId());
 		stmt2.executeUpdate();	// note the cascade delete settings take care of deleting all referenced rows
 		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("DELETE FROM STEP WHERE PROCESSFLOW = ?");
-		stmt3.setInt(1, processFlowId);
+		stmt3.setInt(1, processFlow.getId());
 		stmt3.executeUpdate();	// note the cascade delete settings take care of deleting all referenced rows
+		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
+			if (step instanceof PickStep) {
+				PickStep pStep = (PickStep) step;
+				if (pStep.getRobotSettings().getWorkPiece().getId() > 0) {
+					PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("DELETE FROM WORKPIECE WHERE ID = ?");
+					stmt4.setInt(1, pStep.getRobotSettings().getWorkPiece().getId());
+					stmt4.executeUpdate();	
+				}
+			}
+			if (step instanceof RobotStep) {
+				AbstractRobotActionSettings<?> robotActionSettings = ((RobotStep) step).getRobotSettings();
+				if (robotActionSettings.getSmoothPoint().getId() > 0) {
+					PreparedStatement stmt5 = ConnectionManager.getConnection().prepareStatement("DELETE FROM COORDINATES WHERE ID = ?");
+					stmt5.setInt(1, robotActionSettings.getSmoothPoint().getId());
+					stmt5.executeUpdate();	
+				}
+			}
+		}
+		clearReferenceIds(processFlow);
+	}
+	
+	private void clearReferenceIds(final ProcessFlow processFlow) {
+		processFlow.setId(0);
+		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
+			if (step instanceof PickStep) {
+				PickStep pStep = (PickStep) step;
+				pStep.getRobotSettings().getWorkPiece().setId(0);
+			}
+			if (step instanceof RobotStep) {
+				AbstractRobotActionSettings<?> robotActionSettings = ((RobotStep) step).getRobotSettings();
+				robotActionSettings.getSmoothPoint().setId(0);
+			}
+		}
 	}
 	
 	private void saveProcessFlowStepsAndSettings(final ProcessFlow processFlow) throws SQLException {
