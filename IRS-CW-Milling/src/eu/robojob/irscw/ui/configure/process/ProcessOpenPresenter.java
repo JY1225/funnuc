@@ -46,8 +46,7 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 		}
 	}
 	
-	public void openProcess(final String processId) {
-		logger.info("loading process: " + processId);
-		
+	public void openProcess(final ProcessFlow processFlow) {
+		logger.info("loading process: " + processFlow.getId());
 	}
 }

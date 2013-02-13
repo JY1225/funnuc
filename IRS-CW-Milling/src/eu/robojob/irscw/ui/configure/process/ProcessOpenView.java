@@ -111,8 +111,19 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		btnLoad = createButton(openIconPath, CSS_CLASS_BUTTON_LOAD, Translator.getTranslation(LOAD), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				getPresenter().openProcess("");
+				getPresenter().openProcess(table.getSelectionModel().selectedItemProperty().getValue());
 			}
+		});
+		table.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(final ObservableValue<? extends Number> arg0, final Number oldValue, final Number newValue) {
+				if ((newValue != null) && (newValue.intValue() >= 0)) {
+					btnLoad.setDisable(false);
+				} else {
+					btnLoad.setDisable(true);
+				}
+			}
+			
 		});
 		btnLoad.setDisable(true);
 		table.getSelectionModel().setCellSelectionEnabled(false);
