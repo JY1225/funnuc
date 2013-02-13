@@ -240,7 +240,7 @@ public class ProcessFlowMapper {
 	
 	private void saveRobotActionSettings(final RobotStep robotStep) throws SQLException {
 		if (robotStep.getRobotSettings().getSmoothPoint() != null) {
-			saveCoordinates(robotStep.getRobotSettings().getSmoothPoint());
+			generalMapper.saveCoordinates(robotStep.getRobotSettings().getSmoothPoint());
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTACTIONSETTINGS (STEP, GRIPPERHEAD, SMOOTHPOINT, ROBOT) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, ((AbstractProcessStep) robotStep).getId());
@@ -270,21 +270,6 @@ public class ProcessFlowMapper {
 			stmt2.setInt(1, robotStep.getRobotSettings().getId());
 			stmt2.setBoolean(2, robotPutSettings.isDoMachineAirblow());
 			stmt2.executeUpdate();
-		}
-	}
-	
-	private void saveCoordinates(final Coordinates coordinates) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO COORDINATES (X, Y, Z, W, P, R) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-		stmt.setFloat(1, coordinates.getX());
-		stmt.setFloat(2, coordinates.getY());
-		stmt.setFloat(3, coordinates.getZ());
-		stmt.setFloat(4, coordinates.getW());
-		stmt.setFloat(5, coordinates.getP());
-		stmt.setFloat(6, coordinates.getR());
-		stmt.executeUpdate();
-		ResultSet keys = stmt.getGeneratedKeys();
-		if ((keys != null) && (keys.next())) {
-			coordinates.setId(keys.getInt(1));
 		}
 	}
 	

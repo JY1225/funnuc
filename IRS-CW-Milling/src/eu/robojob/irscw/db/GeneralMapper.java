@@ -72,6 +72,33 @@ public class GeneralMapper {
 		return coordinates;
 	}
 	
+	public void saveCoordinates(final Coordinates coordinates) throws SQLException {
+		if (coordinates.getId() > 0) {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO COORDINATES (X, Y, Z, W, P, R) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			stmt.setFloat(1, coordinates.getX());
+			stmt.setFloat(2, coordinates.getY());
+			stmt.setFloat(3, coordinates.getZ());
+			stmt.setFloat(4, coordinates.getW());
+			stmt.setFloat(5, coordinates.getP());
+			stmt.setFloat(6, coordinates.getR());
+			stmt.executeUpdate();
+			ResultSet keys = stmt.getGeneratedKeys();
+			if ((keys != null) && (keys.next())) {
+				coordinates.setId(keys.getInt(1));
+			}
+		} else {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE COORDINATES SET X = ?, Y = ?, Z = ?, W = ?, P = ?, R = ? WHERE ID = ?", Statement.RETURN_GENERATED_KEYS);
+			stmt.setFloat(1, coordinates.getX());
+			stmt.setFloat(2, coordinates.getY());
+			stmt.setFloat(3, coordinates.getZ());
+			stmt.setFloat(4, coordinates.getW());
+			stmt.setFloat(5, coordinates.getP());
+			stmt.setFloat(6, coordinates.getR());
+			stmt.setInt(7, coordinates.getId());
+			stmt.executeUpdate();
+		}
+	}
+	
 	public WorkPiece getWorkPieceById(final int workPieceId) throws SQLException {
 		WorkPiece workPiece = workPieceBuffer.get(workPieceId);
 		if (workPiece != null) {
