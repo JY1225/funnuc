@@ -181,9 +181,9 @@ public class TransportButton extends StackPane {
 	}
 	
 	public void setFocussed(final boolean active) {
-		this.getStyleClass().remove("transport-unfocussed");
+		shapeRegion.getStyleClass().remove("transport-unfocussed");
 		if (!active) {
-			this.getStyleClass().add("transport-unfocussed");
+			shapeRegion.getStyleClass().add("transport-unfocussed");
 		}
 	}
 	
