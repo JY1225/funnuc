@@ -125,6 +125,7 @@ public class ProcessFlowMapper {
 		try {
 			stmt.executeUpdate();
 			deleteProcessFlowStepsAndSettings(processFlow);
+			clearProcessFlowStepsSettingsAndReferencedIds(processFlow);
 			saveProcessFlowStepsAndSettings(processFlow);
 			ConnectionManager.getConnection().commit();
 		} catch (SQLException e) {
