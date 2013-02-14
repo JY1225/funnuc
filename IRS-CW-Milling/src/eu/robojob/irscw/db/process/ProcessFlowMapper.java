@@ -84,6 +84,13 @@ public class ProcessFlowMapper {
 		this.robotManager = robotManager;
 	} 
 	
+	public void updateLastOpened(final ProcessFlow processFlow) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE PROCESSFLOW SET LASTOPENED = ? WHERE ID = ?");
+		stmt.setTimestamp(1, processFlow.getLastOpened());
+		stmt.setInt(2, processFlow.getId());
+		stmt.executeUpdate();
+	}
+	
 	public List<ProcessFlow> getAllProcessFlows() throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW ORDER BY LASTOPENED DESC");
 		ResultSet results = stmt.executeQuery();
@@ -129,9 +136,9 @@ public class ProcessFlowMapper {
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
-	//TODO: delete all id s (work piece, coordinates, ...)
 	public void saveProcessFlow(final ProcessFlow processFlow) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
+		clearProcessFlowStepsSettingsAndReferencedIds(processFlow);
 		processFlow.setCreation(new Timestamp(System.currentTimeMillis()));
 		processFlow.setLastOpened(new Timestamp(System.currentTimeMillis()));
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO PROCESSFLOW (NAME, CREATION, LASTOPENED) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);

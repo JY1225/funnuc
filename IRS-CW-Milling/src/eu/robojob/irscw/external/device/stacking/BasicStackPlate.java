@@ -213,9 +213,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 				//TODO improve, dimensions finished workpiece are not always the same as raw workpiece dimensions
 				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, rawWorkPiece.getDimensions());
 				layout.getStackingPositions().get(i).setWorkPiece(finishedWorkPiece);
-			} else {
-				layout.getStackingPositions().get(i).setWorkPiece(rawWorkPiece);
-			}
+			} 
 		}
 	}
 }

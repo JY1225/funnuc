@@ -78,7 +78,11 @@ public class ProcessFlow {
 		this.creation = creation;
 		this.lastOpened = lastOpened;
 		setUpProcess(processSteps);
-		initialize();
+		this.currentIndices = new HashMap<Integer, Integer>();
+		//TODO more than two concurrent steps possible?
+		setCurrentIndex(WORKPIECE_0_ID, -1);
+		setCurrentIndex(WORKPIECE_1_ID, -1);
+		setFinishedAmount(0);
 	}
 	
 	public ProcessFlow(final String name, final List<AbstractProcessStep> processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, RobotSettings> robotSettings,
@@ -113,6 +117,7 @@ public class ProcessFlow {
 		for (AbstractProcessStep step : this.processSteps) {
 			step.setProcessFlow(this);
 		}
+		this.id = processFlow.getId();
 		this.name = processFlow.getName();
 		this.creation = processFlow.getCreation();
 		this.lastOpened = new Timestamp(System.currentTimeMillis());

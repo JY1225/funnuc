@@ -145,6 +145,15 @@ public class ProcessFlowManager {
 		}
 	}
 	
+	public void updateLastOpened(final ProcessFlow processFlow) {
+		try {
+			processFlowMapper.updateLastOpened(processFlow);
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+	
 	public void saveProcessFlow(final ProcessFlow processFlow) throws DuplicateProcessFlowNameException {
 		try {
 			int idForName = processFlowMapper.getProcessFlowIdForName(processFlow.getName());
