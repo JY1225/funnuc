@@ -7,6 +7,7 @@ public class MenuBarPresenter {
 	private MenuBarView view;
 	private MainPresenter parent;
 	
+	private boolean adminActive;
 	private boolean robotActive;
 	private boolean alarmsActive;
 	
@@ -15,6 +16,7 @@ public class MenuBarPresenter {
 		processMenuBarView.setPresenter(this);
 		robotActive = false;
 		alarmsActive = false;
+		adminActive = false;
 	}
 	
 	public void setParent(final MainPresenter parent) {
@@ -30,7 +32,12 @@ public class MenuBarPresenter {
 	}
 	
 	public void showConfigureView() {
+		view.setRobotButtonEnabled(true);
+		view.setAlarmsButtonEnabled(true);
+		view.setExitButtonEnabled(true);
+		view.setConfigureButtonEnabled(true);
 		view.setConfigureActive();
+		adminActive = false;
 	}
 	
 	public void clickedTeach() {
@@ -50,11 +57,22 @@ public class MenuBarPresenter {
 	}
 	
 	public void clickedAdmin() {
-		parent.showAdmin();
+		if (adminActive) {
+			parent.showConfigure();
+		} else {
+			parent.showAdmin();
+		}
 	}
 	
 	public void showAdminView() {
 		view.setAdminActive();
+		view.setTeachButtonEnabled(false);
+		view.setAutomateButtonEnabled(false);
+		view.setRobotButtonEnabled(false);
+		view.setAlarmsButtonEnabled(false);
+		view.setExitButtonEnabled(false);
+		view.setConfigureButtonEnabled(false);
+		adminActive = true;
 	}
 	
 	public void clickedAlarms() {

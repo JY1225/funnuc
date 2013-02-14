@@ -261,4 +261,16 @@ public class MenuBarView extends ToolBar {
 		btnAutomate.setDisable(!enabled);
 	}
 	
+	public void setRobotButtonEnabled(final boolean enabled) {
+		btnRobot.setDisable(!enabled);
+	}
+	
+	public void setAlarmsButtonEnabled(final boolean enabled) {
+		btnAlarms.setDisable(!enabled);
+	}
+	
+	public void setExitButtonEnabled(final boolean enabled) {
+		btnExit.setDisable(!enabled);
+	}
+	
 }
