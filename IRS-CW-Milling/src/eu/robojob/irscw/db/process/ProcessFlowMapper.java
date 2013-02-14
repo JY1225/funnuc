@@ -117,7 +117,6 @@ public class ProcessFlowMapper {
 	}
 	
 	public void updateProcessFlow(final ProcessFlow processFlow) throws SQLException {
-		clearProcessFlowStepsSettingsAndReferencedIds(processFlow);
 		ConnectionManager.getConnection().setAutoCommit(false);
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE PROCESSFLOW SET NAME = ?, LASTOPENED = ? WHERE ID = ?");
 		stmt.setString(1, processFlow.getName());

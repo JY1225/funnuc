@@ -62,7 +62,7 @@
 }
 
 .popup {
-	-fx-effect: dropshadow(gaussian, #4c4c4c, 10, 0, 0, 5);
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 5);
 	-fx-background-color: #4c4c4c, #807c7c, #6d6c6c;
 	-fx-background-insets: 0, 0 1 1 1, 0 2 2 2;
 	-fx-background-radius: 0 0 3 3, 0 0 2 2, 0 0 1 1;
