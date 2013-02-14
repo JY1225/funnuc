@@ -54,6 +54,19 @@
 .header-button:pressed, .header-button.selected {
 	-fx-background-color: #807878, #222222, #6696e7, #1d355d, linear-gradient(#5078bc 0%, #3e6099 100%);
 	-fx-background-color: #807878, #222222, #e6624a, #992b11, linear-gradient(#c54b35 0%, #be3c1a 100%);
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 1 1 2 1, 2 1 2 1;
+}
+
+.bar:pressed, .bar.selected {
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 1 1 2 1, 2 1 2 1;
+}
+
+.first.selected, .first:pressed {
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 1 0 2 1, 2 0 2 1;
+}
+
+.last.selected, .last:pressed {
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 0, 1 1 2 0, 2 1 2 0;
 }
 
 .header-button-exit:pressed, header-button-exit.selected {
