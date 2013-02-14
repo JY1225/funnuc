@@ -73,7 +73,7 @@ public class GeneralMapper {
 	}
 	
 	public void saveCoordinates(final Coordinates coordinates) throws SQLException {
-		if (coordinates.getId() > 0) {
+		if (coordinates.getId() <= 0) {
 			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO COORDINATES (X, Y, Z, W, P, R) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			stmt.setFloat(1, coordinates.getX());
 			stmt.setFloat(2, coordinates.getY());
@@ -142,7 +142,7 @@ public class GeneralMapper {
 		}
 		//TODO: for now shape is always cuboid!
 		int shape = WORKPIECE_SHAPE_CUBOID;
-		if (workPiece.getId() >= 0) {
+		if (workPiece.getId() > 0) {
 			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE WORKPIECE SET TYPE = ?, SHAPE = ?, LENGTH = ?, WIDTH = ?, HEIGHT = ? WHERE ID = ?");
 			stmt.setInt(1, type);
 			stmt.setInt(2, shape);

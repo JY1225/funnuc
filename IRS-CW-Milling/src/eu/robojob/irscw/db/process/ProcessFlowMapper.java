@@ -110,7 +110,7 @@ public class ProcessFlowMapper {
 	}
 	
 	public void updateProcessFlow(final ProcessFlow processFlow) throws SQLException {
-		clearReferenceIds(processFlow);
+		clearProcessFlowStepsSettingsAndReferencedIds(processFlow);
 		ConnectionManager.getConnection().setAutoCommit(false);
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE PROCESSFLOW SET NAME = ?, LASTOPENED = ? WHERE ID = ?");
 		stmt.setString(1, processFlow.getName());
@@ -158,6 +158,8 @@ public class ProcessFlowMapper {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM PROCESSFLOW WHERE ID = ?");
 		stmt.setInt(1, processFlow.getId());
 		stmt.executeUpdate();
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
 	private void deleteProcessFlowStepsAndSettings(final ProcessFlow processFlow) throws SQLException {
@@ -181,18 +183,17 @@ public class ProcessFlowMapper {
 			}
 			if (step instanceof RobotStep) {
 				AbstractRobotActionSettings<?> robotActionSettings = ((RobotStep) step).getRobotSettings();
-				if (robotActionSettings.getSmoothPoint().getId() > 0) {
+				if ((robotActionSettings.getSmoothPoint() != null) && (robotActionSettings.getSmoothPoint().getId() > 0)) {
 					PreparedStatement stmt5 = ConnectionManager.getConnection().prepareStatement("DELETE FROM COORDINATES WHERE ID = ?");
 					stmt5.setInt(1, robotActionSettings.getSmoothPoint().getId());
 					stmt5.executeUpdate();	
 				}
 			}
 		}
-		clearReferenceIds(processFlow);
+		clearProcessFlowStepsSettingsAndReferencedIds(processFlow);
 	}
-	
-	private void clearReferenceIds(final ProcessFlow processFlow) {
-		processFlow.setId(0);
+
+	private void clearProcessFlowStepsSettingsAndReferencedIds(final ProcessFlow processFlow) {
 		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
 			if (step instanceof PickStep) {
 				PickStep pStep = (PickStep) step;
@@ -200,7 +201,9 @@ public class ProcessFlowMapper {
 			}
 			if (step instanceof RobotStep) {
 				AbstractRobotActionSettings<?> robotActionSettings = ((RobotStep) step).getRobotSettings();
-				robotActionSettings.getSmoothPoint().setId(0);
+				if (robotActionSettings.getSmoothPoint() != null) {
+					robotActionSettings.getSmoothPoint().setId(0);
+				}
 			}
 		}
 	}
