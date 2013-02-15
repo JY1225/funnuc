@@ -3,7 +3,7 @@ package eu.robojob.irscw.ui.configure.device.processing.cnc;
 import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
+import eu.robojob.irscw.ui.general.AbstractFormPresenter;
 
 public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMillingMachinePutView, CNCMillingMachineMenuPresenter> {
 

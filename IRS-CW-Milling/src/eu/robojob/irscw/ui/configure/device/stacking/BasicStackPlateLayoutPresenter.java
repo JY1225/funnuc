@@ -2,7 +2,7 @@ package eu.robojob.irscw.ui.configure.device.stacking;
 
 import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
+import eu.robojob.irscw.ui.general.AbstractFormPresenter;
 
 public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicStackPlateLayoutView, BasicStackPlateMenuPresenter> {
 

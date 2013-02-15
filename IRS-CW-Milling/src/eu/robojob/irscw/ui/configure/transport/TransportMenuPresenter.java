@@ -1,7 +1,7 @@
 package eu.robojob.irscw.ui.configure.transport;
 
 import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
-import eu.robojob.irscw.ui.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
 public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuView> {
 
@@ -41,8 +41,8 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 	}
 
 	@Override
-	public void setTextFieldListener(final ConfigurePresenter parent) {
-		transportInterventionPresenter.setTextFieldListener(parent);
+	public void setTextFieldListener(final TextInputControlListener listener) {
+		transportInterventionPresenter.setTextFieldListener(listener);
 	}
 	
 	public void processFlowUpdated() {

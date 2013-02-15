@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlowManager;
-import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
+import eu.robojob.irscw.ui.general.AbstractFormPresenter;
 
 public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView, ProcessMenuPresenter> {
 	

@@ -20,9 +20,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.irscw.ui.general.AbstractFormView;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 

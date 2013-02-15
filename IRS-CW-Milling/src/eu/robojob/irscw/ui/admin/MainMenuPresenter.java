@@ -1,5 +1,8 @@
 package eu.robojob.irscw.ui.admin;
 
+import eu.robojob.irscw.ui.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
+
 public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 
 	public MainMenuPresenter(final MainMenuView view) {
@@ -7,7 +10,7 @@ public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 	}
 
 	@Override
-	public void setTextFieldListener(final AdminPresenter parent) {
+	public void setTextFieldListener(final TextInputControlListener listener) {
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package eu.robojob.irscw.ui.configure.transport;
 
-import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
+import eu.robojob.irscw.ui.general.AbstractFormPresenter;
 import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 import eu.robojob.irscw.ui.general.model.TransportInformation;
 

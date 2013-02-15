@@ -12,9 +12,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import eu.robojob.irscw.external.device.DeviceSettings;
 import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.ui.configure.AbstractFormView;
 import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.irscw.ui.general.AbstractFormView;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 

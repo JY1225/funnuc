@@ -2,7 +2,7 @@ package eu.robojob.irscw.ui.configure.process;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import eu.robojob.irscw.ui.configure.AbstractMenuView;
+import eu.robojob.irscw.ui.general.AbstractMenuView;
 import eu.robojob.irscw.util.Translator;
 
 public class ProcessMenuView extends AbstractMenuView<ProcessMenuPresenter> {

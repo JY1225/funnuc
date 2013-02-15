@@ -1,4 +1,4 @@
-	package eu.robojob.irscw.ui.configure;
+	package eu.robojob.irscw.ui.general;
 
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 

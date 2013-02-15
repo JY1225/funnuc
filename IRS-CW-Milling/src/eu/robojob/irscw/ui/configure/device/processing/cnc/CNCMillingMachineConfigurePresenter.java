@@ -16,7 +16,7 @@ import eu.robojob.irscw.external.robot.RobotPutSettings;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
+import eu.robojob.irscw.ui.general.AbstractFormPresenter;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<CNCMillingMachineConfigureView, CNCMillingMachineMenuPresenter> {

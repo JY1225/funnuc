@@ -6,7 +6,7 @@ import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
+import eu.robojob.irscw.ui.general.AbstractFormPresenter;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMillingMachinePickView, CNCMillingMachineMenuPresenter> {

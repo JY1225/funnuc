@@ -8,7 +8,7 @@ import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrient
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
+import eu.robojob.irscw.ui.general.AbstractFormPresenter;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<BasicStackPlateRawWorkPieceView, BasicStackPlateMenuPresenter> {

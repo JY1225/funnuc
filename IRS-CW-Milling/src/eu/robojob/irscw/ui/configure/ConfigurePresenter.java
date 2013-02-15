@@ -34,6 +34,8 @@ import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
+import eu.robojob.irscw.ui.general.AbstractFormView;
+import eu.robojob.irscw.ui.general.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 

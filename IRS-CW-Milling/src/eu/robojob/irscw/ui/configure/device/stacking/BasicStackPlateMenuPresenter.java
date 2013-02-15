@@ -1,7 +1,7 @@
 package eu.robojob.irscw.ui.configure.device.stacking;
 
-import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
-import eu.robojob.irscw.ui.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.irscw.ui.general.AbstractFormPresenter;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPresenter {
@@ -44,12 +44,12 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 	}
 
 	@Override
-	public void setTextFieldListener(final ConfigurePresenter parent) {
-		basicStackPlateConfigurePresenter.setTextFieldListener(parent);
+	public void setTextFieldListener(final TextInputControlListener listener) {
+		basicStackPlateConfigurePresenter.setTextFieldListener(listener);
 		if (basicStackPlateWorkPiecePresenter != null) {
-			basicStackPlateWorkPiecePresenter.setTextFieldListener(parent);
+			basicStackPlateWorkPiecePresenter.setTextFieldListener(listener);
 		}
-		basicStackPlateLayoutPresenter.setTextFieldListener(parent);
+		basicStackPlateLayoutPresenter.setTextFieldListener(listener);
 	}
 
 	@Override

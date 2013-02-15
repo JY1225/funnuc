@@ -1,7 +1,7 @@
 package eu.robojob.irscw.ui.configure.process;
 
 import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
-import eu.robojob.irscw.ui.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
 public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView> {
 	
@@ -70,10 +70,10 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	}
 
 	@Override
-	public void setTextFieldListener(final ConfigurePresenter parent) {
-		configurePresenter.setTextFieldListener(parent);
-		openPresenter.setTextFieldListener(parent);
-		savePresenter.setTextFieldListener(parent);
+	public void setTextFieldListener(final TextInputControlListener listener) {
+		configurePresenter.setTextFieldListener(listener);
+		openPresenter.setTextFieldListener(listener);
+		savePresenter.setTextFieldListener(listener);
 	}
 
 	@Override

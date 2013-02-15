@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure;
+package eu.robojob.irscw.ui.general;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +23,7 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 	private static String arrowRightPath = "M 1.6875 0 L 0 1.65625 L 3.375 5 L 0.0625 8.3125 L 1.71875 10 L 6.65625 5.0625 L 6.5625 4.96875 L 6.625 4.90625 L 1.6875 0 z ";
 	
 	private static final int BUTTON_WIDTH = 210;
+	private static final int ICON_BUTTON_WIDTH = 50;
 	private static final int BUTTON_HEIGHT = 45;
 	
 	private static final int ICON_WIDTH = 20;
@@ -89,6 +90,41 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 		hbox.getChildren().add(arrowPane);
 		hbox.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		hbox.getStyleClass().add(CSS_CLASS_LEFT_MENU_ITEM_PANEL);
+		button.setGraphic(hbox);
+		button.setOnAction(clickedEventHandler);
+		button.getStyleClass().add(CSS_CLASS_LEFT_MENU_BUTTON);
+		if (index == 0) {
+			button.getStyleClass().add(CSS_CLASS_LEFT_MENU_TOP);
+			button.getStyleClass().add(CSS_CLASS_LEFT_MENU_BOTH);
+		}
+		if (index == 1) {
+			getChildren().get(0).getStyleClass().remove(CSS_CLASS_LEFT_MENU_BOTH);
+		}
+		if (index == getChildren().size()) {
+			if (index > 0) {
+				getChildren().get(index - 1).getStyleClass().remove(CSS_CLASS_LEFT_MENU_BOTTOM);
+			}
+			button.getStyleClass().add(CSS_CLASS_LEFT_MENU_BOTTOM);
+		}
+		menuItems.put(index, button);
+		getChildren().add(button);
+	}
+	
+	protected void addIconMenuItem(final int index, final String iconPath, final EventHandler<ActionEvent> clickedEventHandler) {
+		if ((index < 0) || (index > getChildren().size()) || ((getChildren().size() > 0) && (index < getChildren().size() - 1) && getChildren().get(index) != null)) {
+			throw new IllegalArgumentException("Wrong index value ["  + index + "].");
+		}
+		Button button = new Button();
+		HBox hbox = new HBox();
+		StackPane iconPane = new StackPane();
+		SVGPath icon = new SVGPath();
+		icon.setContent(iconPath);
+		icon.getStyleClass().add(CSS_CLASS_MENU_ICON);
+		hbox.setAlignment(Pos.CENTER);
+		iconPane.getChildren().add(icon);
+		iconPane.setPrefSize(ICON_WIDTH + 2 * ICON_MARGIN, BUTTON_HEIGHT);
+		hbox.getChildren().add(iconPane);
+		hbox.setPrefSize(ICON_BUTTON_WIDTH, BUTTON_HEIGHT);
 		button.setGraphic(hbox);
 		button.setOnAction(clickedEventHandler);
 		button.getStyleClass().add(CSS_CLASS_LEFT_MENU_BUTTON);

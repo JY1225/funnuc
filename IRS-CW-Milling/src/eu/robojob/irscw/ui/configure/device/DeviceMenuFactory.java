@@ -10,8 +10,6 @@ import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.ui.configure.AbstractFormPresenter;
-import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineConfigurePresenter;
 import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineConfigureView;
 import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineMenuPresenter;
@@ -30,6 +28,8 @@ import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateMenuPresente
 import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateRawWorkPiecePresenter;
 import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateRawWorkPieceView;
 import eu.robojob.irscw.ui.configure.device.stacking.StackingDeviceMenuView;
+import eu.robojob.irscw.ui.general.AbstractFormPresenter;
+import eu.robojob.irscw.ui.general.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class DeviceMenuFactory {

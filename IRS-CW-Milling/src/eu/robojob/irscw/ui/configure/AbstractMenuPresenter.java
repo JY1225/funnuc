@@ -1,35 +1,23 @@
 package eu.robojob.irscw.ui.configure;
 
-public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> {
+import eu.robojob.irscw.ui.MainContentPresenter;
+import eu.robojob.irscw.ui.general.AbstractMenuView;
+
+public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> extends eu.robojob.irscw.ui.general.AbstractMenuPresenter<T> {
 
 	private ConfigurePresenter parent;
-	private T view;
-	
+
 	public AbstractMenuPresenter(final T view) {
-		this.view = view;
-		setPresenter();
+		super(view);
 	}
-	
-	public void setParent(final ConfigurePresenter parent) {
-		this.parent = parent;
-	}
-	
-	public abstract void setTextFieldListener(ConfigurePresenter parent);
-	
-	protected abstract void setPresenter();
-	
-	public T getView() {
-		return view;
-	}
-	
+
 	public ConfigurePresenter getParent() {
 		return parent;
 	}
-	
-	public abstract void openFirst();
-	
-	public abstract void setBlocked(boolean blocked);
-	
-	public abstract boolean isConfigured();
+
+	@Override
+	public void setParent(final MainContentPresenter parent) {
+		this.parent = (ConfigurePresenter) parent;
+	}
 	
 }

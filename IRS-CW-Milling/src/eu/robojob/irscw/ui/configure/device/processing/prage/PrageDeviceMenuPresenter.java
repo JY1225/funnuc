@@ -1,8 +1,8 @@
 package eu.robojob.irscw.ui.configure.device.processing.prage;
 
-import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.device.AbstractDeviceMenuPresenter;
 import eu.robojob.irscw.ui.configure.device.DeviceMenuView;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class PrageDeviceMenuPresenter extends AbstractDeviceMenuPresenter {
@@ -31,7 +31,7 @@ public class PrageDeviceMenuPresenter extends AbstractDeviceMenuPresenter {
 	}
 
 	@Override
-	public void setTextFieldListener(final ConfigurePresenter parent) {		
+	public void setTextFieldListener(final TextInputControlListener listener) {		
 	}
 
 	@Override
