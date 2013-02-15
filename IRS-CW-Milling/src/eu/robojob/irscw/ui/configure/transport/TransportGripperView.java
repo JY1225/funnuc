@@ -53,7 +53,7 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		add(lblGripperHead, column++, row);
 		
 		cbbGripperHeads = new ComboBox<String>();
-		cbbGripperHeads.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
+		cbbGripperHeads.setPrefSize(60, UIConstants.COMBO_HEIGHT);
 		add(cbbGripperHeads, column++, row);
 		cbbGripperHeads.valueProperty().addListener(new ChangeListener<String>() {
 			@Override

@@ -6,6 +6,10 @@ import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlowManager;
 import eu.robojob.irscw.process.ProcessFlowTimer;
+import eu.robojob.irscw.ui.admin.AdminPresenter;
+import eu.robojob.irscw.ui.admin.AdminView;
+import eu.robojob.irscw.ui.admin.MainMenuPresenter;
+import eu.robojob.irscw.ui.admin.MainMenuView;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
 import eu.robojob.irscw.ui.automate.AutomateStatusPresenter;
 import eu.robojob.irscw.ui.automate.AutomateStatusView;
@@ -59,6 +63,8 @@ public class RoboSoftAppFactory {
 	private ProcessMenuPresenter processConfigurationMenuPresenter;
 	private ProcessOpenPresenter processOpenPresenter;
 	private ProcessSavePresenter processSavePresenter;
+	private AdminPresenter adminPresenter;
+	private MainMenuPresenter mainMenuPresenter;
 	
 	private ProcessFlow processFlow;
 	private ProcessFlowTimer processFlowTimer;
@@ -80,7 +86,8 @@ public class RoboSoftAppFactory {
 	public MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
 			MainView mainView = new MainView();
-			mainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter(), getAutomatePresenter(), getRobotPopUpPresenter());
+			mainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter(), getAutomatePresenter(), 
+					getRobotPopUpPresenter(), getAdminPresenter());
 			mainPresenter.loadProcessFlow(getProcessFlow());
 		}
 		return mainPresenter;
@@ -261,5 +268,21 @@ public class RoboSoftAppFactory {
 			transportMenuFactory = new TransportMenuFactory(getProcessFlow());
 		}
 		return transportMenuFactory;
+	}
+	
+	private AdminPresenter getAdminPresenter() {
+		if (adminPresenter == null) {
+			AdminView view = new AdminView();
+			adminPresenter = new AdminPresenter(view, getMainMenuPresenter(), getKeyboardPresenter(), getNumericKeyboardPresenter());
+		}
+		return adminPresenter;
+	}
+	
+	private MainMenuPresenter getMainMenuPresenter() {
+		if (mainMenuPresenter == null) {
+			MainMenuView view = new MainMenuView();
+			mainMenuPresenter = new MainMenuPresenter(view);
+		}
+		return mainMenuPresenter;
 	}
 }

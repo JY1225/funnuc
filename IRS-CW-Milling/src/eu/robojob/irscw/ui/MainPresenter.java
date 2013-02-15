@@ -9,6 +9,7 @@ import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
+import eu.robojob.irscw.ui.admin.AdminPresenter;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.menu.MenuBarPresenter;
@@ -26,11 +27,12 @@ public class MainPresenter implements ProcessFlowListener {
 	private TeachPresenter teachPresenter;
 	private AutomatePresenter automatePresenter;
 	private RobotPopUpPresenter robotPopUpPresenter;
+	private AdminPresenter adminPresenter;
 	
 	private MainContentPresenter activeContentPresenter;
 		
 	public MainPresenter(final MainView view, final MenuBarPresenter menuBarPresenter, final ConfigurePresenter configurePresenter, final TeachPresenter teachPresenter, 
-			final AutomatePresenter automatePresenter, final RobotPopUpPresenter robotPopUpPresenter) {
+			final AutomatePresenter automatePresenter, final RobotPopUpPresenter robotPopUpPresenter, final AdminPresenter adminPresenter) {
 		this.view = view;
 		view.setPresenter(this);
 		this.menuBarPresenter = menuBarPresenter;
@@ -43,6 +45,8 @@ public class MainPresenter implements ProcessFlowListener {
 		automatePresenter.setParent(this);
 		this.robotPopUpPresenter = robotPopUpPresenter;
 		robotPopUpPresenter.setParent(this);
+		this.adminPresenter = adminPresenter;
+		adminPresenter.setParent(this);
 		view.setMenuBarView(menuBarPresenter.getView());
 		this.process = null;
 	}
@@ -86,7 +90,7 @@ public class MainPresenter implements ProcessFlowListener {
 	
 	public void showAdmin() {
 		menuBarPresenter.showAdminView();
-		//TODO show admin content
+		setActiveMainContentPresenter(adminPresenter);
 	}
 	
 	public void closePopUps() {
