@@ -1,10 +1,7 @@
 package eu.robojob.irscw.ui;
 
-import javafx.scene.Node;
 
-public interface MainContentPresenter {
+public interface MainContentPresenter extends ContentPresenter {
 
-	void setActive(boolean active);
 	void setParent(MainPresenter mainPresenter);
-	Node getView();
 }

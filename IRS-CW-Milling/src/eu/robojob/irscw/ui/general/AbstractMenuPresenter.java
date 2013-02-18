@@ -1,6 +1,6 @@
 package eu.robojob.irscw.ui.general;
 
-import eu.robojob.irscw.ui.MainContentPresenter;
+import eu.robojob.irscw.ui.ContentPresenter;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
 public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> {
@@ -26,5 +26,5 @@ public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> {
 	
 	public abstract boolean isConfigured();
 	
-	public abstract void setParent(final MainContentPresenter parent);
+	public abstract void setParent(final ContentPresenter parent);
 }

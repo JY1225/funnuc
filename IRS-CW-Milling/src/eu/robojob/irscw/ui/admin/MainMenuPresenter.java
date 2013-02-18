@@ -1,6 +1,5 @@
 package eu.robojob.irscw.ui.admin;
 
-import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
 public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
@@ -38,6 +37,7 @@ public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 	
 	public void robotMenuClicked() {
 		getView().setRobotMenuActive();
+		getParent().openRobotAdmin();
 	}
 	
 	public void deviceMenuClicked() {

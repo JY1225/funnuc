@@ -72,4 +72,8 @@ public class AdminView extends StackPane {
 			keyboardPane.setMaxWidth(USE_PREF_SIZE);
 		}
 	}
+	
+	public void closeKeyboard() {
+		getChildren().remove(keyboardPane);
+	}
 }

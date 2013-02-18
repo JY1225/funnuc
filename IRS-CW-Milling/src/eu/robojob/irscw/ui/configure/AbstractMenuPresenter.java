@@ -1,6 +1,6 @@
 package eu.robojob.irscw.ui.configure;
 
-import eu.robojob.irscw.ui.MainContentPresenter;
+import eu.robojob.irscw.ui.ContentPresenter;
 import eu.robojob.irscw.ui.general.AbstractMenuView;
 
 public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> extends eu.robojob.irscw.ui.general.AbstractMenuPresenter<T> {
@@ -16,7 +16,7 @@ public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> exten
 	}
 
 	@Override
-	public void setParent(final MainContentPresenter parent) {
+	public void setParent(final ContentPresenter parent) {
 		this.parent = (ConfigurePresenter) parent;
 	}
 	
