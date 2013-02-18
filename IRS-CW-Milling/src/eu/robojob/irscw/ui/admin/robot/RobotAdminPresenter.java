@@ -14,6 +14,7 @@ public class RobotAdminPresenter implements SubContentPresenter {
 		this.view = view;
 		this.robotMenuPresenter = robotMenuPresenter;
 		robotMenuPresenter.setParent(this);
+		getView().setMenuView(robotMenuPresenter.getView());
 	}
 	
 	public RobotAdminView getView() {
@@ -22,8 +23,6 @@ public class RobotAdminPresenter implements SubContentPresenter {
 
 	@Override
 	public void setActive(final boolean active) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

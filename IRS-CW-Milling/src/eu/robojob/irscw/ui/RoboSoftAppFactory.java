@@ -10,6 +10,10 @@ import eu.robojob.irscw.ui.admin.AdminPresenter;
 import eu.robojob.irscw.ui.admin.AdminView;
 import eu.robojob.irscw.ui.admin.MainMenuPresenter;
 import eu.robojob.irscw.ui.admin.MainMenuView;
+import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
+import eu.robojob.irscw.ui.admin.robot.RobotAdminView;
+import eu.robojob.irscw.ui.admin.robot.RobotMenuPresenter;
+import eu.robojob.irscw.ui.admin.robot.RobotMenuView;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
 import eu.robojob.irscw.ui.automate.AutomateStatusPresenter;
 import eu.robojob.irscw.ui.automate.AutomateStatusView;
@@ -65,6 +69,7 @@ public class RoboSoftAppFactory {
 	private ProcessSavePresenter processSavePresenter;
 	private AdminPresenter adminPresenter;
 	private MainMenuPresenter mainMenuPresenter;
+	private RobotAdminPresenter robotAdminPresenter;
 	
 	private ProcessFlow processFlow;
 	private ProcessFlowTimer processFlowTimer;
@@ -273,7 +278,7 @@ public class RoboSoftAppFactory {
 	private AdminPresenter getAdminPresenter() {
 		if (adminPresenter == null) {
 			AdminView view = new AdminView();
-			adminPresenter = new AdminPresenter(view, getMainMenuPresenter(), getKeyboardPresenter(), getNumericKeyboardPresenter());
+			adminPresenter = new AdminPresenter(view, getMainMenuPresenter(), getKeyboardPresenter(), getNumericKeyboardPresenter(), getRobotAdminPresenter());
 		}
 		return adminPresenter;
 	}
@@ -284,5 +289,15 @@ public class RoboSoftAppFactory {
 			mainMenuPresenter = new MainMenuPresenter(view);
 		}
 		return mainMenuPresenter;
+	}
+	
+	private RobotAdminPresenter getRobotAdminPresenter() {
+		if (robotAdminPresenter == null) {
+			RobotAdminView view = new RobotAdminView();
+			RobotMenuView menuView = new RobotMenuView();
+			RobotMenuPresenter robotMenuPresenter = new RobotMenuPresenter(menuView);
+			robotAdminPresenter = new RobotAdminPresenter(view, robotMenuPresenter);
+		}
+		return robotAdminPresenter;
 	}
 }

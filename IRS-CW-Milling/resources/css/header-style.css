@@ -5,14 +5,14 @@
 }
 
 .tool-bar {
-	-fx-background-color: #807c7c, #4c4c4c, #807c7c, #6d6c6c;
-	-fx-background-insets: 0 0 0 0, 1 0 0 0, 1 0 1 0, 1 0 2 0;
+	-fx-background-color: #807c7c, #3d3d3d, #696868, linear-gradient(#737373 0%, #666565 100%);
+	-fx-background-insets: 0 0 0 0, 1 0 0 0, 1 0 1 0 , 1 0 2 0;
 	-fx-effect: dropshadow(two-pass-box, #5b5959, 15, 0, 0, 1);
 }
 
 .header-button {
-	-fx-background-color: #807878, #222222, #807878, #353333, linear-gradient(#656161 0%, #4e4a4a 100%);
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 3 1;
+	-fx-background-color: #807878, #222222, #908888, #353333, linear-gradient(#726e6e 0%, #4e4a4a 100%);
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 2 1;
 	-fx-background-radius: 3, 3, 2, 2, 2;
 	-fx-padding: 1 0 0 0;
 	-fx-text-alignment: center;
@@ -37,40 +37,39 @@
 }
 
 .bar {
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 3 1;
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 2 1;
 	-fx-background-radius: 0,0,0,0;
 }
 
 .first {
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 2 0 2 1, 2 0 3 1;
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 2 0 2 1, 2 0 2 1;
     -fx-background-radius: 3 0 0 3, 3 0 0 3, 2 0 0 2, 2 0 0 2, 2 0 0 2;
 }
 
 .last {
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 0, 2 1 2 0, 2 1 3 0;
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 0, 2 1 2 0, 2 1 2 0;
 	-fx-background-radius: 0 3 3 0, 0 3 3 0, 0 2 2 0, 0 2 2 0, 0 2 2 0;
 }
 
 .header-button:pressed, .header-button.selected {
-	-fx-background-color: #807878, #222222, #6696e7, #1d355d, linear-gradient(#5078bc 0%, #3e6099 100%);
-	-fx-background-color: #807878, #222222, #e6624a, #992b11, linear-gradient(#c54b35 0%, #be3c1a 100%);
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 1 1 2 1, 2 1 2 1;
+	-fx-background-color: #807878, #222222, #992b11, linear-gradient(#e6624a 0%, #992b11 60%), radial-gradient(center 50% 100%, radius 50%, #c54b35 0%, #be3c1a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.04) 90%, rgba(255, 255, 255, 0) 91%);
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 2 1;
 }
 
 .bar:pressed, .bar.selected {
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 1 1 2 1, 2 1 2 1;
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 2 1;
 }
 
 .first.selected, .first:pressed {
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 1 0 2 1, 2 0 2 1;
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 2 0 2 1, 2 0 2 1;
 }
 
 .last.selected, .last:pressed {
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 0, 1 1 2 0, 2 1 2 0;
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 0, 2 1 2 0, 2 1 2 0;
 }
 
 .header-button-exit:pressed, header-button-exit.selected {
-	-fx-background-color: #807878, #222222, #e6624a, #992b11, linear-gradient(#c54b35 0%, #be3c1a 100%);
+	-fx-background-color: #807878, #222222, linear-gradient(#992b11 0%, #992b11 100%), linear-gradient(#e6624a 0%, #992b11 60%), radial-gradient(center 50% 100%, radius 50%, #c54b35 0%, #be3c1a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.04) 90%, rgba(255, 255, 255, 0) 91%);
 }
 
 .header-button:disabled {

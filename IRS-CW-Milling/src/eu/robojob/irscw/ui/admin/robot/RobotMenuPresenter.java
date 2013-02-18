@@ -1,9 +1,9 @@
 package eu.robojob.irscw.ui.admin.robot;
 
-import eu.robojob.irscw.ui.admin.AbstractMenuPresenter;
+import eu.robojob.irscw.ui.admin.AbstractSubMenuPresenter;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
-public class RobotMenuPresenter extends AbstractMenuPresenter<RobotMenuView> {
+public class RobotMenuPresenter extends AbstractSubMenuPresenter<RobotMenuView, RobotAdminPresenter> {
 
 	public RobotMenuPresenter(final RobotMenuView view) {
 		super(view);
@@ -14,6 +14,10 @@ public class RobotMenuPresenter extends AbstractMenuPresenter<RobotMenuView> {
 	}
 	
 	public void configureGeneral() {
+		
+	}
+	
+	public void configureGrippers() {
 		
 	}
 

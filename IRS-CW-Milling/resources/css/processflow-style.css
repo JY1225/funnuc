@@ -1,26 +1,27 @@
 /* ---------- DEVICE BUTTON ---------- */
 
 .device-button {
-	-fx-background-insets: 0, 1, 2, 6, 7, 8 8 9 8;
+	-fx-background-insets: 0, 1, 2 1 1 1, 2 1 1 1;
 	-fx-shape: "M 34.03125 0.03125 C 15.253569 0.03125 0.03125 15.253568 0.03125 34.03125 C 0.03125 52.808932 15.253569 68.03125 34.03125 68.03125 C 52.808931 68.03125 68.03125 52.808932 68.03125 34.03125 C 68.03125 15.253568 52.808931 0.03125 34.03125 0.03125 z";
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 7, 0.0, 0, 2);
 }
 
 .btn-pre {
-	-fx-background-color: linear-gradient(#ededed 0%, #f9f9f9 100%), linear-gradient(#9d9d9d 0%, #d9d9d9 100%), #d9d9d9, #a54600, linear-gradient(#ffc18f 0%, #d66a00 100%), linear-gradient(#ff8b24 0%, #fb8720 100%);
+	-fx-background-color: linear-gradient(#f47504 0%, #a45100 100%), linear-gradient(#ffbe85 0%, #ca6400 60%), radial-gradient(center 50% 100%, radius 50%, #ffa454 0%, #f57403 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%);
 }
 
 .pre-process {
 }
 
 .btn-cnc {
-	-fx-background-color: linear-gradient(#ededed 0%, #f9f9f9 100%), linear-gradient(#9d9d9d 0%, #d9d9d9 100%), #d9d9d9, #012d86, linear-gradient(#7fa9ff 0%, #144dc0 100%), linear-gradient(#3073fb 0%, #2767ea 100%);
+	-fx-background-color: linear-gradient(#0047d8 0%, #003294 100%), linear-gradient(#97b7f9 0%, #144dc0 60%), radial-gradient(center 50% 100%, radius 50%, #3073fb 0%, #1654d4 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%);
 }
 
 .cnc-machine {
 }
 
 .btn-post {
-	-fx-background-color: linear-gradient(#ededed 0%, #f9f9f9 100%), linear-gradient(#9d9d9d 0%, #d9d9d9 100%), #d9d9d9, #064e08, linear-gradient(#55f358 0%, #117514 100%), linear-gradient(#2bb52e 0%, #27a22a 100%);
+	-fx-background-color: linear-gradient(#2e9330 0%, #117514 100%), linear-gradient(#9adc9b 0%, #117514 60%), radial-gradient(center 50% 100%, radius 50%, #3bc63e 0%, #27a22a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%);
 }
 
 .post-process {
@@ -28,8 +29,9 @@
 
 .button-shape {
 	-fx-fill: white;
-	-fx-scale-x: 0.82;
-	-fx-scale-y: 0.82;
+	-fx-scale-x: 0.85;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 2, 0.0, 0, 0);
+	-fx-scale-y: 0.85;
 }
 
 .btn-pre .button-shape {
@@ -46,7 +48,7 @@
 }
 
 .device-unfocussed {
-	-fx-opacity: 0.2;
+	-fx-opacity: 0.15;
 }
 
 .device-label {
@@ -60,6 +62,9 @@
 	-fx-padding: 0;
 }
 
+.device-unfocussed .device-label {
+}
+
 .unknown-device {
 	-fx-text-fill: red;	
 }
@@ -69,13 +74,15 @@
 
 .transport-button {
 	-fx-opacity: 1;
-	-fx-background-color: #f9f9f9, #9d9d9d, #d9d9d9;
-	-fx-background-insets: 0, 0 0 1 0, 1 0 1 0;
+	-fx-background-color: linear-gradient(#39bee5 0%, #0fa3ce 100%), #5bd8fc, linear-gradient(#35bfe7 0%, #1fb6e2 100%);
+	-fx-background-insets: 0, 1, 2 1 1 1;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 7, 0.0, 0, 2);
 	/*-fx-shape: "m 236.67304,254.67726 1.76147,2.51639 1.85583,2.57929 -54.19659,0 0,5.03277 54.16514,0 -1.82438,2.54783 -1.76147,2.54784 2.42202,-1.00655 10.1599,-4.08912 56.83879,0 0,-5.03277 -56.77588,0 -10.22281,-4.12058 -2.42202,-0.9751 z";*/
 }
 
 .transport-unfocussed {
-	-fx-opacity: 0.2;
+	-fx-opacity: 0.05;
+
 }
 
 .pause-shape {

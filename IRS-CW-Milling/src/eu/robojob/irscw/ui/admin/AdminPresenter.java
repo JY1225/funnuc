@@ -3,6 +3,7 @@ package eu.robojob.irscw.ui.admin;
 import javafx.scene.control.TextInputControl;
 import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
+import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
@@ -17,9 +18,10 @@ public class AdminPresenter implements TextInputControlListener, MainContentPres
 	private MainMenuPresenter mainMenuPresenter;
 	private FullKeyboardPresenter fullKeyboardPresenter;
 	private NumericKeyboardPresenter numericKeyboardPresenter;
+	private RobotAdminPresenter robotAdminPresenter;
 	
 	public AdminPresenter(final AdminView view, final MainMenuPresenter mainMenuPresenter, final FullKeyboardPresenter fullKeyboardPresenter, 
-			final NumericKeyboardPresenter numericKeyboardPresenter) {
+			final NumericKeyboardPresenter numericKeyboardPresenter, final RobotAdminPresenter robotAdminPresenter) {
 		this.view = view;
 		view.setPresenter(this);
 		view.setMainMenu(mainMenuPresenter.getView());
@@ -27,6 +29,7 @@ public class AdminPresenter implements TextInputControlListener, MainContentPres
 		mainMenuPresenter.setParent(this);
 		this.fullKeyboardPresenter = fullKeyboardPresenter;
 		this.numericKeyboardPresenter = numericKeyboardPresenter;
+		this.robotAdminPresenter = robotAdminPresenter;
 	}
 	
 	@Override
@@ -87,7 +90,7 @@ public class AdminPresenter implements TextInputControlListener, MainContentPres
 	}
 	
 	public void openRobotAdmin() {
-		
+		getView().setContent(robotAdminPresenter.getView());
 	}
 
 }
