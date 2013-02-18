@@ -89,8 +89,9 @@
 	-fx-background-radius: 0 0 3 3, 0 0 2 2, 0 0 1 1;
 }
 
-.pop-up-btn-pressed, .pop-up-btn:pressed {
-	-fx-background-color: #222222, #36568c, #4368a6;
+.pop-up-btn-pressed, .pop-up-btn:pressed {	
+	-fx-background-color: #222222, #413d3d, #413d3d;
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0.0, 0, 1);
 }
 
 .warning-bg-icon {

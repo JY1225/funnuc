@@ -126,7 +126,7 @@
 }
 
 .progressbar-piece-green {
-	-fx-background-color: #f9f9f9, #1e8f20, #21a524;
+	-fx-background-color: #f9f9f9, #1e8f20, linear-gradient(#21a524 0%, #2ed331 100%);
 }
 
 .progressbar-piece-yellow {
