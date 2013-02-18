@@ -42,7 +42,7 @@ public class MenuBarView extends ToolBar {
 	
 	private static final int BTN_HEIGHT = 45;
 	private static final int BTN_WIDTH_SMALL = 60;
-	private static final int BTN_WIDTH_LARGE = 130;
+	private static final int BTN_WIDTH_LARGE = 153;
 	
 	private static final String CSS_CLASS_BTN_SELECTED = "selected";
 	private static final String CSS_CLASS_HEADER_BUTTON = "header-button";
@@ -168,6 +168,7 @@ public class MenuBarView extends ToolBar {
 		hBoxProcessMenuItems.getChildren().add(btnConfigure);
 		hBoxProcessMenuItems.getChildren().add(btnTeach);
 		hBoxProcessMenuItems.getChildren().add(btnAutomate);
+		hBoxProcessMenuItems.setSpacing(-13);
 		
 		buttonBar = new HBox();
 		buttonBar.getChildren().add(btnAlarms);
