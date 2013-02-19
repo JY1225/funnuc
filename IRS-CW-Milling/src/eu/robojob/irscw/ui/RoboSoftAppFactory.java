@@ -12,6 +12,8 @@ import eu.robojob.irscw.ui.admin.MainMenuPresenter;
 import eu.robojob.irscw.ui.admin.MainMenuView;
 import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
 import eu.robojob.irscw.ui.admin.robot.RobotAdminView;
+import eu.robojob.irscw.ui.admin.robot.RobotConfigurePresenter;
+import eu.robojob.irscw.ui.admin.robot.RobotConfigureView;
 import eu.robojob.irscw.ui.admin.robot.RobotMenuPresenter;
 import eu.robojob.irscw.ui.admin.robot.RobotMenuView;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
@@ -70,6 +72,7 @@ public class RoboSoftAppFactory {
 	private AdminPresenter adminPresenter;
 	private MainMenuPresenter mainMenuPresenter;
 	private RobotAdminPresenter robotAdminPresenter;
+	private RobotConfigurePresenter robotConfigurePresenter;
 	
 	private ProcessFlow processFlow;
 	private ProcessFlowTimer processFlowTimer;
@@ -278,7 +281,7 @@ public class RoboSoftAppFactory {
 	private AdminPresenter getAdminPresenter() {
 		if (adminPresenter == null) {
 			AdminView view = new AdminView();
-			adminPresenter = new AdminPresenter(view, getMainMenuPresenter(), getKeyboardPresenter(), getNumericKeyboardPresenter(), getRobotAdminPresenter());
+			adminPresenter = new AdminPresenter(view, getMainMenuPresenter(), getKeyboardPresenter(), getNumericKeyboardPresenter());
 		}
 		return adminPresenter;
 	}
@@ -286,7 +289,7 @@ public class RoboSoftAppFactory {
 	private MainMenuPresenter getMainMenuPresenter() {
 		if (mainMenuPresenter == null) {
 			MainMenuView view = new MainMenuView();
-			mainMenuPresenter = new MainMenuPresenter(view);
+			mainMenuPresenter = new MainMenuPresenter(view, getRobotAdminPresenter());
 		}
 		return mainMenuPresenter;
 	}
@@ -295,9 +298,17 @@ public class RoboSoftAppFactory {
 		if (robotAdminPresenter == null) {
 			RobotAdminView view = new RobotAdminView();
 			RobotMenuView menuView = new RobotMenuView();
-			RobotMenuPresenter robotMenuPresenter = new RobotMenuPresenter(menuView);
+			RobotMenuPresenter robotMenuPresenter = new RobotMenuPresenter(menuView, getRobotConfigurePresenter());
 			robotAdminPresenter = new RobotAdminPresenter(view, robotMenuPresenter);
 		}
 		return robotAdminPresenter;
+	}
+	
+	private RobotConfigurePresenter getRobotConfigurePresenter() {
+		if (robotConfigurePresenter == null) {
+			RobotConfigureView view = new RobotConfigureView();
+			robotConfigurePresenter = new RobotConfigurePresenter(view, robotManager);
+		}
+		return robotConfigurePresenter;
 	}
 }

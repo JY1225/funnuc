@@ -7,21 +7,21 @@
 }
 
 .btn-pre {
-	-fx-background-color: linear-gradient(#f47504 0%, #a45100 100%), linear-gradient(#ffbe85 0%, #ca6400 60%), radial-gradient(center 50% 100%, radius 50%, #ffa454 0%, #f57403 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%);
+	-fx-background-color: linear-gradient(#f47504 0%, #a45100 100%), linear-gradient(#ffbe85 0%, #ca6400 60%), radial-gradient(center 50% 100%, radius 50%, #fe8b27 0%, #f57403 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%);
 }
 
 .pre-process {
 }
 
 .btn-cnc {
-	-fx-background-color: linear-gradient(#0047d8 0%, #003294 100%), linear-gradient(#97b7f9 0%, #144dc0 60%), radial-gradient(center 50% 100%, radius 50%, #3073fb 0%, #1654d4 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%);
+	-fx-background-color: linear-gradient(#0047d8 0%, #003294 100%), linear-gradient(#97b7f9 0%, #144dc0 60%), radial-gradient(center 50% 100%, radius 50%, #2d6ae8 0%, #1654d4 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%);
 }
 
 .cnc-machine {
 }
 
 .btn-post {
-	-fx-background-color: linear-gradient(#2e9330 0%, #117514 100%), linear-gradient(#9adc9b 0%, #117514 60%), radial-gradient(center 50% 100%, radius 50%, #3bc63e 0%, #27a22a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%);
+	-fx-background-color: linear-gradient(#2e9330 0%, #117514 100%), linear-gradient(#9adc9b 0%, #117514 60%), radial-gradient(center 50% 100%, radius 50%, #3bc63e 0%, #27a22a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%);
 }
 
 .post-process {

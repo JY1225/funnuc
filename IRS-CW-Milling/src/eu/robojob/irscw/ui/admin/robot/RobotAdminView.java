@@ -22,6 +22,10 @@ public class RobotAdminView extends HBox {
 	public void setPresenter(final RobotAdminPresenter presenter) {
 		this.presenter = presenter;
 	}
+	
+	public RobotAdminPresenter getPresenter() {
+		return this.presenter;
+	}
 
 	private void build() {
 		getChildren().clear();

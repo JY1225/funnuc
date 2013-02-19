@@ -583,4 +583,8 @@ public class FanucRobot extends AbstractRobot {
 		return new FanucRobotPutSettings(this, null, null, null, null, false);
 	}
 
+	public RobotSocketCommunication getRobotSocketCommunication() {
+		return this.fanucRobotCommunication;
+	}
+	
 }

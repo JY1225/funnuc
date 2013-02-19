@@ -2,55 +2,31 @@
 	-fx-background-color: #7b7b7b;
 }
 
-.admin-menu {
+.admin-main .left-menu {
 	-fx-background-color: #4c4c4c, #807c7c, #6d6c6c;
 	-fx-background-insets: 0 0 0 0, 0 1 0 0, 0 1 0 0;
 }
 
-.admin-menu-button {
-	-fx-padding: 0;
-	-fx-background-radius: 0;
-	-fx-background-color: #343434, #726c6c, #5e5a5a;
-	-fx-background-insets: 0 0 0 0, 1 1 1 1, 2 1 0 1;
-}
-
-.admin-menu-button:pressed, .admin-menu-item-selected {
-	-fx-background-color: #343c48, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
-	-fx-background-color: #343c48, #992b11, #be3c1a;
-}
-
-.admin-menu-button .admin-menu-item-label {
-	-fx-padding: 0 0 0 5;
+.check-box {
 	-fx-text-fill: white;
-	-fx-text-alignment: center;
+	-fx-font-size: 14px;
 	-fx-font-family: "Open Sans";
-	-fx-font-weight: bold;
-	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
 }
 
-.admin-menu-button:disabled {
-	-fx-background-color: #545454, #807c7c, #6d6c6c;
-	-fx-opacity: 1;
+.check-box .box {
+	-fx-background-radius: 3, 3, 2;
+	-fx-padding: 5;
+	-fx-background-color: #8c8888, #222222, #373737, #4e4a4a;
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 }
 
-.admin-menu-button .admin-menu-item-label:disabled, .admin-menu-icon:disabled {
-	-fx-fill: #abaaaa;
+.check-box .box .mark {
+	-fx-background-color: transparent;
+	-fx-padding: 5;
 }
 
-.admin-menu-icon {
-	-fx-fill: white;
-}
-
-.admin-menu-top {
-	-fx-background-radius: 3 3 0 0;
-}
-
-.admin-menu-bottom {
-	-fx-background-radius: 0 0 3 3;
-	-fx-background-insets: 0 0 0 0, 1 1 1 1, 2 1 1 1;
-}
-
-.admin-menu-both {
-	-fx-background-radius: 3;
+.check-box:selected .box .mark {
+	-fx-background-color: white;
+	-fx-padding: 5;
 }

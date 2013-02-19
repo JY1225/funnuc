@@ -75,5 +75,6 @@ public class AdminView extends StackPane {
 	
 	public void closeKeyboard() {
 		getChildren().remove(keyboardPane);
+		requestFocus();
 	}
 }

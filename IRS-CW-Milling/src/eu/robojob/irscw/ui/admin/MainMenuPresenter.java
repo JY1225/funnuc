@@ -1,15 +1,20 @@
 package eu.robojob.irscw.ui.admin;
 
+import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
 public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
-
-	public MainMenuPresenter(final MainMenuView view) {
+	
+	private RobotAdminPresenter robotAdminPresenter;
+	
+	public MainMenuPresenter(final MainMenuView view, final RobotAdminPresenter robotAdminPresenter) {
 		super(view);
+		this.robotAdminPresenter = robotAdminPresenter;
 	}
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
+		robotAdminPresenter.setTextFieldListener(listener);
 	}
 
 	@Override
@@ -37,7 +42,7 @@ public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 	
 	public void robotMenuClicked() {
 		getView().setRobotMenuActive();
-		getParent().openRobotAdmin();
+		getParent().setContentNode(robotAdminPresenter.getView());
 	}
 	
 	public void deviceMenuClicked() {
