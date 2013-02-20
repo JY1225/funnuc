@@ -14,8 +14,6 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sun.xml.internal.ws.org.objectweb.asm.Type;
-
 import eu.robojob.irscw.db.ConnectionManager;
 import eu.robojob.irscw.db.GeneralMapper;
 import eu.robojob.irscw.external.device.AbstractDevice;
@@ -294,7 +292,7 @@ public class ProcessFlowMapper {
 		if (robotStep.getRobotSettings().getSmoothPoint() != null) {
 			stmt.setInt(3, robotStep.getRobotSettings().getSmoothPoint().getId());
 		} else {
-			stmt.setNull(3, Type.INT);
+			stmt.setNull(3, java.sql.Types.INTEGER);
 		}
 		stmt.setInt(4, robotStep.getRobot().getId());
 		stmt.executeUpdate();

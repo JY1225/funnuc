@@ -1,5 +1,7 @@
 package eu.robojob.irscw.ui.configure.process;
 
+import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.ProcessFlowManager;
 import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
@@ -8,9 +10,11 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	private ProcessConfigurePresenter configurePresenter;
 	private ProcessSavePresenter savePresenter;
 	private ProcessOpenPresenter openPresenter;
-			
+	private ProcessFlowManager processFlowManager;	
+	private ProcessFlow activeProcessFlow;
+	
 	public ProcessMenuPresenter(final ProcessMenuView view, final ProcessConfigurePresenter configurePresenter, final ProcessSavePresenter savePresenter,
-			final ProcessOpenPresenter openPresenter) {
+			final ProcessOpenPresenter openPresenter, final ProcessFlow activeProcessFlow, final ProcessFlowManager processFlowManager) {
 		super(view);
 		this.configurePresenter = configurePresenter;
 		configurePresenter.setMenuPresenter(this);
@@ -18,6 +22,8 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 		savePresenter.setMenuPresenter(this);
 		this.openPresenter = openPresenter;
 		openPresenter.setMenuPresenter(this);
+		this.activeProcessFlow = activeProcessFlow;
+		this.processFlowManager = processFlowManager;
 	}
 
 	@Override
@@ -41,6 +47,7 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	}
 	
 	public void newProcess() {
+		activeProcessFlow.loadFromOtherProcessFlow(processFlowManager.createNewProcessFlow());
 	}
 	
 	public void processOpened() {

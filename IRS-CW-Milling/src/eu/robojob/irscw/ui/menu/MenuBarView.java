@@ -188,6 +188,9 @@ public class MenuBarView extends ToolBar {
 				
 		this.getItems().add(buttonBar);
 		this.setPrefHeight(55);
+		
+		btnAlarms.setDisable(true);
+		btnAdmin.setDisable(true);
 	}
 	
 	public void setConfigureActive() {
@@ -255,7 +258,7 @@ public class MenuBarView extends ToolBar {
 	}
 	
 	public void setAdminButtonEnabled(final boolean enabled) {
-		btnAdmin.setDisable(!enabled);
+		//btnAdmin.setDisable(!enabled);
 	}
 	
 	public void setAutomateButtonEnabled(final boolean enabled) {
@@ -267,7 +270,7 @@ public class MenuBarView extends ToolBar {
 	}
 	
 	public void setAlarmsButtonEnabled(final boolean enabled) {
-		btnAlarms.setDisable(!enabled);
+		//btnAlarms.setDisable(!enabled);
 	}
 	
 	public void setExitButtonEnabled(final boolean enabled) {

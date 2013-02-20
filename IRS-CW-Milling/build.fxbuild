@@ -6,3 +6,4 @@ jfx.build.applicationClass = eu.robojob.irscw.RoboSoft
 jfx.deploy.nativePackage = true
 jfx.deploy.appletWith = 800
 jfx.deploy.appletHeight = 600
+jfx.build.splashImage = img/logo.png

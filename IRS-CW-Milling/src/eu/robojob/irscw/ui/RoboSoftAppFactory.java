@@ -228,7 +228,7 @@ public class RoboSoftAppFactory {
 		if (processConfigurationMenuPresenter == null) {
 			ProcessMenuView processConfigurationMenuView = new ProcessMenuView();
 			processConfigurationMenuPresenter = new ProcessMenuPresenter(processConfigurationMenuView, getProcessConfigurePresenter(), getProcessSavePresenter(), 
-					getProcessOpenPresenter());
+					getProcessOpenPresenter(), getProcessFlow(), processFlowManager);
 		}
 		return processConfigurationMenuPresenter;
 	}
