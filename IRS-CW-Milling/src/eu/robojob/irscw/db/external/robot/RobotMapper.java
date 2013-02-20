@@ -4,7 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import eu.robojob.irscw.db.ConnectionManager;
@@ -20,9 +22,21 @@ public class RobotMapper {
 
 	private static final int ROBOT_TYPE_FANUC = 1;
 	private ConnectionMapper connectionMapper;
+	private Map<Integer, GripperBody> gripperBodiesBuffer;
+	private Map<Integer, GripperHead> gripperHeadsBuffer;
+	private Map<Integer, Gripper> grippersBuffer;
 	
 	public RobotMapper(final ConnectionMapper connectionMapper) {
 		this.connectionMapper = connectionMapper;
+		gripperBodiesBuffer = new HashMap<Integer, GripperBody>();
+		gripperHeadsBuffer = new HashMap<Integer, GripperHead>();
+		grippersBuffer = new HashMap<Integer, Gripper>();
+	}
+	
+	public void clearBuffers() {
+		gripperBodiesBuffer.clear();
+		gripperHeadsBuffer.clear();
+		grippersBuffer.clear();
 	}
 	
 	public Set<AbstractRobot> getAllRobots() throws SQLException {
@@ -74,16 +88,20 @@ public class RobotMapper {
 	}
 	
 	private GripperBody getGripperBodyById(final int id) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM GRIPPERBODY WHERE ID = ?");
-		stmt.setInt(1, id);
-		ResultSet results = stmt.executeQuery();
 		GripperBody gripperBody = null;
-		if (results.next()) {
-			String name = results.getString("NAME");
-			String description = results.getString("DESCRIPTION");
-			Set<GripperHead> gripperHeads = getGripperHeadsByGripperBodyId(id);
-			gripperBody = new GripperBody(name, description, gripperHeads);
-			gripperBody.setId(id);
+		gripperBody = gripperBodiesBuffer.get(id);
+		if (gripperBody == null) {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM GRIPPERBODY WHERE ID = ?");
+			stmt.setInt(1, id);
+			ResultSet results = stmt.executeQuery();
+			if (results.next()) {
+				String name = results.getString("NAME");
+				String description = results.getString("DESCRIPTION");
+				Set<GripperHead> gripperHeads = getGripperHeadsByGripperBodyId(id);
+				gripperBody = new GripperBody(name, description, gripperHeads);
+				gripperBody.setId(id);
+			}
+			gripperBodiesBuffer.put(id, gripperBody);
 		}
 		return gripperBody;
 	}
@@ -95,10 +113,15 @@ public class RobotMapper {
 		Set<GripperHead> gripperHeads = new HashSet<GripperHead>();
 		while (results.next()) {
 			int id = results.getInt("ID");
-			String name = results.getString("NAME");
-			Set<Gripper> grippers = getGrippersByGripperHeadId(id);
-			GripperHead gripperHead = new GripperHead(name, grippers, null);
-			gripperHead.setId(id);
+			GripperHead gripperHead = null;
+			gripperHead = gripperHeadsBuffer.get(id);
+			if (gripperHead == null) {
+				String name = results.getString("NAME");
+				Set<Gripper> grippers = getGrippersByGripperHeadId(id);
+				gripperHead = new GripperHead(name, grippers, null);
+				gripperHead.setId(id);
+				gripperHeadsBuffer.put(id, gripperHead);
+			}
 			gripperHeads.add(gripperHead);
 		}
 		return gripperHeads;
@@ -118,19 +141,23 @@ public class RobotMapper {
 	}
 	
 	private Gripper getGripperById(final int id) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM GRIPPER WHERE ID = ?");
-		stmt.setInt(1, id);
-		ResultSet results = stmt.executeQuery();
 		Gripper gripper = null;
-		if (results.next()) {
-			float height = results.getFloat("HEIGHT");
-			boolean fixedHeight = results.getBoolean("FIXEDHEIGHT");
-			String name = results.getString("NAME");
-			String description = results.getString("DESCRIPTION");
-			String imageUrl = results.getString("IMAGE_URL");
-			gripper = new Gripper(name, height, description, imageUrl);
-			gripper.setFixedHeight(fixedHeight);
-			gripper.setId(id);
+		gripper = grippersBuffer.get(id);
+		if (gripper == null) {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM GRIPPER WHERE ID = ?");
+			stmt.setInt(1, id);
+			ResultSet results = stmt.executeQuery();
+			if (results.next()) {
+				float height = results.getFloat("HEIGHT");
+				boolean fixedHeight = results.getBoolean("FIXEDHEIGHT");
+				String name = results.getString("NAME");
+				String description = results.getString("DESCRIPTION");
+				String imageUrl = results.getString("IMAGE_URL");
+				gripper = new Gripper(name, height, description, imageUrl);
+				gripper.setFixedHeight(fixedHeight);
+				gripper.setId(id);
+			}
+			grippersBuffer.put(id, gripper);
 		}
 		return gripper;
 	}

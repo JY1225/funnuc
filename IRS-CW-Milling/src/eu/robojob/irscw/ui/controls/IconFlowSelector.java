@@ -15,6 +15,7 @@ public class IconFlowSelector extends ScrollPane {
 	private HBox box;
 	
 	private static final int PREF_HEIGHT = 145;
+	private static final int PREF_HEIGHT_SCROLL = 175;
 	private static final int SPACING = 5;
 	private static final int PADDING = 10;
 	
@@ -40,6 +41,11 @@ public class IconFlowSelector extends ScrollPane {
 		IconFlowSelectorItem item = new IconFlowSelectorItem(index, name, iconUrl);
 		item.addEventHandler(MouseEvent.MOUSE_CLICKED, handler);
 		items.put(index, item);
+		if (items.size() > 4) {
+			this.setPrefHeight(PREF_HEIGHT_SCROLL);
+		} else {
+			this.setPrefHeight(PREF_HEIGHT);
+		}
 		box.getChildren().add(item);
 	}
 	

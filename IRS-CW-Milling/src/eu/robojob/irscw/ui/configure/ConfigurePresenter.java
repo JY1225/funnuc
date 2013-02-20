@@ -156,13 +156,13 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		if (keyboardActive) {
 			keyboardActive = false;
 			// we assume the keyboard view is always on top
-			view.removeNodeFromTop(keyboardPresenter.getView());
-			view.requestFocus();
+			getView().removeNodeFromTop(keyboardPresenter.getView());
+			getView().requestFocus();
 		} else if (numericKeyboardActive) {
 			numericKeyboardActive = false;
 			// we assume the keyboard view is always on top
-			view.removeNodeFromBottomLeft(numericKeyboardPresenter.getView());
-			view.requestFocus();
+			getView().removeNodeFromBottomLeft(numericKeyboardPresenter.getView());
+			getView().requestFocus();
 		}
 	}
 	

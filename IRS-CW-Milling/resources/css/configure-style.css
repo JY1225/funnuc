@@ -64,15 +64,15 @@
 
 .form-button-bar-left {
 	-fx-background-radius: 3 0 0 3, 3 0 0 3, 2 0 0 2, 2 0 0 2, 2 0 0 2;
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 2 0 2 1, 2 0 3 1;
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 2 0 2 1, 2 0 2 1;
 }
 
 .form-button-bar-left .form-button-active {
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 1 0 2 1, 2 0 2 1;
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 2 0 2 1, 2 0 2 1;
 }
 
 .form-button-bar-right .form-button-active {
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 1 1 2 1, 2 1 2 1;
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 2 1;
 }
 
 .form-button-bar-right {
@@ -242,7 +242,7 @@
 .iconflow-selector {
 	-fx-background-color: #8c8888, #3b3b3b, #5b5b5b, #6d6c6c;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
-	-fx-background-radius: 2px;
+	-fx-background-radius: 2, 2, 2, 2;
 }
 
 .iconflow-item {	
@@ -287,61 +287,9 @@
 	-fx-opacity: 1;
 }
 
-.iconflow-selector .scroll-bar {
-	-fx-background-color: transparent;
-	-fx-border-color: transparent;
-	-fx-effect: null;
-}
-
-.iconflow-selector .scroll-bar .decrement-button {
-	-fx-padding: 10 0 10 0;
-	-fx-background-color: transparent;
-	-fx-border-width: 0px;
-	-fx-border-color: transparent;
-	-fx-effect: null;
-}
-
-.iconflow-selector .scroll-bar .decrement-arrow {
-	-fx-shape: " ";
-	-fx-padding: 0;
-}
-
-.iconflow-selector .scroll-bar .increment-button {
-	-fx-padding: 10 0 10 0;
-	-fx-background-color: transparent;
-	-fx-border-color: transparent;
-	-fx-border-width: 0px;
-	-fx-effect: null;
-}
-
-.iconflow-selector .scroll-bar .increment-arrow {
-	-fx-shape: " ";
-	-fx-padding: 0;
-}
-
-.iconflow-selector .scroll-bar .track {
-	-fx-background-color: #eeeeee;
-	-fx-border-color:transparent;
-	-fx-background-radius: 0em;
-	-fx-border-radius:2em;
-	-fx-effect: null;
-}
-
 .lbl-intervention {
 	-fx-text-alignment: right;
 	-fx-alignment: center-right;
-}
-
-.iconflow-selector .scroll-bar .thumb {
-	-fx-background-color: rgba(0, 0, 0, 0.5);
-	-fx-border-color: transparent;
-	-fx-background-insets: 2, 0;
-}
-
-.iconflow-selector .scroll-bar .thumb:pressed {
-	-fx-background-color: rgba(0, 0, 0, 0.3);
-	-fx-border-color: transparent;
-	-fx-background-insets: 2, 0;
 }
 
 .btn-intervention {
@@ -502,6 +450,44 @@
 	-fx-background-insets: 0 0 0 0, 1 0 0 0;
 	-fx-border-width: 0 0 1 0;
 	-fx-border-color: #343434;
+}
+
+.iconflow-selector .scroll-bar {
+	
+}
+
+.iconflow-selector .scroll-bar .decrement-button, .iconflow-selector .scroll-bar .increment-button {
+	-fx-padding: 6px 8px 6px 8px;
+	-fx-background-color: #343434, #726c6c, #5e5a5a;
+	-fx-padding: 10px;
+}
+
+.iconflow-selector .scroll-bar .decrement-button {
+	-fx-background-insets: 0, 1, 2 1 1 1;
+}
+
+.iconflow-selector .scroll-bar .increment-button {
+	-fx-background-insets: 0, 1, 2 1 1 1;
+}
+
+.iconflow-selector .scroll-bar .decrement-arrow, .iconflow-selector .scroll-bar .increment-arrow {
+	-fx-background-color: white;
+	-fx-effect: null;
+	-fx-border-width: 0px;
+	-fx-padding: 6px 4px 6px 4px;
+}
+
+.iconflow-selector .scroll-bar .track {
+	-fx-background-color: #343434, #726c6c, #898989;
+	-fx-background-insets: 0, 1 0 1 1, 2 0 1 1;
+	-fx-background-radius: 0px;
+}
+
+.iconflow-selector .scroll-bar .thumb {
+	-fx-background-color: #343434, #726c6c, #5e5a5a;
+	-fx-background-insets: 0, 1 1 1 1, 2 1 1 1;
+	-fx-background-radius: 0px;
+	-fx-border-width: 0px;
 }
 
 .table .scroll-bar:horizontal {

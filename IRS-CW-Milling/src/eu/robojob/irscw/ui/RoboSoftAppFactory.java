@@ -14,6 +14,8 @@ import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
 import eu.robojob.irscw.ui.admin.robot.RobotAdminView;
 import eu.robojob.irscw.ui.admin.robot.RobotConfigurePresenter;
 import eu.robojob.irscw.ui.admin.robot.RobotConfigureView;
+import eu.robojob.irscw.ui.admin.robot.RobotGripperPresenter;
+import eu.robojob.irscw.ui.admin.robot.RobotGripperView;
 import eu.robojob.irscw.ui.admin.robot.RobotMenuPresenter;
 import eu.robojob.irscw.ui.admin.robot.RobotMenuView;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
@@ -58,7 +60,6 @@ public class RoboSoftAppFactory {
 	private MainPresenter mainPresenter;
 	private MenuBarPresenter menuBarPresenter;
 	private ConfigurePresenter configurePresenter;
-	private FullKeyboardPresenter keyboardPresenter;
 	private ProcessConfigurePresenter processConfigurationPresenter;
 	private TeachPresenter teachPresenter;
 	private AutomatePresenter automatePresenter;
@@ -73,6 +74,7 @@ public class RoboSoftAppFactory {
 	private MainMenuPresenter mainMenuPresenter;
 	private RobotAdminPresenter robotAdminPresenter;
 	private RobotConfigurePresenter robotConfigurePresenter;
+	private RobotGripperPresenter robotGripperPresenter;
 	
 	private ProcessFlow processFlow;
 	private ProcessFlowTimer processFlowTimer;
@@ -179,19 +181,14 @@ public class RoboSoftAppFactory {
 	}
 	
 	public FullKeyboardPresenter getKeyboardPresenter() {
-		if (keyboardPresenter == null) {
-			FullKeyboardView keyboardView = new FullKeyboardView(KeyboardType.QWERTZ_DE);
-			keyboardPresenter = new FullKeyboardPresenter(keyboardView);
-		}
+		FullKeyboardView keyboardView = new FullKeyboardView(KeyboardType.QWERTZ_DE);
+		FullKeyboardPresenter keyboardPresenter = new FullKeyboardPresenter(keyboardView);
 		return keyboardPresenter;
 	}
 	
 	public NumericKeyboardPresenter getNumericKeyboardPresenter() {
-		NumericKeyboardPresenter numericKeyboardPresenter = null;
-		if (numericKeyboardPresenter == null) {
-			NumericKeyboardView numericKeyboardView = new NumericKeyboardView();
-			numericKeyboardPresenter = new NumericKeyboardPresenter(numericKeyboardView);
-		}
+		NumericKeyboardView numericKeyboardView = new NumericKeyboardView();
+		NumericKeyboardPresenter numericKeyboardPresenter = new NumericKeyboardPresenter(numericKeyboardView);
 		return numericKeyboardPresenter;
 	}
 	
@@ -298,7 +295,7 @@ public class RoboSoftAppFactory {
 		if (robotAdminPresenter == null) {
 			RobotAdminView view = new RobotAdminView();
 			RobotMenuView menuView = new RobotMenuView();
-			RobotMenuPresenter robotMenuPresenter = new RobotMenuPresenter(menuView, getRobotConfigurePresenter());
+			RobotMenuPresenter robotMenuPresenter = new RobotMenuPresenter(menuView, getRobotConfigurePresenter(), getRobotGripperPresenter());
 			robotAdminPresenter = new RobotAdminPresenter(view, robotMenuPresenter);
 		}
 		return robotAdminPresenter;
@@ -310,5 +307,13 @@ public class RoboSoftAppFactory {
 			robotConfigurePresenter = new RobotConfigurePresenter(view, robotManager);
 		}
 		return robotConfigurePresenter;
+	}
+	
+	private RobotGripperPresenter getRobotGripperPresenter() {
+		if (robotGripperPresenter == null) {
+			RobotGripperView view = new RobotGripperView();
+			robotGripperPresenter = new RobotGripperPresenter(view, robotManager);
+		}
+		return robotGripperPresenter;
 	}
 }

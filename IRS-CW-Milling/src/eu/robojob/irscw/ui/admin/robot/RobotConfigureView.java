@@ -8,7 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.GripperHead;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IntegerTextField;

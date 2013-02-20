@@ -33,6 +33,8 @@ public class IconFlowSelectorItem extends VBox {
 		build();
 		setSelected(false);
 		setPrefSize(WIDTH, HEIGHT);
+		setMinSize(WIDTH, HEIGHT);
+		setMaxSize(WIDTH, HEIGHT);
 		setAlignment(Pos.CENTER);
 	}
 	

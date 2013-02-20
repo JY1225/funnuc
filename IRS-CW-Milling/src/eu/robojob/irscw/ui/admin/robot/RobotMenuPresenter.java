@@ -6,15 +6,18 @@ import eu.robojob.irscw.ui.controls.TextInputControlListener;
 public class RobotMenuPresenter extends AbstractSubMenuPresenter<RobotMenuView, RobotAdminPresenter> {
 
 	private RobotConfigurePresenter configurePresenter;
+	private RobotGripperPresenter gripperPresenter;
 	
-	public RobotMenuPresenter(final RobotMenuView view, final RobotConfigurePresenter configurePresenter) {
+	public RobotMenuPresenter(final RobotMenuView view, final RobotConfigurePresenter configurePresenter, final RobotGripperPresenter gripperPresenter) {
 		super(view);
 		this.configurePresenter = configurePresenter;
+		this.gripperPresenter = gripperPresenter;
 	}
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
 		configurePresenter.setTextFieldListener(listener);
+		gripperPresenter.setTextFieldListener(listener);
 	}
 	
 	public void configureGeneral() {
@@ -24,7 +27,7 @@ public class RobotMenuPresenter extends AbstractSubMenuPresenter<RobotMenuView, 
 	
 	public void configureGrippers() {
 		getView().setConfigureGrippersActive();
-		
+		getParent().setContentView(gripperPresenter.getView());
 	}
 
 	@Override

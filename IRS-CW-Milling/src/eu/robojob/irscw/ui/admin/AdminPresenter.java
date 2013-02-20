@@ -72,17 +72,17 @@ public class AdminPresenter implements TextInputControlListener, MainContentPres
 	
 	private void textFieldFocussed(final FullTextField textField) {
 		fullKeyboardPresenter.setTarget(textField);
-		view.showKeyboardPane(fullKeyboardPresenter.getView());
+		view.showKeyboardPane(fullKeyboardPresenter.getView(), (textField.localToScene(textField.getLayoutBounds().getMinY(), textField.getLayoutBounds().getMaxY()).getY() > 337));
 	}
 	
 	private void textFieldFocussed(final NumericTextField textField) {
 		numericKeyboardPresenter.setTarget(textField);
-		view.showKeyboardPane(numericKeyboardPresenter.getView());
+		view.showKeyboardPane(numericKeyboardPresenter.getView(), false);
 	}
 	
 	private void textFieldFocussed(final IntegerTextField textField) {
 		numericKeyboardPresenter.setTarget(textField);
-		view.showKeyboardPane(numericKeyboardPresenter.getView());
+		view.showKeyboardPane(numericKeyboardPresenter.getView(), false);
 	}
 
 	@Override

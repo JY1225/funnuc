@@ -30,3 +30,17 @@
 	-fx-background-color: white;
 	-fx-padding: 5;
 }
+
+.gripper-image-edit {
+	-fx-background-color: #8c8888, #3b3b3b, #5b5b5b, #6d6c6c;
+	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 1 1 3 1;
+	-fx-background-radius: 2, 2, 2, 2;
+}
+
+.yellow {
+	-fx-background-color: yellow;
+}
+
+.red {
+	-fx-background-color: red;
+}
