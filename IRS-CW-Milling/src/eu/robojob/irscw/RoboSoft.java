@@ -40,7 +40,8 @@ public class RoboSoft extends Application {
 	public void start(final Stage stage) throws Exception {
 		logger.info("Started application.");
 		Properties properties = new Properties();
-		properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
+		//properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
+		properties.load(new FileInputStream(new File("settings.properties")));
 		
 		GeneralMapper generalMapper = new GeneralMapper();
 		ConnectionMapper connectionMapper = new ConnectionMapper();
