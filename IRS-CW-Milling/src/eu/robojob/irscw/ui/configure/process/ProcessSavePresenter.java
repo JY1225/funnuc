@@ -37,6 +37,7 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 		processFlow.setName(name);
 	}
 	
+	//FIXME: make sure process can only be saved if configured correctly
 	public void overwrite() {
 		try {
 			processFlowManager.updateProcessFlow(processFlow);

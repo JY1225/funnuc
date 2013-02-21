@@ -85,12 +85,15 @@ public class RoboSoftAppFactory {
 	
 	private DeviceMenuFactory deviceMenuFactory;
 	private TransportMenuFactory transportMenuFactory;
+	
+	private KeyboardType keyboardType;
 		
 	public RoboSoftAppFactory(final DeviceManager deviceManager, final RobotManager robotManager, 
-			final ProcessFlowManager processFlowManager) {
+			final ProcessFlowManager processFlowManager, final KeyboardType keyboardType) {
 		this.deviceManager = deviceManager;
 		this.robotManager = robotManager;
 		this.processFlowManager = processFlowManager;
+		this.keyboardType = keyboardType;
 	}
 	
 	public MainPresenter getMainPresenter() {
@@ -181,7 +184,7 @@ public class RoboSoftAppFactory {
 	}
 	
 	public FullKeyboardPresenter getKeyboardPresenter() {
-		FullKeyboardView keyboardView = new FullKeyboardView(KeyboardType.QWERTZ_DE);
+		FullKeyboardView keyboardView = new FullKeyboardView(keyboardType);
 		FullKeyboardPresenter keyboardPresenter = new FullKeyboardPresenter(keyboardView);
 		return keyboardPresenter;
 	}

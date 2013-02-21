@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Properties;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -25,6 +26,8 @@ import eu.robojob.irscw.process.ProcessFlowManager;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.RoboSoftAppFactory;
+import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView.KeyboardType;
+import eu.robojob.irscw.ui.preloader.RoboJobPreloader;
 
 public class RoboSoft extends Application {
 
@@ -39,41 +42,70 @@ public class RoboSoft extends Application {
 	@Override
 	public void start(final Stage stage) throws Exception {
 		logger.info("Started application.");
-		Properties properties = new Properties();
-		//properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
-		properties.load(new FileInputStream(new File("settings.properties")));
-		
-		GeneralMapper generalMapper = new GeneralMapper();
-		ConnectionMapper connectionMapper = new ConnectionMapper();
-		DeviceMapper deviceMapper = new DeviceMapper(generalMapper, connectionMapper);
-		DeviceManager deviceManager = new DeviceManager(deviceMapper);
-		RobotMapper robotMapper = new RobotMapper(connectionMapper);
-		RobotManager robotManager = new RobotManager(robotMapper);
-		ProcessFlowMapper processFlowMapper = new ProcessFlowMapper(generalMapper, deviceManager, robotManager);
-		ProcessFlowManager processFlowManager = new ProcessFlowManager(processFlowMapper, deviceManager, robotManager);
-		
-		RoboSoftAppFactory factory = new RoboSoftAppFactory(deviceManager, robotManager, processFlowManager);
-		MainPresenter mainPresenter = factory.getMainPresenter();
-		mainPresenter.showConfigure();
-		Scene scene = new Scene(mainPresenter.getView(), WIDTH, HEIGHT);
-		Locale.setDefault(new Locale("nl"));
-		if (!Boolean.parseBoolean(properties.getProperty("mouse-visible"))) {
-			scene.setCursor(Cursor.NONE);
-		}
-		scene.getStylesheets().add("css/general-style.css");
-		scene.getStylesheets().add("css/header-style.css");
-		scene.getStylesheets().add("css/keyboard-style.css");
-		scene.getStylesheets().add("css/configure-style.css");
-		scene.getStylesheets().add("css/processflow-style.css");
-		scene.getStylesheets().add("css/teach-style.css");
-		scene.getStylesheets().add("css/automate-style.css");
-		scene.getStylesheets().add("css/admin-style.css");
-		stage.setScene(scene);
+		final Properties properties = new Properties();
+		properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
+		//properties.load(new FileInputStream(new File("settings.properties")));
+		final RoboJobPreloader preloader = new RoboJobPreloader();
+		Scene scene2 = new Scene(preloader, WIDTH, HEIGHT);
+		scene2.getStylesheets().add("css/preloader-style.css");
+		stage.setScene(scene2);
 		stage.setTitle("RoboSoft");
 		stage.centerOnScreen();
 		stage.setResizable(false);
 		stage.initStyle(StageStyle.UNDECORATED);
 		stage.show();
+		
+		ThreadManager.submit(new Thread () {
+			@Override
+			public void run() {
+				try {
+					GeneralMapper generalMapper = new GeneralMapper();
+					ConnectionMapper connectionMapper = new ConnectionMapper();
+					DeviceMapper deviceMapper = new DeviceMapper(generalMapper, connectionMapper);
+					DeviceManager deviceManager = new DeviceManager(deviceMapper);
+					RobotMapper robotMapper = new RobotMapper(connectionMapper);
+					RobotManager robotManager = new RobotManager(robotMapper);
+					ProcessFlowMapper processFlowMapper = new ProcessFlowMapper(generalMapper, deviceManager, robotManager);
+					ProcessFlowManager processFlowManager = new ProcessFlowManager(processFlowMapper, deviceManager, robotManager);
+					String keyboardTypePropertyVal = properties.getProperty("keyboard-type");
+					KeyboardType keyboardType = null;
+					if (keyboardTypePropertyVal.equals("azerty")) {
+						keyboardType = KeyboardType.AZERTY;
+					} else if (keyboardTypePropertyVal.equals("querty")) {
+						keyboardType = KeyboardType.QWERTY;
+					} else if (keyboardTypePropertyVal.equals("quertz")) {
+						keyboardType = KeyboardType.QWERTZ_DE;
+					}
+					RoboSoftAppFactory factory = new RoboSoftAppFactory(deviceManager, robotManager, processFlowManager, keyboardType);
+					final MainPresenter mainPresenter = factory.getMainPresenter();
+					mainPresenter.showConfigure();
+					Thread.sleep(1000);
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							final Scene scene = new Scene(mainPresenter.getView(), WIDTH, HEIGHT);
+							Locale.setDefault(new Locale(properties.getProperty("locale")));
+							if (!Boolean.parseBoolean(properties.getProperty("mouse-visible"))) {
+								scene.setCursor(Cursor.NONE);
+							}
+							scene.getStylesheets().add("css/general-style.css");
+							scene.getStylesheets().add("css/header-style.css");
+							scene.getStylesheets().add("css/keyboard-style.css");
+							scene.getStylesheets().add("css/configure-style.css");
+							scene.getStylesheets().add("css/processflow-style.css");
+							scene.getStylesheets().add("css/teach-style.css");
+							scene.getStylesheets().add("css/automate-style.css");
+							scene.getStylesheets().add("css/admin-style.css");
+							stage.setScene(scene);						
+						}
+					});
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		
 	}
 	
 	@Override

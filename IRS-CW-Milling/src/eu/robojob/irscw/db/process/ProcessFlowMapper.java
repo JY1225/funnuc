@@ -377,7 +377,9 @@ public class ProcessFlowMapper {
 		for (Entry<GripperHead, Gripper> entry : robotSettings.getGrippers().entrySet()) {
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM GRIPPERHEAD_GRIPPER WHERE GRIPPERHEAD = ? AND GRIPPER = ?");
 			stmt2.setInt(1, entry.getKey().getId());
-			stmt2.setInt(2, entry.getValue().getId());
+			if (entry.getValue() != null) {
+				stmt2.setInt(2, entry.getValue().getId());
+			}
 			ResultSet results = stmt2.executeQuery();
 			int id = 0;
 			if (results.next()) {

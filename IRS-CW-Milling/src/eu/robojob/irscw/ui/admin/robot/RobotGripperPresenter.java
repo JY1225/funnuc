@@ -52,4 +52,15 @@ public class RobotGripperPresenter extends AbstractFormPresenter<RobotGripperVie
 			editMode = false;
 		}
 	}
+	
+	public void updateSelectedGripper(final String name, final float height, final boolean fixedHeight, final String imageUrl) {
+		selectedGripper.setName(name);
+		selectedGripper.setHeight(height);
+		selectedGripper.setFixedHeight(fixedHeight);
+		selectedGripper.setImageUrl(imageUrl);
+	}
+	
+	public void saveNewGripper() {
+		
+	}
 }
