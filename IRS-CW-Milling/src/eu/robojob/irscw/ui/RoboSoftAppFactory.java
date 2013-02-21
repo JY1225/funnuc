@@ -11,6 +11,8 @@ import eu.robojob.irscw.ui.admin.AdminView;
 import eu.robojob.irscw.ui.admin.MainMenuPresenter;
 import eu.robojob.irscw.ui.admin.MainMenuView;
 import eu.robojob.irscw.ui.admin.SubMenuAdminView;
+import eu.robojob.irscw.ui.admin.device.BasicStackPlateConfigurePresenter;
+import eu.robojob.irscw.ui.admin.device.BasicStackPlateConfigureView;
 import eu.robojob.irscw.ui.admin.device.DeviceAdminPresenter;
 import eu.robojob.irscw.ui.admin.device.DeviceMenuPresenter;
 import eu.robojob.irscw.ui.admin.device.DeviceMenuView;
@@ -79,6 +81,7 @@ public class RoboSoftAppFactory {
 	private RobotConfigurePresenter robotConfigurePresenter;
 	private RobotGripperPresenter robotGripperPresenter;
 	private DeviceAdminPresenter deviceAdminPresenter;
+	private BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
 	
 	private ProcessFlow processFlow;
 	private ProcessFlowTimer processFlowTimer;
@@ -302,10 +305,18 @@ public class RoboSoftAppFactory {
 		if (deviceAdminPresenter == null) {
 			SubMenuAdminView view = new SubMenuAdminView(); 
 			DeviceMenuView menuView = new DeviceMenuView();
-			DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(menuView);
+			DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(menuView, getBasicStackPlateConfigurePresenter());
 			deviceAdminPresenter = new DeviceAdminPresenter(view, deviceMenuPresenter);
 		}
 		return deviceAdminPresenter;
+	}
+	
+	public BasicStackPlateConfigurePresenter getBasicStackPlateConfigurePresenter() {
+		if (basicStackPlateConfigurePresenter == null) {
+			BasicStackPlateConfigureView view = new BasicStackPlateConfigureView();
+			basicStackPlateConfigurePresenter = new BasicStackPlateConfigurePresenter(view);
+		}
+		return basicStackPlateConfigurePresenter;
 	}
 	
 	private RobotAdminPresenter getRobotAdminPresenter() {

@@ -35,7 +35,8 @@ public class TransportButton extends StackPane {
 	
 	private static final String CSS_CLASS_TRANSPORT_LABEL = "transport-label";
 	private static final String CSS_CLASS_PAUSE_SHAPE = "pause-shape";
-	
+	private static final String CSS_CLASS_UNCLICKABLE = "unclickable";
+
 	private EventHandler<MouseEvent> handlerPressed;
 	private EventHandler<MouseEvent> handlerReleased;
 	
@@ -188,12 +189,10 @@ public class TransportButton extends StackPane {
 	}
 	
 	public void setClickable(final boolean clickable) {
-		this.removeEventHandler(MouseEvent.MOUSE_PRESSED, handlerPressed);
-		this.removeEventHandler(MouseEvent.MOUSE_RELEASED, handlerReleased);
-		if (clickable) {
-			this.setEventHandler(MouseEvent.MOUSE_PRESSED, handlerPressed);
-			this.setEventHandler(MouseEvent.MOUSE_RELEASED, handlerReleased);
-		} 
+		shapeRegion.getStyleClass().remove(CSS_CLASS_UNCLICKABLE);
+		if (!clickable) {
+			shapeRegion.getStyleClass().add(CSS_CLASS_UNCLICKABLE);
+		}
 	}
 	
 }

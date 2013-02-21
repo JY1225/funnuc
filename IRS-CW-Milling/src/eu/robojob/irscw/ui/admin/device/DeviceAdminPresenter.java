@@ -21,7 +21,7 @@ public class DeviceAdminPresenter implements SubContentPresenter {
 	}
 	
 	@Override
-	public void setActive(boolean active) { 
+	public void setActive(final boolean active) { 
 	}
 
 	public SubMenuAdminView getView() {
@@ -33,7 +33,7 @@ public class DeviceAdminPresenter implements SubContentPresenter {
 	}
 	
 	@Override
-	public void setParent(MainContentPresenter mainContentPresenter) {
+	public void setParent(final MainContentPresenter mainContentPresenter) {
 		this.parent = (AdminPresenter) mainContentPresenter;
 	}
 

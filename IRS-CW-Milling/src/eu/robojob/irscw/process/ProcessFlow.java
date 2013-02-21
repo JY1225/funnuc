@@ -65,7 +65,7 @@ public class ProcessFlow {
 	
 	private ClampingManner clampingManner;
 	
-	public ProcessFlow(final String name, final List<AbstractProcessStep>processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, 
+	public ProcessFlow(final String name, final List<AbstractProcessStep> processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, 
 			RobotSettings> robotSettings, final ClampingManner clampingManner, final Timestamp creation, final Timestamp lastOpened) {
 		this.name = name;
 		this.clampingManner = clampingManner;

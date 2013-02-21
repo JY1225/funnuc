@@ -53,5 +53,25 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 			}
 		});
 	}
+	
+	public void setConfigureUserFramesActive() {
+		setMenuItemSelected(0);
+	}
+	
+	public void setConfigureBasicStackPlateActive() {
+		setMenuItemSelected(1);
+	}
+	
+	public void setConfigureCNCMachineActive() {
+		setMenuItemSelected(2);
+	}
+	
+	public void setConfigureClampingsActive() {
+		setMenuItemSelected(3);
+	}
+	
+	public void setConfigurePrageActive() {
+		setMenuItemSelected(4);
+	}
 
 }
