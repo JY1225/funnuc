@@ -1,16 +1,15 @@
 package eu.robojob.irscw.ui.preloader;
 
 import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.scene.effect.Bloom;
-import javafx.scene.effect.Light.Spot;
-import javafx.scene.effect.Lighting;
-import javafx.scene.effect.Reflection;
+import javafx.animation.TranslateTransition;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
 public class RoboJobPreloader extends BorderPane {
@@ -30,9 +29,47 @@ public class RoboJobPreloader extends BorderPane {
 		getStyleClass().add(CSS_PRELOADER);
 		image = new Image("img/robojoblogo.png", 402, 52, true, true);
 		imageVw = new ImageView(image);
-		setCenter(imageVw);
 		
-		Spot light = new Spot();
+		Rectangle rect = new Rectangle();
+		rect.setX(-26);
+		rect.setY(-26);
+		rect.setWidth(200);
+		rect.setHeight(150);
+		rect.getTransforms().add(new Rotate(105));
+		
+		rect.getStyleClass().add("shine");
+		
+		Pane rectPane = new Pane();
+		rectPane.getChildren().add(rect);
+		rectPane.setPrefSize(402, 52);
+		rectPane.setMinSize(402, 52);
+		rectPane.setMaxSize(402, 52);
+		
+		Pane rectBgPane = new Pane();
+		rectBgPane.setPrefSize(402, 52);
+		rectBgPane.setMinSize(402, 52);
+		rectBgPane.setMaxSize(402, 52);
+		
+		rectBgPane.getChildren().add(rectPane);
+		
+		StackPane sp = new StackPane();
+		sp.getChildren().add(imageVw);
+		sp.getChildren().add(rectBgPane);
+		sp.setPrefSize(402, 52);
+		sp.setMinSize(402, 52);
+		sp.setMaxSize(402, 52);
+		
+		TranslateTransition trans = new TranslateTransition(Duration.millis(1750));
+		trans.setInterpolator(Interpolator.EASE_BOTH);
+		trans.setNode(rect);
+		trans.setCycleCount(Timeline.INDEFINITE);
+		trans.setFromX(0);
+		trans.setToX(500);
+		
+		trans.play();
+		setCenter(sp);
+
+		/*Spot light = new Spot();
 		light.setY(26);
 		light.setZ(100);
 		light.setPointsAtY(26);
@@ -71,7 +108,7 @@ public class RoboJobPreloader extends BorderPane {
 	    KeyFrame frame2 = new KeyFrame(new Duration(1750), keyVal10, keyVal11);
 	    tl.getKeyFrames().addAll(frame1, frame2);
 	    
-	    tl.play();
+	    tl.play();*/
 	}
 	
 	public void stopAnimation() {
