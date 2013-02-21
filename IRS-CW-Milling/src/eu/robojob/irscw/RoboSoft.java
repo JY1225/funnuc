@@ -96,7 +96,7 @@ public class RoboSoft extends Application {
 							scene.getStylesheets().add("css/teach-style.css");
 							scene.getStylesheets().add("css/automate-style.css");
 							scene.getStylesheets().add("css/admin-style.css");
-							//stage.setScene(scene);						
+							stage.setScene(scene);						
 						}
 					});
 				} catch(Exception e) {
