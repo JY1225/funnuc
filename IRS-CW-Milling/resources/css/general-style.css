@@ -23,7 +23,7 @@
 .left-menu-button:pressed, .menu-item-selected {
 	-fx-background-color: #343c48, #6696e7, linear-gradient(#5078bc 0%, #3e6099 100%);
 	-fx-background-color: #343c48, #992b11, #be3c1a;
-	-fx-background-color: #222222, #992b11, linear-gradient(#e6624a 0%, #992b11 60%), radial-gradient(center 50% 100%, radius 50%, #c54b35 0%, #be3c1a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.03) 90%, rgba(255, 255, 255, 0) 91%);
+	-fx-background-color: #222222, #992b11, linear-gradient(#ea2621 0%, #d11c18 60%), radial-gradient(center 50% 100%, radius 50%, #ea2621 0%, #d11c18 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.04) 90%, rgba(255, 255, 255, 0) 91%);
 }
 
 .left-menu-button .left-menu-item-label {
