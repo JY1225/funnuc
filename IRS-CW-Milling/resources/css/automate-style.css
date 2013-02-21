@@ -30,7 +30,7 @@
 .finished-amount {
 	-fx-font-family: "Open Sans Semibold";
 	-fx-font-smoothing-type: lcd;
-	-fx-font-size: 60px;
+	-fx-font-size: 75px;
 	-fx-text-alignment: center;
 	-fx-alignment: center;
 }

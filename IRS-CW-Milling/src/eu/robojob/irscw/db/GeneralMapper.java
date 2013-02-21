@@ -40,8 +40,9 @@ public class GeneralMapper {
 			int number = results.getInt("NUMBER");
 			float zsafe = results.getFloat("ZSAFE");
 			int locationId = results.getInt("LOCATION");
+			String name = results.getString("NAME");
 			Coordinates location = getCoordinatesById(locationId);
-			userFrame = new UserFrame(number, zsafe, location);
+			userFrame = new UserFrame(number, name, zsafe, location);
 			userFrame.setId(userFrameId);
 		}
 		stmt.close();

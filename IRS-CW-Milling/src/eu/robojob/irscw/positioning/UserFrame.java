@@ -3,14 +3,24 @@ package eu.robojob.irscw.positioning;
 public class UserFrame {
 
 	private int id; 
+	private String name;
 	private int number;
 	private float zSafeDistance;
 	private Coordinates location;
 	
-	public UserFrame(final int number, final float zSafeDistance, final Coordinates location) {
+	public UserFrame(final int number, final String name, final float zSafeDistance, final Coordinates location) {
 		this.number = number;
+		this.name = name;
 		this.zSafeDistance = zSafeDistance;
 		this.location = location;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public int getId() {

@@ -1,11 +1,12 @@
-package eu.robojob.irscw.ui.admin.robot;
+package eu.robojob.irscw.ui.admin;
 
+import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 
-public class RobotAdminView extends HBox {
+public class SubMenuAdminView extends HBox {
 
 	private static final double MENU_WIDTH = 170;
 	
@@ -14,7 +15,7 @@ public class RobotAdminView extends HBox {
 	private StackPane menuView;
 	private StackPane contentView;
 	
-	public RobotAdminView() {
+	public SubMenuAdminView() {
 		super();
 		build();
 	}

@@ -54,7 +54,6 @@ public class RoboSoft extends Application {
 		stage.setResizable(false);
 		stage.initStyle(StageStyle.UNDECORATED);
 		stage.show();
-		
 		ThreadManager.submit(new Thread () {
 			@Override
 			public void run() {
@@ -79,7 +78,6 @@ public class RoboSoft extends Application {
 					RoboSoftAppFactory factory = new RoboSoftAppFactory(deviceManager, robotManager, processFlowManager, keyboardType);
 					final MainPresenter mainPresenter = factory.getMainPresenter();
 					mainPresenter.showConfigure();
-					Thread.sleep(1000);
 					Platform.runLater(new Runnable() {
 						@Override
 						public void run() {
@@ -101,6 +99,7 @@ public class RoboSoft extends Application {
 					});
 				} catch(Exception e) {
 					e.printStackTrace();
+					Platform.exit();
 				}
 			}
 		});
@@ -112,6 +111,12 @@ public class RoboSoft extends Application {
 	public void stop() {
 		logger.info("Closing application.");
 		ThreadManager.shutDown();
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				
+			}
+		});
 		logger.info("Closed application.");
 	}
 }

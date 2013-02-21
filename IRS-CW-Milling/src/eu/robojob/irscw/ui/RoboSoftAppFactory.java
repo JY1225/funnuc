@@ -10,8 +10,11 @@ import eu.robojob.irscw.ui.admin.AdminPresenter;
 import eu.robojob.irscw.ui.admin.AdminView;
 import eu.robojob.irscw.ui.admin.MainMenuPresenter;
 import eu.robojob.irscw.ui.admin.MainMenuView;
+import eu.robojob.irscw.ui.admin.SubMenuAdminView;
+import eu.robojob.irscw.ui.admin.device.DeviceAdminPresenter;
+import eu.robojob.irscw.ui.admin.device.DeviceMenuPresenter;
+import eu.robojob.irscw.ui.admin.device.DeviceMenuView;
 import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
-import eu.robojob.irscw.ui.admin.robot.RobotAdminView;
 import eu.robojob.irscw.ui.admin.robot.RobotConfigurePresenter;
 import eu.robojob.irscw.ui.admin.robot.RobotConfigureView;
 import eu.robojob.irscw.ui.admin.robot.RobotGripperPresenter;
@@ -75,6 +78,7 @@ public class RoboSoftAppFactory {
 	private RobotAdminPresenter robotAdminPresenter;
 	private RobotConfigurePresenter robotConfigurePresenter;
 	private RobotGripperPresenter robotGripperPresenter;
+	private DeviceAdminPresenter deviceAdminPresenter;
 	
 	private ProcessFlow processFlow;
 	private ProcessFlowTimer processFlowTimer;
@@ -289,14 +293,24 @@ public class RoboSoftAppFactory {
 	private MainMenuPresenter getMainMenuPresenter() {
 		if (mainMenuPresenter == null) {
 			MainMenuView view = new MainMenuView();
-			mainMenuPresenter = new MainMenuPresenter(view, getRobotAdminPresenter());
+			mainMenuPresenter = new MainMenuPresenter(view, getRobotAdminPresenter(), getDeviceAdminPresenter());
 		}
 		return mainMenuPresenter;
 	}
 	
+	private DeviceAdminPresenter getDeviceAdminPresenter() {
+		if (deviceAdminPresenter == null) {
+			SubMenuAdminView view = new SubMenuAdminView(); 
+			DeviceMenuView menuView = new DeviceMenuView();
+			DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(menuView);
+			deviceAdminPresenter = new DeviceAdminPresenter(view, deviceMenuPresenter);
+		}
+		return deviceAdminPresenter;
+	}
+	
 	private RobotAdminPresenter getRobotAdminPresenter() {
 		if (robotAdminPresenter == null) {
-			RobotAdminView view = new RobotAdminView();
+			SubMenuAdminView view = new SubMenuAdminView();
 			RobotMenuView menuView = new RobotMenuView();
 			RobotMenuPresenter robotMenuPresenter = new RobotMenuPresenter(menuView, getRobotConfigurePresenter(), getRobotGripperPresenter());
 			robotAdminPresenter = new RobotAdminPresenter(view, robotMenuPresenter);
