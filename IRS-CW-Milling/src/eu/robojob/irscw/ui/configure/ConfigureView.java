@@ -20,7 +20,7 @@ public class ConfigureView extends VBox {
 	public static final int HEIGHT_TOP = 245;
 	public static final int HEIGHT_BOTTOM = 300;
 	public static final int WIDTH = 800;
-	public static final int WIDTH_BOTTOM_LEFT = 230;
+	public static final int WIDTH_BOTTOM_LEFT = 210;
 	
 	private static final String CSS_CLASS_TOP_PANE = "top-panel";
 	private static final String CSS_CLASS_BOTTOM_PANE = "bottompane";
@@ -55,7 +55,7 @@ public class ConfigureView extends VBox {
 		bottom.setPrefWidth(WIDTH);
 		VBox.setVgrow(bottom, Priority.ALWAYS);
 		bottom.getStyleClass().add(CSS_CLASS_BOTTOM_PANE);
-		
+				
 		bottomLeft = new StackPane();
 		bottom.getChildren().add(bottomLeft);
 		bottomLeft.setPrefWidth(WIDTH_BOTTOM_LEFT);
@@ -66,7 +66,7 @@ public class ConfigureView extends VBox {
 		bottomRight.getStyleClass().add(CSS_CLASS_BOTTOM_RIGHT_PANE);
 		bottomRight.setPrefWidth(WIDTH - WIDTH_BOTTOM_LEFT);
 		bottomRight.setPrefHeight(HEIGHT_BOTTOM);
-
+		
 	}
 
 	public void addNodeToTop(final Node node) {

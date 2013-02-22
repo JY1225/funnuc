@@ -5,16 +5,17 @@
 }
 
 .tool-bar {
-	-fx-background-color: #807c7c, #3d3d3d, #696868, linear-gradient(#737373 0%, #666565 100%);
-	-fx-background-insets: 0 0 0 0, 1 0 0 0, 1 0 1 0 , 1 0 2 0;
-	-fx-effect: dropshadow(two-pass-box, #5b5959, 15, 0, 0, 1);
+	-fx-background-color: #292d32, #4c505a, linear-gradient(#5d6370 0%, #4f535d 100%);
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 0 0 2 0;
+	-fx-effect: dropshadow(two-pass-box, #5b5959, 10, 0, 0, 1);
+	-fx-padding: 0;
 }
 
 .header-button {
-	-fx-background-color: #807878, #222222, #908888, #353333, linear-gradient(#726e6e 0%, #4e4a4a 100%);
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 2 1;
-	-fx-background-radius: 3, 3, 2, 2, 2;
-	-fx-padding: 1 0 0 0;
+	-fx-background-color: #292d32, #2d2f36, #5a606b, #42454e, linear-gradient(#656c7b 0%, #424750 50%, #3d4148 50% , #4c505a 100%);
+	-fx-background-insets: 0, 0 0 1 0, 0 1 1 0, 0 1 1 1, 0 1 2 1;
+	-fx-background-radius: 0;
+	-fx-padding: 0 0 0 0;
 	-fx-text-alignment: center;
 	-fx-font-family: "Open Sans";
 	-fx-font-weight: bold;
@@ -22,10 +23,20 @@
 	-fx-font-smoothing-type: lcd;
 }
 
+.header-button-right {
+	-fx-background-color: #292d32, #5a606b, #2d2f36, #5a606b, #42454e, linear-gradient(#656c7b 0%, #424750 50%, #3d4148 50% , #4c505a 100%);
+	-fx-background-insets: 0, 0 0 1 0, 0 1 1 0, 0 2 1 0, 0 2 1 1, 0 2 2 1;
+}
+
+.header-button-left {
+	-fx-background-insets: 0, 0 0 1 0, 0 1 1 1, 0 1 1 2, 0 1 2 2;
+}
+
 .header-button-shape {
 	-fx-fill: white;
     -fx-text-alignment: center;
     -fx-padding: 0 0 0 5;
+    -fx-effect: dropshadow(one-pass-box, #232528, 1, 0.0, 0, 1);
 }
 
 .header-button Text {
@@ -34,54 +45,69 @@
 	-fx-font-weight: bold;
 	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
+	-fx-effect: dropshadow(one-pass-box, #232528, 1, 0.0, 0, 1);
 }
 
 .bar {
-	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 2 1;
+	-fx-background-insets: 0, 0 0 1 0, 0 1.9 1 0, 0 1.9 1 1.5, 0 1.9 2 1.5;
 	-fx-background-radius: 0,0,0,0;
 	-fx-shape: "M 0 0 L 13 22.5 L 0 45 L 25 45 L 115 45 L 140 45 L 153 22.5 L 140 0 L 115 0 L 25 0 L 0 0 z";
 }
 
 .first {
-	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 2 1;
-    -fx-background-radius: 3 0 0 3, 3 0 0 3, 2 0 0 2, 2 0 0 2, 2 0 0 2;
-    -fx-shape: "M 3 0 C 1.338 0 0 1.338 0 3 L 0 42 C 0 43.662 1.338 45 3 45 L 25 45 L 115 45 L 140 45 L 153 22.5 L 140 0 L 115 0 L 25 0 L 3 0 z";
+	-fx-background-insets: 0, 0 0 1 0, 0 1.5 1 1, 0 1.5 1 2, 0 1.5 2 2;
+    -fx-background-radius: 0;
+    -fx-shape: "M 0 0 L 0 3 L 0 42 L 0 45 L 3 45 L 45 45 L 115 45 L 140 45 L 153 22.5 L 140 0 L 115 0 L 45 0 L 3 0 L 0 0 z";
     -fx-padding: 0 13 0 0;
     
 }
 
 .last {
-	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 2 1;
-	-fx-background-radius: 0 3 3 0, 0 3 3 0, 0 2 2 0, 0 2 2 0, 0 2 2 0;
-	-fx-shape: "M 0 0 L 13 22.5 L 0 45 L 25 45 L 128 45 L 150 45 C 151.662 45 153 43.662 153 42 L 153 3 C 153 1.338 151.662 0 150 0 L 128 0 L 25 0 L 0 0 z  ";
+	-fx-background-color: #292d32, #666c78, #2d2f36, #666c78, #42454e, linear-gradient(#656c7b 0%, #424750 50%, #3d4148 50% , #4c505a 100%);
+	-fx-background-insets: 0, 0 0 1 0, 0 1 1 0, 0 2 1 0, 0 2 1 1.5, 0 2 2 1.5;
+	-fx-background-radius: 0;
+	-fx-shape: "M 0 0 L 13 22.5 L 0 45 L 25 45 L 108 45 L 128 45 L 150 45 L 153 45 L 153 42 L 153 3 L 153 0 L 150 0 L 128 0 L 108 0 L 25 0 L 0 0 z";
 	-fx-padding: 0 0 0 13;
 }
 
 .header-button:pressed, .header-button.selected {
-	-fx-background-color: #807878, #222222, #992b11, linear-gradient(#e6624a 0%, #992b11 60%), radial-gradient(center 50% 100%, radius 50%, #c54b35 0%, #be3c1a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.04) 90%, rgba(255, 255, 255, 0) 91%);
-	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 2 1;
-	-fx-background-color: #807878, #222222, #992b11, linear-gradient(#ea2621 0%, #d11c18 60%), radial-gradient(center 50% 100%, radius 50%, #ea2621 0%, #d11c18 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.04) 90%, rgba(255, 255, 255, 0) 91%);
+	-fx-background-color: #292d32, #3c4147, #2d2f36, #42454e, linear-gradient(#303238 0%, #2e3136 50%, #2a2d31 50%, #32363b 100%);
+	-fx-effect: innershadow(two-pass-box, rgba(0, 0, 0, 0.8), 15, 0.0, 0, 2);
 }
 
-.bar:pressed, .bar.selected {
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 2 1 2 1;
+.header-button-right:pressed, .header-button-right.header-button.selected, .last.selected {
+	-fx-background-color: #292d32, #5a606b, #2d2f36, #3c4147, #42454e, linear-gradient(#565d69 0%, #383b42 50%, #32353a 50% , #3c4147 100%);
 }
 
-.first.selected, .first:pressed {
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 2 0 2 1, 2 0 2 1;
-}
-
-.last.selected, .last:pressed {
-	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 1 2 0, 2 1 2 0, 2 1 2 0;
-}
-
-.header-button-exit:pressed, header-button-exit.selected {
-	-fx-background-color: #807878, #222222, #992b11, linear-gradient(#ea2621 0%, #d11c18 60%), radial-gradient(center 50% 100%, radius 50%, #ea2621 0%, #d11c18 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.04) 90%, rgba(255, 255, 255, 0) 91%);
+.header-button.last:disabled {
+	-fx-background-color: #292d32, #666c78, #2d2f36, #666c78, #42454e, linear-gradient(#5d6370 0%, #4f535d 100%);
+	-fx-background-insets: 0, 0 0 1 0, 0 1 1 0, 0 2 1 0, 0 2 1 1.5, 0 2 2 1.5;
 }
 
 .header-button:disabled {
-	-fx-background-color: #807c7c, #515151, #807c7c, #6d6c6c, #6d6c6c;
 	-fx-opacity: 1;
+	-fx-background-color: #292d32, #2d2f36, #5a606b, #42454e, linear-gradient(#5d6370 0%, #4f535d 100%);
+}
+
+.header-button-right:disabled {
+	-fx-background-color: #292d32, #5a606b, #2d2f36, #5a606b, #42454e, linear-gradient(#5d6370 0%, #4f535d 100%);	
+	-fx-background-insets: 0, 0 0 1 0, 0 1 1 0, 0 2 1 0, 0 2 1 1, 0 2 2 1;
+}
+
+.header-button:pressed Text, .header-button.selected Text {
+	-fx-fill: white;
+}
+
+.bar:pressed, .bar.selected {
+}
+
+.first.selected, .first:pressed {
+}
+
+.last.selected, .last:pressed {
+}
+
+.header-button-exit:pressed, header-button-exit.selected {
 }
 
 .header-button.selected:disabled {
@@ -95,5 +121,5 @@
 }
 
 .header-button:disabled Text {
-   -fx-fill: #abaaaa;
+   -fx-fill: #7f848d;
 }

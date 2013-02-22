@@ -18,6 +18,7 @@ public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
 		robotAdminPresenter.setTextFieldListener(listener);
+		deviceAdminPresenter.setTextFieldListener(listener);
 	}
 
 	@Override

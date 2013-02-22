@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -25,7 +24,7 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 	private static final int TEXT_BUTTON_WIDTH = 150;
 	private static final int BUTTON_WIDTH = 210;
 	private static final int ICON_BUTTON_WIDTH = 50;
-	private static final int BUTTON_HEIGHT = 45;
+	private static final int BUTTON_HEIGHT = 43;
 	
 	private static final int ICON_WIDTH = 20;
 	private static final int ICON_MARGIN = 6;
@@ -46,7 +45,6 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 	public AbstractMenuView() {
 		super();
 		setAlignment(Pos.TOP_CENTER);
-		setPadding(new Insets(15, 0, 0, 0));
 		this.getStyleClass().add(CSS_CLASS_LEFT_MENU);
 		this.menuItems = new HashMap<Integer, Button>();
 	}

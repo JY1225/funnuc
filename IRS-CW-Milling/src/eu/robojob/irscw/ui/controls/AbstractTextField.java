@@ -1,5 +1,6 @@
 package eu.robojob.irscw.ui.controls;
 
+import eu.robojob.irscw.util.UIConstants;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -17,6 +18,7 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 	private boolean notifyEveryChange;
 	
 	public AbstractTextField(final int maxLength) {
+		setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
 		this.focusedProperty().addListener(new TextFieldFocusListener(this));
 		this.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 			@Override

@@ -41,11 +41,13 @@ public class MenuBarView extends ToolBar {
 	private Button selectedPopupBtn;
 	
 	private static final int BTN_HEIGHT = 45;
-	private static final int BTN_WIDTH_SMALL = 60;
+	private static final int BTN_WIDTH_SMALL = 65;
 	private static final int BTN_WIDTH_LARGE = 153;
 	
 	private static final String CSS_CLASS_BTN_SELECTED = "selected";
 	private static final String CSS_CLASS_HEADER_BUTTON = "header-button";
+	private static final String CSS_CLASS_HEADER_BUTTON_LEFT = "header-button-left";
+	private static final String CSS_CLASS_HEADER_BUTTON_RIGHT = "header-button-right";
 	private static final String CSS_CLASS_HEADER_BUTTON_EXIT = "header-button-exit";
 	private static final String CSS_CLASS_HEADER_BUTTON_SHAPE = "header-button-shape";
 	private static final String CSS_CLASS_BAR = "bar";
@@ -177,17 +179,21 @@ public class MenuBarView extends ToolBar {
 		buttonBar.getChildren().add(btnAdmin);
 		buttonBar.getChildren().add(btnExit);
 		
-		HBox.setMargin(btnRobot, new Insets(0, 0, 0, 10));
-		HBox.setMargin(btnAdmin, new Insets(0, 10, 0, 0));
+		btnAdmin.getStyleClass().add(CSS_CLASS_HEADER_BUTTON_LEFT);
+		btnRobot.getStyleClass().add(CSS_CLASS_HEADER_BUTTON_RIGHT);
+		
+		/*HBox.setMargin(btnRobot, new Insets(0, 0, 0, 10));
+		HBox.setMargin(btnAdmin, new Insets(0, 10, 0, 0));*/
 		
 		hBoxProcessMenuItems.setAlignment(Pos.CENTER);
 		buttonBar.setAlignment(Pos.CENTER);
 		
 		HBox.setHgrow(buttonBar, Priority.ALWAYS);
 		HBox.setHgrow(hBoxProcessMenuItems, Priority.ALWAYS);
-				
+		
+		buttonBar.setPadding(new Insets(0, 0, 0, 0));
 		this.getItems().add(buttonBar);
-		this.setPrefHeight(55);
+		this.setPrefHeight(45);
 		
 	}
 	

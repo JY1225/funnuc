@@ -2,6 +2,8 @@ package eu.robojob.irscw.ui.controls;
 
 import java.text.DecimalFormat;
 
+import eu.robojob.irscw.util.UIConstants;
+
 public class IntegerTextField extends AbstractTextField<Integer> {
 
 	private static final String CSS_CLASS_INTEGER_TEXTFIELD = "integer-textfield";
@@ -11,6 +13,7 @@ public class IntegerTextField extends AbstractTextField<Integer> {
 	
 	public IntegerTextField(final int maxLength) {
 		super(maxLength);
+		setPrefWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
 		this.getStyleClass().add(CSS_CLASS_INTEGER_TEXTFIELD);
 	}
 

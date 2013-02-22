@@ -1,9 +1,12 @@
 package eu.robojob.irscw.ui.controls;
 
+import eu.robojob.irscw.util.UIConstants;
+
 public class FullTextField extends AbstractTextField<String> {
 
 	public FullTextField(final int maxLength) {
 		super(maxLength);
+		setPrefWidth(UIConstants.TEXT_FIELD_HEIGHT * 6);
 	}
 
 	@Override

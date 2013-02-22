@@ -14,7 +14,7 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
-		
+		basicStackPlateConfigurePresenter.setTextFieldListener(listener);
 	}
 
 	@Override

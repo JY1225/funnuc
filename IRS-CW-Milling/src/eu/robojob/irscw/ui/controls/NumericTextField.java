@@ -3,6 +3,8 @@ package eu.robojob.irscw.ui.controls;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
+import eu.robojob.irscw.util.UIConstants;
+
 public class NumericTextField extends AbstractTextField<Float> {
 
 	private static final String CSS_CLASS_NUMERIC_TEXTFIELD = "numeric-textfield";
@@ -13,6 +15,7 @@ public class NumericTextField extends AbstractTextField<Float> {
 	
 	public NumericTextField(final int maxLength) {
 		super(maxLength);	// 
+		setPrefWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
 		this.getStyleClass().add(CSS_CLASS_NUMERIC_TEXTFIELD);
 	}
 
