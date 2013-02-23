@@ -11,7 +11,7 @@ public class AdminView extends StackPane {
 	public static final int HEIGHT = 545;
 	public static final int WIDTH = 800;
 	
-	protected static final double MAIN_MENU_WIDTH = 70;
+	protected static final double MAIN_MENU_WIDTH = 50;
 	
 	private static final String CSS_CLASS_MAIN = "admin-main";
 	

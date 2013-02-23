@@ -17,9 +17,9 @@ public class MainMenuView extends AbstractMenuView<MainMenuPresenter> {
 	@Override
 	protected void build() {
 		int index = 0;
-		setPrefWidth(70);
-		setMinWidth(70);
-		setMaxWidth(70);
+		setPrefWidth(50);
+		setMinWidth(50);
+		setMaxWidth(50);
 		addIconMenuItem(index++, GENERAL_PATH, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {

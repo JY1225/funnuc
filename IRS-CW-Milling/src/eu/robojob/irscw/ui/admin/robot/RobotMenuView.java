@@ -16,9 +16,9 @@ public class RobotMenuView extends AbstractMenuView<RobotMenuPresenter> {
 	
 	@Override
 	protected void build() {
-		setPrefWidth(170);
-		setMinWidth(170);
-		setMaxWidth(170);
+		setPrefWidth(150);
+		setMinWidth(150);
+		setMaxWidth(150);
 		addTextMenuItem(0, Translator.getTranslation(GENERAL), true, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {

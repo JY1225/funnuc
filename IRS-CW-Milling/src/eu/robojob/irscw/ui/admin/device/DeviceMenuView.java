@@ -19,9 +19,9 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 	
 	@Override
 	protected void build() {
-		setPrefWidth(170);
-		setMinWidth(170);
-		setMaxWidth(170);
+		setPrefWidth(150);
+		setMinWidth(150);
+		setMaxWidth(150);
 		addTextMenuItem(0, Translator.getTranslation(USERFRAMES), true, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {

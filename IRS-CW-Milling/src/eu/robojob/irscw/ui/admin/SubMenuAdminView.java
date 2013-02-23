@@ -8,7 +8,7 @@ import javafx.scene.layout.StackPane;
 
 public class SubMenuAdminView extends HBox {
 
-	private static final double MENU_WIDTH = 170;
+	private static final double MENU_WIDTH = 150;
 	
 	private RobotAdminPresenter presenter;
 	
