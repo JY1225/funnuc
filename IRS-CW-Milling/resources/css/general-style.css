@@ -4,8 +4,8 @@
 }
 
 .bottom-right {
-	-fx-background-color: #33373d, #73757a, #67696f;
-	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 1;
+	-fx-background-color: #53555a, #708286, linear-gradient(#67696f 0%, #616369 100%);
+	-fx-background-insets: 0 0 0 0, 1 0 0 0, 1 0 0 0;
 	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, -5, 0);
 }
 

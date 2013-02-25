@@ -82,7 +82,12 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	
 	@Override
 	protected void build() {
+		this.setPrefSize(590, 300);
+		this.setMinSize(590, 300);
+		this.setMaxSize(590, 300);
+		
 		group = new Group();
+		group.setCache(true);
 		
 		group.getChildren().clear();
 		
@@ -149,11 +154,11 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 			configureWorkPieces();
 		}
 		
-		Scale s = new Scale(570 / group.getBoundsInParent().getWidth(), 300 / group.getBoundsInParent().getHeight());
+		Scale s = new Scale(590 / group.getBoundsInParent().getWidth(), 300 / group.getBoundsInParent().getHeight());
 		group.getTransforms().add(s);
 		
 		root = new Pane();
-		root.setPrefSize(570, 300);
+		root.setPrefSize(590, 300);
 		root.getChildren().clear();
 		root.getChildren().add(group);		
 		

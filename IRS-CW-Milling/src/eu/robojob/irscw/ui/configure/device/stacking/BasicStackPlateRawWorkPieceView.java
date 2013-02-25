@@ -195,7 +195,10 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		});
 		add(itxtWorkPieceAmount, column++, row);
 		
-		btnMaxAmount = new Button(Translator.getTranslation(MAX));
+		btnMaxAmount = new Button();
+		Label lblMaxAmount = new Label(Translator.getTranslation(MAX));
+		lblMaxAmount.getStyleClass().add(CSS_CLASS_FORM_BUTTON_LABEL);
+		btnMaxAmount.setGraphic(lblMaxAmount);
 		btnMaxAmount.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
 		btnMaxAmount.setPrefSize(UIConstants.BUTTON_HEIGHT * 2, UIConstants.BUTTON_HEIGHT);
 		btnMaxAmount.setOnAction(new EventHandler<ActionEvent>() {

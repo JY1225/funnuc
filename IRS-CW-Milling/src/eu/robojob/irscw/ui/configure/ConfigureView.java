@@ -17,7 +17,7 @@ public class ConfigureView extends VBox {
 	
 	private ConfigurePresenter presenter;
 	
-	public static final int HEIGHT_TOP = 245;
+	public static final int HEIGHT_TOP = 255;
 	public static final int HEIGHT_BOTTOM = 300;
 	public static final int WIDTH = 800;
 	public static final int WIDTH_BOTTOM_LEFT = 210;
@@ -52,6 +52,8 @@ public class ConfigureView extends VBox {
 		bottom = new HBox();
 		getChildren().add(bottom);
 		bottom.setPrefHeight(HEIGHT_BOTTOM);
+		bottom.setMinHeight(HEIGHT_BOTTOM);
+		bottom.setMaxHeight(HEIGHT_BOTTOM);
 		bottom.setPrefWidth(WIDTH);
 		VBox.setVgrow(bottom, Priority.ALWAYS);
 		bottom.getStyleClass().add(CSS_CLASS_BOTTOM_PANE);

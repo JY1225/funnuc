@@ -84,5 +84,23 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 		return createButton(iconPath, iconClass, text, width, height, handler, ICON_WIDTH);
 	}
 	
+	public Button createButton(final String text, final double width, final double height, final EventHandler<ActionEvent> handler) {
+		Button button = new Button();
+		HBox hbox = new HBox();
+		hbox.setAlignment(Pos.CENTER_LEFT);
+		Label label = new Label(text);
+		label.getStyleClass().add(CSS_CLASS_FORM_BUTTON_LABEL);
+		label.setPrefSize(width, height);
+		label.setAlignment(Pos.CENTER);
+		hbox.getChildren().add(label);
+		HBox.setHgrow(label, Priority.ALWAYS);
+		hbox.setPrefSize(width, height);
+		hbox.getStyleClass().add(CSS_CLASS_FORM_BUTTON_PANEL);
+		button.setOnAction(handler);
+		button.setGraphic(hbox);
+		button.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
+		return button;
+	}
+	
 	public abstract void refresh();
 }

@@ -91,13 +91,13 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		    	 }
 		     }
 		  });
-		nameColumn.setMinWidth(350);
-		nameColumn.setMaxWidth(350);
-		nameColumn.setPrefWidth(350);
+		nameColumn.setMinWidth(300);
+		nameColumn.setMaxWidth(300);
+		nameColumn.setPrefWidth(300);
 		nameColumn.setResizable(false);
-		lastOpenedColumn.setPrefWidth(150);
-		lastOpenedColumn.setMinWidth(150);
-		lastOpenedColumn.setMaxWidth(150);
+		lastOpenedColumn.setPrefWidth(200);
+		lastOpenedColumn.setMinWidth(200);
+		lastOpenedColumn.setMaxWidth(200);
 		lastOpenedColumn.setResizable(false);
 		table.getColumns().add(nameColumn);
 		table.getColumns().add(lastOpenedColumn);
