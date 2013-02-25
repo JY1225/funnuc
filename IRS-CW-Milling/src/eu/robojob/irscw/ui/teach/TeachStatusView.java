@@ -21,8 +21,8 @@ public class TeachStatusView extends VBox {
 	private static final double STATUS_HEIGHT = 200;
 	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
 	private static final double BTN_HEIGHT = 40;
-	private static final String CSS_CLASS_TEACH_BUTTON = "teach-btn";
-	private static final String CSS_CLASS_TEACH_BUTTON_TEXT = "teach-btn-text";
+	private static final String CSS_CLASS_TEACH_BUTTON = "form-button";
+	private static final String CSS_CLASS_TEACH_BUTTON_TEXT = "form-btn-text";
 	
 	private static final String STOP = "StatusView.stop";
 	

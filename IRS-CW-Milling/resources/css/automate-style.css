@@ -8,14 +8,12 @@
 }
 
 .circle-back {
-	-fx-fill: #595959;
-	-fx-effect: innershadow(one-pass-box, #5e5e5e, 1, 0, 0, 1);
+	-fx-fill: #46494f;
 	-fx-background-insets: 0;
 }
 
 .circle-front {
-	-fx-fill: #6d6c6c;
-	-fx-effect: dropshadow(one-pass-box, #5e5e5e, 1, 0, 0, 1);
+	-fx-fill: #60636c;
 	-fx-background-insets: 0;
 }
 

@@ -348,6 +348,7 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		synchronized (syncObject) {
 			syncObject.notifyAll();
 		}
+		reset();
 	}
 
 	@Override

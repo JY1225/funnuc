@@ -18,7 +18,6 @@ import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
-//TODO disable optimal when processflow has different structure
 public class GeneralInfoView extends GridPane {
 	
 	private ProcessFlow processFlow;
@@ -42,7 +41,7 @@ public class GeneralInfoView extends GridPane {
 	private static final int PREF_LBL_TITLE_HEIGHT = 30;
 	
 	private static final String CSS_CLASS_BUTTON_START_LABEL = "btn-start-label";
-	private static final String CSS_CLASS_BUTTON_START = "btn-start";
+	private static final String CSS_CLASS_BUTTON = "form-button";
 	private static final String CSS_CLASS_GENERAL_INFO_MESSAGE = "general-info-msg";
 	
 	private static final String TEACH_OPTIMAL_TITLE = "GeneralInfoView.teachOptimalTitle";
@@ -93,7 +92,7 @@ public class GeneralInfoView extends GridPane {
 			}
 		});
 		btnStartOptimal.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-		btnStartOptimal.getStyleClass().add(CSS_CLASS_BUTTON_START);
+		btnStartOptimal.getStyleClass().add(CSS_CLASS_BUTTON);
 		
 		lblInfoMessageAllTitle = new Label(Translator.getTranslation(TEACH_ALL_TITLE));
 		lblInfoMessageAllTitle.setPrefSize(PREF_LBL_WIDTH, PREF_LBL_TITLE_HEIGHT);
@@ -121,7 +120,7 @@ public class GeneralInfoView extends GridPane {
 			}
 		});
 		btnStartAll.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-		btnStartAll.getStyleClass().add(CSS_CLASS_BUTTON_START);
+		btnStartAll.getStyleClass().add(CSS_CLASS_BUTTON);
 		
 		VBox vBoxOptimalLabels = new VBox();
 		vBoxOptimalLabels.getChildren().add(lblInfoMessageOptimalTitle);

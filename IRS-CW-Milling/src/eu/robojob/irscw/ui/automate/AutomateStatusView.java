@@ -56,9 +56,9 @@ public class AutomateStatusView extends HBox {
 	private Circle circleFront;
 	private StackPane spAmountContents;
 	
-	private static final String CSS_CLASS_AUTOMATE_BOTTOM = "automate-bottom";
+	private static final String CSS_CLASS_AUTOMATE_BOTTOM = "content-bottom";
 	protected static final String CSS_CLASS_AUTOMATE_BUTTON_TEXT = "automate-btn-text";
-	protected static final String CSS_CLASS_AUTOMATE_BUTTON = "automate-btn";
+	protected static final String CSS_CLASS_AUTOMATE_BUTTON = "form-button";
 	private static final String CSS_CLASS_CIRCLE_BACK = "circle-back";
 	private static final String CSS_CLASS_CIRCLE_FRONT = "circle-front";
 	private static final String CSS_CLASS_PROGRESS = "progress";

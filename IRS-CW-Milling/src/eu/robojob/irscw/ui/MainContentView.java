@@ -12,12 +12,12 @@ public class MainContentView extends VBox {
 	private StackPane top;
 	private GridPane bottom;
 	
-	public static final int HEIGHT_TOP = 245;
+	public static final int HEIGHT_TOP = 255;
 	public static final int HEIGHT_BOTTOM = 300;
 	public static final int WIDTH = 800;
 	
 	private static final String CSS_CLASS_TOP_PANEL = "top-panel";
-	private static final String CSS_CLASS_TEACH_BOTTOM = "content-bottom";
+	private static final String CSS_CLASS_CONTENT_BOTTOM = "content-bottom";
 	public static final String CSS_CLASS_TEACH_MESSAGE = "content-msg";
 	public static final String CSS_CLASS_TEACH_BUTTON_TEXT = "content-btn-text";
 	public static final String CSS_CLASS_TEACH_BUTTON = "content-btn";
@@ -41,7 +41,7 @@ public class MainContentView extends VBox {
 		bottom.setPrefHeight(HEIGHT_BOTTOM);
 		bottom.setPrefWidth(WIDTH);
 		VBox.setVgrow(bottom, Priority.ALWAYS);
-		bottom.getStyleClass().add(CSS_CLASS_TEACH_BOTTOM);
+		bottom.getStyleClass().add(CSS_CLASS_CONTENT_BOTTOM);
 	}
 	
 	public void addNodeToTop(final Node node) {

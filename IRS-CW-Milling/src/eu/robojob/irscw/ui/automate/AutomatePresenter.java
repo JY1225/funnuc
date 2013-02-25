@@ -62,6 +62,7 @@ public class AutomatePresenter extends ExecutionPresenter {
 			getProcessFlow().initialize();
 			getProcessFlow().setMode(Mode.STOPPED);
 		}
+		automateThread.reset();
 		statusPresenter.initializeView();
 		statusPresenter.getView().activateStartButton();
 	}

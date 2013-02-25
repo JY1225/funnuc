@@ -118,11 +118,11 @@ public class ExternalCommunicationThread extends Thread {
 		}
 	}
 	
-	public void clearIncommingBuffer() {
+	public synchronized void clearIncommingBuffer() {
 		incommingMessages.clear();
 	}
 	
-	private void putMessage(final String message) {
+	private synchronized void putMessage(final String message) {
 		incommingMessages.addLast(message);
 	}
 	
