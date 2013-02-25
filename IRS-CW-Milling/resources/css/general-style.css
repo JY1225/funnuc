@@ -85,6 +85,7 @@
 }
 
 .pop-up-btn-pressed, .pop-up-btn:pressed {	
+	-fx-background-color: #3c4147, #292d32, #3c4147, #2a2d31;
 	-fx-effect: innershadow(two-pass-box, rgba(0, 0, 0, 0.75), 15, 0.0, 0, 2);
 }
 
