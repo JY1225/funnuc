@@ -35,7 +35,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	private static final String CSS_CLASS_POPUP_BUTTON_BOTTOM = "pop-up-btn-bottom";
 	private static final String CSS_CLASS_POPUP_BUTTON_PRESSED = "pop-up-btn-pressed";
 	
-	private static final int TOP_LEFT_X = 80;
+	private static final int TOP_LEFT_X = 65;
 	private static final int TOP_LEFT_Y = 0;
 	
 	private int speed;

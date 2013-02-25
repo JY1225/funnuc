@@ -76,7 +76,7 @@
 }
 
 .header-button-right:pressed, .header-button-right.header-button.selected, .last.selected {
-	-fx-background-color: #292d32, #5a606b, #2d2f36, #3c4147, #42454e, linear-gradient(#565d69 0%, #383b42 50%, #32353a 50% , #3c4147 100%);
+	-fx-background-color: #292d32, #3c4147, #2d2f36, #42454e, linear-gradient(#303238 0%, #2e3136 50%, #2a2d31 50%, #32363b 100%);
 }
 
 .header-button.last:disabled {

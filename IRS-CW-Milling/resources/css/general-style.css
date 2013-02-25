@@ -1,7 +1,4 @@
-
-.bottompane {
-	-fx-background-color: white;
-}
+.bottompane { }
 
 .bottom-right {
 	-fx-background-color: #53555a, #708286, linear-gradient(#67696f 0%, #616369 100%);
@@ -39,12 +36,10 @@
 }
 
 .left-menu-button:disabled {
-	-fx-background-color: #545454, #807c7c, #6d6c6c;
-	-fx-opacity: 1;
+	-fx-opacity: 0.5;
 }
 
 .left-menu-button .left-menu-item-label:disabled, .menu-icon:disabled {
-	-fx-fill: #abaaaa;
 }
 
 .menu-icon {
@@ -64,14 +59,14 @@
 
 .popup {
 	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 5);
-	-fx-background-color: #4c4c4c, #807c7c, #6d6c6c;
+	-fx-background-color: #3b3f46, #5b6068, #52555c;
 	-fx-background-insets: 0, 0 1 1 1, 0 2 2 2;
 	-fx-background-radius: 0 0 3 3, 0 0 2 2, 0 0 1 1;
 }
 
 .pop-up-btn {
-	-fx-background-color: #343434, #726c6c, #5e5a5a;
-	-fx-background-insets: 0, 0 1 1 1, 1 1 1 1;
+	-fx-background-color: #5b6068, #3b3f46, #5b6068, linear-gradient(#52555c 0%, #4f5158 100%);
+	-fx-background-insets: 0, 0 0 0 0, 1 1 0 1, 2 1 0 1;
 	-fx-background-radius: 0;
 }
 
@@ -86,12 +81,11 @@
 }
 
 .pop-up-btn-bottom {
-	-fx-background-radius: 0 0 3 3, 0 0 2 2, 0 0 1 1;
+	-fx-background-radius: 0 0 2 2, 0 0 2 2, 0 0 1 1;
 }
 
 .pop-up-btn-pressed, .pop-up-btn:pressed {	
-	-fx-background-color: #222222, #413d3d, #413d3d;
-	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0.0, 0, 1);
+	-fx-effect: innershadow(two-pass-box, rgba(0, 0, 0, 0.75), 15, 0.0, 0, 2);
 }
 
 .warning-bg-icon {
