@@ -15,6 +15,7 @@ public class NumericKeyboardView extends AbstractKeyboardView {
 	
 	@Override
 	protected void buildKeyboard() {
+		this.setCache(true);
 		int row = 0;
 		
 		int column = 0;

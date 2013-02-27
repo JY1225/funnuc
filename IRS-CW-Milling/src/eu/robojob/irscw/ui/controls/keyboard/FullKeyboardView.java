@@ -27,6 +27,7 @@ public class FullKeyboardView extends AbstractKeyboardView {
 	
 	@Override
 	protected void buildKeyboard() {
+		this.setCache(true);
 		switch(type) {
 			case AZERTY:
 				buildViewAzerty();

@@ -3,18 +3,16 @@
 .bottom-right {
 	-fx-background-color: #53555a, #708286, linear-gradient(#67696f 0%, #616369 100%);
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 1 0 0 0;
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, -5, 0);
 }
 
 .bottom-left, .left-menu, .content-bottom {
 	-fx-background-color: #3b3f46, #5b6068, #52555c;
 	-fx-background-insets: 0 0 0 0, 0 1 0 0, 0 1 0 0;
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, -5, 0);
 }
 
 .content-bottom {
 	/* #6c707e, #585b64); */
-	-fx-background-color: #52555c, #7c7f84, radial-gradient(center 50% 0%, radius 50%, #60636c 0%, #585b64 100%);
+	-fx-background-color: #52555c, #7c7f84, #585b64;
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 1 0 0 0;
 }
 
@@ -27,7 +25,7 @@
 
 .left-menu-button:pressed, .menu-item-selected {
 	-fx-background-color: #3c4147, #292d32, #3c4147, #2a2d31;
-	-fx-effect: innershadow(two-pass-box, rgba(0, 0, 0, 0.75), 15, 0.0, 0, 2);
+	-fx-effect: innershadow(two-pass-box, #070707, 10, 0.0, 0, 2);
 }
 
 .left-menu-button .left-menu-item-label {
@@ -38,7 +36,6 @@
 	-fx-font-weight: bold;
 	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
-	-fx-effect: dropshadow(one-pass-box, #393b3f, 1, 0.0, 0, 1);
 }
 
 .left-menu-button:disabled {
@@ -92,7 +89,7 @@
 
 .pop-up-btn-pressed, .pop-up-btn:pressed {	
 	-fx-background-color: #3c4147, #292d32, #3c4147, #2a2d31;
-	-fx-effect: innershadow(two-pass-box, rgba(0, 0, 0, 0.75), 15, 0.0, 0, 2);
+	-fx-effect: innershadow(two-pass-box, #070707, 10, 0.0, 0, 2);
 }
 
 .warning-bg-icon {

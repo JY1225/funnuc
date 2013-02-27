@@ -139,5 +139,4 @@
 
 .unclickable {
 		-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 5, 0.0, 0, 1);
-
 }

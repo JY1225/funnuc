@@ -1,10 +1,10 @@
 package eu.robojob.irscw.ui.admin;
 
-import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardView;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardView;
 
 public class AdminView extends StackPane {
 
@@ -13,7 +13,7 @@ public class AdminView extends StackPane {
 	
 	protected static final double MAIN_MENU_WIDTH = 50;
 	
-	private static final String CSS_CLASS_MAIN = "admin-main";
+	private static final String CSS_CLASS_MAIN = "bottom-right";
 	
 	private HBox hBoxMain;
 	private StackPane mainMenu;
@@ -72,7 +72,7 @@ public class AdminView extends StackPane {
 		keyboardPane.getChildren().add(keyboardNode);
 		getChildren().add(keyboardPane);
 		if (keyboardNode instanceof NumericKeyboardView) {
-			keyboardPane.setMaxWidth(240);
+			keyboardPane.setMaxWidth(200);
 			keyboardPane.setMaxHeight(300);
 		} else {
 			keyboardPane.setMaxWidth(USE_PREF_SIZE);

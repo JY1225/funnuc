@@ -1,10 +1,10 @@
 package eu.robojob.irscw.ui.admin;
 
-import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
 
 public class SubMenuAdminView extends HBox {
 
