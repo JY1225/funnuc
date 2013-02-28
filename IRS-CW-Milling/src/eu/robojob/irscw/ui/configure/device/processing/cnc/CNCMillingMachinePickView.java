@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -51,6 +52,9 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	private NumericTextField ntxtWorkPieceLength;
 	private NumericTextField ntxtWorkPieceHeight;
 	
+	private Label lblAirblow;
+	private CheckBox cbAirblow;
+	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
 	private static final int MAX_INTEGER_LENGTH = 6;
@@ -69,6 +73,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	protected static final String WIDTH = "CNCMillingMachinePickView.width";
 	protected static final String LENGTH = "CNCMillingMachinePickView.length";
 	private static final String HEIGHT = "CNCMillingMachinePickView.height";
+	private static final String AIRBLOW = "CNCMillingMachinePickView.airblow";
 		
 	public CNCMillingMachinePickView() {
 		super();
@@ -130,6 +135,18 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		HBox.setMargin(ntxtSmoothZ, new Insets(0, 20, 0, 10));
 		hBoxSmoothPoint.setFillHeight(false);
 		hBoxSmoothPoint.setAlignment(Pos.CENTER_LEFT);
+		
+		HBox hboxAirblow = new HBox();
+		lblAirblow = new Label(Translator.getTranslation(AIRBLOW));
+		cbAirblow = new CheckBox();
+		cbAirblow.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				getPresenter().changedAirblow(newValue);
+			}
+		});
+		hboxAirblow.getChildren().addAll(lblAirblow, cbAirblow);
+		hboxAirblow.setSpacing(10);
 		
 		GridPane dimensions = new GridPane();
 		dimensions.setHgap(10);
@@ -249,6 +266,10 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		column = 0;
 		row++;
 		add(hBoxSmoothPoint, column++, row);
+		
+		column = 0;
+		row++;
+		add(hboxAirblow, column++, row);
 				
 		column = 0;
 		row++;
@@ -287,6 +308,11 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		} else {
 			btnResetSmooth.setDisable(false);
 		} 
+		if (pickStep.getRobotSettings().isDoMachineAirblow()) {
+			cbAirblow.setSelected(true);
+		} else {
+			cbAirblow.setSelected(false);
+		}
 		setDimensions(pickStep.getRobotSettings().getWorkPiece().getDimensions());
 	}
 	

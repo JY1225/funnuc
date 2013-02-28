@@ -86,6 +86,10 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 		getView().refresh();
 	}
 	
+	public void changedAirblow(final boolean airblow) {
+		pickStep.getRobotSettings().setDoMachineAirblow(airblow);
+	}
+	
 	public void changedHeight(final float height) {
 		pickStep.getRobotSettings().getWorkPiece().getDimensions().setHeight(height);
 		pickStep.setRelativeTeachedOffset(null);

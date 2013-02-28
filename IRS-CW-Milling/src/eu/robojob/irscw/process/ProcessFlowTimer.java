@@ -180,11 +180,13 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		long totalTime = 0;
 		if (otherTimeCurrentSteps.containsKey(workPieceId)) {
 			totalTime = otherTimeCurrentSteps.get(workPieceId);
+			otherTimeCurrentSteps.remove(workPieceId);
 		}
-		totalTime += (System.currentTimeMillis() - startingTimeCurrentSteps.get(workPieceId));
-		logger.debug("TIME STEP [" + step + "]: " + totalTime);
-		startingTimeCurrentSteps.remove(workPieceId);
-		otherTimeCurrentSteps.remove(workPieceId);
+		if ((startingTimeCurrentSteps != null) && (startingTimeCurrentSteps.get(workPieceId) != null)) {
+			totalTime += (System.currentTimeMillis() - startingTimeCurrentSteps.get(workPieceId));
+			logger.debug("TIME STEP [" + step + "]: " + totalTime);
+			startingTimeCurrentSteps.remove(workPieceId);
+		}
 		stepDurations.put(step, totalTime);
 	}
 	

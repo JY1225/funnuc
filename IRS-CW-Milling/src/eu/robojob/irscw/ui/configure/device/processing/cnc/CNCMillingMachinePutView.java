@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
@@ -41,11 +42,15 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	private static final int VGAP = 15;
 	private static final int MAX_INTEGER_LENGTH = 6;
 	
+	private Label lblAirblow;
+	private CheckBox cbAirblow;
+	
 	private static final String SMOOTH_PUT_INFO = "CNCMillingMachinePutView.smoothPickInfo";
 	private static final String SMOOTH_X = "CNCMillingMachinePutView.smoothX";
 	private static final String SMOOTH_Y = "CNCMillingMachinePutView.smoothY";
 	private static final String SMOOTH_Z = "CNCMillingMachinePutView.smoothZ";
 	private static final String SMOOTH_RESET = "CNCMillingMachinePutView.resetSmooth";
+	private static final String AIRBLOW = "CNCMillingMachinePutView.airblow";
 	
 	private static final String CSS_CLASS_CENTER_TEXT = "center-text";
 	
@@ -117,7 +122,19 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		HBox.setMargin(ntxtSmoothZ, new Insets(0, 20, 0, 10));
 		hBoxSmoothPoint.setFillHeight(false);
 		hBoxSmoothPoint.setAlignment(Pos.CENTER_LEFT);
-
+		
+		HBox hboxAirblow = new HBox();
+		lblAirblow = new Label(Translator.getTranslation(AIRBLOW));
+		cbAirblow = new CheckBox();
+		cbAirblow.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				getPresenter().changedAirblow(newValue);
+			}
+		});
+		hboxAirblow.getChildren().addAll(lblAirblow, cbAirblow);
+		hboxAirblow.setSpacing(10);
+		
 		int column = 0;
 		int row = 0;
 		add(lblSmoothInfo, column++, row);
@@ -126,6 +143,10 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		row++;
 		add(hBoxSmoothPoint, column++, row);
 		
+		column = 0;
+		row++;
+		add(hboxAirblow, column++, row);
+				
 		refresh();
 	}
 
@@ -147,6 +168,11 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 			btnResetSmooth.setDisable(true);
 		} else {
 			btnResetSmooth.setDisable(false);
+		}
+		if (putStep.getRobotSettings().isDoMachineAirblow()) {
+			cbAirblow.setSelected(true);
+		} else {
+			cbAirblow.setSelected(false);
 		}
 	}
 

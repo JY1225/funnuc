@@ -17,7 +17,7 @@
 .check-box .box {
 	-fx-background-radius: 3, 3, 2;
 	-fx-padding: 5;
-	-fx-background-color: #8c8888, #222222, #373737, #4e4a4a;
+	-fx-background-color: #837e7e, #1c1d20, #2c2e32, #34363b;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 }
 

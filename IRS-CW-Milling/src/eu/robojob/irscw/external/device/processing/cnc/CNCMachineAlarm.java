@@ -8,10 +8,6 @@ import eu.robojob.irscw.util.Translator;
 public class CNCMachineAlarm {
 
 	public static final int MACHINE = 0;
-	public static final int FEED_HOLD = 1;
-	public static final int MAIN_PRESSURE = 2;
-	public static final int OIL_TEMP_HIGH = 3;
-	public static final int OIL_LEVEL_LOW = 4;
 	public static final int DOOR1_NOT_OPEN = 5;
 	public static final int DOOR2_NOT_OPEN = 6;
 	public static final int DOOR1_NOT_CLOSED = 7;
@@ -81,18 +77,6 @@ public class CNCMachineAlarm {
 		Set<CNCMachineAlarm> alarms = new HashSet<CNCMachineAlarm>();
 		if ((alarmReg1 & CNCMachineConstants.ALR_MACHINE) > 0) {
 			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MACHINE));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_FEED_HOLD) > 0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.FEED_HOLD));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_MAIN_PRESSURE) > 0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MAIN_PRESSURE));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_OIL_TEMP_HIGH) > 0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.OIL_TEMP_HIGH));
-		}
-		if ((alarmReg1 & CNCMachineConstants.ALR_OIL_LEVEL_LOW) > 0) {
-			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.OIL_LEVEL_LOW));
 		}
 		if ((alarmReg1 & CNCMachineConstants.ALR_DOOR1_NOT_OPEN) > 0) {
 			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.DOOR1_NOT_OPEN));

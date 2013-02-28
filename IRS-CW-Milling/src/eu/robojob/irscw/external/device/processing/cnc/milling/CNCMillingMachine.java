@@ -76,18 +76,18 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void reset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		int command = 0;
-		command = command | CNCMachineConstants.RESET_REQUEST;
+		command = command | CNCMachineConstants.IPC_RESET_REQUEST;
 		int[] registers = {command};
-		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 		// this one does not need to wait, we can assume it will work
 	}
 	
 	@Override
 	public void nCReset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		int command = 0;
-		command = command | CNCMachineConstants.NC_RESET;
+		command = command | CNCMachineConstants.IPC_NC_RESET;
 		int[] registers = {command};
-		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 		//TODO read the OTHER register and wait till the set bit is zero, this has to be implemented in the device interface, for now: wait 2 seconds
 		Thread.sleep(SLEEP_TIME_AFTER_RESET);
 	}
@@ -95,35 +95,35 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public void powerOff() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		int command = 0;
-		command = command | CNCMachineConstants.POWER_OFF;
+		command = command | CNCMachineConstants.IPC_POWER_OFF;
 		int[] registers = {command};
-		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 		// normally no more commands after this, so multiple IPC requests problem can't occur
 	}
 
 	@Override
 	public void indicateAllProcessed() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		int command = 0;
-		command = command | CNCMachineConstants.ALL_WP_PROCESSED;
+		command = command | CNCMachineConstants.IPC_ALL_WP_PROCESSED;
 		int[] registers = {command};
-		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 	}
 
 	@Override
 	public void indicateOperatorRequested(final boolean requested) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		int command = 0;
 		if (requested) {
-			command = command | CNCMachineConstants.OPERATOR_REQUESTED;
+			command = command | CNCMachineConstants.IPC_OPERATOR_REQUESTED;
 		}
 		int[] registers = {command};
-		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 	}
 	
 	@Override
 	public void clearIndications() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		int command = 0;
 		int[] registers = {command};
-		cncMachineCommunication.writeRegisters(CNCMachineConstants.OTHER, registers);
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 	}
 	
 	@Override
@@ -187,10 +187,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		//TODO for now WA1 is always used
 		command = command | CNCMachineConstants.IPC_PUT_WA1_REQUEST;
 	
-		int cncTask = 0;
-		cncTask = cncTask | CNCMachineConstants.WA1_CNC_PROCESS;
-		
-		int[] registers = {command, cncTask};
+		int[] registers = {command};
 		
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 		

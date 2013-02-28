@@ -58,6 +58,10 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 		}
 	}
 
+	public void changedAirblow(final boolean airblow) {
+		putStep.getRobotSettings().setDoMachineAirblow(airblow);
+	}
+	
 	@Override
 	public boolean isConfigured() {
 		if (putStep.getRobotSettings().getSmoothPoint() != null) {
