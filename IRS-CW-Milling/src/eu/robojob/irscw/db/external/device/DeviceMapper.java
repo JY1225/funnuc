@@ -193,4 +193,8 @@ public class DeviceMapper {
 		}
 		return clamping;
 	}
+	
+	public Set<UserFrame> getAllUserFrames() throws SQLException {
+		return generalMapper.getAllUserFrames();
+	}
 }

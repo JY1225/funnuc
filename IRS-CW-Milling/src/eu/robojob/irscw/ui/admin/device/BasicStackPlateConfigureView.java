@@ -2,6 +2,7 @@ package eu.robojob.irscw.ui.admin.device;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -64,6 +65,8 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	protected void build() {
 		setVgap(15);
 		setHgap(15);
+		setPadding(new Insets(50, 0, 0, 0));
+		setAlignment(Pos.TOP_CENTER);
 		spacer = new Region();
 		spacer.setPrefWidth(20);
 		lblName = new Label(Translator.getTranslation(NAME));

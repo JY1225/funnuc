@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
@@ -165,6 +167,17 @@ public class GeneralMapper {
 				workPiece.setId(keys.getInt(1));
 			}
 		}
+	}
+	
+	public Set<UserFrame> getAllUserFrames() throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM USERFRAME");
+		ResultSet results = stmt.executeQuery();
+		Set<UserFrame> userFrames = new HashSet<UserFrame>();
+		while (results.next()) {
+			int id = results.getInt("ID");
+			userFrames.add(getUserFrameById(id));
+		}
+		return userFrames;
 	}
 	
 }

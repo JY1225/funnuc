@@ -16,6 +16,7 @@ import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
+import eu.robojob.irscw.positioning.UserFrame;
 
 public class DeviceManager {
 	
@@ -139,4 +140,12 @@ public class DeviceManager {
 		return stackingToDevicesByName.get(name);
 	}
 	
+	public Set<UserFrame> getAllUserFrames() {
+		try {
+			return deviceMapper.getAllUserFrames();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

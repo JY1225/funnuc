@@ -1,22 +1,27 @@
 package eu.robojob.irscw.ui.admin;
 
 import eu.robojob.irscw.ui.admin.device.DeviceAdminPresenter;
+import eu.robojob.irscw.ui.admin.general.GeneralAdminPresenter;
 import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
 public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 	
+	private GeneralAdminPresenter generalAdminPresenter;
 	private RobotAdminPresenter robotAdminPresenter;
 	private DeviceAdminPresenter deviceAdminPresenter;
 	
-	public MainMenuPresenter(final MainMenuView view, final RobotAdminPresenter robotAdminPresenter, final DeviceAdminPresenter deviceAdminPresenter) {
+	public MainMenuPresenter(final MainMenuView view, final GeneralAdminPresenter generalAdminPresenter,
+			final RobotAdminPresenter robotAdminPresenter, final DeviceAdminPresenter deviceAdminPresenter) {
 		super(view);
+		this.generalAdminPresenter = generalAdminPresenter;
 		this.robotAdminPresenter = robotAdminPresenter;
 		this.deviceAdminPresenter = deviceAdminPresenter;
 	}
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
+		generalAdminPresenter.setTextFieldListener(listener);
 		robotAdminPresenter.setTextFieldListener(listener);
 		deviceAdminPresenter.setTextFieldListener(listener);
 	}
@@ -29,6 +34,7 @@ public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 	@Override
 	public void openFirst() {
 		getView().setGeneralMenuActive();
+		getParent().setContentNode(generalAdminPresenter.getView());
 	}
 
 	@Override
@@ -42,6 +48,7 @@ public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 	
 	public void generalMenuClicked() {
 		getView().setGeneralMenuActive();
+		getParent().setContentNode(generalAdminPresenter.getView());
 	}
 	
 	public void robotMenuClicked() {

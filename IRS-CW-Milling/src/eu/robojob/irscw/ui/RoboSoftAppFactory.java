@@ -13,9 +13,19 @@ import eu.robojob.irscw.ui.admin.MainMenuView;
 import eu.robojob.irscw.ui.admin.SubMenuAdminView;
 import eu.robojob.irscw.ui.admin.device.BasicStackPlateConfigurePresenter;
 import eu.robojob.irscw.ui.admin.device.BasicStackPlateConfigureView;
+import eu.robojob.irscw.ui.admin.device.CNCMachineClampingsPresenter;
+import eu.robojob.irscw.ui.admin.device.CNCMachineClampingsView;
+import eu.robojob.irscw.ui.admin.device.CNCMachineConfigurePresenter;
+import eu.robojob.irscw.ui.admin.device.CNCMachineConfigureView;
 import eu.robojob.irscw.ui.admin.device.DeviceAdminPresenter;
 import eu.robojob.irscw.ui.admin.device.DeviceMenuPresenter;
 import eu.robojob.irscw.ui.admin.device.DeviceMenuView;
+import eu.robojob.irscw.ui.admin.device.PrageDeviceConfigurePresenter;
+import eu.robojob.irscw.ui.admin.device.PrageDeviceConfigureView;
+import eu.robojob.irscw.ui.admin.device.UserFramesConfigurePresenter;
+import eu.robojob.irscw.ui.admin.device.UserFramesConfigureView;
+import eu.robojob.irscw.ui.admin.general.GeneralAdminPresenter;
+import eu.robojob.irscw.ui.admin.general.GeneralAdminView;
 import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
 import eu.robojob.irscw.ui.admin.robot.RobotConfigurePresenter;
 import eu.robojob.irscw.ui.admin.robot.RobotConfigureView;
@@ -77,11 +87,16 @@ public class RoboSoftAppFactory {
 	private ProcessSavePresenter processSavePresenter;
 	private AdminPresenter adminPresenter;
 	private MainMenuPresenter mainMenuPresenter;
+	private GeneralAdminPresenter generalAdminPresenter;
 	private RobotAdminPresenter robotAdminPresenter;
 	private RobotConfigurePresenter robotConfigurePresenter;
 	private RobotGripperPresenter robotGripperPresenter;
 	private DeviceAdminPresenter deviceAdminPresenter;
+	private UserFramesConfigurePresenter userFramesConfigurePresenter;
 	private BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
+	private CNCMachineConfigurePresenter cncMachineConfigurePresenter;
+	private CNCMachineClampingsPresenter cncMachineClampingsPresenter;
+	private PrageDeviceConfigurePresenter prageDeviceConfigurePresenter;
 	
 	private ProcessFlow processFlow;
 	private ProcessFlowTimer processFlowTimer;
@@ -296,19 +311,36 @@ public class RoboSoftAppFactory {
 	private MainMenuPresenter getMainMenuPresenter() {
 		if (mainMenuPresenter == null) {
 			MainMenuView view = new MainMenuView();
-			mainMenuPresenter = new MainMenuPresenter(view, getRobotAdminPresenter(), getDeviceAdminPresenter());
+			mainMenuPresenter = new MainMenuPresenter(view, getGeneralAdminPresenter(), getRobotAdminPresenter(), getDeviceAdminPresenter());
 		}
 		return mainMenuPresenter;
+	}
+	
+	private GeneralAdminPresenter getGeneralAdminPresenter() {
+		if (generalAdminPresenter == null) {
+			GeneralAdminView view = new GeneralAdminView();
+			generalAdminPresenter = new GeneralAdminPresenter(view);
+		}
+		return generalAdminPresenter;
 	}
 	
 	private DeviceAdminPresenter getDeviceAdminPresenter() {
 		if (deviceAdminPresenter == null) {
 			SubMenuAdminView view = new SubMenuAdminView(); 
 			DeviceMenuView menuView = new DeviceMenuView();
-			DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(menuView, getBasicStackPlateConfigurePresenter());
+			DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(menuView, getUserFramesConfigurePresenter(), getBasicStackPlateConfigurePresenter(),
+					getCNCMachineConfigurePresenter(), getCNCMachineClampingsPresenter(), getPrageDeviceConfigurePresenter());
 			deviceAdminPresenter = new DeviceAdminPresenter(view, deviceMenuPresenter);
 		}
 		return deviceAdminPresenter;
+	}
+	
+	public UserFramesConfigurePresenter getUserFramesConfigurePresenter() {
+		if (userFramesConfigurePresenter == null) {
+			UserFramesConfigureView view = new UserFramesConfigureView();
+			userFramesConfigurePresenter = new UserFramesConfigurePresenter(view, deviceManager);
+		}
+		return userFramesConfigurePresenter;
 	}
 	
 	public BasicStackPlateConfigurePresenter getBasicStackPlateConfigurePresenter() {
@@ -317,6 +349,30 @@ public class RoboSoftAppFactory {
 			basicStackPlateConfigurePresenter = new BasicStackPlateConfigurePresenter(view);
 		}
 		return basicStackPlateConfigurePresenter;
+	}
+	
+	private CNCMachineConfigurePresenter getCNCMachineConfigurePresenter() {
+		if (cncMachineConfigurePresenter == null) {
+			CNCMachineConfigureView view = new CNCMachineConfigureView();
+			cncMachineConfigurePresenter = new CNCMachineConfigurePresenter(view);
+		}
+		return cncMachineConfigurePresenter;
+	}
+	
+	private CNCMachineClampingsPresenter getCNCMachineClampingsPresenter() {
+		if (cncMachineClampingsPresenter == null) {
+			CNCMachineClampingsView view = new CNCMachineClampingsView();
+			cncMachineClampingsPresenter = new CNCMachineClampingsPresenter(view);
+		}
+		return cncMachineClampingsPresenter;
+	}
+	
+	private PrageDeviceConfigurePresenter getPrageDeviceConfigurePresenter() {
+		if (prageDeviceConfigurePresenter == null) {
+			PrageDeviceConfigureView view = new PrageDeviceConfigureView();
+			prageDeviceConfigurePresenter = new PrageDeviceConfigurePresenter(view);
+		}
+		return prageDeviceConfigurePresenter;
 	}
 	
 	private RobotAdminPresenter getRobotAdminPresenter() {

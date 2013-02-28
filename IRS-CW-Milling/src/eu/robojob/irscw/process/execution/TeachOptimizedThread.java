@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.RobotActionException;
@@ -193,17 +195,17 @@ public class TeachOptimizedThread extends TeachThread {
 	
 	private void initializeSteps() {
 		for (AbstractProcessStep step : getProcessFlow().getProcessSteps()) {
-			if ((step instanceof PickStep) && ((PickStep) step).getDevice().getName().equals("IRS M Basic")) {
+			if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof BasicStackPlate) {
 				pickFromStackerStep = (PickStep) step;
-			} else if ((step instanceof PutAndWaitStep) && ((PutAndWaitStep) step).getDevice().getName().equals("Präge Device")) {
+			} else if ((step instanceof PutAndWaitStep) && ((PutAndWaitStep) step).getDevice() instanceof PrageDevice) {
 				putAndWaitOnPrageStep = (PutAndWaitStep) step;
-			} else if ((step instanceof PickAfterWaitStep) && ((PickAfterWaitStep) step).getDevice().getName().equals("Präge Device")) {
+			} else if ((step instanceof PickAfterWaitStep) && ((PickAfterWaitStep) step).getDevice() instanceof PrageDevice) {
 				pickAfterWaitOnPrageStep = (PickAfterWaitStep) step;
-			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice().getName().equals("Mazak VRX J500")) {
+			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice() instanceof CNCMillingMachine) {
 				putInMachineStep = (PutStep) step;
-			} else if ((step instanceof PickStep) && ((PickStep) step).getDevice().getName().equals("Mazak VRX J500")) {
+			} else if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof CNCMillingMachine) {
 				pickFromMachineStep = (PickStep) step;
-			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice().getName().equals("IRS M Basic")) {
+			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice() instanceof BasicStackPlate) {
 				putOnStackerStep = (PutStep) step;
 			}
 		}

@@ -5,16 +5,29 @@ import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
 public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView, DeviceAdminPresenter> {
 
+	private UserFramesConfigurePresenter userFramesConfigurePresenter;
 	private BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
+	private CNCMachineConfigurePresenter cncMachineConfigurePresenter;
+	private CNCMachineClampingsPresenter cncMachineClampingsPresenter;
+	private PrageDeviceConfigurePresenter prageDeviceConfigurePresenter;
 	
-	public DeviceMenuPresenter(final DeviceMenuView view, final BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter) {
+	public DeviceMenuPresenter(final DeviceMenuView view, final UserFramesConfigurePresenter userFramesConfigurePresenter,
+			final BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter, final CNCMachineConfigurePresenter cncMachineConfigurePresenter,
+				final CNCMachineClampingsPresenter cncMachineClamingsPresenter, final PrageDeviceConfigurePresenter prageDeviceConfigurePresenter) {
 		super(view);
+		this.userFramesConfigurePresenter = userFramesConfigurePresenter;
 		this.basicStackPlateConfigurePresenter = basicStackPlateConfigurePresenter;
+		this.cncMachineConfigurePresenter = cncMachineConfigurePresenter;
+		this.cncMachineClampingsPresenter = cncMachineClamingsPresenter;
+		this.prageDeviceConfigurePresenter = prageDeviceConfigurePresenter;
 	}
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
+		userFramesConfigurePresenter.setTextFieldListener(listener);
 		basicStackPlateConfigurePresenter.setTextFieldListener(listener);
+		cncMachineConfigurePresenter.setTextFieldListener(listener);
+		cncMachineClampingsPresenter.setTextFieldListener(listener);
 	}
 
 	@Override
@@ -32,6 +45,7 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 
 	public void configureUserFrames() { 
 		getView().setConfigureUserFramesActive();
+		getParent().setContentView(userFramesConfigurePresenter.getView());
 	}
 	
 	public void configureBasicStackPlate() { 
@@ -41,14 +55,17 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 	
 	public void configureCNCMachine() { 
 		getView().setConfigureCNCMachineActive();
+		getParent().setContentView(cncMachineConfigurePresenter.getView());
 	}
 	
 	public void configureCNCMachineClampings() {
 		getView().setConfigureClampingsActive();
+		getParent().setContentView(cncMachineClampingsPresenter.getView());
 	}
 	
 	public void configurePrage() { 
 		getView().setConfigurePrageActive();
+		getParent().setContentView(prageDeviceConfigurePresenter.getView());
 	}
 	
 	@Override
