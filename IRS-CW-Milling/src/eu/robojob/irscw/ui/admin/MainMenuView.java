@@ -20,12 +20,12 @@ public class MainMenuView extends AbstractMenuView<MainMenuPresenter> {
 		setPrefWidth(50);
 		setMinWidth(50);
 		setMaxWidth(50);
-		addIconMenuItem(index++, GENERAL_PATH, new EventHandler<ActionEvent>() {
+		/*addIconMenuItem(index++, GENERAL_PATH, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
 				getPresenter().generalMenuClicked();
 			}
-		});
+		});*/
 		addIconMenuItem(index++, ROBOT_PATH, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
@@ -45,10 +45,10 @@ public class MainMenuView extends AbstractMenuView<MainMenuPresenter> {
 	}
 	
 	public void setRobotMenuActive() {
-		setMenuItemSelected(1);
+		setMenuItemSelected(0);
 	}
 	
 	public void setDeviceMenuActive() {
-		setMenuItemSelected(2);
+		setMenuItemSelected(1);
 	}
 }

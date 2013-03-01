@@ -63,6 +63,10 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		
 	}
 	
+	public CNCMachineSocketCommunication getCNCMachineSocketCommunication() {
+		return this.cncMachineCommunication;
+	}
+	
 	@Override
 	public void updateStatusAndAlarms() throws InterruptedException, SocketResponseTimedOutException, SocketDisconnectedException {
 		int statusInt = (cncMachineCommunication.readRegisters(CNCMachineConstants.STATUS, 1)).get(0);

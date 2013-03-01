@@ -1,12 +1,18 @@
 package eu.robojob.irscw.ui.admin.device;
 
+import java.util.List;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
@@ -19,6 +25,8 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 
 	private Label lblName;
 	private FullTextField fulltxtName;
+	private Label lblUserFrame;
+	private ComboBox<String> cbbUserFrames;
 	private Label lblHorizontalHoleAmount;
 	private IntegerTextField itxtHorizontalHoleAmount;
 	private Label lblVerticalHoleAmount;
@@ -42,7 +50,10 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	private Region spacer;
 	private Button btnSave;
 	
+	private ObservableList<String> userFrameNames;
+	
 	private static final String NAME = "BasicStackPlateConfigureView.name";
+	private static final String USERFRAME = "BasicStackPlateConfigureView.userFrame";
 	private static final String HORIZONTALHOLEAMOUNT = "BasicStackPlateConfigureView.horizontalHoleAmount";
 	private static final String VERTICALHOLEAMOUNT = "BasicStackPlateConfigureView.verticalHoleAmount";
 	private static final String HOLEDIAMETER = "BasicStackPlateConfigureView.holeDiameter";
@@ -55,9 +66,12 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	private static final String OVERFLOWPERCENTAGE = "BasicStackPlateConfigureView.overflowPercentage";
 	private static final String SAVE = "BasicStackPlateConfigureView.save";
 	
+	private BasicStackPlate basicStackPlate;
+	
 	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
 
 	public BasicStackPlateConfigureView() {
+		userFrameNames = FXCollections.observableArrayList();
 		build();
 	}
 	
@@ -71,6 +85,10 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		spacer.setPrefWidth(20);
 		lblName = new Label(Translator.getTranslation(NAME));
 		fulltxtName = new FullTextField(50);
+		lblUserFrame = new Label(Translator.getTranslation(USERFRAME));
+		cbbUserFrames = new ComboBox<String>();
+		cbbUserFrames.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
+		cbbUserFrames.setItems(userFrameNames);
 		lblHorizontalHoleAmount = new Label(Translator.getTranslation(HORIZONTALHOLEAMOUNT));
 		itxtHorizontalHoleAmount = new IntegerTextField(3);
 		lblVerticalHoleAmount = new Label(Translator.getTranslation(VERTICALHOLEAMOUNT));
@@ -97,6 +115,9 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		int column = 0;
 		add(lblName, column++, row);
 		add(fulltxtName, column++, row, 4, 1);
+		column = 0; row++;
+		add(lblUserFrame, column++, row);
+		add(cbbUserFrames, column++, row, 4, 1);
 		column = 0; row++;
 		add(lblHorizontalHoleAmount, column++, row);
 		add(itxtHorizontalHoleAmount, column++, row);
@@ -132,6 +153,16 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		GridPane.setHalignment(btnSave, HPos.CENTER);
 		GridPane.setMargin(btnSave, new Insets(15, 0, 0, 0));
 	}
+	
+	public void setUserFrames(final List<String> userFrames) {
+		userFrameNames.clear();
+		userFrameNames.addAll(userFrames);
+	}
+	
+	public void setBasicStackPlate(final BasicStackPlate basicStackPlate) {
+		this.basicStackPlate = basicStackPlate;
+		refresh();
+	}
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
@@ -150,7 +181,18 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 
 	@Override
 	public void refresh() {
-		
+		fulltxtName.setText(basicStackPlate.getName());
+		itxtHorizontalHoleAmount.setText(basicStackPlate.getLayout().getHorizontalHoleAmount() + "");
+		itxtVerticalHoleAmount.setText(basicStackPlate.getLayout().getVerticalHoleAmount() + "");
+		numtxtHoleDiameter.setText(basicStackPlate.getLayout().getHoleDiameter() + "");
+		numtxtStudDiameter.setText(basicStackPlate.getLayout().getStudDiameter() + "");
+		numtxtHorizontalPadding.setText(basicStackPlate.getLayout().getHorizontalPadding() + "");
+		numtxtVerticalPaddingTop.setText(basicStackPlate.getLayout().getVerticalPadding() + "");
+		numtxtVerticalPaddingBottom.setText(basicStackPlate.getLayout().getVerticalPaddingBottom() + "");
+		numtxtHorizontalHoleDistance.setText(basicStackPlate.getLayout().getHorizontalHoleDistance() + "");
+		numtxtInterferenceDistance.setText(basicStackPlate.getLayout().getInterferenceDistance() + "");
+		numtxtOverflowPercentage.setText(basicStackPlate.getLayout().getOverflowPercentage() + "");
+		cbbUserFrames.valueProperty().set(basicStackPlate.getWorkAreas().get(0).getUserFrame().getName());
 	}
 
 }

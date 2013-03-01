@@ -7,28 +7,36 @@
 	-fx-background-insets: 0 0 0 0, 0 1 0 0, 0 1 0 0;
 }
 
-.check-box {
+.check-box, .radio-button {
 	-fx-text-fill: white;
 	-fx-font-size: 14px;
 	-fx-font-family: "Open Sans";
 	-fx-font-smoothing-type: lcd;
 }
 
-.check-box .box {
+.check-box .box, .radio-button .radio {
 	-fx-background-radius: 3, 3, 2;
 	-fx-padding: 5;
 	-fx-background-color: #837e7e, #1c1d20, #2c2e32, #34363b;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
 }
 
-.check-box .box .mark {
+.radio-button .radio {
+	-fx-background-radius: 10;
+}
+
+.check-box .box .mark, .radio-button .radio .dot {
 	-fx-background-color: transparent;
 	-fx-padding: 5;
 }
 
-.check-box:selected .box .mark {
+.check-box:selected .box .mark, .radio-button:selected .radio .dot {
 	-fx-background-color: white;
 	-fx-padding: 5;
+}
+
+.radio-button:selected .radio, .radio-button .radio {
+	-fx-padding: 3 4 5 4;
 }
 
 .gripper-image-edit {
@@ -43,4 +51,11 @@
 
 .red {
 	-fx-background-color: red;
+}
+
+.padding-button {
+	-fx-padding: 0 10 0 10;
+}
+
+.cnc-contentpane {
 }

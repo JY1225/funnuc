@@ -346,7 +346,7 @@ public class RoboSoftAppFactory {
 	public BasicStackPlateConfigurePresenter getBasicStackPlateConfigurePresenter() {
 		if (basicStackPlateConfigurePresenter == null) {
 			BasicStackPlateConfigureView view = new BasicStackPlateConfigureView();
-			basicStackPlateConfigurePresenter = new BasicStackPlateConfigurePresenter(view);
+			basicStackPlateConfigurePresenter = new BasicStackPlateConfigurePresenter(view, deviceManager);
 		}
 		return basicStackPlateConfigurePresenter;
 	}
@@ -354,7 +354,7 @@ public class RoboSoftAppFactory {
 	private CNCMachineConfigurePresenter getCNCMachineConfigurePresenter() {
 		if (cncMachineConfigurePresenter == null) {
 			CNCMachineConfigureView view = new CNCMachineConfigureView();
-			cncMachineConfigurePresenter = new CNCMachineConfigurePresenter(view);
+			cncMachineConfigurePresenter = new CNCMachineConfigurePresenter(view, deviceManager);
 		}
 		return cncMachineConfigurePresenter;
 	}

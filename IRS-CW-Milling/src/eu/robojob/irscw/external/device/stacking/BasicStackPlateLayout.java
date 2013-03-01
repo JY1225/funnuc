@@ -489,6 +489,14 @@ public class BasicStackPlateLayout {
 	public List<StackingPosition> getStackingPositions() {
 		return stackingPositions;
 	}
+	
+	public float getInterferenceDistance() {
+		return interferenceDistance;
+	}
+	
+	public float getOverflowPercentage() {
+		return overFlowPercentage;
+	}
 
 	public void setStackingPositions(final List<StackingPosition> stackingPositions) {
 		this.stackingPositions = stackingPositions;

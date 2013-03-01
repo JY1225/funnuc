@@ -44,12 +44,16 @@
 	-fx-font-size: 13px;
 }
 
-.form-button-bar-left {
+.form-button-bar-left, .form-button-bar-center {
 	-fx-background-radius: 3 0 0 3, 3 0 0 3, 2 0 0 2, 2 0 0 2, 2 0 0 2;
 	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 2 0 2 1, 2 0 2 1;
 }
 
-.form-button-bar-left .form-button-active {
+.form-button-bar-center {
+	-fx-background-radius: 0;
+}
+
+.form-button-bar-left .form-button-active, .form-button-bar-center .form-button-active {
 	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 1, 2 0 2 1, 2 0 2 1;
 }
 

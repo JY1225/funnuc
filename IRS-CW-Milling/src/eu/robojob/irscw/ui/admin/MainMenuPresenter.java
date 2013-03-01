@@ -33,8 +33,8 @@ public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 
 	@Override
 	public void openFirst() {
-		getView().setGeneralMenuActive();
-		getParent().setContentNode(generalAdminPresenter.getView());
+		getView().setRobotMenuActive();
+		getParent().setContentNode(robotAdminPresenter.getView());
 	}
 
 	@Override
