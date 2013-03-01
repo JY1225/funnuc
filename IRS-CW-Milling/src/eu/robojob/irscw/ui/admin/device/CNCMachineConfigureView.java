@@ -130,6 +130,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
 		cncMachineGeneralView.setTextFieldListener(listener);
+		cncMachinePartsOperationView.setTextFieldListener(listener);
 	}
 
 }

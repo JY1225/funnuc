@@ -87,21 +87,23 @@ public class BasicStackPlateLayout {
 		stackingPositions.clear();
 		clearStuds();
 		//TODO add upper limits
-		WorkPieceDimensions dimensions = rawWorkPiece.getDimensions();
-		if (!((dimensions != null) && (dimensions.getWidth() > 0) && (dimensions.getLength() > 0) && (dimensions.getHeight() > 0))) {
-			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_DATA);
+		if (rawWorkPiece != null) {
+			WorkPieceDimensions dimensions = rawWorkPiece.getDimensions();
+			if (!((dimensions != null) && (dimensions.getWidth() > 0) && (dimensions.getLength() > 0) && (dimensions.getHeight() > 0))) {
+				throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_DATA);
+			}
+			switch(orientation) {
+				case HORIZONTAL:
+					configureHorizontalStackingPositions(dimensions);
+					break;
+				case TILTED:
+					configureTiltedStackingPositionsAlt(dimensions);
+					break;
+				default:
+					throw new IllegalArgumentException("Unknown work piece orientation");
+			}
+			this.orientation = orientation;
 		}
-		switch(orientation) {
-			case HORIZONTAL:
-				configureHorizontalStackingPositions(dimensions);
-				break;
-			case TILTED:
-				configureTiltedStackingPositionsAlt(dimensions);
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown work piece orientation");
-		}
-		this.orientation = orientation;
 	}
 	
 	private void configureHorizontalStackingPositions(final WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {

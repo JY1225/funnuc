@@ -87,6 +87,12 @@ public class ProcessFlowManager {
 		processSteps.add(pickStep2);
 		processSteps.add(putStep2);
 		Map<AbstractDevice, DeviceSettings> deviceSettings = new HashMap<AbstractDevice, DeviceSettings>();
+		if (stackingFromDevice instanceof BasicStackPlate) {
+			((BasicStackPlate) stackingFromDevice).clearDeviceSettings();
+		}
+		if (stackingToDevice instanceof BasicStackPlate) {
+			((BasicStackPlate) stackingToDevice).clearDeviceSettings();
+		}
 		deviceSettings.put(stackingFromDevice, stackingFromDevice.getDeviceSettings());
 		if (stackingFromDevice instanceof BasicStackPlate) {
 			((BasicStackPlateSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPieceDimensions(rawWorkPiece.getDimensions());

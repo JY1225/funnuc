@@ -8,6 +8,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.util.Translator;
 
 public class CNCMachinePartsOperationView extends GridPane {
@@ -88,4 +89,9 @@ public class CNCMachinePartsOperationView extends GridPane {
 		column++;
 		add(cbbUseRobotServiceRequest, column++, row);
 	}
+	
+	public void setTextFieldListener(final TextInputControlListener listener) {
+		itxtAmountOfDoors.setFocusListener(listener);
+	}
+
 }

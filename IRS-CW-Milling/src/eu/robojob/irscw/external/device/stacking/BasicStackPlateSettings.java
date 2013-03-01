@@ -61,7 +61,15 @@ public class BasicStackPlateSettings extends DeviceSettings {
 	public WorkPiece getFinishedWorkPiece() {
 		return this.finishedWorkPiece;
 	}
+	
+	public void clearRawWorkPiece() {
+		this.rawWorkPiece = null;
+	}
 
+	public void clearFinishedWorkPiece() {
+		this.finishedWorkPiece = null;
+	}
+	
 	public WorkPieceOrientation getOrientation() {
 		return orientation;
 	}

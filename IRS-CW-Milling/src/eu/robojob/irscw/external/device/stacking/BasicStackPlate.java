@@ -147,6 +147,10 @@ public class BasicStackPlate extends AbstractStackingDevice {
 					this.rawWorkPiece = settings.getRawWorkPiece();
 					this.finishedWorkPiece = settings.getFinishedWorkPiece();
 					layout.placeRawWorkPieces(rawWorkPiece, settings.getAmount());
+				} else {
+					layout.configureStackingPositions(null, settings.getOrientation());
+					this.rawWorkPiece = settings.getRawWorkPiece();
+					this.finishedWorkPiece = settings.getFinishedWorkPiece();
 				}
 			} catch (IncorrectWorkPieceDataException e) {
 				logger.error(e);
@@ -160,7 +164,17 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public DeviceSettings getDeviceSettings() {
 		return new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, layout.getOrientation(), layout.getRawWorkPieceAmount());
 	}
-
+	
+	public void clearDeviceSettings() {
+		this.rawWorkPiece = new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions());
+		this.finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions());;
+		try {
+			this.layout.configureStackingPositions(null, layout.getOrientation());
+		} catch (IncorrectWorkPieceDataException e) {
+			logger.error(e);
+		}
+	}
+	
 	@Override
 	public boolean validatePickSettings(final DevicePickSettings pickSettings) {
 		// note we assume the corresponding device settings are loaded!
