@@ -167,7 +167,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	
 	public void clearDeviceSettings() {
 		this.rawWorkPiece = new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions());
-		this.finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions());;
+		this.finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions());
 		try {
 			this.layout.configureStackingPositions(null, layout.getOrientation());
 		} catch (IncorrectWorkPieceDataException e) {
