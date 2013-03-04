@@ -89,6 +89,8 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		hboxSelectUf.setAlignment(Pos.CENTER_LEFT);
 		cbbUfs = new ComboBox<String>();
 		cbbUfs.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
+		cbbUfs.setMinSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
+		cbbUfs.setMaxSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
 		cbbUfs.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> observableValue, final String oldValue, final String newValue) {

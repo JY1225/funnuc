@@ -15,8 +15,6 @@ import eu.robojob.irscw.ui.admin.device.BasicStackPlateConfigurePresenter;
 import eu.robojob.irscw.ui.admin.device.BasicStackPlateConfigureView;
 import eu.robojob.irscw.ui.admin.device.CNCMachineClampingsPresenter;
 import eu.robojob.irscw.ui.admin.device.CNCMachineClampingsView;
-import eu.robojob.irscw.ui.admin.device.CNCMachineConfigurePresenter;
-import eu.robojob.irscw.ui.admin.device.CNCMachineConfigureView;
 import eu.robojob.irscw.ui.admin.device.DeviceAdminPresenter;
 import eu.robojob.irscw.ui.admin.device.DeviceMenuPresenter;
 import eu.robojob.irscw.ui.admin.device.DeviceMenuView;
@@ -24,6 +22,8 @@ import eu.robojob.irscw.ui.admin.device.PrageDeviceConfigurePresenter;
 import eu.robojob.irscw.ui.admin.device.PrageDeviceConfigureView;
 import eu.robojob.irscw.ui.admin.device.UserFramesConfigurePresenter;
 import eu.robojob.irscw.ui.admin.device.UserFramesConfigureView;
+import eu.robojob.irscw.ui.admin.device.cnc.CNCMachineConfigurePresenter;
+import eu.robojob.irscw.ui.admin.device.cnc.CNCMachineConfigureView;
 import eu.robojob.irscw.ui.admin.general.GeneralAdminPresenter;
 import eu.robojob.irscw.ui.admin.general.GeneralAdminView;
 import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
@@ -362,7 +362,7 @@ public class RoboSoftAppFactory {
 	private CNCMachineClampingsPresenter getCNCMachineClampingsPresenter() {
 		if (cncMachineClampingsPresenter == null) {
 			CNCMachineClampingsView view = new CNCMachineClampingsView();
-			cncMachineClampingsPresenter = new CNCMachineClampingsPresenter(view);
+			cncMachineClampingsPresenter = new CNCMachineClampingsPresenter(view, deviceManager);
 		}
 		return cncMachineClampingsPresenter;
 	}
@@ -370,7 +370,7 @@ public class RoboSoftAppFactory {
 	private PrageDeviceConfigurePresenter getPrageDeviceConfigurePresenter() {
 		if (prageDeviceConfigurePresenter == null) {
 			PrageDeviceConfigureView view = new PrageDeviceConfigureView();
-			prageDeviceConfigurePresenter = new PrageDeviceConfigurePresenter(view);
+			prageDeviceConfigurePresenter = new PrageDeviceConfigurePresenter(view, deviceManager);
 		}
 		return prageDeviceConfigurePresenter;
 	}

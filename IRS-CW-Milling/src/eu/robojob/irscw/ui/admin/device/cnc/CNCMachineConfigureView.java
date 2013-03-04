@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.admin.device;
+package eu.robojob.irscw.ui.admin.device.cnc;
 
 import java.util.Set;
 
@@ -12,8 +12,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.irscw.ui.admin.device.cnc.CNCMachineGeneralView;
-import eu.robojob.irscw.ui.admin.device.cnc.CNCMachinePartsOperationView;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.general.AbstractFormView;
 import eu.robojob.irscw.util.Translator;
@@ -42,7 +40,6 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	private static final String CSS_CLASS_PADDING_BTN = "padding-button";
 		
 	private static final double WIDTH = 550;
-	private static final double HEIGHT = 505;
 	
 	private static final String CSS_CLASS_CNC_CONTENTPANE = "cnc-contentpane";
 	
@@ -108,6 +105,12 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		hboxNavButtons.getChildren().addAll(btnGeneral, btnPartsWorking, btnCriteria, btnClampConditions, btnTimers, btnMCodes);
 		add(hboxNavButtons, 0, 0);
 
+		btnPartsWorking.setDisable(true);
+		btnCriteria.setDisable(true);
+		btnClampConditions.setDisable(true);
+		btnTimers.setDisable(true);
+		btnMCodes.setDisable(true);
+		
 		contentPane = new StackPane();
 		contentPane.setPrefWidth(WIDTH);
 		contentPane.setMinWidth(WIDTH);
@@ -117,6 +120,10 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		GridPane.setMargin(contentPane, new Insets(20, 0, 0, 0));
 		GridPane.setVgrow(contentPane, Priority.ALWAYS);
 		contentPane.setAlignment(Pos.CENTER);
+		
+		contentPane.getChildren().clear();
+		contentPane.getChildren().add(cncMachineGeneralView);
+		setActiveButton(btnGeneral);
 	}
 	
 	public void setActiveButton(final Button button) {

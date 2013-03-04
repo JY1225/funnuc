@@ -1,6 +1,7 @@
 package eu.robojob.irscw.ui.admin.device;
 
 import eu.robojob.irscw.ui.admin.AbstractSubMenuPresenter;
+import eu.robojob.irscw.ui.admin.device.cnc.CNCMachineConfigurePresenter;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
 public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView, DeviceAdminPresenter> {
@@ -28,6 +29,7 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		basicStackPlateConfigurePresenter.setTextFieldListener(listener);
 		cncMachineConfigurePresenter.setTextFieldListener(listener);
 		cncMachineClampingsPresenter.setTextFieldListener(listener);
+		prageDeviceConfigurePresenter.setTextFieldListener(listener);
 	}
 
 	@Override
