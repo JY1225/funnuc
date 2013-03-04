@@ -4,7 +4,9 @@ import java.util.Set;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -13,6 +15,7 @@ import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.irscw.ui.general.AbstractFormView;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 
@@ -24,10 +27,13 @@ public class CNCMachineGeneralView extends GridPane {
 	private FullTextField fulltxtIp;
 	private Label lblPort;
 	private IntegerTextField itxtPort;
-	private Label lblUserFrame;
-	private ComboBox<String> cbbUserFrame;
 	private Label lblStatus;
 	private Label lblStatusVal;
+	private Label lblNameWA1;
+	private FullTextField fulltxtNameWA1;
+	private Label lblUserFrameWA1;
+	private ComboBox<String> cbbUserFrameWA1;
+	private Button btnSave;
 		
 	private ObservableList<String> userFrameNames;
 	
@@ -36,9 +42,15 @@ public class CNCMachineGeneralView extends GridPane {
 	private static final String PORT = "CNCMachineGeneralView.port";
 	private static final String USERFRAME = "CNCMachineGeneralView.userFrame";
 	private static final String STATUS = "CNCMachineGeneralView.status";
+	private static final String SAVE = "CNCMachineGeneralView.save";
+	private static final String WA1 = "CNCMachineGeneralView.wa1";
 	
 	private static final String STATUS_CONNECTED = "CNCMachineGeneralView.statusConnected";
 	private static final String STATUS_DISCONNECTED = "CNCMachineGeneralView.statusDisconnected";
+	
+	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
+	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
+	private static final double BTN_WIDTH = BTN_HEIGHT * 3;
 	
 	public CNCMachineGeneralView() {
 		this.userFrameNames = FXCollections.observableArrayList();
@@ -58,12 +70,19 @@ public class CNCMachineGeneralView extends GridPane {
 		lblPort = new Label(Translator.getTranslation(PORT));
 		itxtPort = new IntegerTextField(5);
 		itxtPort.setPrefSize(50, UIConstants.TEXT_FIELD_HEIGHT);
-		lblUserFrame = new Label(Translator.getTranslation(USERFRAME));
-		cbbUserFrame = new ComboBox<String>();
-		cbbUserFrame.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
-		cbbUserFrame.setItems(userFrameNames);
 		lblStatus = new Label(Translator.getTranslation(STATUS));
 		lblStatusVal = new Label();
+		
+		lblNameWA1 = new Label(Translator.getTranslation(WA1));
+		fulltxtNameWA1 = new FullTextField(100);
+		lblUserFrameWA1 = new Label(Translator.getTranslation(USERFRAME));
+		cbbUserFrameWA1 = new ComboBox<String>();
+		cbbUserFrameWA1.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
+		cbbUserFrameWA1.setItems(userFrameNames);
+		
+		btnSave = AbstractFormView.createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, null);
+		GridPane.setHalignment(btnSave, HPos.CENTER);
+		
 		int row = 0;
 		int column = 0;
 		add(lblName, column++, row);
@@ -75,11 +94,16 @@ public class CNCMachineGeneralView extends GridPane {
 		add(lblPort, column++, row);
 		add(itxtPort, column++, row);
 		column = 0; row++;
-		add(lblUserFrame, column++, row);
-		add(cbbUserFrame, column++, row);
-		column = 0; row++;
 		add(lblStatus, column++, row);
 		add(lblStatusVal, column++, row);
+		column = 0; row++;
+		add(lblNameWA1, column++, row);
+		add(fulltxtNameWA1, column++, row);
+		column = 0; row++;
+		add(lblUserFrameWA1, column++, row);
+		add(cbbUserFrameWA1, column++, row);
+		column = 0; row++;
+		add(btnSave, column++, row, 2, 1);
 	}
 	
 	public void refresh(final Set<String> userFrameNames, final AbstractCNCMachine cncMachine) {
@@ -93,7 +117,8 @@ public class CNCMachineGeneralView extends GridPane {
 		} else {
 			lblStatusVal.setText(Translator.getTranslation(STATUS_DISCONNECTED));	
 		}
-		cbbUserFrame.valueProperty().set(cncMachine.getWorkAreas().get(0).getUserFrame().getName());
+		fulltxtNameWA1.setText(cncMachine.getWorkAreas().get(0).getName());
+		cbbUserFrameWA1.valueProperty().set(cncMachine.getWorkAreas().get(0).getUserFrame().getName());
 	}
 	
 	public void setTextFieldListener(final TextInputControlListener listener) {

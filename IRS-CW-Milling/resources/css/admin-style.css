@@ -59,3 +59,11 @@
 
 .cnc-contentpane {
 }
+
+.bottom-right {
+	-fx-background-insets: 0 0 0 0, 0 0 0 0, 0 0 0 0;
+}
+
+.bottom-left, .left-menu, .content-bottom {
+	-fx-background-insets: 0 0 0 0, 0 1 0 0, 0 1 0 0;
+}
