@@ -188,7 +188,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	}
 	
 	public void setProcessActive(final boolean active) {
-		btnReset.setDisable(active);
+		btnRestart.setDisable(active);
 		btnToHome.setDisable(active);
 		btnToChange.setDisable(active);
 	}

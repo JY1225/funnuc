@@ -38,7 +38,7 @@
 	-fx-font-smoothing-type: lcd;
 }
 
-.left-menu-button:disabled {
+.left-menu-button:disabled .left-menu-item-label{
 	-fx-opacity: 0.5;
 }
 
@@ -90,6 +90,14 @@
 .pop-up-btn-pressed, .pop-up-btn:pressed {	
 	-fx-background-color: #3c4147, #292d32, #3c4147, #2a2d31;
 	-fx-effect: innershadow(two-pass-box, #070707, 10, 0.0, 0, 2);
+}
+
+.pop-up-btn:disabled {
+	-fx-opacity: 1;
+}
+
+.pop-up-btn:disabled Text {
+	-fx-opacity: 0.5;
 }
 
 .warning-bg-icon {
