@@ -194,6 +194,7 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 				currentStepIndexSecondary++;
 			}
 		}
+		
 		if (currentStepIndexMain == processFlow.getProcessSteps().size()) {
 			currentStepIndexMain = currentStepIndexSecondary;
 			currentStepIndexSecondary = 0;
@@ -209,9 +210,10 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		// the first process has priority so it can finish first
 		// sometimes, a special optimization is possible: when the first process does a pick and the second process's next step is 
 		// a put in the same WorkArea, this should be allowed, before the first process does it's put
-		
+		//TODO Set put in machine always free after!
 		if (!isRunning.get(mainProcId)) {
 			AbstractProcessStep step = processFlow.getStep(currentStepIndexMain);
+			
 			if ((step instanceof PutStep) && (currentStepIndexMain > 0)) {
 				PickStep previousStep = (PickStep) processFlow.getStep(currentStepIndexMain - 1);	// before put step is always a pick step
 				AbstractProcessStep stepSecondProcess = processFlow.getStep(currentStepIndexSecondary);
@@ -219,6 +221,11 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 					PutStep secondProcessPutStep = (PutStep) stepSecondProcess;
 					if (secondProcessPutStep.getRobotSettings().getWorkArea().equals(previousStep.getDeviceSettings().getWorkArea())) {
 						AbstractProcessStep stepSecond = processFlow.getStep(currentStepIndexSecondary);
+						secondProcessPutStep.getRobotSettings().setFreeAfter(true);
+						if (processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 2) {
+							// next time: last piece: free after pick is true!
+							previousStep.getRobotSettings().setFreeAfter(true);
+						}
 						ProcessStepExecutionThread exThread2 = new ProcessStepExecutionThread(stepSecond, secondProcId, this);
 						isRunning.put(secondProcId, true);
 						ThreadManager.submit(exThread2);

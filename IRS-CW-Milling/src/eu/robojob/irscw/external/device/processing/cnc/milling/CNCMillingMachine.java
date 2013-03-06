@@ -30,6 +30,8 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 public class CNCMillingMachine extends AbstractCNCMachine {
 
 	private CNCMachineSocketCommunication cncMachineCommunication;
+	private float clampingWidthR;
+	private float clampingLengthR;
 		
 	private static final int PREPARE_PUT_TIMEOUT = 2 * 60 * 1000;
 	private static final int PREPARE_PICK_TIMEOUT = 2 * 60 * 1000;
@@ -40,10 +42,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int CYCLE_FINISHED_TIMEOUT = Integer.MAX_VALUE;
 	private static final int SLEEP_TIME_AFTER_RESET = 2500;
 	
-	//FIXME uit database halen!
-	private static final float LENGTH_CLAMP_LOCATION_R = 0;
-	private static final float WIDTH_CLAMP_LOCATION_R = 90;
-	
 	private static final String EXCEPTION_CYCLE_NOT_STARTED = "CNCMillingMachine.cycleNotStarted";
 	private static final String EXCEPTION_CYCLE_END_TIMEOUT = "CNCMillingMachine.cycleEndTimeout";
 	private static final String EXCEPTION_PREPARE_PICK_TIMEOUT = "CNCMillingMachine.preparePickTimeout";
@@ -51,16 +49,18 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final String EXCEPTION_UNCLAMP_TIMEOUT = "CNCMillingMachine.unclampTimeout";
 	private static final String EXCEPTION_CLAMP_TIMEOUT = "CNCMillingMachine.clampTimeout";
 			
-	public CNCMillingMachine(final String name, final Set<Zone> zones, final SocketConnection socketConnection) {
+	public CNCMillingMachine(final String name, final Set<Zone> zones, final SocketConnection socketConnection, final float clampingLengthR, final float clampingWidthR) {
 		super(name, zones);
+		this.clampingLengthR = clampingLengthR;
+		this.clampingWidthR = clampingWidthR;
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
 		// start monitoring thread at creation of this object
 		ThreadManager.submit(cncMachineMonitoringThread);
 	}
 	
-	public CNCMillingMachine(final String name, final SocketConnection socketConnection) {
-		this(name, new HashSet<Zone>(), socketConnection);
+	public CNCMillingMachine(final String name, final SocketConnection socketConnection, final float clampingLengthR, final float clampingWidthR) {
+		this(name, new HashSet<Zone>(), socketConnection, clampingLengthR, clampingWidthR);
 		
 	}
 	
@@ -280,9 +280,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			c.setR(c.getR() + LENGTH_CLAMP_LOCATION_R);
+			c.setR(c.getR() + clampingLengthR);
 		} else {
-			c.setR(c.getR() + WIDTH_CLAMP_LOCATION_R);
+			c.setR(c.getR() + clampingWidthR);
 		}
 		return c;
 	}
@@ -291,9 +291,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			c.setR(c.getR() + LENGTH_CLAMP_LOCATION_R);
+			c.setR(c.getR() + clampingLengthR);
 		} else {
-			c.setR(c.getR() + WIDTH_CLAMP_LOCATION_R);
+			c.setR(c.getR() + clampingWidthR);
 		}
 		return c;
 	}

@@ -102,13 +102,15 @@ public class DeviceMapper {
 		CNCMillingMachine cncMillingMachine = null;
 		if (results.next()) {
 			int deviceInterfaceId = results.getInt("DEVICEINTERFACE");
+			float clampingLengthR = results.getFloat("CLAMPING_LENGTH_R");
+			float clampingWidthR = results.getFloat("CLAMPING_WIDTH_R");
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICEINTERFACE WHERE ID = ?");
 			stmt2.setInt(1, deviceInterfaceId);
 			ResultSet results2 = stmt2.executeQuery();
 			if (results2.next()) {
 				int socketConnectionId = results2.getInt("SOCKETCONNECTION");
 				SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
-				cncMillingMachine = new CNCMillingMachine(name, zones, socketConnection);
+				cncMillingMachine = new CNCMillingMachine(name, zones, socketConnection, clampingLengthR, clampingWidthR);
 				cncMillingMachine.setId(id);
 			}
 		}
