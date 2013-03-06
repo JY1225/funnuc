@@ -13,9 +13,6 @@ public class StackingPosition {
 	private WorkPiece workPiece;
 	private WorkPieceOrientation orientation;
 	
-	private static final int HORIZONTAL_R = 90;
-	private static final int TILTED_R = 135;
-	
 	private List<StudPosition> studs;
 	
 	public StackingPosition(final Coordinates position, final WorkPiece workPiece, final WorkPieceOrientation orientation, final List<StudPosition> studs) {
@@ -23,21 +20,14 @@ public class StackingPosition {
 		this.workPiece = workPiece;
 		this.studs = studs;
 		this.orientation = orientation;
-		if (orientation == WorkPieceOrientation.TILTED) {
-			position.setR(TILTED_R);
-		} else if (orientation == WorkPieceOrientation.HORIZONTAL) {
-			position.setR(HORIZONTAL_R);
-		} else {
-			throw new IllegalArgumentException("Unkown orientation.");
-		}
 	}
 	
 	public StackingPosition(final Coordinates position, final WorkPiece workPiece, final WorkPieceOrientation orientation) {
 		this(position, workPiece, orientation, new ArrayList<StudPosition>());
 	}
 
-	public StackingPosition(final float horizontalPosition, final float verticalPosition, final WorkPiece workPiece, final WorkPieceOrientation orientation) {
-		this (new Coordinates(horizontalPosition, verticalPosition, 0, 0, 0, 0), workPiece, orientation);
+	public StackingPosition(final float horizontalPosition, final float verticalPosition, final float r, final WorkPiece workPiece, final WorkPieceOrientation orientation) {
+		this (new Coordinates(horizontalPosition, verticalPosition, 0, 0, 0, r), workPiece, orientation);
 	}
 	
 	public Coordinates getPosition() {

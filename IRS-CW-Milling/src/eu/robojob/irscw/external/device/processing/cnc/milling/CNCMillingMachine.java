@@ -40,6 +40,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int CYCLE_FINISHED_TIMEOUT = Integer.MAX_VALUE;
 	private static final int SLEEP_TIME_AFTER_RESET = 2500;
 	
+	//FIXME uit database halen!
 	private static final float LENGTH_CLAMP_LOCATION_R = 0;
 	private static final float WIDTH_CLAMP_LOCATION_R = 90;
 	
@@ -279,9 +280,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			c.setR(LENGTH_CLAMP_LOCATION_R);
+			c.setR(c.getR() + LENGTH_CLAMP_LOCATION_R);
 		} else {
-			c.setR(WIDTH_CLAMP_LOCATION_R);
+			c.setR(c.getR() + WIDTH_CLAMP_LOCATION_R);
 		}
 		return c;
 	}
@@ -290,9 +291,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			c.setR(LENGTH_CLAMP_LOCATION_R);
+			c.setR(c.getR() + LENGTH_CLAMP_LOCATION_R);
 		} else {
-			c.setR(WIDTH_CLAMP_LOCATION_R);
+			c.setR(c.getR() + WIDTH_CLAMP_LOCATION_R);
 		}
 		return c;
 	}

@@ -25,6 +25,9 @@ public class RoboJobPreloader extends BorderPane {
 	}
 	
 	private void build() {
+		this.setPrefSize(800, 600);
+		this.setMinSize(800, 600);
+		this.setMaxSize(800, 600);
 		getStyleClass().add(CSS_PRELOADER);
 		image = new Image("img/robojoblogo.png", 402, 52, true, true);
 		imageVw = new ImageView(image);

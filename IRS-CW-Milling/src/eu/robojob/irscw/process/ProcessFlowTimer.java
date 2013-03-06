@@ -1,8 +1,8 @@
 package eu.robojob.irscw.process;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,20 +33,20 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	public ProcessFlowTimer(final ProcessFlow processFlow) {
 		this.processFlow = processFlow;
 		processFlow.addListener(this);
-		stepDurations = new HashMap<AbstractProcessStep, Long>();
-		waitingTimeAfterStepDurations = new HashMap<AbstractProcessStep, Long>();
+		stepDurations = new ConcurrentHashMap<AbstractProcessStep, Long>();
+		waitingTimeAfterStepDurations = new ConcurrentHashMap<AbstractProcessStep, Long>();
 		timeWon = 0;
 		reset();
 	}
 	
-	private void reset() {
+	private synchronized void reset() {
 		logger.debug("Timer of [" + processFlow + "] reset.");
-		startingTimeCurrentSteps = new HashMap<Integer, Long>();
-		startingTimePauseAfterSteps = new HashMap<Integer, Long>();
-		otherTimeCurrentSteps = new HashMap<Integer, Long>();
-		lastActiveSteps = new HashMap<Integer, AbstractProcessStep>();
-		startingTimeCurrentProcessFlow = new HashMap<Integer, Long>();
-		otherTimeCurrentProcessFlow = new HashMap<Integer, Long>();
+		startingTimeCurrentSteps = new ConcurrentHashMap<Integer, Long>();
+		startingTimePauseAfterSteps = new ConcurrentHashMap<Integer, Long>();
+		otherTimeCurrentSteps = new ConcurrentHashMap<Integer, Long>();
+		lastActiveSteps = new ConcurrentHashMap<Integer, AbstractProcessStep>();
+		startingTimeCurrentProcessFlow = new ConcurrentHashMap<Integer, Long>();
+		otherTimeCurrentProcessFlow = new ConcurrentHashMap<Integer, Long>();
 	}
 	
 	public long getProcessFlowDuration() {
@@ -81,10 +81,12 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	}
 	
 	@Override
-	public void modeChanged(final ModeChangedEvent e) {
+	public synchronized void modeChanged(final ModeChangedEvent e) {
 		switch (e.getMode()) {
 			case STOPPED:
-				reset();
+				for (int workPiece: this.startingTimeCurrentSteps.keySet()) {
+					stopProcessTimeMeasurement(workPiece);
+				}
 				break;
 			case READY:
 			case PAUSED:
@@ -147,12 +149,12 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		}
 	}
 	
-	private void startProcessTimeMeasurement(final int workPieceId) {
+	private synchronized void startProcessTimeMeasurement(final int workPieceId) {
 		otherTimeCurrentProcessFlow.remove(workPieceId);
 		startingTimeCurrentProcessFlow.put(workPieceId, System.currentTimeMillis());
 	}
 	
-	private void stopProcessTimeMeasurement(final int workPieceId) {
+	private synchronized void stopProcessTimeMeasurement(final int workPieceId) {
 		startingTimeCurrentProcessFlow.remove(workPieceId);
 		otherTimeCurrentProcessFlow.remove(workPieceId);
 	}
@@ -161,7 +163,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		return timeWon;
 	}
 	
-	public long getProcessTimeMeasurement(final int workPieceId) {
+	public synchronized long getProcessTimeMeasurement(final int workPieceId) {
 		long totalTime = 0;
 		if (otherTimeCurrentProcessFlow.containsKey(workPieceId)) {
 			totalTime = otherTimeCurrentProcessFlow.get(workPieceId);
@@ -172,11 +174,11 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		return totalTime;
 	}
 	
-	private void startStepTimeMeasurement(final int workPieceId, final AbstractProcessStep step) {
+	private synchronized void startStepTimeMeasurement(final int workPieceId, final AbstractProcessStep step) {
 		startingTimeCurrentSteps.put(workPieceId, System.currentTimeMillis());
 	}
 	
-	private void stopStepTimeMeasurement(final int workPieceId, final AbstractProcessStep step) {
+	private synchronized void stopStepTimeMeasurement(final int workPieceId, final AbstractProcessStep step) {
 		long totalTime = 0;
 		if (otherTimeCurrentSteps.containsKey(workPieceId)) {
 			totalTime = otherTimeCurrentSteps.get(workPieceId);
@@ -190,19 +192,19 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		stepDurations.put(step, totalTime);
 	}
 	
-	private void startPauseTimeMeasurement(final int workPieceId, final AbstractProcessStep step) {
+	private synchronized void startPauseTimeMeasurement(final int workPieceId, final AbstractProcessStep step) {
 		lastActiveSteps.put(workPieceId, step);
 		startingTimePauseAfterSteps.put(workPieceId, System.currentTimeMillis());
 	}
 	
-	private void stopPauseTimeMeasurement(final int workPieceId) {
+	private synchronized void stopPauseTimeMeasurement(final int workPieceId) {
 		if (startingTimePauseAfterSteps.containsKey(workPieceId) && lastActiveSteps.containsKey(workPieceId)) {
 			waitingTimeAfterStepDurations.put(lastActiveSteps.get(workPieceId), System.currentTimeMillis() - startingTimePauseAfterSteps.get(workPieceId));
 			startingTimePauseAfterSteps.remove(workPieceId);
 		}
 	}
 	
-	private void pauseTimeMeasurements() {
+	private synchronized void pauseTimeMeasurements() {
 		// handle pause for step timing
 		for (int workPieceId : startingTimeCurrentSteps.keySet()) {
 			long otherTime = 0;
@@ -225,7 +227,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		}
 	}
 	
-	private void continueTimeMeasurements() {
+	private synchronized void continueTimeMeasurements() {
 		for (int workPieceId : otherTimeCurrentSteps.keySet()) {
 			startingTimeCurrentSteps.put(workPieceId, System.currentTimeMillis());
 		}
@@ -234,14 +236,14 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		}
 	}
 	
-	public long getStepTime(final AbstractProcessStep step) {
+	public synchronized long getStepTime(final AbstractProcessStep step) {
 		if (stepDurations.containsKey(step)) {
 			return stepDurations.get(step);
 		}
 		return -1;
 	}
 	
-	public long getTimeInCurrentStep(final int workPieceId) {
+	public synchronized long getTimeInCurrentStep(final int workPieceId) {
 		if (!(otherTimeCurrentSteps.containsKey(workPieceId) || startingTimeCurrentSteps.containsKey(workPieceId))) {
 			return -1;
 		}

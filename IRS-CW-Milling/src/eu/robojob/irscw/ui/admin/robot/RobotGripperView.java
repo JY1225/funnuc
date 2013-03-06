@@ -23,6 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.Gripper;
+import eu.robojob.irscw.external.robot.GripperBody;
 import eu.robojob.irscw.external.robot.GripperHead;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IconFlowSelector;
@@ -47,6 +48,7 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 	private static final String EDIT = "RobotGripperView.edit";
 	private static final String NEW = "RobotGripperView.new";
 	private static final String SAVE = "RobotGripperView.save";
+	private static final String REMOVE = "RobotGripperView.remove";
 	
 	private static final String EDIT_PATH = "M 15.71875,0 3.28125,12.53125 0,20 7.46875,16.71875 20,4.28125 C 20,4.28105 19.7362,2.486 18.625,1.375 17.5134,0.2634 15.71875,0 15.71875,0 z M 3.53125,12.78125 c 0,0 0.3421,-0.0195 1.0625,0.3125 C 4.85495,13.21295 5.1112,13.41 5.375,13.625 l 0.96875,0.96875 c 0.2258,0.2728 0.4471,0.5395 0.5625,0.8125 C 7.01625,15.66565 7.25,16.5 7.25,16.5 L 3,18.34375 C 2.5602,17.44355 2.55565,17.44 1.65625,17 l 1.875,-4.21875 z";
 	private static final String ADD_PATH = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 8.75 5 L 11.25 5 L 11.25 8.75 L 15 8.75 L 15 11.25 L 11.25 11.25 L 11.25 15 L 8.75 15 L 8.75 11.25 L 5 11.25 L 5 8.75 L 8.75 8.75 L 8.75 5 z";
@@ -58,6 +60,7 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 	private static final double IMG_HEIGHT = 90;
 	
 	private static final String CSS_CLASS_GRIPPER_IMAGE_EDIT = "gripper-image-edit";
+	private static final String CSS_CLASS_DELETE_BUTTON = "delete-button";
 	
 	private Button btnCreateNew;
 	private Button btnEdit;
@@ -73,9 +76,14 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 	private Region spacer;
 	private Label lblFixedHeight;
 	private CheckBox cbFixedHeight;
-
+	private CheckBox cbA;
+	private CheckBox cbB;
+	private CheckBox cbC;
+	private CheckBox cbD;
+	
 	private FileChooser fileChooser;
 	private Button btnSave;
+	private Button btnRemove;
 	
 	private String imagePath;
 	
@@ -161,6 +169,14 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		spacer.setPrefWidth(15);
 		lblFixedHeight = new Label(Translator.getTranslation(FIXED_HEIGHT));
 		cbFixedHeight = new CheckBox();
+		cbA = new CheckBox("A");
+		cbB = new CheckBox("B");
+		cbC = new CheckBox("C");
+		cbD = new CheckBox("D");
+		cbA.setDisable(true);
+		cbB.setDisable(true);
+		cbC.setDisable(true);
+		cbD.setDisable(true);
 		gpEditor.setAlignment(Pos.CENTER);
 		int column2 = 0;
 		int row2 = 0;
@@ -173,7 +189,13 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		gpEditor.add(spacer, column2++, row2);
 		gpEditor.add(lblFixedHeight, column2++, row2);
 		gpEditor.add(cbFixedHeight, column2++, row2);
-	
+		HBox hboxHeads = new HBox();
+		hboxHeads.getChildren().addAll(cbA, cbB, cbC, cbD);
+		hboxHeads.setSpacing(20);
+		column2 = 0;
+		row2++;
+		gpEditor.add(hboxHeads, column2++, row2, 5, 1);
+		
 		column = 0;
 		row++;
 		
@@ -182,8 +204,20 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		hbox.setPrefWidth(USE_COMPUTED_SIZE);
 		hbox.setAlignment(Pos.CENTER);
 		
+		btnSave = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				getPresenter().saveData(fulltxtName.getText(), imagePath, Float.parseFloat(numtxtHeight.getText()), cbFixedHeight.selectedProperty().get(),
+						cbA.selectedProperty().get(), cbB.selectedProperty().get(), cbC.selectedProperty().get(), cbD.selectedProperty().get());
+			}
+		});
 		
-		btnSave = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, null);
+		btnRemove = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(REMOVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				getPresenter().removeGripper();
+			}
+		});
 		
 		vboxForm = new VBox();
 		vboxForm.getChildren().addAll(hbox, btnSave);
@@ -236,6 +270,11 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		cbFixedHeight.setSelected(gripper.isFixedHeight());
 		imageVw.setImage(new Image(gripper.getImageUrl(), IMG_WIDTH, IMG_HEIGHT, true, true));
 		imagePath = gripper.getImageUrl();
+		GripperBody body = robot.getGripperBody();
+		cbA.setSelected((body.getGripperHeadByName("A") != null) && (body.getGripperHeadByName("A").getGripperById(gripper.getId()) != null));
+		cbB.setSelected((body.getGripperHeadByName("B") != null) && (body.getGripperHeadByName("B").getGripperById(gripper.getId()) != null));
+		cbC.setSelected((body.getGripperHeadByName("C") != null) && (body.getGripperHeadByName("C").getGripperById(gripper.getId()) != null));
+		cbD.setSelected((body.getGripperHeadByName("D") != null) && (body.getGripperHeadByName("D").getGripperById(gripper.getId()) != null));
 	}
 	
 	public void reset() {
@@ -247,6 +286,10 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		btnEdit.setDisable(true);
 		fulltxtName.setText("");
 		numtxtHeight.setText("");
+		cbA.setSelected(true);
+		cbB.setSelected(true);
+		cbC.setSelected(false);
+		cbD.setSelected(false);
 		imageVw.setImage(null);
 		imagePath = null;
 		validate();

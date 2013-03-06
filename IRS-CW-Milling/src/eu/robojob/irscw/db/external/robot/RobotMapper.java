@@ -161,4 +161,81 @@ public class RobotMapper {
 		}
 		return gripper;
 	}
+	
+	public void updateRobotData(final FanucRobot robot, final String name, final String ip, final int port, 
+			final boolean hasGripperHeadA, final boolean hasGripperHeadB, final boolean hasGripperHeadC, final boolean hasGripperHeadD) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		if (!robot.getName().equals(name)) {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE ROBOT SET NAME = ? WHERE ID = ?");
+			stmt.setString(1, name);
+			stmt.setInt(2, robot.getId());
+			stmt.executeUpdate();
+			robot.setName(name);
+		}
+		if ((!robot.getRobotSocketCommunication().getExternalCommunicationThread().getSocketConnection().getIpAddress().equals(ip)) 
+				|| (robot.getRobotSocketCommunication().getExternalCommunicationThread().getSocketConnection().getPortNumber() != port)
+				|| (!robot.getRobotSocketCommunication().getExternalCommunicationThread().getSocketConnection().getName().equals(name))) {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE SOCKETCONNECTION SET IPADDRESS = ?, PORTNR = ?, NAME = ? WHERE ID = ?");
+			stmt.setString(1, ip);
+			stmt.setInt(2, port);
+			stmt.setString(3, name);
+			stmt.setInt(4, robot.getRobotSocketCommunication().getExternalCommunicationThread().getSocketConnection().getId());
+			stmt.executeUpdate();
+			robot.getRobotSocketCommunication().getExternalCommunicationThread().getSocketConnection().setName(name);
+			robot.getRobotSocketCommunication().getExternalCommunicationThread().getSocketConnection().setPortNumber(port);
+			robot.getRobotSocketCommunication().getExternalCommunicationThread().getSocketConnection().setIpAddress(ip);
+			robot.getRobotSocketCommunication().getExternalCommunicationThread().getSocketConnection().disconnect();
+		}
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+		// TODO updating of gripper heads
+	}
+	
+	public void updateGripperData(final Gripper gripper, final String name, final String imgUrl, final float height, final boolean fixedHeight, 
+			final boolean headA, final boolean headB, final boolean headC, final boolean headD) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		if ((!gripper.getName().equals(name)) || (!gripper.getImageUrl().equals(imgUrl)) || (gripper.getHeight() != height)
+				|| (gripper.isFixedHeight() != fixedHeight)) {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE GRIPPER SET HEIGHT = ?, FIXEDHEIGHT = ?, NAME = ?, IMAGE_URL = ? WHERE ID = ?");
+			stmt.setFloat(1, height);
+			stmt.setBoolean(2, fixedHeight);
+			stmt.setString(3, name);
+			stmt.setString(4, imgUrl);
+			stmt.setInt(5, gripper.getId());
+			stmt.executeUpdate();
+			gripper.setName(name);
+			gripper.setImageUrl(imgUrl);
+			gripper.setHeight(height);
+			gripper.setFixedHeight(fixedHeight);
+		}
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+		// TODO updating of gripper head compatibility
+	}
+	
+	public void saveGripper(final Gripper gripper, final GripperHead... heads) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO GRIPPER (NAME, IMAGE_URL, HEIGHT, FIXEDHEIGHT) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		stmt.setString(1, gripper.getName());
+		stmt.setString(2, gripper.getImageUrl());
+		stmt.setFloat(3, gripper.getHeight());
+		stmt.setBoolean(4, gripper.isFixedHeight());
+		try {
+			stmt.executeUpdate();
+			ResultSet resultSet = stmt.getGeneratedKeys();
+			if (resultSet.next()) {
+				gripper.setId(resultSet.getInt(1));
+				for (GripperHead head : heads) {
+					PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO GRIPPERHEAD_GRIPPER (GRIPPERHEAD, GRIPPER) VALUES (?, ?)");
+					stmt2.setInt(1, head.getId());
+					stmt2.setInt(2, gripper.getId());
+					stmt2.executeUpdate();
+				}
+				ConnectionManager.getConnection().commit();
+			}
+		} catch (SQLException e) {
+			ConnectionManager.getConnection().rollback();
+		}
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
 }

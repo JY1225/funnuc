@@ -14,6 +14,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	private VBox vBoxMenuItems;
 	
 	private Button btnReset;
+	private Button btnRestart;
 	private Button btnToHome;
 	private Button btnToChange;
 	
@@ -28,6 +29,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	private static final int HEIGHT = AMOUNT_OF_ITEMS * BUTTON_HEIGHT;
 	
 	private static final String RESET = "RobotPopUpView.reset";
+	private static final String RESTART = "RobotPopUpView.restart";
 	private static final String TO_HOME = "RobotPopUpView.toHome";
 	private static final String TO_CHANGE = "RobotPopUpView.toChange";
 	
@@ -61,6 +63,18 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 			}
 		});
 		vBoxMenuItems.getChildren().add(btnReset);
+		
+		btnRestart = new Button();
+		btnRestart.setGraphic(new Text(Translator.getTranslation(RESTART)));
+		btnRestart.setPrefSize(WIDTH, BUTTON_HEIGHT);
+		btnRestart.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
+		btnRestart.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				getPresenter().restartClicked();
+			}
+		});
+		vBoxMenuItems.getChildren().add(btnRestart);
 		
 		btnToHome = new Button();
 		btnToHome.setGraphic(new Text(Translator.getTranslation(TO_HOME)));
@@ -168,6 +182,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btn10.setDisable(!connected);
 		btn100.setDisable(!connected);
 		btnReset.setDisable(!connected);
+		btnRestart.setDisable(!connected);
 		btnToChange.setDisable(!connected);
 		btnToHome.setDisable(!connected);
 	}

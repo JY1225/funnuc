@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.irscw.external.communication.socket.ExternalSocketCommunication;
 import eu.robojob.irscw.external.communication.socket.SocketConnection;
 import eu.robojob.irscw.external.communication.socket.SocketDisconnectedException;
@@ -15,6 +18,7 @@ public class RobotSocketCommunication extends ExternalSocketCommunication {
 
 	private StringBuffer command;
 	private AbstractRobot robot;
+	private static Logger logger = LogManager.getLogger(RobotSocketCommunication.class.getName());
 		
 	public RobotSocketCommunication(final SocketConnection socketConnection, final AbstractRobot fanucRobot) {
 		super(socketConnection);
@@ -48,6 +52,9 @@ public class RobotSocketCommunication extends ExternalSocketCommunication {
 	public synchronized List<String> readValues(final int commandId, final int ackId, final int timeout) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
 		getExternalCommunicationThread().writeString(commandId + ";");
 		String responseString = awaitResponse(ackId + ";", timeout);
+		if (commandId == 70) {
+			logger.debug("Wrote [" + commandId + ";], and response was [" + responseString + "].");
+		}
 		return parseResult(responseString.substring((ackId + ";").length()));
 	}
 	
@@ -65,6 +72,7 @@ public class RobotSocketCommunication extends ExternalSocketCommunication {
 				break;
 			}
 			List<String> positionValues = readValues(RobotConstants.COMMAND_ASK_POSITION, RobotConstants.RESPONSE_ASK_POSITION, getDefaultWaitTimeout());
+			logger.debug("Position values: [" + positionValues + "].");
 			float x = Float.parseFloat(positionValues.get(0));
 			float y = Float.parseFloat(positionValues.get(1));
 			float z = Float.parseFloat(positionValues.get(2));

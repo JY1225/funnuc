@@ -26,6 +26,8 @@ public class BasicStackPlateLayout {
 	private float verticalHoleDistance;
 	private float interferenceDistance;
 	private float overFlowPercentage;
+	private float horizontalR;
+	private float tiltedR;
 	private WorkPieceOrientation orientation;
 
 	private StudPosition[][] studPositions;
@@ -38,7 +40,8 @@ public class BasicStackPlateLayout {
 	private static Logger logger = LogManager.getLogger(BasicStackPlateLayout.class.getName());
 		
 	public BasicStackPlateLayout(final int horizontalHoleAmount, final int verticalHoleAmount, final float holeDiameter, final float studDiameter, final float horizontalPadding,
-			final float verticalPaddingTop, final float verticalPaddingBottom, final float horizontalHoleDistance, final float interferenceDistance, final float overflowPercentage) {
+			final float verticalPaddingTop, final float verticalPaddingBottom, final float horizontalHoleDistance, final float interferenceDistance, final float overflowPercentage,
+				final float horizontalR, final float tiltedR) {
 		this.horizontalHoleAmount = horizontalHoleAmount;
 		this.verticalHoleAmount = verticalHoleAmount;
 		this.holeDiameter = holeDiameter;
@@ -50,6 +53,8 @@ public class BasicStackPlateLayout {
 		this.verticalHoleDistance = 2 * horizontalHoleDistance;		// this is always the case with this Basic Stack Plate (so tilted layout results in a 45° angle)
 		this.interferenceDistance = interferenceDistance;
 		this.overFlowPercentage = overflowPercentage;
+		this.horizontalR = horizontalR;
+		this.tiltedR = tiltedR;
 		// initialize stud positions
 		this.studPositions = new StudPosition[verticalHoleAmount][horizontalHoleAmount];
 		for (int i = 0; i < verticalHoleAmount; i++) {
@@ -71,6 +76,22 @@ public class BasicStackPlateLayout {
 		return horizontalPadding * 2 + (horizontalHoleAmount - 1) * horizontalHoleDistance;
 	}
 	
+	public float getHorizontalR() {
+		return horizontalR;
+	}
+
+	public void setHorizontalR(final float horizontalR) {
+		this.horizontalR = horizontalR;
+	}
+
+	public float getTiltedR() {
+		return tiltedR;
+	}
+
+	public void setTiltedR(final float tiltedR) {
+		this.tiltedR = tiltedR;
+	}
+
 	private void clearStuds() {
 		for (StudPosition[] vertPos : studPositions) {
 			for (StudPosition pos : vertPos) {
@@ -219,7 +240,7 @@ public class BasicStackPlateLayout {
 				}
 				
 				boolean corner = false;
-				StackingPosition stackingPosition = new StackingPosition(horizontalPos, verticalPos, null, WorkPieceOrientation.HORIZONTAL);
+				StackingPosition stackingPosition = new StackingPosition(horizontalPos, verticalPos, horizontalR, null, WorkPieceOrientation.HORIZONTAL);
 				
 				// condition one: only two vertical studs and not enough remaining width (only one leftVerticalExtraIndex)
 				// condition two: only two horizontal studs, or: only three horizontal studs and not enough remaining length (only two rightHorizontalExtraIndex)
@@ -351,7 +372,7 @@ public class BasicStackPlateLayout {
 				float x = horizontalPadding + (horizontalIndex * horizontalHoleDistance) + h;
 				float y = verticalPaddingBottom + (verticalIndex * verticalHoleDistance) + v;
 				
-				StackingPosition position = new StackingPosition(x, y, null, WorkPieceOrientation.TILTED);
+				StackingPosition position = new StackingPosition(x, y, tiltedR, null, WorkPieceOrientation.TILTED);
 				
 				if (needsCorners) {
 					StudPosition studPos = new StudPosition(horizontalIndex, verticalIndex, studPositions[verticalIndex][horizontalIndex].getCenterPosition(), StudType.TILTED_CORNER);

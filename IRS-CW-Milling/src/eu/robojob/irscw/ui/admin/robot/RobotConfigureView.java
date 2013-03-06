@@ -1,5 +1,7 @@
 package eu.robojob.irscw.ui.admin.robot;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -73,7 +75,13 @@ public class RobotConfigureView extends AbstractFormView<RobotConfigurePresenter
 		spacer = new Region();
 		spacer.setPrefWidth(25);
 		add(spacer, column++, row);
-		btnSave = createButton(SAVE_PATH, "form-button", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, null);
+		btnSave = createButton(SAVE_PATH, "form-button", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				getPresenter().saveData(fulltxtName.getText(), fulltxtIpAddress.getText(), Integer.parseInt(itxtPort.getText()), cbGripperHeadA.selectedProperty().get(), 
+						cbGripperHeadB.selectedProperty().get(), cbGripperHeadC.selectedProperty().get(), cbGripperHeadD.selectedProperty().get());
+			}
+		});
 		add(btnSave, column++, row);
 		column = 0; 
 		row++;

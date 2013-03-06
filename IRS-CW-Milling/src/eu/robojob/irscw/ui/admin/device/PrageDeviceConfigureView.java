@@ -123,11 +123,13 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	public void refresh() {
 		fulltxtName.setText(prageDevice.getName());
 		cbbUserFrame.valueProperty().set(prageDevice.getWorkAreas().get(0).getUserFrame().getName());
-		Coordinates relClampingPosition = prageDevice.getWorkAreas().get(0).getActiveClamping().getRelativePosition();
-		numtxtX.setText("" + relClampingPosition.getX());
-		numtxtY.setText("" + relClampingPosition.getY());
-		numtxtZ.setText("" + relClampingPosition.getZ());
-		numtxtR.setText("" + relClampingPosition.getR());
+		if (prageDevice.getWorkAreas().get(0).getActiveClamping() != null) {
+			Coordinates relClampingPosition = prageDevice.getWorkAreas().get(0).getActiveClamping().getRelativePosition();
+			numtxtX.setText("" + relClampingPosition.getX());
+			numtxtY.setText("" + relClampingPosition.getY());
+			numtxtZ.setText("" + relClampingPosition.getZ());
+			numtxtR.setText("" + relClampingPosition.getR());
+		}
 	}
 
 }

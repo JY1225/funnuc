@@ -85,8 +85,10 @@ public class DeviceMapper {
 			float horizontalHoleDistance = results.getFloat("HORIZONTALHOLEDISTANCE");
 			float interferenceDistance = results.getFloat("INTERFERENCEDISTANCE");
 			float overflowPercentage = results.getFloat("OVERFLOWPERCENTAGE");
+			float horizontalR = results.getFloat("HORIZONTAL_R");
+			float tiltedR = results.getFloat("TILTED_R");
 			BasicStackPlateLayout layout = new BasicStackPlateLayout(horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, horizontalPadding, verticalPaddingTop, 
-					verticalPaddingBottom, horizontalHoleDistance, interferenceDistance, overflowPercentage);
+					verticalPaddingBottom, horizontalHoleDistance, interferenceDistance, overflowPercentage, horizontalR, tiltedR);
 			stackPlate = new BasicStackPlate(name, zones, layout);
 			stackPlate.setId(id);
 		}

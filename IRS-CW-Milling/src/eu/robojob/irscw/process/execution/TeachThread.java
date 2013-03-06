@@ -63,7 +63,7 @@ public class TeachThread extends Thread {
 					if ((nextStep != null) && (nextStep instanceof InterventionStep) && (getProcessFlow().getCurrentIndex(WORKPIECE_ID) < (processFlow.getProcessSteps().size() - 2))) {
 						nextStep = processFlow.getProcessSteps().get(2 + getProcessFlow().getCurrentIndex(WORKPIECE_ID));
 					}
-					if (step instanceof AbstractTransportStep) {
+					/*if (step instanceof AbstractTransportStep) {
 						((AbstractTransportStep) step).getRobotSettings().setFreeAfter(true);
 						if ((nextStep != null) && (nextStep instanceof AbstractTransportStep) && (step instanceof AbstractTransportStep)) {
 							AbstractTransportStep trStep = (AbstractTransportStep) step;
@@ -74,7 +74,7 @@ public class TeachThread extends Thread {
 								trStep.getRobotSettings().setFreeAfter(true);
 							}
 						}
-					}
+					}*/
 					if (!(step instanceof InterventionStep)) {
 						if (step instanceof AbstractTransportStep) {
 							((AbstractTransportStep) step).executeStepTeached(WORKPIECE_ID);
@@ -87,10 +87,10 @@ public class TeachThread extends Thread {
 				}
 				if (running) {
 					// everything went as it should
-					processFlow.setMode(Mode.READY);
-					getProcessFlow().setCurrentIndex(WORKPIECE_ID, 0);
 					processFlow.incrementFinishedAmount();
-					this.running = false;
+					processFlow.setCurrentIndex(WORKPIECE_ID, 0);
+					processFlow.setMode(Mode.READY);
+					setRunning(false);
 				} else {
 					// flow got interrupted
 					processFlow.setMode(Mode.STOPPED);
@@ -142,6 +142,7 @@ public class TeachThread extends Thread {
 				device.interruptCurrentAction();
 			}
 			processFlow.initialize();
+			indicateStopped();
 		}
 	}
 
@@ -163,5 +164,10 @@ public class TeachThread extends Thread {
 	
 	public ProcessFlow getProcessFlow() {
 		return processFlow;
+	}
+	
+	@Override
+	public String toString() {
+		return "TeachThread [" + processFlow + "].";
 	}
 }

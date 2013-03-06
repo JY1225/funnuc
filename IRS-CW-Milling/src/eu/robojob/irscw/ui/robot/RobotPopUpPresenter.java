@@ -43,6 +43,16 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	public void resetClicked() {
 		if (robot.isConnected()) {
 			try {
+				robot.reset();
+			} catch (AbstractCommunicationException | InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void restartClicked() {
+		if (robot.isConnected()) {
+			try {
 				robot.restartProgram();
 			} catch (AbstractCommunicationException | InterruptedException e) {
 				e.printStackTrace();

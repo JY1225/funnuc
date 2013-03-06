@@ -16,6 +16,9 @@ public class MainView extends BorderPane {
 	
 	public MainView() {
 		super();
+		this.setPrefSize(800, 600);
+		this.setMinSize(800, 600);
+		this.setMaxSize(800, 600);
 		contentPane = new StackPane();
 		this.setCenter(contentPane);
 		contentPane.setAlignment(Pos.TOP_LEFT);

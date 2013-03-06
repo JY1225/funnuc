@@ -66,7 +66,7 @@ public abstract class ExternalSocketCommunication {
 			}
 			if (getExternalCommunicationThread().hasNextMessage()) {
 				String response = getExternalCommunicationThread().getNextMessage();
-				response = response.replaceAll("[^A-Za-z0-9,;\\.]", "");
+				response = response.replaceAll("[^A-Za-z0-9,;\\.\\-]", "");
 				if (response.startsWith(command)) {
 					return response;
 				} else {

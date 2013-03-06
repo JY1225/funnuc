@@ -44,6 +44,7 @@ import eu.robojob.irscw.external.robot.fanuc.FanucRobotPickSettings;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobotPutSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.DeviceStep;
 import eu.robojob.irscw.process.InterventionStep;
 import eu.robojob.irscw.process.PickAfterWaitStep;
@@ -267,6 +268,16 @@ public class ProcessFlowMapper {
 			stmt2.setInt(1, step.getId());
 			stmt2.setInt(2, iStep.getFrequency());
 			stmt2.executeUpdate();
+		}
+		if (step instanceof AbstractTransportStep) {
+			AbstractTransportStep transportStep = (AbstractTransportStep) step;
+			if (transportStep.getRobotSettings().getGripperHead().getGripper().isFixedHeight()) {
+				generalMapper.saveCoordinates(transportStep.getRelativeTeachedOffset());
+				PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO STEP_TEACHEDCOORDINATES (STEP, COORDINATES) VALUES (?, ?)");
+				stmt2.setInt(1, step.getId());
+				stmt2.setInt(2, transportStep.getRelativeTeachedOffset().getId());
+				stmt2.executeUpdate();
+			}
 		}
 	}
 	
@@ -539,10 +550,22 @@ public class ProcessFlowMapper {
 		return processSteps;
 	}
 	
+	public Coordinates getRelativeTeachedCoordinates(final int stepId) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM STEP_TEACHEDCOORDINATES WHERE STEP = ?");
+		stmt.setInt(1, stepId);
+		ResultSet results = stmt.executeQuery();
+		if (results.next()) {
+			int coordinates = results.getInt("COORDINATES");
+			return generalMapper.getCoordinatesById(coordinates);
+		}
+		return null;
+	}
+	
 	public PickStep getPickStep(final int id) throws SQLException {
 		DevicePickSettings deviceSettings = getDevicePickSettingsByStepId(id);
 		RobotPickSettings robotSettings = getRobotPickSettingsByStepId(id, deviceSettings.getWorkArea());
 		PickStep pickStep = new PickStep(deviceSettings, robotSettings);
+		pickStep.setRelativeTeachedOffset(getRelativeTeachedCoordinates(id));
 		return pickStep;
 	}
 	
@@ -550,6 +573,7 @@ public class ProcessFlowMapper {
 		DevicePickSettings deviceSettings = getDevicePickSettingsByStepId(id);
 		RobotPickSettings robotSettings = getRobotPickSettingsByStepId(id, deviceSettings.getWorkArea());
 		PickAfterWaitStep pickAfterWaitStep = new PickAfterWaitStep(deviceSettings, robotSettings);
+		pickAfterWaitStep.setRelativeTeachedOffset(getRelativeTeachedCoordinates(id));
 		return pickAfterWaitStep;
 	}
 	
@@ -557,6 +581,7 @@ public class ProcessFlowMapper {
 		DevicePutSettings deviceSettings = getDevicePutSettingsByStepId(id);
 		RobotPutSettings robotSettings = getRobotPutSettingsByStepId(id, deviceSettings.getWorkArea());
 		PutStep putStep = new PutStep(deviceSettings, robotSettings);
+		putStep.setRelativeTeachedOffset(getRelativeTeachedCoordinates(id));
 		return putStep;
 	}
 	
@@ -564,6 +589,7 @@ public class ProcessFlowMapper {
 		DevicePutSettings deviceSettings = getDevicePutSettingsByStepId(id);
 		RobotPutSettings robotSettings = getRobotPutSettingsByStepId(id, deviceSettings.getWorkArea());
 		PutAndWaitStep putAndWaitStep = new PutAndWaitStep(deviceSettings, robotSettings);
+		putAndWaitStep.setRelativeTeachedOffset(getRelativeTeachedCoordinates(id));
 		return putAndWaitStep;
 	}
 	
