@@ -90,7 +90,7 @@ public class GeneralMapper {
 				coordinates.setId(keys.getInt(1));
 			}
 		} else {
-			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE COORDINATES SET X = ?, Y = ?, Z = ?, W = ?, P = ?, R = ? WHERE ID = ?", Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE COORDINATES SET X = ?, Y = ?, Z = ?, W = ?, P = ?, R = ? WHERE ID = ?");
 			stmt.setFloat(1, coordinates.getX());
 			stmt.setFloat(2, coordinates.getY());
 			stmt.setFloat(3, coordinates.getZ());
