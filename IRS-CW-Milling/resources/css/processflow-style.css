@@ -101,9 +101,8 @@
 }
 
 .process-flow-view {
-	-fx-background-color: #52555c, #ededed;
-	-fx-background-insets: 0, 1 0 0 0;
-	-fx-effect: innershadow(two-pass-box, #959595, 5, 0, 0, 3);
+	-fx-background-color: #ededed;
+	-fx-background-insets: 0;
 }
 
 

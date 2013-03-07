@@ -67,8 +67,11 @@ public class RobotGripperPresenter extends AbstractFormPresenter<RobotGripperVie
 		getView().refresh();
 	}
 	
-	public void removeGripper() {
-		
+	public void deleteGripper() {
+		robotManager.deleteGripper(selectedGripper);
+		selectedGripper = null;
+		editMode = false;
+		getView().refresh();
 	}
 	
 }

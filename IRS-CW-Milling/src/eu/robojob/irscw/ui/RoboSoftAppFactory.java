@@ -282,6 +282,7 @@ public class RoboSoftAppFactory {
 			if (processFlow == null) {
 				processFlow = processFlowManager.createNewProcessFlow();
 			}
+			processFlowManager.setActiveProcessFlow(processFlow);
 		}
 		return processFlow;
 	}

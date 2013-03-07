@@ -63,9 +63,9 @@ public class TeachThread extends Thread {
 					if ((nextStep != null) && (nextStep instanceof InterventionStep) && (getProcessFlow().getCurrentIndex(WORKPIECE_ID) < (processFlow.getProcessSteps().size() - 2))) {
 						nextStep = processFlow.getProcessSteps().get(2 + getProcessFlow().getCurrentIndex(WORKPIECE_ID));
 					}
-					/*if (step instanceof AbstractTransportStep) {
+					if (step instanceof AbstractTransportStep) {
 						((AbstractTransportStep) step).getRobotSettings().setFreeAfter(true);
-						if ((nextStep != null) && (nextStep instanceof AbstractTransportStep) && (step instanceof AbstractTransportStep)) {
+						/*if ((nextStep != null) && (nextStep instanceof AbstractTransportStep) && (step instanceof AbstractTransportStep)) {
 							AbstractTransportStep trStep = (AbstractTransportStep) step;
 							AbstractTransportStep trNextStep = (AbstractTransportStep) nextStep;
 							if (trStep.getRobotSettings().getWorkArea().getUserFrame().equals(trNextStep.getRobotSettings().getWorkArea().getUserFrame())) {
@@ -73,8 +73,8 @@ public class TeachThread extends Thread {
 							} else {
 								trStep.getRobotSettings().setFreeAfter(true);
 							}
-						}
-					}*/
+						}*/
+					}
 					if (!(step instanceof InterventionStep)) {
 						if (step instanceof AbstractTransportStep) {
 							((AbstractTransportStep) step).executeStepTeached(WORKPIECE_ID);

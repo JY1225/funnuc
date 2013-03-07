@@ -8,6 +8,7 @@
 	-fx-background-color: #292d32, #2d2f36, #5a606b, #42454e, linear-gradient(#656c7b 0%, #424750 50%, #3d4148 50% , #4c505a 100%);
 	-fx-background-insets: 0 0 0 0, 0 0 1 0, 0 0 1 0, 0 0 1 0, 0 0 2 0;
 	-fx-padding: 0;
+	-fx-effect: dropshadow(gaussian, rgba(50, 59, 68, 0.8), 6, 0.0, 0, 2);
 }
 
 .header-button {
@@ -35,7 +36,6 @@
 	-fx-fill: white;
     -fx-text-alignment: center;
     -fx-padding: 0 0 0 5;
-    -fx-effect: dropshadow(one-pass-box, #232528, 1, 0.0, 0, 1);
 }
 
 .header-button Text {
@@ -44,7 +44,6 @@
 	-fx-font-weight: bold;
 	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
-	-fx-effect: dropshadow(one-pass-box, #232528, 1, 0.0, 0, 1);
 }
 
 .bar {

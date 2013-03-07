@@ -271,7 +271,7 @@ public class ProcessFlowMapper {
 		}
 		if (step instanceof AbstractTransportStep) {
 			AbstractTransportStep transportStep = (AbstractTransportStep) step;
-			if (transportStep.getRobotSettings().getGripperHead().getGripper().isFixedHeight()) {
+			if (transportStep.getRobotSettings().getGripperHead().getGripper().isFixedHeight() && (transportStep.getRelativeTeachedOffset() != null)) {
 				generalMapper.saveCoordinates(transportStep.getRelativeTeachedOffset());
 				PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO STEP_TEACHEDCOORDINATES (STEP, COORDINATES) VALUES (?, ?)");
 				stmt2.setInt(1, step.getId());

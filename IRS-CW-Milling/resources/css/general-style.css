@@ -1,8 +1,8 @@
 .bottompane { }
 
 .bottom-right {
-	-fx-background-color: #53555a, #708286, linear-gradient(#67696f 0%, #616369 100%);
-	-fx-background-insets: 0 0 0 0, 1 0 0 0, 1 0 0 0;
+	-fx-background-color: #3b3f46, #708286, linear-gradient(#67696f 0%, #616369 100%);
+	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
 }
 
 .bottom-left, .left-menu, .content-bottom {
@@ -12,7 +12,7 @@
 
 .content-bottom {
 	/* #6c707e, #585b64); */
-	-fx-background-color: #52555c, #7c7f84, #585b64;
+	-fx-background-color: #3b3f46, #7c7f84, #585b64;
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 1 0 0 0;
 }
 

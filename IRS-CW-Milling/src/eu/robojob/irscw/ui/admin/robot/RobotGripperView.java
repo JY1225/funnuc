@@ -53,6 +53,7 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 	private static final String EDIT_PATH = "M 15.71875,0 3.28125,12.53125 0,20 7.46875,16.71875 20,4.28125 C 20,4.28105 19.7362,2.486 18.625,1.375 17.5134,0.2634 15.71875,0 15.71875,0 z M 3.53125,12.78125 c 0,0 0.3421,-0.0195 1.0625,0.3125 C 4.85495,13.21295 5.1112,13.41 5.375,13.625 l 0.96875,0.96875 c 0.2258,0.2728 0.4471,0.5395 0.5625,0.8125 C 7.01625,15.66565 7.25,16.5 7.25,16.5 L 3,18.34375 C 2.5602,17.44355 2.55565,17.44 1.65625,17 l 1.875,-4.21875 z";
 	private static final String ADD_PATH = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 8.75 5 L 11.25 5 L 11.25 8.75 L 15 8.75 L 15 11.25 L 11.25 11.25 L 11.25 15 L 8.75 15 L 8.75 11.25 L 5 11.25 L 5 8.75 L 8.75 8.75 L 8.75 5 z";
 	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
+	private static final String DELETE_ICON_PATH = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 5 8.75 L 15 8.75 L 15 11.25 L 5 11.25 L 5 8.75 z";
 
 	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
 	private static final double BTN_WIDTH = BTN_HEIGHT * 3;
@@ -60,7 +61,6 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 	private static final double IMG_HEIGHT = 90;
 	
 	private static final String CSS_CLASS_GRIPPER_IMAGE_EDIT = "gripper-image-edit";
-	private static final String CSS_CLASS_DELETE_BUTTON = "delete-button";
 	
 	private Button btnCreateNew;
 	private Button btnEdit;
@@ -83,7 +83,7 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 	
 	private FileChooser fileChooser;
 	private Button btnSave;
-	private Button btnRemove;
+	private Button btnDelete;
 	
 	private String imagePath;
 	
@@ -211,23 +211,25 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 						cbA.selectedProperty().get(), cbB.selectedProperty().get(), cbC.selectedProperty().get(), cbD.selectedProperty().get());
 			}
 		});
+		btnSave.getStyleClass().add("save-btn");
 		
-		btnRemove = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(REMOVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+		btnDelete = createButton(DELETE_ICON_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(REMOVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				getPresenter().removeGripper();
+				getPresenter().deleteGripper();
 			}
 		});
+		btnDelete.getStyleClass().add("delete-btn");
 		
 		vboxForm = new VBox();
-		vboxForm.getChildren().addAll(hbox, btnSave);
+		vboxForm.getChildren().addAll(hbox, btnSave, btnDelete);
 		vboxForm.setAlignment(Pos.CENTER);
 		vboxForm.setSpacing(VGAP);
 		
 		column = 0;
 		row++;
 		add(vboxForm, column++, row);
-		setMargin(vboxForm, new Insets(50, 0, 0, 0));
+		setMargin(vboxForm, new Insets(30, 0, 0, 0));
 
 		GridPane.setHalignment(vboxForm, HPos.CENTER);
 	}
@@ -299,6 +301,7 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 	public void showFormNew() {
 		setFormVisible(true);
 		btnEdit.setDisable(true);
+		btnDelete.setVisible(false);
 		btnCreateNew.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		validate();
 	}
@@ -306,6 +309,7 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 	public void showFormEdit() {
 		setFormVisible(true);
 		btnCreateNew.setDisable(true);
+		btnDelete.setVisible(true);
 		btnEdit.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		validate();
 	}

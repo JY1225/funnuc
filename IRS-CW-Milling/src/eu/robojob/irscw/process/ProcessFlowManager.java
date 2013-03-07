@@ -31,6 +31,7 @@ public class ProcessFlowManager {
 	private ProcessFlowMapper processFlowMapper;
 	private DeviceManager deviceManager; 
 	private RobotManager robotManager;
+	private ProcessFlow activeProcessFlow;
 	
 	private static Logger logger = LogManager.getLogger(ProcessFlowManager.class.getName());
 	
@@ -38,6 +39,11 @@ public class ProcessFlowManager {
 		this.processFlowMapper = processFlowMapper;
 		this.deviceManager = deviceManager;
 		this.robotManager = robotManager;
+		this.robotManager.setProcessFlowManager(this);
+	}
+	
+	public void setActiveProcessFlow(final ProcessFlow processFlow) {
+		this.activeProcessFlow = processFlow;
 	}
 	
 	public ProcessFlow getLastProcessFlow() {
@@ -174,5 +180,21 @@ public class ProcessFlowManager {
 			logger.error(e);
 			e.printStackTrace();
 		}
+	}
+	
+	public void deleteProcessFlow(final ProcessFlow processFlow) {
+		try {
+			processFlowMapper.deleteProcessFlow(processFlow);
+			if (processFlow.equals(activeProcessFlow)) {
+				activeProcessFlow.setId(0);
+			}
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+	
+	public ProcessFlow getActiveProcessFlow() {
+		return this.activeProcessFlow;
 	}
 }

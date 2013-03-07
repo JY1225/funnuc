@@ -235,7 +235,27 @@ public class RobotMapper {
 			}
 		} catch (SQLException e) {
 			ConnectionManager.getConnection().rollback();
+			throw e;
+		} finally {
+			ConnectionManager.getConnection().setAutoCommit(true);
 		}
-		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void deleteGripper(final Gripper gripper) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM GRIPPERHEAD_GRIPPER WHERE GRIPPER = ?");
+		stmt.setInt(1, gripper.getId());
+		stmt.executeUpdate();
+		try {
+			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("DELETE FROM GRIPPER WHERE ID = ?");
+			stmt2.setInt(1, gripper.getId());
+			stmt2.executeUpdate();
+			ConnectionManager.getConnection().commit();
+		} catch (SQLException e) {
+			ConnectionManager.getConnection().rollback();
+			throw e;
+		} finally {
+			ConnectionManager.getConnection().setAutoCommit(true);
+		}
 	}
 }
