@@ -21,7 +21,7 @@ public class NumericTextField extends AbstractTextField<Float> {
 
 	@Override
 	public String getMatchingExpression() {
-		return "^[0-9]*\\.?[0-9]*$";
+		return "^[-]?[0-9]*\\.?[0-9]*$";
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class NumericTextField extends AbstractTextField<Float> {
 		DecimalFormatSymbols custom = new DecimalFormatSymbols();
 		custom.setDecimalSeparator(DECIMAL_SEPERATOR);
 		formatter.setDecimalFormatSymbols(custom);
-		if (!this.getText().equals("")) {
+		if (!this.getText().equals("") && !this.getText().equals(".") && !this.getText().equals("-")) {
 			setText(formatter.format(Float.valueOf(this.getText())));
 		} else {
 			setText(formatter.format(Float.valueOf(EMPTY_VALUE)));
@@ -40,7 +40,7 @@ public class NumericTextField extends AbstractTextField<Float> {
 
 	@Override
 	public Float convertString(final String text) {
-		if (text.equals("")) {
+		if (text.equals("") || (text.equals("-"))) {
 			return 0f;
 		} else {
 			return Float.valueOf(text);

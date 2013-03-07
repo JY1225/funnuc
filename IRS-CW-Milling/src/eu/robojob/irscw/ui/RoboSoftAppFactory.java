@@ -53,6 +53,7 @@ import eu.robojob.irscw.ui.configure.transport.TransportMenuFactory;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView.KeyboardType;
+import eu.robojob.irscw.ui.controls.keyboard.NegativeNumericKeyboardView;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardView;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
@@ -217,6 +218,12 @@ public class RoboSoftAppFactory {
 		return numericKeyboardPresenter;
 	}
 	
+	public NumericKeyboardPresenter getNegativeNumericKeyboardPresenter() {
+		NegativeNumericKeyboardView numericKeyboardView = new NegativeNumericKeyboardView();
+		NumericKeyboardPresenter numericKeyboardPresenter = new NumericKeyboardPresenter(numericKeyboardView);
+		return numericKeyboardPresenter;
+	}
+	
 	public ProcessConfigurePresenter getProcessConfigurePresenter() {
 		if (processConfigurationPresenter == null) {
 			ProcessConfigureView processConfigurationView = new ProcessConfigureView();
@@ -304,7 +311,7 @@ public class RoboSoftAppFactory {
 	private AdminPresenter getAdminPresenter() {
 		if (adminPresenter == null) {
 			AdminView view = new AdminView();
-			adminPresenter = new AdminPresenter(view, getMainMenuPresenter(), getKeyboardPresenter(), getNumericKeyboardPresenter());
+			adminPresenter = new AdminPresenter(view, getMainMenuPresenter(), getKeyboardPresenter(), getNegativeNumericKeyboardPresenter());
 		}
 		return adminPresenter;
 	}

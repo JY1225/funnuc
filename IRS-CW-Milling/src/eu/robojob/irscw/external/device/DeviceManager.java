@@ -16,6 +16,7 @@ import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
+import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.UserFrame;
 
 public class DeviceManager {
@@ -146,6 +147,27 @@ public class DeviceManager {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	public void updateUserFrame(final UserFrame userFrame, final String name, final int number, final float zSafeDistance, 
+			final float x, final float y, final float z, final float w, final float p, final float r) {
+		try {
+			deviceMapper.updateUserFrame(userFrame, name, number, zSafeDistance, x, y, z, w, p, r);
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+	
+	public void addUserFrame(final String name, final int number, final float zSafeDistance, final float x, final float y, final float z,
+			final float w, final float p, final float r) {
+		UserFrame userFrame = new UserFrame(number, name, zSafeDistance, new Coordinates(x, y, z, w, p, r));
+		try {
+			deviceMapper.saveUserFrame(userFrame);
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
 		}
 	}
 }

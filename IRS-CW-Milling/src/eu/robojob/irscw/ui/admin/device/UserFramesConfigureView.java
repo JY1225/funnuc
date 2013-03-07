@@ -101,6 +101,8 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 				}
 			}
 		});
+		cbbUfs.setItems(userFrameNames);
+
 		HBox hboxButtons = new HBox();
 		btnEdit = createButton(EDIT_PATH, null, Translator.getTranslation(EDIT), BTN_WIDTH, BTN_HEIGHT, null);
 		btnEdit.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
@@ -248,7 +250,14 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		hboxCoordinates2.setPrefWidth(355);
 		hboxCoordinates2.setMaxWidth(355);
 		
-		btnSave = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, null);
+		btnSave = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().saveData(fulltxtName.getText(), Integer.parseInt(itxtNumber.getText()), Float.parseFloat(numtxtZSafe.getText()), 
+						Float.parseFloat(numTxtX.getText()), Float.parseFloat(numTxtY.getText()), Float.parseFloat(numTxtZ.getText()),
+						Float.parseFloat(numTxtW.getText()), Float.parseFloat(numTxtP.getText()), Float.parseFloat(numTxtR.getText()));
+			}
+		});
 		
 		vboxForm.getChildren().addAll(hboxName, hboxDetails, hboxCoordinates1, hboxCoordinates2, btnSave);
 		VBox.setMargin(btnSave, new Insets(15, 0, 0, 0));
@@ -285,7 +294,7 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 
 	@Override
 	public void refresh() {
-		cbbUfs.setItems(userFrameNames);
+		reset();
 	}
 	
 	public void userFrameSelected(final UserFrame userFrame) {

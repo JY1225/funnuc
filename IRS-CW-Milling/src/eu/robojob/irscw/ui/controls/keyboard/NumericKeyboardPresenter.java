@@ -15,6 +15,9 @@ public class NumericKeyboardPresenter extends AbstractKeyboardPresenter {
 		if (keyCode.equals(KeyCode.DECIMAL)) {
 			returnChar = '.';
 		}
+		if (keyCode.equals(KeyCode.MINUS)) {
+			returnChar = '-';
+		}
 		return returnChar;
 	}
 	

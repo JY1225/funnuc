@@ -201,4 +201,48 @@ public class DeviceMapper {
 	public Set<UserFrame> getAllUserFrames() throws SQLException {
 		return generalMapper.getAllUserFrames();
 	}
+	
+	public void updateUserFrame(final UserFrame userFrame, final String name, final int number, final float zSafeDistance, 
+			final float x, final float y, final float z, final float w, final float p, final float r) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		if ((!userFrame.getName().equals(name)) || (userFrame.getNumber() != number) || (userFrame.getzSafeDistance() != zSafeDistance) ||
+				(userFrame.getLocation().getX() != x) || (userFrame.getLocation().getY() != y) || (userFrame.getLocation().getZ() != z) 
+					|| (userFrame.getLocation().getW() != w) || (userFrame.getLocation().getP() != p) || (userFrame.getLocation().getR() != r)) {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE USERFRAME SET NAME = ?, NUMBER = ?, ZSAFE = ? WHERE ID = ?");
+			stmt.setString(1, name);
+			stmt.setInt(2, number);
+			stmt.setFloat(3, zSafeDistance);
+			stmt.setInt(4, userFrame.getId());
+			stmt.executeUpdate();
+			userFrame.setName(name);
+			userFrame.setNumber(number);
+			userFrame.setzSafeDistance(zSafeDistance);
+			userFrame.getLocation().setX(x);
+			userFrame.getLocation().setY(y);
+			userFrame.getLocation().setZ(z);
+			userFrame.getLocation().setW(w);
+			userFrame.getLocation().setP(p);
+			userFrame.getLocation().setR(r);
+			generalMapper.saveCoordinates(userFrame.getLocation());
+		}
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void saveUserFrame(final UserFrame userFrame) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		generalMapper.saveCoordinates(userFrame.getLocation());
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO USERFRAME (NUMBER, ZSAFE, LOCATION, NAME) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		stmt.setInt(1, userFrame.getNumber());
+		stmt.setFloat(2, userFrame.getzSafeDistance());
+		stmt.setInt(3, userFrame.getLocation().getId());
+		stmt.setString(4, userFrame.getName());
+		stmt.executeUpdate();
+		ResultSet resultSet = stmt.getGeneratedKeys();
+		if (resultSet.next()) {
+			userFrame.setId(resultSet.getInt(1));
+		}
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
 }
