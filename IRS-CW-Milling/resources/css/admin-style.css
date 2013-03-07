@@ -69,7 +69,7 @@
 }
 
 .delete-btn {
-	-fx-background-color: #6a3f3c, #6c1811, #fa766c, linear-gradient(#de4539 0%, #bb3b30 50%, #b7392f 50%, #c03b31 100%);
+	-fx-background-color: #6a3f3c, #6c1811, #fa766c, linear-gradient(#e94b3e 0%, #bb3b30 50%, #b7392f 50%, #c03b31 100%);
 }
 
 .delete-btn:pressed, .delete-btn.form-button-active {
@@ -79,11 +79,12 @@
 }
 
 .save-btn {
-	-fx-background-color: #3e577c, #163667, #6d9cfb, linear-gradient(#3572d8 0%, #316dbc 50%, #2f69b7 50%, #316ebf 100%);
+	-fx-background-color: #455067, #223865, #719cf6, linear-gradient(#396fde 0%, #265ac4 50%, #2558bf 50%, #2353b7 100%);
+	-fx-background-color: #45474b, #3a3d42, #8e8f94, linear-gradient(#75767d 0%, #5f6167 50%, #5b5e64 50%, #5f6167 100%);
 }
 
 .save-btn:pressed, .save-btn.form-button-active {
-	-fx-background-color: #8a8c90, #163667, #143f81, #143f81;
+	-fx-background-color: #8a8c90, #3a3d42, #36383d, #4e5055;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 3 2 3 2;
-	-fx-effect: innershadow(two-pass-box, #0b1d36, 8, 0.0, 0, 1);
+	-fx-effect: innershadow(two-pass-box, #28292b, 8, 0.0, 0, 1);
 }

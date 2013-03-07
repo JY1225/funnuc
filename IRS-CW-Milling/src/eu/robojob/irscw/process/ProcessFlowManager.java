@@ -185,9 +185,7 @@ public class ProcessFlowManager {
 	public void deleteProcessFlow(final ProcessFlow processFlow) {
 		try {
 			processFlowMapper.deleteProcessFlow(processFlow);
-			if (processFlow.equals(activeProcessFlow)) {
-				activeProcessFlow.setId(0);
-			}
+			processFlow.setId(0);
 		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();

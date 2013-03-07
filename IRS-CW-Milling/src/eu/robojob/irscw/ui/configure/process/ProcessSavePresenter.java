@@ -57,4 +57,10 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 			e.printStackTrace();
 		}
 	}
+	
+	public void deleteProcess() {
+		processFlowManager.deleteProcessFlow(processFlow);
+		processFlow.loadFromOtherProcessFlow(processFlowManager.getLastProcessFlow());
+		getMenuPresenter().configureProcess();
+	}
 }

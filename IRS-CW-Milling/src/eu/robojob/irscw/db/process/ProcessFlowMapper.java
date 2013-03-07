@@ -190,9 +190,13 @@ public class ProcessFlowMapper {
 			if (step instanceof RobotStep) {
 				AbstractRobotActionSettings<?> robotActionSettings = ((RobotStep) step).getRobotSettings();
 				if ((robotActionSettings.getSmoothPoint() != null) && (robotActionSettings.getSmoothPoint().getId() > 0)) {
-					PreparedStatement stmt5 = ConnectionManager.getConnection().prepareStatement("DELETE FROM COORDINATES WHERE ID = ?");
-					stmt5.setInt(1, robotActionSettings.getSmoothPoint().getId());
-					stmt5.executeUpdate();	
+					generalMapper.deleteCoordinates(robotActionSettings.getSmoothPoint());
+				}
+			}
+			if (step instanceof AbstractTransportStep) {
+				AbstractTransportStep trStep = (AbstractTransportStep) step;
+				if ((trStep.getRelativeTeachedOffset() != null) && (trStep.getRelativeTeachedOffset().getId() > 0)) {
+					generalMapper.deleteCoordinates(trStep.getRelativeTeachedOffset());
 				}
 			}
 		}

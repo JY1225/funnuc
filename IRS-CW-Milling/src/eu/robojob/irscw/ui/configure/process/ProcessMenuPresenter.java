@@ -48,6 +48,7 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	
 	public void newProcess() {
 		activeProcessFlow.loadFromOtherProcessFlow(processFlowManager.createNewProcessFlow());
+		configureProcess();
 	}
 	
 	public void processOpened() {

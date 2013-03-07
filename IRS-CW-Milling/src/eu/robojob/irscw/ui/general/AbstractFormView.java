@@ -26,6 +26,8 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	private static final String CSS_CLASS_FORM_BUTTON_PANEL = "form-button-panel";
 	
 	protected static final String CSS_CLASS_FORM_BUTTON = "form-button";
+	protected static final String CSS_CLASS_SAVE_BUTTON = "save-btn";
+	protected static final String CSS_CLASS_DELETE_BUTTON = "delete-btn";
 	
 	protected static final String CSS_CLASS_FORM_BUTTON_ACTIVE = "form-button-active";
 	protected static final String CSS_CLASS_FORM_LABEL = "form-label";
@@ -35,6 +37,7 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	protected static final String CSS_CLASS_FORM_BUTTON_BAR_RIGHT = "form-button-bar-right";
 	protected static final String CSS_CLASS_FORM_BUTTON_BAR_CENTER = "form-button-bar-center";
 	protected static final String CSS_CLASS_CENTER_TEXT = "center-text";
+	
 	
 	public AbstractFormView() {
 		super();

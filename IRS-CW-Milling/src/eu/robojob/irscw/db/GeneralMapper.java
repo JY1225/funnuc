@@ -75,6 +75,15 @@ public class GeneralMapper {
 		return coordinates;
 	}
 	
+	public void deleteCoordinates(final Coordinates coordinates) throws SQLException {
+		if (coordinates.getId() > 0) {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM COORDINATES WHERE ID = ?");
+			stmt.setInt(1, coordinates.getId());
+			stmt.executeUpdate();	
+			coordinates.setId(0);
+		}
+	}
+	
 	public void saveCoordinates(final Coordinates coordinates) throws SQLException {
 		if (coordinates.getId() <= 0) {
 			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO COORDINATES (X, Y, Z, W, P, R) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
