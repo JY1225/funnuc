@@ -31,10 +31,17 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 	}
 
 	public void changedGripperHead(final String gripperHeadName) {
-		logger.debug("Changed gripper head: " + gripperHeadName);
-		transportInfo.getPickStep().getRobotSettings().setGripperHead(transportInfo.getRobot().getGripperBody().getGripperHeadByName(gripperHeadName));
-		transportInfo.getPutStep().getRobotSettings().setGripperHead(transportInfo.getRobot().getGripperBody().getGripperHeadByName(gripperHeadName));
-		getView().refreshGrippers();
+		if (!gripperHeadName.equals(transportInfo.getPickStep().getRobotSettings().getGripperHead().getName())) {
+			logger.debug("Changed gripper head: " + gripperHeadName);
+			transportInfo.getPickStep().getRobotSettings().setGripperHead(transportInfo.getRobot().getGripperBody().getGripperHeadByName(gripperHeadName));
+			transportInfo.getPutStep().getRobotSettings().setGripperHead(transportInfo.getRobot().getGripperBody().getGripperHeadByName(gripperHeadName));
+			transportInfo.getRobot().loadRobotSettings(robotSettings);
+			transportInfo.getPickStep().setRelativeTeachedOffset(null);
+			transportInfo.getPutStep().setRelativeTeachedOffset(null);
+			transportInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(transportInfo.getPickStep().getProcessFlow(), transportInfo.getPickStep(), true));
+			transportInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(transportInfo.getPutStep().getProcessFlow(), transportInfo.getPutStep(), true));
+			getView().refreshGrippers();
+		}
 	}
 	
 	public void changedGripper(final Gripper gripper) {
