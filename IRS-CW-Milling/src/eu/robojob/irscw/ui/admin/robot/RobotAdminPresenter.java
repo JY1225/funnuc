@@ -1,11 +1,11 @@
 package eu.robojob.irscw.ui.admin.robot;
 
-import javafx.scene.Node;
 import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.SubContentPresenter;
 import eu.robojob.irscw.ui.admin.AdminPresenter;
 import eu.robojob.irscw.ui.admin.SubMenuAdminView;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.irscw.ui.general.AbstractFormView;
 
 public class RobotAdminPresenter implements SubContentPresenter {
 
@@ -37,7 +37,7 @@ public class RobotAdminPresenter implements SubContentPresenter {
 		return this.parent;
 	}
 	
-	public void setContentView(final Node node) {
+	public void setContentView(final AbstractFormView<?> node) {
 		getView().setContentView(node);
 	}
 	

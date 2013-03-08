@@ -65,6 +65,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	
 	@Override
 	public void refresh() {
+		getPresenter().updateUserFrames();
 		cncMachineGeneralView.refresh(userFrames, cncMachine);
 	}
 	

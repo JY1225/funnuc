@@ -25,11 +25,6 @@ public class PrageDeviceConfigurePresenter extends AbstractFormPresenter<PrageDe
 				break;
 			}
 		}
-		Set<String> userFrameNames = new HashSet<String>();
-		for (UserFrame frame : deviceManager.getAllUserFrames()) {
-			userFrameNames.add(frame.getName());
-		}
-		getView().setUserFrameNames(userFrameNames);
 		getView().refresh();
 	}
 
@@ -43,4 +38,11 @@ public class PrageDeviceConfigurePresenter extends AbstractFormPresenter<PrageDe
 		return false;
 	}
 
+	public void updateUserFrames() {
+		Set<String> userFrameNames = new HashSet<String>();
+		for (UserFrame frame : deviceManager.getAllUserFrames()) {
+			userFrameNames.add(frame.getName());
+		}
+		getView().setUserFrameNames(userFrameNames);
+	}
 }

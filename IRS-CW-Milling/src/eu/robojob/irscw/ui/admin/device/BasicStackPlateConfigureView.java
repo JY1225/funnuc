@@ -72,7 +72,6 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 
 	public BasicStackPlateConfigureView() {
 		userFrameNames = FXCollections.observableArrayList();
-		build();
 	}
 	
 	@Override
@@ -161,7 +160,6 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	
 	public void setBasicStackPlate(final BasicStackPlate basicStackPlate) {
 		this.basicStackPlate = basicStackPlate;
-		refresh();
 	}
 
 	@Override
@@ -181,6 +179,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 
 	@Override
 	public void refresh() {
+		getPresenter().updateUserFrames();
 		fulltxtName.setText(basicStackPlate.getName());
 		itxtHorizontalHoleAmount.setText(basicStackPlate.getLayout().getHorizontalHoleAmount() + "");
 		itxtVerticalHoleAmount.setText(basicStackPlate.getLayout().getVerticalHoleAmount() + "");

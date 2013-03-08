@@ -121,6 +121,7 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 
 	@Override
 	public void refresh() {
+		getPresenter().updateUserFrames();
 		fulltxtName.setText(prageDevice.getName());
 		cbbUserFrame.valueProperty().set(prageDevice.getWorkAreas().get(0).getUserFrame().getName());
 		if (prageDevice.getWorkAreas().get(0).getActiveClamping() != null) {

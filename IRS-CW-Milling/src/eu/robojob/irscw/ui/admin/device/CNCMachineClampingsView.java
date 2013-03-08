@@ -216,7 +216,6 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 
 	@Override
 	public void refresh() {
-		
 	}
 	
 	public void showFormEdit() {

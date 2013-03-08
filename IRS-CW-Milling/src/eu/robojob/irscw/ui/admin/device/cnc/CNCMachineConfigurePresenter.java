@@ -16,11 +16,6 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 	public CNCMachineConfigurePresenter(final CNCMachineConfigureView view, final DeviceManager deviceManager) {
 		super(view);
 		this.deviceManager = deviceManager;
-		Set<String> userFrameNames = new HashSet<String>();
-		for (UserFrame uf : deviceManager.getAllUserFrames()) {
-			userFrameNames.add(uf.getName());
-		}
-		getView().setUserFrameNames(userFrameNames);
 		getView().setCNCMachine(deviceManager.getCNCMachines().iterator().next());
 		getView().build();
 		getView().refresh();
@@ -38,6 +33,14 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 	
 	public void setTextFieldListener(final TextInputControlListener listener) {
 		getView().setTextFieldListener(listener);
+	}
+	
+	public void updateUserFrames() {
+		Set<String> userFrameNames = new HashSet<String>();
+		for (UserFrame uf : deviceManager.getAllUserFrames()) {
+			userFrameNames.add(uf.getName());
+		}
+		getView().setUserFrameNames(userFrameNames);
 	}
 
 }

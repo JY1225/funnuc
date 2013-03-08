@@ -5,6 +5,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
+import eu.robojob.irscw.ui.general.AbstractFormView;
 
 public class SubMenuAdminView extends HBox {
 
@@ -43,8 +44,9 @@ public class SubMenuAdminView extends HBox {
 		this.menuView.getChildren().add(menuView);
 	}
 	
-	public void setContentView(final Node contentView) {
+	public void setContentView(final AbstractFormView<?> contentView) {
 		this.contentView.getChildren().clear();
+		contentView.refresh();
 		this.contentView.getChildren().add(contentView);
 	}
 }

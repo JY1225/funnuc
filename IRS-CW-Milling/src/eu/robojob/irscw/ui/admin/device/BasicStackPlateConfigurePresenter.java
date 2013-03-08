@@ -17,11 +17,6 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 	public BasicStackPlateConfigurePresenter(final BasicStackPlateConfigureView view, final DeviceManager deviceManager) {
 		super(view);
 		this.deviceManager = deviceManager;
-		List<String> userFrameNames = new ArrayList<String>();
-		for (UserFrame uf : deviceManager.getAllUserFrames()) {
-			userFrameNames.add(uf.getName());
-		}
-		getView().setUserFrames(userFrameNames);
 		for (AbstractDevice device : deviceManager.getStackingFromDevices()) {
 			if (device instanceof BasicStackPlate) {
 				this.basicStackPlate = (BasicStackPlate) device;
@@ -29,6 +24,16 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 				break;
 			}
 		}
+		getView().build();
+		getView().refresh();
+	}
+	
+	public void updateUserFrames() {
+		List<String> userFrameNames = new ArrayList<String>();
+		for (UserFrame uf : deviceManager.getAllUserFrames()) {
+			userFrameNames.add(uf.getName());
+		}
+		getView().setUserFrames(userFrameNames);
 	}
 
 	@Override

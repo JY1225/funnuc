@@ -1,6 +1,6 @@
 package eu.robojob.irscw.ui.admin.device;
 
-import java.util.Set;
+import java.util.List;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -274,7 +274,7 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		
 	}
 	
-	public void setUserFrameNames(final Set<String> userFrameNames) {
+	public void setUserFrames(final List<String> userFrameNames) {
 		this.userFrameNames.clear();
 		this.userFrameNames.addAll(userFrameNames);
 	}
@@ -295,6 +295,7 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 	@Override
 	public void refresh() {
 		reset();
+		getPresenter().updateUserFrames();
 	}
 	
 	public void userFrameSelected(final UserFrame userFrame) {
