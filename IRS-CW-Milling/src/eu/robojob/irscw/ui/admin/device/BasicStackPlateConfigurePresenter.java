@@ -46,4 +46,9 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 		return false;
 	}
 
+	public void saveData(final String name, final String userFrameName, final int horizontalHoleAmount, final int verticalHoleAmount, 
+			final float holeDiameter, final float studDiameter, final float horizontalHoleDistance, final float horizontalPadding, 
+			final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage) {
+		
+	}
 }

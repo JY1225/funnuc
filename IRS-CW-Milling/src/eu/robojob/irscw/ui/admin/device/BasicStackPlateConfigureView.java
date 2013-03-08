@@ -4,6 +4,8 @@ import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -108,7 +110,16 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numtxtInterferenceDistance = new NumericTextField(5);
 		lblOverflowPercentage = new Label(Translator.getTranslation(OVERFLOWPERCENTAGE));
 		numtxtOverflowPercentage = new NumericTextField(5);
-		btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, null);
+		btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				getPresenter().saveData(fulltxtName.getText(), cbbUserFrames.valueProperty().get(), Integer.parseInt(itxtHorizontalHoleAmount.getText()), 
+						Integer.parseInt(itxtVerticalHoleAmount.getText()), Float.parseFloat(numtxtHoleDiameter.getText()), Float.parseFloat(numtxtStudDiameter.getText()),
+						Float.parseFloat(numtxtHorizontalHoleDistance.getText()), Float.parseFloat(numtxtHorizontalPadding.getText()), 
+						Float.parseFloat(numtxtVerticalPaddingTop.getText()), Float.parseFloat(numtxtVerticalPaddingBottom.getText()), 
+						Float.parseFloat(numtxtInterferenceDistance.getText()), Float.parseFloat(numtxtOverflowPercentage.getText()));
+			}
+		});
 
 		int row = 0;
 		int column = 0;
