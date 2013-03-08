@@ -202,6 +202,10 @@ public class DeviceMapper {
 		return generalMapper.getAllUserFrames();
 	}
 	
+	public UserFrame getUserFrameByName(final String name) throws SQLException {
+		return generalMapper.getUserFrameByName(name);
+	}
+	
 	public void updateUserFrame(final UserFrame userFrame, final String name, final int number, final float zSafeDistance, 
 			final float x, final float y, final float z, final float w, final float p, final float r) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
@@ -244,5 +248,58 @@ public class DeviceMapper {
 		}
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void updateWorkArea(final WorkArea workArea) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE WORKAREA SET ZONE = ?, USERFRAME = ?, NAME = ? WHERE ID = ?");
+		stmt.setInt(1, workArea.getZone().getId());
+		stmt.setInt(2, workArea.getUserFrame().getId());
+		stmt.setString(3, workArea.getName());
+		stmt.setInt(4, workArea.getId());
+		stmt.executeUpdate();
+	}
+	
+	public void updateBasicStackPlate(final BasicStackPlate basicStackPlate, final String name, final String userFrameName, final int horizontalHoleAmount, final int verticalHoleAmount, 
+			final float holeDiameter, final float studDiameter, final float horizontalHoleDistance, final float horizontalPadding, 
+			final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage,
+			final float horizontalR, final float tiltedR) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		if ((!basicStackPlate.getWorkAreas().get(0).getUserFrame().getName().equals(userFrameName))) {
+			UserFrame newUserFrame = getUserFrameByName(userFrameName);
+			basicStackPlate.getWorkAreas().get(0).setUserFrame(newUserFrame);
+			updateWorkArea(basicStackPlate.getWorkAreas().get(0));
+		}
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE STACKPLATE SET HORIZONTALHOLEAMOUNT = ?, VERTICALHOLEAMOUNT = ?, HOLEDIAMETER = ?, " +
+				"STUDDIAMETER = ?, HORIZONTALPADDING = ?, VERTICALPADDINGTOP = ?, VERTICALPADDINGBOTTOM = ?, HORIZONTALHOLEDISTANCE = ?, INTERFERENCEDISTANCE = ?, " +
+				" OVERFLOWPERCENTAGE = ?, HORIZONTAL_R = ?, TILTED_R = ? WHERE ID = ?");
+		stmt.setInt(1, horizontalHoleAmount);
+		stmt.setInt(2, verticalHoleAmount);
+		stmt.setFloat(3, holeDiameter);
+		stmt.setFloat(4, studDiameter);
+		stmt.setFloat(5, horizontalPadding);
+		stmt.setFloat(6, verticalPaddingTop);
+		stmt.setFloat(7, verticalPaddingBottom);
+		stmt.setFloat(8, horizontalHoleDistance);
+		stmt.setFloat(9, interferenceDistance);
+		stmt.setFloat(10, overflowPercentage);
+		stmt.setFloat(11, horizontalR);
+		stmt.setFloat(12, tiltedR);
+		stmt.setInt(13, basicStackPlate.getId());
+		stmt.execute();
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+		basicStackPlate.setName(name);
+		basicStackPlate.getLayout().setHorizontalHoleAmount(horizontalHoleAmount);
+		basicStackPlate.getLayout().setVerticalHoleAmount(verticalHoleAmount);
+		basicStackPlate.getLayout().setHoleDiameter(holeDiameter);
+		basicStackPlate.getLayout().setStudDiameter(studDiameter);
+		basicStackPlate.getLayout().setHorizontalPadding(horizontalPadding);
+		basicStackPlate.getLayout().setVerticalPadding(verticalPaddingTop);
+		basicStackPlate.getLayout().setVerticalPaddingBottom(verticalPaddingBottom);
+		basicStackPlate.getLayout().setHorizontalHoleDistance(horizontalHoleDistance);
+		basicStackPlate.getLayout().setInterferenceDistance(interferenceDistance);
+		basicStackPlate.getLayout().setOverflowPercentage(overflowPercentage);
+		basicStackPlate.getLayout().setHorizontalR(horizontalR);
+		basicStackPlate.getLayout().setTiltedR(tiltedR);
 	}
 }

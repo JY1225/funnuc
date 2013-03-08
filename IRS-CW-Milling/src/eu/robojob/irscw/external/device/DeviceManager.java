@@ -170,4 +170,17 @@ public class DeviceManager {
 			e.printStackTrace();
 		}
 	}
+	
+	public void updateBasicStackPlate(final BasicStackPlate basicStackPlate, final String name, final String userFrameName, final int horizontalHoleAmount, 
+			final int verticalHoleAmount, final float holeDiameter, final float studDiameter, final float horizontalHoleDistance, final float horizontalPadding, 
+			final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage,
+			final float horizontalR, final float tiltedR) {
+		try {
+			deviceMapper.updateBasicStackPlate(basicStackPlate, name, userFrameName, horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, 
+					horizontalHoleDistance, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, interferenceDistance, overflowPercentage, horizontalR, tiltedR);
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}		
+	}
 }

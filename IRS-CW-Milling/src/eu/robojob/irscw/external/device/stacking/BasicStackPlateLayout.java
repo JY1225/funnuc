@@ -480,6 +480,10 @@ public class BasicStackPlateLayout {
 	public float getVerticalPaddingBottom() {
 		return verticalPaddingBottom;
 	}
+	
+	public void setVerticalPaddingBottom(final float verticalPaddingBottom) {
+		this.verticalPaddingBottom = verticalPaddingBottom;
+	}
 
 	public void setVerticalPadding(final float verticalPadding) {
 		this.verticalPaddingTop = verticalPadding;
@@ -517,10 +521,18 @@ public class BasicStackPlateLayout {
 		return interferenceDistance;
 	}
 	
+	public void setInterferenceDistance(final float interferenceDistance) {
+		this.interferenceDistance = interferenceDistance;
+	}
+	
 	public float getOverflowPercentage() {
 		return overFlowPercentage;
 	}
 
+	public void setOverflowPercentage(final float overFlowPercentage) {
+		this.overFlowPercentage = overFlowPercentage;
+	}
+	
 	public void setStackingPositions(final List<StackingPosition> stackingPositions) {
 		this.stackingPositions = stackingPositions;
 	}

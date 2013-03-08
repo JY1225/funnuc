@@ -52,6 +52,25 @@ public class GeneralMapper {
 		return userFrame;
 	}
 	
+	public UserFrame getUserFrameByName(final String userFrameName) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM USERFRAME WHERE NAME = ?");
+		stmt.setString(1, userFrameName);
+		ResultSet results = stmt.executeQuery();
+		UserFrame uf = null;
+		if (results.next()) {
+			int id = results.getInt("ID");
+			int number = results.getInt("NUMBER");
+			float zsafe = results.getFloat("ZSAFE");
+			int locationId = results.getInt("LOCATION");
+			String name = results.getString("NAME");
+			Coordinates location = getCoordinatesById(locationId);
+			uf = new UserFrame(number, name, zsafe, location);
+			uf.setId(id);
+		}
+		stmt.close();
+		return uf;
+	}
+	
 	public Coordinates getCoordinatesById(final int coordinatesId) throws SQLException {
 		Coordinates coordinates = coordinatesBuffer.get(coordinatesId);
 		if (coordinates != null) {

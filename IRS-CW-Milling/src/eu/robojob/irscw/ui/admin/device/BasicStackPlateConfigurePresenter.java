@@ -48,7 +48,9 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 
 	public void saveData(final String name, final String userFrameName, final int horizontalHoleAmount, final int verticalHoleAmount, 
 			final float holeDiameter, final float studDiameter, final float horizontalHoleDistance, final float horizontalPadding, 
-			final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage) {
-		
+				final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage,
+					final float horizontalR, final float tiltedR) {
+		deviceManager.updateBasicStackPlate(basicStackPlate, name, userFrameName, horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, 
+				horizontalHoleDistance, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, interferenceDistance, overflowPercentage, horizontalR, tiltedR);
 	}
 }

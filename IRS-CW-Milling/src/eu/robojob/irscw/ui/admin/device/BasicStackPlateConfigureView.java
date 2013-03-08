@@ -49,6 +49,10 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	private NumericTextField numtxtInterferenceDistance;
 	private Label lblOverflowPercentage;
 	private NumericTextField numtxtOverflowPercentage;
+	private Label lblHorizontalR;
+	private NumericTextField numTxtHorizontalR;
+	private Label lblTiltedR;
+	private NumericTextField numTxtTiltedR;
 	private Region spacer;
 	private Button btnSave;
 	
@@ -67,11 +71,15 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	private static final String INTERFERENCEDISTANCE = "BasicStackPlateConfigureView.interferenceDistance";
 	private static final String OVERFLOWPERCENTAGE = "BasicStackPlateConfigureView.overflowPercentage";
 	private static final String SAVE = "BasicStackPlateConfigureView.save";
+	private static final String HORIZONTAL_R = "BasicStackPlateConfigureView.horizontalR";
+	private static final String TILTED_R = "BasicStackPlateConfigureView.tiltedR";
 	
 	private BasicStackPlate basicStackPlate;
 	
 	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
 
+	//FIXME add smooth
+	
 	public BasicStackPlateConfigureView() {
 		userFrameNames = FXCollections.observableArrayList();
 	}
@@ -110,6 +118,11 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numtxtInterferenceDistance = new NumericTextField(5);
 		lblOverflowPercentage = new Label(Translator.getTranslation(OVERFLOWPERCENTAGE));
 		numtxtOverflowPercentage = new NumericTextField(5);
+		lblHorizontalR = new Label(Translator.getTranslation(HORIZONTAL_R));
+		numTxtHorizontalR = new NumericTextField(5);
+		lblTiltedR = new Label(Translator.getTranslation(TILTED_R));
+		numTxtTiltedR = new NumericTextField(5);
+		
 		btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
@@ -117,7 +130,8 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 						Integer.parseInt(itxtVerticalHoleAmount.getText()), Float.parseFloat(numtxtHoleDiameter.getText()), Float.parseFloat(numtxtStudDiameter.getText()),
 						Float.parseFloat(numtxtHorizontalHoleDistance.getText()), Float.parseFloat(numtxtHorizontalPadding.getText()), 
 						Float.parseFloat(numtxtVerticalPaddingTop.getText()), Float.parseFloat(numtxtVerticalPaddingBottom.getText()), 
-						Float.parseFloat(numtxtInterferenceDistance.getText()), Float.parseFloat(numtxtOverflowPercentage.getText()));
+						Float.parseFloat(numtxtInterferenceDistance.getText()), Float.parseFloat(numtxtOverflowPercentage.getText()), 
+						Float.parseFloat(numTxtHorizontalR.getText()), Float.parseFloat(numTxtTiltedR.getText()));
 			}
 		});
 
@@ -159,6 +173,12 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		add(lblOverflowPercentage, column++, row);
 		add(numtxtOverflowPercentage, column++, row);
 		column = 0; row++;
+		add(lblHorizontalR, column++, row);
+		add(numTxtHorizontalR, column++, row);
+		column++;
+		add(lblTiltedR, column++, row);
+		add(numTxtTiltedR, column++, row);
+		column = 0; row++;
 		add(btnSave, column++, row, 5, 1);
 		GridPane.setHalignment(btnSave, HPos.CENTER);
 		GridPane.setMargin(btnSave, new Insets(15, 0, 0, 0));
@@ -186,6 +206,8 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numtxtHorizontalHoleDistance.setFocusListener(listener);
 		numtxtInterferenceDistance.setFocusListener(listener);
 		numtxtOverflowPercentage.setFocusListener(listener);
+		numTxtHorizontalR.setFocusListener(listener);
+		numTxtTiltedR.setFocusListener(listener);
 	}
 
 	@Override
@@ -202,6 +224,8 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numtxtHorizontalHoleDistance.setText(basicStackPlate.getLayout().getHorizontalHoleDistance() + "");
 		numtxtInterferenceDistance.setText(basicStackPlate.getLayout().getInterferenceDistance() + "");
 		numtxtOverflowPercentage.setText(basicStackPlate.getLayout().getOverflowPercentage() + "");
+		numTxtHorizontalR.setText(basicStackPlate.getLayout().getHorizontalR() + "");
+		numTxtTiltedR.setText(basicStackPlate.getLayout().getTiltedR() + "");
 		cbbUserFrames.valueProperty().set(basicStackPlate.getWorkAreas().get(0).getUserFrame().getName());
 	}
 
