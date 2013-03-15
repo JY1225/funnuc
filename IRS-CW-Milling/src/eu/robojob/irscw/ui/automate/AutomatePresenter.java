@@ -7,6 +7,7 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.ProcessFlowTimer;
 import eu.robojob.irscw.process.execution.AutomateOptimizedThread;
+import eu.robojob.irscw.process.execution.fixed.AutomateFixedControllingThread;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentView;
 import eu.robojob.irscw.ui.general.ExecutionPresenter;
@@ -23,7 +24,8 @@ public class AutomatePresenter extends ExecutionPresenter {
 	
 	private boolean running;
 	
-	private AutomateOptimizedThread automateThread;
+	//private AutomateOptimizedThread automateThread;
+	private AutomateFixedControllingThread automateThread;
 	
 	public AutomatePresenter(final MainContentView view, final FixedProcessFlowPresenter processFlowPresenter, final DisconnectedDevicesView disconnectedDevicesView,
 			final ProcessFlow processFlow, final ProcessFlowTimer processFlowTimer, final AutomateStatusPresenter statusPresenter) {
@@ -37,7 +39,8 @@ public class AutomatePresenter extends ExecutionPresenter {
 		statusPresenter.setTotalAmount(processFlow.getTotalAmount());
 		statusPresenter.setFinishedAmount(processFlow.getFinishedAmount());
 		this.running = false;
-		automateThread = new AutomateOptimizedThread(processFlow);
+		//automateThread = new AutomateOptimizedThread(processFlow);
+		automateThread = new AutomateFixedControllingThread(processFlow);
 	}
 	
 	public int getMainProcessFlowId() {
