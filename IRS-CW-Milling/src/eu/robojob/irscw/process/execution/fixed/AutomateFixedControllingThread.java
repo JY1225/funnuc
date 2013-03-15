@@ -5,9 +5,13 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
+import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
+import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.threading.ThreadManager;
@@ -30,7 +34,7 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	private boolean firstPiece;
 	private boolean lastPiece;
-	
+	private boolean isConcurrentExecutionPossible;
 	private int mainProcessFlowId;
 	
 	public AutomateFixedControllingThread(final ProcessFlow processFlow) {
@@ -40,6 +44,32 @@ public class AutomateFixedControllingThread extends Thread {
 		reset();
 	}
 	
+	private void checkIfConcurrentExecutionIsPossible() {
+		// this is possible if the CNC machine is used only once, and the gripper used to put the piece in the 
+		// CNC machine is not the same as the gripper used to pick the piece from the CNC machine
+		PickStep pickFromMachine = null;
+		PutStep putToMachine = null;
+		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
+			if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
+				pickFromMachine = (PickStep) step;
+			}
+			if ((step instanceof PutStep) && ((PutStep) step).getDevice() instanceof AbstractCNCMachine) {
+				putToMachine = (PutStep) step;
+			}
+		}
+		if (pickFromMachine.getRobotSettings().getGripperHead().equals(putToMachine.getRobotSettings().getGripperHead()) && 
+				processFlow.getFinishedAmount() < processFlow.getTotalAmount() - 1) {
+			isConcurrentExecutionPossible = false; 
+		} else {
+			isConcurrentExecutionPossible = true;
+		}
+		logger.info("Concurrent execution possible: " + isConcurrentExecutionPossible);
+	}
+	
+	public boolean isConcurrentExecutionPossible() {
+		return isConcurrentExecutionPossible;
+	}
+
 	public void reset() {
 		processFlow.setCurrentIndex(WORKPIECE_0_ID, -1);
 		processFlow.setCurrentIndex(WORKPIECE_1_ID, -1);
@@ -53,15 +83,21 @@ public class AutomateFixedControllingThread extends Thread {
 	public void run() {
 		try {
 			running = true;
-			processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.PREPARE, WORKPIECE_0_ID));
-			for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
-				robot.recalculateTCPs();
+			checkIfConcurrentExecutionIsPossible();
+			if (processFlow.getCurrentIndex(WORKPIECE_0_ID) == -1) {
+				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.PREPARE, WORKPIECE_0_ID));
+				for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
+					robot.recalculateTCPs();
+				}
+				for (AbstractDevice device: processFlow.getDevices()) {	// prepare devices for this processflow
+					device.prepareForProcess(processFlow);
+				}
+				processFlow.setCurrentIndex(WORKPIECE_0_ID, 0);
+				processFlow.setCurrentIndex(WORKPIECE_1_ID, 0);
 			}
-			for (AbstractDevice device: processFlow.getDevices()) {	// prepare devices for this processflow
-				device.prepareForProcess(processFlow);
+			if (processFlow.getCurrentIndex(WORKPIECE_1_ID) == -1) {
+				processFlow.setCurrentIndex(WORKPIECE_1_ID, 0);
 			}
-			processFlow.setCurrentIndex(WORKPIECE_0_ID, 0);
-			processFlow.setCurrentIndex(WORKPIECE_1_ID, 0);
 			ThreadManager.submit(processFlowExecutor1);
 			synchronized(finishedSyncObject) {
 				finishedSyncObject.wait();
@@ -80,8 +116,27 @@ public class AutomateFixedControllingThread extends Thread {
 		}
 	}
 	
+	@Override
+	public void interrupt() {
+		if (running) {
+			running = false;
+			for (AbstractRobot robot : processFlow.getRobots()) {
+				robot.interruptCurrentAction();
+			}
+			for (AbstractDevice device :processFlow.getDevices()) {
+				device.interruptCurrentAction();
+			}
+		}
+		stopRunning();
+		reset();
+	}
+	
+	public boolean isFirstPiece() {
+		return firstPiece;
+	}
+	
 	public synchronized void notifyWaitingForPutInMachine(final ProcessFlowExecutionThread processFlowExecutor) {
-		if (firstPiece) {
+		if (firstPiece || !isConcurrentExecutionPossible) {
 			processFlowExecutor.continueExecution();
 		} else	{
 			if (processFlowExecutor.equals(processFlowExecutor1)) {
@@ -96,7 +151,7 @@ public class AutomateFixedControllingThread extends Thread {
 	}
 	
 	public synchronized void notifyWaitingForPickFromMachine(final ProcessFlowExecutionThread processFlowExecutor) {
-		if (lastPiece) {
+		if (lastPiece || !isConcurrentExecutionPossible) {
 			logger.info("First piece so can continue");
 			processFlowExecutor.continueExecution();
 		} else {
@@ -119,20 +174,28 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	public synchronized void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor) {
 		// continue both flows
-		logger.info("Continue both flows");
-		processFlowExecutor1.continueExecution();
-		if (firstPiece) {
-			processFlowExecutor2 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_1_ID);
-			firstPiece = false;
-			ThreadManager.submit(processFlowExecutor2);
+		if (isConcurrentExecutionPossible) {
+			processFlowExecutor1.continueExecution();
+			if (firstPiece) {
+				logger.info("Initiating second flow");
+				processFlowExecutor2 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_1_ID);
+				firstPiece = false;
+				ThreadManager.submit(processFlowExecutor2);
+			} else {
+				processFlowExecutor2.continueExecution();
+			}
 		} else {
-			processFlowExecutor2.continueExecution();
+			processFlowExecutor.continueExecution();
 		}
 	}
 	
 	public synchronized void notifyPickFromMachineFinished(final ProcessFlowExecutionThread processFlowExecutor) {
-		threadWaitingForPutInMachine.continueExecution();
-		threadWaitingForPutInMachine = null;
+		if (isConcurrentExecutionPossible && !lastPiece) {
+			threadWaitingForPutInMachine.continueExecution();
+			threadWaitingForPutInMachine = null;
+		} else {
+			processFlowExecutor.continueExecution();
+		}
 	}
 	
 	public int getMainProcessFlowId() {
@@ -141,11 +204,15 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	//TODO: also review for flows with 2 - 1 pieces?
 	public synchronized void notifyProcessFlowFinished(final ProcessFlowExecutionThread processFlowExecutor) {
-		if (processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 2) {
+		if ((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 2) && (isConcurrentExecutionPossible)) {
 			this.lastPiece = true;
 		}
 		if (processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) {
-			processFlowExecutor.stopRunning();
+			if (isConcurrentExecutionPossible) {
+				processFlowExecutor.stopRunning();
+			} else {
+				this.lastPiece = true;
+			}
 		} 
 		if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
 			processFlowExecutor.stopRunning();
@@ -181,6 +248,7 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	public void stopExecution() {
 		processFlow.setMode(Mode.STOPPED);
+		processFlow.initialize();
 		processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
 		processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
 	}

@@ -6,7 +6,6 @@ import javafx.scene.Node;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.ProcessFlowTimer;
-import eu.robojob.irscw.process.execution.AutomateOptimizedThread;
 import eu.robojob.irscw.process.execution.fixed.AutomateFixedControllingThread;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentView;

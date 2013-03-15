@@ -3,12 +3,18 @@ package eu.robojob.irscw.process.execution.fixed;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.irscw.external.communication.AbstractCommunicationException;
+import eu.robojob.irscw.external.device.DeviceActionException;
+import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
+import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.AbstractTransportStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.process.RobotStep;
 
 public class ProcessFlowExecutionThread extends Thread {
 
@@ -37,53 +43,30 @@ public class ProcessFlowExecutionThread extends Thread {
 			while (running) {
 				
 				AbstractProcessStep currentStep = processFlow.getStep(processFlow.getCurrentIndex(workpieceId));
-				if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof CNCMillingMachine)) {
-					canContinue = false;
-					controllingThread.notifyWaitingForPutInMachine(this);
-					if (!canContinue) {
-						synchronized(syncObject) {
-							logger.info("Waiting before put in machine");
-							syncObject.wait();
-							logger.info("Can continue");
-						}
-					}
-					currentStep.executeStep(workpieceId);
-					if (currentStep instanceof AbstractTransportStep) {
-						((AbstractTransportStep) currentStep).finalizeStep();
-					} 
-					canContinue = false;
-					controllingThread.notifyPutInMachineFinished(this);
-					if (!canContinue) {
-						synchronized(syncObject) {
-							logger.info("Waiting after put in machine");
-							syncObject.wait();
-							logger.info("Can continue");
-						}
-					}
-				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof CNCMillingMachine)) {
-					canContinue = false;
-					controllingThread.notifyWaitingForPickFromMachine(this);
-					if (!canContinue) {
-						synchronized(syncObject) {
-							logger.info("Waiting before pick from machine");
-							syncObject.wait();
-							logger.info("Can continue");
-						}
-					}
-					currentStep.executeStep(workpieceId);
-					if (currentStep instanceof AbstractTransportStep) {
-						((AbstractTransportStep) currentStep).finalizeStep();
-					} 
-					canContinue = false;
-					controllingThread.notifyPickFromMachineFinished(this);
-					if (!canContinue) {
-						synchronized(syncObject) {
-							logger.info("Waiting after pick from machine");
-							syncObject.wait();
-							logger.info("Can continue");
-						}
-					}
+				
+				if (currentStep instanceof RobotStep) {
+					((RobotStep) currentStep).getRobotSettings().setFreeAfter(false);
+				}
+				
+				if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
+					executePutInMachineStep((PutStep) currentStep);
+				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
+					executePickFromMachineStep((PickStep) currentStep);
 				} else {
+					if ((currentStep instanceof PickStep) && ((PickStep) currentStep).getDevice() instanceof BasicStackPlate) {
+						((PickStep) currentStep).getRobotSettings().setFreeAfter(true);
+					}
+					if ((currentStep instanceof PutStep) && ((PutStep) currentStep).getDevice() instanceof BasicStackPlate) {
+						if ((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) || 
+								((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 2)) && controllingThread.isConcurrentExecutionPossible()) {
+							((PutStep) currentStep).getRobotSettings().setFreeAfter(true);
+						}
+					}
+					if ((currentStep instanceof PutAndWaitStep) && controllingThread.isConcurrentExecutionPossible() && 
+							!controllingThread.isFirstPiece()) {
+						logger.info("* SET FREE AFTER PRAGE");
+						((PutAndWaitStep) currentStep).getRobotSettings().setFreeAfter(true);
+					}
 					currentStep.executeStep(workpieceId);
 					if (currentStep instanceof AbstractTransportStep) {
 						((AbstractTransportStep) currentStep).finalizeStep();
@@ -100,7 +83,7 @@ public class ProcessFlowExecutionThread extends Thread {
 			}
 			logger.info(toString() + " ended...");
 		} catch (InterruptedException e) {
-			if (controllingThread.isRunning()) {
+			if (!controllingThread.isRunning()) {
 				controllingThread.stopExecution();
 			} else {
 				controllingThread.notifyException(e);
@@ -109,6 +92,58 @@ public class ProcessFlowExecutionThread extends Thread {
 		} catch (Exception e) {
 			controllingThread.notifyException(e);
 			controllingThread.stopExecution();
+		}
+	}
+	
+	public void executePutInMachineStep(final PutStep putStep) throws InterruptedException, AbstractCommunicationException, RobotActionException, DeviceActionException {
+		canContinue = false;
+		controllingThread.notifyWaitingForPutInMachine(this);
+		if (!canContinue) {
+			synchronized(syncObject) {
+				logger.info("Waiting before put in machine");
+				syncObject.wait();
+				logger.info("Can continue");
+			}
+		}
+		putStep.getRobotSettings().setFreeAfter(true);
+		putStep.executeStep(workpieceId);
+		putStep.finalizeStep();
+		canContinue = false;
+		controllingThread.notifyPutInMachineFinished(this);
+		if (!canContinue) {
+			synchronized(syncObject) {
+				logger.info("Waiting after put in machine");
+				syncObject.wait();
+				logger.info("Can continue");
+			}
+		}
+	}
+	
+	public void executePickFromMachineStep(final PickStep pickStep) throws AbstractCommunicationException, RobotActionException, InterruptedException, DeviceActionException {
+		canContinue = false;
+		controllingThread.notifyWaitingForPickFromMachine(this);
+		if (!canContinue) {
+			synchronized(syncObject) {
+				logger.info("Waiting before pick from machine");
+				syncObject.wait();
+				logger.info("Can continue");
+			}
+		}
+		if (controllingThread.isConcurrentExecutionPossible() && (processFlow.getFinishedAmount() < (processFlow.getTotalAmount() -2))) {
+			pickStep.getRobotSettings().setFreeAfter(false);
+		} else {
+			pickStep.getRobotSettings().setFreeAfter(true);
+		}
+		pickStep.executeStep(workpieceId);
+		pickStep.finalizeStep();
+		canContinue = false;
+		controllingThread.notifyPickFromMachineFinished(this);
+		if (!canContinue) {
+			synchronized(syncObject) {
+				logger.info("Waiting after pick from machine");
+				syncObject.wait();
+				logger.info("Can continue");
+			}
 		}
 	}
 	

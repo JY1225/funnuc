@@ -29,7 +29,8 @@ public class AutomateStatusView extends HBox {
 	public static final int HEIGHT_BOTTOM_RIGHT_TOP = 230;
 	public static final int HEIGHT_BOTTOM_LEFT_TOP = 230;
 	public static final int PROGRESS_RADIUS = 80;
-	public static final int PROGRESS_RADIUS_INNER = 74;
+	public static final int PROGRESS_RADIUS_INNER = 1;
+	public static final int PROGRESS_RADIUS_INNER_CIRCLE = 74;
 	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3;
 	private static final double BTN_HEIGHT = 40;
 	private static final int TIMING_STATUS_WIDTH = 500;
@@ -120,14 +121,14 @@ public class AutomateStatusView extends HBox {
 		circleFront = new Circle();
 		circleFront.setCenterX(PROGRESS_RADIUS);
 		circleFront.setCenterY(PROGRESS_RADIUS);
-		circleFront.setRadius(PROGRESS_RADIUS_INNER);
+		circleFront.setRadius(PROGRESS_RADIUS_INNER_CIRCLE);
 		circleFront.getStyleClass().add(CSS_CLASS_CIRCLE_FRONT);
 		piePiecePath = new Path();
 		piePiecePath.getStyleClass().add(CSS_CLASS_PROGRESS);
 		piePiecePane = new Pane();
 		piePiecePane.getChildren().add(circleBack);
-		piePiecePane.getChildren().add(circleFront);
 		piePiecePane.getChildren().add(piePiecePath);
+		piePiecePane.getChildren().add(circleFront);
 		piePiecePane.setPrefSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
 		piePiecePane.setMinSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
 		piePiecePane.setMaxSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
