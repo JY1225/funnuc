@@ -37,7 +37,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 
 	public AbstractRobot(final String name, final Set<GripperBody> possibleGripperBodies, final GripperBody activeGripperBody) {
 		super(name);
-		this.speed = 50;
+		this.speed = 10;
 		this.listeners = new HashSet<RobotListener>();
 		this.statusChanged = false;
 		this.syncObject = new Object();
@@ -287,12 +287,13 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	public abstract void initiateMoveWithPiece(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void initiateMoveWithPieceNoAction(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void continueMoveWithPieceTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void continueMoveWithPieceTillWait() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void initiateMoveWithoutPieceNoAction(final RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continueMoveTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void continueMoveTillWait() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void performIOAction() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continueMoveWithPieceTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	public abstract void finalizeMoveWithPiece() throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	
+	public abstract void continueMoveWithoutPieceTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void finalizeMovePiece() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
 	public String toString() {
 		return "Robot: " + getName();

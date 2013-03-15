@@ -15,13 +15,14 @@ import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine
 import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.GripperHead;
-import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.DeviceStep;
 import eu.robojob.irscw.process.InterventionStep;
+import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
+import eu.robojob.irscw.process.ProcessingWhileWaitingStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.RobotStep;
 import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
@@ -38,6 +39,8 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 	private static final int WORKPIECE_0_ID = 0;
 	private static final int WORKPIECE_1_ID = 1;
 	protected static final String OTHER_EXCEPTION = "Exception.otherException";
+	
+	private static final int WAIT_FOR_ROBOT_ACTION_FINISHED_DELAY = 500;
 	
 	private ProcessFlow processFlow;
 	private boolean running;
@@ -63,8 +66,8 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		this.isRunning = new HashMap<Integer, Boolean>();
 		isRunning.put(WORKPIECE_0_ID, false);
 		isRunning.put(WORKPIECE_1_ID, false);	
-		getProcessFlow().setCurrentIndex(WORKPIECE_0_ID, 0);
-		getProcessFlow().setCurrentIndex(WORKPIECE_1_ID, 0);
+		getProcessFlow().setCurrentIndex(WORKPIECE_0_ID, -1);
+		getProcessFlow().setCurrentIndex(WORKPIECE_1_ID, -1);
 	}
 	
 	public void setCurrentIndices(final int workPiece0Index, final int workPiece1Index) {
@@ -233,6 +236,13 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 					}
 				}
 			}
+			// if step is robot step, and robot is busy: wait here (note: only if step is not pick after wait step)
+			if ((step instanceof RobotStep) && !(step instanceof PickAfterWaitStep) && !(step instanceof ProcessingWhileWaitingStep)) {
+				while (((RobotStep) step).getRobot().isExecutionInProgress()) {
+					logger.debug(("Waiting for " + ((RobotStep) step).getRobot()) + " to finish current action, step = " + step);
+					Thread.sleep(WAIT_FOR_ROBOT_ACTION_FINISHED_DELAY);
+				}
+			}
 			ProcessStepExecutionThread exThread = new ProcessStepExecutionThread(step, mainProcId, this);
 			isRunning.put(mainProcId, true);
 			ThreadManager.submit(exThread);
@@ -240,10 +250,13 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 		if (!isRunning.get(secondProcId)) {
 			if (isConcurrentExecutionPossible(currentStepIndexMain, currentStepIndexSecondary) && (processFlow.getFinishedAmount() < processFlow.getTotalAmount() - 1)) {
 				AbstractProcessStep stepSecond = processFlow.getStep(currentStepIndexSecondary);
+				if (stepSecond instanceof PickAfterWaitStep) {
+					((PickAfterWaitStep) stepSecond).getRobotSettings().setFreeAfter(true);
+				}
 				ProcessStepExecutionThread exThread2 = new ProcessStepExecutionThread(stepSecond, secondProcId, this);
 				isRunning.put(secondProcId, true);
 				ThreadManager.submit(exThread2);
-			} else {
+			} /*else {
 				AbstractProcessStep step = processFlow.getStep(currentStepIndexMain);
 				if (!(step instanceof RobotStep)) {
 					for (AbstractRobot robot : processFlow.getRobots()) {
@@ -254,7 +267,7 @@ public class AutomateOptimizedThread extends Thread implements ProcessExecutor {
 						}
 					}
 				}
-			}
+			} */
 		}
 	}
 	

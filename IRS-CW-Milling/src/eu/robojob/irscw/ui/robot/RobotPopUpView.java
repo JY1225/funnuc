@@ -147,6 +147,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 				getPresenter().setSpeedClicked(100);
 			}
 		});
+		//btn100.setDisable(true);
 		vBoxMenuItems.getChildren().add(btn100);
 	}
 	

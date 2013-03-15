@@ -121,20 +121,20 @@ public final class CNCMachineConstants {
 	// R: RESULTS
 	
 	public static final int STATUS = 6;
-	public static final int R_PUT_WA1_ALLOWED			= 	BIT0;
-	public static final int R_PUT_WA2_ALLOWED			= 	BIT1;
-	public static final int R_PUT_WA1_READY				= 	BIT2;
-	public static final int R_PUT_WA2_READY				= 	BIT3;
-	public static final int R_CLAMP_WA1_READY			= 	BIT4;
-	public static final int R_CLAMP_WA2_READY			= 	BIT5;
-	public static final int R_CYCLE_STARTED_WA1			= 	BIT6;
-	public static final int R_CYCLE_STARTED_WA2			= 	BIT7;
-	public static final int R_PICK_WA1_REQUESTED		= 	BIT8;
-	public static final int R_PICK_WA2_REQUESTED		= 	BIT9;
-	public static final int R_PICK_WA1_READY			= 	BIT10;
-	public static final int R_PICK_WA2_READY			= 	BIT11;
-	public static final int R_UNCLAMP_WA1_READY			= 	BIT12;
-	public static final int R_UNCLAMP_WA2_READY			= 	BIT13;
+	public static final int R_PUT_WA1_ALLOWED			= 	BIT0; 	
+	public static final int R_PUT_WA2_ALLOWED			= 	BIT1;	
+	public static final int R_PUT_WA1_READY				= 	BIT2;	
+	public static final int R_PUT_WA2_READY				= 	BIT3;	
+	public static final int R_CLAMP_WA1_READY			= 	BIT4; 	
+	public static final int R_CLAMP_WA2_READY			= 	BIT5;	
+	public static final int R_CYCLE_STARTED_WA1			= 	BIT6;	
+	public static final int R_CYCLE_STARTED_WA2			= 	BIT7;	
+	public static final int R_PICK_WA1_REQUESTED		= 	BIT8;	
+	public static final int R_PICK_WA2_REQUESTED		= 	BIT9;	
+	public static final int R_PICK_WA1_READY			= 	BIT10;	
+	public static final int R_PICK_WA2_READY			= 	BIT11;	
+	public static final int R_UNCLAMP_WA1_READY			= 	BIT12;	
+	public static final int R_UNCLAMP_WA2_READY			= 	BIT13;	
 	// BITS 14_15 UNUSED
 	
 	
@@ -193,6 +193,12 @@ public final class CNCMachineConstants {
 	public static final int IPC_UNCLAMP_WA2_RQST		= 	BIT11;	
 	public static final int IPC_CYCLEEND_WA1_RQST		= 	BIT12;	
 	public static final int IPC_CYCLEEND_WA2_RQST		= 	BIT13;	
+	
+	public static final int CNC_PROCESS_TYPE = 13;
+	public static final int CNC_PROCESS_TYPE_WA1_TASK = 1;
+	public static final int CNC_PROCESS_TYPE_WA2_TASK = 2;
+	public static final int CNC_PROCESS_TYPE_WA1_2_TASK = 3;
+	public static final int CNC_PROCESS_TYPE_WA2_2_TASK = 4;
 	
 	public static final int IPC_READ_REQUEST_2 = 14;
 	public static final int IPC_RESET_REQUEST			=	BIT0;

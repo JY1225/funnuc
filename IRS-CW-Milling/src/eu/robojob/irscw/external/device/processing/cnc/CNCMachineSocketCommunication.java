@@ -48,7 +48,7 @@ public class CNCMachineSocketCommunication extends ExternalSocketCommunication {
 		// send the command and wait for reply 
 		getExternalCommunicationThread().clearIncommingBuffer();
 		getExternalCommunicationThread().writeString(command.toString());
-		awaitResponse(command.toString(), timeout);
+		awaitResponse("WW", timeout);
 	}
 	
 	public synchronized void writeRegisters(final int startingRegisterNr, final int[] values) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {

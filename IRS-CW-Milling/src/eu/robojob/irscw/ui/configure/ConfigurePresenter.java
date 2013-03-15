@@ -315,6 +315,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		devicePutSettings.setWorkArea(workArea);
 		DeviceSettings deviceSettings = device.getDeviceSettings();
 		deviceSettings.setClamping(workArea, clamping);
+		processFlowAdapter.getProcessFlow().setDeviceSettings(device, deviceSettings);
 		device.loadDeviceSettings(deviceSettings);
 		
 		FanucRobotPutSettings robotPutSettings = new FanucRobotPutSettings();

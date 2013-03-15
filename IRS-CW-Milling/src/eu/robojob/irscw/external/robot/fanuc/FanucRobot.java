@@ -46,7 +46,7 @@ public class FanucRobot extends AbstractRobot {
 	private static final int WRITE_REGISTER_TIMEOUT = 5000;
 	private static final int IOACTION_TIMEOUT = 2 * 60 * 1000;
 	
-	private static final List<Integer> VALID_USERFRAMES = Arrays.asList(1, 3);
+	private static final List<Integer> VALID_USERFRAMES = Arrays.asList(1, 3, 6);
 	
 	private static final String HEAD_A_ID = "A";
 	private static final String HEAD_B_ID = "B";
@@ -355,7 +355,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void continueMoveWithPieceTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+	public void continueMoveTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_MOVEWAIT);
 		if (getCurrentActionSettings() == null) {
 			throw new InterruptedException();
@@ -366,12 +366,12 @@ public class FanucRobot extends AbstractRobot {
 				throw new RobotActionException(this, EXCEPTION_MOVE_TO_POSITION_TIMEOUT);
 			} 
 		} else {
-			continueMoveWithPieceTillWait();
+			continueMoveTillWait();
 		}
 	}
 	
 	@Override
-	public void continueMoveWithPieceTillWait() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+	public void continueMoveTillWait() throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		if (getCurrentActionSettings() == null) {
 			throw new InterruptedException();
 		}
@@ -408,9 +408,21 @@ public class FanucRobot extends AbstractRobot {
 			throw new RobotActionException(this, EXCEPTION_MOVE_TO_IPPOINT_MOVEWITHPIECE_TIMEOUT);
 		}
 	}
+	
+	@Override
+	public void continueMoveWithoutPieceTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (getCurrentActionSettings() == null) {
+			throw new InterruptedException();
+		}
+		writeCommand(RobotConstants.PERMISSIONS_COMMAND_MOVEWAIT_CONTINUE);
+		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PUT_OUT_OF_MACHINE, MOVE_TO_IPPOINT_TIMEOUT);
+		if (!waitingForPickFinished) {
+			throw new RobotActionException(this, EXCEPTION_MOVE_TO_IPPOINT_MOVEWITHPIECE_TIMEOUT);
+		}
+	}
 
 	@Override
-	public void finalizeMoveWithPiece() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+	public void finalizeMovePiece() throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		if (getCurrentActionSettings() == null) {
 			throw new InterruptedException();
 		}
@@ -420,6 +432,29 @@ public class FanucRobot extends AbstractRobot {
 		}
 		setCurrentActionSettings(null);
 	}
+	
+	@Override
+	public void initiateMoveWithoutPieceNoAction(final RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		if (isExecutionInProgress()) {
+			throw new IllegalStateException("Already performing action, with setting: " + getCurrentActionSettings());
+		} else {
+			setCurrentActionSettings(putSettings);
+		}
+		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
+		writeServiceGripperSet(false, putSettings.getGripperHead().getName(), this.getGripperBody().getGripperHeadByName(HEAD_A_ID), this.getGripperBody().getGripperHeadByName(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT);
+		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
+		if (fPutSettings.getGripperHead().getGripper().getWorkPiece() == null) {
+			throw new IllegalStateException(toString() + " executing move-and-wait with piece , but the gripper [" + fPutSettings.getGripperHead().getGripper() + "] should contain a workpiece.");
+		}
+		if (fPutSettings.isTeachingNeeded()) {
+			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_TEACH;
+		}
+		ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_NO_WAIT;
+		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
+		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
+	}
+	
 
 	private void writeServiceGripperSet(final boolean jawChange, final String headId, final GripperHead gHeadA, final GripperHead gHeadB, final int serviceType) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
 		List<String> values = new ArrayList<String>();
@@ -493,7 +528,7 @@ public class FanucRobot extends AbstractRobot {
 		int userFrameId = workArea.getUserFrame().getNumber();
 		//UF: stacker = 1; Machine = 3
 		if (!VALID_USERFRAMES.contains(userFrameId)) {
-			throw new IllegalArgumentException("Illegal Userframe id: " + userFrameId + " should be 1 or 3.");
+			throw new IllegalArgumentException("Illegal Userframe id: " + userFrameId + " should be 1 or 3 or 6.");
 		} else {
 			values.add("" + userFrameId);					// user frame location
 		}

@@ -61,7 +61,7 @@ public class PickAfterWaitStep extends PickStep {
 		if (!getRobot().lock(getProcessFlow())) {
 			throw new IllegalStateException("Robot [" + getRobot() + "] was already locked by " + getRobot().getLockingProcess());
 		} else {
-			getRobot().finalizeMoveWithPiece();
+			getRobot().finalizeMovePiece();
 			getRobot().release(getProcessFlow());
 			logger.debug("Finalized pick-after-wait.");
 		}

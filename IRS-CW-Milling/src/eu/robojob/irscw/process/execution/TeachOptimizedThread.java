@@ -105,6 +105,7 @@ public class TeachOptimizedThread extends TeachThread {
 						putInMachineStep.setRelativeTeachedOffset(offsetInMachine);
 						//TODO what to do with y offset of Präge?
 					} else if (step.equals(putInMachineStep)) {
+						putInMachineStep.getRobotSettings().setFreeAfter(true);
 						putInMachineStep.executeStepTeached(WORKPIECE_ID);
 						putInMachineStep.finalizeStep();
 						relTeachedOffsetMachineClamping = putInMachineStep.getRelativeTeachedOffset();
@@ -124,9 +125,6 @@ public class TeachOptimizedThread extends TeachThread {
 					pickFromMachineOffset.plus(relTeachedOffsetFinishedWp);
 					pickFromMachineStep.setRelativeTeachedOffset(pickFromMachineOffset);
 					putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);		
-					for (AbstractRobot robot : getProcessFlow().getRobots()) {
-						robot.moveToHome();
-					}
 					setRunning(false);
 					getProcessFlow().setMode(Mode.READY);
 				} else {
@@ -177,17 +175,19 @@ public class TeachOptimizedThread extends TeachThread {
 			stackPlate.prepareForPut(putOnStackerStep.getDeviceSettings());
 			logger.debug("Original coordinates: " + originalCoordinates + ".");
 			logger.debug("Initiating robot: [" + fRobot + "] move action.");
-			fRobot.initiateMoveWithPieceNoAction(putSettings);
+			fRobot.initiateMoveWithoutPieceNoAction(putSettings);
 			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.EXECUTE_TEACHED, WORKPIECE_ID));
-			fRobot.continueMoveWithPieceTillAtLocation();
+			fRobot.continueMoveTillAtLocation();
 			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.TEACHING_NEEDED, WORKPIECE_ID));
-			fRobot.continueMoveWithPieceTillWait();
+			fRobot.continueMoveTillWait();
 			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.TEACHING_FINISHED, WORKPIECE_ID));
 			Coordinates coordinates = new Coordinates(fRobot.getPosition());
 			Coordinates relTeachedOffsetFinishedWp = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalCoordinates, coordinates.calculateOffset(originalCoordinates));
 			logger.info("The relative teached offset (finished workpiece): [" + relTeachedOffsetFinishedWp + "].");
-			fRobot.continueMoveWithPieceTillIPPoint();
-			fRobot.finalizeMoveWithPiece();
+			fRobot.continueMoveWithoutPieceTillIPPoint();
+			logger.info("In IP point");
+			fRobot.finalizeMovePiece();
+			logger.info("finalized move");
 			putOnStackerStep.getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(putOnStackerStep.getProcessFlow(), putOnStackerStep, StatusChangedEvent.ENDED, WORKPIECE_ID));
 			return relTeachedOffsetFinishedWp;
 		}

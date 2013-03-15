@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.communication.socket.SocketConnection;
 import eu.robojob.irscw.external.communication.socket.SocketDisconnectedException;
@@ -29,6 +32,8 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachine extends AbstractCNCMachine {
 
+	private static Logger logger = LogManager.getLogger(CNCMillingMachine.class.getName());
+	
 	private CNCMachineSocketCommunication cncMachineCommunication;
 	private float clampingWidthR;
 	private float clampingLengthR;
@@ -84,7 +89,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		command = command | CNCMachineConstants.IPC_RESET_REQUEST;
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
-		// this one does not need to wait, we can assume it will work
 	}
 	
 	@Override
@@ -135,6 +139,10 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		//FIXME review! potential problems with reset in double processflow execution
 		clearIndications();
+		reset();
+		int command = CNCMachineConstants.CNC_PROCESS_TYPE_WA1_TASK;
+		int[] registers = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.CNC_PROCESS_TYPE, registers);
 	}
 
 	@Override
@@ -148,17 +156,20 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
-		
+		logger.debug("Send start cycle command");
 		boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
+		logger.debug("Cycle is started: " + cycleStartReady);
 		if (!cycleStartReady) {
 			throw new DeviceActionException(this, EXCEPTION_CYCLE_NOT_STARTED);
 		} else {
 			// we now wait for pick requested
 			boolean cycleFinished =  waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED, CYCLE_FINISHED_TIMEOUT);
+			logger.debug("**********FINISHED**********Cycle finished");
 			if (!cycleFinished) {
 				throw new DeviceActionException(this, EXCEPTION_CYCLE_END_TIMEOUT);
 			}
-			nCReset();
+			//nCReset();
+			logger.debug("-----------*NC RESET SENT**********Cycle finished");
 		}
 	}
 

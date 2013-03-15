@@ -20,6 +20,7 @@ public class ProcessStepExecutionThread extends Thread {
 	
 	protected static final String OTHER_EXCEPTION = "Exception.otherException";
 	
+	
 	public ProcessStepExecutionThread(final AbstractProcessStep step, final int workpieceId, final ProcessExecutor parent) {
 		this.step = step;
 		this.workpieceId = workpieceId;

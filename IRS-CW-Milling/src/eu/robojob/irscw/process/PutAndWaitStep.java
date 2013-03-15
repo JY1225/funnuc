@@ -73,9 +73,9 @@ public class PutAndWaitStep extends PutStep {
 				logger.debug("Device [" + getDevice() + "] prepared for move-and-wait.");
 				if (teached && needsTeaching()) {
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_TEACHED, workPieceId));
-					getRobot().continueMoveWithPieceTillAtLocation();
+					getRobot().continueMoveTillAtLocation();
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_NEEDED, workPieceId));
-					getRobot().continueMoveWithPieceTillWait();
+					getRobot().continueMoveTillWait();
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_FINISHED, workPieceId));
 					Coordinates robotPosition = getRobot().getPosition();
 					Coordinates relTeachedOffset = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, robotPosition.calculateOffset(originalPosition));
@@ -83,8 +83,8 @@ public class PutAndWaitStep extends PutStep {
 					setRelativeTeachedOffset(relTeachedOffset);
 				} else {
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, workPieceId));
-					getRobot().continueMoveWithPieceTillAtLocation();
-					getRobot().continueMoveWithPieceTillWait();
+					getRobot().continueMoveTillAtLocation();
+					getRobot().continueMoveTillWait();
 				}
 				logger.debug("Robot move-and-wait action succeeded, about to ask device [" + getDevice() +  "] to grab piece.");
 				getDevice().grabPiece(getDeviceSettings());

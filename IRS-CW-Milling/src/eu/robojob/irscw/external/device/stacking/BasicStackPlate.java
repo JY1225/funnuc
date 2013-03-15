@@ -86,6 +86,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		for (StackingPosition stackingPos : layout.getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == Type.RAW)) {
 				currentPickLocations.add(stackingPos);
+				logger.info("added pick location: " + stackingPos + " pick locations: " + currentPickLocations);
 				Coordinates c = new Coordinates(stackingPos.getPosition());
 				return c;
 			}
@@ -122,11 +123,13 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	@Override
 	public synchronized void pickFinished(final DevicePickSettings pickSettings) {
 		currentPickLocations.get(currentPickLocations.size() - 1).setWorkPiece(null);
+		logger.info("pick finished!!");
 	}
 
 	@Override
 	public synchronized void putFinished(final DevicePutSettings putSettings) {
 		currentPickLocations.remove(0).setWorkPiece(finishedWorkPiece);
+		logger.info("put finished!");
 	}
 	
 	@Override
