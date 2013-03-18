@@ -34,6 +34,8 @@ public class AutomateFixedControllingThread extends Thread {
 	private Object finishedSyncObject;
 	private boolean running = false;
 	
+	private boolean finished;
+	
 	private boolean firstPiece;
 	private boolean lastPiece;
 	private boolean isConcurrentExecutionPossible;
@@ -77,6 +79,7 @@ public class AutomateFixedControllingThread extends Thread {
 		processFlow.setCurrentIndex(WORKPIECE_1_ID, -1);
 		this.firstPiece = true;
 		this.lastPiece = false;
+		this.finished = false;
 		this.finishedSyncObject = new Object();
 		this.mainProcessFlowId = WORKPIECE_0_ID;
 	}
@@ -105,17 +108,19 @@ public class AutomateFixedControllingThread extends Thread {
 			synchronized(finishedSyncObject) {
 				finishedSyncObject.wait();
 			}
-			processFlow.setMode(Mode.FINISHED);
-			processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
-			processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
-			for (AbstractDevice device : processFlow.getDevices()) {
-				if (device instanceof CNCMillingMachine) {
-					((CNCMillingMachine) device).indicateAllProcessed();
+			if (finished) {
+				processFlow.setMode(Mode.FINISHED);
+				for (AbstractDevice device : processFlow.getDevices()) {
+					if (device instanceof CNCMillingMachine) {
+						((CNCMillingMachine) device).indicateAllProcessed();
+					}
+				}
+				for (AbstractRobot robot : processFlow.getRobots()) {
+					robot.moveToHome();
 				}
 			}
-			for (AbstractRobot robot : processFlow.getRobots()) {
-				robot.moveToHome();
-			}
+			processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
+			processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
 			logger.info(toString() + " ended...");
 		} catch(InterruptedException e) {
 			if (running) {
@@ -135,14 +140,12 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	@Override
 	public void interrupt() {
-		if (running) {
-			running = false;
-			for (AbstractRobot robot : processFlow.getRobots()) {
-				robot.interruptCurrentAction();
-			}
-			for (AbstractDevice device :processFlow.getDevices()) {
-				device.interruptCurrentAction();
-			}
+		running = false;
+		for (AbstractRobot robot : processFlow.getRobots()) {
+			robot.interruptCurrentAction();
+		}
+		for (AbstractDevice device :processFlow.getDevices()) {
+			device.interruptCurrentAction();
 		}
 		stopRunning();
 		reset();
@@ -231,14 +234,17 @@ public class AutomateFixedControllingThread extends Thread {
 		} 
 		if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
 			processFlowExecutor.stopRunning();
+			finished = true;
 			synchronized(finishedSyncObject) {
 				finishedSyncObject.notify();
 			}
 		}
-		if (processFlowExecutor.equals(processFlowExecutor1)) {
-			mainProcessFlowId = WORKPIECE_1_ID;
-		} else {
-			mainProcessFlowId = WORKPIECE_0_ID;
+		if (isConcurrentExecutionPossible) {
+			if (processFlowExecutor.equals(processFlowExecutor1)) {
+				mainProcessFlowId = WORKPIECE_1_ID;
+			} else {
+				mainProcessFlowId = WORKPIECE_0_ID;
+			}
 		}
 	}
 	

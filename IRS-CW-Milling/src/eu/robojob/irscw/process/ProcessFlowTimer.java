@@ -84,7 +84,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	public synchronized void modeChanged(final ModeChangedEvent e) {
 		switch (e.getMode()) {
 			case STOPPED:
-				for (int workPiece: this.startingTimeCurrentSteps.keySet()) {
+				for (int workPiece: this.startingTimeCurrentProcessFlow.keySet()) {
 					stopProcessTimeMeasurement(workPiece);
 				}
 				break;
@@ -155,11 +155,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	}
 	
 	private synchronized void stopProcessTimeMeasurement(final int workPieceId) {
-		startingTimeCurrentProcessFlow.remove(workPieceId);
-		otherTimeCurrentProcessFlow.remove(workPieceId);
-		//FIXME: review!
-		otherTimeCurrentSteps.remove(workPieceId);
-		startingTimeCurrentSteps.remove(workPieceId);
+		reset();
 	}
 	
 	public long getTimeWon() {
