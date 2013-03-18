@@ -64,7 +64,6 @@ public class ProcessFlowExecutionThread extends Thread {
 					}
 					if ((currentStep instanceof PutAndWaitStep) && controllingThread.isConcurrentExecutionPossible() && 
 							!controllingThread.isFirstPiece()) {
-						logger.info("* SET FREE AFTER PRAGE");
 						((PutAndWaitStep) currentStep).getRobotSettings().setFreeAfter(true);
 					}
 					currentStep.executeStep(workpieceId);
@@ -84,14 +83,17 @@ public class ProcessFlowExecutionThread extends Thread {
 			logger.info(toString() + " ended...");
 		} catch (InterruptedException e) {
 			if (!controllingThread.isRunning()) {
-				controllingThread.stopExecution();
+				//controllingThread.stopExecution();
+				controllingThread.stopRunning();
 			} else {
 				controllingThread.notifyException(e);
-				controllingThread.stopExecution();
+				//controllingThread.stopExecution();
+				controllingThread.stopRunning();
 			}
 		} catch (Exception e) {
 			controllingThread.notifyException(e);
-			controllingThread.stopExecution();
+			//controllingThread.stopExecution();
+			controllingThread.stopRunning();
 		}
 	}
 	
@@ -147,8 +149,20 @@ public class ProcessFlowExecutionThread extends Thread {
 		}
 	}
 	
+	@Override
+	public void interrupt() {
+		stopRunning();
+	}
+	
 	public void stopRunning() {
 		this.running = false;
+		synchronized(syncObject) {
+			syncObject.notifyAll();
+		}
+	}
+	
+	public void setRunning(final boolean running) {
+		this.running = running;
 	}
 	
 	public boolean isRunning() {
@@ -160,5 +174,10 @@ public class ProcessFlowExecutionThread extends Thread {
 		synchronized(syncObject) {
 			syncObject.notify();
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return "ProcessFlowExecutionThread - WP[" + workpieceId + "]";
 	}
 }

@@ -98,6 +98,7 @@ public class AutomateFixedControllingThread extends Thread {
 			if (processFlow.getCurrentIndex(WORKPIECE_1_ID) == -1) {
 				processFlow.setCurrentIndex(WORKPIECE_1_ID, 0);
 			}
+			processFlowExecutor1 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_0_ID);
 			ThreadManager.submit(processFlowExecutor1);
 			synchronized(finishedSyncObject) {
 				finishedSyncObject.wait();
@@ -105,13 +106,13 @@ public class AutomateFixedControllingThread extends Thread {
 			logger.info(toString() + " ended...");
 		} catch(InterruptedException e) {
 			if (running) {
-				stopExecution();
+				stopRunning();
 			} else {
-				stopExecution();
+				stopRunning();
 				notifyException(e);
 			}
 		} catch (AbstractCommunicationException e) {
-			stopExecution();
+			stopRunning();
 			notifyException(e);
 		}
 	}
@@ -237,11 +238,14 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	public void stopRunning() {
 		running = false;
+		synchronized(finishedSyncObject) {
+			finishedSyncObject.notifyAll();
+		}
 		if (processFlowExecutor1 != null) {
-			processFlowExecutor1.stopRunning();
+			processFlowExecutor1.interrupt();
 		}
 		if (processFlowExecutor2 != null) {
-			processFlowExecutor2.stopRunning();
+			processFlowExecutor2.interrupt();
 		}
 		stopExecution();
 	}
@@ -255,5 +259,10 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	public boolean isRunning() {
 		return running;
+	}
+	
+	@Override
+	public String toString() {
+		return "AutomateFixedControllingThread - processflow [" + processFlow + "]";
 	}
 }
