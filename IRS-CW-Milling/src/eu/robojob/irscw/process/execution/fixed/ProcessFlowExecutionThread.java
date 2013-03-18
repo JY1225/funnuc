@@ -131,7 +131,7 @@ public class ProcessFlowExecutionThread extends Thread {
 				logger.info("Can continue");
 			}
 		}
-		if (controllingThread.isConcurrentExecutionPossible() && (processFlow.getFinishedAmount() < (processFlow.getTotalAmount() -2))) {
+		if (controllingThread.isConcurrentExecutionPossible() && (processFlow.getFinishedAmount() < (processFlow.getTotalAmount() - 1))) {
 			pickStep.getRobotSettings().setFreeAfter(false);
 		} else {
 			pickStep.getRobotSettings().setFreeAfter(true);

@@ -157,6 +157,9 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	private synchronized void stopProcessTimeMeasurement(final int workPieceId) {
 		startingTimeCurrentProcessFlow.remove(workPieceId);
 		otherTimeCurrentProcessFlow.remove(workPieceId);
+		//FIXME: review!
+		otherTimeCurrentSteps.remove(workPieceId);
+		startingTimeCurrentSteps.remove(workPieceId);
 	}
 	
 	public long getTimeWon() {

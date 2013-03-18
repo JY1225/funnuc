@@ -6,7 +6,9 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.external.robot.AbstractRobot;
+import eu.robojob.irscw.external.robot.RobotActionException;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
@@ -103,6 +105,17 @@ public class AutomateFixedControllingThread extends Thread {
 			synchronized(finishedSyncObject) {
 				finishedSyncObject.wait();
 			}
+			processFlow.setMode(Mode.FINISHED);
+			processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
+			processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
+			for (AbstractDevice device : processFlow.getDevices()) {
+				if (device instanceof CNCMillingMachine) {
+					((CNCMillingMachine) device).indicateAllProcessed();
+				}
+			}
+			for (AbstractRobot robot : processFlow.getRobots()) {
+				robot.moveToHome();
+			}
 			logger.info(toString() + " ended...");
 		} catch(InterruptedException e) {
 			if (running) {
@@ -112,6 +125,9 @@ public class AutomateFixedControllingThread extends Thread {
 				notifyException(e);
 			}
 		} catch (AbstractCommunicationException e) {
+			stopRunning();
+			notifyException(e);
+		} catch (RobotActionException e) {
 			stopRunning();
 			notifyException(e);
 		}
@@ -153,7 +169,6 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	public synchronized void notifyWaitingForPickFromMachine(final ProcessFlowExecutionThread processFlowExecutor) {
 		if (lastPiece || !isConcurrentExecutionPossible) {
-			logger.info("First piece so can continue");
 			processFlowExecutor.continueExecution();
 		} else {
 			if (processFlowExecutor.equals(processFlowExecutor1)) {
@@ -205,14 +220,13 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	//TODO: also review for flows with 2 - 1 pieces?
 	public synchronized void notifyProcessFlowFinished(final ProcessFlowExecutionThread processFlowExecutor) {
-		if ((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 2) && (isConcurrentExecutionPossible)) {
-			this.lastPiece = true;
-		}
 		if (processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) {
 			if (isConcurrentExecutionPossible) {
+				this.lastPiece = true;
 				processFlowExecutor.stopRunning();
 			} else {
 				this.lastPiece = true;
+				logger.info("LAST PIECE!");
 			}
 		} 
 		if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
