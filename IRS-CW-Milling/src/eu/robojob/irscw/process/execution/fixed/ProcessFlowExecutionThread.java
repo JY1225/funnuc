@@ -107,6 +107,9 @@ public class ProcessFlowExecutionThread extends Thread {
 				logger.info("Can continue");
 			}
 		}
+		if (!running) {
+			return;
+		}
 		putStep.getRobotSettings().setFreeAfter(true);
 		putStep.executeStep(workpieceId);
 		putStep.finalizeStep();
@@ -130,6 +133,9 @@ public class ProcessFlowExecutionThread extends Thread {
 				syncObject.wait();
 				logger.info("Can continue");
 			}
+		}
+		if (!running) {
+			return;
 		}
 		if (controllingThread.isConcurrentExecutionPossible() && (processFlow.getFinishedAmount() < (processFlow.getTotalAmount() - 1))) {
 			pickStep.getRobotSettings().setFreeAfter(false);

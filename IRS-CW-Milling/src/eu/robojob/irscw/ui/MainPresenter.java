@@ -151,6 +151,8 @@ public class MainPresenter implements ProcessFlowListener {
 		refreshStatus();
 		switch(e.getMode()) {
 			case AUTO:
+				setChangeContentEnabled(false);
+				break;
 			case TEACH:
 				setChangeContentEnabled(false);
 				break;

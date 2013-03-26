@@ -87,6 +87,7 @@ public class AutomateFixedControllingThread extends Thread {
 	@Override
 	public void run() {
 		try {
+			processFlow.setMode(ProcessFlow.Mode.AUTO);
 			running = true;
 			checkIfConcurrentExecutionIsPossible();
 			if (processFlow.getCurrentIndex(WORKPIECE_0_ID) == -1) {
@@ -227,6 +228,10 @@ public class AutomateFixedControllingThread extends Thread {
 			if (isConcurrentExecutionPossible) {
 				this.lastPiece = true;
 				processFlowExecutor.stopRunning();
+				// last piece just finished, if another thread is waiting for picking from the machine it can continue
+				if (threadWaitingForPickFromMachine != null) {
+					threadWaitingForPickFromMachine.continueExecution();
+				}
 			} else {
 				this.lastPiece = true;
 				logger.info("LAST PIECE!");

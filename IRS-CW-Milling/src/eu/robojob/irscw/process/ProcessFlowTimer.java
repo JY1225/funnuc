@@ -84,9 +84,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	public synchronized void modeChanged(final ModeChangedEvent e) {
 		switch (e.getMode()) {
 			case STOPPED:
-				for (int workPiece: this.startingTimeCurrentProcessFlow.keySet()) {
-					stopProcessTimeMeasurement(workPiece);
-				}
+				reset();
 				break;
 			case READY:
 			case PAUSED:
@@ -155,7 +153,8 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	}
 	
 	private synchronized void stopProcessTimeMeasurement(final int workPieceId) {
-		reset();
+		startingTimeCurrentProcessFlow.remove(workPieceId);
+		otherTimeCurrentProcessFlow.remove(workPieceId);
 	}
 	
 	public long getTimeWon() {

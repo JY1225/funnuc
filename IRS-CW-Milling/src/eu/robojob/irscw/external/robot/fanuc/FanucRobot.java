@@ -536,7 +536,11 @@ public class FanucRobot extends AbstractRobot {
 		values.add(df.format(location.getY()));		// y offset
 		values.add(df.format(location.getZ()));		// z offset
 		values.add(df.format(location.getR()));		// r offset							
-		values.add(df.format(dimensions.getHeight() + location.getZ()));	// z safe plane offset
+		if (location.getZ() > 0) {
+			values.add(df.format(dimensions.getHeight() + location.getZ() + clamping.getHeight()));	// z safe plane offset 
+		} else {
+			values.add(df.format(dimensions.getHeight() + clamping.getHeight()));	// z safe plane offset 
+		}
 		if (smoothPoint.getZ() > workArea.getUserFrame().getzSafeDistance()) {	// safety add z
 			values.add(df.format(smoothPoint.getZ()));
 		} else {
