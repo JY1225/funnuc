@@ -160,7 +160,7 @@ public class FanucRobot extends AbstractRobot {
 		if (fPutSettings.getGripperHead().getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException(toString() + " executing put, but the gripper [" + fPutSettings.getGripperHead().getGripper() + "] should contain a workpiece.");
 		}
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -243,7 +243,7 @@ public class FanucRobot extends AbstractRobot {
 		}
 		writeServiceHandlingSet(pickSettings.isFreeAfter(), ppMode, pickSettings.getWorkPiece().getDimensions());
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
-		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getWorkArea().getActiveClamping());
+		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getStep().getRelativeTeachedOffset(), fPickSettings.getSmoothPoint(), fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getWorkArea().getActiveClamping());
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -327,7 +327,7 @@ public class FanucRobot extends AbstractRobot {
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_TEACH;
 		}
 		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -350,7 +350,7 @@ public class FanucRobot extends AbstractRobot {
 		}
 		ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_NO_WAIT;
 		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -451,7 +451,7 @@ public class FanucRobot extends AbstractRobot {
 		}
 		ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_NO_WAIT;
 		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions());
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -521,7 +521,7 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_SERVICE_HANDLING, RobotConstants.RESPONSE_WRITE_SERVICE_HANDLING, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	private void writeServicePointSet(final WorkArea workArea, final Coordinates location, final Coordinates smoothPoint, final WorkPieceDimensions dimensions, final Clamping clamping) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	private void writeServicePointSet(final WorkArea workArea, final Coordinates location, final Coordinates relativeTeachedCoordinates, final Coordinates smoothPoint, final WorkPieceDimensions dimensions, final Clamping clamping) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
 		List<String> values = new ArrayList<String>();
 		// user frame location ; x offset ; y offset ; z offset ; r offset ; z-safe plane offset ; safety add z ; smooth x ; smooth y ; smooth z ; tangent to/from ; xyz allowed ;
 		// clamp height ; bar break iterations ; bar break main axis ; bar break angle ; bar move length
@@ -536,10 +536,10 @@ public class FanucRobot extends AbstractRobot {
 		values.add(df.format(location.getY()));		// y offset
 		values.add(df.format(location.getZ()));		// z offset
 		values.add(df.format(location.getR()));		// r offset							
-		if (location.getZ() > 0) {
+		if (relativeTeachedCoordinates.getZ() >= 0) {
 			values.add(df.format(dimensions.getHeight() + location.getZ() + clamping.getHeight()));	// z safe plane offset 
 		} else {
-			values.add(df.format(dimensions.getHeight() + clamping.getHeight()));	// z safe plane offset 
+			values.add(df.format(dimensions.getHeight() + location.getZ() - relativeTeachedCoordinates.getZ() + clamping.getHeight()));	// z safe plane offset 
 		}
 		if (smoothPoint.getZ() > workArea.getUserFrame().getzSafeDistance()) {	// safety add z
 			values.add(df.format(smoothPoint.getZ()));
