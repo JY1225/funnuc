@@ -8,6 +8,7 @@ import eu.robojob.irscw.external.device.DeviceActionException;
 import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
+import eu.robojob.irscw.process.execution.ProcessExecutor;
 
 public class ProcessingStep extends AbstractProcessStep implements DeviceStep {
 
@@ -25,21 +26,29 @@ public class ProcessingStep extends AbstractProcessStep implements DeviceStep {
 	}
 	
 	@Override
-	public void executeStep(final int workPieceId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void executeStep(final int workPieceId, final ProcessExecutor executor) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the device to be used
 		if (!getDevice().lock(getProcessFlow())) {
 			throw new IllegalStateException("Device [" + getDevice() + "] was already locked by [" + getDevice().getLockingProcess() + "].");
 		} else {
-			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, workPieceId));
-			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
-			logger.debug("Preparing device [" + getDevice() + "] for processing.");
-			getDevice().prepareForStartCyclus(startCyclusSettings);
-			logger.debug("Device [" + getDevice() + "] prepared, starting processing.");
-			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PROCESSING_STARTED, workPieceId));
-			getDevice().startCyclus(startCyclusSettings);
-			logger.debug("Finished processing in [" + getDevice() + "].");
-			getDevice().release(getProcessFlow());
-			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
+			try {
+				checkProcessExecutorStatus(executor);
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, workPieceId));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
+				logger.debug("Preparing device [" + getDevice() + "] for processing.");
+				checkProcessExecutorStatus(executor);
+				getDevice().prepareForStartCyclus(startCyclusSettings);
+				logger.debug("Device [" + getDevice() + "] prepared, starting processing.");
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PROCESSING_STARTED, workPieceId));
+				checkProcessExecutorStatus(executor);
+				getDevice().startCyclus(startCyclusSettings);
+				logger.debug("Finished processing in [" + getDevice() + "].");
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
+			} catch(Exception e) {
+				throw e;
+			} finally {
+				getDevice().release();
+			}
 		}
 	}
 

@@ -48,6 +48,12 @@ public class AutomateFixedControllingThread extends Thread {
 		reset();
 	}
 	
+	private void checkStatus() throws InterruptedException {
+		if (!running) {
+			throw new InterruptedException("Got interrupted during execution of processflow");
+		}
+	}
+	
 	private void checkIfConcurrentExecutionIsPossible() {
 		// this is possible if the CNC machine is used only once, and the gripper used to put the piece in the 
 		// CNC machine is not the same as the gripper used to pick the piece from the CNC machine
@@ -93,9 +99,11 @@ public class AutomateFixedControllingThread extends Thread {
 			if (processFlow.getCurrentIndex(WORKPIECE_0_ID) == -1) {
 				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.PREPARE, WORKPIECE_0_ID));
 				for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
+					checkStatus();
 					robot.recalculateTCPs();
 				}
 				for (AbstractDevice device: processFlow.getDevices()) {	// prepare devices for this processflow
+					checkStatus();
 					device.prepareForProcess(processFlow);
 				}
 				processFlow.setCurrentIndex(WORKPIECE_0_ID, 0);
@@ -104,19 +112,23 @@ public class AutomateFixedControllingThread extends Thread {
 			if (processFlow.getCurrentIndex(WORKPIECE_1_ID) == -1) {
 				processFlow.setCurrentIndex(WORKPIECE_1_ID, 0);
 			}
+			checkStatus();
 			processFlowExecutor1 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_0_ID);
 			ThreadManager.submit(processFlowExecutor1);
 			synchronized(finishedSyncObject) {
 				finishedSyncObject.wait();
 			}
+			checkStatus();
 			if (finished) {
 				processFlow.setMode(Mode.FINISHED);
 				for (AbstractDevice device : processFlow.getDevices()) {
 					if (device instanceof CNCMillingMachine) {
+						checkStatus();
 						((CNCMillingMachine) device).indicateAllProcessed();
 					}
 				}
 				for (AbstractRobot robot : processFlow.getRobots()) {
+					checkStatus();
 					robot.moveToHome();
 				}
 			}
@@ -126,10 +138,10 @@ public class AutomateFixedControllingThread extends Thread {
 		} catch(InterruptedException e) {
 			if (running) {
 				stopRunning();
-			} else {
-				stopRunning();
 				notifyException(e);
-			}
+			} /*else {
+				stopRunning();
+			}*/
 		} catch (AbstractCommunicationException e) {
 			stopRunning();
 			notifyException(e);
@@ -262,6 +274,7 @@ public class AutomateFixedControllingThread extends Thread {
 	}
 	
 	public void stopRunning() {
+		logger.info("Called stop running");
 		running = false;
 		synchronized(finishedSyncObject) {
 			finishedSyncObject.notifyAll();
@@ -276,8 +289,8 @@ public class AutomateFixedControllingThread extends Thread {
 	}
 	
 	public void stopExecution() {
-		processFlow.setMode(Mode.STOPPED);
 		processFlow.initialize();
+		processFlow.setMode(Mode.STOPPED);
 		processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
 		processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
 	}

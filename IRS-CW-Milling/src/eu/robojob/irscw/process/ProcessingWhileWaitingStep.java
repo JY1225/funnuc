@@ -6,6 +6,7 @@ import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSe
 import eu.robojob.irscw.external.robot.AbstractRobot;
 import eu.robojob.irscw.external.robot.AbstractRobotActionSettings;
 import eu.robojob.irscw.external.robot.RobotProcessingWhileWaitingSettings;
+import eu.robojob.irscw.process.execution.ProcessExecutor;
 
 public class ProcessingWhileWaitingStep extends ProcessingStep implements RobotStep {
 
@@ -32,11 +33,17 @@ public class ProcessingWhileWaitingStep extends ProcessingStep implements RobotS
 	}
 
 	@Override
-	public void executeStep(final int workPieceId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void executeStep(final int workPieceId, final ProcessExecutor executor) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		if (!getRobot().lock(getProcessFlow())) {
 			throw new IllegalStateException("Robot [" + getRobot() + "] was already locked by [" + getRobot().getLockingProcess() + "].");
 		} else {
-			super.executeStep(workPieceId);
+			try {
+				super.executeStep(workPieceId, executor);
+			} catch (AbstractCommunicationException | DeviceActionException | InterruptedException e) {
+				throw e;
+			} finally {
+				getRobot().release();
+			}
 		}
 	}
 }

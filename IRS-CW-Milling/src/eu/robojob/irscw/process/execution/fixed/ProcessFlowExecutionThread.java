@@ -15,8 +15,9 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.process.PutStep;
 import eu.robojob.irscw.process.RobotStep;
+import eu.robojob.irscw.process.execution.ProcessExecutor;
 
-public class ProcessFlowExecutionThread extends Thread {
+public class ProcessFlowExecutionThread extends Thread implements ProcessExecutor {
 
 	private ProcessFlow processFlow;
 	private int workpieceId;
@@ -36,6 +37,12 @@ public class ProcessFlowExecutionThread extends Thread {
 		this.canContinue = false;
 	}
 	
+	private void checkStatus() throws InterruptedException {
+		if (!running) {
+			throw new InterruptedException("Got interrupted during execution of processflow");
+		}
+	}
+	
 	@Override 
 	public void run() {
 		this.running = true;
@@ -44,13 +51,17 @@ public class ProcessFlowExecutionThread extends Thread {
 				
 				AbstractProcessStep currentStep = processFlow.getStep(processFlow.getCurrentIndex(workpieceId));
 				
+				checkStatus();
+				
 				if (currentStep instanceof RobotStep) {
 					((RobotStep) currentStep).getRobotSettings().setFreeAfter(false);
 				}
 				
 				if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
+					checkStatus();
 					executePutInMachineStep((PutStep) currentStep);
 				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
+					checkStatus();
 					executePickFromMachineStep((PickStep) currentStep);
 				} else {
 					if ((currentStep instanceof PickStep) && ((PickStep) currentStep).getDevice() instanceof BasicStackPlate) {
@@ -66,9 +77,11 @@ public class ProcessFlowExecutionThread extends Thread {
 							!controllingThread.isFirstPiece()) {
 						((PutAndWaitStep) currentStep).getRobotSettings().setFreeAfter(true);
 					}
-					currentStep.executeStep(workpieceId);
+					checkStatus();
+					currentStep.executeStep(workpieceId, this);
 					if (currentStep instanceof AbstractTransportStep) {
-						((AbstractTransportStep) currentStep).finalizeStep();
+						checkStatus();
+						((AbstractTransportStep) currentStep).finalizeStep(this);
 					} 
 				}
 				
@@ -82,14 +95,12 @@ public class ProcessFlowExecutionThread extends Thread {
 			}
 			logger.info(toString() + " ended...");
 		} catch (InterruptedException e) {
-			if (!controllingThread.isRunning()) {
-				//controllingThread.stopExecution();
-				controllingThread.stopRunning();
-			} else {
+			if (controllingThread.isRunning()) {
 				controllingThread.notifyException(e);
-				//controllingThread.stopExecution();
 				controllingThread.stopRunning();
-			}
+			} /*else {
+				controllingThread.stopRunning();
+			}*/
 		} catch (Exception e) {
 			controllingThread.notifyException(e);
 			//controllingThread.stopExecution();
@@ -99,7 +110,9 @@ public class ProcessFlowExecutionThread extends Thread {
 	
 	public void executePutInMachineStep(final PutStep putStep) throws InterruptedException, AbstractCommunicationException, RobotActionException, DeviceActionException {
 		canContinue = false;
+		checkStatus();
 		controllingThread.notifyWaitingForPutInMachine(this);
+		checkStatus();
 		if (!canContinue) {
 			synchronized(syncObject) {
 				logger.info("Waiting before put in machine");
@@ -111,10 +124,14 @@ public class ProcessFlowExecutionThread extends Thread {
 			return;
 		}
 		putStep.getRobotSettings().setFreeAfter(true);
-		putStep.executeStep(workpieceId);
-		putStep.finalizeStep();
+		checkStatus();
+		putStep.executeStep(workpieceId, this);
+		checkStatus();
+		putStep.finalizeStep(this);
 		canContinue = false;
+		checkStatus();
 		controllingThread.notifyPutInMachineFinished(this);
+		checkStatus();
 		if (!canContinue) {
 			synchronized(syncObject) {
 				logger.info("Waiting after put in machine");
@@ -126,7 +143,9 @@ public class ProcessFlowExecutionThread extends Thread {
 	
 	public void executePickFromMachineStep(final PickStep pickStep) throws AbstractCommunicationException, RobotActionException, InterruptedException, DeviceActionException {
 		canContinue = false;
+		checkStatus();
 		controllingThread.notifyWaitingForPickFromMachine(this);
+		checkStatus();
 		if (!canContinue) {
 			synchronized(syncObject) {
 				logger.info("Waiting before pick from machine");
@@ -142,10 +161,14 @@ public class ProcessFlowExecutionThread extends Thread {
 		} else {
 			pickStep.getRobotSettings().setFreeAfter(true);
 		}
-		pickStep.executeStep(workpieceId);
-		pickStep.finalizeStep();
+		checkStatus();
+		pickStep.executeStep(workpieceId, this);
+		checkStatus();
+		pickStep.finalizeStep(this);
 		canContinue = false;
+		checkStatus();
 		controllingThread.notifyPickFromMachineFinished(this);
+		checkStatus();
 		if (!canContinue) {
 			synchronized(syncObject) {
 				logger.info("Waiting after pick from machine");

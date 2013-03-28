@@ -18,7 +18,7 @@ import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.util.Translator;
 
-public class TeachThread extends Thread {
+public class TeachThread extends Thread implements ProcessExecutor {
 
 	private ProcessFlow processFlow;
 	private boolean running;
@@ -77,10 +77,10 @@ public class TeachThread extends Thread {
 					}
 					if (!(step instanceof InterventionStep)) {
 						if (step instanceof AbstractTransportStep) {
-							((AbstractTransportStep) step).executeStepTeached(WORKPIECE_ID);
-							((AbstractTransportStep) step).finalizeStep();
+							((AbstractTransportStep) step).executeStepTeached(WORKPIECE_ID, this);
+							((AbstractTransportStep) step).finalizeStep(this);
 						} else {
-							step.executeStep(WORKPIECE_ID);
+							step.executeStep(WORKPIECE_ID, this);
 						}
 					}
 					getProcessFlow().setCurrentIndex(WORKPIECE_ID, getProcessFlow().getCurrentIndex(WORKPIECE_ID) + 1);

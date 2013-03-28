@@ -13,6 +13,7 @@ import eu.robojob.irscw.external.robot.RobotPickSettings;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.positioning.TeachedCoordinatesCalculator;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
+import eu.robojob.irscw.process.execution.ProcessExecutor;
 
 public class PickStep extends AbstractTransportStep {
 
@@ -32,89 +33,115 @@ public class PickStep extends AbstractTransportStep {
 	}
 	
 	@Override
-	public void executeStep(final int workPieceId) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
-		executeStep(false, workPieceId);
+	public void executeStep(final int workPieceId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+		executeStep(false, workPieceId, executor);
 	}
 	
 	@Override
-	public void executeStepTeached(final int workPieceId) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
-		executeStep(true, workPieceId);
+	public void executeStepTeached(final int workPieceId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+		executeStep(true, workPieceId, executor);
 	}
 
-	private void executeStep(final boolean teached, final int workPieceId) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	private void executeStep(final boolean teached, final int workPieceId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the devices to be used
 		if (!getDevice().lock(getProcessFlow())) {
 			throw new IllegalStateException("Device [" + getDevice() + "] was already locked by [" + getDevice().getLockingProcess() + "].");
 		} else {
 			if (!getRobot().lock(getProcessFlow())) {
+				getDevice().release();
 				throw new IllegalStateException("Robot [" + getRobot() + "] was already locked by [" + getRobot().getLockingProcess() + "].");
 			} else {
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, workPieceId));
-				Coordinates originalPosition = new Coordinates(getDevice().getPickLocation(devicePickSettings.getWorkArea(), getProcessFlow().getClampingType()));
-				if (needsTeaching()) {
-					Coordinates position = new Coordinates(originalPosition);
-					logger.debug("Original coordinates: " + position + ".");
-					if (getRelativeTeachedOffset() == null) {
-						if (!teached) {
-							throw new IllegalStateException("Teaching was needed, but no relative offset value available and 'teach mode' is not active!");
-						} 
+				try {
+					checkProcessExecutorStatus(executor);
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, workPieceId));
+					Coordinates originalPosition = new Coordinates(getDevice().getPickLocation(devicePickSettings.getWorkArea(), getProcessFlow().getClampingType()));
+					if (needsTeaching()) {
+						Coordinates position = new Coordinates(originalPosition);
+						logger.debug("Original coordinates: " + position + ".");
+						if (getRelativeTeachedOffset() == null) {
+							if (!teached) {
+								throw new IllegalStateException("Teaching was needed, but no relative offset value available and 'teach mode' is not active!");
+							} 
+						} else {
+							logger.debug("The teached offset that will be used: [" + getRelativeTeachedOffset() + "].");
+							Coordinates absoluteOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, getRelativeTeachedOffset());
+							logger.debug("The absolute offset that will be used: [" + absoluteOffset + "].");
+							position.offset(absoluteOffset);
+							logger.debug("Exact pick location: [" + position + "].");
+						}
+						robotPickSettings.setLocation(position);
 					} else {
-						logger.debug("The teached offset that will be used: [" + getRelativeTeachedOffset() + "].");
-						Coordinates absoluteOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, getRelativeTeachedOffset());
-						logger.debug("The absolute offset that will be used: [" + absoluteOffset + "].");
-						position.offset(absoluteOffset);
-						logger.debug("Exact pick location: [" + position + "].");
+						Coordinates position = new Coordinates(originalPosition);
+						logger.debug("Exact pick location (calculated without teaching): [" + position + "].");
+						robotPickSettings.setLocation(position);
 					}
-					robotPickSettings.setLocation(position);
-				} else {
-					Coordinates position = new Coordinates(originalPosition);
-					logger.debug("Exact pick location (calculated without teaching): [" + position + "].");
-					robotPickSettings.setLocation(position);
+					checkProcessExecutorStatus(executor);
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
+					logger.debug("Initiating robot: [" + getRobot() + "] pick action.");
+					getRobotSettings().setTeachingNeeded(teached);
+					checkProcessExecutorStatus(executor);
+					getRobot().initiatePick(robotPickSettings);		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
+					logger.debug("Preparing [" + getDevice() + "] for pick using [" + getRobot() + "].");
+					checkProcessExecutorStatus(executor);
+					getDevice().prepareForPick(devicePickSettings);
+					logger.debug("Device [" + getDevice() + "] prepared for pick.");
+					checkProcessExecutorStatus(executor);
+					if (teached && needsTeaching()) {
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_TEACHED, workPieceId));
+						checkProcessExecutorStatus(executor);
+						getRobot().continuePickTillAtLocation();
+						checkProcessExecutorStatus(executor);
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_NEEDED, workPieceId));
+						checkProcessExecutorStatus(executor);
+						getRobot().continuePickTillUnclampAck();
+						checkProcessExecutorStatus(executor);
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_FINISHED, workPieceId));
+						Coordinates robotPosition = getRobot().getPosition();
+						Coordinates relTeachedOffset = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, robotPosition.calculateOffset(originalPosition));
+						logger.info("The relative teached offset: [" + relTeachedOffset + "].");
+						setRelativeTeachedOffset(relTeachedOffset);
+					} else {
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, workPieceId));
+						checkProcessExecutorStatus(executor);
+						getRobot().continuePickTillAtLocation();
+						checkProcessExecutorStatus(executor);
+						getRobot().continuePickTillUnclampAck();
+					}
+					logger.debug("Robot pick action succeeded, about to ask device [" + getDevice() +  "] to release piece.");
+					checkProcessExecutorStatus(executor);
+					getDevice().releasePiece(devicePickSettings);
+					logger.debug("Device [" + getDevice() + "] released piece, about to finalize pick.");
+					robotPickSettings.getGripperHead().getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
+					checkProcessExecutorStatus(executor);
+					getRobot().continuePickTillIPPoint();
+					checkProcessExecutorStatus(executor);
+					getDevice().pickFinished(devicePickSettings);
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
+					logger.debug("Pick ready (but not finalized).");
+				} catch (AbstractCommunicationException | RobotActionException | DeviceActionException | InterruptedException e) {
+					throw e;
+				} finally {
+					getDevice().release();
+					getRobot().release();
 				}
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
-				logger.debug("Initiating robot: [" + getRobot() + "] pick action.");
-				getRobotSettings().setTeachingNeeded(teached);
-				getRobot().initiatePick(robotPickSettings);		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
-				logger.debug("Preparing [" + getDevice() + "] for pick using [" + getRobot() + "].");
-				getDevice().prepareForPick(devicePickSettings);
-				logger.debug("Device [" + getDevice() + "] prepared for pick.");
-				if (teached && needsTeaching()) {
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_TEACHED, workPieceId));
-					getRobot().continuePickTillAtLocation();
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_NEEDED, workPieceId));
-					getRobot().continuePickTillUnclampAck();
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_FINISHED, workPieceId));
-					Coordinates robotPosition = getRobot().getPosition();
-					Coordinates relTeachedOffset = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, robotPosition.calculateOffset(originalPosition));
-					logger.info("The relative teached offset: [" + relTeachedOffset + "].");
-					setRelativeTeachedOffset(relTeachedOffset);
-				} else {
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, workPieceId));
-					getRobot().continuePickTillAtLocation();
-					getRobot().continuePickTillUnclampAck();
-				}
-				logger.debug("Robot pick action succeeded, about to ask device [" + getDevice() +  "] to release piece.");
-				getDevice().releasePiece(devicePickSettings);
-				logger.debug("Device [" + getDevice() + "] released piece, about to finalize pick.");
-				robotPickSettings.getGripperHead().getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
-				getRobot().continuePickTillIPPoint();
-				getDevice().pickFinished(devicePickSettings);
-				getDevice().release(getProcessFlow());
-				getRobot().release(getProcessFlow());
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
-				logger.debug("Pick ready (but not finalized).");
 			}
 		}
 	}
 	
 	@Override
-	public void finalizeStep() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+	public void finalizeStep(final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		if (!getRobot().lock(getProcessFlow())) {
 			throw new IllegalStateException("Robot [" + getRobot() + "] was already locked by " + getRobot().getLockingProcess());
 		} else {
-			getRobot().finalizePick();
-			getRobot().release(getProcessFlow());
-			logger.debug("Finalized pick");
+			try {
+				checkProcessExecutorStatus(executor);
+				getRobot().finalizePick();
+				logger.debug("Finalized pick");
+			} catch(AbstractCommunicationException | RobotActionException | InterruptedException e) {
+				throw e;
+			} finally {
+				getRobot().release();
+			}
 		}
 	}
 	

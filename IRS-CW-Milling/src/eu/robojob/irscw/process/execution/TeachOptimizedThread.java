@@ -89,8 +89,8 @@ public class TeachOptimizedThread extends TeachThread {
 				while ((getProcessFlow().getCurrentIndex(WORKPIECE_ID) < getProcessFlow().getProcessSteps().size()) && !knowEnough && isRunning()) {
 					AbstractProcessStep step = getProcessFlow().getProcessSteps().get((getProcessFlow().getCurrentIndex(WORKPIECE_ID)));
 					if (step.equals(pickFromStackerStep)) {
-						pickFromStackerStep.executeStepTeached(WORKPIECE_ID);
-						pickFromStackerStep.finalizeStep();
+						pickFromStackerStep.executeStepTeached(WORKPIECE_ID, this);
+						pickFromStackerStep.finalizeStep(this);
 						// update relative offset for upcoming steps
 						relTeachedOffsetRawWp = pickFromStackerStep.getRelativeTeachedOffset();
 						if (putAndWaitOnPrageStep != null) {
@@ -98,24 +98,24 @@ public class TeachOptimizedThread extends TeachThread {
 						}
 						putInMachineStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
 					} else if (step.equals(putAndWaitOnPrageStep)) {
-						putAndWaitOnPrageStep.executeStepTeached(WORKPIECE_ID);
-						putAndWaitOnPrageStep.finalizeStep();
+						putAndWaitOnPrageStep.executeStepTeached(WORKPIECE_ID, this);
+						putAndWaitOnPrageStep.finalizeStep(this);
 						relTeachedOffsetMachineClamping = putAndWaitOnPrageStep.getRelativeTeachedOffset();
 						Coordinates offsetInMachine = new Coordinates(relTeachedOffsetMachineClamping);
 						putInMachineStep.setRelativeTeachedOffset(offsetInMachine);
 						//TODO what to do with y offset of Präge?
 					} else if (step.equals(putInMachineStep)) {
 						putInMachineStep.getRobotSettings().setFreeAfter(true);
-						putInMachineStep.executeStepTeached(WORKPIECE_ID);
-						putInMachineStep.finalizeStep();
+						putInMachineStep.executeStepTeached(WORKPIECE_ID, this);
+						putInMachineStep.finalizeStep(this);
 						relTeachedOffsetMachineClamping = putInMachineStep.getRelativeTeachedOffset();
 						knowEnough = true;
 					} else if (step.equals(pickAfterWaitOnPrageStep)) {
-						pickAfterWaitOnPrageStep.executeStep(WORKPIECE_ID);
-						pickAfterWaitOnPrageStep.finalizeStep();
+						pickAfterWaitOnPrageStep.executeStep(WORKPIECE_ID, this);
+						pickAfterWaitOnPrageStep.finalizeStep(this);
 						knowEnough = true;
 					} else if (!(step instanceof InterventionStep)) {
-						step.executeStep(WORKPIECE_ID);
+						step.executeStep(WORKPIECE_ID, this);
 					}
 					getProcessFlow().setCurrentIndex(WORKPIECE_ID, getProcessFlow().getCurrentIndex(WORKPIECE_ID) + 1);
 				}

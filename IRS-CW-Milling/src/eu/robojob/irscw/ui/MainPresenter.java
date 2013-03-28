@@ -30,7 +30,7 @@ public class MainPresenter implements ProcessFlowListener {
 	private AdminPresenter adminPresenter;
 	
 	private MainContentPresenter activeContentPresenter;
-		
+			
 	public MainPresenter(final MainView view, final MenuBarPresenter menuBarPresenter, final ConfigurePresenter configurePresenter, final TeachPresenter teachPresenter, 
 			final AutomatePresenter automatePresenter, final RobotPopUpPresenter robotPopUpPresenter, final AdminPresenter adminPresenter) {
 		this.view = view;

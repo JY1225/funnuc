@@ -23,7 +23,7 @@ import eu.robojob.irscw.util.Translator;
  * This simple Automate-thread will execute the ProcessSteps sequentially
  */
 @Deprecated
-public class AutomateThread extends Thread {
+public class AutomateThread extends Thread implements ProcessExecutor {
 
 	private static Logger logger = LogManager.getLogger(AutomateThread.class.getName());
 	private static final int WORKPIECE_ID = 1;
@@ -84,13 +84,13 @@ public class AutomateThread extends Thread {
 								for (AbstractRobot robot : processFlow.getRobots()) {
 									robot.moveToHome();	// send robots to home
 								}
-								step.executeStep(WORKPIECE_ID);
+								step.executeStep(WORKPIECE_ID, this);
 								running = false;
 							}
 						} else {
-							step.executeStep(WORKPIECE_ID);
+							step.executeStep(WORKPIECE_ID, this);
 							if (step instanceof AbstractTransportStep) {
-								((AbstractTransportStep) step).finalizeStep();
+								((AbstractTransportStep) step).finalizeStep(this);
 							}
 						}
 						currentStepIndex++;

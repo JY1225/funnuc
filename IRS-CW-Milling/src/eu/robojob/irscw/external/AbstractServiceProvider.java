@@ -37,14 +37,10 @@ public abstract class AbstractServiceProvider {
 		}
 	}
 	
-	public synchronized boolean release(final ProcessFlow ownerProcess) {
-		if (this.ownerProcess.equals(ownerProcess)) {
-			isLocked = false;
-			this.ownerProcess = null;
-			return true;
-		} else {
-			return false;
-		}
+	public synchronized boolean release() {
+		isLocked = false;
+		this.ownerProcess = null;
+		return true;
 	}
 	
 	public synchronized boolean isLocked() {
