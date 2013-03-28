@@ -192,7 +192,7 @@ public class RoboSoftAppFactory {
 		if (automatePresenter == null) {
 			MainContentView view = new MainContentView();
 			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
-			eu.robojob.irscw.ui.automate.device.DeviceMenuFactory deviceMenuFactory = new eu.robojob.irscw.ui.automate.device.DeviceMenuFactory();
+			eu.robojob.irscw.ui.automate.device.DeviceMenuFactory deviceMenuFactory = new eu.robojob.irscw.ui.automate.device.DeviceMenuFactory(getProcessFlow());
 			automatePresenter = new AutomatePresenter(view, getAutomateProcessFlowPresenter(), disconnectedDevicesView,
 					getProcessFlow(), getProcessFlowTimer(), getAutomateStatusPresenter(), deviceMenuFactory);
 		}

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
+import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.automate.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.automate.device.stacking.BasicStackPlateLayoutPresenter;
 import eu.robojob.irscw.ui.automate.device.stacking.BasicStackPlateMenuPresenter;
@@ -16,9 +17,11 @@ import eu.robojob.irscw.ui.general.model.DeviceInformation;
 public class DeviceMenuFactory {
 	
 	private Map<Integer, AbstractMenuPresenter<?>> presentersBuffer;
-			
-	public DeviceMenuFactory() {
+	private ProcessFlow processFlow;		
+	
+	public DeviceMenuFactory(final ProcessFlow processFlow) {
 		presentersBuffer = new HashMap<Integer, AbstractMenuPresenter<?>>();
+		this.processFlow = processFlow;
 	}
 	
 	public void reset() {
@@ -54,7 +57,7 @@ public class DeviceMenuFactory {
 	
 	public BasicStackPlateRefillPresenter getBasicStackPlateRefillPresenter(final DeviceInformation deviceInfo) {
 		BasicStackPlateRefillView view = new BasicStackPlateRefillView();
-		BasicStackPlateRefillPresenter basicStackPlateRefillPresenter = new BasicStackPlateRefillPresenter(view, (BasicStackPlate) deviceInfo.getDevice());
+		BasicStackPlateRefillPresenter basicStackPlateRefillPresenter = new BasicStackPlateRefillPresenter(view, (BasicStackPlate) deviceInfo.getDevice(), processFlow);
 		return basicStackPlateRefillPresenter;
 	}
 	

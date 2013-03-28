@@ -152,6 +152,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		}
 		if (deviceSettings instanceof BasicStackPlateSettings) {
 			BasicStackPlateSettings settings = (BasicStackPlateSettings) deviceSettings;
+			this.currentPickLocations = new ArrayList<StackingPosition>();
 			try {
 				if (settings.getRawWorkPiece() != null) {
 					layout.configureStackingPositions(settings.getRawWorkPiece(), settings.getOrientation());
@@ -179,6 +180,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public void clearDeviceSettings() {
 		this.rawWorkPiece = new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions());
 		this.finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions());
+		this.currentPickLocations = new ArrayList<StackingPosition>();
 		try {
 			this.layout.configureStackingPositions(null, layout.getOrientation());
 		} catch (IncorrectWorkPieceDataException e) {
@@ -261,5 +263,22 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			}
 		}
 		return amount;
+	}
+	
+	public void replaceFinishedWorkPieces(final int amount) throws IncorrectWorkPieceDataException {
+		if (amount > getFinishedWorkPiecesPresentAmount()) {
+			throw new IncorrectWorkPieceDataException("Amount is too high");
+		} else {
+			int readyAmount = 0;
+			for (StackingPosition location : layout.getStackingPositions()) {
+				if ((location.getWorkPiece() != null) && (location.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED))) {
+					location.setWorkPiece(new WorkPiece(Type.RAW, rawWorkPiece.getDimensions()));
+					readyAmount++;
+				}
+				if (readyAmount >= amount) {
+					break;
+				}
+			}
+		}
 	}
 }
