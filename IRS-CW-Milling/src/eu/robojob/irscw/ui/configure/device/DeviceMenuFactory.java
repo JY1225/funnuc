@@ -23,13 +23,13 @@ import eu.robojob.irscw.ui.configure.device.processing.prage.PrageDeviceMenuPres
 import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateConfigurePresenter;
 import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateConfigureView;
 import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateLayoutPresenter;
-import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateLayoutView;
 import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateMenuPresenter;
 import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateRawWorkPiecePresenter;
 import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateRawWorkPieceView;
 import eu.robojob.irscw.ui.configure.device.stacking.StackingDeviceMenuView;
 import eu.robojob.irscw.ui.general.AbstractFormPresenter;
-import eu.robojob.irscw.ui.general.AbstractMenuPresenter;
+import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
+import eu.robojob.irscw.ui.general.device.stacking.BasicStackPlateLayoutView;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class DeviceMenuFactory {
@@ -131,7 +131,7 @@ public class DeviceMenuFactory {
 	}
 	
 	public BasicStackPlateLayoutPresenter getBasicStackPlateLayoutPresenter(final DeviceInformation deviceInfo) {
-		BasicStackPlateLayoutView view = new BasicStackPlateLayoutView();
+		BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter> view = new BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter>();
 		ClampingManner clampingType = null;
 		if (deviceInfo.getPickStep() != null) {
 			clampingType = deviceInfo.getPickStep().getProcessFlow().getClampingType();

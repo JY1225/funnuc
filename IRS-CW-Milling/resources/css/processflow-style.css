@@ -115,7 +115,7 @@
 }
 
 .progressbar-piece-unfocussed {
-	-fx-opacity: 0.2;	
+	-fx-opacity: 1;	
 }
 
 .progressbar-piece-first {

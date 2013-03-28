@@ -37,6 +37,7 @@ import eu.robojob.irscw.ui.automate.AutomatePresenter;
 import eu.robojob.irscw.ui.automate.AutomateStatusPresenter;
 import eu.robojob.irscw.ui.automate.AutomateStatusView;
 import eu.robojob.irscw.ui.automate.TimingView;
+import eu.robojob.irscw.ui.automate.flow.AutomateProcessFlowPresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.ConfigureView;
 import eu.robojob.irscw.ui.configure.device.DeviceMenuFactory;
@@ -81,7 +82,7 @@ public class RoboSoftAppFactory {
 	private AutomatePresenter automatePresenter;
 	private ConfigureProcessFlowPresenter configureProcessFlowPresenter;
 	private FixedProcessFlowPresenter teachProcessFlowPresenter;
-	private FixedProcessFlowPresenter automateProcessFlowPresenter;
+	private AutomateProcessFlowPresenter automateProcessFlowPresenter;
 	private RobotPopUpPresenter robotPopUpPresenter;
 	private ProcessMenuPresenter processConfigurationMenuPresenter;
 	private ProcessOpenPresenter processOpenPresenter;
@@ -191,8 +192,9 @@ public class RoboSoftAppFactory {
 		if (automatePresenter == null) {
 			MainContentView view = new MainContentView();
 			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
+			eu.robojob.irscw.ui.automate.device.DeviceMenuFactory deviceMenuFactory = new eu.robojob.irscw.ui.automate.device.DeviceMenuFactory();
 			automatePresenter = new AutomatePresenter(view, getAutomateProcessFlowPresenter(), disconnectedDevicesView,
-					getProcessFlow(), getProcessFlowTimer(), getAutomateStatusPresenter());
+					getProcessFlow(), getProcessFlowTimer(), getAutomateStatusPresenter(), deviceMenuFactory);
 		}
 		return automatePresenter;
 	}
@@ -248,10 +250,10 @@ public class RoboSoftAppFactory {
 		return teachProcessFlowPresenter;
 	}
 	
-	public FixedProcessFlowPresenter getAutomateProcessFlowPresenter() {
+	public AutomateProcessFlowPresenter getAutomateProcessFlowPresenter() {
 		if (automateProcessFlowPresenter == null) {
 			ProcessFlowView processFlowView = new ProcessFlowView(2);
-			automateProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView);
+			automateProcessFlowPresenter = new AutomateProcessFlowPresenter(processFlowView);
 		}
 		return automateProcessFlowPresenter;
 	}

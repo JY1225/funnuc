@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device.stacking;
+package eu.robojob.irscw.ui.general.device.stacking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +23,11 @@ import eu.robojob.irscw.external.device.stacking.StackingPosition;
 import eu.robojob.irscw.external.device.stacking.StudPosition;
 import eu.robojob.irscw.external.device.stacking.StudPosition.StudType;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.irscw.ui.general.AbstractFormPresenter;
 import eu.robojob.irscw.ui.general.AbstractFormView;
 import eu.robojob.irscw.workpiece.WorkPiece.Type;
 
-public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateLayoutPresenter> {
+public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> extends AbstractFormView<T> {
 
 	private BasicStackPlateLayout basicStackPlateLayout;
 	
@@ -81,7 +82,7 @@ public class BasicStackPlateLayoutView extends AbstractFormView<BasicStackPlateL
 	}
 	
 	@Override
-	protected void build() {
+	public void build() {
 		this.setPrefSize(590, 300);
 		this.setMinSize(590, 300);
 		this.setMaxSize(590, 300);

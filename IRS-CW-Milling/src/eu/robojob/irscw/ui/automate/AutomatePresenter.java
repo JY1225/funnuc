@@ -3,43 +3,52 @@ package eu.robojob.irscw.ui.automate;
 import java.util.Set;
 
 import javafx.scene.Node;
+import javafx.scene.control.TextInputControl;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.ProcessFlow.Mode;
 import eu.robojob.irscw.process.ProcessFlowTimer;
 import eu.robojob.irscw.process.execution.fixed.AutomateFixedControllingThread;
 import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentView;
+import eu.robojob.irscw.ui.automate.device.DeviceMenuFactory;
+import eu.robojob.irscw.ui.automate.flow.AutomateProcessFlowPresenter;
+import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.general.ExecutionPresenter;
-import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
+import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 import eu.robojob.irscw.ui.general.status.DisconnectedDevicesView;
 
-public class AutomatePresenter extends ExecutionPresenter {
+public class AutomatePresenter extends ExecutionPresenter implements TextInputControlListener {
 	
 	private MainContentView view;
 	private ProcessFlowTimer processFlowTimer;
 	private DisconnectedDevicesView disconnectedDevicesView;
 	private AutomateStatusPresenter statusPresenter;
 	private AutomateTimingThread automateTimingThread;
+	private DeviceMenuFactory deviceMenuFactory;
+	private AbstractMenuPresenter<?> activeMenu;
+	private ProcessFlowAdapter processFlowAdapter;
 	
 	private boolean running;
 	
-	//private AutomateOptimizedThread automateThread;
 	private AutomateFixedControllingThread automateThread;
 	
-	public AutomatePresenter(final MainContentView view, final FixedProcessFlowPresenter processFlowPresenter, final DisconnectedDevicesView disconnectedDevicesView,
-			final ProcessFlow processFlow, final ProcessFlowTimer processFlowTimer, final AutomateStatusPresenter statusPresenter) {
+	public AutomatePresenter(final MainContentView view, final AutomateProcessFlowPresenter processFlowPresenter, final DisconnectedDevicesView disconnectedDevicesView,
+			final ProcessFlow processFlow, final ProcessFlowTimer processFlowTimer, final AutomateStatusPresenter statusPresenter,
+			final DeviceMenuFactory deviceMenuFactory) {
 		super(processFlowPresenter, processFlow, statusPresenter.getStatusPresenter());
 		this.view = view;
 		view.setTop(processFlowPresenter.getView());
+		processFlowPresenter.setParent(this);
 		this.disconnectedDevicesView = disconnectedDevicesView;
 		this.statusPresenter = statusPresenter;
 		statusPresenter.setParent(this);
 		this.processFlowTimer = processFlowTimer;
 		statusPresenter.setTotalAmount(processFlow.getTotalAmount());
 		statusPresenter.setFinishedAmount(processFlow.getFinishedAmount());
+		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		this.running = false;
-		//automateThread = new AutomateOptimizedThread(processFlow);
 		automateThread = new AutomateFixedControllingThread(processFlow);
+		this.deviceMenuFactory = deviceMenuFactory;
 	}
 	
 	public int getMainProcessFlowId() {
@@ -120,5 +129,42 @@ public class AutomatePresenter extends ExecutionPresenter {
 	public void stopListening(final ProcessFlow processFlow) {
 		processFlow.removeListener(statusPresenter);
 		ThreadManager.stopRunning(automateTimingThread);
+	}
+
+	public boolean showDeviceMenu(final int deviceIndex) {
+		activeMenu = deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(deviceIndex));
+		if (activeMenu != null) {
+			activeMenu.setParent(this);
+			activeMenu.setTextFieldListener(this);
+			activeMenu.openFirst();
+			view.showBottomHBox();
+			view.setBottomLeft(activeMenu.getView());
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public void closeDeviceMenu() {
+		view.hideBottomHBox();
+	}
+	
+	public void setBottomRight(final Node node) {
+		view.setBottomRight(node);
+	}
+
+	@Override
+	public void closeKeyboard() {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void textFieldFocussed(final TextInputControl textInputControl) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void textFieldLostFocus(final TextInputControl textInputControl) {
+		// TODO Auto-generated method stub
 	}
 }

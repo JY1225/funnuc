@@ -24,12 +24,11 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 		view.setPresenter(this);
 	}
 	
-	@Override public void deviceClicked(final int deviceIndex) {
-	}
-	@Override public void transportClicked(final int transportIndex) {
-	}
-	@Override public void backgroundClicked() {
-	}
+	@Override public void deviceClicked(final int deviceIndex) { }
+	
+	@Override public void transportClicked(final int transportIndex) { }
+	
+	@Override public void backgroundClicked() { }
 	
 	public void loadProcessFlow(final ProcessFlow processFlow) {
 		processFlowAdapter = new ProcessFlowAdapter(processFlow);

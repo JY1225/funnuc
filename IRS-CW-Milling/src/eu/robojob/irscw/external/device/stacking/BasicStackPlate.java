@@ -42,6 +42,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	private BasicStackPlateLayout layout;	
 	private WorkPiece rawWorkPiece;
 	private WorkPiece finishedWorkPiece;
+	private List<BasicStackPlateListener> listeners;
 	
 	private List<StackingPosition> currentPickLocations;
 	
@@ -50,6 +51,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		this.layout = layout;
 		this.rawWorkPiece = new WorkPiece(Type.RAW, new WorkPieceDimensions());
 		this.currentPickLocations = new ArrayList<StackingPosition>();
+		this.listeners = new ArrayList<BasicStackPlateListener>();
 	}
 	
 	public BasicStackPlate(final String name, final BasicStackPlateLayout layout) {
@@ -123,12 +125,18 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	@Override
 	public synchronized void pickFinished(final DevicePickSettings pickSettings) {
 		currentPickLocations.get(currentPickLocations.size() - 1).setWorkPiece(null);
+		for (BasicStackPlateListener listener : listeners) {
+			listener.layoutChanged();
+		}
 		logger.info("pick finished!!");
 	}
 
 	@Override
 	public synchronized void putFinished(final DevicePutSettings putSettings) {
 		currentPickLocations.remove(0).setWorkPiece(finishedWorkPiece);
+		for (BasicStackPlateListener listener : listeners) {
+			listener.layoutChanged();
+		}
 		logger.info("put finished!");
 	}
 	
@@ -232,5 +240,26 @@ public class BasicStackPlate extends AbstractStackingDevice {
 				layout.getStackingPositions().get(i).setWorkPiece(finishedWorkPiece);
 			} 
 		}
+		for (BasicStackPlateListener listener : listeners) {
+			listener.layoutChanged();
+		}
+	}
+	
+	public void addListener(final BasicStackPlateListener listener) {
+		this.listeners.add(listener);
+	}
+	
+	public void removeListener(final BasicStackPlateListener listener) {
+		this.listeners.remove(listener);
+	}
+	
+	public int getFinishedWorkPiecesPresentAmount() {
+		int amount = 0;
+		for (StackingPosition location : layout.getStackingPositions()) {
+			if ((location.getWorkPiece() != null) && (location.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED))) {
+				amount++;
+			}
+		}
+		return amount;
 	}
 }

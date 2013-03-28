@@ -19,4 +19,8 @@ public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> exten
 	public void setParent(final ContentPresenter parent) {
 		this.parent = (AdminPresenter) parent;
 	}
+	
+	public abstract boolean isConfigured();
+
+	public abstract void setBlocked(boolean blocked);
 }

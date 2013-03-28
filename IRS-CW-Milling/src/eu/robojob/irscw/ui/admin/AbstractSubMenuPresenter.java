@@ -21,4 +21,8 @@ public abstract class AbstractSubMenuPresenter<T extends AbstractMenuView<?>, S 
 	public void setParent(final ContentPresenter parent) {
 		this.parent = (S) parent;
 	}
+	
+	public abstract boolean isConfigured();
+
+	public abstract void setBlocked(boolean blocked);
 }
