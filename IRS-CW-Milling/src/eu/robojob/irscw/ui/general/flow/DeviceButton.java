@@ -44,7 +44,8 @@ public class DeviceButton extends VBox {
 	private static final String CSS_CLASS_DEVICE_LABEL = "device-label";
 	private static final String CSS_CLASS_DEVICE_BUTTON_WRAPPER = "device-button-wrapper";
 	private static final String CSS_CLASS_UNCLICKABLE = "unclickable";
-		
+	private static final String CSS_CLASS_UNCLICKABLE_NAME = "label-unclickable";
+	
 	private Button mainButton;
 	private SVGPath imagePath;
 	private Label deviceName;
@@ -173,6 +174,10 @@ public class DeviceButton extends VBox {
 		mainButton.getStyleClass().remove(CSS_CLASS_UNCLICKABLE);
 		if (!clickable) {
 			mainButton.getStyleClass().add(CSS_CLASS_UNCLICKABLE);
+		}
+		deviceName.getStyleClass().remove(CSS_CLASS_UNCLICKABLE_NAME);
+		if (!clickable) {
+			deviceName.getStyleClass().add(CSS_CLASS_UNCLICKABLE_NAME);
 		}
 	}
 }

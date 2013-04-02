@@ -139,5 +139,9 @@
 }
 
 .unclickable {
-	
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 5, 0.0, 0, 2);
+}
+
+.label-unclickable {
+	-fx-text-fill: gray;
 }

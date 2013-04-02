@@ -38,6 +38,7 @@ import eu.robojob.irscw.ui.automate.AutomateStatusPresenter;
 import eu.robojob.irscw.ui.automate.AutomateStatusView;
 import eu.robojob.irscw.ui.automate.TimingView;
 import eu.robojob.irscw.ui.automate.flow.AutomateProcessFlowPresenter;
+import eu.robojob.irscw.ui.automate.flow.AutomateProcessFlowView;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.configure.ConfigureView;
 import eu.robojob.irscw.ui.configure.device.DeviceMenuFactory;
@@ -99,6 +100,7 @@ public class RoboSoftAppFactory {
 	private CNCMachineConfigurePresenter cncMachineConfigurePresenter;
 	private CNCMachineClampingsPresenter cncMachineClampingsPresenter;
 	private PrageDeviceConfigurePresenter prageDeviceConfigurePresenter;
+	private eu.robojob.irscw.ui.automate.device.DeviceMenuFactory automateDeviceMenuFactory;
 	
 	private ProcessFlow processFlow;
 	private ProcessFlowTimer processFlowTimer;
@@ -192,11 +194,17 @@ public class RoboSoftAppFactory {
 		if (automatePresenter == null) {
 			MainContentView view = new MainContentView();
 			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
-			eu.robojob.irscw.ui.automate.device.DeviceMenuFactory deviceMenuFactory = new eu.robojob.irscw.ui.automate.device.DeviceMenuFactory(getProcessFlow());
 			automatePresenter = new AutomatePresenter(view, getAutomateProcessFlowPresenter(), disconnectedDevicesView,
-					getProcessFlow(), getProcessFlowTimer(), getAutomateStatusPresenter(), deviceMenuFactory);
+					getProcessFlow(), getProcessFlowTimer(), getAutomateStatusPresenter(), getAutomateDeviceMenuFactory());
 		}
 		return automatePresenter;
+	}
+	
+	public eu.robojob.irscw.ui.automate.device.DeviceMenuFactory getAutomateDeviceMenuFactory() {
+		if (automateDeviceMenuFactory == null) {
+			automateDeviceMenuFactory = new eu.robojob.irscw.ui.automate.device.DeviceMenuFactory(getProcessFlow());
+		}
+		return automateDeviceMenuFactory; 
 	}
 	
 	public RobotPopUpPresenter getRobotPopUpPresenter() {
@@ -252,8 +260,8 @@ public class RoboSoftAppFactory {
 	
 	public AutomateProcessFlowPresenter getAutomateProcessFlowPresenter() {
 		if (automateProcessFlowPresenter == null) {
-			ProcessFlowView processFlowView = new ProcessFlowView(2);
-			automateProcessFlowPresenter = new AutomateProcessFlowPresenter(processFlowView);
+			AutomateProcessFlowView processFlowView = new AutomateProcessFlowView(2);
+			automateProcessFlowPresenter = new AutomateProcessFlowPresenter(processFlowView, getAutomateDeviceMenuFactory());
 		}
 		return automateProcessFlowPresenter;
 	}

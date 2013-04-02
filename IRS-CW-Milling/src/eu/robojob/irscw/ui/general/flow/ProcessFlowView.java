@@ -68,7 +68,7 @@ public class ProcessFlowView extends GridPane {
 		}
 	}
 	
-	private void build() {
+	protected void build() {
 		this.getChildren().clear();
 		setVgap(GAP);
 		setPadding(new Insets(GAP, 0, GAP, 0));
@@ -95,6 +95,14 @@ public class ProcessFlowView extends GridPane {
 				event.consume();
 			}
 		});
+	}
+	
+	public List<DeviceButton> getDeviceButtons() {
+		return deviceButtons;
+	}
+	
+	public List<TransportButton> getTransportButtons() {
+		return transportButtons;
 	}
 	
 	private void setupDevice(final int index, final int column, final int row) {
