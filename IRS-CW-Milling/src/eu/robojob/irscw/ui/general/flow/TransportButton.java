@@ -52,6 +52,7 @@ public class TransportButton extends StackPane {
 		shapeRegion.setMinSize(WIDTH, SHAPE_HEIGHT);
 		shapeRegion.setMaxSize(WIDTH, SHAPE_HEIGHT);
 		shapeRegion.getStyleClass().add("transport-button");
+		this.getStyleClass().add("transport-button-wrapper");
 		this.getChildren().add(shapeRegion);
 		this.setPrefWidth(WIDTH);
 		this.setMinWidth(WIDTH);
@@ -183,8 +184,12 @@ public class TransportButton extends StackPane {
 	
 	public void setFocussed(final boolean active) {
 		shapeRegion.getStyleClass().remove("transport-unfocussed");
+		hboxPauseLeft.getStyleClass().remove("transport-unfocussed");
+		hboxPauseRight.getStyleClass().remove("transport-unfocussed");
 		if (!active) {
 			shapeRegion.getStyleClass().add("transport-unfocussed");
+			hboxPauseLeft.getStyleClass().add("transport-unfocussed");
+			hboxPauseRight.getStyleClass().add("transport-unfocussed");
 		}
 	}
 	
