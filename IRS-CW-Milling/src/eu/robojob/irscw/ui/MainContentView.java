@@ -108,6 +108,14 @@ public class MainContentView extends VBox {
 		this.spBottom.getChildren().remove(hbBottom);
 	}
 	
+	public void addNodeToBottomLeft(final Node node) {
+		bottomLeft.getChildren().add(node);
+	}
+	
+	public void removeNodeFromBottomLeft(final Node node) {
+		bottomLeft.getChildren().remove(node);
+	}
+	
 	public void setBottomLeft(final Node node) {
 		this.bottomLeft.getChildren().clear();
 		this.bottomLeft.getChildren().add(node);

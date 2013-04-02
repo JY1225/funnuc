@@ -1,15 +1,21 @@
 package eu.robojob.irscw.ui.configure.device.processing.cnc;
 
 import eu.robojob.irscw.external.device.DeviceSettings;
+import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.event.DataChangedEvent;
+import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
+import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
+import eu.robojob.irscw.process.event.ModeChangedEvent;
+import eu.robojob.irscw.process.event.ProcessFlowListener;
+import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.ui.general.AbstractFormPresenter;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
-public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMillingMachinePickView, CNCMillingMachineMenuPresenter> {
+public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMillingMachinePickView, CNCMillingMachineMenuPresenter> implements ProcessFlowListener {
 
 	private PickStep pickStep;
 	private DeviceSettings deviceSettings;
@@ -17,6 +23,7 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 	public CNCMillingMachinePickPresenter(final CNCMillingMachinePickView view, final PickStep pickStep, final DeviceSettings deviceSettings) {
 		super(view);
 		this.pickStep = pickStep;
+		pickStep.getProcessFlow().addListener(this);
 		this.deviceSettings = deviceSettings;
 		view.setPickStep(pickStep);
 		view.setDeviceSettings(deviceSettings);
@@ -125,4 +132,28 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 		}
 		return false;
 	}
+
+	@Override
+	public void modeChanged(final ModeChangedEvent e) { }
+
+	@Override
+	public void statusChanged(final StatusChangedEvent e) { }
+
+	@Override
+	public void dataChanged(final DataChangedEvent e) {
+		if (e.getStep() instanceof PickStep) {
+			PickStep pickStep = (PickStep) e.getStep();
+			if (pickStep.getDevice() instanceof BasicStackPlate) {
+				this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setLength(pickStep.getRobotSettings().getWorkPiece().getDimensions().getLength());
+				this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setWidth(pickStep.getRobotSettings().getWorkPiece().getDimensions().getWidth());
+				this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setHeight(pickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight());
+			}
+		}
+	}
+
+	@Override
+	public void finishedAmountChanged(final FinishedAmountChangedEvent e) { }
+
+	@Override
+	public void exceptionOccured(final ExceptionOccuredEvent e) { }
 }

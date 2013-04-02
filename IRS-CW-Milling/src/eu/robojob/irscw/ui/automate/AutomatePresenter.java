@@ -12,7 +12,9 @@ import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.ui.MainContentView;
 import eu.robojob.irscw.ui.automate.device.DeviceMenuFactory;
 import eu.robojob.irscw.ui.automate.flow.AutomateProcessFlowPresenter;
+import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.general.ExecutionPresenter;
 import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 import eu.robojob.irscw.ui.general.status.DisconnectedDevicesView;
@@ -27,14 +29,15 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 	private DeviceMenuFactory deviceMenuFactory;
 	private AbstractMenuPresenter<?> activeMenu;
 	private ProcessFlowAdapter processFlowAdapter;
-	
+	private NumericKeyboardPresenter numericKeyboardPresenter;
+	private boolean numericKeyboardActive;
 	private boolean running;
 	
 	private AutomateFixedControllingThread automateThread;
 	
 	public AutomatePresenter(final MainContentView view, final AutomateProcessFlowPresenter processFlowPresenter, final DisconnectedDevicesView disconnectedDevicesView,
 			final ProcessFlow processFlow, final ProcessFlowTimer processFlowTimer, final AutomateStatusPresenter statusPresenter,
-			final DeviceMenuFactory deviceMenuFactory) {
+			final DeviceMenuFactory deviceMenuFactory, final NumericKeyboardPresenter numericKeyboardPresenter) {
 		super(processFlowPresenter, processFlow, statusPresenter.getStatusPresenter());
 		this.view = view;
 		view.setTop(processFlowPresenter.getView());
@@ -49,6 +52,9 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 		this.running = false;
 		automateThread = new AutomateFixedControllingThread(processFlow);
 		this.deviceMenuFactory = deviceMenuFactory;
+		this.numericKeyboardPresenter = numericKeyboardPresenter;
+		numericKeyboardPresenter.setParent(this);
+		this.numericKeyboardActive = false;
 	}
 	
 	public int getMainProcessFlowId() {
@@ -155,16 +161,28 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 
 	@Override
 	public void closeKeyboard() {
-		// TODO Auto-generated method stub
+		if (numericKeyboardActive) {
+			view.removeNodeFromBottomLeft(numericKeyboardPresenter.getView());
+			numericKeyboardActive = false;
+			view.requestFocus();
+		}
 	}
 
 	@Override
 	public void textFieldFocussed(final TextInputControl textInputControl) {
-		// TODO Auto-generated method stub
+		if (textInputControl instanceof IntegerTextField) {
+			numericKeyboardPresenter.setTarget(textInputControl);
+			if (!numericKeyboardActive) {
+				view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
+				numericKeyboardActive = true;
+			}
+		} else {
+			throw new IllegalStateException("Expected to only contain integer textfields");
+		}
 	}
 
 	@Override
 	public void textFieldLostFocus(final TextInputControl textInputControl) {
-		// TODO Auto-generated method stub
+		closeKeyboard();
 	}
 }

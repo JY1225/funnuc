@@ -267,7 +267,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	
 	public void replaceFinishedWorkPieces(final int amount) throws IncorrectWorkPieceDataException {
 		if (amount > getFinishedWorkPiecesPresentAmount()) {
-			throw new IncorrectWorkPieceDataException("Amount is too high");
+			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
 		} else {
 			int readyAmount = 0;
 			for (StackingPosition location : layout.getStackingPositions()) {

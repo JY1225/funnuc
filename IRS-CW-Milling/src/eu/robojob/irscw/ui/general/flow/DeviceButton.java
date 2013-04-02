@@ -171,12 +171,12 @@ public class DeviceButton extends VBox {
 	}
 	
 	public void setClickable(final boolean clickable) {
+		this.getStyleClass().remove(CSS_CLASS_UNCLICKABLE);
 		mainButton.getStyleClass().remove(CSS_CLASS_UNCLICKABLE);
-		if (!clickable) {
-			mainButton.getStyleClass().add(CSS_CLASS_UNCLICKABLE);
-		}
 		deviceName.getStyleClass().remove(CSS_CLASS_UNCLICKABLE_NAME);
 		if (!clickable) {
+			this.getStyleClass().add(CSS_CLASS_UNCLICKABLE);
+			mainButton.getStyleClass().add(CSS_CLASS_UNCLICKABLE);
 			deviceName.getStyleClass().add(CSS_CLASS_UNCLICKABLE_NAME);
 		}
 	}
