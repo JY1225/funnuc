@@ -4,10 +4,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
@@ -34,6 +38,23 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	private static final String HORIZONTAL_ICON = "M 3.3125 3.28125 L 3.3125 14.4375 L 20.0625 14.4375 L 20.0625 3.28125 L 3.3125 3.28125 z ";
 	private static final String TILTED_ICON = "M 11.90625 0.03125 L 0.0625 11.875 L 7.96875 19.78125 L 19.8125 7.9375 L 11.90625 0.03125 z ";
 	
+	private SVGPath alarmBgPath;
+	private SVGPath alarmPath;
+	private Label lblAlarmMessage;
+	private HBox hBoxAlarm;
+	private static final int MSG_MIN_HEIGHT = 40;
+	private static final int PADDING_BOTTOM = 10;
+	private static final int ICON_PADDING = 10;
+	private static final int ICON_WIDTH = 25;
+	private static final String TRIANGLE_ICON = "M 12.5,1.03125 C 11.993062,1.0311198 11.509776,1.3702678 11.125,2.0625 L 0.3125,21.46875 C -0.45731218,22.853735 0.22861858,24 1.8125,24 l 21.375,0 c 1.584142,0 2.268771,-1.145744 1.5,-2.53125 L 13.90625,2.0625 C 13.521995,1.3697471 13.006938,1.0313802 12.5,1.03125 z";
+	private static final String WARNING_ICON = "m 10.9375,7.15625 0,2.59375 0.625,6.96875 1.875,0 0.625,-6.96875 0,-2.59375 z m 0.125,11.15625 0,2.875 2.875,0 0,-2.875 z";
+	protected static final String CSS_CLASS_WARNING_ICON = "warning-icon";
+	protected static final String CSS_CLASS_WARNING_BG_ICON = "warning-bg-icon";
+	protected static final String CSS_CLASS_INFO_MESSAGE = "info-msg";
+	protected static final String CSS_CLASS_STATUS_MESSAGE = "status-msg";
+	private static final String CSS_CLASS_INFO_BORDER_BOTTOM = "info-border-bottom";
+	private static final String CSS_CLASS_WARNING_CONFIG = "warning-config";
+
 	private StackPane icon1Pane;
 	private SVGPath workPieceWidthPath;
 	private StackPane icon2Pane;
@@ -87,8 +108,40 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	
 	@Override
 	protected void build() {
+		
+		// icon
+		alarmBgPath = new SVGPath();
+		alarmBgPath.setContent(TRIANGLE_ICON);
+		alarmBgPath.getStyleClass().add(CSS_CLASS_WARNING_BG_ICON);
+		alarmPath = new SVGPath();
+		alarmPath.setContent(WARNING_ICON);
+		alarmPath.getStyleClass().add(CSS_CLASS_WARNING_ICON);
+		Pane alarmIconPane = new Pane();
+		alarmIconPane.getChildren().addAll(alarmBgPath, alarmPath);
+		// label
+		lblAlarmMessage = new Label();
+		lblAlarmMessage.setWrapText(true);
+		lblAlarmMessage.getStyleClass().addAll(CSS_CLASS_INFO_MESSAGE, CSS_CLASS_STATUS_MESSAGE);
+		// hbox
+		hBoxAlarm = new HBox();
+		hBoxAlarm.setMinHeight(MSG_MIN_HEIGHT);
+		hBoxAlarm.setMaxHeight(MSG_MIN_HEIGHT);
+		HBox.setMargin(alarmIconPane, new Insets(0, ICON_PADDING, 0, 0));
+		hBoxAlarm.getChildren().addAll(alarmIconPane, lblAlarmMessage);
+		hBoxAlarm.getStyleClass().add(CSS_CLASS_INFO_BORDER_BOTTOM);
+		hBoxAlarm.setAlignment(Pos.TOP_LEFT);
+		hBoxAlarm.setPadding(new Insets(0, 0, PADDING_BOTTOM, 0));
+		lblAlarmMessage.setMaxWidth(450 - ICON_WIDTH - ICON_PADDING);
+		lblAlarmMessage.getStyleClass().add(CSS_CLASS_WARNING_CONFIG);
+		hBoxAlarm.setPrefWidth(450);
+		hBoxAlarm.setMaxWidth(450);
 		int row = 0;
 		int column = 0;
+				
+		add(hBoxAlarm, 0, row, 7, 1);
+		GridPane.setMargin(hBoxAlarm, new Insets(0, 0, 25, 0));
+		GridPane.setHalignment(hBoxAlarm, HPos.LEFT);
+		row++; column = 0;
 		
 		workPieceWidthPath = new SVGPath();
 		workPieceWidthPath.setContent(WIDTH_ICON);
@@ -176,12 +229,12 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		btnTilted.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
 		orientationsBox.getChildren().add(btnTilted);
 		orientationsBox.setAlignment(Pos.CENTER);
-		row = 0;
+		row = 1;
 		column = 4;
 		add(lblOrientation, column++, row);
 		add(orientationsBox, column, row, 2, 1);
 		column = 4;
-		row = 1;
+		row++;
 		lblWorkPieceAmount = new Label(Translator.getTranslation(AMOUNT));
 		add(lblWorkPieceAmount, column++, row);
 		itxtWorkPieceAmount = new IntegerTextField(MAX_INTEGER_LENGTH);
@@ -208,9 +261,9 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 			}
 		});
 		add(btnMaxAmount, column++, row);
-		
+		hideNotification();
+
 		refresh();
-		
 	}
 
 	@Override
@@ -227,6 +280,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		setDimensions(settings.getRawWorkPiece().getDimensions());
 		itxtWorkPieceAmount.setText("" + settings.getAmount());
 		setOrientation(settings.getOrientation());
+		getPresenter().recalculate();
 	}
 	
 	private void setOrientation(final WorkPieceOrientation orientation) {
@@ -260,4 +314,14 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		}
 	}
 
+	public void showNotification(final String notification) {
+		lblAlarmMessage.setText(notification);
+		hBoxAlarm.setVisible(true);
+		hBoxAlarm.setManaged(true);
+	}
+	
+	public void hideNotification() {
+		hBoxAlarm.setVisible(false);
+		hBoxAlarm.setManaged(false);
+	}
 }

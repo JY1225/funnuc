@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
+import eu.robojob.irscw.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.event.DataChangedEvent;
 import eu.robojob.irscw.ui.general.AbstractFormPresenter;
@@ -47,7 +48,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public void changedWidth(final float width) {
 		logger.info("Set width [" + width + "].");
 		dimensions.setWidth(width);
-		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		recalculate();
 		pickStep.setRelativeTeachedOffset(null);
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
@@ -55,7 +56,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public void changedLength(final float length) {
 		logger.info("Set length [" + length + "].");
 		dimensions.setLength(length);
-		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		recalculate();
 		pickStep.setRelativeTeachedOffset(null);
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
@@ -63,7 +64,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public void changedHeight(final float height) {
 		logger.info("Set height [" + height + "].");
 		dimensions.setHeight(height);
-		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		recalculate();
 		pickStep.setRelativeTeachedOffset(null);
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
@@ -71,14 +72,24 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public void changedAmount(final int amount) {
 		logger.info("Set amount [" + amount + "].");
 		deviceSettings.setAmount(amount);
-		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		recalculate();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+	}
+	
+	public void recalculate() {
+		try {
+			((BasicStackPlate) pickStep.getDevice()).getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation());
+			((BasicStackPlate) pickStep.getDevice()).getLayout().placeRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
+			getView().hideNotification();
+		} catch (IncorrectWorkPieceDataException e) {
+			getView().showNotification(e.getLocalizedMessage());
+		}
 	}
 	
 	public void changedOrientation(final WorkPieceOrientation orientation) {
 		logger.info("Set orientation [" + orientation + "].");
 		deviceSettings.setOrientation(orientation);
-		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		recalculate();
 		getView().refresh();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 	}

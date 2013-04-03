@@ -12,11 +12,13 @@ import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.ui.general.AbstractFormPresenter;
+import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<CNCMillingMachineWorkPieceView, CNCMillingMachineMenuPresenter> implements ProcessFlowListener  {
 
 	private PickStep pickStep;
+	private static final String DIMENSIONS_DO_NOT_MATCH = "CNCMillingMachineWorkPiecePresenter.dimensionsDoNotMatch";
 	
 	public CNCMillingMachineWorkPiecePresenter(final CNCMillingMachineWorkPieceView view, final PickStep pickStep, final DeviceSettings deviceSettings) {
 		super(view);
@@ -44,9 +46,23 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		return false;
 	}
 	
+	public void recalculate() {
+		if (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null) {
+			WorkPieceDimensions myDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
+			WorkPieceDimensions prevDimensions = getPreviousPickDimensions();
+			if ((myDimensions.getWidth() > 0) && (myDimensions.getLength() > 0) && (myDimensions.getHeight() > 0) && (myDimensions.getWidth() <= prevDimensions.getWidth()) && (myDimensions.getLength() <= prevDimensions.getLength()) 
+					&& (myDimensions.getHeight() <= prevDimensions.getHeight())) {
+				getView().hideNotification();
+				return;
+			}
+		} 
+		getView().showNotification(Translator.getTranslation(DIMENSIONS_DO_NOT_MATCH));
+	}
+	
 	public void changedWidth(final float width) {
 		pickStep.getRobotSettings().getWorkPiece().getDimensions().setWidth(width);
 		pickStep.setRelativeTeachedOffset(null);
+		recalculate();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
@@ -59,6 +75,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 	public void changedLength(final float length) {
 		pickStep.getRobotSettings().getWorkPiece().getDimensions().setLength(length);
 		pickStep.setRelativeTeachedOffset(null);
+		recalculate();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
