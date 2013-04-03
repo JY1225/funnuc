@@ -1,7 +1,7 @@
 /* ---------- DEVICE BUTTON ---------- */
 
 .device-button {
-	-fx-background-insets: 0, 1, 2 1 1 1, 2 1 1 1, 0;
+	-fx-background-insets: 0, 0.5, 2 1 1 1, 2 1 1 1, 0;
 	-fx-shape: "M 34.03125 0.03125 C 15.253569 0.03125 0.03125 15.253568 0.03125 34.03125 C 0.03125 52.808932 15.253569 68.03125 34.03125 68.03125 C 52.808931 68.03125 68.03125 52.808932 68.03125 34.03125 C 68.03125 15.253568 52.808931 0.03125 34.03125 0.03125 z";
 	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 7, 0.0, 0, 2);
 }
@@ -11,45 +11,45 @@
 }
 
 .btn-pre{
-	-fx-background-color: linear-gradient(#f47504 0%, #a45100 100%), linear-gradient(#ffbe85 0%, #ca6400 60%), radial-gradient(center 50% 100%, radius 50%, #ffad0f 0%, #f57403 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%);
+	-fx-background-color: linear-gradient(#f47504 0%, #a45100 100%), linear-gradient(#fde5cf 0%, #ca6400 60%), radial-gradient(center 50% 100%, radius 50%, #ffb628 0%, #f57403 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.70) 0%, rgba(255, 255, 255, 0.12) 90%, rgba(255, 255, 255, 0) 91%);
 }
 
 .device-button.unclickable .btn-pre, .device-button.unclickable:pressed .btn-pre  {
-	-fx-background-color: linear-gradient(#f47504 0%, #a45100 100%), linear-gradient(#ffbe85 0%, #ca6400 60%), radial-gradient(center 50% 100%, radius 50%, #ffad0f 0%, #f57403 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%), rgba(237, 237, 237, 0.3);
+	-fx-background-color: linear-gradient(#f47504 0%, #a45100 100%), linear-gradient(#fde5cf 0%, #ca6400 60%), radial-gradient(center 50% 100%, radius 50%, #ffb628 0%, #f57403 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.70) 0%, rgba(255, 255, 255, 0.12) 90%, rgba(255, 255, 255, 0) 91%), rgba(237, 237, 237, 0.3);
 }
 
 .device-button:pressed .btn-pre {
-	-fx-background-color: linear-gradient(#f47504 0%, #a45100 100%), linear-gradient(#ffbe85 0%, #ca6400 60%), radial-gradient(center 50% 100%, radius 50%, #ffad0f 0%, #f57403 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%), rgba(0, 0, 0, 0.3);
+	-fx-background-color: linear-gradient(#f47504 0%, #a45100 100%), linear-gradient(#fde5cf 0%, #ca6400 60%), radial-gradient(center 50% 100%, radius 50%, #ffb628 0%, #f57403 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.70) 0%, rgba(255, 255, 255, 0.12) 90%, rgba(255, 255, 255, 0) 91%), rgba(0, 0, 0, 0.3);
 }
 
 .pre-process {
 }
 
 .btn-cnc {
-	-fx-background-color: linear-gradient(#0047d8 0%, #003294 100%), linear-gradient(#97b7f9 0%, #144dc0 60%), radial-gradient(center 50% 100%, radius 50%, #0090ff 0%, #1654d4 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%);
+	-fx-background-color: linear-gradient(#0047d8 0%, #003294 100%), linear-gradient(#a3bef5 0%, #144dc0 60%), radial-gradient(center 50% 100%, radius 50%, #0090ff 0%, #1654d4 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.12) 90%, rgba(255, 255, 255, 0) 91%);
 }
 
 .device-button.unclickable .btn-cnc, .device-button.unclickable:pressed .btn-cnc {
-	-fx-background-color: linear-gradient(#0047d8 0%, #003294 100%), linear-gradient(#97b7f9 0%, #144dc0 60%), radial-gradient(center 50% 100%, radius 50%, #0090ff 0%, #1654d4 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%), rgba(237, 237, 237, 0.3);
+	-fx-background-color: linear-gradient(#0047d8 0%, #003294 100%), linear-gradient(#a3bef5 0%, #144dc0 60%), radial-gradient(center 50% 100%, radius 50%, #0090ff 0%, #1654d4 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.12) 90%, rgba(255, 255, 255, 0) 91%), rgba(237, 237, 237, 0.3);
 }
 
 .device-button:pressed .btn-cnc {
-	-fx-background-color: linear-gradient(#0047d8 0%, #003294 100%), linear-gradient(#97b7f9 0%, #144dc0 60%), radial-gradient(center 50% 100%, radius 50%, #0090ff 0%, #1654d4 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%), rgba(0, 0, 0, 0.3);
+	-fx-background-color: linear-gradient(#0047d8 0%, #003294 100%), linear-gradient(#a3bef5 0%, #144dc0 60%), radial-gradient(center 50% 100%, radius 50%, #0090ff 0%, #1654d4 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.12) 90%, rgba(255, 255, 255, 0) 91%), rgba(0, 0, 0, 0.3);
 }
 
 .cnc-machine {
 }
 
 .btn-post {
-	-fx-background-color: linear-gradient(#2e9330 0%, #117514 100%), linear-gradient(#9adc9b 0%, #117514 60%), radial-gradient(center 50% 100%, radius 50%, #1cea00 0%, #27a22a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%);
+	-fx-background-color: linear-gradient(#2e9330 0%, #117514 100%), linear-gradient(#b2e7b3 0%, #117514 60%), radial-gradient(center 50% 100%, radius 50%, #1cea00 0%, #27a22a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.12) 90%, rgba(255, 255, 255, 0) 91%);
 }
 
 .device-button.unclickable .btn-post, .device-button.unclickable:pressed .btn-post {
-	-fx-background-color: linear-gradient(#2e9330 0%, #117514 100%), linear-gradient(#9adc9b 0%, #117514 60%), radial-gradient(center 50% 100%, radius 50%, #1cea00 0%, #27a22a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%), rgba(237, 237, 237, 0.3);
+	-fx-background-color: linear-gradient(#2e9330 0%, #117514 100%), linear-gradient(#b2e7b3 0%, #117514 60%), radial-gradient(center 50% 100%, radius 50%, #1cea00 0%, #27a22a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.12) 90%, rgba(255, 255, 255, 0) 91%), rgba(237, 237, 237, 0.3);
 }
 
 .device-button:pressed .btn-post {
-	-fx-background-color: linear-gradient(#2e9330 0%, #117514 100%), linear-gradient(#9adc9b 0%, #117514 60%), radial-gradient(center 50% 100%, radius 50%, #1cea00 0%, #27a22a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.08) 90%, rgba(255, 255, 255, 0) 91%), rgba(0, 0, 0, 0.3);
+	-fx-background-color: linear-gradient(#2e9330 0%, #117514 100%), linear-gradient(#b2e7b3 0%, #117514 60%), radial-gradient(center 50% 100%, radius 50%, #1cea00 0%, #27a22a 100%), radial-gradient(center 50% 0%, radius 70%, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.12) 90%, rgba(255, 255, 255, 0) 91%), rgba(0, 0, 0, 0.3);
 }
 
 .post-process {

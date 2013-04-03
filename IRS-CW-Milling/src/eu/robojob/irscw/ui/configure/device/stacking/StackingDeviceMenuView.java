@@ -56,6 +56,7 @@ public class StackingDeviceMenuView extends AbstractMenuView<AbstractStackingDev
 				getPresenter().configureDevice();
 			}
 		});
+		getMenuItem(index).setDisable(true);
 		index++;
 		if (!putStep) {
 			workpieceIndex = index;

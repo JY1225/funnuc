@@ -201,4 +201,8 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 		return menuItems.get(index);
 	}
 	
+	public int getMenuItemsSize() {
+		return menuItems.size();
+	}
+	
 }

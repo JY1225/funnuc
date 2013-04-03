@@ -211,9 +211,11 @@ public class ProcessFlow {
 	}
 
 	public synchronized void processProcessFlowEvent(final ProcessFlowEvent event) {
+		// use temporary set so during the invocation of events on listeners the listener list can be updated
+		Set<ProcessFlowListener> tempListeners = new HashSet<ProcessFlowListener>(listeners);
 		switch(event.getId()) {
 			case ProcessFlowEvent.MODE_CHANGED:
-				for (ProcessFlowListener listener : listeners) {
+				for (ProcessFlowListener listener : tempListeners) {
 					listener.modeChanged((ModeChangedEvent) event);
 				}
 				break;
@@ -224,22 +226,22 @@ public class ProcessFlow {
 				} else {
 					setCurrentIndex(scEvent.getWorkPieceId(), -1);
 				}
-				for (ProcessFlowListener listener : listeners) {
+				for (ProcessFlowListener listener : tempListeners) {
 					listener.statusChanged(scEvent);
 				}
 				break;
 			case ProcessFlowEvent.DATA_CHANGED:
-				for (ProcessFlowListener listener : listeners) {
+				for (ProcessFlowListener listener : tempListeners) {
 					listener.dataChanged((DataChangedEvent) event);
 				}
 				break;
 			case ProcessFlowEvent.FINISHED_AMOUNT_CHANGED:
-				for (ProcessFlowListener listener : listeners) {
+				for (ProcessFlowListener listener : tempListeners) {
 					listener.finishedAmountChanged((FinishedAmountChangedEvent) event);
 				}
 				break;
 			case ProcessFlowEvent.EXCEPTION_OCCURED:
-				for (ProcessFlowListener listener : listeners) {
+				for (ProcessFlowListener listener : tempListeners) {
 					listener.exceptionOccured((ExceptionOccuredEvent) event);
 				}
 				break;

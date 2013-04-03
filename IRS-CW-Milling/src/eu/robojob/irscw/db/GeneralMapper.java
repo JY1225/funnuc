@@ -21,20 +21,25 @@ public class GeneralMapper {
 	private static final int WORKPIECE_TYPE_FINISHED = 2;
 	
 	private Map<Integer, UserFrame> userFrameBuffer;
-	private Map<Integer, Coordinates> coordinatesBuffer;
-	private Map<Integer, WorkPiece> workPieceBuffer;
+	private Map<Integer, Map<Integer, Coordinates>> coordinatesBuffer;
+	private Map<Integer, Map<Integer, WorkPiece>> workPieceBuffer;
 	
 	public GeneralMapper() {
 		this.userFrameBuffer = new HashMap<Integer, UserFrame>();
-		this.coordinatesBuffer = new HashMap<Integer, Coordinates>();
-		this.workPieceBuffer = new HashMap<Integer, WorkPiece>();
+		this.coordinatesBuffer = new HashMap<Integer, Map<Integer, Coordinates>>();
+		this.workPieceBuffer = new HashMap<Integer, Map<Integer, WorkPiece>>();
+	}
+	
+	public void clearBuffers(final int processFlowId) {
+		coordinatesBuffer.remove(processFlowId);
+		workPieceBuffer.remove(processFlowId);
 	}
 	
 	public UserFrame getUserFrameById(final int userFrameId) throws SQLException {
 		UserFrame userFrame = userFrameBuffer.get(userFrameId);
 		if (userFrame != null) {
 			return userFrame;
-		}
+		} 
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM USERFRAME WHERE ID = ?");
 		stmt.setInt(1, userFrameId);
 		ResultSet results = stmt.executeQuery();
@@ -43,7 +48,7 @@ public class GeneralMapper {
 			float zsafe = results.getFloat("ZSAFE");
 			int locationId = results.getInt("LOCATION");
 			String name = results.getString("NAME");
-			Coordinates location = getCoordinatesById(locationId);
+			Coordinates location = getCoordinatesById(0, locationId);
 			userFrame = new UserFrame(number, name, zsafe, location);
 			userFrame.setId(userFrameId);
 		}
@@ -63,7 +68,7 @@ public class GeneralMapper {
 			float zsafe = results.getFloat("ZSAFE");
 			int locationId = results.getInt("LOCATION");
 			String name = results.getString("NAME");
-			Coordinates location = getCoordinatesById(locationId);
+			Coordinates location = getCoordinatesById(0, locationId);
 			uf = new UserFrame(number, name, zsafe, location);
 			uf.setId(id);
 		}
@@ -71,10 +76,19 @@ public class GeneralMapper {
 		return uf;
 	}
 	
-	public Coordinates getCoordinatesById(final int coordinatesId) throws SQLException {
-		Coordinates coordinates = coordinatesBuffer.get(coordinatesId);
-		if (coordinates != null) {
-			return coordinates;
+	public Coordinates getCoordinatesById(final int processFlowId, final int coordinatesId) throws SQLException {
+		Coordinates coordinates = null;
+		if (processFlowId != 0) {
+			Map<Integer, Coordinates> buffer = coordinatesBuffer.get(processFlowId);
+			if (buffer != null) {
+				coordinates = buffer.get(coordinatesId);
+				if (coordinates != null) {
+					return coordinates;
+				}
+			} else {
+				Map<Integer, Coordinates> newBuffer = new HashMap<Integer, Coordinates>();
+				coordinatesBuffer.put(processFlowId, newBuffer);
+			}
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM COORDINATES WHERE ID = ?");
 		stmt.setInt(1, coordinatesId);
@@ -90,7 +104,9 @@ public class GeneralMapper {
 			coordinates.setId(coordinatesId);
 		}
 		stmt.close();
-		coordinatesBuffer.put(coordinatesId, coordinates);
+		if (processFlowId != 0) {
+			coordinatesBuffer.get(processFlowId).put(coordinatesId, coordinates);
+		}
 		return coordinates;
 	}
 	
@@ -99,6 +115,9 @@ public class GeneralMapper {
 			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM COORDINATES WHERE ID = ?");
 			stmt.setInt(1, coordinates.getId());
 			stmt.executeUpdate();	
+			for (Map<Integer, Coordinates> buffer : coordinatesBuffer.values()) {
+				buffer.remove(coordinates.getId());
+			}
 			coordinates.setId(0);
 		}
 	}
@@ -130,10 +149,19 @@ public class GeneralMapper {
 		}
 	}
 	
-	public WorkPiece getWorkPieceById(final int workPieceId) throws SQLException {
-		WorkPiece workPiece = workPieceBuffer.get(workPieceId);
-		if (workPiece != null) {
-			return workPiece;
+	public WorkPiece getWorkPieceById(final int processFlowId, final int workPieceId) throws SQLException {
+		WorkPiece workPiece = null;
+		if (processFlowId != 0) {
+			Map<Integer, WorkPiece> buffer = workPieceBuffer.get(processFlowId);
+			if (buffer != null) {
+				workPiece = buffer.get(workPieceId);
+				if (workPiece != null) {
+					return workPiece;
+				}
+			} else {
+				Map<Integer, WorkPiece> newBuffer = new HashMap<Integer, WorkPiece>();
+				workPieceBuffer.put(processFlowId, newBuffer);
+			}
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM WORKPIECE WHERE ID = ?");
 		stmt.setInt(1, workPieceId);
@@ -158,7 +186,9 @@ public class GeneralMapper {
 			workPiece.setId(workPieceId);
 		}
 		stmt.close();
-		workPieceBuffer.put(workPieceId, workPiece);
+		if (processFlowId != 0) {
+			workPieceBuffer.get(processFlowId).put(workPieceId, workPiece);
+		}
 		return workPiece;
 	}
 	

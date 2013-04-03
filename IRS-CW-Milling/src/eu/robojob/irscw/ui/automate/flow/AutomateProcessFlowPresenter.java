@@ -1,8 +1,5 @@
 package eu.robojob.irscw.ui.automate.flow;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
 import eu.robojob.irscw.ui.automate.device.DeviceMenuFactory;
@@ -15,9 +12,7 @@ public class AutomateProcessFlowPresenter extends FixedProcessFlowPresenter {
 	private AutomatePresenter parent;	
 	private int selectedDevice;
 	private DeviceMenuFactory deviceMenuFactory;
-	
-	private static Logger logger = LogManager.getLogger(AutomateProcessFlowPresenter.class.getName());
-	
+		
 	public AutomateProcessFlowPresenter(final AutomateProcessFlowView view, final DeviceMenuFactory deviceMenuFactory) {
 		super(view);
 		view.setPresenter(this);
@@ -61,10 +56,8 @@ public class AutomateProcessFlowPresenter extends FixedProcessFlowPresenter {
 	}
 	
 	public void buildFinished() {
-		logger.info("Build finished!");
 		for (DeviceButton deviceButton : getView().getDeviceButtons()) {
 			if (deviceMenuFactory.getDeviceMenu(deviceButton.getDeviceInformation()) != null) {
-				logger.info("Set clickable true!!");
 				deviceButton.setClickable(true);
 			} else {
 				deviceButton.setClickable(false);

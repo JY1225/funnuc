@@ -172,11 +172,11 @@ public class DeviceMapper {
 		if (results.next()) {
 			int type = results.getInt("TYPE");
 			int relativePositionId = results.getInt("RELATIVE_POSITION");
-			Coordinates relativePosition = generalMapper.getCoordinatesById(relativePositionId);
+			Coordinates relativePosition = generalMapper.getCoordinatesById(0, relativePositionId);
 			int smoothToId = results.getInt("SMOOTH_TO");
-			Coordinates smoothTo = generalMapper.getCoordinatesById(smoothToId);
+			Coordinates smoothTo = generalMapper.getCoordinatesById(0, smoothToId);
 			int smoothFromId = results.getInt("SMOOTH_FROM");
-			Coordinates smoothFrom = generalMapper.getCoordinatesById(smoothFromId);
+			Coordinates smoothFrom = generalMapper.getCoordinatesById(0, smoothFromId);
 			float height = results.getFloat("HEIGHT");
 			String imageUrl = results.getString("IMAGE_URL");
 			String name = results.getString("NAME");

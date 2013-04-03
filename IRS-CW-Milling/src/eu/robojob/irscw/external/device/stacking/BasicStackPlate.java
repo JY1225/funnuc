@@ -160,6 +160,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 					this.finishedWorkPiece = settings.getFinishedWorkPiece();
 					layout.placeRawWorkPieces(rawWorkPiece, settings.getAmount());
 				} else {
+					logger.info("Raw workpiece was null!");
 					layout.configureStackingPositions(null, settings.getOrientation());
 					this.rawWorkPiece = settings.getRawWorkPiece();
 					this.finishedWorkPiece = settings.getFinishedWorkPiece();

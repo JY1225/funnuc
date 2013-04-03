@@ -10,13 +10,17 @@ import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.PutStep;
+import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineConfigurePresenter;
 import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineConfigureView;
 import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineMenuPresenter;
+import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineMenuView;
 import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachinePickPresenter;
 import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachinePickView;
 import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachinePutPresenter;
 import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachinePutView;
+import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineWorkPiecePresenter;
+import eu.robojob.irscw.ui.configure.device.processing.cnc.CNCMillingMachineWorkPieceView;
 import eu.robojob.irscw.ui.configure.device.processing.prage.PrageDeviceConfigurePresenter;
 import eu.robojob.irscw.ui.configure.device.processing.prage.PrageDeviceConfigureView;
 import eu.robojob.irscw.ui.configure.device.processing.prage.PrageDeviceMenuPresenter;
@@ -28,7 +32,6 @@ import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateRawWorkPiece
 import eu.robojob.irscw.ui.configure.device.stacking.BasicStackPlateRawWorkPieceView;
 import eu.robojob.irscw.ui.configure.device.stacking.StackingDeviceMenuView;
 import eu.robojob.irscw.ui.general.AbstractFormPresenter;
-import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
 import eu.robojob.irscw.ui.general.device.stacking.BasicStackPlateLayoutView;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
@@ -78,14 +81,19 @@ public class DeviceMenuFactory {
 		PrageDeviceConfigureView view = new PrageDeviceConfigureView(deviceInfo);
 		PrageDeviceConfigurePresenter presenter = new PrageDeviceConfigurePresenter(view, deviceInfo, deviceManager);
 		return presenter;
-		
 	}
 	
 	private CNCMillingMachineMenuPresenter getCncMillingMachineMenuPresenter(final DeviceInformation deviceInfo) {
-		DeviceMenuView view = new DeviceMenuView();
+		CNCMillingMachineMenuView view = new CNCMillingMachineMenuView();
 		CNCMillingMachineMenuPresenter cncMillingMachineMenuPresenter = new CNCMillingMachineMenuPresenter(view, deviceInfo, getCncMillingMachineConfigurePresenter(deviceInfo), getCNCMillingMachinePickPresenter(deviceInfo.getPickStep(), deviceInfo.getDeviceSettings()),
-				getCNCMillingMachinePutPresenter(deviceInfo.getPutStep(),  deviceInfo.getDeviceSettings()));
+				getCNCMillingMachinePutPresenter(deviceInfo.getPutStep(), deviceInfo.getDeviceSettings()), getCncMillingMachineWorkPiecePresenter(deviceInfo));
 		return cncMillingMachineMenuPresenter;
+	}
+	
+	private CNCMillingMachineWorkPiecePresenter getCncMillingMachineWorkPiecePresenter(final DeviceInformation deviceInfo) {
+		CNCMillingMachineWorkPieceView view = new CNCMillingMachineWorkPieceView();
+		CNCMillingMachineWorkPiecePresenter presenter = new CNCMillingMachineWorkPiecePresenter(view, deviceInfo.getPickStep(), deviceInfo.getDeviceSettings());
+		return presenter;
 	}
 	
 	private CNCMillingMachineConfigurePresenter getCncMillingMachineConfigurePresenter(final DeviceInformation deviceInfo) {

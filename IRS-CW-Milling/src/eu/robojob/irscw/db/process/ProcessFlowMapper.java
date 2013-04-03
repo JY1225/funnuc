@@ -123,7 +123,7 @@ public class ProcessFlowMapper {
 		stmt.setInt(3, processFlow.getId());
 		try {
 			stmt.executeUpdate();
-			deleteProcessFlowStepsAndSettings(processFlow);
+			deleteStepsAndSettings(processFlow);
 			clearProcessFlowStepsSettingsAndReferencedIds(processFlow);
 			saveProcessFlowStepsAndSettings(processFlow);
 			ConnectionManager.getConnection().commit();
@@ -148,6 +148,7 @@ public class ProcessFlowMapper {
 			stmt.executeUpdate();
 			ResultSet resultSet = stmt.getGeneratedKeys();
 			if (resultSet.next()) {
+				clearIds(processFlow);
 				processFlow.setId(resultSet.getInt(1));
 				saveProcessFlowStepsAndSettings(processFlow);
 				ConnectionManager.getConnection().commit();
@@ -158,9 +159,28 @@ public class ProcessFlowMapper {
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
+	private void clearIds(final ProcessFlow processFlow) {
+		processFlow.setId(0);
+		for (DeviceSettings deviceSettings : processFlow.getDeviceSettings().values()) {
+			deviceSettings.setId(0);
+			if (deviceSettings instanceof BasicStackPlateSettings) {
+				((BasicStackPlateSettings) deviceSettings).getFinishedWorkPiece().setId(0);
+				((BasicStackPlateSettings) deviceSettings).getRawWorkPiece().setId(0);
+			}
+		}
+		for (RobotSettings robotSettings : processFlow.getRobotSettings().values()) {
+			robotSettings.setId(0);
+		}
+		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
+			step.setId(0);
+		}
+	}
+	
 	public void deleteProcessFlow(final ProcessFlow processFlow) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		deleteProcessFlowStepsAndSettings(processFlow);
+		generalMapper.clearBuffers(processFlow.getId());
+		deleteStepsAndSettings(processFlow);
+		clearProcessFlowStepsSettingsAndReferencedIds(processFlow);
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM PROCESSFLOW WHERE ID = ?");
 		stmt.setInt(1, processFlow.getId());
 		stmt.executeUpdate();
@@ -168,7 +188,36 @@ public class ProcessFlowMapper {
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
-	private void deleteProcessFlowStepsAndSettings(final ProcessFlow processFlow) throws SQLException {
+	private void deleteStepsAndSettings(final ProcessFlow processFlow) throws SQLException {
+		// delete all coordinates and work pieces (these are not cascaded)
+		// delete all coordinates
+		PreparedStatement stmtDeleteCoordinates = ConnectionManager.getConnection().prepareStatement("" +
+				"delete from coordinates where coordinates.id in " 													+ 
+				"	( " 																							+
+                "		(select coordinates from step_teachedcoordinates where step_teachedcoordinates.step in " 	+
+                "        	(select id from step where step.processflow = ?) "										+
+                "		) " 																						+
+                " 		union "																						+
+                "		(select smoothpoint from robotactionsettings where robotactionsettings.step in "			+
+                "			(select id from step where step.processflow = ?) "										+
+                "		) "																							+
+				"	) "	
+				);	
+		stmtDeleteCoordinates.setInt(1, processFlow.getId());
+		stmtDeleteCoordinates.setInt(2, processFlow.getId());
+		stmtDeleteCoordinates.executeUpdate();
+		// delete all work pieces (it suffices to delete the work pieces from the pick settings
+		PreparedStatement stmtDeleteWorkPieces = ConnectionManager.getConnection().prepareStatement("" 	+
+				"delete from workpiece where workpiece.id in "											+ 
+				"	(" 																					+
+				"		select workpiece from robotpicksettings where robotpicksettings.id in" 			+
+				"			(" 																			+
+				"				select id from robotactionsettings where robotactionsettings.step in " 	+
+				"					(select id from step where step.processflow = ?)" 					+
+				"			)" 																			+
+				"	) ");
+		stmtDeleteWorkPieces.setInt(1, processFlow.getId());
+		stmtDeleteWorkPieces.executeUpdate();
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM DEVICESETTINGS WHERE PROCESSFLOW = ?");
 		stmt.setInt(1, processFlow.getId());
 		stmt.executeUpdate();	// note the cascade delete settings take care of deleting all referenced rows
@@ -178,29 +227,6 @@ public class ProcessFlowMapper {
 		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("DELETE FROM STEP WHERE PROCESSFLOW = ?");
 		stmt3.setInt(1, processFlow.getId());
 		stmt3.executeUpdate();	// note the cascade delete settings take care of deleting all referenced rows
-		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
-			if (step instanceof PickStep) {
-				PickStep pStep = (PickStep) step;
-				if (pStep.getRobotSettings().getWorkPiece().getId() > 0) {
-					PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("DELETE FROM WORKPIECE WHERE ID = ?");
-					stmt4.setInt(1, pStep.getRobotSettings().getWorkPiece().getId());
-					stmt4.executeUpdate();	
-				}
-			}
-			if (step instanceof RobotStep) {
-				AbstractRobotActionSettings<?> robotActionSettings = ((RobotStep) step).getRobotSettings();
-				if ((robotActionSettings.getSmoothPoint() != null) && (robotActionSettings.getSmoothPoint().getId() > 0)) {
-					generalMapper.deleteCoordinates(robotActionSettings.getSmoothPoint());
-				}
-			}
-			if (step instanceof AbstractTransportStep) {
-				AbstractTransportStep trStep = (AbstractTransportStep) step;
-				if ((trStep.getRelativeTeachedOffset() != null) && (trStep.getRelativeTeachedOffset().getId() > 0)) {
-					generalMapper.deleteCoordinates(trStep.getRelativeTeachedOffset());
-				}
-			}
-		}
-		clearProcessFlowStepsSettingsAndReferencedIds(processFlow);
 	}
 
 	private void clearProcessFlowStepsSettingsAndReferencedIds(final ProcessFlow processFlow) {
@@ -213,6 +239,12 @@ public class ProcessFlowMapper {
 				AbstractRobotActionSettings<?> robotActionSettings = ((RobotStep) step).getRobotSettings();
 				if (robotActionSettings.getSmoothPoint() != null) {
 					robotActionSettings.getSmoothPoint().setId(0);
+				}
+			}
+			if (step instanceof AbstractTransportStep) {
+				AbstractTransportStep trStep = (AbstractTransportStep) step;
+				if (trStep.getRelativeTeachedOffset() != null) {
+					trStep.getRelativeTeachedOffset().setId(0);
 				}
 			}
 		}
@@ -415,6 +447,7 @@ public class ProcessFlowMapper {
 		ResultSet results = stmt.executeQuery();
 		ProcessFlow processFlow = null;
 		if (results.next()) {
+			generalMapper.clearBuffers(id);
 			String name = results.getString("NAME");
 			Timestamp creation = results.getTimestamp("CREATION");
 			Timestamp lastOpened = results.getTimestamp("LASTOPENED");
@@ -476,7 +509,7 @@ public class ProcessFlowMapper {
 				clampings.put(workArea, clamping);
 			}
 			if (device instanceof BasicStackPlate) {
-				BasicStackPlateSettings stackPlateSettings = getBasicStackPlateSettings(id, (BasicStackPlate) device, clampings);
+				BasicStackPlateSettings stackPlateSettings = getBasicStackPlateSettings(processId, id, (BasicStackPlate) device, clampings);
 				settings.put(device, stackPlateSettings);
 			} else {
 				DeviceSettings deviceSettings = new DeviceSettings(clampings);
@@ -486,7 +519,7 @@ public class ProcessFlowMapper {
 		return settings;
 	}
 	
-	private BasicStackPlateSettings getBasicStackPlateSettings(final int deviceSettingsId, final BasicStackPlate stackPlate, final Map<WorkArea, Clamping> clampings) throws SQLException {
+	private BasicStackPlateSettings getBasicStackPlateSettings(final int processFlowId, final int deviceSettingsId, final BasicStackPlate stackPlate, final Map<WorkArea, Clamping> clampings) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM STACKPLATESETTINGS WHERE ID = ?");
 		stmt.setInt(1, deviceSettingsId);
 		ResultSet results = stmt.executeQuery();
@@ -496,8 +529,8 @@ public class ProcessFlowMapper {
 			int orientation = results.getInt("ORIENTATION");
 			int rawWorkPieceId = results.getInt("RAWWORKPIECE");
 			int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
-			WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(rawWorkPieceId);
-			WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(finishedWorkPieceId);
+			WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(processFlowId, rawWorkPieceId);
+			WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
 			if (orientation == STACKPLATE_ORIENTATION_HORIZONTAL) {
 				basicStackPlateSettings = new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.HORIZONTAL, amount);
 			} else if (orientation == STACKPLATE_ORIENTATION_TILTED) {
@@ -520,31 +553,31 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			switch (type) {
 				case STEP_TYPE_PICK:
-					PickStep pickStep = getPickStep(id);
+					PickStep pickStep = getPickStep(processId, id);
 					processSteps.add(pickStep);
 					break;
 				case STEP_TYPE_PUT:
-					PutStep putStep = getPutStep(id);
+					PutStep putStep = getPutStep(processId, id);
 					processSteps.add(putStep);
 					break;
 				case STEP_TYPE_PROCESSING:
-					ProcessingStep processingStep = getProcessingStep(id);
+					ProcessingStep processingStep = getProcessingStep(processId, id);
 					processSteps.add(processingStep);
 					break;
 				case STEP_TYPE_INTERVENTION:
-					InterventionStep interventionStep = getInterventionStep(id);
+					InterventionStep interventionStep = getInterventionStep(processId, id);
 					processSteps.add(interventionStep);
 					break;
 				case STEP_TYPE_PUTANDWAIT:
-					PutAndWaitStep putAndWaitStep = getPutAndWaitStep(id);
+					PutAndWaitStep putAndWaitStep = getPutAndWaitStep(processId, id);
 					processSteps.add(putAndWaitStep);
 					break;
 				case STEP_TYPE_PICKAFTERWAIT:
-					PickAfterWaitStep pickAfterWaitStep = getPickAfterWaitStep(id);
+					PickAfterWaitStep pickAfterWaitStep = getPickAfterWaitStep(processId, id);
 					processSteps.add(pickAfterWaitStep);
 					break;
 				case STEP_TYPE_PROCESSINGWHILEWAITING:
-					ProcessingWhileWaitingStep processingWhileWaitingStep = getProcessingWhileWaitingStep(id);
+					ProcessingWhileWaitingStep processingWhileWaitingStep = getProcessingWhileWaitingStep(processId, id);
 					processSteps.add(processingWhileWaitingStep);
 					break;
 				default:
@@ -554,56 +587,56 @@ public class ProcessFlowMapper {
 		return processSteps;
 	}
 	
-	public Coordinates getRelativeTeachedCoordinates(final int stepId) throws SQLException {
+	public Coordinates getRelativeTeachedCoordinates(final int processFlowId, final int stepId) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM STEP_TEACHEDCOORDINATES WHERE STEP = ?");
 		stmt.setInt(1, stepId);
 		ResultSet results = stmt.executeQuery();
 		if (results.next()) {
 			int coordinates = results.getInt("COORDINATES");
-			return generalMapper.getCoordinatesById(coordinates);
+			return generalMapper.getCoordinatesById(processFlowId, coordinates);
 		}
 		return null;
 	}
 	
-	public PickStep getPickStep(final int id) throws SQLException {
+	public PickStep getPickStep(final int processFlowId, final int id) throws SQLException {
 		DevicePickSettings deviceSettings = getDevicePickSettingsByStepId(id);
-		RobotPickSettings robotSettings = getRobotPickSettingsByStepId(id, deviceSettings.getWorkArea());
+		RobotPickSettings robotSettings = getRobotPickSettingsByStepId(processFlowId, id, deviceSettings.getWorkArea());
 		PickStep pickStep = new PickStep(deviceSettings, robotSettings);
-		pickStep.setRelativeTeachedOffset(getRelativeTeachedCoordinates(id));
+		pickStep.setRelativeTeachedOffset(getRelativeTeachedCoordinates(processFlowId, id));
 		return pickStep;
 	}
 	
-	public PickAfterWaitStep getPickAfterWaitStep(final int id) throws SQLException {
+	public PickAfterWaitStep getPickAfterWaitStep(final int processFlowId, final int id) throws SQLException {
 		DevicePickSettings deviceSettings = getDevicePickSettingsByStepId(id);
-		RobotPickSettings robotSettings = getRobotPickSettingsByStepId(id, deviceSettings.getWorkArea());
+		RobotPickSettings robotSettings = getRobotPickSettingsByStepId(processFlowId, id, deviceSettings.getWorkArea());
 		PickAfterWaitStep pickAfterWaitStep = new PickAfterWaitStep(deviceSettings, robotSettings);
-		pickAfterWaitStep.setRelativeTeachedOffset(getRelativeTeachedCoordinates(id));
+		pickAfterWaitStep.setRelativeTeachedOffset(getRelativeTeachedCoordinates(processFlowId, id));
 		return pickAfterWaitStep;
 	}
 	
-	public PutStep getPutStep(final int id) throws SQLException {
+	public PutStep getPutStep(final int processFlowId, final int id) throws SQLException {
 		DevicePutSettings deviceSettings = getDevicePutSettingsByStepId(id);
-		RobotPutSettings robotSettings = getRobotPutSettingsByStepId(id, deviceSettings.getWorkArea());
+		RobotPutSettings robotSettings = getRobotPutSettingsByStepId(processFlowId, id, deviceSettings.getWorkArea());
 		PutStep putStep = new PutStep(deviceSettings, robotSettings);
-		putStep.setRelativeTeachedOffset(getRelativeTeachedCoordinates(id));
+		putStep.setRelativeTeachedOffset(getRelativeTeachedCoordinates(processFlowId, id));
 		return putStep;
 	}
 	
-	public PutAndWaitStep getPutAndWaitStep(final int id) throws SQLException {
+	public PutAndWaitStep getPutAndWaitStep(final int processFlowId, final int id) throws SQLException {
 		DevicePutSettings deviceSettings = getDevicePutSettingsByStepId(id);
-		RobotPutSettings robotSettings = getRobotPutSettingsByStepId(id, deviceSettings.getWorkArea());
+		RobotPutSettings robotSettings = getRobotPutSettingsByStepId(processFlowId, id, deviceSettings.getWorkArea());
 		PutAndWaitStep putAndWaitStep = new PutAndWaitStep(deviceSettings, robotSettings);
-		putAndWaitStep.setRelativeTeachedOffset(getRelativeTeachedCoordinates(id));
+		putAndWaitStep.setRelativeTeachedOffset(getRelativeTeachedCoordinates(processFlowId, id));
 		return putAndWaitStep;
 	}
 	
-	public ProcessingStep getProcessingStep(final int id) throws SQLException {
+	public ProcessingStep getProcessingStep(final int processFlowId, final int id) throws SQLException {
 		ProcessingDeviceStartCyclusSettings processingDeviceStartCyclusSettings = getStartCyclusSettingsByStepId(id);
 		ProcessingStep processingStep = new ProcessingStep(processingDeviceStartCyclusSettings);
 		return processingStep;
 	}
 	
-	public InterventionStep getInterventionStep(final int id) throws SQLException {
+	public InterventionStep getInterventionStep(final int processFlowId, final int id) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM INTERVENTIONSTEP WHERE ID = ?");
 		stmt.setInt(1, id);
 		ResultSet results = stmt.executeQuery();
@@ -616,7 +649,7 @@ public class ProcessFlowMapper {
 		return null;
 	}
 	
-	public ProcessingWhileWaitingStep getProcessingWhileWaitingStep(final int id) throws SQLException {
+	public ProcessingWhileWaitingStep getProcessingWhileWaitingStep(final int processFlowId, final int id) throws SQLException {
 		ProcessingDeviceStartCyclusSettings processingDeviceStartCyclusSettings = getStartCyclusSettingsByStepId(id);
 		RobotProcessingWhileWaitingSettings robotProcessingWhileWaitingSettings = getRobotProcessingWhileWaitingRobotSettings(id, processingDeviceStartCyclusSettings.getWorkArea());
 		ProcessingWhileWaitingStep processingWhileWaitingStep = new ProcessingWhileWaitingStep(processingDeviceStartCyclusSettings, robotProcessingWhileWaitingSettings);
@@ -712,7 +745,7 @@ public class ProcessFlowMapper {
 		return devicePutSettings;
 	}
 	
-	public RobotPickSettings getRobotPickSettingsByStepId(final int pickStepId, final WorkArea workArea) throws SQLException {
+	public RobotPickSettings getRobotPickSettingsByStepId(final int processFlowId, final int pickStepId, final WorkArea workArea) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ROBOTACTIONSETTINGS JOIN ROBOTPICKSETTINGS ON ROBOTACTIONSETTINGS.ID = ROBOTPICKSETTINGS.ID WHERE ROBOTACTIONSETTINGS.STEP = ?");
 		stmt.setInt(1, pickStepId);
 		ResultSet results = stmt.executeQuery();
@@ -726,8 +759,8 @@ public class ProcessFlowMapper {
 			boolean airblow = results.getBoolean("AIRBLOW");
 			AbstractRobot robot = robotManager.getRobotById(robotId);
 			GripperHead gripperHead = robot.getGripperHeadById(gripperHeadId);
-			Coordinates smoothPoint = generalMapper.getCoordinatesById(smoothPointId);
-			WorkPiece workPiece = generalMapper.getWorkPieceById(workPieceId);
+			Coordinates smoothPoint = generalMapper.getCoordinatesById(processFlowId, smoothPointId);
+			WorkPiece workPiece = generalMapper.getWorkPieceById(processFlowId, workPieceId);
 			if (robot instanceof FanucRobot) {
 				robotPickSettings = new FanucRobotPickSettings(robot, workArea, gripperHead, smoothPoint, null, workPiece, airblow);
 				robotPickSettings.setId(id);
@@ -738,7 +771,7 @@ public class ProcessFlowMapper {
 		return robotPickSettings;
 	}
 	
-	public RobotPutSettings getRobotPutSettingsByStepId(final int putStepId, final WorkArea workArea) throws SQLException {
+	public RobotPutSettings getRobotPutSettingsByStepId(final int processFlowId, final int putStepId, final WorkArea workArea) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ROBOTACTIONSETTINGS JOIN ROBOTPUTSETTINGS ON ROBOTACTIONSETTINGS.ID = ROBOTPUTSETTINGS.ID WHERE ROBOTACTIONSETTINGS.STEP = ?");
 		stmt.setInt(1, putStepId);
 		ResultSet results = stmt.executeQuery();
@@ -751,7 +784,7 @@ public class ProcessFlowMapper {
 			boolean airblow = results.getBoolean("AIRBLOW");
 			AbstractRobot robot = robotManager.getRobotById(robotId);
 			GripperHead gripperHead = robot.getGripperHeadById(gripperHeadId);
-			Coordinates smoothPoint = generalMapper.getCoordinatesById(smoothPointId);
+			Coordinates smoothPoint = generalMapper.getCoordinatesById(processFlowId, smoothPointId);
 			if (robot instanceof FanucRobot) {
 				robotPutSettings = new FanucRobotPutSettings(robot, workArea, gripperHead, smoothPoint, null, airblow);
 				robotPutSettings.setId(id);

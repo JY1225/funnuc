@@ -171,7 +171,6 @@ public class ProcessFlowManager {
 			int idForName = processFlowMapper.getProcessFlowIdForName(processFlow.getName());
 			if (idForName == 0) {
 				logger.info("Saving processflow with name: [" + processFlow.getName() + "].");
-				processFlow.setId(0);
 				processFlowMapper.saveProcessFlow(processFlow);
 			} else {
 				throw new DuplicateProcessFlowNameException();

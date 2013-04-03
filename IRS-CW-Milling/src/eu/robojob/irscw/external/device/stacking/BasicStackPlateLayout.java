@@ -105,6 +105,7 @@ public class BasicStackPlateLayout {
 	 * @throws IncorrectWorkPieceDataException 
 	 */
 	public void configureStackingPositions(final WorkPiece rawWorkPiece, final WorkPieceOrientation orientation) throws IncorrectWorkPieceDataException {
+		logger.debug("Calculating stacking positions for work piece [" + rawWorkPiece.getDimensions() + "] with id [" + rawWorkPiece.getId() + "], orientation: [" + orientation + "].");
 		stackingPositions.clear();
 		clearStuds();
 		//TODO add upper limits
@@ -416,6 +417,7 @@ public class BasicStackPlateLayout {
 	}
 
 	public void placeRawWorkPieces(final WorkPiece rawWorkPiece, final int amount) throws IncorrectWorkPieceDataException {
+		logger.debug("Placing raw workpieces: [" + amount + "].");
 		if (amount <= getMaxRawWorkPiecesAmount()) {
 			for (int i = 0; i < amount; i++) {
 				StackingPosition stackingPos = stackingPositions.get(i);
@@ -425,6 +427,7 @@ public class BasicStackPlateLayout {
 				}
 			}
 		} else {
+			logger.debug("Trying to place [" + amount + "] but maximum is [" + getMaxRawWorkPiecesAmount() + "].");
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
 		}
 	}
