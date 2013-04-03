@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import eu.robojob.irscw.ui.general.PopUpView;
 import eu.robojob.irscw.ui.menu.MenuBarView;
 
 public class MainView extends BorderPane {

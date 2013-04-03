@@ -22,7 +22,6 @@ import eu.robojob.irscw.process.ProcessingStep;
 import eu.robojob.irscw.process.ProcessingWhileWaitingStep;
 import eu.robojob.irscw.process.PutAndWaitStep;
 import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.configure.device.DeviceMenuFactory;
 import eu.robojob.irscw.ui.configure.flow.ConfigureProcessFlowPresenter;
@@ -35,6 +34,7 @@ import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.general.AbstractFormView;
+import eu.robojob.irscw.ui.general.MainContentPresenter;
 import eu.robojob.irscw.ui.general.model.DeviceInformation;
 import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
 

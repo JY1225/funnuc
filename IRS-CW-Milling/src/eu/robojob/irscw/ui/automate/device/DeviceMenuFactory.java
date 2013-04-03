@@ -1,8 +1,5 @@
 package eu.robojob.irscw.ui.automate.device;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.ui.automate.AbstractMenuPresenter;
@@ -16,29 +13,20 @@ import eu.robojob.irscw.ui.general.model.DeviceInformation;
 
 public class DeviceMenuFactory {
 	
-	private Map<Integer, AbstractMenuPresenter<?>> presentersBuffer;
 	private ProcessFlow processFlow;		
 	
 	public DeviceMenuFactory(final ProcessFlow processFlow) {
-		presentersBuffer = new HashMap<Integer, AbstractMenuPresenter<?>>();
 		this.processFlow = processFlow;
 	}
 	
-	public void reset() {
-		presentersBuffer.clear();
-	}
-	
 	public synchronized AbstractMenuPresenter<?> getDeviceMenu(final DeviceInformation deviceInfo) {
-		AbstractMenuPresenter<?> menuPresenter = presentersBuffer.get(deviceInfo.getIndex());
-		if (menuPresenter == null) {
-			switch(deviceInfo.getType()) {
-				case BASIC_STACK_PLATE:
-					menuPresenter = getBasicStackPlateMenuPresenter(deviceInfo);
-					break;
-				default:
-					menuPresenter = null;
-			}
-			presentersBuffer.put(deviceInfo.getIndex(), menuPresenter);
+		AbstractMenuPresenter<?> menuPresenter;
+		switch(deviceInfo.getType()) {
+			case BASIC_STACK_PLATE:
+				menuPresenter = getBasicStackPlateMenuPresenter(deviceInfo);
+				break;
+			default:
+				menuPresenter = null;
 		}
 		return menuPresenter;
 	}
@@ -59,9 +47,5 @@ public class DeviceMenuFactory {
 		BasicStackPlateRefillView view = new BasicStackPlateRefillView();
 		BasicStackPlateRefillPresenter basicStackPlateRefillPresenter = new BasicStackPlateRefillPresenter(view, (BasicStackPlate) deviceInfo.getDevice(), processFlow);
 		return basicStackPlateRefillPresenter;
-	}
-	
-	public void clearBuffer() {
-		presentersBuffer.clear();
 	}
 }

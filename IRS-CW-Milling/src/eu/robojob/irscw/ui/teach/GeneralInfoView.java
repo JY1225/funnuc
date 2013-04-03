@@ -13,7 +13,7 @@ import eu.robojob.irscw.process.AbstractProcessStep;
 import eu.robojob.irscw.process.PickAfterWaitStep;
 import eu.robojob.irscw.process.PickStep;
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.MainContentView;
+import eu.robojob.irscw.ui.general.MainContentView;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;

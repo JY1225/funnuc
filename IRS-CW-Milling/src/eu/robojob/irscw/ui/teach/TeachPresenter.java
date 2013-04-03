@@ -6,8 +6,8 @@ import eu.robojob.irscw.process.ProcessFlow;
 import eu.robojob.irscw.process.execution.TeachOptimizedThread;
 import eu.robojob.irscw.process.execution.TeachThread;
 import eu.robojob.irscw.threading.ThreadManager;
-import eu.robojob.irscw.ui.MainContentView;
 import eu.robojob.irscw.ui.general.ExecutionPresenter;
+import eu.robojob.irscw.ui.general.MainContentView;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.ui.general.status.DisconnectedDevicesView;
 

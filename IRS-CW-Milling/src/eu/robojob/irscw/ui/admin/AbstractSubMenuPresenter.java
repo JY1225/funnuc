@@ -1,8 +1,8 @@
 package eu.robojob.irscw.ui.admin;
 
-import eu.robojob.irscw.ui.ContentPresenter;
-import eu.robojob.irscw.ui.SubContentPresenter;
 import eu.robojob.irscw.ui.general.AbstractMenuView;
+import eu.robojob.irscw.ui.general.ContentPresenter;
+import eu.robojob.irscw.ui.general.SubContentPresenter;
 
 public abstract class AbstractSubMenuPresenter<T extends AbstractMenuView<?>, S extends SubContentPresenter> extends eu.robojob.irscw.ui.general.AbstractMenuPresenter<T> {
 

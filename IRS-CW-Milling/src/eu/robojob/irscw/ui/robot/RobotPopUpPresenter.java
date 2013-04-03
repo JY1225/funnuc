@@ -13,7 +13,7 @@ import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
 import eu.robojob.irscw.process.event.ModeChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.ui.AbstractPopUpPresenter;
+import eu.robojob.irscw.ui.general.AbstractPopUpPresenter;
 
 public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> implements RobotListener, ProcessFlowListener {
 

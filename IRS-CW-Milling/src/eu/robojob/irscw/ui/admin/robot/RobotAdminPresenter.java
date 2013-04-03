@@ -1,11 +1,11 @@
 package eu.robojob.irscw.ui.admin.robot;
 
-import eu.robojob.irscw.ui.MainContentPresenter;
-import eu.robojob.irscw.ui.SubContentPresenter;
 import eu.robojob.irscw.ui.admin.AdminPresenter;
 import eu.robojob.irscw.ui.admin.SubMenuAdminView;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.general.AbstractFormView;
+import eu.robojob.irscw.ui.general.MainContentPresenter;
+import eu.robojob.irscw.ui.general.SubContentPresenter;
 
 public class RobotAdminPresenter implements SubContentPresenter {
 

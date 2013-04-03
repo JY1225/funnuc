@@ -2,7 +2,6 @@ package eu.robojob.irscw.ui.admin;
 
 import javafx.scene.Node;
 import javafx.scene.control.TextInputControl;
-import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
@@ -10,6 +9,7 @@ import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
+import eu.robojob.irscw.ui.general.MainContentPresenter;
 
 public class AdminPresenter implements TextInputControlListener, MainContentPresenter {
 

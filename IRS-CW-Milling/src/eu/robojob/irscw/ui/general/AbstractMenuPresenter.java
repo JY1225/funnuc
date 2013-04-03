@@ -1,6 +1,5 @@
 package eu.robojob.irscw.ui.general;
 
-import eu.robojob.irscw.ui.ContentPresenter;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 
 public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> {

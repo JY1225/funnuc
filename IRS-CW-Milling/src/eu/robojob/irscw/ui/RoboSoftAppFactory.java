@@ -58,6 +58,7 @@ import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.controls.keyboard.NegativeNumericKeyboardView;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
 import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardView;
+import eu.robojob.irscw.ui.general.MainContentView;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.ui.general.flow.ProcessFlowView;
 import eu.robojob.irscw.ui.general.status.DisconnectedDevicesView;

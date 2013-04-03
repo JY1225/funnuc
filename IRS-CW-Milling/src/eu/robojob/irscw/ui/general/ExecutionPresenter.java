@@ -21,8 +21,6 @@ import eu.robojob.irscw.external.robot.RobotEvent;
 import eu.robojob.irscw.external.robot.RobotListener;
 import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
 import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.ContentPresenter;
-import eu.robojob.irscw.ui.MainContentPresenter;
 import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
 import eu.robojob.irscw.ui.general.status.StatusPresenter;
@@ -67,6 +65,7 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 		return processFlow;
 	}
 	
+	//TODO check if this is still ok if the devices contained in a processflow can change!
 	private void enable() {
 		processFlow.addListener(statusPresenter);
 		processFlowPresenter.refresh();

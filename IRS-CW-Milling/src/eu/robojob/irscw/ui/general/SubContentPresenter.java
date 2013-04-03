@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui;
+package eu.robojob.irscw.ui.general;
 
 
 public interface SubContentPresenter extends ContentPresenter {

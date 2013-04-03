@@ -6,7 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import eu.robojob.irscw.ui.MainContentView;
+import eu.robojob.irscw.ui.general.MainContentView;
 import eu.robojob.irscw.ui.general.status.StatusView;
 import eu.robojob.irscw.util.Translator;
 import eu.robojob.irscw.util.UIConstants;

@@ -12,6 +12,7 @@ import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.ui.admin.AdminPresenter;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
+import eu.robojob.irscw.ui.general.MainContentPresenter;
 import eu.robojob.irscw.ui.menu.MenuBarPresenter;
 import eu.robojob.irscw.ui.robot.RobotPopUpPresenter;
 import eu.robojob.irscw.ui.teach.TeachPresenter;
