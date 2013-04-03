@@ -19,6 +19,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 
 	private PickStep pickStep;
 	private static final String DIMENSIONS_DO_NOT_MATCH = "CNCMillingMachineWorkPiecePresenter.dimensionsDoNotMatch";
+	private static final String INCORRECT_DATA = "CNCMillingMachineWorkPiecePresenter.incorrectData";
 	
 	public CNCMillingMachineWorkPiecePresenter(final CNCMillingMachineWorkPieceView view, final PickStep pickStep, final DeviceSettings deviceSettings) {
 		super(view);
@@ -50,13 +51,17 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		if (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null) {
 			WorkPieceDimensions myDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
 			WorkPieceDimensions prevDimensions = getPreviousPickDimensions();
-			if ((myDimensions.getWidth() > 0) && (myDimensions.getLength() > 0) && (myDimensions.getHeight() > 0) && (myDimensions.getWidth() <= prevDimensions.getWidth()) && (myDimensions.getLength() <= prevDimensions.getLength()) 
-					&& (myDimensions.getHeight() <= prevDimensions.getHeight())) {
+			if ((myDimensions.getWidth() <= 0) || (myDimensions.getLength() <= 0) || (myDimensions.getHeight() <= 0)) {
+				getView().showNotification(Translator.getTranslation(INCORRECT_DATA));
+			} else if ((myDimensions.getWidth() > prevDimensions.getWidth()) || (myDimensions.getLength() > prevDimensions.getLength())
+					 || (myDimensions.getHeight() > prevDimensions.getHeight())) {
+				getView().showNotification(Translator.getTranslation(DIMENSIONS_DO_NOT_MATCH));
+			} else {
 				getView().hideNotification();
-				return;
 			}
-		} 
-		getView().showNotification(Translator.getTranslation(DIMENSIONS_DO_NOT_MATCH));
+		} else {
+			getView().showNotification(Translator.getTranslation(INCORRECT_DATA));
+		}
 	}
 	
 	public void changedWidth(final float width) {
@@ -123,6 +128,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 				this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setLength(pickStep.getRobotSettings().getWorkPiece().getDimensions().getLength());
 				this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setWidth(pickStep.getRobotSettings().getWorkPiece().getDimensions().getWidth());
 				this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setHeight(pickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight());
+				this.pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.pickStep.getProcessFlow(), this.pickStep, true));
 			}
 		}
 	}

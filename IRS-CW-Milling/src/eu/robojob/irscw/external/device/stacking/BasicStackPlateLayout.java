@@ -105,7 +105,6 @@ public class BasicStackPlateLayout {
 	 * @throws IncorrectWorkPieceDataException 
 	 */
 	public void configureStackingPositions(final WorkPiece rawWorkPiece, final WorkPieceOrientation orientation) throws IncorrectWorkPieceDataException {
-		logger.debug("Calculating stacking positions for work piece [" + rawWorkPiece.getDimensions() + "] with id [" + rawWorkPiece.getId() + "], orientation: [" + orientation + "].");
 		stackingPositions.clear();
 		clearStuds();
 		//TODO add upper limits
