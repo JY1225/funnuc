@@ -77,7 +77,10 @@ public class MenuBarPresenter {
 	
 	public void clickedAlarms() {
 		if (!alarmsActive) {
+			parent.closePopUps();
 			parent.showAlarms();
+		} else {
+			parent.closePopUps();
 		}
 	}
 	
@@ -89,6 +92,7 @@ public class MenuBarPresenter {
 	
 	public void clickedRobot() {
 		if (!robotActive) {
+			parent.closePopUps();
 			parent.showRobot();
 		} else {
 			parent.closePopUps();

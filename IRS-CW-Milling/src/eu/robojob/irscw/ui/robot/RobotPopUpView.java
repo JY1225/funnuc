@@ -23,7 +23,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	private Button btn50;
 	private Button btn100;
 	
-	private static final int BUTTON_HEIGHT = UIConstants.BUTTON_HEIGHT;
+	private static final int BUTTON_HEIGHT = UIConstants.BUTTON_HEIGHT + 5;
 	private static final int WIDTH = BUTTON_HEIGHT * 4;
 	private static final int AMOUNT_OF_ITEMS = 7;
 	private static final int HEIGHT = AMOUNT_OF_ITEMS * BUTTON_HEIGHT;

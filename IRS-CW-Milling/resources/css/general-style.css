@@ -67,6 +67,13 @@
 	-fx-background-radius: 0 0 3 3, 0 0 2 2, 0 0 1 1;
 }
 
+.alarms-popup {
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 5);
+	-fx-background-color: #3b3f46, #5b6068, #52555c;
+	-fx-background-insets: 0, 0 1 1 0, 0 2 2 0;
+	-fx-background-radius: 0 0 3 0, 0 0 2 0, 0 0 1 0;
+}
+
 .pop-up-btn {
 	-fx-background-color: #5b6068, #3b3f46, #5b6068, linear-gradient(#52555c 0%, #4f5158 100%);
 	-fx-background-insets: 0, 0 0 0 0, 1 1 0 1, 2 1 0 1;

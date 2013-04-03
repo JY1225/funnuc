@@ -10,6 +10,7 @@ import eu.robojob.irscw.process.event.ProcessChangedEvent;
 import eu.robojob.irscw.process.event.ProcessFlowListener;
 import eu.robojob.irscw.process.event.StatusChangedEvent;
 import eu.robojob.irscw.ui.admin.AdminPresenter;
+import eu.robojob.irscw.ui.alarms.AlarmsPopUpPresenter;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
 import eu.robojob.irscw.ui.configure.ConfigurePresenter;
 import eu.robojob.irscw.ui.general.MainContentPresenter;
@@ -27,13 +28,15 @@ public class MainPresenter implements ProcessFlowListener {
 	private ConfigurePresenter configurePresenter;
 	private TeachPresenter teachPresenter;
 	private AutomatePresenter automatePresenter;
+	private AlarmsPopUpPresenter alarmsPopUpPresenter;
 	private RobotPopUpPresenter robotPopUpPresenter;
 	private AdminPresenter adminPresenter;
 	
 	private MainContentPresenter activeContentPresenter;
 			
 	public MainPresenter(final MainView view, final MenuBarPresenter menuBarPresenter, final ConfigurePresenter configurePresenter, final TeachPresenter teachPresenter, 
-			final AutomatePresenter automatePresenter, final RobotPopUpPresenter robotPopUpPresenter, final AdminPresenter adminPresenter) {
+			final AutomatePresenter automatePresenter, final AlarmsPopUpPresenter alarmsPopUpPresenter, 
+				final RobotPopUpPresenter robotPopUpPresenter, final AdminPresenter adminPresenter) {
 		this.view = view;
 		view.setPresenter(this);
 		this.menuBarPresenter = menuBarPresenter;
@@ -44,6 +47,8 @@ public class MainPresenter implements ProcessFlowListener {
 		teachPresenter.setParent(this);
 		this.automatePresenter = automatePresenter;
 		automatePresenter.setParent(this);
+		this.alarmsPopUpPresenter = alarmsPopUpPresenter;
+		alarmsPopUpPresenter.setParent(this);
 		this.robotPopUpPresenter = robotPopUpPresenter;
 		robotPopUpPresenter.setParent(this);
 		this.adminPresenter = adminPresenter;
@@ -81,7 +86,7 @@ public class MainPresenter implements ProcessFlowListener {
 	
 	public void showAlarms() {
 		menuBarPresenter.alarmsActive();
-		//TODO show alarms content
+		view.addPopUpView(alarmsPopUpPresenter.getView());
 	}
 
 	public void showRobot() {

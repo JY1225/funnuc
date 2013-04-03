@@ -33,6 +33,8 @@ import eu.robojob.irscw.ui.admin.robot.RobotGripperPresenter;
 import eu.robojob.irscw.ui.admin.robot.RobotGripperView;
 import eu.robojob.irscw.ui.admin.robot.RobotMenuPresenter;
 import eu.robojob.irscw.ui.admin.robot.RobotMenuView;
+import eu.robojob.irscw.ui.alarms.AlarmsPopUpPresenter;
+import eu.robojob.irscw.ui.alarms.AlarmsPopUpView;
 import eu.robojob.irscw.ui.automate.AutomatePresenter;
 import eu.robojob.irscw.ui.automate.AutomateStatusPresenter;
 import eu.robojob.irscw.ui.automate.AutomateStatusView;
@@ -85,6 +87,7 @@ public class RoboSoftAppFactory {
 	private ConfigureProcessFlowPresenter configureProcessFlowPresenter;
 	private FixedProcessFlowPresenter teachProcessFlowPresenter;
 	private AutomateProcessFlowPresenter automateProcessFlowPresenter;
+	private AlarmsPopUpPresenter alarmsPopUpPresenter;
 	private RobotPopUpPresenter robotPopUpPresenter;
 	private ProcessMenuPresenter processConfigurationMenuPresenter;
 	private ProcessOpenPresenter processOpenPresenter;
@@ -127,10 +130,18 @@ public class RoboSoftAppFactory {
 		if (mainPresenter == null) {
 			MainView mainView = new MainView();
 			mainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter(), getAutomatePresenter(), 
-					getRobotPopUpPresenter(), getAdminPresenter());
+					getAlarmsPopUpPresenter(), getRobotPopUpPresenter(), getAdminPresenter());
 			mainPresenter.loadProcessFlow(getProcessFlow());
 		}
 		return mainPresenter;
+	}
+	
+	public AlarmsPopUpPresenter getAlarmsPopUpPresenter() {
+		if (alarmsPopUpPresenter == null) {
+			AlarmsPopUpView view = new AlarmsPopUpView();
+			alarmsPopUpPresenter = new AlarmsPopUpPresenter(view);
+		}
+		return alarmsPopUpPresenter;
 	}
 	
 	public MenuBarPresenter getMenuBarPresenter() {
