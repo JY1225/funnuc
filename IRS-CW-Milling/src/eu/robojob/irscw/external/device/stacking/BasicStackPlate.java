@@ -256,6 +256,10 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		this.listeners.remove(listener);
 	}
 	
+	public void clearListeners() {
+		this.listeners.clear();
+	}
+	
 	public int getFinishedWorkPiecesPresentAmount() {
 		int amount = 0;
 		for (StackingPosition location : layout.getStackingPositions()) {

@@ -26,6 +26,20 @@ public class RobotAlarm {
 	public static final int WORKPIECE_NOT_GRIPPED							=	40;
 	public static final int ROBOT_NOT_IN_START_POSITION						=	45;
 	
+	public static final int IOACTION_TIMEOUT = 101;
+	public static final int MOVE_TO_PICK_POSITION_TIMEOUT = 102;
+	public static final int MOVE_TO_PUT_POSITION_TIMEOUT = 103;
+	public static final int MOVE_TO_IPPOINT_PICK_TIMEOUT = 104;
+	public static final int MOVE_TO_IPPOINT_PUT_TIMEOUT = 104;
+	public static final int MOVE_TO_IPPOINT_MOVEWITHPIECE_TIMEOUT = 104;
+	public static final int MOVE_TO_POSITION_TIMEOUT = 105;
+	public static final int CLAMP_ACK_REQUEST_TIMEOUT = 106;
+	public static final int UNCLAMP_ACK_REQUEST_TIMEOUT = 107;
+	public static final int FINALIZE_PICK_TIMEOUT = 108;
+	public static final int FINALIZE_PUT_TIMEOUT = 108;
+	public static final int FINALIZE_MOVEWITHPIECE_TIMEOUT = 108;
+	public static final int TEACH_TIMEOUT = 109;
+	
 	public static final int FAULT_LED 										= 	60;
 	public static final int CMOS_BATTERY_LOW 								= 	61;
 	
@@ -72,7 +86,8 @@ public class RobotAlarm {
 	}
 	
 	//TODO perhaps this methods should be placed in the FanucRobot-class or an helper class
-	public static Set<RobotAlarm> parseFanucRobotAlarms(final int errorId, final int controllerValue) {
+	public static Set<RobotAlarm> parseFanucRobotAlarms(final int errorId, final int controllerValue,
+			final RobotAlarm timeout) {
 		Set<RobotAlarm> alarms = new HashSet<RobotAlarm>();
 		if (errorId != RobotConstants.E_NO_ERROR) {
 			switch (errorId) {
@@ -139,6 +154,9 @@ public class RobotAlarm {
 		}
 		if ((controllerValue & RobotConstants.CV_CMOS_BATTERY_LOW) != 0) {
 			alarms.add(new RobotAlarm(RobotAlarm.CMOS_BATTERY_LOW));
+		}
+		if (timeout != null) {
+			alarms.add(timeout);
 		}
 		return alarms;
 	}

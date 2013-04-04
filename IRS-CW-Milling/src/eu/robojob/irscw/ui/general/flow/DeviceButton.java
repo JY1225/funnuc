@@ -154,7 +154,7 @@ public class DeviceButton extends VBox {
 			}
 		} else {
 			if (rotateTransition != null) {
-				rotateTransition.pause();
+				rotateTransition.stop();
 			}
 		}
 	}

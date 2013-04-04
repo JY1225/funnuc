@@ -55,20 +55,6 @@ public class FanucRobot extends AbstractRobot {
 		
 	private static Logger logger = LogManager.getLogger(FanucRobot.class.getName());
 	
-	private static final String EXCEPTION_IOACTION_TIMEOUT = "FanucRobot.ioActionTimeout";
-	private static final String EXCEPTION_MOVE_TO_PICK_POSITION_TIMEOUT = "FanucRobot.moveToPickPositionTimeout";
-	private static final String EXCEPTION_MOVE_TO_PUT_POSITION_TIMEOUT = "FanucRobot.moveToPutPositionTimeout";
-	private static final String EXCEPTION_MOVE_TO_IPPOINT_PICK_TIMEOUT = "FanucRobot.moveToIPPointTimeout";
-	private static final String EXCEPTION_MOVE_TO_IPPOINT_PUT_TIMEOUT = "FanucRobot.moveToIPPointTimeout";
-	private static final String EXCEPTION_MOVE_TO_IPPOINT_MOVEWITHPIECE_TIMEOUT = "FanucRobot.moveToIPPointTimeout";
-	private static final String EXCEPTION_MOVE_TO_POSITION_TIMEOUT = "FanucRobot.moveToPositionTimeout";
-	private static final String EXCEPTION_CLAMP_ACK_REQUEST_TIMEOUT = "FanucRobot.clampAckRequestTimeout";
-	private static final String EXCEPTION_UNCLAMP_ACK_REQUEST_TIMEOUT = "FanucRobot.unclampAckRequestTimeout";
-	private static final String EXCEPTION_FINALIZE_PICK_TIMEOUT = "FanucRobot.finalizePickTimeout";
-	private static final String EXCEPTION_FINALIZE_PUT_TIMEOUT = "FanucRobot.finalizePutTimeout";
-	private static final String EXCEPTION_FINALIZE_MOVEWITHPIECE_TIMEOUT = "FanucRobot.finalizeMoveWithPieceTimeout";
-	private static final String EXCEPTION_TEACH_TIMEOUT = "FanucRobot.teachTimeout";
-	
 	public FanucRobot(final String name, final Set<GripperBody> gripperBodies, final GripperBody gripperBody, final SocketConnection socketConnection) {
 		super(name, gripperBodies, gripperBody);
 		this.fanucRobotCommunication = new RobotSocketCommunication(socketConnection, this);
@@ -92,7 +78,7 @@ public class FanucRobot extends AbstractRobot {
 		int controllerValue = Integer.parseInt(values.get(1));
 		int controllerString = Integer.parseInt(values.get(2));
 		double zRest = Float.parseFloat(values.get(3));
-		setAlarms(RobotAlarm.parseFanucRobotAlarms(errorId, controllerValue));
+		setAlarms(RobotAlarm.parseFanucRobotAlarms(errorId, controllerValue, getRobotTimeout()));
 		setStatus(controllerString);
 		setZRest(zRest);
 	}
@@ -173,12 +159,16 @@ public class FanucRobot extends AbstractRobot {
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForTeachingNeeded = waitForStatus(RobotConstants.STATUS_AWAITING_TEACHING, MOVE_TO_LOCATION_TIMEOUT);
 			if (!waitingForTeachingNeeded) {
-				throw new RobotActionException(this, EXCEPTION_MOVE_TO_PUT_POSITION_TIMEOUT);
+				setRobotTimeout(new RobotAlarm(RobotAlarm.MOVE_TO_PUT_POSITION_TIMEOUT));
+				waitForStatus(RobotConstants.STATUS_AWAITING_TEACHING);
+				setRobotTimeout(null);
 			} 
 		} else {
 			boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PUT_CLAMP_REQUEST, MOVE_TO_LOCATION_TIMEOUT);
 			if (!waitingForRelease) {
-				throw new RobotActionException(this, EXCEPTION_MOVE_TO_PUT_POSITION_TIMEOUT);
+				setRobotTimeout(new RobotAlarm(RobotAlarm.MOVE_TO_PUT_POSITION_TIMEOUT));
+				waitForStatus(RobotConstants.STATUS_PUT_CLAMP_REQUEST);
+				setRobotTimeout(null);
 			}
 		}
 	}
@@ -191,12 +181,16 @@ public class FanucRobot extends AbstractRobot {
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PUT_CLAMP_REQUEST, TEACH_TIMEOUT);
 			if (!waitingForRelease) {
-				throw new RobotActionException(this, EXCEPTION_TEACH_TIMEOUT);
+				setRobotTimeout(new RobotAlarm(RobotAlarm.TEACH_TIMEOUT));
+				waitForStatus(RobotConstants.STATUS_PUT_CLAMP_REQUEST);
+				setRobotTimeout(null);
 			}
 		} else {
 			boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PUT_CLAMP_REQUEST, CLAMP_ACK_REQUEST_TIMEOUT);
 			if (!waitingForRelease) {
-				throw new RobotActionException(this, EXCEPTION_CLAMP_ACK_REQUEST_TIMEOUT);
+				setRobotTimeout(new RobotAlarm(RobotAlarm.CLAMP_ACK_REQUEST_TIMEOUT));
+				waitForStatus(RobotConstants.STATUS_PUT_CLAMP_REQUEST);
+				setRobotTimeout(null);
 			}
 		}
 	}
@@ -209,7 +203,9 @@ public class FanucRobot extends AbstractRobot {
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_PUT_CLAMP_ACK);
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PUT_OUT_OF_MACHINE, MOVE_FINISH_TIMEOUT);
 		if (!waitingForPickFinished) {
-			throw new RobotActionException(this, EXCEPTION_MOVE_TO_IPPOINT_PUT_TIMEOUT);
+			setRobotTimeout(new RobotAlarm(RobotAlarm.MOVE_TO_IPPOINT_PUT_TIMEOUT));
+			waitForStatus(RobotConstants.STATUS_PUT_OUT_OF_MACHINE);
+			setRobotTimeout(null);
 		}
 	}
 
@@ -220,7 +216,9 @@ public class FanucRobot extends AbstractRobot {
 		}
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PUT_FINISHED, MOVE_FINISH_TIMEOUT);
 		if (!waitingForPickFinished) {
-			throw new RobotActionException(this, EXCEPTION_FINALIZE_PUT_TIMEOUT);
+			setRobotTimeout(new RobotAlarm(RobotAlarm.FINALIZE_PUT_TIMEOUT));
+			waitForStatus(RobotConstants.STATUS_PUT_FINISHED);
+			setRobotTimeout(null);
 		}
 		setCurrentActionSettings(null);
 	}
@@ -256,12 +254,16 @@ public class FanucRobot extends AbstractRobot {
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForTeachingNeeded = waitForStatus(RobotConstants.STATUS_AWAITING_TEACHING, MOVE_TO_LOCATION_TIMEOUT);
 			if (!waitingForTeachingNeeded) {
-				throw new RobotActionException(this, EXCEPTION_MOVE_TO_PICK_POSITION_TIMEOUT);
+				setRobotTimeout(new RobotAlarm(RobotAlarm.MOVE_TO_PICK_POSITION_TIMEOUT));
+				waitForStatus(RobotConstants.STATUS_AWAITING_TEACHING);
+				setRobotTimeout(null);
 			} 
 		} else {
 			boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PICK_RELEASE_REQUEST, MOVE_TO_LOCATION_TIMEOUT);
 			if (!waitingForRelease) {
-				throw new RobotActionException(this, EXCEPTION_MOVE_TO_PICK_POSITION_TIMEOUT);
+				setRobotTimeout(new RobotAlarm(RobotAlarm.MOVE_TO_PICK_POSITION_TIMEOUT));
+				waitForStatus(RobotConstants.STATUS_PICK_RELEASE_REQUEST);
+				setRobotTimeout(null);
 			}
 		}
 	}
@@ -274,12 +276,16 @@ public class FanucRobot extends AbstractRobot {
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PICK_RELEASE_REQUEST, TEACH_TIMEOUT);
 			if (!waitingForRelease) {
-				throw new RobotActionException(this, EXCEPTION_TEACH_TIMEOUT);
+				setRobotTimeout(new RobotAlarm(RobotAlarm.TEACH_TIMEOUT));
+				waitForStatus(RobotConstants.STATUS_PICK_RELEASE_REQUEST);
+				setRobotTimeout(null);
 			}
 		} else {
 			boolean waitingForRelease = waitForStatus(RobotConstants.STATUS_PICK_RELEASE_REQUEST, CLAMP_ACK_REQUEST_TIMEOUT);
 			if (!waitingForRelease) {
-				throw new RobotActionException(this, EXCEPTION_UNCLAMP_ACK_REQUEST_TIMEOUT);
+				setRobotTimeout(new RobotAlarm(RobotAlarm.UNCLAMP_ACK_REQUEST_TIMEOUT));
+				waitForStatus(RobotConstants.STATUS_PICK_RELEASE_REQUEST);
+				setRobotTimeout(null);
 			}
 		}
 		
@@ -293,7 +299,9 @@ public class FanucRobot extends AbstractRobot {
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_PICK_RELEASE_ACK);
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PICK_OUT_OF_MACHINE, MOVE_TO_IPPOINT_TIMEOUT);
 		if (!waitingForPickFinished) {
-			throw new RobotActionException(this, EXCEPTION_MOVE_TO_IPPOINT_PICK_TIMEOUT);
+			setRobotTimeout(new RobotAlarm(RobotAlarm.MOVE_TO_IPPOINT_PICK_TIMEOUT));
+			waitForStatus(RobotConstants.STATUS_PICK_OUT_OF_MACHINE);
+			setRobotTimeout(null);
 		}
 	}
 
@@ -304,7 +312,9 @@ public class FanucRobot extends AbstractRobot {
 		}
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PICK_FINISHED, MOVE_FINISH_TIMEOUT);
 		if (!waitingForPickFinished) {
-			throw new RobotActionException(this, EXCEPTION_FINALIZE_PICK_TIMEOUT);
+			setRobotTimeout(new RobotAlarm(RobotAlarm.FINALIZE_PICK_TIMEOUT));
+			waitForStatus(RobotConstants.STATUS_PICK_FINISHED);
+			setRobotTimeout(null);
 		}
 		setCurrentActionSettings(null);
 	}
@@ -363,7 +373,9 @@ public class FanucRobot extends AbstractRobot {
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForTeachingNeeded = waitForStatus(RobotConstants.STATUS_AWAITING_TEACHING, MOVE_TO_LOCATION_TIMEOUT);
 			if (!waitingForTeachingNeeded) {
-				throw new RobotActionException(this, EXCEPTION_MOVE_TO_POSITION_TIMEOUT);
+				setRobotTimeout(new RobotAlarm(RobotAlarm.MOVE_TO_POSITION_TIMEOUT));
+				waitForStatus(RobotConstants.STATUS_AWAITING_TEACHING);
+				setRobotTimeout(null);
 			} 
 		} else {
 			continueMoveTillWait();
@@ -378,12 +390,16 @@ public class FanucRobot extends AbstractRobot {
 		if (getCurrentActionSettings().isTeachingNeeded()) {
 			boolean waitingForLocation = waitForStatus(RobotConstants.STATUS_WAITING_AFTER_MOVE, TEACH_TIMEOUT);
 			if (!waitingForLocation) {
-				throw new RobotActionException(this, EXCEPTION_TEACH_TIMEOUT);
+				setRobotTimeout(new RobotAlarm(RobotAlarm.TEACH_TIMEOUT));
+				waitForStatus(RobotConstants.STATUS_WAITING_AFTER_MOVE);
+				setRobotTimeout(null);
 			}
 		} else {
 			boolean waitingForLocation = waitForStatus(RobotConstants.STATUS_WAITING_AFTER_MOVE, MOVE_TO_LOCATION_TIMEOUT);
 			if (!waitingForLocation) {
-				throw new RobotActionException(this, EXCEPTION_MOVE_TO_POSITION_TIMEOUT);
+				setRobotTimeout(new RobotAlarm(RobotAlarm.MOVE_TO_POSITION_TIMEOUT));
+				waitForStatus(RobotConstants.STATUS_WAITING_AFTER_MOVE);
+				setRobotTimeout(null);
 			}
 		}
 	}
@@ -393,7 +409,9 @@ public class FanucRobot extends AbstractRobot {
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_IOACTION);
 		boolean prageSucceeded = waitForStatus(RobotConstants.STATUS_IOACTION_FINISHED, IOACTION_TIMEOUT);
 		if (!prageSucceeded) {
-			throw new RobotActionException(this, EXCEPTION_IOACTION_TIMEOUT);
+			setRobotTimeout(new RobotAlarm(RobotAlarm.IOACTION_TIMEOUT));
+			waitForStatus(RobotConstants.STATUS_IOACTION_FINISHED);
+			setRobotTimeout(null);
 		}
 	}
 
@@ -405,7 +423,9 @@ public class FanucRobot extends AbstractRobot {
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_MOVEWAIT_CONTINUE);
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PICK_OUT_OF_MACHINE, MOVE_TO_IPPOINT_TIMEOUT);
 		if (!waitingForPickFinished) {
-			throw new RobotActionException(this, EXCEPTION_MOVE_TO_IPPOINT_MOVEWITHPIECE_TIMEOUT);
+			setRobotTimeout(new RobotAlarm(RobotAlarm.MOVE_TO_IPPOINT_MOVEWITHPIECE_TIMEOUT));
+			waitForStatus(RobotConstants.STATUS_PICK_OUT_OF_MACHINE);
+			setRobotTimeout(null);
 		}
 	}
 	
@@ -417,7 +437,9 @@ public class FanucRobot extends AbstractRobot {
 		writeCommand(RobotConstants.PERMISSIONS_COMMAND_MOVEWAIT_CONTINUE);
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PUT_OUT_OF_MACHINE, MOVE_TO_IPPOINT_TIMEOUT);
 		if (!waitingForPickFinished) {
-			throw new RobotActionException(this, EXCEPTION_MOVE_TO_IPPOINT_MOVEWITHPIECE_TIMEOUT);
+			setRobotTimeout(new RobotAlarm(RobotAlarm.MOVE_TO_IPPOINT_MOVEWITHPIECE_TIMEOUT));
+			waitForStatus(RobotConstants.STATUS_PUT_OUT_OF_MACHINE);
+			setRobotTimeout(null);
 		}
 	}
 
@@ -428,7 +450,9 @@ public class FanucRobot extends AbstractRobot {
 		}
 		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_MOVEWAIT_FINISHED, MOVE_FINISH_TIMEOUT);
 		if (!waitingForPickFinished) {
-			throw new RobotActionException(this, EXCEPTION_FINALIZE_MOVEWITHPIECE_TIMEOUT);
+			setRobotTimeout(new RobotAlarm(RobotAlarm.FINALIZE_MOVEWITHPIECE_TIMEOUT));
+			waitForStatus(RobotConstants.STATUS_MOVEWAIT_FINISHED);
+			setRobotTimeout(null);
 		}
 		setCurrentActionSettings(null);
 	}

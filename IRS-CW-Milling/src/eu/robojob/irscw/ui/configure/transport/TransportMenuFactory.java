@@ -12,18 +12,18 @@ public class TransportMenuFactory {
 
 	private ProcessFlowAdapter processFlowAdapter;
 	
-	private Map<TransportInformation, AbstractMenuPresenter<?>> presentersBuffer;
+	private Map<Integer, AbstractMenuPresenter<?>> presentersBuffer;
 	
 	public TransportMenuFactory(final ProcessFlow processFlow) {
 		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
-		presentersBuffer = new HashMap<TransportInformation, AbstractMenuPresenter<?>>();
+		presentersBuffer = new HashMap<Integer, AbstractMenuPresenter<?>>();
 	}
 	
 	public AbstractMenuPresenter<?> getTransportMenu(final TransportInformation transportInfo) {
-		AbstractMenuPresenter<?> menuPresenter = presentersBuffer.get(transportInfo);
+		AbstractMenuPresenter<?> menuPresenter = presentersBuffer.get(transportInfo.getIndex());
 		if (menuPresenter == null) {
 			menuPresenter =  getTransportMenuPresenter(transportInfo);
-			presentersBuffer.put(transportInfo, menuPresenter);
+			presentersBuffer.put(transportInfo.getIndex(), menuPresenter);
 		}
 		return menuPresenter;
 	}

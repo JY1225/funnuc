@@ -46,10 +46,6 @@ public class DeviceMenuFactory {
 		presentersBuffer = new HashMap<Integer, AbstractMenuPresenter<?>>();
 	}
 	
-	public void reset() {
-		presentersBuffer.clear();
-	}
-	
 	public synchronized AbstractMenuPresenter<?> getDeviceMenu(final DeviceInformation deviceInfo) {
 		AbstractMenuPresenter<?> menuPresenter = presentersBuffer.get(deviceInfo.getIndex());
 		if (menuPresenter == null) {

@@ -361,7 +361,8 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	
 	public void removeDevice(final int index) {
 		processFlowAdapter.removeDeviceSteps(index);
-		deviceMenuFactory.reset();
+		deviceMenuFactory.clearBuffer();
+		transportMenuFactory.clearBuffer();
 		refresh();
 	}
 	

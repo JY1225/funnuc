@@ -16,6 +16,7 @@ public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicS
 		super(view);
 		getView().setBasicStackPlate(basicStackPlate);
 		this.stackPlate = basicStackPlate;
+		this.stackPlate.clearListeners();
 		this.stackPlate.addListener(this);
 		getView().build();
 	}

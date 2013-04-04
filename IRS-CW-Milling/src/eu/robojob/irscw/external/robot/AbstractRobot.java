@@ -33,6 +33,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	private int currentStatus;
 	private double zrest;
 	
+	private RobotAlarm robotTimeout;
+	
 	private AbstractRobotActionSettings<?> currentActionSettings;
 
 	public AbstractRobot(final String name, final Set<GripperBody> possibleGripperBodies, final GripperBody activeGripperBody) {
@@ -166,10 +168,10 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		if (!isConnected()) {
 			throw new RobotActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
 		}
-		while (waitedTime < timeout) {
+		while ((timeout == 0) || ((timeout > 0) && (waitedTime < timeout))) {
 			// start waiting
 			statusChanged = false;
-			if (timeout > waitedTime) {
+			if ((timeout == 0) || ((timeout > 0) && (timeout > waitedTime))) {
 				long timeBeforeWait = System.currentTimeMillis();
 				synchronized (syncObject) {
 					syncObject.wait(timeout - waitedTime);
@@ -195,6 +197,10 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 			}
 		} 
 		return false;
+	}
+	
+	protected void waitForStatus(final int status) throws RobotActionException, InterruptedException {
+		waitForStatus(status, 0);
 	}
 	
 	public boolean isExecutionInProgress() {
@@ -257,6 +263,14 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 			}
 		}
 		return null;
+	}
+	
+	public void setRobotTimeout(final RobotAlarm robotTimeout) {
+		this.robotTimeout = robotTimeout;
+	}
+	
+	public RobotAlarm getRobotTimeout() {
+		return robotTimeout;
 	}
 		
 	public abstract void updateStatusZRestAndAlarms() throws AbstractCommunicationException, InterruptedException;

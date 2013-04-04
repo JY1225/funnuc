@@ -83,14 +83,32 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	@Override
 	public void build() {
+		System.out.println("******---------CALLED BUILD******---------");
+		this.setCache(false);
+		this.holes.clear();
+		this.studs.clear();
+		this.horizontalLabels.clear();
+		this.verticalLabels.clear();
+		
+		if (group != null) {
+			group.getChildren().clear();
+		}
+		group = null;
+		
+		if (root != null) {
+			root.getChildren().clear();
+			getChildren().remove(root);
+		}
+		
+		root = null;
+		this.getChildren().clear();
+		
 		this.setPrefSize(590, 300);
 		this.setMinSize(590, 300);
 		this.setMaxSize(590, 300);
 		
 		group = new Group();
 		group.setCache(true);
-		
-		group.getChildren().clear();
 		
 		// add plate
 		stackPlate = new Rectangle(0, 0, basicStackPlateLayout.getLength(), basicStackPlateLayout.getWidth());
@@ -165,9 +183,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 		
 		group.setLayoutX(0 - group.getBoundsInParent().getMinX());
 		group.setLayoutY(0 - group.getBoundsInParent().getMinY());
-		
-		this.getChildren().clear();
-		
+				
 		this.add(root, 0, 0);
 	}
 	
