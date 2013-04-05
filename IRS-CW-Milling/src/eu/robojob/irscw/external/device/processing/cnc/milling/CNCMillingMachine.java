@@ -33,10 +33,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private float clampingWidthR;
 	private float clampingLengthR;
 		
-	// private static final int PREPARE_PUT_TIMEOUT = 2 * 60 * 1000;
-	private static final int PREPARE_PUT_TIMEOUT = 2 * 1000;
-	//private static final int PREPARE_PICK_TIMEOUT = 2 * 60 * 1000;
-	private static final int PREPARE_PICK_TIMEOUT = 2 * 1000;
+	private static final int PREPARE_PUT_TIMEOUT = 2 * 60 * 1000;
+	private static final int PREPARE_PICK_TIMEOUT = 2 * 60 * 1000;
 
 	private static final int CLAMP_TIMEOUT = 1 * 60 * 1000;
 	private static final int UNCLAMP_TIMEOUT = 1 * 60 * 1000;
