@@ -4,9 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.irscw.external.communication.AbstractCommunicationException;
 import eu.robojob.irscw.external.communication.socket.SocketConnection;
 import eu.robojob.irscw.external.communication.socket.SocketDisconnectedException;
@@ -31,15 +28,16 @@ import eu.robojob.irscw.threading.ThreadManager;
 import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachine extends AbstractCNCMachine {
-
-	private static Logger logger = LogManager.getLogger(CNCMillingMachine.class.getName());
 	
 	private CNCMachineSocketCommunication cncMachineCommunication;
 	private float clampingWidthR;
 	private float clampingLengthR;
 		
-	private static final int PREPARE_PUT_TIMEOUT = 2 * 60 * 1000;
-	private static final int PREPARE_PICK_TIMEOUT = 2 * 60 * 1000;
+	// private static final int PREPARE_PUT_TIMEOUT = 2 * 60 * 1000;
+	private static final int PREPARE_PUT_TIMEOUT = 2 * 1000;
+	//private static final int PREPARE_PICK_TIMEOUT = 2 * 60 * 1000;
+	private static final int PREPARE_PICK_TIMEOUT = 2 * 1000;
+
 	private static final int CLAMP_TIMEOUT = 1 * 60 * 1000;
 	private static final int UNCLAMP_TIMEOUT = 1 * 60 * 1000;
 	private static final int PUT_ALLOWED_TIMEOUT = 2 * 60 * 1000;
@@ -47,13 +45,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int CYCLE_FINISHED_TIMEOUT = Integer.MAX_VALUE;
 	private static final int SLEEP_TIME_AFTER_RESET = 2500;
 	
-	private static final String EXCEPTION_CYCLE_NOT_STARTED = "CNCMillingMachine.cycleNotStarted";
-	private static final String EXCEPTION_CYCLE_END_TIMEOUT = "CNCMillingMachine.cycleEndTimeout";
-	private static final String EXCEPTION_PREPARE_PICK_TIMEOUT = "CNCMillingMachine.preparePickTimeout";
-	private static final String EXCEPTION_PREPARE_PUT_TIMEOUT = "CNCMillingMachine.preparePutTimeout";
-	private static final String EXCEPTION_UNCLAMP_TIMEOUT = "CNCMillingMachine.unclampTimeout";
-	private static final String EXCEPTION_CLAMP_TIMEOUT = "CNCMillingMachine.clampTimeout";
-			
 	public CNCMillingMachine(final String name, final Set<Zone> zones, final SocketConnection socketConnection, final float clampingLengthR, final float clampingWidthR) {
 		super(name, zones);
 		this.clampingLengthR = clampingLengthR;
@@ -80,7 +71,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		List<Integer> alarmInts = cncMachineCommunication.readRegisters(CNCMachineConstants.ALARMS_REG1, 2);
 		int alarmReg1 = alarmInts.get(0);
 		int alarmReg2 = alarmInts.get(1);
-		setAlarms(CNCMachineAlarm.parseCNCAlarms(alarmReg1, alarmReg2));
+		setAlarms(CNCMachineAlarm.parseCNCAlarms(alarmReg1, alarmReg2, getCncMachineTimeout()));
 	}
 	
 	@Override
@@ -156,20 +147,19 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
-		logger.debug("Send start cycle command");
 		boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
-		logger.debug("Cycle is started: " + cycleStartReady);
 		if (!cycleStartReady) {
-			throw new DeviceActionException(this, EXCEPTION_CYCLE_NOT_STARTED);
-		} else {
+			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
+			waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1);
+			setCncMachineTimeout(null);
 			// we now wait for pick requested
 			boolean cycleFinished =  waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED, CYCLE_FINISHED_TIMEOUT);
-			logger.debug("**********FINISHED**********Cycle finished");
 			if (!cycleFinished) {
-				throw new DeviceActionException(this, EXCEPTION_CYCLE_END_TIMEOUT);
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_END_TIMEOUT));
+				waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED);
+				setCncMachineTimeout(null);
 			}
 			//nCReset();
-			logger.debug("-----------*NC RESET SENT**********Cycle finished");
 		}
 	}
 
@@ -189,7 +179,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		// check put is prepared
 		boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA1_READY, PREPARE_PICK_TIMEOUT);
 		if (!pickReady) {
-			throw new DeviceActionException(this, EXCEPTION_PREPARE_PICK_TIMEOUT);
+			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
+			waitForStatus(CNCMachineConstants.R_PICK_WA1_READY);
+			setCncMachineTimeout(null);
 		}
 	}
 
@@ -210,7 +202,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		// check put is prepared
 		boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
 		if (!putReady) {
-			throw new DeviceActionException(this, EXCEPTION_PREPARE_PUT_TIMEOUT);
+			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PUT_TIMEOUT));
+			waitForStatus(CNCMachineConstants.R_PUT_WA1_READY);
+			setCncMachineTimeout(null);
 		} 
 	}
 
@@ -229,7 +223,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		
 		boolean clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY, UNCLAMP_TIMEOUT);
 		if (!clampReady) {
-			throw new DeviceActionException(this, EXCEPTION_UNCLAMP_TIMEOUT);
+			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
+			waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY);
+			setCncMachineTimeout(null);
 		}
 	}
 
@@ -248,7 +244,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		
 		boolean clampReady =  waitForStatus(CNCMachineConstants.R_CLAMP_WA1_READY, CLAMP_TIMEOUT);
 		if (!clampReady) {
-			throw new DeviceActionException(this, EXCEPTION_CLAMP_TIMEOUT);
+			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CLAMP_TIMEOUT));
+			waitForStatus(CNCMachineConstants.R_CLAMP_WA1_READY);
+			setCncMachineTimeout(null);
 		} 
 	}
 

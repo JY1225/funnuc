@@ -28,6 +28,14 @@ public class CNCMachineAlarm {
 	public static final int WA2_UNCLAMP = 22;
 	public static final int MULTIPLE_IPC_REQUESTS = 23;
 	
+	public static final int CYCLE_NOT_STARTED_TIMEOUT = 101;
+	public static final int CYCLE_END_TIMEOUT = 102;
+	public static final int PREPARE_PICK_TIMEOUT = 103;
+	public static final int PREPARE_PUT_TIMEOUT = 104;
+	public static final int UNCLAMP_TIMEOUT = 105;
+	public static final int CLAMP_TIMEOUT = 106;
+			
+	
 	private static final int DEFAULT_PRIORITY = 5;
 		
 	private int id;
@@ -73,7 +81,8 @@ public class CNCMachineAlarm {
 	}
 	
 	//TODO perhaps this methods should be placed in the CNCMillingMachine-class or an helper class
-	public static Set<CNCMachineAlarm> parseCNCAlarms(final int alarmReg1, final int alarmReg2) {
+	public static Set<CNCMachineAlarm> parseCNCAlarms(final int alarmReg1, final int alarmReg2, 
+			final CNCMachineAlarm timeout) {
 		Set<CNCMachineAlarm> alarms = new HashSet<CNCMachineAlarm>();
 		if ((alarmReg1 & CNCMachineConstants.ALR_MACHINE) > 0) {
 			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MACHINE));
@@ -134,6 +143,9 @@ public class CNCMachineAlarm {
 		}
 		if ((alarmReg2 & CNCMachineConstants.ALR_MULTIPLE_IPC_RQST) > 0) {
 			alarms.add(new CNCMachineAlarm(CNCMachineAlarm.MULTIPLE_IPC_REQUESTS));
+		}
+		if (timeout != null) {
+			alarms.add(timeout);
 		}
 		return alarms;
 	}

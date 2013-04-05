@@ -139,7 +139,7 @@ public class RoboSoftAppFactory {
 	public AlarmsPopUpPresenter getAlarmsPopUpPresenter() {
 		if (alarmsPopUpPresenter == null) {
 			AlarmsPopUpView view = new AlarmsPopUpView();
-			alarmsPopUpPresenter = new AlarmsPopUpPresenter(view);
+			alarmsPopUpPresenter = new AlarmsPopUpPresenter(view, getProcessFlow(), deviceManager, robotManager);
 		}
 		return alarmsPopUpPresenter;
 	}

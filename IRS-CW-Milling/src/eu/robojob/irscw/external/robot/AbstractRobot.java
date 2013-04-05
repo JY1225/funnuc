@@ -174,7 +174,11 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 			if ((timeout == 0) || ((timeout > 0) && (timeout > waitedTime))) {
 				long timeBeforeWait = System.currentTimeMillis();
 				synchronized (syncObject) {
-					syncObject.wait(timeout - waitedTime);
+					if (timeout > 0) {
+						syncObject.wait(timeout - waitedTime);
+					} else {
+						syncObject.wait();
+					}
 				}
 				// at this point the wait is finished, either by a notify (status changed, or request to stop), or by a timeout
 				if (stopAction) {

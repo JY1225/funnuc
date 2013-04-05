@@ -15,6 +15,10 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.irscw.external.device.ClampingManner;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
@@ -60,6 +64,8 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	private static final String CSS_CLASS_FINISHED = "finished";
 	private static final String CSS_CLASS_FINISHED_MARK = "workpiece-finished-mark";
 	
+	private static Logger logger = LogManager.getLogger(BasicStackPlateLayoutView.class.getName());
+	
 	public BasicStackPlateLayoutView() {
 		super();
 		this.holes = new ArrayList<Circle>();
@@ -83,7 +89,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	@Override
 	public void build() {
-		System.out.println("******---------CALLED BUILD******---------");
+		logger.debug("**called build**");
 		this.setCache(false);
 		this.holes.clear();
 		this.studs.clear();

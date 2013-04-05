@@ -159,6 +159,7 @@
 .process-flow-view {
 	-fx-background-color: #ededed;
 	-fx-background-insets: 0;
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.6), 4, 0.0, 0, 2);
 }
 
 

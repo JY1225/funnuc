@@ -90,8 +90,13 @@
 }
 
 .warning-config {
-	-fx-font-size: 16px;
 	-fx-font-family: "Open Sans";
-	-fx-font-smoothing-type: lcd;
-	-fx-font-style: italic;
+	-fx-font-weight: bold;
+	-fx-font-size: 14px;
+}
+
+.alarm-popup-msg {
+	-fx-font-family: "Open Sans";
+	-fx-font-weight: bold;
+	-fx-font-size: 14px;
 }

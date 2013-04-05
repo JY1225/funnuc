@@ -28,6 +28,8 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	private boolean stopAction;
 	
+	private CNCMachineAlarm cncMachineTimeout;
+	
 	private static Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());
 	
 	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "AbstractCNCMachine.disconnectedWhileWaiting";
@@ -46,6 +48,14 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this(name, new HashSet<Zone>());
 	}
 	
+	public CNCMachineAlarm getCncMachineTimeout() {
+		return cncMachineTimeout;
+	}
+
+	public void setCncMachineTimeout(final CNCMachineAlarm cncMachineTimeout) {
+		this.cncMachineTimeout = cncMachineTimeout;
+	}
+
 	@Override
 	public void interruptCurrentAction() {
 		logger.debug("Interrupting current action of: " + getName());
@@ -142,13 +152,17 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		if (!isConnected()) {
 			throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
 		}
-		while (waitedTime < timeout) {
+		while ((timeout == 0) || ((timeout > 0) && (waitedTime < timeout))) {
 			// start waiting
 			statusChanged = false;
-			if (timeout > waitedTime) {
+			if ((timeout == 0) || ((timeout > 0) && (timeout > waitedTime))) {
 				long timeBeforeWait = System.currentTimeMillis();
 				synchronized (syncObject) {
-					syncObject.wait(timeout - waitedTime);
+					if (timeout > 0) {
+						syncObject.wait(timeout - waitedTime);
+					} else {
+						syncObject.wait();
+					}
 				}
 				// at this point the wait is finished, either by a notify (status changed, or request to stop), or by a timeout
 				if (stopAction) {
@@ -171,6 +185,10 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 			}
 		} 
 		return false;
+	}
+	
+	protected void waitForStatus(final int status) throws DeviceActionException, InterruptedException {
+		waitForStatus(status, 0);
 	}
 	
 	@Override
