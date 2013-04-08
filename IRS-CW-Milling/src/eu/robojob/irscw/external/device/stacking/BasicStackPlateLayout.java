@@ -35,7 +35,7 @@ public class BasicStackPlateLayout {
 	
 	private static final float MIN_OVERLAP_DISTANCE = 5;
 	private static final double MAX_OVERLAP_PERCENTAGE = 0.35;
-	private static final double MAX_OVERFLOW = 50;
+	private static final double MAX_OVERFLOW = 25;
 	
 	private static Logger logger = LogManager.getLogger(BasicStackPlateLayout.class.getName());
 		
@@ -298,7 +298,7 @@ public class BasicStackPlateLayout {
 		int n = 0;
 		while(!ok) {
 			double overflowHorL = (width - a - n*b - c) / Math.sqrt(2) - horizontalPadding;	// check the horizontal distance overflowing the stacker to the left
-			if ((overflowHorL < 0) || (Math.pow(overflowHorL, 2)/surface < overFlowPercentage)) {	// if this distance is negative, or small enough, everything is ok
+			if ((overflowHorL < 0) || ((Math.pow(overflowHorL, 2)/surface < overFlowPercentage) && (overflowHorL < MAX_OVERFLOW))) {	// if this distance is negative, or small enough, everything is ok
 				ok = true;
 			} else {
 				n++;	// if not, we increase the amount of studs to the left
