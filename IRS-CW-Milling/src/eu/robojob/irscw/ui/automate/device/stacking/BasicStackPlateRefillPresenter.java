@@ -1,8 +1,5 @@
 package eu.robojob.irscw.ui.automate.device.stacking;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
 import eu.robojob.irscw.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.irscw.process.ProcessFlow;
@@ -10,7 +7,6 @@ import eu.robojob.irscw.ui.general.AbstractFormPresenter;
 
 public class BasicStackPlateRefillPresenter extends AbstractFormPresenter<BasicStackPlateRefillView, BasicStackPlateMenuPresenter> {
 
-	private static Logger logger = LogManager.getLogger(BasicStackPlateRefillPresenter.class.getName());
 	private BasicStackPlate stackPlate;
 	private ProcessFlow processFlow;
 	
@@ -36,8 +32,9 @@ public class BasicStackPlateRefillPresenter extends AbstractFormPresenter<BasicS
 		try {
 			stackPlate.replaceFinishedWorkPieces(amount);
 			processFlow.setFinishedAmount(processFlow.getFinishedAmount() - amount);
+			getView().hideNotification();
 		} catch (IncorrectWorkPieceDataException e) {
-			logger.error(e);
+			getView().showNotification(e.getLocalizedMessage());
 		}
 	}
 }
