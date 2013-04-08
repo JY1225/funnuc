@@ -8,6 +8,7 @@ public class IncorrectWorkPieceDataException extends Exception {
 	public static final String INCORRECT_DATA = "IncorrectWorkPieceDataException.incorrectData";
 	public static final String LENGTH_SMALLER_WIDTH = "IncorrectWorkPieceDataException.lengthSmallerThanWidth";
 	public static final String INCORRECT_AMOUNT = "IncorrectWorkPieceDataException.incorrectAmount";
+	public static final String TOO_LARGE = "IncorrectWorkPieceDataException.tooLarge"; 
 	
 	private String key;
 
