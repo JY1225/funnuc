@@ -126,6 +126,7 @@ public class BasicStackPlateRefillView extends AbstractFormView<BasicStackPlateR
 	@Override
 	public void refresh() {
 		refreshMax();
+		hideNotification();
 	}
 	
 	private void refreshMax() {
