@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.irscw.db.external.device.DeviceMapper;
 import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
@@ -185,5 +186,15 @@ public class DeviceManager {
 			logger.error(e);
 			e.printStackTrace();
 		}		
+	}
+	
+	public void updateCNCMachineData(final CNCMillingMachine cncMachine, final String name, final String ipAddress, 
+			final int port, final String workAreaName, final String userFramename) {
+		try {
+			deviceMapper.updateCNCMachine(cncMachine, name, ipAddress, port, workAreaName, userFramename);
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}	
 	}
 }

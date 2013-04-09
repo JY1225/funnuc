@@ -4,6 +4,8 @@ import java.util.Set;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -21,6 +23,8 @@ import eu.robojob.irscw.util.UIConstants;
 
 public class CNCMachineGeneralView extends GridPane {
 
+	private CNCMachineConfigurePresenter presenter;
+	
 	private Label lblName;
 	private FullTextField fulltxtName;
 	private Label lblIPAddress;
@@ -57,6 +61,10 @@ public class CNCMachineGeneralView extends GridPane {
 		build();
 	}
 	
+	public void setPresenter(final CNCMachineConfigurePresenter presenter) {
+		this.presenter = presenter;
+	}
+	
 	public void build() {
 		setVgap(15);
 		setHgap(15);
@@ -80,7 +88,12 @@ public class CNCMachineGeneralView extends GridPane {
 		cbbUserFrameWA1.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
 		cbbUserFrameWA1.setItems(userFrameNames);
 		
-		btnSave = AbstractFormView.createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, null);
+		btnSave = AbstractFormView.createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {	
+			@Override
+			public void handle(final ActionEvent arg0) {
+				presenter.saveData(fulltxtName.getText(), fulltxtIp.getText(), Integer.parseInt(itxtPort.getText()), fulltxtNameWA1.getText(), cbbUserFrameWA1.valueProperty().get());
+			}
+		});
 		GridPane.setHalignment(btnSave, HPos.CENTER);
 		
 		int row = 0;

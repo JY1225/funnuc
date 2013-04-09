@@ -15,6 +15,7 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
+import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
@@ -287,6 +288,9 @@ public class DeviceMapper {
 		stmt.setFloat(12, tiltedR);
 		stmt.setInt(13, basicStackPlate.getId());
 		stmt.execute();
+		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
+		stmt2.setString(1, name);
+		stmt2.execute();
 		Coordinates smoothTo = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
 		Coordinates smoothFrom = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
 		smoothTo.setX(smoothToX);
@@ -312,5 +316,28 @@ public class DeviceMapper {
 		basicStackPlate.getLayout().setOverflowPercentage(overflowPercentage);
 		basicStackPlate.getLayout().setHorizontalR(horizontalR);
 		basicStackPlate.getLayout().setTiltedR(tiltedR);
+	}
+	
+	public void updateCNCMachine(final CNCMillingMachine cncMachine, final String name, final String ipAddress, 
+			final int port, final String workAreaName, final String userFramename) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		cncMachine.getWorkAreas().get(0).setName(workAreaName);
+		updateWorkArea(cncMachine.getWorkAreas().get(0));
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE SOCKETCONNECTION " +
+				"SET IPADDRESS = ?, PORTNR = ?, NAME = ? WHERE ID = ?");
+		stmt.setString(1, ipAddress);
+		stmt.setInt(2, port);
+		stmt.setString(3, name);
+		stmt.setInt(4, cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().getId());
+		stmt.execute();
+		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
+		stmt2.setString(1, name);
+		stmt2.execute();
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setIpAddress(ipAddress);
+		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setPortNumber(port);
+		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setName(name);
+		//FIXME : add user frame adjustment
 	}
 }
