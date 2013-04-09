@@ -7,6 +7,7 @@
 
 .bottom-left, .left-menu, .content-bottom {
 	-fx-background-color: #3b3f46, #5b6068, #52555c;
+	-fx-effect: innershadow(two-pass-box, rgba(0, 0, 0, 0.1), 10, 0.0, -3, 2);
 	-fx-background-insets: 0 0 0 0, 0 1 0 0, 0 1 0 0;
 }
 
