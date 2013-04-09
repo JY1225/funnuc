@@ -106,7 +106,6 @@ public class BasicStackPlateLayout {
 	public void configureStackingPositions(final WorkPiece rawWorkPiece, final WorkPieceOrientation orientation) throws IncorrectWorkPieceDataException {
 		stackingPositions.clear();
 		clearStuds();
-		//TODO add upper limits
 		if (rawWorkPiece != null) {
 			WorkPieceDimensions dimensions = rawWorkPiece.getDimensions();
 			if (!((dimensions != null) && (dimensions.getWidth() > 0) && (dimensions.getLength() > 0) && (dimensions.getHeight() > 0))) {
@@ -114,10 +113,9 @@ public class BasicStackPlateLayout {
 			}
 			switch(orientation) {
 				case HORIZONTAL:
-					configureHorizontalStackingPositionsAlt(dimensions);
+					configureHorizontalStackingPositions(dimensions);
 					break;
 				case TILTED:
-					//configureTiltedStackingPositionsAlt(dimensions);
 					configureTiltedStackingPositions(dimensions);
 					break;
 				default:
@@ -127,7 +125,7 @@ public class BasicStackPlateLayout {
 		}
 	}
 	
-	private void configureHorizontalStackingPositionsAlt(final WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
+	private void configureHorizontalStackingPositions(final WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
 		if (dimensions.getLength() < dimensions.getWidth()) {
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.LENGTH_SMALLER_WIDTH);
 		}
@@ -243,11 +241,11 @@ public class BasicStackPlateLayout {
 		logger.info("-corner length: " + cornerLength);
 		logger.info("-corner width: " + cornerWidth);
 
-		initializeRawWorkPiecePositionsHorizontal2(dimensions, amountOfStudsWorkPiece, amountOfStudsWorkPieceVertical, 
+		initializeRawWorkPiecePositionsHorizontal(dimensions, amountOfStudsWorkPiece, amountOfStudsWorkPieceVertical, 
 				(maxHorizontalIndex + 1), (maxVerticalIndex + 1), cornerLength, cornerWidth);
 	}
 	
-	private void initializeRawWorkPiecePositionsHorizontal2(final WorkPieceDimensions dimensions, final int amountOfStudsWorkPiece,
+	private void initializeRawWorkPiecePositionsHorizontal(final WorkPieceDimensions dimensions, final int amountOfStudsWorkPiece,
 			final int amountOfStudsWorkPieceVertical, final int amountHorizontal, final int amountVertical, 
 				final boolean cornerLength, final boolean cornerWidth) {
 		for (int i = 0; i < amountVertical; i++) {
@@ -445,10 +443,10 @@ public class BasicStackPlateLayout {
 		logger.info("corner piece length: " + cornerLength);
 		logger.info("corner piece width: " + cornerWidth);
 		
-		initializeRawWorkPiecePositionsTilted2(dimensions, amountOfStudsLeftFirst, amountOfStudsLeftOther, (maxHorizontalIndex + 1), verticalRowIndex, (maxVerticalIndex + 1), cornerLength, cornerWidth);
+		initializeRawWorkPiecePositionsTilted(dimensions, amountOfStudsLeftFirst, amountOfStudsLeftOther, (maxHorizontalIndex + 1), verticalRowIndex, (maxVerticalIndex + 1), cornerLength, cornerWidth);
 	}
 	
-	private void initializeRawWorkPiecePositionsTilted2(final WorkPieceDimensions dimensions, final int amountOfStudsLeftFirst,
+	private void initializeRawWorkPiecePositionsTilted(final WorkPieceDimensions dimensions, final int amountOfStudsLeftFirst,
 			final int amountOfStudsLeftOther, final int amountHorizontal, final int amountOfStudsVertical, 
 				final int amountVertical, final boolean cornerLength, final boolean cornerWidth) {
 		double a = horizontalHoleDistance/(Math.sqrt(2)) - studDiameter/2;
