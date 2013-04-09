@@ -122,6 +122,7 @@ public class CNCMachineGeneralView extends GridPane {
 	}
 	
 	public void setTextFieldListener(final TextInputControlListener listener) {
+		fulltxtNameWA1.setFocusListener(listener);
 		fulltxtName.setFocusListener(listener);
 		fulltxtIp.setFocusListener(listener);
 		itxtPort.setFocusListener(listener);

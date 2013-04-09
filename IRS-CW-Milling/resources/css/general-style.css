@@ -7,12 +7,13 @@
 
 .bottom-left, .left-menu, .content-bottom {
 	-fx-background-color: #3b3f46, #5b6068, #52555c;
-	-fx-effect: innershadow(two-pass-box, rgba(0, 0, 0, 0.1), 10, 0.0, -3, 2);
+	-fx-effect: innershadow(two-pass-box, rgba(41, 45, 50, 0.3), 7, 0.0, -2, 2);
 	-fx-background-insets: 0 0 0 0, 0 1 0 0, 0 1 0 0;
 }
 
 .content-bottom {
 	/* #6c707e, #585b64); */
+	-fx-effect: null;
 	-fx-background-color: #3b3f46, #7c7f84, #585b64;
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 1 0 0 0;
 }

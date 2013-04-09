@@ -14,6 +14,8 @@ public class IntegerTextField extends AbstractTextField<Integer> {
 	public IntegerTextField(final int maxLength) {
 		super(maxLength);
 		setPrefWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
+		setMinWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
+		setMaxWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
 		this.getStyleClass().add(CSS_CLASS_INTEGER_TEXTFIELD);
 	}
 

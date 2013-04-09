@@ -174,10 +174,13 @@ public class DeviceManager {
 	public void updateBasicStackPlate(final BasicStackPlate basicStackPlate, final String name, final String userFrameName, final int horizontalHoleAmount, 
 			final int verticalHoleAmount, final float holeDiameter, final float studDiameter, final float horizontalHoleDistance, final float horizontalPadding, 
 			final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage,
-			final float horizontalR, final float tiltedR) {
+			final float horizontalR, final float tiltedR, final float smoothToX, final float smoothToY, final float smoothToZ,
+			final float smoothFromX, final float smoothFromY, final float smoothFromZ) {
 		try {
 			deviceMapper.updateBasicStackPlate(basicStackPlate, name, userFrameName, horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, 
-					horizontalHoleDistance, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, interferenceDistance, overflowPercentage, horizontalR, tiltedR);
+					horizontalHoleDistance, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, interferenceDistance, overflowPercentage, horizontalR, tiltedR,
+					smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ);
+			basicStackPlate.loadDeviceSettings(basicStackPlate.getDeviceSettings());
 		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();

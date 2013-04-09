@@ -262,7 +262,8 @@ public class DeviceMapper {
 	public void updateBasicStackPlate(final BasicStackPlate basicStackPlate, final String name, final String userFrameName, final int horizontalHoleAmount, final int verticalHoleAmount, 
 			final float holeDiameter, final float studDiameter, final float horizontalHoleDistance, final float horizontalPadding, 
 			final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage,
-			final float horizontalR, final float tiltedR) throws SQLException {
+			final float horizontalR, final float tiltedR, final float smoothToX, final float smoothToY, final float smoothToZ,
+			final float smoothFromX, final float smoothFromY, final float smoothFromZ) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		if ((!basicStackPlate.getWorkAreas().get(0).getUserFrame().getName().equals(userFrameName))) {
 			UserFrame newUserFrame = getUserFrameByName(userFrameName);
@@ -286,6 +287,16 @@ public class DeviceMapper {
 		stmt.setFloat(12, tiltedR);
 		stmt.setInt(13, basicStackPlate.getId());
 		stmt.execute();
+		Coordinates smoothTo = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
+		Coordinates smoothFrom = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
+		smoothTo.setX(smoothToX);
+		smoothTo.setY(smoothToY);
+		smoothTo.setZ(smoothToZ);
+		smoothFrom.setX(smoothFromX);
+		smoothFrom.setY(smoothFromY);
+		smoothFrom.setZ(smoothFromZ);
+		generalMapper.saveCoordinates(smoothTo);
+		generalMapper.saveCoordinates(smoothFrom);
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 		basicStackPlate.setName(name);

@@ -16,6 +16,8 @@ public class NumericTextField extends AbstractTextField<Float> {
 	public NumericTextField(final int maxLength) {
 		super(maxLength);	// 
 		setPrefWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
+		setMinWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
+		setMaxWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
 		this.getStyleClass().add(CSS_CLASS_NUMERIC_TEXTFIELD);
 	}
 

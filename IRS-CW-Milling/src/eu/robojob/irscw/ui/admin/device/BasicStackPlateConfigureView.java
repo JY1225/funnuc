@@ -13,8 +13,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
+import eu.robojob.irscw.positioning.Coordinates;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
@@ -53,6 +55,23 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	private NumericTextField numTxtHorizontalR;
 	private Label lblTiltedR;
 	private NumericTextField numTxtTiltedR;
+	
+	private Label lblSmoothTo;
+	private Label lblSmoothToX;
+	private NumericTextField numtxtSmoothToX;
+	private Label lblSmoothToY;
+	private NumericTextField numtxtSmoothToY;
+	private Label lblSmoothToZ;
+	private NumericTextField numtxtSmoothToZ;
+	
+	private Label lblSmoothFrom;
+	private Label lblSmoothFromX;
+	private NumericTextField numtxtSmoothFromX;
+	private Label lblSmoothFromY;
+	private NumericTextField numtxtSmoothFromY;
+	private Label lblSmoothFromZ;
+	private NumericTextField numtxtSmoothFromZ;
+	
 	private Region spacer;
 	private Button btnSave;
 	
@@ -73,6 +92,11 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	private static final String SAVE = "BasicStackPlateConfigureView.save";
 	private static final String HORIZONTAL_R = "BasicStackPlateConfigureView.horizontalR";
 	private static final String TILTED_R = "BasicStackPlateConfigureView.tiltedR";
+	private static final String SMOOTH_TO = "BasicStackPlateConfigureView.smoothTo";
+	private static final String SMOOTH_FROM = "BasicStackPlateConfigureView.smoothFrom";
+	private static final String X = "BasicStackPlateConfigureView.x";
+	private static final String Y = "BasicStackPlateConfigureView.y";
+	private static final String Z = "BasicStackPlateConfigureView.z";
 	
 	private BasicStackPlate basicStackPlate;
 	
@@ -88,7 +112,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	protected void build() {
 		setVgap(15);
 		setHgap(15);
-		setPadding(new Insets(50, 0, 0, 0));
+		setPadding(new Insets(25, 0, 0, 0));
 		setAlignment(Pos.TOP_CENTER);
 		spacer = new Region();
 		spacer.setPrefWidth(20);
@@ -97,6 +121,8 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		lblUserFrame = new Label(Translator.getTranslation(USERFRAME));
 		cbbUserFrames = new ComboBox<String>();
 		cbbUserFrames.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
+		cbbUserFrames.setMinSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
+		cbbUserFrames.setMaxSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
 		cbbUserFrames.setItems(userFrameNames);
 		lblHorizontalHoleAmount = new Label(Translator.getTranslation(HORIZONTALHOLEAMOUNT));
 		itxtHorizontalHoleAmount = new IntegerTextField(3);
@@ -123,6 +149,32 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		lblTiltedR = new Label(Translator.getTranslation(TILTED_R));
 		numTxtTiltedR = new NumericTextField(5);
 		
+		HBox hboxSmoothTo = new HBox();
+		lblSmoothTo = new Label(Translator.getTranslation(SMOOTH_TO));
+		lblSmoothTo.setPrefWidth(110);
+		lblSmoothToX = new Label(Translator.getTranslation(X));
+		numtxtSmoothToX = new NumericTextField(5);
+		lblSmoothToY = new Label(Translator.getTranslation(Y));
+		numtxtSmoothToY = new NumericTextField(5);
+		lblSmoothToZ = new Label(Translator.getTranslation(Z));
+		numtxtSmoothToZ = new NumericTextField(5);
+		hboxSmoothTo.setSpacing(15);
+		hboxSmoothTo.getChildren().addAll(lblSmoothTo, lblSmoothToX, numtxtSmoothToX, lblSmoothToY, numtxtSmoothToY, lblSmoothToZ, numtxtSmoothToZ);
+		hboxSmoothTo.setAlignment(Pos.CENTER_LEFT);
+		
+		HBox hboxSmoothFrom = new HBox();
+		lblSmoothFrom = new Label(Translator.getTranslation(SMOOTH_FROM));
+		lblSmoothFrom.setPrefWidth(110);
+		lblSmoothFromX = new Label(Translator.getTranslation(X));
+		numtxtSmoothFromX = new NumericTextField(5);
+		lblSmoothFromY = new Label(Translator.getTranslation(Y));
+		numtxtSmoothFromY = new NumericTextField(5);
+		lblSmoothFromZ = new Label(Translator.getTranslation(Z));
+		numtxtSmoothFromZ = new NumericTextField(5);
+		hboxSmoothFrom.setSpacing(15);
+		hboxSmoothFrom.getChildren().addAll(lblSmoothFrom, lblSmoothFromX, numtxtSmoothFromX, lblSmoothFromY, numtxtSmoothFromY, lblSmoothFromZ, numtxtSmoothFromZ);
+		hboxSmoothFrom.setAlignment(Pos.CENTER_LEFT);
+		
 		btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
@@ -131,17 +183,20 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 						Float.parseFloat(numtxtHorizontalHoleDistance.getText()), Float.parseFloat(numtxtHorizontalPadding.getText()), 
 						Float.parseFloat(numtxtVerticalPaddingTop.getText()), Float.parseFloat(numtxtVerticalPaddingBottom.getText()), 
 						Float.parseFloat(numtxtInterferenceDistance.getText()), Float.parseFloat(numtxtOverflowPercentage.getText()), 
-						Float.parseFloat(numTxtHorizontalR.getText()), Float.parseFloat(numTxtTiltedR.getText()));
+						Float.parseFloat(numTxtHorizontalR.getText()), Float.parseFloat(numTxtTiltedR.getText()), 
+						Float.parseFloat(numtxtSmoothToX.getText()), Float.parseFloat(numtxtSmoothToY.getText()), 
+						Float.parseFloat(numtxtSmoothToZ.getText()), Float.parseFloat(numtxtSmoothFromX.getText()), 
+						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()));
 			}
 		});
 
 		int row = 0;
 		int column = 0;
 		add(lblName, column++, row);
-		add(fulltxtName, column++, row, 4, 1);
+		add(fulltxtName, column++, row, 3, 1);
 		column = 0; row++;
 		add(lblUserFrame, column++, row);
-		add(cbbUserFrames, column++, row, 4, 1);
+		add(cbbUserFrames, column++, row, 3, 1);
 		column = 0; row++;
 		add(lblHorizontalHoleAmount, column++, row);
 		add(itxtHorizontalHoleAmount, column++, row);
@@ -179,9 +234,13 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		add(lblTiltedR, column++, row);
 		add(numTxtTiltedR, column++, row);
 		column = 0; row++;
+		add(hboxSmoothTo, column++, row, 5, 1);
+		column = 0; row++;
+		add(hboxSmoothFrom, column++, row, 5, 1);
+		column = 0; row++;
 		add(btnSave, column++, row, 5, 1);
 		GridPane.setHalignment(btnSave, HPos.CENTER);
-		GridPane.setMargin(btnSave, new Insets(15, 0, 0, 0));
+		GridPane.setMargin(btnSave, new Insets(10, 0, 0, 0));
 	}
 	
 	public void setUserFrames(final List<String> userFrames) {
@@ -208,6 +267,12 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numtxtOverflowPercentage.setFocusListener(listener);
 		numTxtHorizontalR.setFocusListener(listener);
 		numTxtTiltedR.setFocusListener(listener);
+		numtxtSmoothToX.setFocusListener(listener);
+		numtxtSmoothToY.setFocusListener(listener);
+		numtxtSmoothToZ.setFocusListener(listener);
+		numtxtSmoothFromX.setFocusListener(listener);
+		numtxtSmoothFromY.setFocusListener(listener);
+		numtxtSmoothFromZ.setFocusListener(listener);
 	}
 
 	@Override
@@ -227,6 +292,14 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numTxtHorizontalR.setText(basicStackPlate.getLayout().getHorizontalR() + "");
 		numTxtTiltedR.setText(basicStackPlate.getLayout().getTiltedR() + "");
 		cbbUserFrames.valueProperty().set(basicStackPlate.getWorkAreas().get(0).getUserFrame().getName());
+		Coordinates smoothTo = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
+		Coordinates smoothFrom = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
+		numtxtSmoothToX.setText(smoothTo.getX() + "");
+		numtxtSmoothToY.setText(smoothTo.getY() + "");
+		numtxtSmoothToZ.setText(smoothTo.getZ() + "");
+		numtxtSmoothFromX.setText(smoothFrom.getX() + "");
+		numtxtSmoothFromY.setText(smoothFrom.getY() + "");
+		numtxtSmoothFromZ.setText(smoothFrom.getZ() + "");
 	}
 
 }
