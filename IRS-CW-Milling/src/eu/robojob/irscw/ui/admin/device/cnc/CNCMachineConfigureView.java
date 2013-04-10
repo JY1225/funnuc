@@ -70,6 +70,12 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	}
 	
 	@Override
+	public void setPresenter(final CNCMachineConfigurePresenter presenter) {
+		super.setPresenter(presenter);
+		cncMachineGeneralView.setPresenter(presenter);
+	}
+	
+	@Override
 	protected void build() {
 		setPrefWidth(600);
 		setMinWidth(600);

@@ -15,7 +15,6 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
-import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
@@ -234,6 +233,19 @@ public class DeviceMapper {
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
+	public void updateUserFrame(final UserFrame userFrame) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE USERFRAME SET NAME = ?, NUMBER = ?, ZSAFE = ? WHERE ID = ?");
+		stmt.setString(1, userFrame.getName());
+		stmt.setInt(2, userFrame.getNumber());
+		stmt.setFloat(3, userFrame.getzSafeDistance());
+		stmt.setInt(4, userFrame.getId());
+		stmt.executeUpdate();
+		generalMapper.saveCoordinates(userFrame.getLocation());
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
 	public void saveUserFrame(final UserFrame userFrame) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		generalMapper.saveCoordinates(userFrame.getLocation());
@@ -290,6 +302,7 @@ public class DeviceMapper {
 		stmt.execute();
 		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
 		stmt2.setString(1, name);
+		stmt2.setInt(2, basicStackPlate.getId());
 		stmt2.execute();
 		Coordinates smoothTo = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
 		Coordinates smoothFrom = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
@@ -322,6 +335,7 @@ public class DeviceMapper {
 			final int port, final String workAreaName, final String userFramename) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		cncMachine.getWorkAreas().get(0).setName(workAreaName);
+		cncMachine.getWorkAreas().get(0).setUserFrame(getUserFrameByName(userFramename));
 		updateWorkArea(cncMachine.getWorkAreas().get(0));
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE SOCKETCONNECTION " +
 				"SET IPADDRESS = ?, PORTNR = ?, NAME = ? WHERE ID = ?");
@@ -332,12 +346,16 @@ public class DeviceMapper {
 		stmt.execute();
 		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
 		stmt2.setString(1, name);
+		stmt2.setInt(2, cncMachine.getId());
 		stmt2.execute();
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
+		cncMachine.setName(name);
 		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setIpAddress(ipAddress);
 		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setPortNumber(port);
 		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setName(name);
-		//FIXME : add user frame adjustment
+		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().disconnect();
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 }

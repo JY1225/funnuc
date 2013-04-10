@@ -3,14 +3,19 @@ package eu.robojob.irscw.ui.admin.device.cnc;
 import java.util.HashSet;
 import java.util.Set;
 
+import javafx.application.Platform;
+
 import eu.robojob.irscw.external.device.DeviceManager;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMachineEvent;
+import eu.robojob.irscw.external.device.processing.cnc.CNCMachineListener;
 import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.positioning.UserFrame;
 import eu.robojob.irscw.ui.admin.device.DeviceMenuPresenter;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.general.AbstractFormPresenter;
 
-public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachineConfigureView, DeviceMenuPresenter> {
+public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachineConfigureView, DeviceMenuPresenter> implements CNCMachineListener {
 
 	private DeviceManager deviceManager;
 	private CNCMillingMachine cncMachine;
@@ -20,6 +25,7 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		this.deviceManager = deviceManager;
 		this.cncMachine = (CNCMillingMachine) deviceManager.getCNCMachines().iterator().next();
 		getView().setCNCMachine(cncMachine);
+		cncMachine.addListener(this);
 		getView().build();
 		getView().refresh();
 	}
@@ -50,5 +56,37 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		deviceManager.updateCNCMachineData(cncMachine, name, ip, port, workAreaName, userFramename);
 		getView().refresh();
 	}
+
+	@Override
+	public void cNCMachineConnected(final CNCMachineEvent event) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				getView().refresh();
+			}
+		});
+	}
+
+	@Override
+	public void cNCMachineDisconnected(final CNCMachineEvent event) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				getView().refresh();
+			}
+		});
+	}
+
+	@Override 
+	public void cNCMachineStatusChanged(final CNCMachineEvent event) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				getView().refresh();
+			}
+		});
+	}
+
+	@Override public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) { }
 
 }
