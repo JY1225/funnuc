@@ -16,6 +16,7 @@ public class RobotMenuView extends AbstractMenuView<RobotMenuPresenter> {
 	
 	@Override
 	protected void build() {
+		this.getStyleClass().add("admin-menu");
 		setPrefWidth(150);
 		setMinWidth(150);
 		setMaxWidth(150);

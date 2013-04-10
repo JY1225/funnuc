@@ -14,8 +14,10 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.NumericTextField;
@@ -34,6 +36,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private FullTextField fullTxtName;
 	private Label lblHeight;
 	private NumericTextField numtxtHeight;
+	// relative position
+	private Label lblRelativePosition;
 	private Label lblX;
 	private NumericTextField numtxtX;
 	private Label lblY;
@@ -42,6 +46,26 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private NumericTextField numtxtZ;
 	private Label lblR;
 	private NumericTextField numtxtR;
+	// smooth to
+	private Label lblSmoothTo;
+	private Label lblSmoothToX;
+	private NumericTextField numtxtSmoothToX;
+	private Label lblSmoothToY;
+	private NumericTextField numtxtSmoothToY;
+	private Label lblSmoothToZ;
+	private NumericTextField numtxtSmoothToZ;
+	// smooth from
+	private Label lblSmoothFrom;
+	private Label lblSmoothFromX;
+	private NumericTextField numtxtSmoothFromX;
+	private Label lblSmoothFromY;
+	private NumericTextField numtxtSmoothFromY;
+	private Label lblSmoothFromZ;
+	private NumericTextField numtxtSmoothFromZ;	
+	// image
+	private StackPane spImage;
+	private ImageView imageVw;
+	
 	private Button btnSave;
 	
 	private static final String EDIT = "CNCMachineClampingsView.edit";
@@ -49,6 +73,10 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private static final String NAME = "CNCMachineClampingsView.name";
 	private static final String HEIGHT = "CNCMachineClampingsView.height";
 	private static final String SAVE = "CNCMacineClampingsView.save";
+	
+	private static final String RELATIVE_POSITION = "CNCMachineClampingsView.relativePosition";
+	private static final String SMOOTH_TO = "CNCMachineClampingsView.smoothTo";
+	private static final String SMOOTH_FROM = "CNCMachineClampingsView.smoothFrom";
 	
 	private static final String EDIT_PATH = "M 15.71875,0 3.28125,12.53125 0,20 7.46875,16.71875 20,4.28125 C 20,4.28105 19.7362,2.486 18.625,1.375 17.5134,0.2634 15.71875,0 15.71875,0 z M 3.53125,12.78125 c 0,0 0.3421,-0.0195 1.0625,0.3125 C 4.85495,13.21295 5.1112,13.41 5.375,13.625 l 0.96875,0.96875 c 0.2258,0.2728 0.4471,0.5395 0.5625,0.8125 C 7.01625,15.66565 7.25,16.5 7.25,16.5 L 3,18.34375 C 2.5602,17.44355 2.55565,17.44 1.65625,17 l 1.875,-4.21875 z";
 	private static final String ADD_PATH = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 8.75 5 L 11.25 5 L 11.25 8.75 L 15 8.75 L 15 11.25 L 11.25 11.25 L 11.25 15 L 8.75 15 L 8.75 11.25 L 5 11.25 L 5 8.75 L 8.75 8.75 L 8.75 5 z";
@@ -112,6 +140,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		
 		lblName = new Label(Translator.getTranslation(NAME));
 		fullTxtName = new FullTextField(100);
+		fullTxtName.setMaxWidth(250);
+		fullTxtName.setPrefWidth(250);
 		fullTxtName.setOnChange(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> arg0, final String arg1, final String arg2) {
@@ -127,6 +157,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 				validate();
 			}
 		});
+		lblRelativePosition = new Label(Translator.getTranslation(RELATIVE_POSITION));
+		lblRelativePosition.setPrefWidth(125);
 		lblX = new Label("X");
 		numtxtX = new NumericTextField(6);
 		numtxtX.setMaxWidth(75);
@@ -164,6 +196,24 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			}
 		});
 		
+		lblSmoothTo = new Label(Translator.getTranslation(SMOOTH_TO));
+		lblSmoothTo.setPrefWidth(125);
+		lblSmoothToX = new Label("X");
+		numtxtSmoothToX = new NumericTextField(5);
+		lblSmoothToY = new Label("Y");
+		numtxtSmoothToY = new NumericTextField(5);
+		lblSmoothToZ = new Label("Z");
+		numtxtSmoothToZ = new NumericTextField(5);
+		
+		lblSmoothFrom = new Label(Translator.getTranslation(SMOOTH_FROM));
+		lblSmoothFrom.setPrefWidth(125);
+		lblSmoothFromX = new Label("X");
+		numtxtSmoothFromX = new NumericTextField(5);
+		lblSmoothFromY = new Label("Y");
+		numtxtSmoothFromY = new NumericTextField(5);
+		lblSmoothFromZ = new Label("Z");
+		numtxtSmoothFromZ = new NumericTextField(5);
+		
 		btnSave = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, null);
 
 		gpDetails = new GridPane();
@@ -173,24 +223,38 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		int column = 0;
 		int row = 0;
 		gpDetails.add(lblName, column++, row);
-		gpDetails.add(fullTxtName, column++, row);
+		gpDetails.add(fullTxtName, column++, row, 3, 1);
 		column = 0; row++;
 		gpDetails.add(lblHeight, column++, row);
-		gpDetails.add(numtxtHeight, column++, row);
+		gpDetails.add(numtxtHeight, column++, row, 3, 1);
 		column = 0; row++;
-		gpDetails.add(lblX, column++, row);
-		gpDetails.add(numtxtX, column++, row);
+		GridPane gpRelativePosition = new GridPane();
+		gpRelativePosition.setVgap(15);
+		gpRelativePosition.setHgap(15);
+		gpRelativePosition.add(lblRelativePosition, 0, 0);
+		gpRelativePosition.add(lblX, 1, 0);
+		gpRelativePosition.add(numtxtX, 2, 0);
+		gpRelativePosition.add(lblY, 3, 0);
+		gpRelativePosition.add(numtxtY, 4, 0);
+		gpRelativePosition.add(lblZ, 5, 0);
+		gpRelativePosition.add(numtxtZ, 6, 0);
+		gpRelativePosition.add(lblR, 1, 1);
+		gpRelativePosition.add(numtxtR, 2, 1);
+		gpDetails.add(gpRelativePosition, column++, row, 4, 1);
 		column = 0; row++;
-		gpDetails.add(lblY, column++, row);
-		gpDetails.add(numtxtY, column++, row);
+		HBox hboxSmoothTo = new HBox();
+		hboxSmoothTo.setAlignment(Pos.CENTER_LEFT);
+		hboxSmoothTo.setSpacing(15);
+		hboxSmoothTo.getChildren().addAll(lblSmoothTo, lblSmoothToX, numtxtSmoothToX, lblSmoothToY, numtxtSmoothToY, lblSmoothToZ, numtxtSmoothToZ);
+		gpDetails.add(hboxSmoothTo, column++, row, 4, 1);
 		column = 0; row++;
-		gpDetails.add(lblZ, column++, row);
-		gpDetails.add(numtxtZ, column++, row);
+		HBox hboxSmoothFrom = new HBox();
+		hboxSmoothFrom.setAlignment(Pos.CENTER_LEFT);
+		hboxSmoothFrom.setSpacing(15);
+		hboxSmoothFrom.getChildren().addAll(lblSmoothFrom, lblSmoothFromX, numtxtSmoothFromX, lblSmoothFromY, numtxtSmoothFromY, lblSmoothFromZ, numtxtSmoothFromZ);
+		gpDetails.add(hboxSmoothFrom, column++, row, 4, 1);
 		column = 0; row++;
-		gpDetails.add(lblR, column++, row);
-		gpDetails.add(numtxtR, column++, row);
-		column = 0; row++;
-		gpDetails.add(btnSave, column++, row, 2, 1);
+		gpDetails.add(btnSave, column++, row, 4, 1);
 		gpDetails.setVisible(false);
 		GridPane.setHalignment(btnSave, HPos.CENTER);
 		
@@ -212,6 +276,12 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		numtxtY.setFocusListener(listener);
 		numtxtZ.setFocusListener(listener);
 		numtxtR.setFocusListener(listener);
+		numtxtSmoothToX.setFocusListener(listener);
+		numtxtSmoothToY.setFocusListener(listener);
+		numtxtSmoothToZ.setFocusListener(listener);
+		numtxtSmoothFromX.setFocusListener(listener);
+		numtxtSmoothFromY.setFocusListener(listener);
+		numtxtSmoothFromZ.setFocusListener(listener);
 	}
 
 	@Override
@@ -261,6 +331,12 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		numtxtY.setText("" + clamping.getRelativePosition().getY());
 		numtxtZ.setText("" + clamping.getRelativePosition().getZ());
 		numtxtR.setText("" + clamping.getRelativePosition().getR());
+		numtxtSmoothToX.setText("" + clamping.getSmoothToPoint().getX());
+		numtxtSmoothToY.setText("" + clamping.getSmoothToPoint().getY());
+		numtxtSmoothToZ.setText("" + clamping.getSmoothToPoint().getZ());
+		numtxtSmoothFromX.setText("" + clamping.getSmoothFromPoint().getX());
+		numtxtSmoothFromY.setText("" + clamping.getSmoothFromPoint().getY());
+		numtxtSmoothFromZ.setText("" + clamping.getSmoothFromPoint().getZ());
 	}
 
 	public void validate() {

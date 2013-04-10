@@ -33,6 +33,7 @@ public class SubMenuAdminView extends HBox {
 		getChildren().clear();
 		menuView = new StackPane();
 		menuView.setPrefWidth(MENU_WIDTH);
+		menuView.getStyleClass().add("admin-menu");
 		getChildren().add(menuView);
 		contentView = new StackPane();
 		getChildren().add(contentView);

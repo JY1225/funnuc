@@ -1,33 +1,37 @@
 .bottompane { }
 
-.bottom-right {
-	-fx-background-color: #3b3f46, #708286, linear-gradient(#67696f 0%, #616369 100%);
-	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
-}
-
 .bottom-left, .left-menu, .content-bottom {
-	-fx-background-color: #3b3f46, #5b6068, #52555c;
-	-fx-effect: innershadow(two-pass-box, rgba(41, 45, 50, 0.3), 7, 0.0, -2, 2);
-	-fx-background-insets: 0 0 0 0, 0 1 0 0, 0 1 0 0;
+	-fx-background-color: #52555c;
+	-fx-effect: innershadow(two-pass-box, rgba(31, 35, 40, 0.35), 8, 0.0, -2, 2);
+	-fx-background-insets: 0;
 }
 
 .content-bottom {
 	/* #6c707e, #585b64); */
 	-fx-effect: null;
-	-fx-background-color: #3b3f46, #7c7f84, #585b64;
-	-fx-background-insets: 0 0 0 0, 1 0 0 0, 1 0 0 0;
+	-fx-background-color: #3d4046, #777a81, #585b64;
+	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
+}
+
+.bottom-right, .admin-bottom-right {
+	-fx-background-color: #3d4046, #777a81, linear-gradient(#67696f 0%, #616369 100%);
+	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
 }
 
 .left-menu-button {
 	-fx-padding: 0;
 	-fx-background-radius: 0;
 	-fx-background-color: #5b6068, #3b3f46, #5b6068, linear-gradient(#52555c 0%, #4f5158 100%);
-	-fx-background-insets: 0, 0, 1 1 0 0, 2 1 0 0;
+	-fx-background-insets: 0, 0, 1 0 0 0, 2 0 0 0;
+}
+
+.left-menu-top {
+	-fx-background-insets: 0, 0, 0 0 0 0, 0 0 0 0;
 }
 
 .left-menu-button:pressed, .menu-item-selected {
 	-fx-background-color: #3c4147, #292d32, #3c4147, #2a2d31;
-	-fx-effect: innershadow(two-pass-box, #070707, 10, 0.0, 0, 2);
+	-fx-effect: innershadow(two-pass-box, rgba(31, 35, 40, 0.35), 8, 0.0, -2, 2);
 }
 
 .left-menu-button .left-menu-item-label {
@@ -55,11 +59,11 @@
 }
 
 .left-menu-bottom {
-	-fx-background-insets: 0 1 0 0, 0 0 1 0, 1 1 2 0, 2 1 2 0;
+	-fx-background-insets: 0 0 0 0, 0 0 1 0, 1 0 2 0, 2 0 2 0;
 }
 
 .left-menu-both {
-		-fx-background-insets: 0, 0, 1 1 0 1, 2 2 0 1;
+		-fx-background-insets: 0, 0, 1 0 0 1, 2 0 0 1;
 }
 
 .popup {

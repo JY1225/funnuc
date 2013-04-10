@@ -59,12 +59,23 @@
 .cnc-contentpane {
 }
 
-.bottom-right {
+.admin-bottom-right {
 	-fx-background-insets: 0 0 0 0, 0 0 0 0, 0 0 0 0;
 }
 
-.bottom-left, .left-menu, .content-bottom {
-	-fx-background-insets: 0 0 0 0, 0 1 0 0, 0 1 0 0;
+.admin-main .bottom-left, .admin-main .left-menu, .admin-main .content-bottom {
+	-fx-background-insets: 0 0 0 0;
+}
+
+.admin-menu.bottom-left, .admin-menu.left-menu, .admin-menu.content-bottom {
+	-fx-background-color: #52555c;
+	-fx-effect: innershadow(two-pass-box, rgba(31, 35, 40, 0.55), 8, 0.0, -2, 2);
+	-fx-background-insets: 0;
+}
+
+.admin-menu .left-menu-button:pressed, .admin-menu .menu-item-selected {
+	-fx-background-color: #3c4147, #292d32, #3c4147, #2a2d31;
+	-fx-effect: innershadow(two-pass-box, #070707, 10, 0.0, 0, 2);
 }
 
 .delete-btn {

@@ -20,6 +20,7 @@ public class MainMenuView extends AbstractMenuView<MainMenuPresenter> {
 		setPrefWidth(50);
 		setMinWidth(50);
 		setMaxWidth(50);
+		this.getStyleClass().add("admin-menu");
 		/*addIconMenuItem(index++, GENERAL_PATH, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {

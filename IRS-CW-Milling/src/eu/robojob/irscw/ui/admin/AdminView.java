@@ -13,7 +13,7 @@ public class AdminView extends StackPane {
 	
 	protected static final double MAIN_MENU_WIDTH = 50;
 	
-	private static final String CSS_CLASS_MAIN = "bottom-right";
+	private static final String CSS_CLASS_MAIN = "admin-bottom-right";
 	
 	private HBox hBoxMain;
 	private StackPane mainMenu;
