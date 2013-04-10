@@ -16,6 +16,7 @@ import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.ui.controls.FullTextField;
 import eu.robojob.irscw.ui.controls.IntegerTextField;
+import eu.robojob.irscw.ui.controls.NumericTextField;
 import eu.robojob.irscw.ui.controls.TextInputControlListener;
 import eu.robojob.irscw.ui.general.AbstractFormView;
 import eu.robojob.irscw.util.Translator;
@@ -37,6 +38,10 @@ public class CNCMachineGeneralView extends GridPane {
 	private FullTextField fulltxtNameWA1;
 	private Label lblUserFrameWA1;
 	private ComboBox<String> cbbUserFrameWA1;
+	private Label lblClampingLengthR;
+	private NumericTextField numTxtClampingLengthR;
+	private Label lblnumTxtClampingWidthR;
+	private NumericTextField numTxtClampingWidthR;
 	private Button btnSave;
 		
 	private ObservableList<String> userFrameNames;
@@ -51,6 +56,8 @@ public class CNCMachineGeneralView extends GridPane {
 	
 	private static final String STATUS_CONNECTED = "CNCMachineGeneralView.statusConnected";
 	private static final String STATUS_DISCONNECTED = "CNCMachineGeneralView.statusDisconnected";
+	private static final String CLAMPING_LENGTH_R = "CNCMachineGeneralView.clampingLengthR";
+	private static final String CLAMPING_WIDTH_R = "CNCMachineGeneralView.clampingWidthR";
 	
 	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
 	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
@@ -88,10 +95,16 @@ public class CNCMachineGeneralView extends GridPane {
 		cbbUserFrameWA1.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
 		cbbUserFrameWA1.setItems(userFrameNames);
 		
+		lblClampingLengthR = new Label(Translator.getTranslation(CLAMPING_LENGTH_R));
+		numTxtClampingLengthR = new NumericTextField(5);
+		lblnumTxtClampingWidthR = new Label(Translator.getTranslation(CLAMPING_WIDTH_R));
+		numTxtClampingWidthR = new NumericTextField(5);
+		
 		btnSave = AbstractFormView.createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {	
 			@Override
 			public void handle(final ActionEvent arg0) {
-				presenter.saveData(fulltxtName.getText(), fulltxtIp.getText(), Integer.parseInt(itxtPort.getText()), fulltxtNameWA1.getText(), cbbUserFrameWA1.valueProperty().get());
+				presenter.saveData(fulltxtName.getText(), fulltxtIp.getText(), Integer.parseInt(itxtPort.getText()), fulltxtNameWA1.getText(), cbbUserFrameWA1.valueProperty().get(),
+						Float.parseFloat(numTxtClampingLengthR.getText()), Float.parseFloat(numTxtClampingWidthR.getText()));
 			}
 		});
 		GridPane.setHalignment(btnSave, HPos.CENTER);
@@ -116,6 +129,12 @@ public class CNCMachineGeneralView extends GridPane {
 		add(lblUserFrameWA1, column++, row);
 		add(cbbUserFrameWA1, column++, row);
 		column = 0; row++;
+		add(lblClampingLengthR, column++, row);
+		add(numTxtClampingLengthR, column++, row);
+		column = 0; row++;
+		add(lblnumTxtClampingWidthR, column++, row);
+		add(numTxtClampingWidthR, column++, row);
+		column = 0; row++;
 		add(btnSave, column++, row, 2, 1);
 	}
 	
@@ -132,6 +151,8 @@ public class CNCMachineGeneralView extends GridPane {
 		}
 		fulltxtNameWA1.setText(cncMachine.getWorkAreas().get(0).getName());
 		cbbUserFrameWA1.valueProperty().set(cncMachine.getWorkAreas().get(0).getUserFrame().getName());
+		numTxtClampingLengthR.setText(cncMachine.getClampingLengthR() + "");
+		numTxtClampingWidthR.setText(cncMachine.getClampingWidthR() + "");
 	}
 	
 	public void setTextFieldListener(final TextInputControlListener listener) {
@@ -139,6 +160,8 @@ public class CNCMachineGeneralView extends GridPane {
 		fulltxtName.setFocusListener(listener);
 		fulltxtIp.setFocusListener(listener);
 		itxtPort.setFocusListener(listener);
+		numTxtClampingLengthR.setFocusListener(listener);
+		numTxtClampingWidthR.setFocusListener(listener);
 	}
 	
 }

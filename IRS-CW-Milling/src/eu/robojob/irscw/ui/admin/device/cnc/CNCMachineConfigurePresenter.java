@@ -52,8 +52,9 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		getView().setUserFrameNames(userFrameNames);
 	}
 	
-	public void saveData(final String name, final String ip, final int port, final String workAreaName, final String userFramename) {
-		deviceManager.updateCNCMachineData(cncMachine, name, ip, port, workAreaName, userFramename);
+	public void saveData(final String name, final String ip, final int port, final String workAreaName, final String userFramename,
+			final float clampingLengthR, final float clampingWidthR) {
+		deviceManager.updateCNCMachineData(cncMachine, name, ip, port, workAreaName, userFramename, clampingLengthR, clampingWidthR);
 		getView().refresh();
 	}
 

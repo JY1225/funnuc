@@ -80,7 +80,7 @@ public class ExternalCommunicationThread extends Thread {
 						if (alive) {
 							logger.error("IOException detected: " + e.getMessage() + " so disconnecting...");
 							logger.error("Current messages: " + incommingMessages);
-							e.printStackTrace();
+							//e.printStackTrace();
 							externalCommunication.iOExceptionOccured(e);
 						}
 					} catch (SocketDisconnectedException e) {

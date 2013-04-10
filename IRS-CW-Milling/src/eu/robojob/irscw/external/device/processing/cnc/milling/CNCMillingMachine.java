@@ -30,9 +30,6 @@ import eu.robojob.irscw.workpiece.WorkPieceDimensions;
 public class CNCMillingMachine extends AbstractCNCMachine {
 	
 	private CNCMachineSocketCommunication cncMachineCommunication;
-	private float clampingWidthR;
-	private float clampingLengthR;
-		
 	private static final int PREPARE_PUT_TIMEOUT = 2 * 60 * 1000;
 	private static final int PREPARE_PICK_TIMEOUT = 2 * 60 * 1000;
 
@@ -44,9 +41,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int SLEEP_TIME_AFTER_RESET = 2500;
 	
 	public CNCMillingMachine(final String name, final Set<Zone> zones, final SocketConnection socketConnection, final float clampingLengthR, final float clampingWidthR) {
-		super(name, zones);
-		this.clampingLengthR = clampingLengthR;
-		this.clampingWidthR = clampingWidthR;
+		super(name, zones, clampingLengthR, clampingWidthR);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
 		// start monitoring thread at creation of this object
@@ -287,9 +282,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			c.setR(c.getR() + clampingLengthR);
+			c.setR(c.getR() + getClampingLengthR());
 		} else {
-			c.setR(c.getR() + clampingWidthR);
+			c.setR(c.getR() + getClampingWidthR());
 		}
 		return c;
 	}
@@ -298,9 +293,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			c.setR(c.getR() + clampingLengthR);
+			c.setR(c.getR() + getClampingLengthR());
 		} else {
-			c.setR(c.getR() + clampingWidthR);
+			c.setR(c.getR() +  getClampingWidthR());
 		}
 		return c;
 	}

@@ -189,9 +189,11 @@ public class DeviceManager {
 	}
 	
 	public void updateCNCMachineData(final CNCMillingMachine cncMachine, final String name, final String ipAddress, 
-			final int port, final String workAreaName, final String userFramename) {
+			final int port, final String workAreaName, final String userFramename, final float clampingLengthR, 
+				final float clampingWidthR) {
 		try {
-			deviceMapper.updateCNCMachine(cncMachine, name, ipAddress, port, workAreaName, userFramename);
+			deviceMapper.updateCNCMachine(cncMachine, name, ipAddress, port, workAreaName, userFramename, clampingLengthR, 
+					clampingWidthR);
 		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();

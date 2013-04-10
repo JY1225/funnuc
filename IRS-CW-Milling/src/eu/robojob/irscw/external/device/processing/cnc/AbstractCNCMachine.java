@@ -29,12 +29,16 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private boolean stopAction;
 	
 	private CNCMachineAlarm cncMachineTimeout;
+
+	private float clampingWidthR;
+
+	private float clampingLengthR;
 	
 	private static Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());
 	
 	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "AbstractCNCMachine.disconnectedWhileWaiting";
 	
-	public AbstractCNCMachine(final String name, final Set<Zone> zones) {
+	public AbstractCNCMachine(final String name, final Set<Zone> zones, final float clampingLengthR, final float clampingWidthR) {
 		super(name, zones, true);
 		this.statusChanged = false;
 		syncObject = new Object();
@@ -42,10 +46,12 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.currentStatus = 0;
 		this.listeners = new HashSet<CNCMachineListener>();
 		this.stopAction = false;
+		this.clampingLengthR = clampingLengthR;
+		this.clampingWidthR = clampingWidthR;
 	}
 	
-	public AbstractCNCMachine(final String name) {
-		this(name, new HashSet<Zone>());
+	public AbstractCNCMachine(final String name, final float clampingLengthR, final float clampingWidthR) {
+		this(name, new HashSet<Zone>(), clampingLengthR, clampingWidthR);
 	}
 	
 	public CNCMachineAlarm getCncMachineTimeout() {
@@ -213,4 +219,19 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		return new DeviceSettings(getWorkAreas());
 	}
 
+	public float getClampingWidthR() {
+		return clampingWidthR;
+	}
+
+	public void setClampingWidthR(final float clampingWidthR) {
+		this.clampingWidthR = clampingWidthR;
+	}
+
+	public float getClampingLengthR() {
+		return clampingLengthR;
+	}
+
+	public void setClampingLengthR(final float clampingLengthR) {
+		this.clampingLengthR = clampingLengthR;
+	}
 }

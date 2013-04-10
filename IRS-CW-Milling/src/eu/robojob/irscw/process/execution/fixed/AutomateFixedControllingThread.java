@@ -124,7 +124,7 @@ public class AutomateFixedControllingThread extends Thread {
 				for (AbstractDevice device : processFlow.getDevices()) {
 					if (device instanceof CNCMillingMachine) {
 						checkStatus();
-						((CNCMillingMachine) device).indicateAllProcessed();
+						((AbstractCNCMachine) device).indicateAllProcessed();
 					}
 				}
 				for (AbstractRobot robot : processFlow.getRobots()) {

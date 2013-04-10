@@ -15,6 +15,7 @@ import eu.robojob.irscw.external.device.AbstractDevice;
 import eu.robojob.irscw.external.device.Clamping;
 import eu.robojob.irscw.external.device.WorkArea;
 import eu.robojob.irscw.external.device.Zone;
+import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
 import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
@@ -50,7 +51,7 @@ public class DeviceMapper {
 			Set<Zone> zones = getAllZonesByDeviceId(id);
 			switch (type) {
 				case DEVICE_TYPE_CNCMILLING:
-					CNCMillingMachine cncMillingMachine = getCNCMillingMachine(id, name, zones);
+					AbstractCNCMachine cncMillingMachine = getCNCMillingMachine(id, name, zones);
 					devices.add(cncMillingMachine);
 					break;
 				case DEVICE_TYPE_STACKPLATE:
@@ -95,11 +96,11 @@ public class DeviceMapper {
 		return stackPlate;
 	}
 	
-	private CNCMillingMachine getCNCMillingMachine(final int id, final String name, final Set<Zone> zones) throws SQLException {
+	private AbstractCNCMachine getCNCMillingMachine(final int id, final String name, final Set<Zone> zones) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CNCMILLINGMACHINE WHERE ID = ?");
 		stmt.setInt(1, id);
 		ResultSet results = stmt.executeQuery();
-		CNCMillingMachine cncMillingMachine = null;
+		AbstractCNCMachine cncMillingMachine = null;
 		if (results.next()) {
 			int deviceInterfaceId = results.getInt("DEVICEINTERFACE");
 			float clampingLengthR = results.getFloat("CLAMPING_LENGTH_R");
@@ -332,7 +333,8 @@ public class DeviceMapper {
 	}
 	
 	public void updateCNCMachine(final CNCMillingMachine cncMachine, final String name, final String ipAddress, 
-			final int port, final String workAreaName, final String userFramename) throws SQLException {
+			final int port, final String workAreaName, final String userFramename, final float clampingLengthR, 
+				final float clampingWidthR) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		cncMachine.getWorkAreas().get(0).setName(workAreaName);
 		cncMachine.getWorkAreas().get(0).setUserFrame(getUserFrameByName(userFramename));
@@ -348,9 +350,16 @@ public class DeviceMapper {
 		stmt2.setString(1, name);
 		stmt2.setInt(2, cncMachine.getId());
 		stmt2.execute();
+		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CNCMILLINGMACHINE SET CLAMPING_LENGTH_R = ?, CLAMPING_WIDTH_R = ? WHERE ID = ?");
+		stmt3.setFloat(1, clampingLengthR);
+		stmt3.setFloat(2, clampingWidthR);
+		stmt3.setInt(3, cncMachine.getId());
+		stmt3.execute();
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 		cncMachine.setName(name);
+		cncMachine.setClampingLengthR(clampingLengthR);
+		cncMachine.setClampingWidthR(clampingWidthR);
 		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setIpAddress(ipAddress);
 		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setPortNumber(port);
 		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setName(name);
