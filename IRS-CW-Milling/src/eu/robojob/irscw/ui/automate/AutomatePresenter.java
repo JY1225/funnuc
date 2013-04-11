@@ -79,6 +79,7 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 			getProcessFlow().initialize();
 			getProcessFlow().setMode(Mode.STOPPED);
 		}
+		//TODO reset devices
 		automateThread.reset();
 		statusPresenter.initializeView();
 		statusPresenter.getView().activateStartButton();

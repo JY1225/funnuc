@@ -73,6 +73,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		command = command | CNCMachineConstants.IPC_RESET_REQUEST;
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+		setCncMachineTimeout(null);
 	}
 	
 	@Override
@@ -145,15 +146,15 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
 			waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1);
 			setCncMachineTimeout(null);
-			// we now wait for pick requested
-			boolean cycleFinished =  waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED, CYCLE_FINISHED_TIMEOUT);
-			if (!cycleFinished) {
-				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_END_TIMEOUT));
-				waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED);
-				setCncMachineTimeout(null);
-			}
-			//nCReset();
 		}
+		// we now wait for pick requested
+		boolean cycleFinished =  waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED, CYCLE_FINISHED_TIMEOUT);
+		if (!cycleFinished) {
+			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_END_TIMEOUT));
+			waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED);
+			setCncMachineTimeout(null);
+		}
+		//nCReset();
 	}
 
 	@Override

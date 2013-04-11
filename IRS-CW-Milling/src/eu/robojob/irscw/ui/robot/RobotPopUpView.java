@@ -56,6 +56,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btnReset.setGraphic(new Text(Translator.getTranslation(RESET)));
 		btnReset.setPrefSize(WIDTH, BUTTON_HEIGHT);
 		btnReset.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
+		btnReset.getStyleClass().add("pop-up-first");
 		btnReset.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {

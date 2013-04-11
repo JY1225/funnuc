@@ -207,7 +207,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		waitForStatus(status, 0);
 	}
 	
-	public boolean isExecutionInProgress() {
+	public synchronized boolean isExecutionInProgress() {
 		if (currentActionSettings == null) {
 			return false;
 		}
@@ -218,7 +218,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		return currentActionSettings;
 	}
 
-	public void setCurrentActionSettings(final AbstractRobotActionSettings<?> currentActionSettings) {
+	public synchronized void setCurrentActionSettings(final AbstractRobotActionSettings<?> currentActionSettings) {
 		this.currentActionSettings = currentActionSettings;
 	}
 

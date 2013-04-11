@@ -285,6 +285,10 @@ public class AutomateFixedControllingThread extends Thread {
 		if (processFlowExecutor2 != null) {
 			processFlowExecutor2.interrupt();
 		}
+		// just to be sure: 
+		for (AbstractRobot robot : processFlow.getRobots()) {
+			robot.setCurrentActionSettings(null);
+		}
 		stopExecution();
 	}
 	
