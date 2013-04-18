@@ -143,28 +143,6 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		GridPane.setHalignment(hBoxAlarm, HPos.LEFT);
 		row++; column = 0;
 		
-		workPieceWidthPath = new SVGPath();
-		workPieceWidthPath.setContent(WIDTH_ICON);
-		workPieceWidthPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
-		icon1Pane = new StackPane();
-		icon1Pane.getChildren().add(workPieceWidthPath);
-		icon1Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
-		StackPane.setAlignment(workPieceWidthPath, Pos.BOTTOM_RIGHT);
-		add(icon1Pane, column++, row);
-		lblWorkPieceWidth = new Label(Translator.getTranslation(WIDTH));
-		add(lblWorkPieceWidth, column++, row);
-		ntxtWorkPieceWidth = new NumericTextField(MAX_INTEGER_LENGTH);
-		ntxtWorkPieceWidth.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
-		ntxtWorkPieceWidth.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
-		ntxtWorkPieceWidth.setOnChange(new ChangeListener<Float>() {
-			@Override
-			public void changed(final ObservableValue<? extends Float> observable, final Float oldValue, final Float newValue) {
-				getPresenter().changedWidth(newValue);
-			}
-		});
-		add(ntxtWorkPieceWidth, column++, row);
-		column = 0;
-		row++;
 		workPieceLengthPath = new SVGPath();
 		workPieceLengthPath.setContent(LENGTH_ICON);
 		workPieceLengthPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
@@ -187,6 +165,30 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		add(ntxtWorkPieceLength, column++, row);
 		column = 0;
 		row++;
+		
+		workPieceWidthPath = new SVGPath();
+		workPieceWidthPath.setContent(WIDTH_ICON);
+		workPieceWidthPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
+		icon1Pane = new StackPane();
+		icon1Pane.getChildren().add(workPieceWidthPath);
+		icon1Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
+		StackPane.setAlignment(workPieceWidthPath, Pos.BOTTOM_RIGHT);
+		add(icon1Pane, column++, row);
+		lblWorkPieceWidth = new Label(Translator.getTranslation(WIDTH));
+		add(lblWorkPieceWidth, column++, row);
+		ntxtWorkPieceWidth = new NumericTextField(MAX_INTEGER_LENGTH);
+		ntxtWorkPieceWidth.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtWorkPieceWidth.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtWorkPieceWidth.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> observable, final Float oldValue, final Float newValue) {
+				getPresenter().changedWidth(newValue);
+			}
+		});
+		add(ntxtWorkPieceWidth, column++, row);
+		column = 0;
+		row++;
+		
 		workPieceHeightPath = new SVGPath();
 		workPieceHeightPath.setContent(HEIGTH_ICON);
 		workPieceHeightPath.getStyleClass().add(CSS_CLASS_FORM_ICON);

@@ -11,6 +11,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,6 +29,7 @@ import eu.robojob.irscw.ui.MainPresenter;
 import eu.robojob.irscw.ui.RoboSoftAppFactory;
 import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView.KeyboardType;
 import eu.robojob.irscw.ui.preloader.RoboJobPreloader;
+import eu.robojob.irscw.util.Translator;
 
 public class RoboSoft extends Application {
 
@@ -52,13 +54,19 @@ public class RoboSoft extends Application {
 		stage.setTitle("RoboSoft");
 		stage.centerOnScreen();
 		stage.setResizable(false);
-		//stage.initStyle(StageStyle.UNDECORATED);
+		stage.initStyle(StageStyle.UNDECORATED);
 		stage.getIcons().add(new Image("img/icon.png"));
 		stage.show();
 		ThreadManager.submit(new Thread () {
 			@Override
 			public void run() {
 				try {
+					Locale.setDefault(new Locale(properties.getProperty("locale")));
+					if (properties.getProperty("locale").equals("en")) {
+						Translator.setLanguageEN();
+					} else {
+						Translator.setLanguageNL();
+					}
 					GeneralMapper generalMapper = new GeneralMapper();
 					ConnectionMapper connectionMapper = new ConnectionMapper();
 					DeviceMapper deviceMapper = new DeviceMapper(generalMapper, connectionMapper);
@@ -83,7 +91,7 @@ public class RoboSoft extends Application {
 						@Override
 						public void run() {
 							final Scene scene = new Scene(mainPresenter.getView(), WIDTH, HEIGHT);
-							Locale.setDefault(new Locale(properties.getProperty("locale")));
+							
 							if (!Boolean.parseBoolean(properties.getProperty("mouse-visible"))) {
 								scene.setCursor(Cursor.NONE);
 							}

@@ -9,7 +9,7 @@ public final class Translator {
 	private static ResourceBundle messages = ResourceBundle.getBundle("messages", locale);
 	
 	private Translator() {
-		setLanguageNL();
+		//setLanguageNL();
 	}
 	
 	public static void setLanguageNL() {
@@ -18,7 +18,7 @@ public final class Translator {
 	}
 	
 	public static void setLanguageEN() {
-		locale = new Locale("nl");
+		locale = new Locale("en");
 		messages = ResourceBundle.getBundle("messages", locale);
 	}
 	

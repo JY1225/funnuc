@@ -111,42 +111,7 @@ public class CNCMillingMachineWorkPieceView extends AbstractFormView<CNCMillingM
 		GridPane dimensions = new GridPane();
 		dimensions.setHgap(10);
 		
-		workPieceWidthPath = new SVGPath();
-		workPieceWidthPath.setContent(WIDTH_ICON);
-		workPieceWidthPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
-		icon1Pane = new StackPane();
-		icon1Pane.getChildren().add(workPieceWidthPath);
-		icon1Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
-		StackPane.setAlignment(workPieceWidthPath, Pos.BOTTOM_RIGHT);
-		dimensions.add(icon1Pane, column++, row);
-		lblWorkPieceWidth = new Label(Translator.getTranslation(WIDTH));
-		dimensions.add(lblWorkPieceWidth, column++, row);
-		ntxtWorkPieceWidth = new NumericTextField(MAX_INTEGER_LENGTH);
-		ntxtWorkPieceWidth.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
-		ntxtWorkPieceWidth.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
-		ntxtWorkPieceWidth.setOnChange(new ChangeListener<Float>() {
-			@Override
-			public void changed(final ObservableValue<? extends Float> observable, final Float oldValue, final Float newValue) {
-				getPresenter().changedWidth(newValue);
-			}
-		});
-		dimensions.add(ntxtWorkPieceWidth, column++, row);
-		btnResetWidth = new Button();
-		Text txtBtnResetWidth = new Text(Translator.getTranslation(RESET));
-		txtBtnResetWidth.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT);
-		btnResetWidth.setGraphic(txtBtnResetWidth);
-		btnResetWidth.setAlignment(Pos.CENTER);
-		btnResetWidth.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent event) {
-				getPresenter().resetWidth();
-			}
-		});
-		btnResetWidth.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
-		btnResetWidth.setPrefSize(UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT);
-		dimensions.add(btnResetWidth, column++, row);
-		column = 0;
-		row++;
+		
 		workPieceLengthPath = new SVGPath();
 		workPieceLengthPath.setContent(LENGTH_ICON);
 		workPieceLengthPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
@@ -185,6 +150,44 @@ public class CNCMillingMachineWorkPieceView extends AbstractFormView<CNCMillingM
 		dimensions.add(btnResetLength, column++, row);
 		column = 0;
 		row++;
+		
+		workPieceWidthPath = new SVGPath();
+		workPieceWidthPath.setContent(WIDTH_ICON);
+		workPieceWidthPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
+		icon1Pane = new StackPane();
+		icon1Pane.getChildren().add(workPieceWidthPath);
+		icon1Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
+		StackPane.setAlignment(workPieceWidthPath, Pos.BOTTOM_RIGHT);
+		dimensions.add(icon1Pane, column++, row);
+		lblWorkPieceWidth = new Label(Translator.getTranslation(WIDTH));
+		dimensions.add(lblWorkPieceWidth, column++, row);
+		ntxtWorkPieceWidth = new NumericTextField(MAX_INTEGER_LENGTH);
+		ntxtWorkPieceWidth.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtWorkPieceWidth.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtWorkPieceWidth.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> observable, final Float oldValue, final Float newValue) {
+				getPresenter().changedWidth(newValue);
+			}
+		});
+		dimensions.add(ntxtWorkPieceWidth, column++, row);
+		btnResetWidth = new Button();
+		Text txtBtnResetWidth = new Text(Translator.getTranslation(RESET));
+		txtBtnResetWidth.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT);
+		btnResetWidth.setGraphic(txtBtnResetWidth);
+		btnResetWidth.setAlignment(Pos.CENTER);
+		btnResetWidth.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().resetWidth();
+			}
+		});
+		btnResetWidth.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
+		btnResetWidth.setPrefSize(UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT);
+		dimensions.add(btnResetWidth, column++, row);
+		column = 0;
+		row++;
+		
 		workPieceHeightPath = new SVGPath();
 		workPieceHeightPath.setContent(HEIGTH_ICON);
 		workPieceHeightPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
