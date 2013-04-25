@@ -73,6 +73,10 @@
 	-fx-background-insets: 0;
 }
 
+.main-admin-menu.bottom-left, .main-admin-menu.left-menu, .main-admin-menu.content-bottom { 
+	-fx-effect: innershadow(two-pass-box, rgba(31, 35, 40, 0.45), 1, 0.0, -1, 1);
+}
+
 .admin-menu .left-menu-button:pressed, .admin-menu .menu-item-selected {
 	-fx-background-color: #3c4147, #292d32, #3c4147, #2a2d31;
 	-fx-effect: innershadow(two-pass-box, #070707, 10, 0.0, 0, 2);
