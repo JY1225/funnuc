@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<anttasks:AntTask xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:anttasks="http://at.bestsolution.efxclipse.tooling.jdt/1.0" buildDirectory="${workspace}/IRS-CW-Milling/build" cssToBin="true">
-  <deploy height="600" width="800" splashImage="">
-    <application name="IRS-CW-Milling" mainclass="eu.robojob.irscw.RoboSoft" version="1.0" toolkit="fx"/>
-    <info vendor="RoboJob"/>
-  </deploy>
-  <signjar/>
-</anttasks:AntTask>
