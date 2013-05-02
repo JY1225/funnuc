@@ -45,8 +45,8 @@ public class RoboSoft extends Application {
 	public void start(final Stage stage) throws Exception {
 		logger.info("Started application.");
 		final Properties properties = new Properties();
-		properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
-		//properties.load(new FileInputStream(new File("settings.properties")));
+		//properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
+		properties.load(new FileInputStream(new File("settings.properties")));
 		final RoboJobPreloader preloader = new RoboJobPreloader();
 		Scene scene2 = new Scene(preloader, WIDTH, HEIGHT);
 		scene2.getStylesheets().add("styles/preloader-style.css");
