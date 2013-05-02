@@ -48,7 +48,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>eu.robojob.irscw.RoboSoft</mainClass>
+							<mainClass>eu.robojob.millassist.RoboSoft</mainClass>
 						</manifest>
 						<manifestEntries> 
            					<Class-Path>.</Class-Path> 
