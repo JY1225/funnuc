@@ -1,10 +1,10 @@
-package eu.robojob.irscw.ui.admin;
+package eu.robojob.millassist.ui.admin;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardView;
+import eu.robojob.millassist.ui.controls.keyboard.NumericKeyboardView;
 
 public class AdminView extends StackPane {
 

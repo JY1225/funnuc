@@ -1,10 +1,10 @@
-package eu.robojob.irscw.process;
+package eu.robojob.millassist.process;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.robot.RobotActionException;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.process.execution.ProcessExecutor;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.robot.RobotActionException;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.execution.ProcessExecutor;
 
 public abstract class AbstractTransportStep extends AbstractProcessStep implements RobotStep, DeviceStep {
 

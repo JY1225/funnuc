@@ -1,7 +1,7 @@
-package eu.robojob.irscw.process;
+package eu.robojob.millassist.process;
 
-import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.AbstractDeviceActionSettings;
+import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.AbstractDeviceActionSettings;
 
 public interface DeviceStep {
 

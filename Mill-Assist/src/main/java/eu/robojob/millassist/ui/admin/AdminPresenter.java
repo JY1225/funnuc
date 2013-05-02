@@ -1,15 +1,15 @@
-package eu.robojob.irscw.ui.admin;
+package eu.robojob.millassist.ui.admin;
 
 import javafx.scene.Node;
 import javafx.scene.control.TextInputControl;
-import eu.robojob.irscw.ui.MainPresenter;
-import eu.robojob.irscw.ui.controls.FullTextField;
-import eu.robojob.irscw.ui.controls.IntegerTextField;
-import eu.robojob.irscw.ui.controls.NumericTextField;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardPresenter;
-import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
-import eu.robojob.irscw.ui.general.MainContentPresenter;
+import eu.robojob.millassist.ui.MainPresenter;
+import eu.robojob.millassist.ui.controls.FullTextField;
+import eu.robojob.millassist.ui.controls.IntegerTextField;
+import eu.robojob.millassist.ui.controls.NumericTextField;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.controls.keyboard.FullKeyboardPresenter;
+import eu.robojob.millassist.ui.controls.keyboard.NumericKeyboardPresenter;
+import eu.robojob.millassist.ui.general.MainContentPresenter;
 
 public class AdminPresenter implements TextInputControlListener, MainContentPresenter {
 

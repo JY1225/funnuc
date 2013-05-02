@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.communication.socket;
+package eu.robojob.millassist.external.communication.socket;
 
 import java.io.BufferedReader;
 import java.io.IOException;

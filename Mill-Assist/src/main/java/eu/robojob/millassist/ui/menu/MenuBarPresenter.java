@@ -1,6 +1,6 @@
-package eu.robojob.irscw.ui.menu;
+package eu.robojob.millassist.ui.menu;
 
-import eu.robojob.irscw.ui.MainPresenter;
+import eu.robojob.millassist.ui.MainPresenter;
 
 public class MenuBarPresenter {
 	

@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.controls;
+package eu.robojob.millassist.ui.controls;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

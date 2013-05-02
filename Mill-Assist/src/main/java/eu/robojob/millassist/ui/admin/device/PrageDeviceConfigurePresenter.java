@@ -1,13 +1,13 @@
-package eu.robojob.irscw.ui.admin.device;
+package eu.robojob.millassist.ui.admin.device;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
-import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
-import eu.robojob.irscw.positioning.UserFrame;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
+import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
+import eu.robojob.millassist.positioning.UserFrame;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class PrageDeviceConfigurePresenter extends AbstractFormPresenter<PrageDeviceConfigureView, DeviceMenuPresenter> {
 

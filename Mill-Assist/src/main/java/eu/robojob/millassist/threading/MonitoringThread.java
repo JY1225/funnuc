@@ -1,4 +1,4 @@
-package eu.robojob.irscw.threading;
+package eu.robojob.millassist.threading;
 
 public interface MonitoringThread {
 

@@ -1,16 +1,16 @@
-package eu.robojob.irscw.ui.general.model;
+package eu.robojob.millassist.ui.general.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.external.device.DeviceType;
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.InterventionStep;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.ProcessingStep;
-import eu.robojob.irscw.process.PutStep;
+import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.InterventionStep;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.ProcessingStep;
+import eu.robojob.millassist.process.PutStep;
 
 public class DeviceInformation {
 

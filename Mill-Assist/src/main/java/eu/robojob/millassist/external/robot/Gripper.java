@@ -1,6 +1,6 @@
-package eu.robojob.irscw.external.robot;
+package eu.robojob.millassist.external.robot;
 
-import eu.robojob.irscw.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class Gripper {
 	

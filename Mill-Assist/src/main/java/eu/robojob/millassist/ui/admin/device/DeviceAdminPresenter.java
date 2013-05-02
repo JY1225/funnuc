@@ -1,11 +1,11 @@
-package eu.robojob.irscw.ui.admin.device;
+package eu.robojob.millassist.ui.admin.device;
 
-import eu.robojob.irscw.ui.admin.AdminPresenter;
-import eu.robojob.irscw.ui.admin.SubMenuAdminView;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormView;
-import eu.robojob.irscw.ui.general.MainContentPresenter;
-import eu.robojob.irscw.ui.general.SubContentPresenter;
+import eu.robojob.millassist.ui.admin.AdminPresenter;
+import eu.robojob.millassist.ui.admin.SubMenuAdminView;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.ui.general.MainContentPresenter;
+import eu.robojob.millassist.ui.general.SubContentPresenter;
 
 public class DeviceAdminPresenter implements SubContentPresenter {
 

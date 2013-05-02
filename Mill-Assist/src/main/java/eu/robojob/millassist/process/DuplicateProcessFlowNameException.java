@@ -1,4 +1,4 @@
-package eu.robojob.irscw.process;
+package eu.robojob.millassist.process;
 
 public class DuplicateProcessFlowNameException extends Exception {
 

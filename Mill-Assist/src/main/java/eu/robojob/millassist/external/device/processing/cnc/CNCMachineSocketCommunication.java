@@ -1,13 +1,13 @@
-package eu.robojob.irscw.external.device.processing.cnc;
+package eu.robojob.millassist.external.device.processing.cnc;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.robojob.irscw.external.communication.socket.ExternalSocketCommunication;
-import eu.robojob.irscw.external.communication.socket.SocketConnection;
-import eu.robojob.irscw.external.communication.socket.SocketDisconnectedException;
-import eu.robojob.irscw.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.communication.socket.ExternalSocketCommunication;
+import eu.robojob.millassist.external.communication.socket.SocketConnection;
+import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
+import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
 
 public class CNCMachineSocketCommunication extends ExternalSocketCommunication {
 

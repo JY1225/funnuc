@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.communication;
+package eu.robojob.millassist.external.communication;
 
 public abstract class AbstractCommunicationException extends Exception {
 

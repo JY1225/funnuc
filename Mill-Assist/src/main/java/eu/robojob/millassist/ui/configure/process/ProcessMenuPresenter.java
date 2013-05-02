@@ -1,9 +1,9 @@
-package eu.robojob.irscw.ui.configure.process;
+package eu.robojob.millassist.ui.configure.process;
 
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessFlowManager;
-import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessFlowManager;
+import eu.robojob.millassist.ui.configure.AbstractMenuPresenter;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
 
 public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView> {
 	

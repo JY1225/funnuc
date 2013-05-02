@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.process;
+package eu.robojob.millassist.ui.configure.process;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -10,12 +10,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.controls.FullTextField;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormView;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.controls.FullTextField;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 
 public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 

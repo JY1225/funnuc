@@ -1,6 +1,6 @@
-package eu.robojob.irscw.external;
+package eu.robojob.millassist.external;
 
-import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessFlow;
 
 public abstract class AbstractServiceProvider {
 	

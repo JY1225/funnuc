@@ -1,9 +1,9 @@
-package eu.robojob.irscw.ui.admin;
+package eu.robojob.millassist.ui.admin;
 
-import eu.robojob.irscw.ui.general.AbstractMenuView;
-import eu.robojob.irscw.ui.general.ContentPresenter;
+import eu.robojob.millassist.ui.general.AbstractMenuView;
+import eu.robojob.millassist.ui.general.ContentPresenter;
 
-public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> extends eu.robojob.irscw.ui.general.AbstractMenuPresenter<T> {
+public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> extends eu.robojob.millassist.ui.general.AbstractMenuPresenter<T> {
 
 	private AdminPresenter parent;
 

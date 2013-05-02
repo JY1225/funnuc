@@ -1,11 +1,11 @@
-package eu.robojob.irscw.ui.automate.flow;
+package eu.robojob.millassist.ui.automate.flow;
 
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.automate.AutomatePresenter;
-import eu.robojob.irscw.ui.automate.device.DeviceMenuFactory;
-import eu.robojob.irscw.ui.general.flow.DeviceButton;
-import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
-import eu.robojob.irscw.ui.general.flow.TransportButton;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.automate.AutomatePresenter;
+import eu.robojob.millassist.ui.automate.device.DeviceMenuFactory;
+import eu.robojob.millassist.ui.general.flow.DeviceButton;
+import eu.robojob.millassist.ui.general.flow.FixedProcessFlowPresenter;
+import eu.robojob.millassist.ui.general.flow.TransportButton;
 
 public class AutomateProcessFlowPresenter extends FixedProcessFlowPresenter {
 	

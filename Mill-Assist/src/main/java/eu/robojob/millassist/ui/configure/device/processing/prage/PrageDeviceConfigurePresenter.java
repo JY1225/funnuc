@@ -1,8 +1,8 @@
-package eu.robojob.irscw.ui.configure.device.processing.prage;
+package eu.robojob.millassist.ui.configure.device.processing.prage;
 
-import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
-import eu.robojob.irscw.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
 public class PrageDeviceConfigurePresenter extends AbstractFormPresenter<PrageDeviceConfigureView, PrageDeviceMenuPresenter> {
 	

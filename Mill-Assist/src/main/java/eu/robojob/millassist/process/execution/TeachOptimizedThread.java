@@ -1,32 +1,32 @@
-package eu.robojob.irscw.process.execution;
+package eu.robojob.millassist.process.execution;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
-import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.RobotActionException;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotPutSettings;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.positioning.TeachedCoordinatesCalculator;
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.InterventionStep;
-import eu.robojob.irscw.process.PickAfterWaitStep;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessFlow.Mode;
-import eu.robojob.irscw.process.PutAndWaitStep;
-import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.threading.ThreadManager;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.workpiece.WorkPiece;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.RobotActionException;
+import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
+import eu.robojob.millassist.external.robot.fanuc.FanucRobotPutSettings;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.positioning.TeachedCoordinatesCalculator;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.InterventionStep;
+import eu.robojob.millassist.process.PickAfterWaitStep;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessFlow.Mode;
+import eu.robojob.millassist.process.PutAndWaitStep;
+import eu.robojob.millassist.process.PutStep;
+import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.threading.ThreadManager;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class TeachOptimizedThread extends TeachThread {
 	

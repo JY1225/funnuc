@@ -1,9 +1,9 @@
-package eu.robojob.irscw.ui.controls;
+package eu.robojob.millassist.ui.controls;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.util.UIConstants;
 
 public class NumericTextField extends AbstractTextField<Float> {
 

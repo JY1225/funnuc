@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.general.flow;
+package eu.robojob.millassist.ui.general.flow;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,7 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
-import eu.robojob.irscw.ui.general.model.TransportInformation;
+import eu.robojob.millassist.ui.general.model.TransportInformation;
 
 public class TransportButton extends StackPane {
 

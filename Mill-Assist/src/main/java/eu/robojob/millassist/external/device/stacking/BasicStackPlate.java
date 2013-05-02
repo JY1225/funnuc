@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device.stacking;
+package eu.robojob.millassist.external.device.stacking;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,22 +9,22 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.Clamping;
-import eu.robojob.irscw.external.device.ClampingManner;
-import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.DeviceInterventionSettings;
-import eu.robojob.irscw.external.device.DevicePickSettings;
-import eu.robojob.irscw.external.device.DevicePutSettings;
-import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.external.device.DeviceType;
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.Zone;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.workpiece.WorkPiece;
-import eu.robojob.irscw.workpiece.WorkPiece.Type;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.ClampingManner;
+import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.DeviceInterventionSettings;
+import eu.robojob.millassist.external.device.DevicePickSettings;
+import eu.robojob.millassist.external.device.DevicePutSettings;
+import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.Zone;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Type;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 /**
  * This device needs to maintain state (position contents change during process-execution). 

@@ -1,10 +1,10 @@
-package eu.robojob.irscw.ui.automate;
+package eu.robojob.millassist.ui.automate;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.util.Translator;
 
 public class TimingView extends HBox {
 

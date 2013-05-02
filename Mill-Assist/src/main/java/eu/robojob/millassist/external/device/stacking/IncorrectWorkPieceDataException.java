@@ -1,6 +1,6 @@
-package eu.robojob.irscw.external.device.stacking;
+package eu.robojob.millassist.external.device.stacking;
 
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.util.Translator;
 
 public class IncorrectWorkPieceDataException extends Exception {
 

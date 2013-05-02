@@ -1,4 +1,4 @@
-package eu.robojob.irscw.db.external.robot;
+package eu.robojob.millassist.db.external.robot;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,14 +9,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import eu.robojob.irscw.db.ConnectionManager;
-import eu.robojob.irscw.db.external.util.ConnectionMapper;
-import eu.robojob.irscw.external.communication.socket.SocketConnection;
-import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.Gripper;
-import eu.robojob.irscw.external.robot.GripperBody;
-import eu.robojob.irscw.external.robot.GripperHead;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
+import eu.robojob.millassist.db.ConnectionManager;
+import eu.robojob.millassist.db.external.util.ConnectionMapper;
+import eu.robojob.millassist.external.communication.socket.SocketConnection;
+import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.Gripper;
+import eu.robojob.millassist.external.robot.GripperBody;
+import eu.robojob.millassist.external.robot.GripperHead;
+import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
 
 public class RobotMapper {
 

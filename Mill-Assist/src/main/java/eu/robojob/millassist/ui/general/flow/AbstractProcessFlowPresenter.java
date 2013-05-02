@@ -1,6 +1,6 @@
-package eu.robojob.irscw.ui.general.flow;
+package eu.robojob.millassist.ui.general.flow;
 
-import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessFlow;
 
 public abstract class AbstractProcessFlowPresenter {
 

@@ -1,7 +1,7 @@
-package eu.robojob.irscw.ui.controls.keyboard;
+package eu.robojob.millassist.ui.controls.keyboard;
 
 import javafx.scene.input.KeyCode;
-import eu.robojob.irscw.ui.controls.NumericTextField;
+import eu.robojob.millassist.ui.controls.NumericTextField;
 
 public class NumericKeyboardPresenter extends AbstractKeyboardPresenter {
 

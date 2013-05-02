@@ -1,7 +1,7 @@
-package eu.robojob.irscw.process;
+package eu.robojob.millassist.process;
 
-import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.AbstractRobotActionSettings;
+import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings;
 
 public interface RobotStep {
 

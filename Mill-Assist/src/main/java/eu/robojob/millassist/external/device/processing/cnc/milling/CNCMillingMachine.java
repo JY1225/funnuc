@@ -1,31 +1,31 @@
-package eu.robojob.irscw.external.device.processing.cnc.milling;
+package eu.robojob.millassist.external.device.processing.cnc.milling;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.communication.socket.SocketConnection;
-import eu.robojob.irscw.external.communication.socket.SocketDisconnectedException;
-import eu.robojob.irscw.external.communication.socket.SocketResponseTimedOutException;
-import eu.robojob.irscw.external.device.ClampingManner;
-import eu.robojob.irscw.external.device.ClampingManner.Type;
-import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.DeviceInterventionSettings;
-import eu.robojob.irscw.external.device.DevicePickSettings;
-import eu.robojob.irscw.external.device.DevicePutSettings;
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.Zone;
-import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
-import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarm;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineConstants;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineMonitoringThread;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineSocketCommunication;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.threading.ThreadManager;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.communication.socket.SocketConnection;
+import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
+import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.device.ClampingManner;
+import eu.robojob.millassist.external.device.ClampingManner.Type;
+import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.DeviceInterventionSettings;
+import eu.robojob.millassist.external.device.DevicePickSettings;
+import eu.robojob.millassist.external.device.DevicePutSettings;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.Zone;
+import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarm;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineConstants;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMonitoringThread;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.threading.ThreadManager;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachine extends AbstractCNCMachine {
 	

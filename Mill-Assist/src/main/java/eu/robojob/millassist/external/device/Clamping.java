@@ -1,9 +1,9 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.millassist.external.device;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.millassist.positioning.Coordinates;
 
 public class Clamping {
 	

@@ -1,13 +1,13 @@
-package eu.robojob.irscw.ui.robot;
+package eu.robojob.millassist.ui.robot;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import eu.robojob.irscw.ui.general.PopUpView;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.ui.general.PopUpView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 
 public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 

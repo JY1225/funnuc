@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device.stacking;
+package eu.robojob.millassist.ui.configure.device.stacking;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -15,17 +15,17 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.ui.controls.IntegerTextField;
-import eu.robojob.irscw.ui.controls.NumericTextField;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormView;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlateSettings;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.ui.controls.IntegerTextField;
+import eu.robojob.millassist.ui.controls.NumericTextField;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStackPlateRawWorkPiecePresenter> {
 

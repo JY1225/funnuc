@@ -1,10 +1,10 @@
-package eu.robojob.irscw.ui.automate.device.stacking;
+package eu.robojob.millassist.ui.automate.device.stacking;
 
 import javafx.application.Platform;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlateListener;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
-import eu.robojob.irscw.ui.general.device.stacking.BasicStackPlateLayoutView;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlateListener;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.device.stacking.BasicStackPlateLayoutView;
 
 public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter>, BasicStackPlateMenuPresenter> 
 	implements BasicStackPlateListener {

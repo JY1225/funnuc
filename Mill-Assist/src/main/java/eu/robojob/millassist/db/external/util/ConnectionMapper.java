@@ -1,4 +1,4 @@
-package eu.robojob.irscw.db.external.util;
+package eu.robojob.millassist.db.external.util;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.robojob.irscw.db.ConnectionManager;
-import eu.robojob.irscw.external.communication.socket.SocketConnection;
+import eu.robojob.millassist.db.ConnectionManager;
+import eu.robojob.millassist.external.communication.socket.SocketConnection;
 
 public class ConnectionMapper {	
 	

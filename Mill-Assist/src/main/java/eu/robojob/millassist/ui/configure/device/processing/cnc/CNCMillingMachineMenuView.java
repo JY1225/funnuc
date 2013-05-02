@@ -1,9 +1,9 @@
-package eu.robojob.irscw.ui.configure.device.processing.cnc;
+package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import eu.robojob.irscw.ui.configure.device.DeviceMenuView;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.ui.configure.device.DeviceMenuView;
+import eu.robojob.millassist.util.Translator;
 
 public class CNCMillingMachineMenuView extends DeviceMenuView {
 

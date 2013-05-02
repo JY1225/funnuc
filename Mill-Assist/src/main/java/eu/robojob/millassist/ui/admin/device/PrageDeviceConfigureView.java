@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.admin.device;
+package eu.robojob.millassist.ui.admin.device;
 
 import java.util.Set;
 
@@ -11,14 +11,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.ui.controls.FullTextField;
-import eu.robojob.irscw.ui.controls.NumericTextField;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormView;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.ui.controls.FullTextField;
+import eu.robojob.millassist.ui.controls.NumericTextField;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 
 public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfigurePresenter> {
 

@@ -1,10 +1,10 @@
-package eu.robojob.irscw.ui.general.model;
+package eu.robojob.millassist.ui.general.model;
 
-import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.RobotSettings;
-import eu.robojob.irscw.process.InterventionStep;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.PutStep;
+import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.RobotSettings;
+import eu.robojob.millassist.process.InterventionStep;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.PutStep;
 
 public class TransportInformation {
 

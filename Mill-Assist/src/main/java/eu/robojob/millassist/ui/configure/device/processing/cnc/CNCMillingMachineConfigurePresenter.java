@@ -1,23 +1,23 @@
-package eu.robojob.irscw.ui.configure.device.processing.cnc;
+package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.device.Clamping;
-import eu.robojob.irscw.external.device.ClampingManner.Type;
-import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.external.device.DevicePickSettings;
-import eu.robojob.irscw.external.device.DevicePutSettings;
-import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
-import eu.robojob.irscw.external.robot.RobotPickSettings;
-import eu.robojob.irscw.external.robot.RobotPutSettings;
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.AbstractTransportStep;
-import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
-import eu.robojob.irscw.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.ClampingManner.Type;
+import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.external.device.DevicePickSettings;
+import eu.robojob.millassist.external.device.DevicePutSettings;
+import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.robot.RobotPickSettings;
+import eu.robojob.millassist.external.robot.RobotPutSettings;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.AbstractTransportStep;
+import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
 public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<CNCMillingMachineConfigureView, CNCMillingMachineMenuPresenter> {
 

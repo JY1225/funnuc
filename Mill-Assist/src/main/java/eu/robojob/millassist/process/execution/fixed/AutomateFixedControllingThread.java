@@ -1,22 +1,22 @@
-package eu.robojob.irscw.process.execution.fixed;
+package eu.robojob.millassist.process.execution.fixed;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
-import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.RobotActionException;
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessFlow.Mode;
-import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
-import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.threading.ThreadManager;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.RobotActionException;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessFlow.Mode;
+import eu.robojob.millassist.process.PutStep;
+import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
+import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.threading.ThreadManager;
 
 public class AutomateFixedControllingThread extends Thread {
 

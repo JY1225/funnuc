@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.general.flow;
+package eu.robojob.millassist.ui.general.flow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +13,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import eu.robojob.irscw.external.device.DeviceType;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.configure.ConfigureView;
-import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
+import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.configure.ConfigureView;
+import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
 
 public class ProcessFlowView extends GridPane {
 

@@ -1,4 +1,4 @@
-package eu.robojob.irscw.db;
+package eu.robojob.millassist.db;
 
 import java.net.URL;
 import java.sql.Connection;

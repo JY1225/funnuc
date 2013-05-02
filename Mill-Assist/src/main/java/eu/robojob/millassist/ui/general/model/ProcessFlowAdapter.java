@@ -1,16 +1,16 @@
-package eu.robojob.irscw.ui.general.model;
+package eu.robojob.millassist.ui.general.model;
 
-import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.DeviceInterventionSettings;
-import eu.robojob.irscw.external.device.DeviceType;
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.InterventionStep;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessStepType;
-import eu.robojob.irscw.process.ProcessingStep;
-import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.event.DataChangedEvent;
+import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.DeviceInterventionSettings;
+import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.InterventionStep;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessStepType;
+import eu.robojob.millassist.process.ProcessingStep;
+import eu.robojob.millassist.process.PutStep;
+import eu.robojob.millassist.process.event.DataChangedEvent;
 
 /**
  * This class extends the functionalities of the ProcessFlow class and organizes its information to simplify interaction between UI classes and ProcessFlow

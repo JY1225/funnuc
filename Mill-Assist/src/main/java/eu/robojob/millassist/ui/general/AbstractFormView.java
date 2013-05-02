@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.general;
+package eu.robojob.millassist.ui.general;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,8 +11,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
-import eu.robojob.irscw.ui.configure.ConfigureView;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.configure.ConfigureView;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
 
 public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> extends GridPane {
 

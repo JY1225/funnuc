@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.alarms;
+package eu.robojob.millassist.ui.alarms;
 
 import java.util.Set;
 
@@ -9,8 +9,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
-import eu.robojob.irscw.ui.general.PopUpView;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.ui.general.PopUpView;
+import eu.robojob.millassist.util.Translator;
 
 public class AlarmsPopUpView extends PopUpView<AlarmsPopUpPresenter> {
 

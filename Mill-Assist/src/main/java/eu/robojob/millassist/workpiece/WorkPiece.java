@@ -1,4 +1,4 @@
-package eu.robojob.irscw.workpiece;
+package eu.robojob.millassist.workpiece;
 
 public class WorkPiece {
 

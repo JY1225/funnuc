@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure;
+package eu.robojob.millassist.ui.configure;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;

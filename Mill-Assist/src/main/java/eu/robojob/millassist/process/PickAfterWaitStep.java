@@ -1,15 +1,15 @@
-package eu.robojob.irscw.process;
+package eu.robojob.millassist.process;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.DevicePickSettings;
-import eu.robojob.irscw.external.robot.RobotActionException;
-import eu.robojob.irscw.external.robot.RobotPickSettings;
-import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.process.execution.ProcessExecutor;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.DevicePickSettings;
+import eu.robojob.millassist.external.robot.RobotActionException;
+import eu.robojob.millassist.external.robot.RobotPickSettings;
+import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.process.execution.ProcessExecutor;
 
 public class PickAfterWaitStep extends PickStep {
 

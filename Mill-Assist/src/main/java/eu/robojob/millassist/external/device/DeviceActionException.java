@@ -1,6 +1,6 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.millassist.external.device;
 
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.util.Translator;
 
 public class DeviceActionException extends Exception {
 

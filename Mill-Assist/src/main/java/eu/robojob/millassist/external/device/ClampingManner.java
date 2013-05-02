@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.millassist.external.device;
 
 public class ClampingManner {
 

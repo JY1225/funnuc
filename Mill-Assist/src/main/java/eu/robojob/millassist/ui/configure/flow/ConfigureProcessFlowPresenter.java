@@ -1,11 +1,11 @@
-package eu.robojob.irscw.ui.configure.flow;
+package eu.robojob.millassist.ui.configure.flow;
 
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.configure.ConfigurePresenter;
-import eu.robojob.irscw.ui.configure.ConfigurePresenter.Mode;
-import eu.robojob.irscw.ui.general.flow.AbstractProcessFlowPresenter;
-import eu.robojob.irscw.ui.general.flow.ProcessFlowView;
-import eu.robojob.irscw.ui.general.flow.ProcessFlowView.ProgressBarPieceMode;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.configure.ConfigurePresenter;
+import eu.robojob.millassist.ui.configure.ConfigurePresenter.Mode;
+import eu.robojob.millassist.ui.general.flow.AbstractProcessFlowPresenter;
+import eu.robojob.millassist.ui.general.flow.ProcessFlowView;
+import eu.robojob.millassist.ui.general.flow.ProcessFlowView.ProgressBarPieceMode;
 
 public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter {
 	

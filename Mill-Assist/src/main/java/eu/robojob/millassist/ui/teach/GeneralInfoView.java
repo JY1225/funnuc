@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.teach;
+package eu.robojob.millassist.ui.teach;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -9,14 +9,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.PickAfterWaitStep;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.general.MainContentView;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.PickAfterWaitStep;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.general.MainContentView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class GeneralInfoView extends GridPane {
 	

@@ -1,6 +1,6 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.millassist.external.device;
 
-import eu.robojob.irscw.process.InterventionStep;
+import eu.robojob.millassist.process.InterventionStep;
 
 public class DeviceInterventionSettings extends AbstractDeviceActionSettings<InterventionStep> {
 	

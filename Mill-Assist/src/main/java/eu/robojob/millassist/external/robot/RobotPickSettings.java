@@ -1,9 +1,9 @@
-package eu.robojob.irscw.external.robot;
+package eu.robojob.millassist.external.robot;
 
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.workpiece.WorkPiece;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.workpiece.WorkPiece;
 
 public abstract class RobotPickSettings extends AbstractRobotActionSettings<PickStep> {
 	

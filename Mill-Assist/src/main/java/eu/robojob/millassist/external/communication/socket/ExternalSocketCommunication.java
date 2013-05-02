@@ -1,12 +1,12 @@
-package eu.robojob.irscw.external.communication.socket;
+package eu.robojob.millassist.external.communication.socket;
 
 import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.ExternalCommunicationThread;
-import eu.robojob.irscw.threading.ThreadManager;
+import eu.robojob.millassist.external.communication.ExternalCommunicationThread;
+import eu.robojob.millassist.threading.ThreadManager;
 
 public abstract class ExternalSocketCommunication {
 

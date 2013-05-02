@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.millassist.external.device;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -10,15 +10,15 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.db.external.device.DeviceMapper;
-import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
-import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
-import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
-import eu.robojob.irscw.external.device.stacking.AbstractStackingDevice;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.positioning.UserFrame;
+import eu.robojob.millassist.db.external.device.DeviceMapper;
+import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
+import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.positioning.UserFrame;
 
 public class DeviceManager {
 	

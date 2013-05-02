@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device.processing.cnc;
+package eu.robojob.millassist.external.device.processing.cnc;
 
 public final class CNCMachineConstants {
 

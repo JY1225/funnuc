@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.teach;
+package eu.robojob.millassist.ui.teach;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -6,15 +6,15 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import eu.robojob.irscw.ui.general.MainContentView;
-import eu.robojob.irscw.ui.general.status.StatusView;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.ui.general.MainContentView;
+import eu.robojob.millassist.ui.general.status.StatusView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 
 public class TeachStatusView extends VBox {
 
 	private TeachStatusPresenter presenter;
-	private eu.robojob.irscw.ui.general.status.StatusView statusView;
+	private eu.robojob.millassist.ui.general.status.StatusView statusView;
 	private Button btnCancel;
 	
 	private static final double WIDTH = 500;

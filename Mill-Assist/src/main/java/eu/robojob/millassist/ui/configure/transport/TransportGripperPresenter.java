@@ -1,14 +1,14 @@
-package eu.robojob.irscw.ui.configure.transport;
+package eu.robojob.millassist.ui.configure.transport;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.robot.Gripper;
-import eu.robojob.irscw.external.robot.GripperHead;
-import eu.robojob.irscw.external.robot.RobotSettings;
-import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
-import eu.robojob.irscw.ui.general.model.TransportInformation;
+import eu.robojob.millassist.external.robot.Gripper;
+import eu.robojob.millassist.external.robot.GripperHead;
+import eu.robojob.millassist.external.robot.RobotSettings;
+import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.model.TransportInformation;
 
 public class TransportGripperPresenter extends AbstractFormPresenter<TransportGripperView, TransportMenuPresenter> {
 

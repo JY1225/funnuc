@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.admin.device.cnc;
+package eu.robojob.millassist.ui.admin.device.cnc;
 
 import java.util.Set;
 
@@ -11,11 +11,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
-import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormView;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 
 public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigurePresenter> {
 

@@ -1,4 +1,4 @@
-package eu.robojob.irscw.threading;
+package eu.robojob.millassist.threading;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.ExternalCommunicationThread;
+import eu.robojob.millassist.external.communication.ExternalCommunicationThread;
 
 public final class ThreadManager {
 

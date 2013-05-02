@@ -1,6 +1,6 @@
-package eu.robojob.irscw.ui.automate.flow;
+package eu.robojob.millassist.ui.automate.flow;
 
-import eu.robojob.irscw.ui.general.flow.ProcessFlowView;
+import eu.robojob.millassist.ui.general.flow.ProcessFlowView;
 
 public class AutomateProcessFlowView extends ProcessFlowView {
 

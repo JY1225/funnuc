@@ -1,6 +1,6 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.millassist.external.device;
 
-import eu.robojob.irscw.process.PutStep;
+import eu.robojob.millassist.process.PutStep;
 
 public class DevicePutSettings extends AbstractDeviceActionSettings<PutStep> {
 	

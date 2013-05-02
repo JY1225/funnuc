@@ -1,7 +1,7 @@
-package eu.robojob.irscw.process.event;
+package eu.robojob.millassist.process.event;
 
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessFlow.Mode;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessFlow.Mode;
 
 public class ModeChangedEvent extends ProcessFlowEvent {
 

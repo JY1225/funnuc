@@ -1,21 +1,21 @@
-package eu.robojob.irscw.process.execution.fixed;
+package eu.robojob.millassist.process.execution.fixed;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.external.robot.RobotActionException;
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.AbstractTransportStep;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.PutAndWaitStep;
-import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.RobotStep;
-import eu.robojob.irscw.process.execution.ProcessExecutor;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.robot.RobotActionException;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.AbstractTransportStep;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.PutAndWaitStep;
+import eu.robojob.millassist.process.PutStep;
+import eu.robojob.millassist.process.RobotStep;
+import eu.robojob.millassist.process.execution.ProcessExecutor;
 
 public class ProcessFlowExecutionThread extends Thread implements ProcessExecutor {
 

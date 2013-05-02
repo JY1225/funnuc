@@ -1,6 +1,6 @@
-package eu.robojob.irscw.ui.general;
+package eu.robojob.millassist.ui.general;
 
-import eu.robojob.irscw.ui.MainPresenter;
+import eu.robojob.millassist.ui.MainPresenter;
 
 public abstract class AbstractPopUpPresenter<T extends PopUpView<?>> {
 

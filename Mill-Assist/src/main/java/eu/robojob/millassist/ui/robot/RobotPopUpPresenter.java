@@ -1,19 +1,19 @@
-package eu.robojob.irscw.ui.robot;
+package eu.robojob.millassist.ui.robot;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.robot.RobotActionException;
-import eu.robojob.irscw.external.robot.RobotAlarmsOccuredEvent;
-import eu.robojob.irscw.external.robot.RobotEvent;
-import eu.robojob.irscw.external.robot.RobotListener;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
-import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
-import eu.robojob.irscw.process.event.ModeChangedEvent;
-import eu.robojob.irscw.process.event.ProcessFlowListener;
-import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.ui.general.AbstractPopUpPresenter;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.robot.RobotActionException;
+import eu.robojob.millassist.external.robot.RobotAlarmsOccuredEvent;
+import eu.robojob.millassist.external.robot.RobotEvent;
+import eu.robojob.millassist.external.robot.RobotListener;
+import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
+import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
+import eu.robojob.millassist.process.event.ModeChangedEvent;
+import eu.robojob.millassist.process.event.ProcessFlowListener;
+import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.ui.general.AbstractPopUpPresenter;
 
 public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> implements RobotListener, ProcessFlowListener {
 

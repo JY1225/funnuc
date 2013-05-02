@@ -1,23 +1,23 @@
-package eu.robojob.irscw.ui.automate;
+package eu.robojob.millassist.ui.automate;
 
 import java.util.Set;
 
 import javafx.scene.Node;
 import javafx.scene.control.TextInputControl;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessFlow.Mode;
-import eu.robojob.irscw.process.ProcessFlowTimer;
-import eu.robojob.irscw.process.execution.fixed.AutomateFixedControllingThread;
-import eu.robojob.irscw.threading.ThreadManager;
-import eu.robojob.irscw.ui.automate.device.DeviceMenuFactory;
-import eu.robojob.irscw.ui.automate.flow.AutomateProcessFlowPresenter;
-import eu.robojob.irscw.ui.controls.IntegerTextField;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.controls.keyboard.NumericKeyboardPresenter;
-import eu.robojob.irscw.ui.general.ExecutionPresenter;
-import eu.robojob.irscw.ui.general.MainContentView;
-import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
-import eu.robojob.irscw.ui.general.status.DisconnectedDevicesView;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessFlow.Mode;
+import eu.robojob.millassist.process.ProcessFlowTimer;
+import eu.robojob.millassist.process.execution.fixed.AutomateFixedControllingThread;
+import eu.robojob.millassist.threading.ThreadManager;
+import eu.robojob.millassist.ui.automate.device.DeviceMenuFactory;
+import eu.robojob.millassist.ui.automate.flow.AutomateProcessFlowPresenter;
+import eu.robojob.millassist.ui.controls.IntegerTextField;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.controls.keyboard.NumericKeyboardPresenter;
+import eu.robojob.millassist.ui.general.ExecutionPresenter;
+import eu.robojob.millassist.ui.general.MainContentView;
+import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
+import eu.robojob.millassist.ui.general.status.DisconnectedDevicesView;
 
 public class AutomatePresenter extends ExecutionPresenter implements TextInputControlListener {
 	

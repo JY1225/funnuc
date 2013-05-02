@@ -1,8 +1,8 @@
-package eu.robojob.irscw.external.robot;
+package eu.robojob.millassist.external.robot;
 
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.AbstractProcessStep;
 
 public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep> {
 	

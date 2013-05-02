@@ -1,9 +1,9 @@
-package eu.robojob.irscw.ui.configure.device.stacking;
+package eu.robojob.millassist.ui.configure.device.stacking;
 
-import eu.robojob.irscw.external.device.ClampingManner;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
-import eu.robojob.irscw.ui.general.device.stacking.BasicStackPlateLayoutView;
+import eu.robojob.millassist.external.device.ClampingManner;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.device.stacking.BasicStackPlateLayoutView;
 
 public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter>, BasicStackPlateMenuPresenter> {
 

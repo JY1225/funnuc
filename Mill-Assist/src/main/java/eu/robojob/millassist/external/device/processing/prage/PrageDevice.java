@@ -1,28 +1,28 @@
-package eu.robojob.irscw.external.device.processing.prage;
+package eu.robojob.millassist.external.device.processing.prage;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.Clamping;
-import eu.robojob.irscw.external.device.ClampingManner;
-import eu.robojob.irscw.external.device.ClampingManner.Type;
-import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.DeviceInterventionSettings;
-import eu.robojob.irscw.external.device.DevicePickSettings;
-import eu.robojob.irscw.external.device.DevicePutSettings;
-import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.external.device.DeviceType;
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.Zone;
-import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
-import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
-import eu.robojob.irscw.external.robot.RobotActionException;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.ClampingManner;
+import eu.robojob.millassist.external.device.ClampingManner.Type;
+import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.DeviceInterventionSettings;
+import eu.robojob.millassist.external.device.DevicePickSettings;
+import eu.robojob.millassist.external.device.DevicePutSettings;
+import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.Zone;
+import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
+import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.robot.RobotActionException;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class PrageDevice extends AbstractProcessingDevice {
 		

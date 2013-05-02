@@ -1,7 +1,7 @@
-package eu.robojob.irscw.ui.admin.general;
+package eu.robojob.millassist.ui.admin.general;
 
-import eu.robojob.irscw.ui.admin.MainMenuPresenter;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.admin.MainMenuPresenter;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class GeneralAdminPresenter extends AbstractFormPresenter<GeneralAdminView, MainMenuPresenter> {
 

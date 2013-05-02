@@ -1,7 +1,7 @@
-package eu.robojob.irscw.ui.admin.general;
+package eu.robojob.millassist.ui.admin.general;
 
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormView;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
 
 public class GeneralAdminView extends AbstractFormView<GeneralAdminPresenter> {
 

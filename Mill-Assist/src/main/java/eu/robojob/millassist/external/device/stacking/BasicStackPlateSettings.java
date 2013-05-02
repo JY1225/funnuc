@@ -1,10 +1,10 @@
-package eu.robojob.irscw.external.device.stacking;
+package eu.robojob.millassist.external.device.stacking;
 
-import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.irscw.workpiece.WorkPiece;
-import eu.robojob.irscw.workpiece.WorkPiece.Type;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Type;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class BasicStackPlateSettings extends DeviceSettings {
 

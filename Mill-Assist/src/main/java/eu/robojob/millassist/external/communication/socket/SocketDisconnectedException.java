@@ -1,7 +1,7 @@
-package eu.robojob.irscw.external.communication.socket;
+package eu.robojob.millassist.external.communication.socket;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.util.Translator;
 
 public class SocketDisconnectedException extends AbstractCommunicationException {
 

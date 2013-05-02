@@ -1,4 +1,4 @@
-package eu.robojob.irscw.process;
+package eu.robojob.millassist.process;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -7,12 +7,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
-import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
-import eu.robojob.irscw.process.event.ModeChangedEvent;
-import eu.robojob.irscw.process.event.ProcessFlowListener;
-import eu.robojob.irscw.process.event.StatusChangedEvent;
+import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
+import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
+import eu.robojob.millassist.process.event.ModeChangedEvent;
+import eu.robojob.millassist.process.event.ProcessFlowListener;
+import eu.robojob.millassist.process.event.StatusChangedEvent;
 
 public class ProcessFlowTimer implements ProcessFlowListener {
 

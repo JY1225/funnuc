@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.robot.fanuc;
+package eu.robojob.millassist.external.robot.fanuc;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -10,25 +10,25 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.communication.socket.SocketConnection;
-import eu.robojob.irscw.external.communication.socket.SocketDisconnectedException;
-import eu.robojob.irscw.external.communication.socket.SocketResponseTimedOutException;
-import eu.robojob.irscw.external.device.Clamping;
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.GripperBody;
-import eu.robojob.irscw.external.robot.GripperHead;
-import eu.robojob.irscw.external.robot.RobotActionException;
-import eu.robojob.irscw.external.robot.RobotAlarm;
-import eu.robojob.irscw.external.robot.RobotConstants;
-import eu.robojob.irscw.external.robot.RobotMonitoringThread;
-import eu.robojob.irscw.external.robot.RobotPickSettings;
-import eu.robojob.irscw.external.robot.RobotPutSettings;
-import eu.robojob.irscw.external.robot.RobotSocketCommunication;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.threading.ThreadManager;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.communication.socket.SocketConnection;
+import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
+import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.GripperBody;
+import eu.robojob.millassist.external.robot.GripperHead;
+import eu.robojob.millassist.external.robot.RobotActionException;
+import eu.robojob.millassist.external.robot.RobotAlarm;
+import eu.robojob.millassist.external.robot.RobotConstants;
+import eu.robojob.millassist.external.robot.RobotMonitoringThread;
+import eu.robojob.millassist.external.robot.RobotPickSettings;
+import eu.robojob.millassist.external.robot.RobotPutSettings;
+import eu.robojob.millassist.external.robot.RobotSocketCommunication;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.threading.ThreadManager;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class FanucRobot extends AbstractRobot {
 

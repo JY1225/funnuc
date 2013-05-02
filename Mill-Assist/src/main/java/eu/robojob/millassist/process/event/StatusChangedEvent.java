@@ -1,7 +1,7 @@
-package eu.robojob.irscw.process.event;
+package eu.robojob.millassist.process.event;
 
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.ProcessFlow;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.ProcessFlow;
 
 public class StatusChangedEvent extends ProcessFlowEvent {
 

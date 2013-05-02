@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.menu;
+package eu.robojob.millassist.ui.menu;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -10,7 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.util.Translator;
 
 public class MenuBarView extends ToolBar {
 	

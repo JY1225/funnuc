@@ -1,4 +1,4 @@
-package eu.robojob.irscw.db;
+package eu.robojob.millassist.db;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,10 +9,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.positioning.UserFrame;
-import eu.robojob.irscw.workpiece.WorkPiece;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.positioning.UserFrame;
+import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class GeneralMapper {
 

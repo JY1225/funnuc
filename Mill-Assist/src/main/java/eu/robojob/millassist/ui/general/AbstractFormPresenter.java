@@ -1,6 +1,6 @@
-	package eu.robojob.irscw.ui.general;
+	package eu.robojob.millassist.ui.general;
 
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
 
 public abstract class AbstractFormPresenter<T extends AbstractFormView<?>, S extends AbstractMenuPresenter<?>> {
 

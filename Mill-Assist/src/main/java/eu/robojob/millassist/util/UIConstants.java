@@ -1,4 +1,4 @@
-package eu.robojob.irscw.util;
+package eu.robojob.millassist.util;
 
 public final class UIConstants {
 	

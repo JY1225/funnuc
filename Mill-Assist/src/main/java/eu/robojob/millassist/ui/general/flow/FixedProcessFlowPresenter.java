@@ -1,19 +1,19 @@
-package eu.robojob.irscw.ui.general.flow;
+package eu.robojob.millassist.ui.general.flow;
 
 import javafx.application.Platform;
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessingStep;
-import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
-import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
-import eu.robojob.irscw.process.event.ModeChangedEvent;
-import eu.robojob.irscw.process.event.ProcessFlowListener;
-import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.ui.general.flow.ProcessFlowView.ProgressBarPieceMode;
-import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessingStep;
+import eu.robojob.millassist.process.PutStep;
+import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
+import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
+import eu.robojob.millassist.process.event.ModeChangedEvent;
+import eu.robojob.millassist.process.event.ProcessFlowListener;
+import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.ui.general.flow.ProcessFlowView.ProgressBarPieceMode;
+import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
 
 public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter implements ProcessFlowListener {
 	

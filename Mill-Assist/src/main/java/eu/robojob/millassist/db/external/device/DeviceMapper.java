@@ -1,4 +1,4 @@
-package eu.robojob.irscw.db.external.device;
+package eu.robojob.millassist.db.external.device;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,21 +7,21 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import eu.robojob.irscw.db.ConnectionManager;
-import eu.robojob.irscw.db.GeneralMapper;
-import eu.robojob.irscw.db.external.util.ConnectionMapper;
-import eu.robojob.irscw.external.communication.socket.SocketConnection;
-import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.Clamping;
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.Zone;
-import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
-import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlateLayout;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.positioning.UserFrame;
+import eu.robojob.millassist.db.ConnectionManager;
+import eu.robojob.millassist.db.GeneralMapper;
+import eu.robojob.millassist.db.external.util.ConnectionMapper;
+import eu.robojob.millassist.external.communication.socket.SocketConnection;
+import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.Zone;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlateLayout;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.positioning.UserFrame;
 
 public class DeviceMapper {
 	

@@ -1,9 +1,9 @@
-package eu.robojob.irscw.ui.automate.device.stacking;
+package eu.robojob.millassist.ui.automate.device.stacking;
 
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class BasicStackPlateRefillPresenter extends AbstractFormPresenter<BasicStackPlateRefillView, BasicStackPlateMenuPresenter> {
 

@@ -1,7 +1,7 @@
-package eu.robojob.irscw.ui.controls.keyboard;
+package eu.robojob.millassist.ui.controls.keyboard;
 
 import javafx.scene.input.KeyCode;
-import eu.robojob.irscw.ui.controls.FullTextField;
+import eu.robojob.millassist.ui.controls.FullTextField;
 
 public class FullKeyboardPresenter extends AbstractKeyboardPresenter {
 	

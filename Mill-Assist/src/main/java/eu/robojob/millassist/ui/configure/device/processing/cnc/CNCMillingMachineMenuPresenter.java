@@ -1,8 +1,8 @@
-package eu.robojob.irscw.ui.configure.device.processing.cnc;
+package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
-import eu.robojob.irscw.ui.configure.device.AbstractDeviceMenuPresenter;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.ui.configure.device.AbstractDeviceMenuPresenter;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
 public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter {
 

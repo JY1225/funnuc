@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.process;
+package eu.robojob.millassist.ui.configure.process;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,12 +19,12 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.controls.FullTextField;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormView;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.controls.FullTextField;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 
 public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 	

@@ -1,4 +1,4 @@
-package eu.robojob.irscw;
+package eu.robojob.millassist;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,20 +16,20 @@ import javafx.stage.StageStyle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.db.GeneralMapper;
-import eu.robojob.irscw.db.external.device.DeviceMapper;
-import eu.robojob.irscw.db.external.robot.RobotMapper;
-import eu.robojob.irscw.db.external.util.ConnectionMapper;
-import eu.robojob.irscw.db.process.ProcessFlowMapper;
-import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.external.robot.RobotManager;
-import eu.robojob.irscw.process.ProcessFlowManager;
-import eu.robojob.irscw.threading.ThreadManager;
-import eu.robojob.irscw.ui.MainPresenter;
-import eu.robojob.irscw.ui.RoboSoftAppFactory;
-import eu.robojob.irscw.ui.controls.keyboard.FullKeyboardView.KeyboardType;
-import eu.robojob.irscw.ui.preloader.RoboJobPreloader;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.db.GeneralMapper;
+import eu.robojob.millassist.db.external.device.DeviceMapper;
+import eu.robojob.millassist.db.external.robot.RobotMapper;
+import eu.robojob.millassist.db.external.util.ConnectionMapper;
+import eu.robojob.millassist.db.process.ProcessFlowMapper;
+import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.external.robot.RobotManager;
+import eu.robojob.millassist.process.ProcessFlowManager;
+import eu.robojob.millassist.threading.ThreadManager;
+import eu.robojob.millassist.ui.MainPresenter;
+import eu.robojob.millassist.ui.RoboSoftAppFactory;
+import eu.robojob.millassist.ui.controls.keyboard.FullKeyboardView.KeyboardType;
+import eu.robojob.millassist.ui.preloader.RoboJobPreloader;
+import eu.robojob.millassist.util.Translator;
 
 public class RoboSoft extends Application {
 
@@ -49,13 +49,13 @@ public class RoboSoft extends Application {
 		//properties.load(new FileInputStream(new File("settings.properties")));
 		final RoboJobPreloader preloader = new RoboJobPreloader();
 		Scene scene2 = new Scene(preloader, WIDTH, HEIGHT);
-		scene2.getStylesheets().add("css/preloader-style.css");
+		scene2.getStylesheets().add("styles/preloader-style.css");
 		stage.setScene(scene2);
 		stage.setTitle("RoboSoft");
 		stage.centerOnScreen();
 		stage.setResizable(false);
 		stage.initStyle(StageStyle.UNDECORATED);
-		stage.getIcons().add(new Image("img/icon.png"));
+		stage.getIcons().add(new Image("images/icon.png"));
 		stage.show();
 		ThreadManager.submit(new Thread () {
 			@Override
@@ -95,14 +95,14 @@ public class RoboSoft extends Application {
 							if (!Boolean.parseBoolean(properties.getProperty("mouse-visible"))) {
 								scene.setCursor(Cursor.NONE);
 							}
-							scene.getStylesheets().add("css/general-style.css");
-							scene.getStylesheets().add("css/header-style.css");
-							scene.getStylesheets().add("css/keyboard-style.css");
-							scene.getStylesheets().add("css/configure-style.css");
-							scene.getStylesheets().add("css/processflow-style.css");
-							scene.getStylesheets().add("css/teach-style.css");
-							scene.getStylesheets().add("css/automate-style.css");
-							scene.getStylesheets().add("css/admin-style.css");
+							scene.getStylesheets().add("styles/general-style.css");
+							scene.getStylesheets().add("styles/header-style.css");
+							scene.getStylesheets().add("styles/keyboard-style.css");
+							scene.getStylesheets().add("styles/configure-style.css");
+							scene.getStylesheets().add("styles/processflow-style.css");
+							scene.getStylesheets().add("styles/teach-style.css");
+							scene.getStylesheets().add("styles/automate-style.css");
+							scene.getStylesheets().add("styles/admin-style.css");
 							stage.setScene(scene);						
 						}
 					});

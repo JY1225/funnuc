@@ -1,7 +1,7 @@
-package eu.robojob.irscw.ui.automate.device.stacking;
+package eu.robojob.millassist.ui.automate.device.stacking;
 
-import eu.robojob.irscw.ui.automate.AbstractMenuPresenter;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.automate.AbstractMenuPresenter;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
 
 public class BasicStackPlateMenuPresenter extends AbstractMenuPresenter<BasicStackPlateMenuView> {
 

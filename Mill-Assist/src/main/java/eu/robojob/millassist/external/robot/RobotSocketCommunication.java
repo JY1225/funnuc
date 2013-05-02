@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.robot;
+package eu.robojob.millassist.external.robot;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,11 +8,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.socket.ExternalSocketCommunication;
-import eu.robojob.irscw.external.communication.socket.SocketConnection;
-import eu.robojob.irscw.external.communication.socket.SocketDisconnectedException;
-import eu.robojob.irscw.external.communication.socket.SocketResponseTimedOutException;
-import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.millassist.external.communication.socket.ExternalSocketCommunication;
+import eu.robojob.millassist.external.communication.socket.SocketConnection;
+import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
+import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.positioning.Coordinates;
 
 public class RobotSocketCommunication extends ExternalSocketCommunication {
 

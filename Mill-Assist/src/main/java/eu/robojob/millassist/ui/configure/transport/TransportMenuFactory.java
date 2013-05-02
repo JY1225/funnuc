@@ -1,12 +1,12 @@
-package eu.robojob.irscw.ui.configure.transport;
+package eu.robojob.millassist.ui.configure.transport;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
-import eu.robojob.irscw.ui.general.model.ProcessFlowAdapter;
-import eu.robojob.irscw.ui.general.model.TransportInformation;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.configure.AbstractMenuPresenter;
+import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
+import eu.robojob.millassist.ui.general.model.TransportInformation;
 
 public class TransportMenuFactory {
 

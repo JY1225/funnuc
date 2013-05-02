@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.transport;
+package eu.robojob.millassist.ui.configure.transport;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -6,15 +6,15 @@ import javafx.event.EventHandler;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import eu.robojob.irscw.external.robot.Gripper;
-import eu.robojob.irscw.external.robot.GripperBody;
-import eu.robojob.irscw.external.robot.GripperHead;
-import eu.robojob.irscw.ui.controls.IconFlowSelector;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormView;
-import eu.robojob.irscw.ui.general.model.TransportInformation;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.external.robot.Gripper;
+import eu.robojob.millassist.external.robot.GripperBody;
+import eu.robojob.millassist.external.robot.GripperHead;
+import eu.robojob.millassist.ui.controls.IconFlowSelector;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.ui.general.model.TransportInformation;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 
 public class TransportGripperView extends AbstractFormView<TransportGripperPresenter> {
 

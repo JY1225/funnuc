@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.general.status;
+package eu.robojob.millassist.ui.general.status;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -8,7 +8,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.util.Translator;
 
 public class StatusView extends VBox {
 	

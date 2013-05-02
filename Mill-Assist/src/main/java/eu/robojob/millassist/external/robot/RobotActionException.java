@@ -1,6 +1,6 @@
-package eu.robojob.irscw.external.robot;
+package eu.robojob.millassist.external.robot;
 
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.util.Translator;
 
 public class RobotActionException extends Exception {
 

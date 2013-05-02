@@ -1,11 +1,11 @@
-package eu.robojob.irscw.external.device.processing;
+package eu.robojob.millassist.external.device.processing;
 
 import java.util.Set;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.Zone;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.Zone;
 
 public abstract class AbstractProcessingDevice extends AbstractDevice {
 	

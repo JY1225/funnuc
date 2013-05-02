@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.automate.device.stacking;
+package eu.robojob.millassist.ui.automate.device.stacking;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,12 +11,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.ui.controls.IntegerTextField;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormView;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.ui.controls.IntegerTextField;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 
 public class BasicStackPlateRefillView extends AbstractFormView<BasicStackPlateRefillPresenter> {
 

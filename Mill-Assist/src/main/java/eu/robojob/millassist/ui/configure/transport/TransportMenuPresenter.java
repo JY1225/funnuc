@@ -1,7 +1,7 @@
-package eu.robojob.irscw.ui.configure.transport;
+package eu.robojob.millassist.ui.configure.transport;
 
-import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.configure.AbstractMenuPresenter;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
 
 public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuView> {
 

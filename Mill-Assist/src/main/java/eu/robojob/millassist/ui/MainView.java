@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui;
+package eu.robojob.millassist.ui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import eu.robojob.irscw.ui.general.PopUpView;
-import eu.robojob.irscw.ui.menu.MenuBarView;
+import eu.robojob.millassist.ui.general.PopUpView;
+import eu.robojob.millassist.ui.menu.MenuBarView;
 
 public class MainView extends BorderPane {
 	

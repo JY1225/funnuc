@@ -1,19 +1,19 @@
-package eu.robojob.irscw.ui.configure.device.processing.cnc;
+package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
-import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.process.AbstractProcessStep;
-import eu.robojob.irscw.process.PickAfterWaitStep;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
-import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
-import eu.robojob.irscw.process.event.ModeChangedEvent;
-import eu.robojob.irscw.process.event.ProcessFlowListener;
-import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.PickAfterWaitStep;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
+import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
+import eu.robojob.millassist.process.event.ModeChangedEvent;
+import eu.robojob.millassist.process.event.ProcessFlowListener;
+import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<CNCMillingMachineWorkPieceView, CNCMillingMachineMenuPresenter> implements ProcessFlowListener  {
 

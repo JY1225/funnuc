@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.preloader;
+package eu.robojob.millassist.ui.preloader;
 
 import javafx.animation.Interpolator;
 import javafx.animation.Timeline;
@@ -29,7 +29,7 @@ public class RoboJobPreloader extends BorderPane {
 		this.setMinSize(800, 600);
 		this.setMaxSize(800, 600);
 		getStyleClass().add(CSS_PRELOADER);
-		image = new Image("img/robojoblogo.png", 402, 52, true, true);
+		image = new Image("images/robojoblogo.png", 402, 52, true, true);
 		imageVw = new ImageView(image);
 		
 		Rectangle rect = new Rectangle();

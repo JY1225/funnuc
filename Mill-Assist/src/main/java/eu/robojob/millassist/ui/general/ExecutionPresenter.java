@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.general;
+package eu.robojob.millassist.ui.general;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,23 +8,23 @@ import java.util.Set;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
-import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarm;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineEvent;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineListener;
-import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.RobotAlarm;
-import eu.robojob.irscw.external.robot.RobotAlarmsOccuredEvent;
-import eu.robojob.irscw.external.robot.RobotEvent;
-import eu.robojob.irscw.external.robot.RobotListener;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.MainPresenter;
-import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
-import eu.robojob.irscw.ui.general.status.StatusPresenter;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarm;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineEvent;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
+import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.RobotAlarm;
+import eu.robojob.millassist.external.robot.RobotAlarmsOccuredEvent;
+import eu.robojob.millassist.external.robot.RobotEvent;
+import eu.robojob.millassist.external.robot.RobotListener;
+import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.MainPresenter;
+import eu.robojob.millassist.ui.general.flow.FixedProcessFlowPresenter;
+import eu.robojob.millassist.ui.general.status.StatusPresenter;
+import eu.robojob.millassist.util.Translator;
 
 public abstract class ExecutionPresenter implements CNCMachineListener, RobotListener, MainContentPresenter, ContentPresenter {
 

@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.general;
+package eu.robojob.millassist.ui.general;
 
 import javafx.scene.Node;
 

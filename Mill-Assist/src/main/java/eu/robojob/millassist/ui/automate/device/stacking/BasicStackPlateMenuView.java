@@ -1,9 +1,9 @@
-package eu.robojob.irscw.ui.automate.device.stacking;
+package eu.robojob.millassist.ui.automate.device.stacking;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import eu.robojob.irscw.ui.general.AbstractMenuView;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.ui.general.AbstractMenuView;
+import eu.robojob.millassist.util.Translator;
 
 public class BasicStackPlateMenuView extends AbstractMenuView<BasicStackPlateMenuPresenter> {
 	

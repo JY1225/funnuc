@@ -1,15 +1,15 @@
-package eu.robojob.irscw.ui.automate.device;
+package eu.robojob.millassist.ui.automate.device;
 
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.automate.AbstractMenuPresenter;
-import eu.robojob.irscw.ui.automate.device.stacking.BasicStackPlateLayoutPresenter;
-import eu.robojob.irscw.ui.automate.device.stacking.BasicStackPlateMenuPresenter;
-import eu.robojob.irscw.ui.automate.device.stacking.BasicStackPlateMenuView;
-import eu.robojob.irscw.ui.automate.device.stacking.BasicStackPlateRefillPresenter;
-import eu.robojob.irscw.ui.automate.device.stacking.BasicStackPlateRefillView;
-import eu.robojob.irscw.ui.general.device.stacking.BasicStackPlateLayoutView;
-import eu.robojob.irscw.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.automate.AbstractMenuPresenter;
+import eu.robojob.millassist.ui.automate.device.stacking.BasicStackPlateLayoutPresenter;
+import eu.robojob.millassist.ui.automate.device.stacking.BasicStackPlateMenuPresenter;
+import eu.robojob.millassist.ui.automate.device.stacking.BasicStackPlateMenuView;
+import eu.robojob.millassist.ui.automate.device.stacking.BasicStackPlateRefillPresenter;
+import eu.robojob.millassist.ui.automate.device.stacking.BasicStackPlateRefillView;
+import eu.robojob.millassist.ui.general.device.stacking.BasicStackPlateLayoutView;
+import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
 public class DeviceMenuFactory {
 	

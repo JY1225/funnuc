@@ -1,6 +1,6 @@
-package eu.robojob.irscw.ui.controls;
+package eu.robojob.millassist.ui.controls;
 
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.util.UIConstants;
 
 public class FullTextField extends AbstractTextField<String> {
 

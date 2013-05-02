@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.controls;
+package eu.robojob.millassist.ui.controls;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -6,7 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.util.UIConstants;
 
 public abstract class AbstractTextField<T> extends javafx.scene.control.TextField {
 

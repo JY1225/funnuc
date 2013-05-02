@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.communication;
+package eu.robojob.millassist.external.communication;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -6,9 +6,9 @@ import java.util.LinkedList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.socket.ExternalSocketCommunication;
-import eu.robojob.irscw.external.communication.socket.SocketConnection;
-import eu.robojob.irscw.external.communication.socket.SocketDisconnectedException;
+import eu.robojob.millassist.external.communication.socket.ExternalSocketCommunication;
+import eu.robojob.millassist.external.communication.socket.SocketConnection;
+import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
 
 /**
  * All external devices act as servers, so this communication-thread will continuously try to establish connection, read incoming messages, and will act as

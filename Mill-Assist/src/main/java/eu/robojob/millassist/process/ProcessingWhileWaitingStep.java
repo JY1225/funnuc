@@ -1,12 +1,12 @@
-package eu.robojob.irscw.process;
+package eu.robojob.millassist.process;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
-import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.AbstractRobotActionSettings;
-import eu.robojob.irscw.external.robot.RobotProcessingWhileWaitingSettings;
-import eu.robojob.irscw.process.execution.ProcessExecutor;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings;
+import eu.robojob.millassist.external.robot.RobotProcessingWhileWaitingSettings;
+import eu.robojob.millassist.process.execution.ProcessExecutor;
 
 public class ProcessingWhileWaitingStep extends ProcessingStep implements RobotStep {
 

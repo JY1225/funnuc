@@ -1,19 +1,19 @@
-package eu.robojob.irscw.ui.admin.device.cnc;
+package eu.robojob.millassist.ui.admin.device.cnc;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javafx.application.Platform;
 
-import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineEvent;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineListener;
-import eu.robojob.irscw.external.device.processing.cnc.milling.CNCMillingMachine;
-import eu.robojob.irscw.positioning.UserFrame;
-import eu.robojob.irscw.ui.admin.device.DeviceMenuPresenter;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineEvent;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
+import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.millassist.positioning.UserFrame;
+import eu.robojob.millassist.ui.admin.device.DeviceMenuPresenter;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachineConfigureView, DeviceMenuPresenter> implements CNCMachineListener {
 

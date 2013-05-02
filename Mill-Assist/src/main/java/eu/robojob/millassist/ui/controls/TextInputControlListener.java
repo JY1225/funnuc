@@ -1,7 +1,7 @@
-package eu.robojob.irscw.ui.controls;
+package eu.robojob.millassist.ui.controls;
 
 import javafx.scene.control.TextInputControl;
-import eu.robojob.irscw.ui.controls.keyboard.KeyboardParentPresenter;
+import eu.robojob.millassist.ui.controls.keyboard.KeyboardParentPresenter;
 
 public interface TextInputControlListener extends KeyboardParentPresenter {
 

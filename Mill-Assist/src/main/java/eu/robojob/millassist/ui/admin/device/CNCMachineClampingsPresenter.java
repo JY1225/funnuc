@@ -1,11 +1,11 @@
-package eu.robojob.irscw.ui.admin.device;
+package eu.robojob.millassist.ui.admin.device;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import eu.robojob.irscw.external.device.Clamping;
-import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachineClampingsView, DeviceMenuPresenter> {
 

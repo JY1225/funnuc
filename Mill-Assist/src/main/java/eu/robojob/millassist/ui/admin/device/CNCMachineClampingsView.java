@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.admin.device;
+package eu.robojob.millassist.ui.admin.device;
 
 import java.io.File;
 import java.util.Set;
@@ -22,13 +22,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
-import eu.robojob.irscw.external.device.Clamping;
-import eu.robojob.irscw.ui.controls.FullTextField;
-import eu.robojob.irscw.ui.controls.NumericTextField;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormView;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.ui.controls.FullTextField;
+import eu.robojob.millassist.ui.controls.NumericTextField;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 
 public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClampingsPresenter> {
 

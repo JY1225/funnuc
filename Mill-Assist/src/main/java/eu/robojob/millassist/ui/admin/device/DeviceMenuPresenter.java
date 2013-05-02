@@ -1,8 +1,8 @@
-package eu.robojob.irscw.ui.admin.device;
+package eu.robojob.millassist.ui.admin.device;
 
-import eu.robojob.irscw.ui.admin.AbstractSubMenuPresenter;
-import eu.robojob.irscw.ui.admin.device.cnc.CNCMachineConfigurePresenter;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.admin.AbstractSubMenuPresenter;
+import eu.robojob.millassist.ui.admin.device.cnc.CNCMachineConfigurePresenter;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
 
 public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView, DeviceAdminPresenter> {
 

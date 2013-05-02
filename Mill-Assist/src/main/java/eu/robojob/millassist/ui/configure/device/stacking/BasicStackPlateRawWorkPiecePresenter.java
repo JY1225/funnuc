@@ -1,16 +1,16 @@
-package eu.robojob.irscw.ui.configure.device.stacking;
+package eu.robojob.millassist.ui.configure.device.stacking;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
-import eu.robojob.irscw.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlateSettings;
+import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<BasicStackPlateRawWorkPieceView, BasicStackPlateMenuPresenter> {
 

@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.robot;
+package eu.robojob.millassist.external.robot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,9 +11,9 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.AbstractServiceProvider;
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.millassist.external.AbstractServiceProvider;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.positioning.Coordinates;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {
 	

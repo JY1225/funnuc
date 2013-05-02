@@ -1,10 +1,10 @@
-package eu.robojob.irscw.ui.configure.device;
+package eu.robojob.millassist.ui.configure.device;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import eu.robojob.irscw.ui.general.AbstractMenuView;
-import eu.robojob.irscw.ui.general.model.DeviceInformation;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.ui.general.AbstractMenuView;
+import eu.robojob.millassist.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.util.Translator;
 
 public class DeviceMenuView extends AbstractMenuView<AbstractDeviceMenuPresenter> {
 

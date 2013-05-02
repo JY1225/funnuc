@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.admin.device.cnc;
+package eu.robojob.millassist.ui.admin.device.cnc;
 
 public class CNCMachineCriteriaView {
 

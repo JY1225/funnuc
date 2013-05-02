@@ -1,7 +1,7 @@
-package eu.robojob.irscw.ui.configure.device.stacking;
+package eu.robojob.millassist.ui.configure.device.stacking;
 
-import eu.robojob.irscw.ui.configure.AbstractMenuPresenter;
-import eu.robojob.irscw.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.ui.configure.AbstractMenuPresenter;
+import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
 public abstract class AbstractStackingDeviceMenuPresenter extends AbstractMenuPresenter<StackingDeviceMenuView> {
 

@@ -1,9 +1,9 @@
-package eu.robojob.irscw.ui.admin;
+package eu.robojob.millassist.ui.admin;
 
-import eu.robojob.irscw.ui.admin.device.DeviceAdminPresenter;
-import eu.robojob.irscw.ui.admin.general.GeneralAdminPresenter;
-import eu.robojob.irscw.ui.admin.robot.RobotAdminPresenter;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.admin.device.DeviceAdminPresenter;
+import eu.robojob.millassist.ui.admin.general.GeneralAdminPresenter;
+import eu.robojob.millassist.ui.admin.robot.RobotAdminPresenter;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
 
 public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 	

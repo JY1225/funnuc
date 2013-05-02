@@ -1,14 +1,14 @@
-package eu.robojob.irscw.ui.automate;
+package eu.robojob.millassist.ui.automate;
 
 import javafx.application.Platform;
-import eu.robojob.irscw.process.ProcessFlow.Mode;
-import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
-import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
-import eu.robojob.irscw.process.event.ModeChangedEvent;
-import eu.robojob.irscw.process.event.ProcessFlowListener;
-import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.ui.general.status.StatusPresenter;
+import eu.robojob.millassist.process.ProcessFlow.Mode;
+import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
+import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
+import eu.robojob.millassist.process.event.ModeChangedEvent;
+import eu.robojob.millassist.process.event.ProcessFlowListener;
+import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.ui.general.status.StatusPresenter;
 
 public class AutomateStatusPresenter implements ProcessFlowListener {
 

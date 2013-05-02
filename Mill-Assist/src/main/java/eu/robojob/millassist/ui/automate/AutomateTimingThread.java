@@ -1,10 +1,10 @@
-package eu.robojob.irscw.ui.automate;
+package eu.robojob.millassist.ui.automate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.process.ProcessFlowTimer;
-import eu.robojob.irscw.threading.ThreadManager;
+import eu.robojob.millassist.process.ProcessFlowTimer;
+import eu.robojob.millassist.threading.ThreadManager;
 
 public class AutomateTimingThread extends Thread {
 

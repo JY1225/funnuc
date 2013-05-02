@@ -1,8 +1,8 @@
-package eu.robojob.irscw.ui.admin.robot;
+package eu.robojob.millassist.ui.admin.robot;
 
-import eu.robojob.irscw.external.robot.Gripper;
-import eu.robojob.irscw.external.robot.RobotManager;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.external.robot.Gripper;
+import eu.robojob.millassist.external.robot.RobotManager;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class RobotGripperPresenter extends AbstractFormPresenter<RobotGripperView, RobotMenuPresenter> {
 	

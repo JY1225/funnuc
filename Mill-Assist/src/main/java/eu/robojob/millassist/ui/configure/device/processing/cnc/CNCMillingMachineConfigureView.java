@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device.processing.cnc;
+package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
 import java.util.Set;
 
@@ -10,14 +10,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import eu.robojob.irscw.external.device.Clamping;
-import eu.robojob.irscw.external.device.ClampingManner.Type;
-import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormView;
-import eu.robojob.irscw.ui.general.model.DeviceInformation;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.ClampingManner.Type;
+import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 
 public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingMachineConfigurePresenter> {
 

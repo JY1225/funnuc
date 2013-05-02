@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.configure.device.processing.prage;
+package eu.robojob.millassist.ui.configure.device.processing.prage;
 
 import java.util.Set;
 
@@ -6,11 +6,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormView;
-import eu.robojob.irscw.ui.general.model.DeviceInformation;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 
 public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfigurePresenter> {
 

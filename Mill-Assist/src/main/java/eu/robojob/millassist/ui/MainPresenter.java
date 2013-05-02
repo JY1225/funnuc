@@ -1,22 +1,22 @@
-package eu.robojob.irscw.ui;
+package eu.robojob.millassist.ui;
 
 import javafx.application.Platform;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.event.DataChangedEvent;
-import eu.robojob.irscw.process.event.ExceptionOccuredEvent;
-import eu.robojob.irscw.process.event.FinishedAmountChangedEvent;
-import eu.robojob.irscw.process.event.ModeChangedEvent;
-import eu.robojob.irscw.process.event.ProcessChangedEvent;
-import eu.robojob.irscw.process.event.ProcessFlowListener;
-import eu.robojob.irscw.process.event.StatusChangedEvent;
-import eu.robojob.irscw.ui.admin.AdminPresenter;
-import eu.robojob.irscw.ui.alarms.AlarmsPopUpPresenter;
-import eu.robojob.irscw.ui.automate.AutomatePresenter;
-import eu.robojob.irscw.ui.configure.ConfigurePresenter;
-import eu.robojob.irscw.ui.general.MainContentPresenter;
-import eu.robojob.irscw.ui.menu.MenuBarPresenter;
-import eu.robojob.irscw.ui.robot.RobotPopUpPresenter;
-import eu.robojob.irscw.ui.teach.TeachPresenter;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
+import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
+import eu.robojob.millassist.process.event.ModeChangedEvent;
+import eu.robojob.millassist.process.event.ProcessChangedEvent;
+import eu.robojob.millassist.process.event.ProcessFlowListener;
+import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.ui.admin.AdminPresenter;
+import eu.robojob.millassist.ui.alarms.AlarmsPopUpPresenter;
+import eu.robojob.millassist.ui.automate.AutomatePresenter;
+import eu.robojob.millassist.ui.configure.ConfigurePresenter;
+import eu.robojob.millassist.ui.general.MainContentPresenter;
+import eu.robojob.millassist.ui.menu.MenuBarPresenter;
+import eu.robojob.millassist.ui.robot.RobotPopUpPresenter;
+import eu.robojob.millassist.ui.teach.TeachPresenter;
 
 public class MainPresenter implements ProcessFlowListener {
 

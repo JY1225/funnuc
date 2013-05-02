@@ -1,11 +1,11 @@
-package eu.robojob.irscw.ui.admin.device;
+package eu.robojob.millassist.ui.admin.device;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.positioning.UserFrame;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.positioning.UserFrame;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class UserFramesConfigurePresenter extends AbstractFormPresenter<UserFramesConfigureView, DeviceMenuPresenter> {
 

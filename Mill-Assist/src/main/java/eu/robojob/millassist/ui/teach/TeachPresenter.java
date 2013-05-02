@@ -1,15 +1,15 @@
-package eu.robojob.irscw.ui.teach;
+package eu.robojob.millassist.ui.teach;
 
 import java.util.Set;
 
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.execution.TeachOptimizedThread;
-import eu.robojob.irscw.process.execution.TeachThread;
-import eu.robojob.irscw.threading.ThreadManager;
-import eu.robojob.irscw.ui.general.ExecutionPresenter;
-import eu.robojob.irscw.ui.general.MainContentView;
-import eu.robojob.irscw.ui.general.flow.FixedProcessFlowPresenter;
-import eu.robojob.irscw.ui.general.status.DisconnectedDevicesView;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.execution.TeachOptimizedThread;
+import eu.robojob.millassist.process.execution.TeachThread;
+import eu.robojob.millassist.threading.ThreadManager;
+import eu.robojob.millassist.ui.general.ExecutionPresenter;
+import eu.robojob.millassist.ui.general.MainContentView;
+import eu.robojob.millassist.ui.general.flow.FixedProcessFlowPresenter;
+import eu.robojob.millassist.ui.general.status.DisconnectedDevicesView;
 
 public class TeachPresenter extends ExecutionPresenter {
 

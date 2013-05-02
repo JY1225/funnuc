@@ -1,12 +1,12 @@
-package eu.robojob.irscw.ui.admin.robot;
+package eu.robojob.millassist.ui.admin.robot;
 
 import javafx.application.Platform;
-import eu.robojob.irscw.external.robot.RobotAlarmsOccuredEvent;
-import eu.robojob.irscw.external.robot.RobotEvent;
-import eu.robojob.irscw.external.robot.RobotListener;
-import eu.robojob.irscw.external.robot.RobotManager;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.external.robot.RobotAlarmsOccuredEvent;
+import eu.robojob.millassist.external.robot.RobotEvent;
+import eu.robojob.millassist.external.robot.RobotListener;
+import eu.robojob.millassist.external.robot.RobotManager;
+import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class RobotConfigurePresenter extends AbstractFormPresenter<RobotConfigureView, RobotMenuPresenter> implements RobotListener {
 	

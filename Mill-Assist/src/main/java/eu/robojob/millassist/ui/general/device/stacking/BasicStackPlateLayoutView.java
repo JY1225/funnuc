@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.general.device.stacking;
+package eu.robojob.millassist.ui.general.device.stacking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +19,17 @@ import javafx.scene.transform.Translate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.device.ClampingManner;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlateLayout;
-import eu.robojob.irscw.external.device.stacking.StackingPosition;
-import eu.robojob.irscw.external.device.stacking.StudPosition;
-import eu.robojob.irscw.external.device.stacking.StudPosition.StudType;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
-import eu.robojob.irscw.ui.general.AbstractFormView;
-import eu.robojob.irscw.workpiece.WorkPiece.Type;
+import eu.robojob.millassist.external.device.ClampingManner;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlateLayout;
+import eu.robojob.millassist.external.device.stacking.StackingPosition;
+import eu.robojob.millassist.external.device.stacking.StudPosition;
+import eu.robojob.millassist.external.device.stacking.StudPosition.StudType;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
 public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> extends AbstractFormView<T> {
 

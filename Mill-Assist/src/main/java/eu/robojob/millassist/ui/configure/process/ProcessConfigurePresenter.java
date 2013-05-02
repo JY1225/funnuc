@@ -1,7 +1,7 @@
-package eu.robojob.irscw.ui.configure.process;
+package eu.robojob.millassist.ui.configure.process;
 
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConfigureView, ProcessMenuPresenter> {
 	

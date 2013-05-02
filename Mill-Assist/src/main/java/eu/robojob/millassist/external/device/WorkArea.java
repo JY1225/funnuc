@@ -1,11 +1,11 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.millassist.external.device;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import eu.robojob.irscw.positioning.UserFrame;
+import eu.robojob.millassist.positioning.UserFrame;
 
 public class WorkArea {
 	

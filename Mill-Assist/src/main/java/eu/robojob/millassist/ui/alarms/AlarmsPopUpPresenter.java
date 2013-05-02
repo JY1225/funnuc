@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.alarms;
+package eu.robojob.millassist.ui.alarms;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -8,22 +8,22 @@ import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.device.AbstractDevice;
-import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarm;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineEvent;
-import eu.robojob.irscw.external.device.processing.cnc.CNCMachineListener;
-import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.RobotAlarm;
-import eu.robojob.irscw.external.robot.RobotAlarmsOccuredEvent;
-import eu.robojob.irscw.external.robot.RobotEvent;
-import eu.robojob.irscw.external.robot.RobotListener;
-import eu.robojob.irscw.external.robot.RobotManager;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.ui.general.AbstractPopUpPresenter;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarm;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineEvent;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
+import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.RobotAlarm;
+import eu.robojob.millassist.external.robot.RobotAlarmsOccuredEvent;
+import eu.robojob.millassist.external.robot.RobotEvent;
+import eu.robojob.millassist.external.robot.RobotListener;
+import eu.robojob.millassist.external.robot.RobotManager;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.general.AbstractPopUpPresenter;
+import eu.robojob.millassist.util.Translator;
 
 public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView> implements CNCMachineListener, RobotListener {
 

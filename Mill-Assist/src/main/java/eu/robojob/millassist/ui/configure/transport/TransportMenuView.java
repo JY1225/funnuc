@@ -1,10 +1,10 @@
-package eu.robojob.irscw.ui.configure.transport;
+package eu.robojob.millassist.ui.configure.transport;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import eu.robojob.irscw.ui.general.AbstractMenuView;
-import eu.robojob.irscw.ui.general.model.TransportInformation;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.ui.general.AbstractMenuView;
+import eu.robojob.millassist.ui.general.model.TransportInformation;
+import eu.robojob.millassist.util.Translator;
 
 public class TransportMenuView extends AbstractMenuView<TransportMenuPresenter> {
 

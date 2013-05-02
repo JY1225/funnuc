@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device.processing.cnc;
+package eu.robojob.millassist.external.device.processing.cnc;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -6,8 +6,8 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.threading.MonitoringThread;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.threading.MonitoringThread;
 
 public class CNCMachineMonitoringThread extends Thread implements MonitoringThread {
 

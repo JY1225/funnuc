@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device.processing.cnc;
+package eu.robojob.millassist.external.device.processing.cnc;
 
 import java.util.HashSet;
 import java.util.Map.Entry;
@@ -7,14 +7,14 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.external.device.Clamping;
-import eu.robojob.irscw.external.device.DeviceActionException;
-import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.external.device.DeviceType;
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.Zone;
-import eu.robojob.irscw.external.device.processing.AbstractProcessingDevice;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.Zone;
+import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 
 public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 

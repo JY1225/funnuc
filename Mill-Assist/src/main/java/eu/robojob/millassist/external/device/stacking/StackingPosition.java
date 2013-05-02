@@ -1,11 +1,11 @@
-package eu.robojob.irscw.external.device.stacking;
+package eu.robojob.millassist.external.device.stacking;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.workpiece.WorkPiece;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class StackingPosition {
 	

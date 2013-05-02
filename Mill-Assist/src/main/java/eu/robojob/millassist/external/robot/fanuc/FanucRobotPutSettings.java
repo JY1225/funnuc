@@ -1,10 +1,10 @@
-package eu.robojob.irscw.external.robot.fanuc;
+package eu.robojob.millassist.external.robot.fanuc;
 
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.robot.AbstractRobot;
-import eu.robojob.irscw.external.robot.GripperHead;
-import eu.robojob.irscw.external.robot.RobotPutSettings;
-import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.GripperHead;
+import eu.robojob.millassist.external.robot.RobotPutSettings;
+import eu.robojob.millassist.positioning.Coordinates;
 
 public class FanucRobotPutSettings extends RobotPutSettings {
 	

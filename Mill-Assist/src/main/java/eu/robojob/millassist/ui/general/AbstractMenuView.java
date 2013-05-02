@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.general;
+package eu.robojob.millassist.ui.general;
 
 import java.util.HashMap;
 import java.util.Map;

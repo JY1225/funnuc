@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.teach;
+package eu.robojob.millassist.ui.teach;
 
 public class GeneralInfoPresenter {
 

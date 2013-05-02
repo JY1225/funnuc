@@ -1,7 +1,7 @@
-package eu.robojob.irscw.external.robot;
+package eu.robojob.millassist.external.robot;
 
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.process.ProcessingWhileWaitingStep;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.process.ProcessingWhileWaitingStep;
 
 public class RobotProcessingWhileWaitingSettings extends AbstractRobotActionSettings<ProcessingWhileWaitingStep> {
 

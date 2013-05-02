@@ -1,8 +1,8 @@
-package eu.robojob.irscw.external.device.processing;
+package eu.robojob.millassist.external.device.processing;
 
-import eu.robojob.irscw.external.device.AbstractDeviceActionSettings;
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.process.ProcessingStep;
+import eu.robojob.millassist.external.device.AbstractDeviceActionSettings;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.process.ProcessingStep;
 
 public class ProcessingDeviceStartCyclusSettings extends AbstractDeviceActionSettings<ProcessingStep> {
 

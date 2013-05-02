@@ -1,36 +1,36 @@
-package eu.robojob.irscw;
+package eu.robojob.millassist;
 
 import java.util.Properties;
 
-import eu.robojob.irscw.external.device.ClampingManner;
-import eu.robojob.irscw.external.device.ClampingManner.Type;
-import eu.robojob.irscw.external.device.DeviceManager;
-import eu.robojob.irscw.external.device.DevicePickSettings;
-import eu.robojob.irscw.external.device.DevicePutSettings;
-import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.external.device.WorkArea;
-import eu.robojob.irscw.external.device.processing.ProcessingDeviceStartCyclusSettings;
-import eu.robojob.irscw.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.irscw.external.device.processing.prage.PrageDevice;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.irscw.external.device.stacking.BasicStackPlateSettings;
-import eu.robojob.irscw.external.robot.RobotManager;
-import eu.robojob.irscw.external.robot.RobotPickSettings;
-import eu.robojob.irscw.external.robot.RobotSettings;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotPickSettings;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobotPutSettings;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.process.PickAfterWaitStep;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessFlowTimer;
-import eu.robojob.irscw.process.ProcessingStep;
-import eu.robojob.irscw.process.PutAndWaitStep;
-import eu.robojob.irscw.process.PutStep;
-import eu.robojob.irscw.workpiece.WorkPiece;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.external.device.ClampingManner;
+import eu.robojob.millassist.external.device.ClampingManner.Type;
+import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.external.device.DevicePickSettings;
+import eu.robojob.millassist.external.device.DevicePutSettings;
+import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlateSettings;
+import eu.robojob.millassist.external.robot.RobotManager;
+import eu.robojob.millassist.external.robot.RobotPickSettings;
+import eu.robojob.millassist.external.robot.RobotSettings;
+import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
+import eu.robojob.millassist.external.robot.fanuc.FanucRobotPickSettings;
+import eu.robojob.millassist.external.robot.fanuc.FanucRobotPutSettings;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.PickAfterWaitStep;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessFlowTimer;
+import eu.robojob.millassist.process.ProcessingStep;
+import eu.robojob.millassist.process.PutAndWaitStep;
+import eu.robojob.millassist.process.PutStep;
+import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class PropertiesProcessFlowFactory {
 
@@ -160,7 +160,7 @@ public class PropertiesProcessFlowFactory {
 		robotPickSettings1.setGripperHead(robot.getGripperBody().getGripperHeadByName(robotHeadIdBefore));
 		robotPickSettings1.setSmoothPoint(new Coordinates(stackPlate.getWorkAreaByName("IRS M Basic").getActiveClamping().getSmoothFromPoint()));
 		robotPickSettings1.setWorkArea(stackPlate.getWorkAreaByName("IRS M Basic"));
-		WorkPiece rawWorkPiece = new WorkPiece(eu.robojob.irscw.workpiece.WorkPiece.Type.RAW, rawDimensions);
+		WorkPiece rawWorkPiece = new WorkPiece(eu.robojob.millassist.workpiece.WorkPiece.Type.RAW, rawDimensions);
 		robotPickSettings1.setWorkPiece(rawWorkPiece);		
 		// Pick step
 		PickStep pick1 = new PickStep(stackPlatePickSettings, robotPickSettings1);
@@ -213,7 +213,7 @@ public class PropertiesProcessFlowFactory {
 		robotPickSettings3.setSmoothPoint(new Coordinates(cncMilling.getWorkAreaByName("Mazak VRX Main").getClampingByName("Clamping 1").getSmoothFromPoint()));
 		robotPickSettings3.setWorkArea(mainWorkArea);
 		robotPickSettings3.setDoMachineAirblow(true);
-		WorkPiece finishedWorkPiece = new WorkPiece(eu.robojob.irscw.workpiece.WorkPiece.Type.FINISHED, finishedDimensions);
+		WorkPiece finishedWorkPiece = new WorkPiece(eu.robojob.millassist.workpiece.WorkPiece.Type.FINISHED, finishedDimensions);
 		robotPickSettings3.setWorkPiece(finishedWorkPiece);
 		// Pick step
 		PickStep pick2 = new PickStep(cncPickSettings, robotPickSettings3);

@@ -1,6 +1,6 @@
-package eu.robojob.irscw.ui.teach;
+package eu.robojob.millassist.ui.teach;
 
-import eu.robojob.irscw.ui.general.status.StatusPresenter;
+import eu.robojob.millassist.ui.general.status.StatusPresenter;
 
 public class TeachStatusPresenter {
 

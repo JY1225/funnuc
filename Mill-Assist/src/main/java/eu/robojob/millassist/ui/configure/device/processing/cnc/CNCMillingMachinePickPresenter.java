@@ -1,9 +1,9 @@
-package eu.robojob.irscw.ui.configure.device.processing.cnc;
+package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
-import eu.robojob.irscw.external.device.DeviceSettings;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.process.PickStep;
-import eu.robojob.irscw.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMillingMachinePickView, CNCMillingMachineMenuPresenter> {
 

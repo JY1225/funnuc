@@ -1,7 +1,7 @@
-package eu.robojob.irscw.ui.admin.robot;
+package eu.robojob.millassist.ui.admin.robot;
 
-import eu.robojob.irscw.ui.admin.AbstractSubMenuPresenter;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.admin.AbstractSubMenuPresenter;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
 
 public class RobotMenuPresenter extends AbstractSubMenuPresenter<RobotMenuView, RobotAdminPresenter> {
 

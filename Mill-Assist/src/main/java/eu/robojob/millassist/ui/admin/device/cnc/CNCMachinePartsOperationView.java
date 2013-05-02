@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.admin.device.cnc;
+package eu.robojob.millassist.ui.admin.device.cnc;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
@@ -7,9 +7,9 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import eu.robojob.irscw.ui.controls.IntegerTextField;
-import eu.robojob.irscw.ui.controls.TextInputControlListener;
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.ui.controls.IntegerTextField;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.util.Translator;
 
 public class CNCMachinePartsOperationView extends GridPane {
 

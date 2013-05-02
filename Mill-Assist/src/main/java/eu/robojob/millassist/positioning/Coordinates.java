@@ -1,4 +1,4 @@
-package eu.robojob.irscw.positioning;
+package eu.robojob.millassist.positioning;
 
 
 public class Coordinates {

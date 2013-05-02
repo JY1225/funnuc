@@ -1,9 +1,9 @@
-package eu.robojob.irscw.external.device.processing.cnc;
+package eu.robojob.millassist.external.device.processing.cnc;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import eu.robojob.irscw.util.Translator;
+import eu.robojob.millassist.util.Translator;
 
 public class CNCMachineAlarm {
 

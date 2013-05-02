@@ -1,6 +1,6 @@
-package eu.robojob.irscw.external.device.stacking;
+package eu.robojob.millassist.external.device.stacking;
 
-import eu.robojob.irscw.positioning.Coordinates;
+import eu.robojob.millassist.positioning.Coordinates;
 
 public class StudPosition {
 	

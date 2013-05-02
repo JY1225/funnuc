@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.robot;
+package eu.robojob.millassist.external.robot;
 
 
 public class RobotEvent {

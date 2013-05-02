@@ -1,4 +1,4 @@
-package eu.robojob.irscw.ui.automate;
+package eu.robojob.millassist.ui.automate;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -17,9 +17,9 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Translate;
-import eu.robojob.irscw.ui.general.status.StatusView;
-import eu.robojob.irscw.util.Translator;
-import eu.robojob.irscw.util.UIConstants;
+import eu.robojob.millassist.ui.general.status.StatusView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 
 public class AutomateStatusView extends HBox {
 	

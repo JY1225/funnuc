@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.robot;
+package eu.robojob.millassist.external.robot;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -10,10 +10,10 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.irscw.db.external.robot.RobotMapper;
-import eu.robojob.irscw.external.robot.fanuc.FanucRobot;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.process.ProcessFlowManager;
+import eu.robojob.millassist.db.external.robot.RobotMapper;
+import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessFlowManager;
 
 public class RobotManager {
 	

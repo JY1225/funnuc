@@ -1,6 +1,6 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.millassist.external.device;
 
-import eu.robojob.irscw.process.AbstractProcessStep;
+import eu.robojob.millassist.process.AbstractProcessStep;
 
 public abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep> {
 	

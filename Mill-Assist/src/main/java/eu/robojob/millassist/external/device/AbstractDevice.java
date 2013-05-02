@@ -1,15 +1,15 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.millassist.external.device;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import eu.robojob.irscw.external.AbstractServiceProvider;
-import eu.robojob.irscw.external.communication.AbstractCommunicationException;
-import eu.robojob.irscw.positioning.Coordinates;
-import eu.robojob.irscw.process.ProcessFlow;
-import eu.robojob.irscw.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.external.AbstractServiceProvider;
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractDevice extends AbstractServiceProvider {
 	

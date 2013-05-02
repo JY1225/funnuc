@@ -1,4 +1,4 @@
-package eu.robojob.irscw.external.device;
+package eu.robojob.millassist.external.device;
 
 import java.util.ArrayList;
 import java.util.HashSet;
