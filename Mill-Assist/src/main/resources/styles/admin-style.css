@@ -1,7 +1,7 @@
 .admin-main {
 	-fx-background-color: #7b7b7b;
+	-fx-background-insets: 0;
 }
-
 
 .admin-main .content-bottom {
 	-fx-background-insets: 0;
@@ -61,11 +61,11 @@
 }
 
 .admin-bottom-right {
-	-fx-background-insets: 0 0 0 0, 0 0 0 0, 0 0 0 0;
+	-fx-background-insets: 0;
 }
 
 .admin-main .bottom-left, .admin-main .content-bottom {
-	-fx-background-insets: 0 0 0 0;
+	-fx-background-insets: 0;	
 }
 
 .admin-menu.bottom-left, .admin-menu.content-bottom {

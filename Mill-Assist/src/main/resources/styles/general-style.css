@@ -17,12 +17,17 @@
 .content-bottom {
 	/* #6c707e, #585b64); */
 	-fx-background-color: #3d4046, #777a81, #585b64;
+	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;	
+}
+
+.bottom-right {
+	-fx-background-color: #3d4046, #777a81, linear-gradient(#67696f 0%, #616369 100%);
 	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
 }
 
-.bottom-right, .admin-bottom-right {
-	-fx-background-color: #3d4046, #777a81, linear-gradient(#67696f 0%, #616369 100%);
-	-fx-background-insets: 0 0 0 0, 1 0 0 0, 2 0 0 0;
+.admin-bottom-right {
+	-fx-background-color: linear-gradient(#67696f 0%, #616369 100%);
+	-fx-background-insets: 0;
 }
 
 .left-menu-button {

@@ -38,6 +38,7 @@ public class AdminView extends StackPane {
 	private void build() {
 		setPrefSize(WIDTH, HEIGHT);
 		getStyleClass().add(CSS_CLASS_MAIN);
+		getStyleClass().add("admin-main");
 		hBoxMain = new HBox();
 		hBoxMain.setPrefSize(WIDTH, HEIGHT);
 		this.getChildren().add(hBoxMain);
