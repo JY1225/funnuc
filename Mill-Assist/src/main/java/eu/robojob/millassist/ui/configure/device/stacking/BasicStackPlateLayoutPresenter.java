@@ -15,6 +15,7 @@ public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicS
 	public BasicStackPlateLayoutPresenter(final BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter> view, final BasicStackPlate basicStackPlate, final ClampingManner clampingType) {
 		super(view);
 		this.basicStackPlate = basicStackPlate;
+		basicStackPlate.addListener(this);
 		view.setBasicStackPlate(basicStackPlate);
 		view.setClampingType(clampingType);
 		view.build();

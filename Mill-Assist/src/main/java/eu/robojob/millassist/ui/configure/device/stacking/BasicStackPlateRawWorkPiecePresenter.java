@@ -84,6 +84,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		} catch (IncorrectWorkPieceDataException e) {
 			getView().showNotification(e.getLocalizedMessage());
 		}
+		((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
 	}
 	
 	public void changedOrientation(final WorkPieceOrientation orientation) {
@@ -92,6 +93,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		recalculate();
 		getView().refresh();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+		((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
 	}
 
 	@Override
@@ -109,8 +111,10 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
 		deviceSettings.setAmount(plate.getLayout().getStackingPositions().size());
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		recalculate();
 		getView().refresh();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
 	}
 
 }

@@ -171,6 +171,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		} else {
 			throw new IllegalArgumentException("Unknown device settings");
 		}
+		notifyLayoutChanged();
 	}
 
 	@Override
@@ -187,6 +188,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		} catch (IncorrectWorkPieceDataException e) {
 			logger.error(e);
 		}
+		notifyLayoutChanged();
 	}
 	
 	@Override
@@ -243,6 +245,10 @@ public class BasicStackPlate extends AbstractStackingDevice {
 				layout.getStackingPositions().get(i).setWorkPiece(finishedWorkPiece);
 			} 
 		}
+		notifyLayoutChanged();
+	}
+	
+	public void notifyLayoutChanged() {
 		for (BasicStackPlateListener listener : listeners) {
 			listener.layoutChanged();
 		}
@@ -285,5 +291,6 @@ public class BasicStackPlate extends AbstractStackingDevice {
 				}
 			}
 		}
+		notifyLayoutChanged();
 	}
 }

@@ -33,7 +33,6 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 	public void configureWorkPiece() {
 		getView().setConfigureWorkPieceActive();
 		// check if it's a pick (raw workpiece) or put (finished workpiece)	
-		//TODO in the future: add 'partly-finished workpieces'
 		getParent().setBottomRightView(basicStackPlateWorkPiecePresenter.getView());
 	}
 

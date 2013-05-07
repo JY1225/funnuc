@@ -282,7 +282,6 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		setDimensions(settings.getRawWorkPiece().getDimensions());
 		itxtWorkPieceAmount.setText("" + settings.getAmount());
 		setOrientation(settings.getOrientation());
-		getPresenter().recalculate();
 	}
 	
 	private void setOrientation(final WorkPieceOrientation orientation) {
