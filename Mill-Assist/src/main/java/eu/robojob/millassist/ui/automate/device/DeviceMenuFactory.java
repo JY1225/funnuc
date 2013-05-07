@@ -55,4 +55,8 @@ public class DeviceMenuFactory {
 		return basicStackPlateRefillPresenter;
 	}
 	
+	public void clearBuffer() {
+		buffer.unregisterListeners();
+		buffer = null;
+	}
 }
