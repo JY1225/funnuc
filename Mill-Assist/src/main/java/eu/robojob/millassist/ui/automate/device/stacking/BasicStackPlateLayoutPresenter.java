@@ -41,4 +41,9 @@ public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicS
 		});
 	}
 
+	@Override
+	public void unregister() {
+		stackPlate.removeListener(this);
+	}
+
 }

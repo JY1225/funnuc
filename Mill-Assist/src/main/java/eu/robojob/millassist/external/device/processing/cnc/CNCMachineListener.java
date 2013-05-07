@@ -9,4 +9,5 @@ public interface CNCMachineListener {
 	void cNCMachineStatusChanged(CNCMachineEvent event);
 	void cNCMachineAlarmsOccured(CNCMachineAlarmsOccuredEvent event);
 	
+	void unregister();
 }

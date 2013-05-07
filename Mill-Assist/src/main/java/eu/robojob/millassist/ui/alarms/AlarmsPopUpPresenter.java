@@ -28,6 +28,8 @@ import eu.robojob.millassist.util.Translator;
 public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView> implements CNCMachineListener, RobotListener {
 
 	private ProcessFlow processFlow;
+	private Set<AbstractCNCMachine> cncMachines;
+	private Set<AbstractRobot> robots;
 	
 	private static final String NOT_CONNECTED_TO = "AlarmsPopUpPresenter.notConnectedTo";
 	private static Logger logger = LogManager.getLogger(AlarmsPopUpPresenter.class.getName());
@@ -36,11 +38,15 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 			final DeviceManager deviceMgr, final RobotManager robotMgr) {
 		super(view);
 		this.processFlow = processFlow;
+		cncMachines = new HashSet<AbstractCNCMachine>();
+		robots = new HashSet<AbstractRobot>();
 		for (AbstractCNCMachine cncMachine: deviceMgr.getCNCMachines()) {
 			cncMachine.addListener(this);
+			cncMachines.add(cncMachine);
 		}
 		for (AbstractRobot robot: robotMgr.getRobots()) {
 			robot.addListener(this);
+			robots.add(robot);
 		}
 		updateAlarms();
 	}
@@ -132,6 +138,18 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 				updateAlarms();
 			}
 		});
+	}
+
+	@Override
+	public void unregister() {
+		for (AbstractCNCMachine cncMachine : cncMachines) {
+			cncMachine.removeListener(this);
+		}
+		for (AbstractRobot robot : robots) {
+			robot.removeListener(this);
+		}
+		cncMachines.clear();
+		robots.clear();
 	}
 
 }

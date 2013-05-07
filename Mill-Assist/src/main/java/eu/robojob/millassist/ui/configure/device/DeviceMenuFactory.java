@@ -6,8 +6,11 @@ import java.util.Map;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
 import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlateListener;
 import eu.robojob.millassist.external.device.stacking.BasicStackPlateSettings;
+import eu.robojob.millassist.external.robot.RobotListener;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.ui.configure.AbstractMenuPresenter;
@@ -147,6 +150,18 @@ public class DeviceMenuFactory {
 	}
 	
 	public void clearBuffer() {
+		for (AbstractMenuPresenter<?> presenter : presentersBuffer.values()) {
+			if (presenter instanceof BasicStackPlateListener) {
+				((BasicStackPlateListener) presenter).unregister();
+			}
+			if (presenter instanceof CNCMachineListener) {
+				((CNCMachineListener) presenter).unregister();
+			}
+			if (presenter instanceof RobotListener) {
+				((RobotListener) presenter).unregister();
+			}
+			
+		}
 		presentersBuffer.clear();
 	}
 }

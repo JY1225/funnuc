@@ -138,4 +138,9 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 
 	@Override
 	public void exceptionOccured(final ExceptionOccuredEvent e) { }
+
+	@Override
+	public void unregister() {
+		pickStep.getProcessFlow().removeListener(this);
+	}
 }

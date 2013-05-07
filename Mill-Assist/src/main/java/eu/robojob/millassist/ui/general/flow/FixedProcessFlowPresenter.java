@@ -145,4 +145,9 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) { }
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) { }
 
+	@Override
+	public void unregister() {
+		processFlowAdapter.getProcessFlow().removeListener(this);
+	}
+
 }

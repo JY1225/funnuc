@@ -260,4 +260,13 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 			}
 		});
 	}
+	
+	@Override public void unregister() {
+		for (AbstractCNCMachine machine : machines.keySet()) {
+			machine.removeListener(this);
+		}
+		for (AbstractRobot robot : robots.keySet()) {
+			robot.removeListener(this);
+		}
+	}
 }

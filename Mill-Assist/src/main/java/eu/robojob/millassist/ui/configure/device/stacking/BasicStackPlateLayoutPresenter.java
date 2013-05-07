@@ -1,11 +1,14 @@
 package eu.robojob.millassist.ui.configure.device.stacking;
 
+import javafx.application.Platform;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlateListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.device.stacking.BasicStackPlateLayoutView;
 
-public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter>, BasicStackPlateMenuPresenter> {
+public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter>, BasicStackPlateMenuPresenter> 
+	implements BasicStackPlateListener {
 
 	private BasicStackPlate basicStackPlate;
 	
@@ -25,5 +28,20 @@ public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicS
 	@Override
 	public boolean isConfigured() {
 		return ((basicStackPlate.getLayout().getStackingPositions().size() > 0) && (basicStackPlate.getLayout().getStackingPositions().get(0).getWorkPiece() != null));
+	}
+	
+	@Override
+	public void layoutChanged() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				getView().build();
+			}
+		});
+	}
+
+	@Override
+	public void unregister() {
+		basicStackPlate.removeListener(this);
 	}
 }

@@ -17,7 +17,6 @@
 .form-button:pressed, .form-button-active {
 	-fx-background-color: #8a8c90, #3a3d42, #36383d, #4e5055;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 3 2 3 2;
-	-fx-effect: innershadow(two-pass-box, #28292b, 8, 0.0, 0, 1);
 }
 
 .form-button:disabled {
@@ -176,26 +175,18 @@
 
 .normal-stud {
 	-fx-fill: #00eaff;
-	-fx-stroke: #10a0ad;
-	-fx-stroke-width: 1px;
 }
 
 .horizontal-stud {
 	-fx-fill: #f6ff00;
-	-fx-stroke: #a3a80e;
-	-fx-stroke-width: 1px;
 }
 
 .corner-shape {
 	-fx-fill: #8754cf;
-	-fx-stroke: #614c87;
-	-fx-stroke-width: 1px;
 }
 
 .workpiece {
 	-fx-fill: #f27e17;
-	-fx-stroke-width: 1px;
-	-fx-stroke: #ad5609;
 }
 
 .workpiece-mark {
@@ -208,8 +199,6 @@
 
 .finished {
 	-fx-fill: #6fc955;
-	-fx-stroke-width: 1px;
-	-fx-stroke: #205c0f;
 }
 
 .root {
@@ -219,11 +208,6 @@
 .line {
 	-fx-stroke-width: 2px;
 	-fx-stroke: #9e9e9e;
-}
-
-.corner-stud-lines {
-	-fx-stroke: red;
-	-fx-stroke-line-cap: butt;
 }
 
 .iconflow-selector {
@@ -307,7 +291,6 @@
 	-fx-background-radius: 0px;
 	-fx-background-color: #45474c, #3a3d42, linear-gradient(#75767d 0%, #5f6167 50%, #5b5e64 50%, #5f6167 100%);
 	-fx-background-insets: 0, 0 0 1 0, 0 0 2 0;
-	-fx-effect: dropshadow(gaussian, black, 10, 0.0, 5, 5);
 }
 
 .table .column-header-background .column-header {

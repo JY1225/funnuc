@@ -77,4 +77,9 @@ public class RobotConfigurePresenter extends AbstractFormPresenter<RobotConfigur
 	@Override
 	public void robotSpeedChanged(final RobotEvent event) { }
 
+	@Override
+	public void unregister() {
+		robot.removeListener(this);
+	}
+
 }

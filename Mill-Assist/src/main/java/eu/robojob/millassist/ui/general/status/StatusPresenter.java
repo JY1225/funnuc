@@ -147,4 +147,9 @@ public class StatusPresenter implements ProcessFlowListener {
 			}
 		});
 	}
+
+	@Override
+	public void unregister() {
+		//TODO implement!
+	}
 }

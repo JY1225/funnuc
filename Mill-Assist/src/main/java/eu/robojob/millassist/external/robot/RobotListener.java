@@ -11,4 +11,6 @@ public interface RobotListener {
 	void robotAlarmsOccured(RobotAlarmsOccuredEvent event);
 	void robotSpeedChanged(RobotEvent event);
 	
+	void unregister();
+	
 }

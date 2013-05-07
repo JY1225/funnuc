@@ -195,8 +195,12 @@ public class TransportButton extends StackPane {
 	
 	public void setClickable(final boolean clickable) {
 		shapeRegion.getStyleClass().remove(CSS_CLASS_UNCLICKABLE);
+		hboxPauseLeft.getStyleClass().remove(CSS_CLASS_UNCLICKABLE);
+		hboxPauseRight.getStyleClass().remove(CSS_CLASS_UNCLICKABLE);
 		if (!clickable) {
 			shapeRegion.getStyleClass().add(CSS_CLASS_UNCLICKABLE);
+			hboxPauseLeft.getStyleClass().add(CSS_CLASS_UNCLICKABLE);
+			hboxPauseRight.getStyleClass().add(CSS_CLASS_UNCLICKABLE);
 		}
 	}
 	

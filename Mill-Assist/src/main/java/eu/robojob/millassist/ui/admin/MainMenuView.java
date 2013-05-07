@@ -2,6 +2,7 @@ package eu.robojob.millassist.ui.admin;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import eu.robojob.millassist.ui.general.AbstractMenuView;
 
 public class MainMenuView extends AbstractMenuView<MainMenuPresenter> {
@@ -16,6 +17,7 @@ public class MainMenuView extends AbstractMenuView<MainMenuPresenter> {
 
 	@Override
 	protected void build() {
+		setPadding(new Insets(0, 1, 0, 0));
 		int index = 0;
 		setPrefWidth(50);
 		setMinWidth(50);

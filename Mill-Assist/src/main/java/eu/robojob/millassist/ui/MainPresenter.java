@@ -182,5 +182,10 @@ public class MainPresenter implements ProcessFlowListener {
  			refreshStatus();
  		}
 	}
+
+	@Override
+	public void unregister() {
+		process.removeListener(this);
+	}
 	
 }

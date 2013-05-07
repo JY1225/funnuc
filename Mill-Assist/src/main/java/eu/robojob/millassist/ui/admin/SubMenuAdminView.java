@@ -1,8 +1,10 @@
 package eu.robojob.millassist.ui.admin;
 
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import eu.robojob.millassist.ui.admin.robot.RobotAdminPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -43,6 +45,7 @@ public class SubMenuAdminView extends HBox {
 	public void setMenuView(final Node menuView) {
 		this.menuView.getChildren().clear();
 		this.menuView.getChildren().add(menuView);
+		((Region) menuView).setPadding(new Insets(0, 1, 0, 0));
 	}
 	
 	public void setContentView(final AbstractFormView<?> contentView) {

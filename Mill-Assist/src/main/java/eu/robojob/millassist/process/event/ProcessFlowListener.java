@@ -9,4 +9,5 @@ public interface ProcessFlowListener {
 	void finishedAmountChanged(FinishedAmountChangedEvent e);
 	void exceptionOccured(ExceptionOccuredEvent e);
 	
+	void unregister();
 }

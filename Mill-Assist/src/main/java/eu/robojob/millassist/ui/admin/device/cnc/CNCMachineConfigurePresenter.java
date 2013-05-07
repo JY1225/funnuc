@@ -90,4 +90,9 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 
 	@Override public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) { }
 
+	@Override
+	public void unregister() {
+		cncMachine.removeListener(this);
+	}
+
 }

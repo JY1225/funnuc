@@ -68,6 +68,8 @@ public class MenuBarView extends ToolBar {
 	
 	protected void buildView() {
 		
+		this.getStyleClass().add("toolbar");
+		
 		selectedBtn = null;
 		selectedPopupBtn = null;		
 		

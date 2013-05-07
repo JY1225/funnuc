@@ -15,6 +15,8 @@ public class DeviceMenuFactory {
 	
 	private ProcessFlow processFlow;		
 	
+	private BasicStackPlateMenuPresenter buffer;
+	
 	public DeviceMenuFactory(final ProcessFlow processFlow) {
 		this.processFlow = processFlow;
 	}
@@ -23,7 +25,11 @@ public class DeviceMenuFactory {
 		AbstractMenuPresenter<?> menuPresenter;
 		switch(deviceInfo.getType()) {
 			case BASIC_STACK_PLATE:
-				menuPresenter = getBasicStackPlateMenuPresenter(deviceInfo);
+				if (buffer != null) {
+					menuPresenter = getBasicStackPlateMenuPresenter(deviceInfo);
+				} else {
+					menuPresenter = buffer;
+				}
 				break;
 			default:
 				menuPresenter = null;
@@ -48,4 +54,5 @@ public class DeviceMenuFactory {
 		BasicStackPlateRefillPresenter basicStackPlateRefillPresenter = new BasicStackPlateRefillPresenter(view, (BasicStackPlate) deviceInfo.getDevice(), processFlow);
 		return basicStackPlateRefillPresenter;
 	}
+	
 }

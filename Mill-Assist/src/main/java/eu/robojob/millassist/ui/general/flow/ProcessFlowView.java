@@ -152,7 +152,7 @@ public class ProcessFlowView extends GridPane {
 		});
 		this.add(transport, column, row);
 		transport.toBack();
-		GridPane.setMargin(transport, new Insets(0, -1, 0, -1));
+		GridPane.setMargin(transport, new Insets(0, -2, 0, -2));
 		transportButtons.add(transport);
 		HBox progressHBox = new HBox();
 		this.add(progressHBox, column, (1 + row));

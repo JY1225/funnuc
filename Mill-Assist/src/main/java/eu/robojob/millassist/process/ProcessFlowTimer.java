@@ -263,4 +263,9 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) { }
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) {	 }
 
+	@Override
+	public void unregister() {
+		processFlow.removeListener(this);
+	}
+
 }

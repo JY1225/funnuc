@@ -3,6 +3,9 @@ package eu.robojob.millassist.ui.configure.transport;
 import java.util.HashMap;
 import java.util.Map;
 
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlateListener;
+import eu.robojob.millassist.external.robot.RobotListener;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.configure.AbstractMenuPresenter;
 import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
@@ -47,6 +50,18 @@ public class TransportMenuFactory {
 	}
 	
 	public void clearBuffer() {
+		for (AbstractMenuPresenter<?> presenter : presentersBuffer.values()) {
+			if (presenter instanceof BasicStackPlateListener) {
+				((BasicStackPlateListener) presenter).unregister();
+			}
+			if (presenter instanceof CNCMachineListener) {
+				((CNCMachineListener) presenter).unregister();
+			}
+			if (presenter instanceof RobotListener) {
+				((RobotListener) presenter).unregister();
+			}
+			
+		}
 		presentersBuffer.clear();
 	}
 }

@@ -103,4 +103,9 @@ public class AutomateStatusPresenter implements ProcessFlowListener {
 	
 	@Override public void statusChanged(final StatusChangedEvent e) { }
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) { }
+
+	@Override
+	public void unregister() {
+		//TODO implement!
+	}
 }

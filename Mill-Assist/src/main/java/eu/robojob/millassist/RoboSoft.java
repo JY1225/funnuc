@@ -95,14 +95,15 @@ public class RoboSoft extends Application {
 							if (!Boolean.parseBoolean(properties.getProperty("mouse-visible"))) {
 								scene.setCursor(Cursor.NONE);
 							}
-							scene.getStylesheets().add("styles/general-style.css");
-							scene.getStylesheets().add("styles/header-style.css");
+							
 							scene.getStylesheets().add("styles/keyboard-style.css");
 							scene.getStylesheets().add("styles/configure-style.css");
-							scene.getStylesheets().add("styles/processflow-style.css");
 							scene.getStylesheets().add("styles/teach-style.css");
 							scene.getStylesheets().add("styles/automate-style.css");
 							scene.getStylesheets().add("styles/admin-style.css");
+							scene.getStylesheets().add("styles/general-style.css");
+							scene.getStylesheets().add("styles/header-style.css");
+							scene.getStylesheets().add("styles/processflow-style.css");
 							stage.setScene(scene);						
 						}
 					});

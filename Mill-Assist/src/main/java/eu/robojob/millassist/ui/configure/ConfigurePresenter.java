@@ -169,6 +169,10 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		bottomRight.refresh();
 		view.setBottomRight(bottomRight);
 	}
+	
+	public void setBottomRightViewNoRefresh(final AbstractFormView<?> bottomRight) {
+		view.setBottomRight(bottomRight);
+	}
 
 	public void textFieldFocussed(final TextInputControl textInputControl) {
 		if (textInputControl instanceof FullTextField) {

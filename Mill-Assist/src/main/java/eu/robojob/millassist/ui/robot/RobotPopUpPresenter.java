@@ -18,12 +18,14 @@ import eu.robojob.millassist.ui.general.AbstractPopUpPresenter;
 public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> implements RobotListener, ProcessFlowListener {
 
 	private FanucRobot robot;
+	private ProcessFlow processFlow;
 	private boolean connected;
 	
 	public RobotPopUpPresenter(final RobotPopUpView view, final FanucRobot robot, final ProcessFlow processFlow) {
 		super(view);
 		this.robot = robot;
 		connected = false;
+		this.processFlow = processFlow;
 		processFlow.addListener(this);
 		robot.addListener(this);
 		if (robot.isConnected()) {
@@ -145,5 +147,11 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	@Override public void robotZRestChanged(final RobotEvent event) { }
 	@Override
 	public void exceptionOccured(final ExceptionOccuredEvent e) { }
+
+	@Override
+	public void unregister() {
+		robot.removeListener(this);
+		processFlow.removeListener(this);
+	}
 	
 }

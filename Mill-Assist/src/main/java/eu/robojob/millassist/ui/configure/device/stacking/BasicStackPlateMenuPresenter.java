@@ -40,7 +40,7 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 	@Override
 	public void showLayout() {
 		getView().setViewLayoutActive();
-		getParent().setBottomRightView(basicStackPlateLayoutPresenter.getView());
+		getParent().setBottomRightViewNoRefresh(basicStackPlateLayoutPresenter.getView());
 	}
 
 	@Override

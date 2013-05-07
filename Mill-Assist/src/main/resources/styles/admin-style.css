@@ -2,8 +2,9 @@
 	-fx-background-color: #7b7b7b;
 }
 
-.admin-main .left-menu {
-	-fx-background-insets: 0 0 0 0, 0 1 0 0, 0 1 0 0;
+
+.admin-main .content-bottom {
+	-fx-background-insets: 0;
 }
 
 .check-box, .radio-button {
@@ -63,23 +64,17 @@
 	-fx-background-insets: 0 0 0 0, 0 0 0 0, 0 0 0 0;
 }
 
-.admin-main .bottom-left, .admin-main .left-menu, .admin-main .content-bottom {
+.admin-main .bottom-left, .admin-main .content-bottom {
 	-fx-background-insets: 0 0 0 0;
 }
 
-.admin-menu.bottom-left, .admin-menu.left-menu, .admin-menu.content-bottom {
+.admin-menu.bottom-left, .admin-menu.content-bottom {
 	-fx-background-color: #52555c;
-	-fx-effect: innershadow(two-pass-box, rgba(31, 35, 40, 0.45), 5, 0.0, -1, 1);
 	-fx-background-insets: 0;
 }
 
-.main-admin-menu.bottom-left, .main-admin-menu.left-menu, .main-admin-menu.content-bottom { 
-	-fx-effect: innershadow(two-pass-box, rgba(31, 35, 40, 0.45), 1, 0.0, -1, 1);
-}
-
 .admin-menu .left-menu-button:pressed, .admin-menu .menu-item-selected {
-	-fx-background-color: #3c4147, #292d32, #3c4147, #2a2d31;
-	-fx-effect: innershadow(two-pass-box, #070707, 10, 0.0, 0, 2);
+	-fx-background-color: #3c4147, #2a2d31;
 }
 
 .delete-btn {
@@ -89,7 +84,6 @@
 .delete-btn:pressed, .delete-btn.form-button-active {
 	-fx-background-color: #8a8c90, #6c1811, #832018, #941f16;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 3 2 3 2;
-	-fx-effect: innershadow(two-pass-box, #3a0d09, 8, 0.0, 0, 1);
 }
 
 .save-btn {
@@ -100,7 +94,6 @@
 .save-btn:pressed, .save-btn.form-button-active {
 	-fx-background-color: #8a8c90, #3a3d42, #36383d, #4e5055;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 3 2 3 2;
-	-fx-effect: innershadow(two-pass-box, #28292b, 8, 0.0, 0, 1);
 }
 
 .warning-config {
