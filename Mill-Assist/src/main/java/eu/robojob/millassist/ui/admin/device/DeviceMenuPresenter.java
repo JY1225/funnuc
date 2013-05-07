@@ -75,4 +75,9 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		return false;
 	}
 
+	@Override
+	public void unregisterListeners() {
+		cncMachineConfigurePresenter.unregister();
+	}
+
 }

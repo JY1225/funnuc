@@ -60,4 +60,9 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 		return cncMillingMachineConfigurePresenter.isConfigured() && cncMillingMachinePickPresenter.isConfigured() && cncMillingMachinePutPresenter.isConfigured() && cncMillingMachineWorkPiecePresenter.isConfigured();
 	}
 
+	@Override
+	public void unregisterListeners() {
+		cncMillingMachineWorkPiecePresenter.unregister();
+	}
+
 }

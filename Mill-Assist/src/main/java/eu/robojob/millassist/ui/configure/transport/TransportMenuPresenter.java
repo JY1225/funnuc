@@ -53,4 +53,7 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 	public boolean isConfigured() {
 		return transportGripperPresenter.isConfigured() && transportInterventionPresenter.isConfigured();
 	}
+
+	@Override
+	public void unregisterListeners() { }
 }

@@ -49,4 +49,9 @@ public class RobotMenuPresenter extends AbstractSubMenuPresenter<RobotMenuView, 
 		return false;
 	}
 
+	@Override
+	public void unregisterListeners() {
+		configurePresenter.unregister();
+	}
+
 }

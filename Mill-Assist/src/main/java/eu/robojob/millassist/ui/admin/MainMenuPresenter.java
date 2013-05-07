@@ -61,4 +61,9 @@ public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 		getParent().setContentNode(deviceAdminPresenter.getView());
 	}
 
+	@Override
+	public void unregisterListeners() {
+		//TODO pass to individual admin presenters?
+	}
+
 }

@@ -22,4 +22,6 @@ public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> {
 	public abstract void openFirst();
 		
 	public abstract void setParent(final ContentPresenter parent);
+	
+	public abstract void unregisterListeners();
 }

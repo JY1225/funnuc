@@ -90,4 +90,7 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 		return false;
 	}
 
+	@Override
+	public void unregisterListeners() { }
+
 }

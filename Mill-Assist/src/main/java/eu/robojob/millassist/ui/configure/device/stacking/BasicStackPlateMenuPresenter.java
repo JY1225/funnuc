@@ -65,4 +65,9 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 		}
 	}
 
+	@Override
+	public void unregisterListeners() {
+		basicStackPlateLayoutPresenter.unregister();
+	}
+
 }

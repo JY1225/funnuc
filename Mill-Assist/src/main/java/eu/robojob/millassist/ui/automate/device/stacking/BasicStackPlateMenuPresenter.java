@@ -43,4 +43,9 @@ public class BasicStackPlateMenuPresenter extends AbstractMenuPresenter<BasicSta
 		getView().setRefillActive();
 	}
 
+	@Override
+	public void unregisterListeners() {
+		layoutPresenter.unregister();
+	}
+
 }

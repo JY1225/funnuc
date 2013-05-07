@@ -48,4 +48,7 @@ public class PrageDeviceMenuPresenter extends AbstractDeviceMenuPresenter {
 		configureDevice();
 	}
 
+	@Override
+	public void unregisterListeners() { }
+
 }
