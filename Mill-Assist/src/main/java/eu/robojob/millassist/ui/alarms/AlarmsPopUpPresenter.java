@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
@@ -76,6 +77,34 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 			} else {
 				for (RobotAlarm alarm : robot.getAlarms()) {
 					alarmStrings.add(alarm.getLocalizedMessage());
+				}
+			}
+		}
+		if (alarmStrings.size() > 0) {
+			// alarms, so indicate this!
+			for (AbstractDevice device : processFlow.getDevices()) {
+				if (device instanceof AbstractCNCMachine) {
+					if (device.isConnected()) {
+						try {
+							((AbstractCNCMachine) device).indicateOperatorRequested(true);
+						} catch (AbstractCommunicationException | InterruptedException e) {
+							e.printStackTrace();
+							logger.error(e);
+						}
+					}
+				}
+			}
+		} else {
+			for (AbstractDevice device : processFlow.getDevices()) {
+				if (device instanceof AbstractCNCMachine) {
+					if (device.isConnected()) {
+						try {
+							((AbstractCNCMachine) device).indicateOperatorRequested(false);
+						} catch (AbstractCommunicationException | InterruptedException e) {
+							e.printStackTrace();
+							logger.error(e);
+						}
+					}
 				}
 			}
 		}

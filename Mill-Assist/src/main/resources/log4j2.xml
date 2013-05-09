@@ -2,19 +2,23 @@
 <configuration>
 
   <appenders>
-    <RollingFile name="LOGFILE" fileName="C:/RoboJob/logs/logfile.log" append="true" filePattern="C:/RoboJob/logs/$${date:yyyy-MM}/logfile-%d{MM-dd-yyyy}-%i.log">
+    <RollingFile name="LOGFILE" fileName="./logs/log/logfile.log" append="true" filePattern="./logs/log/$${date:yyyy-MM}/logfile-%d{MM-dd-yyyy}-%i.log">
 	  <PatternLayout>
         <pattern>%-7p %-25d %-30t %-5L %-70c - %m%n</pattern>
       </PatternLayout>     
       <Policies>
         <TimeBasedTriggeringPolicy />
-        <SizeBasedTriggeringPolicy size="250 MB"/>
+        <SizeBasedTriggeringPolicy size="25 MB"/>
       </Policies>
       <DefaultRolloverStrategy max="20"/>
     </RollingFile>
-    <File name="XML" fileName="C:/RoboJob/logs/xml/logFile.xml">
+    <RollingFile name="XML" fileName="./logs/xml/logFile.xml" append="true" filePattern="./logs/xml/$${date:yyyy-MM}/logfile-%d{MM-dd-yyyy}-%i.xml">
       <XMLLayout locationInfo="true"/>
-    </File>
+       <Policies>
+        <TimeBasedTriggeringPolicy />
+        <SizeBasedTriggeringPolicy size="25 MB"/>
+      </Policies>
+    </RollingFile>
     <Console name="STDOUT">
       <PatternLayout>
         <pattern>%-7p %-25d %-30t %-5L %-70c - %m%n</pattern>
