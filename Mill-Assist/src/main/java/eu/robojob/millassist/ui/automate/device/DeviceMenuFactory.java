@@ -25,7 +25,7 @@ public class DeviceMenuFactory {
 		AbstractMenuPresenter<?> menuPresenter;
 		switch(deviceInfo.getType()) {
 			case BASIC_STACK_PLATE:
-				if (buffer != null) {
+				if (buffer == null) {
 					menuPresenter = getBasicStackPlateMenuPresenter(deviceInfo);
 				} else {
 					menuPresenter = buffer;

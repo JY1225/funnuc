@@ -372,5 +372,6 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 
 	public abstract RobotPickSettings getDefaultPickSettings();
 	public abstract RobotPutSettings getDefaultPutSettings();
+	public abstract float getMaxWorkPieceWeight();
 	
 }

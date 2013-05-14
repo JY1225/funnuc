@@ -42,6 +42,7 @@ public class FanucRobot extends AbstractRobot {
 	private static final int ASK_POSITION_TIMEOUT = 50000;
 	private static final int ASK_STATUS_TIMEOUT = 5 * 1000;
 	private static final int TEACH_TIMEOUT = 10 * 60 * 1000;
+	private static final float MAX_WORKPIECE_WEIGHT = 15;
 	
 	private static final int WRITE_REGISTER_TIMEOUT = 5000;
 	private static final int IOACTION_TIMEOUT = 2 * 60 * 1000;
@@ -648,6 +649,11 @@ public class FanucRobot extends AbstractRobot {
 
 	public RobotSocketCommunication getRobotSocketCommunication() {
 		return this.fanucRobotCommunication;
+	}
+
+	@Override
+	public float getMaxWorkPieceWeight() {
+		return MAX_WORKPIECE_WEIGHT;
 	}
 	
 }

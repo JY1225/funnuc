@@ -341,7 +341,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		btnCalc = createButton(Translator.getTranslation(CALC), UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				// TODO Auto-generated method stub
+				getPresenter().recalcWeight();
 			}
 		});
 		add(btnCalc, column++, row);

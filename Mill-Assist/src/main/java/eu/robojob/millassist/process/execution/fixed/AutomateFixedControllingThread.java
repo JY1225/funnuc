@@ -7,6 +7,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
@@ -57,9 +58,13 @@ public class AutomateFixedControllingThread extends Thread {
 	private void checkIfConcurrentExecutionIsPossible() {
 		// this is possible if the CNC machine is used only once, and the gripper used to put the piece in the 
 		// CNC machine is not the same as the gripper used to pick the piece from the CNC machine
+		PickStep pickFromStacker = null;
 		PickStep pickFromMachine = null;
 		PutStep putToMachine = null;
 		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
+			if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof BasicStackPlate) {
+				pickFromStacker = (PickStep) step;
+			}
 			if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
 				pickFromMachine = (PickStep) step;
 			}
@@ -67,11 +72,16 @@ public class AutomateFixedControllingThread extends Thread {
 				putToMachine = (PutStep) step;
 			}
 		}
-		if (pickFromMachine.getRobotSettings().getGripperHead().equals(putToMachine.getRobotSettings().getGripperHead()) && 
+		float totalWorkPieceWeight = pickFromStacker.getRobotSettings().getWorkPiece().getWeight() + pickFromMachine.getRobotSettings().getWorkPiece().getWeight();
+		if (totalWorkPieceWeight < pickFromMachine.getRobot().getMaxWorkPieceWeight()) {
+			if (pickFromMachine.getRobotSettings().getGripperHead().equals(putToMachine.getRobotSettings().getGripperHead()) && 
 				processFlow.getFinishedAmount() < processFlow.getTotalAmount() - 1) {
-			isConcurrentExecutionPossible = false; 
+				isConcurrentExecutionPossible = false; 
+			} else {
+				isConcurrentExecutionPossible = true;
+			}
 		} else {
-			isConcurrentExecutionPossible = true;
+			isConcurrentExecutionPossible = false;
 		}
 		logger.info("Concurrent execution possible: " + isConcurrentExecutionPossible);
 	}
