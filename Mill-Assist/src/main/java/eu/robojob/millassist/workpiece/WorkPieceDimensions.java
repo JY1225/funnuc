@@ -47,6 +47,10 @@ public class WorkPieceDimensions {
 		return knownShape;
 	}
 
+	public float getVolume() {
+		return width*height*length;
+	}
+	
 	public void setKnownShape(final boolean knownShape) {
 		this.knownShape = knownShape;
 	}

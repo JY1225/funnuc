@@ -3,6 +3,7 @@ package eu.robojob.millassist.external.device.stacking;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
@@ -16,7 +17,7 @@ public class BasicStackPlateSettings extends DeviceSettings {
 	
 	public BasicStackPlateSettings(final WorkPieceDimensions dimensions, final WorkPieceDimensions finishedDimensions,
 			final WorkPieceOrientation orientation, final int amount) {
-		this(new WorkPiece(WorkPiece.Type.RAW, dimensions), new WorkPiece(WorkPiece.Type.FINISHED, finishedDimensions), orientation, amount);
+		this(new WorkPiece(WorkPiece.Type.RAW, dimensions, Material.OTHER, 0.0f), new WorkPiece(WorkPiece.Type.FINISHED, finishedDimensions, Material.OTHER, 0.0f), orientation, amount);
 	}
 	
 	public BasicStackPlateSettings(final WorkPiece workPiece, final WorkPiece finishedWorkPiece, final WorkPieceOrientation orientation, final int amount) {
@@ -32,7 +33,7 @@ public class BasicStackPlateSettings extends DeviceSettings {
 
 	public void setRawWorkPieceDimensions(final WorkPieceDimensions dimensions) {
 		if (rawWorkPiece == null) {
-			rawWorkPiece = new WorkPiece(Type.RAW, dimensions);
+			rawWorkPiece = new WorkPiece(Type.RAW, dimensions, null, Float.NaN);
 		} else {
 			this.rawWorkPiece.setDimensions(dimensions);
 		}
@@ -40,7 +41,7 @@ public class BasicStackPlateSettings extends DeviceSettings {
 	
 	public void setFinishedWorkPieceDimensions(final WorkPieceDimensions dimensions) {
 		if (finishedWorkPiece == null) {
-			finishedWorkPiece = new WorkPiece(Type.FINISHED, dimensions);
+			finishedWorkPiece = new WorkPiece(Type.FINISHED, dimensions, null, Float.NaN);
 		} else {
 			this.finishedWorkPiece.setDimensions(dimensions);
 		}

@@ -49,7 +49,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public BasicStackPlate(final String name, final Set<Zone> zones, final BasicStackPlateLayout layout) {
 		super(name, zones);
 		this.layout = layout;
-		this.rawWorkPiece = new WorkPiece(Type.RAW, new WorkPieceDimensions());
+		this.rawWorkPiece = new WorkPiece(Type.RAW, new WorkPieceDimensions(), null, Float.NaN);
 		this.currentPickLocations = new ArrayList<StackingPosition>();
 		this.listeners = new ArrayList<BasicStackPlateListener>();
 	}
@@ -109,7 +109,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public synchronized Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
-		finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, workPieceDimensions);
+		finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, workPieceDimensions, null, Float.NaN);
 		Coordinates c = new Coordinates(currentPickLocations.get(0).getPosition());
 		return c;
 	}
@@ -180,8 +180,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	public void clearDeviceSettings() {
-		this.rawWorkPiece = new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions());
-		this.finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions());
+		this.rawWorkPiece = new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(), null, Float.NaN);
+		this.finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(), null, Float.NaN);
 		this.currentPickLocations = new ArrayList<StackingPosition>();
 		try {
 			this.layout.configureStackingPositions(null, layout.getOrientation());
@@ -241,7 +241,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		for (int i = 0; i < layout.getStackingPositions().size(); i++) {
 			if (i < finishedAmount) {
 				//TODO improve, dimensions finished workpiece are not always the same as raw workpiece dimensions
-				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, rawWorkPiece.getDimensions());
+				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, rawWorkPiece.getDimensions(), null, Float.NaN);
 				layout.getStackingPositions().get(i).setWorkPiece(finishedWorkPiece);
 			} 
 		}
@@ -283,7 +283,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			int readyAmount = 0;
 			for (StackingPosition location : layout.getStackingPositions()) {
 				if ((location.getWorkPiece() != null) && (location.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED))) {
-					location.setWorkPiece(new WorkPiece(Type.RAW, rawWorkPiece.getDimensions()));
+					location.setWorkPiece(new WorkPiece(Type.RAW, rawWorkPiece.getDimensions(), null, Float.NaN));
 					readyAmount++;
 				}
 				if (readyAmount >= amount) {

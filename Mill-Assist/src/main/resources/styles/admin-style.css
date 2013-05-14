@@ -107,3 +107,7 @@
 	-fx-font-weight: bold;
 	-fx-font-size: 14px;
 }
+
+.yellow {
+	-fx-background-color: yellow;
+}

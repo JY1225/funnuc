@@ -83,7 +83,7 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 		if (newString.matches(getMatchingExpression()) && calculateLength(newString) <= maxLength) {
 			super.replaceSelection(text);
 		}
-		
+
 		if (notifyEveryChange) {
 			changeListener.changed(null, convertString(currentText), convertString(getText()));
 		}
@@ -115,7 +115,7 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 			}
 		}
 	}
-		
+	
 	public abstract void cleanText();
 	
 	public abstract T convertString(String text);

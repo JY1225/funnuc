@@ -17,6 +17,7 @@
 .form-button:pressed, .form-button-active {
 	-fx-background-color: #8a8c90, #3a3d42, #36383d, #4e5055;
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 3 2 3 2;
+	-fx-effect: innershadow(two-pass-box, #28292b, 8, 0.0, 0, 1);
 }
 
 .form-button:disabled {

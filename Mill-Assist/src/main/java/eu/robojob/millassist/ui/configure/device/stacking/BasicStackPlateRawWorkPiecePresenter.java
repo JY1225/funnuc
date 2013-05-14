@@ -10,6 +10,8 @@ import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataExce
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<BasicStackPlateRawWorkPieceView, BasicStackPlateMenuPresenter> {
@@ -18,6 +20,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	private PickStep pickStep;
 	private WorkPieceDimensions dimensions;
 	private WorkPieceOrientation orientation;
+	private WorkPiece workPiece;
 		
 	private static Logger logger = LogManager.getLogger(BasicStackPlateRawWorkPiecePresenter.class.getName());
 	
@@ -25,6 +28,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		super(view);
 		this.pickStep = pickStep;	
 		this.deviceSettings = deviceSettings;
+		this.workPiece = pickStep.getRobotSettings().getWorkPiece();
 		this.dimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
 		if (dimensions == null) {
 			dimensions = new WorkPieceDimensions();
@@ -45,35 +49,63 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		getView().setPresenter(this);
 	}
 	
+	public void recalcWeight() {
+		workPiece.calculateWeight();
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+		getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
+	}
+	
+	public void changedMaterial(final Material material) {
+		if (!material.equals(workPiece.getMaterial())) {
+			if (material.equals(Material.OTHER)) {
+				workPiece.setMaterial(Material.OTHER);
+				pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+			} else {
+				workPiece.setMaterial(material);
+				workPiece.calculateWeight();
+				pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+			}
+			getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
+		}
+	}
+	
 	public void changedWidth(final float width) {
 		logger.info("Set width [" + width + "].");
-		dimensions.setWidth(width);
-		recalculate();
-		pickStep.setRelativeTeachedOffset(null);
-		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		if (width != dimensions.getWidth()) {
+			dimensions.setWidth(width);	
+			recalculate();
+			pickStep.setRelativeTeachedOffset(null);
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		}
 	}
 	
 	public void changedLength(final float length) {
 		logger.info("Set length [" + length + "].");
-		dimensions.setLength(length);
-		recalculate();
-		pickStep.setRelativeTeachedOffset(null);
-		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		if (length != dimensions.getLength()) {
+			dimensions.setLength(length);
+			recalculate();
+			pickStep.setRelativeTeachedOffset(null);
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		}
 	}
 	
 	public void changedHeight(final float height) {
 		logger.info("Set height [" + height + "].");
-		dimensions.setHeight(height);
-		recalculate();
-		pickStep.setRelativeTeachedOffset(null);
-		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		if (height != dimensions.getHeight()) {
+			dimensions.setHeight(height);
+			recalculate();
+			pickStep.setRelativeTeachedOffset(null);
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		}
 	}
 	
 	public void changedAmount(final int amount) {
 		logger.info("Set amount [" + amount + "].");
-		deviceSettings.setAmount(amount);
-		recalculate();
-		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		if (amount != deviceSettings.getAmount()) {
+			deviceSettings.setAmount(amount);
+			recalculate();
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		}
 	}
 	
 	public void recalculate() {
@@ -89,11 +121,18 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public void changedOrientation(final WorkPieceOrientation orientation) {
 		logger.info("Set orientation [" + orientation + "].");
-		deviceSettings.setOrientation(orientation);
-		recalculate();
-		getView().refresh();
-		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
-		((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
+		if (orientation.equals(deviceSettings.getOrientation())) {
+			deviceSettings.setOrientation(orientation);
+			recalculate();
+			getView().refresh();
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+			((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
+		}
+	}
+	
+	public void changedWeight(final float weight) {
+		workPiece.setWeight(weight);
+		getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
 	}
 
 	@Override
@@ -101,7 +140,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
 		if ((dimensions != null) && (orientation != null) && (plate.getLayout().getStackingPositions() != null)
 				&& (plate.getLayout().getStackingPositions().size() > 0) && (plate.getLayout().getStackingPositions().get(0).getWorkPiece() != null)
-			) {
+					&& (workPiece.getWeight() > 0)
+				) {
 			return true;
 		}
 		return false;

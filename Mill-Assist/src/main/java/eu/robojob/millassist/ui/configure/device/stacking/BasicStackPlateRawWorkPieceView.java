@@ -25,7 +25,9 @@ import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
+import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.WorkPiece.Material;
 
 public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStackPlateRawWorkPiecePresenter> {
 
@@ -65,19 +67,29 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	private Label lblWorkPieceWidth;
 	private Label lblWorkPieceLength;
 	private Label lblWorkPieceHeight;
-		
+	private Label lblWorkPieceWeight;	
+	
 	private Label lblOrientation;
 	private Label lblWorkPieceAmount;
 	private Button btnMaxAmount;
 	
+	private Label lblMaterial;
+	private Button btnCalc;
+	
 	private NumericTextField ntxtWorkPieceWidth;
 	private NumericTextField ntxtWorkPieceLength;
 	private NumericTextField ntxtWorkPieceHeight;
+	private NumericTextField ntxtWorkPieceWeight;
 	private IntegerTextField itxtWorkPieceAmount;
 	
 	private HBox orientationsBox;
+	private HBox materialsBox;
 	private Button btnHorizontal;
 	private Button btnTilted;
+	private Button btnAl;
+	private Button btnFe;
+	private Button btnCu;
+	private Button btnOther;
 	
 	private Region spacer;
 	
@@ -92,11 +104,15 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	protected static final String WIDTH = "BasicStackPlateWorkPieceView.width";
 	protected static final String LENGTH = "BasicStackPlateWorkPieceView.length";
 	private static final String HEIGHT = "BasicStackPlateWorkPieceView.height";
+	private static final String WEIGHT = "BasicStackPlateWorkPieceView.weight";
 	private static final String ORIENTATION = "BasicStackPlateWorkPieceView.orientation";
 	private static final String HORIZONTAL = "BasicStackPlateWorkPieceView.horizontal";
 	private static final String TILTED = "BasicStackPlateWorkPieceView.tilted";
 	private static final String AMOUNT = "BasicStackPlateWorkPieceView.amount";
 	private static final String MAX = "BasicStackPlateWorkPieceView.max";
+	private static final String MATERIAL = "BasicStackPlateWorkPieceView.material";
+	private static final String CALC = "BasicStackPlateWorkPieceView.calc";
+	private static final String OTHER = "BasicStackPlateWorkPieceView.other";
 	
 	private static final String CSS_CLASS_BUTTON_ORIENTATION = "btn-orientation";
 	
@@ -139,7 +155,6 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		int column = 0;
 				
 		add(hBoxAlarm, 0, row, 7, 1);
-		GridPane.setMargin(hBoxAlarm, new Insets(0, 0, 25, 0));
 		GridPane.setHalignment(hBoxAlarm, HPos.LEFT);
 		row++; column = 0;
 		
@@ -209,8 +224,53 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 			}
 		});
 		add(ntxtWorkPieceHeight, column++, row);
+		column = 0;
+		row++;
+		
+		materialsBox = new HBox();
+		materialsBox.setAlignment(Pos.CENTER_LEFT);
+		lblMaterial = new Label(Translator.getTranslation(MATERIAL));
+		lblMaterial.getStyleClass().add(CSS_CLASS_FORM_LABEL);
+		GridPane.setMargin(materialsBox, new Insets(5, 0, 0, 0));
+		btnAl = createButton("Al", BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedMaterial(Material.AL);
+			}
+		});
+		btnAl.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
+		materialsBox.getChildren().add(btnAl);
+		btnCu = createButton("Cu", BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedMaterial(Material.CU);
+			}
+		});
+		btnCu.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+		materialsBox.getChildren().add(btnCu);
+		btnFe = createButton("Fe", BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedMaterial(Material.FE);
+			}
+		});
+		btnFe.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+		materialsBox.getChildren().add(btnFe);
+		btnOther = createButton(Translator.getTranslation(OTHER), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedMaterial(Material.OTHER);
+			}
+		});
+		btnOther.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+		materialsBox.getChildren().add(btnOther);
+		
+		column++;
+		add(lblMaterial, column++, row);
+		add(materialsBox, column++, row, 6, 1);
+		
 		spacer = new Region();
-		spacer.setPrefSize(20, BTN_HEIGHT);
+		spacer.setPrefSize(18, BTN_HEIGHT);
 		add(spacer, 3, 0);
 		lblOrientation = new Label(Translator.getTranslation(ORIENTATION));
 		orientationsBox = new HBox();
@@ -255,7 +315,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		lblMaxAmount.getStyleClass().add(CSS_CLASS_FORM_BUTTON_LABEL);
 		btnMaxAmount.setGraphic(lblMaxAmount);
 		btnMaxAmount.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
-		btnMaxAmount.setPrefSize(UIConstants.BUTTON_HEIGHT * 2, UIConstants.BUTTON_HEIGHT);
+		btnMaxAmount.setPrefSize(UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT);
 		btnMaxAmount.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
@@ -263,8 +323,32 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 			}
 		});
 		add(btnMaxAmount, column++, row);
+		
+		column = 4;
+		row++;
+		lblWorkPieceWeight = new Label(Translator.getTranslation(WEIGHT));
+		add(lblWorkPieceWeight, column++, row);
+		ntxtWorkPieceWeight = new NumericTextField(MAX_INTEGER_LENGTH);
+		ntxtWorkPieceWeight.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtWorkPieceWeight.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtWorkPieceWeight.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> observable, final Float oldValue, final Float newValue) {
+				getPresenter().changedWeight(newValue);
+			}
+		});
+		add(ntxtWorkPieceWeight, column++, row);
+		btnCalc = createButton(Translator.getTranslation(CALC), UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				// TODO Auto-generated method stub
+			}
+		});
+		add(btnCalc, column++, row);
+		
 		hideNotification();
-
+		
+		
 		refresh();
 	}
 
@@ -273,6 +357,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		itxtWorkPieceAmount.setFocusListener(listener);
 		ntxtWorkPieceHeight.setFocusListener(listener);
 		ntxtWorkPieceLength.setFocusListener(listener);
+		ntxtWorkPieceWeight.setFocusListener(listener);
 		ntxtWorkPieceWidth.setFocusListener(listener);
 	}
 
@@ -282,6 +367,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		setDimensions(settings.getRawWorkPiece().getDimensions());
 		itxtWorkPieceAmount.setText("" + settings.getAmount());
 		setOrientation(settings.getOrientation());
+		setWeight(settings.getRawWorkPiece().getMaterial(), settings.getRawWorkPiece().getWeight());
 	}
 	
 	private void setOrientation(final WorkPieceOrientation orientation) {
@@ -314,14 +400,40 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 			ntxtWorkPieceHeight.setText("");
 		}
 	}
+	
+	public void setWeight(final WorkPiece.Material material, final float weight) {
+		ntxtWorkPieceWeight.setText("" + weight);
+		ntxtWorkPieceWeight.cleanText();
+		btnAl.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnCu.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnFe.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnOther.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		if (material.equals(Material.OTHER)) {
+			btnOther.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			btnCalc.setDisable(true);
+		} else {
+			btnCalc.setDisable(false);
+			if (material.equals(Material.AL)) {
+				btnAl.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			} else if (material.equals(Material.CU)) {
+				btnCu.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			} else if (material.equals(Material.FE)) {
+				btnFe.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			}
+		}
+	}
 
 	public void showNotification(final String notification) {
 		lblAlarmMessage.setText(notification);
+		GridPane.setMargin(hBoxAlarm, new Insets(0, 0, 10, 0));
+		setPadding(new Insets(0, 0, 0, 0));
 		hBoxAlarm.setVisible(true);
 		hBoxAlarm.setManaged(true);
 	}
 	
 	public void hideNotification() {
+		GridPane.setMargin(hBoxAlarm, new Insets(0, 0, 0, 0));
+		setPadding(new Insets(-HGAP*2, 0, 0, 0));
 		hBoxAlarm.setVisible(false);
 		hBoxAlarm.setManaged(false);
 	}

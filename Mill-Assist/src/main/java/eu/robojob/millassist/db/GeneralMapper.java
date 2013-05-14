@@ -13,12 +13,17 @@ import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.WorkPiece.Material;
 
 public class GeneralMapper {
 
 	private static final int WORKPIECE_SHAPE_CUBOID = 1;
 	private static final int WORKPIECE_TYPE_RAW = 1;
 	private static final int WORKPIECE_TYPE_FINISHED = 2;
+	private static final int WORKPIECE_MATERIAL_AL = 1;
+	private static final int WORKPIECE_MATERIAL_CU = 2;
+	private static final int WORKPIECE_MATERIAL_FE = 3;
+	private static final int WORKPIECE_MATERIAL_OTHER = 4;
 	
 	private Map<Integer, UserFrame> userFrameBuffer;
 	private Map<Integer, Map<Integer, Coordinates>> coordinatesBuffer;
@@ -172,11 +177,21 @@ public class GeneralMapper {
 			float length = results.getFloat("LENGTH");
 			float width = results.getFloat("WIDTH");
 			float height = results.getFloat("HEIGHT");
+			float weight = results.getFloat("WEIGHT");
+			int materialId = results.getInt("MATERIAL");
+			Material material = Material.OTHER;
+			if (materialId == WORKPIECE_MATERIAL_AL) {
+				material = Material.AL;
+			} else if (materialId == WORKPIECE_MATERIAL_CU) {
+				material = Material.CU;
+			} else if (materialId == WORKPIECE_MATERIAL_FE) {
+				material = Material.FE;
+			}
 			if (shapeId == WORKPIECE_SHAPE_CUBOID) {
 				if (typeId == WORKPIECE_TYPE_RAW) {
-					workPiece = new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(length, width, height));
+					workPiece = new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(length, width, height), material, weight);
 				} else if (typeId == WORKPIECE_TYPE_FINISHED) {
-					workPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(length, width, height));
+					workPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(length, width, height), material, weight);
 				} else {
 					throw new IllegalStateException("Unknown workpiece type: [" + typeId + "].");
 				}
@@ -203,22 +218,34 @@ public class GeneralMapper {
 		}
 		//TODO: for now shape is always cuboid!
 		int shape = WORKPIECE_SHAPE_CUBOID;
+		int material = WORKPIECE_MATERIAL_OTHER;
+		if (workPiece.getMaterial().equals(Material.AL)) {
+			material = WORKPIECE_MATERIAL_AL;
+		} else if (workPiece.getMaterial().equals(Material.CU)) {
+			material = WORKPIECE_MATERIAL_CU;
+		} else if (workPiece.getMaterial().equals(Material.FE)){
+			material =WORKPIECE_MATERIAL_FE;
+		}
 		if (workPiece.getId() > 0) {
-			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE WORKPIECE SET TYPE = ?, SHAPE = ?, LENGTH = ?, WIDTH = ?, HEIGHT = ? WHERE ID = ?");
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE WORKPIECE SET TYPE = ?, SHAPE = ?, LENGTH = ?, WIDTH = ?, HEIGHT = ?, WEIGHT = ?, MATERIAL = ? WHERE ID = ?");
 			stmt.setInt(1, type);
 			stmt.setInt(2, shape);
 			stmt.setFloat(3, workPiece.getDimensions().getLength());
 			stmt.setFloat(4, workPiece.getDimensions().getWidth());
 			stmt.setFloat(5, workPiece.getDimensions().getHeight());
-			stmt.setInt(6, workPiece.getId());
+			stmt.setFloat(6, workPiece.getWeight());
+			stmt.setInt(7, material);
+			stmt.setInt(8, workPiece.getId());
 			stmt.executeUpdate();
 		} else {
-			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO WORKPIECE (TYPE, SHAPE, LENGTH, WIDTH, HEIGHT) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO WORKPIECE (TYPE, SHAPE, LENGTH, WIDTH, HEIGHT, WEIGHT, MATERIAL) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			stmt.setInt(1, type);
 			stmt.setInt(2, shape);
 			stmt.setFloat(3, workPiece.getDimensions().getLength());
 			stmt.setFloat(4, workPiece.getDimensions().getWidth());
 			stmt.setFloat(5, workPiece.getDimensions().getHeight());
+			stmt.setFloat(6, workPiece.getWeight());
+			stmt.setInt(7, material);
 			stmt.executeUpdate();
 			ResultSet keys = stmt.getGeneratedKeys();
 			if ((keys != null) && (keys.next())) {

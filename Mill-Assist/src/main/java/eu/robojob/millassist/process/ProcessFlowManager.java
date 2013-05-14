@@ -23,6 +23,7 @@ import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotManager;
 import eu.robojob.millassist.external.robot.RobotSettings;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
@@ -83,8 +84,8 @@ public class ProcessFlowManager {
 		PickStep pickStep2 = new PickStep(cncMachine.getDefaultPickSettings(), robot.getDefaultPickSettings());
 		PutStep putStep2 = new PutStep(stackingToDevice.getDefaultPutSettings(), robot.getDefaultPutSettings());
 		List<AbstractProcessStep> processSteps = new ArrayList<AbstractProcessStep>();
-		WorkPiece rawWorkPiece = new WorkPiece(Type.RAW, new WorkPieceDimensions());
-		WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, new WorkPieceDimensions());
+		WorkPiece rawWorkPiece = new WorkPiece(Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f);
+		WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, new WorkPieceDimensions(), Material.OTHER, 0.0f);
 		pickStep.getRobotSettings().setWorkPiece(rawWorkPiece);
 		pickStep2.getRobotSettings().setWorkPiece(finishedWorkPiece);
 		processSteps.add(pickStep);
