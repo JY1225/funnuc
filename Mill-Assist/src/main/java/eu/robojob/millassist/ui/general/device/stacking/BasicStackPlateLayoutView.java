@@ -89,7 +89,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	@Override
 	public void build() {
-		logger.debug("**called build**");
+		logger.debug("**called build!!**");
 		this.setCache(false);
 		this.holes.clear();
 		this.studs.clear();

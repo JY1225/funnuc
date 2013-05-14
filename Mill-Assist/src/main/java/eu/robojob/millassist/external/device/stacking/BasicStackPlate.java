@@ -52,6 +52,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		this.rawWorkPiece = new WorkPiece(Type.RAW, new WorkPieceDimensions(), null, Float.NaN);
 		this.currentPickLocations = new ArrayList<StackingPosition>();
 		this.listeners = new ArrayList<BasicStackPlateListener>();
+		logger.info("CLEARED LISTENERS CONSTR " + listeners.size());
 	}
 	
 	public BasicStackPlate(final String name, final BasicStackPlateLayout layout) {
@@ -252,18 +253,22 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		for (BasicStackPlateListener listener : listeners) {
 			listener.layoutChanged();
 		}
+		logger.info("LISTENERS NOTIFIED!: " + listeners.size());
 	}
 	
 	public void addListener(final BasicStackPlateListener listener) {
 		this.listeners.add(listener);
+		logger.info("ADDED LISTENER " + listeners.size());
 	}
 	
 	public void removeListener(final BasicStackPlateListener listener) {
 		this.listeners.remove(listener);
+		logger.info("REMOVED LISTENER " + listeners.size());
 	}
 	
 	public void clearListeners() {
 		this.listeners.clear();
+		logger.info("CLEARED LISTENERS " + listeners.size());
 	}
 	
 	public int getFinishedWorkPiecesPresentAmount() {
