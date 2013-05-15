@@ -35,6 +35,7 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 	
 	public void nameChanged(final String name) {
 		processFlow.setName(name);
+		getView().refresh();
 	}
 	
 	//FIXME: make sure process can only be saved if configured correctly

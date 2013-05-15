@@ -110,7 +110,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		btnMCodes = createButton(Translator.getTranslation(M_CODES), Button.USE_COMPUTED_SIZE, UIConstants.BUTTON_HEIGHT, null);
 		btnMCodes.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_BAR_RIGHT, CSS_CLASS_PADDING_BTN);
 		hboxNavButtons.getChildren().addAll(btnGeneral, btnPartsWorking, btnCriteria, btnClampConditions, btnTimers, btnMCodes);
-		add(hboxNavButtons, 0, 0);
+		getContents().add(hboxNavButtons, 0, 0);
 
 		btnPartsWorking.setDisable(true);
 		btnCriteria.setDisable(true);
@@ -122,7 +122,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		contentPane.setPrefWidth(WIDTH);
 		contentPane.setMinWidth(WIDTH);
 		contentPane.setMaxWidth(WIDTH);
-		add(contentPane, 0, 1);
+		getContents().add(contentPane, 0, 1);
 		contentPane.getStyleClass().add(CSS_CLASS_CNC_CONTENTPANE);
 		GridPane.setMargin(contentPane, new Insets(20, 0, 0, 0));
 		GridPane.setVgrow(contentPane, Priority.ALWAYS);

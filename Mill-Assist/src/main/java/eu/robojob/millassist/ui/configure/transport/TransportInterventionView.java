@@ -43,8 +43,8 @@ public class TransportInterventionView extends AbstractFormView<TransportInterve
 	
 	public void setTransportInfo(final TransportInformation transportInfo) {
 		this.transportInfo = transportInfo;
-		setVgap(VGAP);
-		setHgap(HGAP);
+		getContents().setVgap(VGAP);
+		getContents().setHgap(HGAP);
 	}
 	
 	@Override
@@ -59,16 +59,16 @@ public class TransportInterventionView extends AbstractFormView<TransportInterve
 		int column = 0;
 		int row = 0;
 		
-		add(btnInterventionBeforePick, column++, row);
+		getContents().add(btnInterventionBeforePick, column++, row);
 		
 		lblInterventionBeforeInterval = new Label(Translator.getTranslation(INTERVAL));
 		lblInterventionBeforeInterval.setPrefWidth(LBL_WIDTH);
 		lblInterventionBeforeInterval.getStyleClass().add(CSS_CLASS_LABEL_INTERVENTION);
-		add(lblInterventionBeforeInterval, column++, row);
+		getContents().add(lblInterventionBeforeInterval, column++, row);
 		
 		itfInterventionBeforePickFrequency = new IntegerTextField(2);
 		itfInterventionBeforePickFrequency.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
-		add(itfInterventionBeforePickFrequency, column++, row);
+		getContents().add(itfInterventionBeforePickFrequency, column++, row);
 		itfInterventionBeforePickFrequency.setOnChange(new ChangeListener<Integer>() {
 			@Override
 			public void changed(final ObservableValue<? extends Integer> arg0, final Integer arg1, final Integer arg2) {
@@ -86,16 +86,16 @@ public class TransportInterventionView extends AbstractFormView<TransportInterve
 			}
 		});
 		
-		add(btnInterventionAfterPut, column++, row);
+		getContents().add(btnInterventionAfterPut, column++, row);
 		
 		lblIntervnetionAfterInterval = new Label(Translator.getTranslation(INTERVAL));
 		lblIntervnetionAfterInterval.setPrefWidth(LBL_WIDTH);
 		lblIntervnetionAfterInterval.getStyleClass().add(CSS_CLASS_LABEL_INTERVENTION);
-		add(lblIntervnetionAfterInterval, column++, row);
+		getContents().add(lblIntervnetionAfterInterval, column++, row);
 		
 		itfInterventionAfterPutFrequency = new IntegerTextField(2);
 		itfInterventionAfterPutFrequency.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
-		add(itfInterventionAfterPutFrequency, column++, row);
+		getContents().add(itfInterventionAfterPutFrequency, column++, row);
 		itfInterventionAfterPutFrequency.setOnChange(new ChangeListener<Integer>() {
 			@Override
 			public void changed(final ObservableValue<? extends Integer> arg0, final Integer arg1, final Integer arg2) {

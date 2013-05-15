@@ -121,12 +121,12 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public void changedOrientation(final WorkPieceOrientation orientation) {
 		logger.info("Set orientation [" + orientation + "].");
-		if (orientation.equals(deviceSettings.getOrientation())) {
+		if (!orientation.equals(deviceSettings.getOrientation())) {
 			deviceSettings.setOrientation(orientation);
 			recalculate();
 			getView().refresh();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
-			((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
+			//((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
 		}
 	}
 	
@@ -154,7 +154,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		recalculate();
 		getView().refresh();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
-		((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
+		//((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
 	}
 
 }

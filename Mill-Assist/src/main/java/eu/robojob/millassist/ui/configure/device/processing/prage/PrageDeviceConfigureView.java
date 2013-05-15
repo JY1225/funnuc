@@ -37,14 +37,14 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	
 	@Override
 	protected void build() {
-		setVgap(VGAP);
-		setHgap(HGAP);
-		getChildren().clear();
+		getContents().setVgap(VGAP);
+		getContents().setHgap(HGAP);
+		getContents().getChildren().clear();
 		
 		lblMachine = new Label(Translator.getTranslation(DEVICE));
 		int column = 0;
 		int row = 0;
-		add(lblMachine, column++, row);
+		getContents().add(lblMachine, column++, row);
 		cbbMachine = new ComboBox<String>();
 		cbbMachine.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		cbbMachine.valueProperty().addListener(new ChangeListener<String>() {
@@ -55,7 +55,7 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 				}
 			}
 		});
-		add(cbbMachine, column++, row);
+		getContents().add(cbbMachine, column++, row);
 	}
 	
 	public void refreshMachines() {

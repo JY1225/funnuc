@@ -80,10 +80,10 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 	
 	@Override
 	protected void build() {
-		setVgap(15);
-		setHgap(15);
-		setPadding(new Insets(50, 0, 0, 0));
-		setAlignment(Pos.TOP_CENTER);
+		getContents().setVgap(15);
+		getContents().setHgap(15);
+		getContents().setPadding(new Insets(50, 0, 0, 0));
+		getContents().setAlignment(Pos.TOP_CENTER);
 		hboxSelectUf = new HBox();
 		hboxSelectUf.setSpacing(15);
 		hboxSelectUf.setAlignment(Pos.CENTER_LEFT);
@@ -151,6 +151,8 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		lblNumber.setPrefWidth(LABEL_WIDTH);
 		itxtNumber = new IntegerTextField(5);
 		itxtNumber.setPrefWidth(75);
+		itxtNumber.setMinWidth(75);
+		itxtNumber.setMaxWidth(75);
 		itxtNumber.setOnChange(new ChangeListener<Integer>() {
 			@Override
 			public void changed(final ObservableValue<? extends Integer> arg0, final Integer arg1, final Integer arg2) {
@@ -162,6 +164,8 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		HBox.setMargin(lblZSafe, new Insets(0, 0, 0, 50));
 		numtxtZSafe = new NumericTextField(6);
 		numtxtZSafe.setPrefWidth(75);
+		numtxtZSafe.setMinWidth(75);
+		numtxtZSafe.setMaxWidth(75);
 		numtxtZSafe.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -179,6 +183,8 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		lblX.setPrefWidth(20);
 		numTxtX = new NumericTextField(6);
 		numTxtX.setPrefWidth(75);
+		numTxtX.setMinWidth(75);
+		numTxtX.setMaxWidth(75);
 		numTxtX.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -190,6 +196,8 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		HBox.setMargin(lblY, new Insets(0, 0, 0, 5));
 		numTxtY = new NumericTextField(6);
 		numTxtY.setPrefWidth(75);
+		numTxtY.setMinWidth(75);
+		numTxtY.setMaxWidth(75);
 		numTxtY.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -201,6 +209,8 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		HBox.setMargin(lblZ, new Insets(0, 0, 0, 5));
 		numTxtZ = new NumericTextField(6);
 		numTxtZ.setPrefWidth(75);
+		numTxtZ.setMinWidth(75);
+		numTxtZ.setMaxWidth(75);
 		numTxtZ.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -218,6 +228,8 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		lblW.setPrefWidth(20);
 		numTxtW = new NumericTextField(6);
 		numTxtW.setPrefWidth(75);
+		numTxtW.setMinWidth(75);
+		numTxtW.setMaxWidth(75);
 		numTxtW.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -229,6 +241,8 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		HBox.setMargin(lblP, new Insets(0, 0, 0, 5));
 		numTxtP = new NumericTextField(6);
 		numTxtP.setPrefWidth(75);
+		numTxtP.setMinWidth(75);
+		numTxtP.setMaxWidth(75);
 		numTxtP.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -240,6 +254,8 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		HBox.setMargin(lblR, new Insets(0, 0, 0, 5));
 		numTxtR = new NumericTextField(6);
 		numTxtR.setPrefWidth(75);
+		numTxtR.setMinWidth(75);
+		numTxtR.setMaxWidth(75);
 		numTxtR.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -267,8 +283,8 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		vboxForm.setAlignment(Pos.CENTER);
 		vboxForm.setVisible(false);
 		
-		add(hboxSelectUf, 0, 0);
-		add(vboxForm, 0, 1);
+		getContents().	add(hboxSelectUf, 0, 0);
+		getContents().	add(vboxForm, 0, 1);
 		
 		refresh();
 		

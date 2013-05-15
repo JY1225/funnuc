@@ -4,14 +4,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
@@ -26,8 +24,8 @@ import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 import eu.robojob.millassist.workpiece.WorkPiece;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStackPlateRawWorkPiecePresenter> {
 
@@ -39,23 +37,6 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	
 	private static final String HORIZONTAL_ICON = "M 3.3125 3.28125 L 3.3125 14.4375 L 20.0625 14.4375 L 20.0625 3.28125 L 3.3125 3.28125 z ";
 	private static final String TILTED_ICON = "M 11.90625 0.03125 L 0.0625 11.875 L 7.96875 19.78125 L 19.8125 7.9375 L 11.90625 0.03125 z ";
-	
-	private SVGPath alarmBgPath;
-	private SVGPath alarmPath;
-	private Label lblAlarmMessage;
-	private HBox hBoxAlarm;
-	private static final int MSG_MIN_HEIGHT = 40;
-	private static final int PADDING_BOTTOM = 10;
-	private static final int ICON_PADDING = 10;
-	private static final int ICON_WIDTH = 25;
-	private static final String TRIANGLE_ICON = "M 12.5,1.03125 C 11.993062,1.0311198 11.509776,1.3702678 11.125,2.0625 L 0.3125,21.46875 C -0.45731218,22.853735 0.22861858,24 1.8125,24 l 21.375,0 c 1.584142,0 2.268771,-1.145744 1.5,-2.53125 L 13.90625,2.0625 C 13.521995,1.3697471 13.006938,1.0313802 12.5,1.03125 z";
-	private static final String WARNING_ICON = "m 10.9375,7.15625 0,2.59375 0.625,6.96875 1.875,0 0.625,-6.96875 0,-2.59375 z m 0.125,11.15625 0,2.875 2.875,0 0,-2.875 z";
-	protected static final String CSS_CLASS_WARNING_ICON = "warning-icon";
-	protected static final String CSS_CLASS_WARNING_BG_ICON = "warning-bg-icon";
-	protected static final String CSS_CLASS_INFO_MESSAGE = "info-msg";
-	protected static final String CSS_CLASS_STATUS_MESSAGE = "status-msg";
-	private static final String CSS_CLASS_INFO_BORDER_BOTTOM = "info-border-bottom";
-	private static final String CSS_CLASS_WARNING_CONFIG = "warning-config";
 
 	private StackPane icon1Pane;
 	private SVGPath workPieceWidthPath;
@@ -118,46 +99,16 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	
 	public void setPickStep(final PickStep pickStep) {
 		this.pickStep = pickStep;
-		setHgap(HGAP);
-		setVgap(VGAP);
+		getContents().setHgap(HGAP);
+		getContents().setVgap(VGAP);
 	}
 	
 	@Override
 	protected void build() {
 		
-		// icon
-		alarmBgPath = new SVGPath();
-		alarmBgPath.setContent(TRIANGLE_ICON);
-		alarmBgPath.getStyleClass().add(CSS_CLASS_WARNING_BG_ICON);
-		alarmPath = new SVGPath();
-		alarmPath.setContent(WARNING_ICON);
-		alarmPath.getStyleClass().add(CSS_CLASS_WARNING_ICON);
-		Pane alarmIconPane = new Pane();
-		alarmIconPane.getChildren().addAll(alarmBgPath, alarmPath);
-		// label
-		lblAlarmMessage = new Label();
-		lblAlarmMessage.setWrapText(true);
-		lblAlarmMessage.getStyleClass().addAll(CSS_CLASS_INFO_MESSAGE, CSS_CLASS_STATUS_MESSAGE);
-		// hbox
-		hBoxAlarm = new HBox();
-		hBoxAlarm.setMinHeight(MSG_MIN_HEIGHT);
-		hBoxAlarm.setMaxHeight(MSG_MIN_HEIGHT);
-		HBox.setMargin(alarmIconPane, new Insets(0, ICON_PADDING, 0, 0));
-		hBoxAlarm.getChildren().addAll(alarmIconPane, lblAlarmMessage);
-		hBoxAlarm.getStyleClass().add(CSS_CLASS_INFO_BORDER_BOTTOM);
-		hBoxAlarm.setAlignment(Pos.TOP_LEFT);
-		hBoxAlarm.setPadding(new Insets(0, 0, PADDING_BOTTOM, 0));
-		lblAlarmMessage.setMaxWidth(450 - ICON_WIDTH - ICON_PADDING);
-		lblAlarmMessage.getStyleClass().add(CSS_CLASS_WARNING_CONFIG);
-		hBoxAlarm.setPrefWidth(450);
-		hBoxAlarm.setMaxWidth(450);
 		int row = 0;
 		int column = 0;
-				
-		add(hBoxAlarm, 0, row, 7, 1);
-		GridPane.setHalignment(hBoxAlarm, HPos.LEFT);
-		row++; column = 0;
-		
+
 		workPieceLengthPath = new SVGPath();
 		workPieceLengthPath.setContent(LENGTH_ICON);
 		workPieceLengthPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
@@ -165,9 +116,9 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		icon2Pane.getChildren().add(workPieceLengthPath);
 		icon2Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
 		StackPane.setAlignment(workPieceLengthPath, Pos.BOTTOM_RIGHT);
-		add(icon2Pane, column++, row);
+		getContents().add(icon2Pane, column++, row);
 		lblWorkPieceLength = new Label(Translator.getTranslation(LENGTH));
-		add(lblWorkPieceLength, column++, row);
+		getContents().add(lblWorkPieceLength, column++, row);
 		ntxtWorkPieceLength = new NumericTextField(MAX_INTEGER_LENGTH);
 		ntxtWorkPieceLength.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		ntxtWorkPieceLength.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
@@ -177,7 +128,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 				getPresenter().changedLength(newValue);
 			}
 		});
-		add(ntxtWorkPieceLength, column++, row);
+		getContents().add(ntxtWorkPieceLength, column++, row);
 		column = 0;
 		row++;
 		
@@ -188,9 +139,9 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		icon1Pane.getChildren().add(workPieceWidthPath);
 		icon1Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
 		StackPane.setAlignment(workPieceWidthPath, Pos.BOTTOM_RIGHT);
-		add(icon1Pane, column++, row);
+		getContents().add(icon1Pane, column++, row);
 		lblWorkPieceWidth = new Label(Translator.getTranslation(WIDTH));
-		add(lblWorkPieceWidth, column++, row);
+		getContents().add(lblWorkPieceWidth, column++, row);
 		ntxtWorkPieceWidth = new NumericTextField(MAX_INTEGER_LENGTH);
 		ntxtWorkPieceWidth.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		ntxtWorkPieceWidth.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
@@ -200,7 +151,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 				getPresenter().changedWidth(newValue);
 			}
 		});
-		add(ntxtWorkPieceWidth, column++, row);
+		getContents().add(ntxtWorkPieceWidth, column++, row);
 		column = 0;
 		row++;
 		
@@ -211,9 +162,9 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		icon3Pane.getChildren().add(workPieceHeightPath);
 		icon3Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
 		StackPane.setAlignment(workPieceHeightPath, Pos.BOTTOM_RIGHT);
-		add(icon3Pane, column++, row);
+		getContents().add(icon3Pane, column++, row);
 		lblWorkPieceHeight = new Label(Translator.getTranslation(HEIGHT));
-		add(lblWorkPieceHeight, column++, row);
+		getContents().add(lblWorkPieceHeight, column++, row);
 		ntxtWorkPieceHeight = new NumericTextField(MAX_INTEGER_LENGTH);
 		ntxtWorkPieceHeight.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		ntxtWorkPieceHeight.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
@@ -223,7 +174,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 				getPresenter().changedHeight(newValue);
 			}
 		});
-		add(ntxtWorkPieceHeight, column++, row);
+		getContents().add(ntxtWorkPieceHeight, column++, row);
 		column = 0;
 		row++;
 		
@@ -266,12 +217,12 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		materialsBox.getChildren().add(btnOther);
 		
 		column++;
-		add(lblMaterial, column++, row);
-		add(materialsBox, column++, row, 6, 1);
+		getContents().add(lblMaterial, column++, row);
+		getContents().add(materialsBox, column++, row, 6, 1);
 		
 		spacer = new Region();
 		spacer.setPrefSize(18, BTN_HEIGHT);
-		add(spacer, 3, 0);
+		getContents().add(spacer, 3, 0);
 		lblOrientation = new Label(Translator.getTranslation(ORIENTATION));
 		orientationsBox = new HBox();
 		btnHorizontal = createButton(HORIZONTAL_ICON, CSS_CLASS_BUTTON_ORIENTATION, Translator.getTranslation(HORIZONTAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
@@ -291,14 +242,14 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		btnTilted.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
 		orientationsBox.getChildren().add(btnTilted);
 		orientationsBox.setAlignment(Pos.CENTER);
-		row = 1;
+		row = 0;
 		column = 4;
-		add(lblOrientation, column++, row);
-		add(orientationsBox, column, row, 2, 1);
+		getContents().add(lblOrientation, column++, row);
+		getContents().add(orientationsBox, column, row, 2, 1);
 		column = 4;
 		row++;
 		lblWorkPieceAmount = new Label(Translator.getTranslation(AMOUNT));
-		add(lblWorkPieceAmount, column++, row);
+		getContents().add(lblWorkPieceAmount, column++, row);
 		itxtWorkPieceAmount = new IntegerTextField(MAX_INTEGER_LENGTH);
 		itxtWorkPieceAmount.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		itxtWorkPieceAmount.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
@@ -308,7 +259,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 				getPresenter().changedAmount(newValue);
 			}
 		});
-		add(itxtWorkPieceAmount, column++, row);
+		getContents().add(itxtWorkPieceAmount, column++, row);
 		
 		btnMaxAmount = new Button();
 		Label lblMaxAmount = new Label(Translator.getTranslation(MAX));
@@ -322,12 +273,12 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 				getPresenter().setMaxAmount();
 			}
 		});
-		add(btnMaxAmount, column++, row);
+		getContents().add(btnMaxAmount, column++, row);
 		
 		column = 4;
 		row++;
 		lblWorkPieceWeight = new Label(Translator.getTranslation(WEIGHT));
-		add(lblWorkPieceWeight, column++, row);
+		getContents().add(lblWorkPieceWeight, column++, row);
 		ntxtWorkPieceWeight = new NumericTextField(MAX_INTEGER_LENGTH);
 		ntxtWorkPieceWeight.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		ntxtWorkPieceWeight.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
@@ -337,14 +288,14 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 				getPresenter().changedWeight(newValue);
 			}
 		});
-		add(ntxtWorkPieceWeight, column++, row);
+		getContents().add(ntxtWorkPieceWeight, column++, row);
 		btnCalc = createButton(Translator.getTranslation(CALC), UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				getPresenter().recalcWeight();
 			}
 		});
-		add(btnCalc, column++, row);
+		getContents().add(btnCalc, column++, row);
 		
 		hideNotification();
 		
@@ -421,20 +372,5 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 				btnFe.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
 			}
 		}
-	}
-
-	public void showNotification(final String notification) {
-		lblAlarmMessage.setText(notification);
-		GridPane.setMargin(hBoxAlarm, new Insets(0, 0, 10, 0));
-		setPadding(new Insets(0, 0, 0, 0));
-		hBoxAlarm.setVisible(true);
-		hBoxAlarm.setManaged(true);
-	}
-	
-	public void hideNotification() {
-		GridPane.setMargin(hBoxAlarm, new Insets(0, 0, 0, 0));
-		setPadding(new Insets(-HGAP*2, 0, 0, 0));
-		hBoxAlarm.setVisible(false);
-		hBoxAlarm.setManaged(false);
 	}
 }

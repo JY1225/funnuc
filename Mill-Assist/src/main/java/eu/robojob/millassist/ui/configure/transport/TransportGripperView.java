@@ -34,8 +34,8 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		
 	public TransportGripperView() {
 		super();
-		setVgap(VGAP);
-		setHgap(HGAP);
+		getContents().setVgap(VGAP);
+		getContents().setHgap(HGAP);
 	}
 	
 	public void setTransportInfo(final TransportInformation transportInfo) {
@@ -47,14 +47,14 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		int column = 0;
 		int row = 0;
 		
-		getChildren().clear();
+		getContents().getChildren().clear();
 		
 		lblGripperHead = new Label(Translator.getTranslation(GRIPPERHEAD));
-		add(lblGripperHead, column++, row);
+		getContents().add(lblGripperHead, column++, row);
 		
 		cbbGripperHeads = new ComboBox<String>();
 		cbbGripperHeads.setPrefSize(60, UIConstants.COMBO_HEIGHT);
-		add(cbbGripperHeads, column++, row);
+		getContents().add(cbbGripperHeads, column++, row);
 		cbbGripperHeads.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
@@ -71,13 +71,13 @@ public class TransportGripperView extends AbstractFormView<TransportGripperPrese
 		row++;
 		
 		lblGripper = new Label(Translator.getTranslation(GRIPPER));
-		add(lblGripper, column++, row);
+		getContents().add(lblGripper, column++, row);
 		
 		ifsGrippers = new IconFlowSelector();
 		ifsGrippers.setPrefWidth(ICONFLOWSELECTOR_WIDTH);
 		column = 0;
 		row++;
-		add(ifsGrippers, column++, row, 3, 1);
+		getContents().add(ifsGrippers, column++, row, 3, 1);
 		
 		row++;
 	}

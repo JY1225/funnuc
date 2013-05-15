@@ -58,23 +58,23 @@ public class RobotConfigureView extends AbstractFormView<RobotConfigurePresenter
 	
 	@Override
 	protected void build() {
-		setHgap(HGAP);
-		setVgap(VGAP);
-		setAlignment(Pos.TOP_CENTER);
-		setPadding(new Insets(25, 0, 0, 0));
+		getContents().setHgap(HGAP);
+		getContents().setVgap(VGAP);
+		getContents().setAlignment(Pos.TOP_CENTER);
+		getContents().setPadding(new Insets(25, 0, 0, 0));
 
-		getChildren().clear();
+		getContents().getChildren().clear();
 		
 		int column = 0;
 		int row = 0;
 		lblName = new Label(Translator.getTranslation(NAME));
-		add(lblName, column++, row);
+		getContents().add(lblName, column++, row);
 		fulltxtName = new FullTextField(100);
 		fulltxtName.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
-		add(fulltxtName, column++, row);
+		getContents().add(fulltxtName, column++, row);
 		spacer = new Region();
 		spacer.setPrefWidth(25);
-		add(spacer, column++, row);
+		getContents().add(spacer, column++, row);
 		btnSave = createButton(SAVE_PATH, "form-button", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
@@ -82,28 +82,28 @@ public class RobotConfigureView extends AbstractFormView<RobotConfigurePresenter
 						cbGripperHeadB.selectedProperty().get(), cbGripperHeadC.selectedProperty().get(), cbGripperHeadD.selectedProperty().get());
 			}
 		});
-		add(btnSave, column++, row);
+		getContents().add(btnSave, column++, row);
 		column = 0; 
 		row++;
 		lblIpAddress = new Label(Translator.getTranslation(IP));
-		add(lblIpAddress, column++, row);
+		getContents().add(lblIpAddress, column++, row);
 		fulltxtIpAddress = new FullTextField(15);
 		fulltxtIpAddress.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
-		add(fulltxtIpAddress, column++, row);
+		getContents().add(fulltxtIpAddress, column++, row);
 		column = 0;
 		row++;
 		lblPort = new Label(Translator.getTranslation(PORT));
-		add(lblPort, column++, row);
+		getContents().add(lblPort, column++, row);
 		itxtPort = new IntegerTextField(5);
 		itxtPort.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
 		itxtPort.setPrefWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
 		itxtPort.setMinWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
 		itxtPort.setMaxWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
-		add(itxtPort, column++, row);
+		getContents().add(itxtPort, column++, row);
 		column = 0;
 		row++;
 		lblGripperHeads = new Label(Translator.getTranslation(GRIPPER_HEADS));
-		add(lblGripperHeads, column++, row);
+		getContents().add(lblGripperHeads, column++, row);
 		HBox hboxHeads = new HBox();
 		cbGripperHeadA = new CheckBox("A");
 		cbGripperHeadA.setDisable(true);
@@ -115,13 +115,13 @@ public class RobotConfigureView extends AbstractFormView<RobotConfigurePresenter
 		cbGripperHeadD.setDisable(true);
 		hboxHeads.getChildren().addAll(cbGripperHeadA, cbGripperHeadB, cbGripperHeadC, cbGripperHeadD);
 		hboxHeads.setSpacing(20);
-		add(hboxHeads, column++, row);
+		getContents().add(hboxHeads, column++, row);
 		column = 0;
 		row++;
 		lblStatus = new Label(Translator.getTranslation(STATUS));
-		add(lblStatus, column++, row);
+		getContents().add(lblStatus, column++, row);
 		lblStatusValue = new Label();
-		add(lblStatusValue, column++, row);
+		getContents().add(lblStatusValue, column++, row);
 	}
 
 	@Override

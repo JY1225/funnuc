@@ -23,6 +23,7 @@ import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
@@ -49,7 +50,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public BasicStackPlate(final String name, final Set<Zone> zones, final BasicStackPlateLayout layout) {
 		super(name, zones);
 		this.layout = layout;
-		this.rawWorkPiece = new WorkPiece(Type.RAW, new WorkPieceDimensions(), null, Float.NaN);
+		this.rawWorkPiece = new WorkPiece(Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f);
 		this.currentPickLocations = new ArrayList<StackingPosition>();
 		this.listeners = new ArrayList<BasicStackPlateListener>();
 		logger.info("CLEARED LISTENERS CONSTR " + listeners.size());
@@ -181,8 +182,8 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	public void clearDeviceSettings() {
-		this.rawWorkPiece = new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(), null, Float.NaN);
-		this.finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(), null, Float.NaN);
+		this.rawWorkPiece = new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f);
+		this.finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(), Material.OTHER, 0.0f);
 		this.currentPickLocations = new ArrayList<StackingPosition>();
 		try {
 			this.layout.configureStackingPositions(null, layout.getOrientation());

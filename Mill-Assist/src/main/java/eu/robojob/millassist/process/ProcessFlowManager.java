@@ -20,6 +20,7 @@ import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.BasicStackPlateSettings;
 import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.GripperHead;
 import eu.robojob.millassist.external.robot.RobotManager;
 import eu.robojob.millassist.external.robot.RobotSettings;
 import eu.robojob.millassist.workpiece.WorkPiece;
@@ -61,7 +62,7 @@ public class ProcessFlowManager {
 		return null;
 	}
 	
-	//TODO add buffer!
+	//TODO add buffer and look at delete!
 	public List<ProcessFlow> getProcessFlows() {
 		try {
 			return processFlowMapper.getAllProcessFlows();
@@ -115,14 +116,14 @@ public class ProcessFlowManager {
 			if (step instanceof DeviceStep) {
 				// if only one work area present: use it
 				DeviceStep deviceStep = (DeviceStep) step;
-				if (deviceStep.getDevice().getWorkAreas().size() == 1) {
+				if (deviceStep.getDevice().getWorkAreas().size() > 0) {
 					WorkArea workArea = deviceStep.getDevice().getWorkAreas().get(0);
 					deviceStep.getDeviceSettings().setWorkArea(workArea);
 					if (step instanceof RobotStep) {
-						((RobotStep) step).getRobotSettings().setWorkArea(workArea);
+						((RobotStep) step).getRobotSettings().setWorkArea(workArea);						
 					}
 					// if only one clamping present: use it
-					if (workArea.getClampings().size() == 1) {
+					if (workArea.getClampings().size() > 0) {
 						Clamping clamping = workArea.getClampings().iterator().next();
 						deviceSettings.get(deviceStep.getDevice()).setClamping(workArea, clamping);
 						if (step instanceof PickStep) {
@@ -132,6 +133,12 @@ public class ProcessFlowManager {
 						}
 					}
 				}
+			}
+			if (step instanceof RobotStep) {
+				RobotStep robotStep = (RobotStep) step;
+				// we assume there always is at least one head!
+				GripperHead head = robotStep.getRobot().getGripperBody().getGripperHeads().iterator().next();
+				robotStep.getRobotSettings().setGripperHead(head);
 			}
 		}
 		ProcessFlow processFlow = new ProcessFlow("", processSteps, deviceSettings, robotSettings, new Timestamp(System.currentTimeMillis()), null);

@@ -58,8 +58,8 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 	@Override
 	protected void build() {
 		
-		setVgap(VGAP);
-		setHgap(HGAP);
+		getContents().setVgap(VGAP);
+		getContents().setHgap(HGAP);
 		
 		fulltxtFilter = new FullTextField(MAX_FILTER_LENGTH);
 		fulltxtFilter.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
@@ -144,10 +144,10 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		totalHBox.getChildren().add(hbox2);
 		int row = 0;
 		int column = 0;
-		add(totalHBox, column++, row);
+		getContents().add(totalHBox, column++, row);
 		row++;
 		column = 0;		
-		add(table, column++, row);
+		getContents().add(table, column++, row);
 		
 		setPadding(new Insets(15, 0, 0, 0));
 	}

@@ -103,10 +103,10 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	
 	@Override
 	protected void build() {
-		setVgap(15);
-		setHgap(15);
-		setAlignment(Pos.TOP_CENTER);
-		setPadding(new Insets(50, 0, 0, 0));
+		getContents().	setVgap(15);
+		getContents().setHgap(15);
+		getContents().setAlignment(Pos.TOP_CENTER);
+		getContents().setPadding(new Insets(50, 0, 0, 0));
 		HBox hboxSelectClamping = new HBox();
 		hboxSelectClamping.setAlignment(Pos.CENTER);
 		cbbClampings = new ComboBox<String>();
@@ -293,8 +293,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		gpDetails.setVisible(false);
 		GridPane.setHalignment(btnSave, HPos.CENTER);
 		
-		add(hboxSelectClamping, 0, 0);
-		add(gpDetails, 0, 1);
+		getContents().add(hboxSelectClamping, 0, 0);
+		getContents().add(gpDetails, 0, 1);
 		GridPane.setMargin(gpDetails, new Insets(25, 0, 0, 0));
 	}
 	

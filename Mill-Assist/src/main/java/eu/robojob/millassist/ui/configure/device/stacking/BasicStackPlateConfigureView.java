@@ -35,13 +35,13 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	
 	@Override
 	protected void build() {
-		setVgap(VGAP);
-		setHgap(HGAP);
-		getChildren().clear();
+		getContents().setVgap(VGAP);
+		getContents().setHgap(HGAP);
+		getContents().getChildren().clear();
 		lblStacker = new Label(Translator.getTranslation(STACKER));
 		int column = 0;
 		int row = 0;
-		add(lblStacker, column++, row);
+		getContents().add(lblStacker, column++, row);
 		cbbStacker = new ComboBox<String>();
 		cbbStacker.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		cbbStacker.valueProperty().addListener(new ChangeListener<String>() {
@@ -52,7 +52,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 				}
 			}
 		});
-		add(cbbStacker, column++, row);
+		getContents().add(cbbStacker, column++, row);
 		refresh();
 	}
 

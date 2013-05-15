@@ -26,7 +26,7 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 	private Button btnOverwrite;
 	private Button btnSaveAsNew;
 	private Button btnDelete;
-	
+
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
 	private static final int NAME_TEXTFIELD_WIDTH = 300;
@@ -53,8 +53,11 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 	
 	@Override
 	protected void build() {
-		setHgap(HGAP);
-		setVgap(VGAP);
+		getContents().setHgap(HGAP);
+		getContents().setVgap(VGAP);
+		
+		int row = 0;
+		int column = 0;
 		
 		lblName = new Label(Translator.getTranslation(NAME));
 		lblName.getStyleClass().addAll(CSS_CLASS_FORM_LABEL, CSS_CLASS_FORM_LABEL_NAME);
@@ -74,9 +77,7 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 		vboxName.getChildren().add(fulltxtName);
 		vboxName.setSpacing(VGAP / 2);
 		vboxName.setAlignment(Pos.CENTER_LEFT);
-		int row = 0;
-		int column = 0;
-		this.add(vboxName, column++, row);
+		getContents().add(vboxName, column++, row);
 	
 		btnOverwrite = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON_ICON, Translator.getTranslation(OVERWRITE), BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
@@ -103,14 +104,16 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 		
 		row++;
 		column = 0;
-		this.add(btnSaveAsNew, column++, row);
+		getContents().add(btnSaveAsNew, column++, row);
 		GridPane.setHalignment(btnSaveAsNew, HPos.CENTER);
 		row++; column = 0;
-		this.add(btnOverwrite, column++, row);
+		getContents().add(btnOverwrite, column++, row);
 		GridPane.setHalignment(btnOverwrite, HPos.CENTER);
 		row++; column = 0;
-		this.add(btnDelete, column++, row);
+		getContents().add(btnDelete, column++, row);
 		GridPane.setHalignment(btnDelete, HPos.CENTER);
+		
+		hideNotification();
 	}
 
 	@Override
@@ -121,12 +124,18 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 	@Override
 	public void refresh() {
 		fulltxtName.setText(processFlow.getName());
-		if (processFlow.getId() > 0) {
-			btnOverwrite.setDisable(false);
-			btnDelete.setDisable(false);
+		if (processFlow.getName().equals("")) {
+			btnOverwrite.setDisable(true);
+			btnSaveAsNew.setDisable(true);
 		} else {
-			btnOverwrite.setDisable(true);
-			btnOverwrite.setDisable(true);
+			btnSaveAsNew.setDisable(true);
+			if (processFlow.getId() > 0) {
+				btnOverwrite.setDisable(false);
+				btnDelete.setDisable(false);
+			} else {
+				btnOverwrite.setDisable(true);
+				btnDelete.setDisable(true);
+			}
 		}
 	}
 	

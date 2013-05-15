@@ -83,6 +83,9 @@ public class RobotManager {
 	public void updateGripper(final Gripper gripper, final String name, final String imgUrl, final float height, final boolean fixedHeight, 
 			final boolean headA, final boolean headB, final boolean headC, final boolean headD) {
 		try {
+			logger.info("About to update gripper [" + gripper.toString() + "] with following data: name [" + name +
+					"], imgUrl [" + imgUrl + "], height [" + height + "], fixedHeight [" + fixedHeight + "], " +
+					"heads (A, B, C, D) [" + headA + ", " + headB + ", " + headC + ", " + headD + "].");
 			robotMapper.updateGripperData(gripper, name, imgUrl, height, fixedHeight, headA, headB, headC, headD);
 		} catch (SQLException e) {
 			e.printStackTrace();

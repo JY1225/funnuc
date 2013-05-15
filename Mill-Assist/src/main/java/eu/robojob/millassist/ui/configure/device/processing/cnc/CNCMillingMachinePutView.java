@@ -56,8 +56,8 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	
 	public CNCMillingMachinePutView() {
 		super();
-		setVgap(VGAP);
-		setHgap(HGAP);
+		getContents().setVgap(VGAP);
+		getContents().setHgap(HGAP);
 	}
 	
 	public void setPutStep(final PutStep putStep) {
@@ -137,15 +137,15 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		
 		int column = 0;
 		int row = 0;
-		add(lblSmoothInfo, column++, row);
+		getContents().add(lblSmoothInfo, column++, row);
 		
 		column = 0;
 		row++;
-		add(hBoxSmoothPoint, column++, row);
+		getContents().add(hBoxSmoothPoint, column++, row);
 		
 		column = 0;
 		row++;
-		add(hboxAirblow, column++, row);
+		getContents().add(hboxAirblow, column++, row);
 				
 		refresh();
 	}

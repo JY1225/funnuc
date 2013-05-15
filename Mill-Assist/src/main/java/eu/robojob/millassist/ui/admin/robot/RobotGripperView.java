@@ -94,17 +94,17 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 	
 	@Override
 	protected void build() {
-		setHgap(HGAP);
-		setVgap(VGAP);
-		setAlignment(Pos.TOP_CENTER);
-		setPadding(new Insets(15, 0, 0, 0));
+		getContents().setHgap(HGAP);
+		getContents().setVgap(VGAP);
+		getContents().setAlignment(Pos.TOP_CENTER);
+		getContents().setPadding(new Insets(15, 0, 0, 0));
 		
 		ifsGrippers = new IconFlowSelector();
 		ifsGrippers.setPrefWidth(ICONFLOWSELECTOR_WIDTH);
 		
 		int column = 0;
 		int row = 0;
-		add(ifsGrippers, column++, row);
+		getContents().add(ifsGrippers, column++, row);
 		
 		HBox hboxButtons = new HBox();
 		btnEdit = createButton(EDIT_PATH, null, Translator.getTranslation(EDIT), BTN_WIDTH, BTN_HEIGHT, null);
@@ -126,7 +126,7 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		hboxButtons.getChildren().addAll(btnEdit, btnCreateNew);
 		column = 0;
 		row++;
-		add(hboxButtons, column++, row);
+		getContents().add(hboxButtons, column++, row);
 		
 		HBox hbox = new HBox();
 		
@@ -228,7 +228,7 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		
 		column = 0;
 		row++;
-		add(vboxForm, column++, row);
+		getContents().add(vboxForm, column++, row);
 		setMargin(vboxForm, new Insets(30, 0, 0, 0));
 
 		GridPane.setHalignment(vboxForm, HPos.CENTER);

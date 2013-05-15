@@ -63,7 +63,7 @@ public class ConfigureView extends VBox {
 		bottomLeft.setPrefWidth(WIDTH_BOTTOM_LEFT);
 		bottomLeft.getStyleClass().add(CSS_CLASS_BOTTOM_LEFT_PANE);
 		
-		bottomRight = new Pane();
+		bottomRight = new StackPane();
 		bottom.getChildren().add(bottomRight);
 		bottomRight.getStyleClass().add(CSS_CLASS_BOTTOM_RIGHT_PANE);
 		bottomRight.setPrefWidth(WIDTH - WIDTH_BOTTOM_LEFT);

@@ -47,10 +47,10 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	
 	@Override
 	protected void build() {
-		setAlignment(Pos.TOP_CENTER);
-		setPadding(new Insets(50, 0, 0, 0));
-		setVgap(15);
-		setHgap(15);
+		getContents().setAlignment(Pos.TOP_CENTER);
+		getContents().setPadding(new Insets(50, 0, 0, 0));
+		getContents().setVgap(15);
+		getContents().setHgap(15);
 		lblName = new Label(Translator.getTranslation(NAME));
 		fulltxtName = new FullTextField(100);
 		lblUserFrame = new Label (Translator.getTranslation(USERFRAME));
@@ -69,11 +69,11 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 		btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, null);
 		int row = 0;
 		int column = 0;
-		add(lblName, column++, row);
-		add(fulltxtName, column++, row);
+		getContents().add(lblName, column++, row);
+		getContents().add(fulltxtName, column++, row);
 		column = 0; row++;
-		add(lblUserFrame, column++, row);
-		add(cbbUserFrame, column++, row);
+		getContents().add(lblUserFrame, column++, row);
+		getContents().add(cbbUserFrame, column++, row);
 		column = 0; row++;
 		
 		int column2 = 0;
@@ -92,12 +92,12 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 		column2 = 0; row2++;
 		gp.add(lblR, column2++, row2);
 		gp.add(numtxtR, column2++, row2);
-		add(gp, column++, row, 2, 1);
+		getContents().	add(gp, column++, row, 2, 1);
 		gp.setAlignment(Pos.CENTER);
 		GridPane.setHalignment(gp, HPos.CENTER);
 		
 		column = 0; row++;
-		add(btnSave, column++, row, 2, 1);
+		getContents().add(btnSave, column++, row, 2, 1);
 		GridPane.setHalignment(btnSave, HPos.CENTER);
 	}
 

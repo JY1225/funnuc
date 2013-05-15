@@ -49,8 +49,8 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		
 	public CNCMillingMachinePickView() {
 		super();
-		setHgap(HGAP);
-		setVgap(VGAP);
+		getContents().setHgap(HGAP);
+		getContents().setVgap(VGAP);
 	}
 	
 	@Override
@@ -125,15 +125,15 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		
 		column = 0;
 		row = 0;
-		add(lblSmoothInfo, column++, row);
+		getContents().add(lblSmoothInfo, column++, row);
 		
 		column = 0;
 		row++;
-		add(hBoxSmoothPoint, column++, row);
+		getContents().add(hBoxSmoothPoint, column++, row);
 		
 		column = 0;
 		row++;
-		add(hboxAirblow, column++, row);
+		getContents().add(hboxAirblow, column++, row);
 				
 		refresh();
 	}

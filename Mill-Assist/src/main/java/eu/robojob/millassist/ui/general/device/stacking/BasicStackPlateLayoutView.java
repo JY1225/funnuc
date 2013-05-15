@@ -107,11 +107,11 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 		}
 		
 		root = null;
-		this.getChildren().clear();
+		getContents().getChildren().clear();
 		
-		this.setPrefSize(590, 300);
-		this.setMinSize(590, 300);
-		this.setMaxSize(590, 300);
+		getContents().setPrefSize(590, 300);
+		getContents().setMinSize(590, 300);
+		getContents().setMaxSize(590, 300);
 		
 		group = new Group();
 		group.setCache(true);
@@ -190,7 +190,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 		group.setLayoutX(0 - group.getBoundsInParent().getMinX());
 		group.setLayoutY(0 - group.getBoundsInParent().getMinY());
 				
-		this.add(root, 0, 0);
+		getContents().add(root, 0, 0);
 	}
 	
 	private void configureStuds() {

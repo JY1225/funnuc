@@ -62,14 +62,14 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	
 	@Override
 	protected void build() {
-		setVgap(VGAP);
-		setHgap(HGAP);
-		getChildren().clear();
+		getContents().setVgap(VGAP);
+		getContents().setHgap(HGAP);
+		getContents().getChildren().clear();
 		
 		lblMachine = new Label(Translator.getTranslation(DEVICE));
 		int column = 0;
 		int row = 0;
-		add(lblMachine, column++, row);
+		getContents().add(lblMachine, column++, row);
 		cbbMachine = new ComboBox<String>();
 		cbbMachine.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		cbbMachine.valueProperty().addListener(new ChangeListener<String>() {
@@ -82,11 +82,11 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 				}
 			}
 		});
-		add(cbbMachine, column++, row);
+		getContents().add(cbbMachine, column++, row);
 		column = 0;
 		row++;
 		lblWorkArea = new Label(Translator.getTranslation(WORKAREA));
-		add(lblWorkArea, column++, row);
+		getContents().add(lblWorkArea, column++, row);
 		cbbWorkArea = new ComboBox<String>();
 		cbbWorkArea.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		cbbWorkArea.valueProperty().addListener(new ChangeListener<String>() {
@@ -101,14 +101,14 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 				}
 			}
 		});
-		add(cbbWorkArea, column++, row);
+		getContents().add(cbbWorkArea, column++, row);
 		column = 0;
 		row++;
 		lblClampingName = new Label(Translator.getTranslation(CLAMPING));
-		add(lblClampingName, column++, row);
+		getContents().add(lblClampingName, column++, row);
 		cbbClamping = new ComboBox<String>();
 		cbbClamping.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
-		add(cbbClamping, column++, row);
+		getContents().add(cbbClamping, column++, row);
 		cbbClamping.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
@@ -140,11 +140,11 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			}
 		});
 		btnWidth.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-		add(lblClampingType, column++, row);
+		getContents().add(lblClampingType, column++, row);
 		HBox hboxBtns = new HBox();
 		hboxBtns.getChildren().add(btnLength);
 		hboxBtns.getChildren().add(btnWidth);
-		add(hboxBtns, column++, row);
+		getContents().add(hboxBtns, column++, row);
 		
 		refresh();
 	}

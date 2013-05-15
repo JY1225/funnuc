@@ -56,10 +56,10 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 
 	@Override
 	protected void build() {
-		setHgap(HGAP);
-		setVgap(VGAP);
+		getContents().setHgap(HGAP);
+		getContents().setVgap(VGAP);
 		
-		getChildren().clear();
+		getContents().getChildren().clear();
 		
 		HBox hbox = new HBox();
 		lblName = new Label(Translator.getTranslation(NAME));
@@ -80,7 +80,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		hbox.getChildren().add(fulltxtName);
 		hbox.setAlignment(Pos.CENTER_LEFT);
 		hbox.setSpacing(HGAP);
-		add(hbox, 0, 0, 2, 1);
+		getContents().add(hbox, 0, 0, 2, 1);
 		
 		btnAddDeviceStep = createButton(ADD_ICON_PATH, CSS_CLASS_ADD_ICON, Translator.getTranslation(ADD), BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
@@ -91,7 +91,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		if (!processFlowAdapter.canAddDevice()) {
 			btnAddDeviceStep.setDisable(true);
 		}
-		add(btnAddDeviceStep, 0, 1);
+		getContents().add(btnAddDeviceStep, 0, 1);
 		btnRemoveDeviceStep = createButton(DELETE_ICON_PATH, CSS_CLASS_REMOVE_ICON, Translator.getTranslation(REMOVE), BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
@@ -101,7 +101,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		if (!processFlowAdapter.canRemoveDevice()) {
 			btnRemoveDeviceStep.setDisable(true);
 		}
-		add(btnRemoveDeviceStep, 1, 1);
+		getContents().add(btnRemoveDeviceStep, 1, 1);
 	}
 	
 	@Override
