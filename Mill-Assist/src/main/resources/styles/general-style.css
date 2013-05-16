@@ -120,7 +120,7 @@
 }
 
 .pop-up-btn-pressed, .pop-up-btn:pressed {	
-	-fx-background-color: #3c4147, #292d32, #3c4147, #2a2d31;
+	-fx-background-color: #292d32, #292d32, #292d32, #2a2d31;
 }
 
 .pop-up-btn:disabled {

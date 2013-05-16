@@ -32,7 +32,7 @@ public class BasicStackPlateMenuPresenter extends AbstractMenuPresenter<BasicSta
 	}
 	
 	public void showLayout() {
-		layoutPresenter.getView().refresh();
+		//layoutPresenter.getView().refresh();
 		getParent().setBottomRight(layoutPresenter.getView());
 		getView().setLayoutActive();
 	}

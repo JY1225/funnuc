@@ -14,6 +14,7 @@ import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
+import eu.robojob.millassist.process.ProcessingStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
@@ -124,6 +125,19 @@ public class AutomateFixedControllingThread extends Thread {
 			}
 			checkStatus();
 			processFlowExecutor1 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_0_ID);
+			if (processFlow.getCurrentIndex(WORKPIECE_0_ID) > 0) {
+				// process has already passed some steps, check if current step is processing in machine
+				AbstractProcessStep step = processFlow.getStep(processFlow.getCurrentIndex(WORKPIECE_0_ID));
+				if (step instanceof ProcessingStep) {
+					if (((ProcessingStep) step).getDevice() instanceof AbstractCNCMachine) {
+						if (processFlow.getCurrentIndex(WORKPIECE_1_ID) == 0) {
+							processFlowExecutor2 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_1_ID);
+							firstPiece = false;
+							ThreadManager.submit(processFlowExecutor2);
+						}
+					}
+				}
+			}
 			ThreadManager.submit(processFlowExecutor1);
 			synchronized(finishedSyncObject) {
 				finishedSyncObject.wait();
