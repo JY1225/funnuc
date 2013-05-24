@@ -8,7 +8,7 @@
 	-fx-background-color: #292d32, #2d2f36, #5a606b, #42454e, linear-gradient(#656c7b 0%, #424750 50%, #3d4148 50% , #4c505a 100%);
 	-fx-background-insets: 0 0 0 0, 0 0 1 0, 0 0 1 0, 0 0 1 0, 0 0 2 0;
 	-fx-padding: 0;
-	-fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.3), 5, 0.0, 0, 2);
+	-fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.2), 5, 0.0, 0, 2);
 }
 
 .header-button {

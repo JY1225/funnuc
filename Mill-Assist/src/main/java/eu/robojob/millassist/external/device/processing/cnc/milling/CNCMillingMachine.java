@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
@@ -22,6 +25,7 @@ import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarm;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineConstants;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMonitoringThread;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
+import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.threading.ThreadManager;
@@ -36,21 +40,24 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int CLAMP_TIMEOUT = 1 * 60 * 1000;
 	private static final int UNCLAMP_TIMEOUT = 1 * 60 * 1000;
 	private static final int PUT_ALLOWED_TIMEOUT = 2 * 60 * 1000;
-	private static final int START_CYCLE_TIMEOUT = 2 * 60 * 1000;
-	private static final int CYCLE_FINISHED_TIMEOUT = Integer.MAX_VALUE;
+	private static final int START_CYCLE_TIMEOUT = 1 * 60 * 1000;
 	private static final int SLEEP_TIME_AFTER_RESET = 2500;
 	
-	public CNCMillingMachine(final String name, final Set<Zone> zones, final SocketConnection socketConnection, final float clampingLengthR, final float clampingWidthR) {
-		super(name, zones, clampingLengthR, clampingWidthR);
+	private static final int M_CODE_LOAD = 0;
+	private static final int M_CODE_UNLOAD = 1;
+	
+	private static Logger logger = LogManager.getLogger(CNCMillingMachine.class.getName());
+	
+	public CNCMillingMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final SocketConnection socketConnection, final float clampingLengthR, final float clampingWidthR) {
+		super(name, wayOfOperating, mCodeAdapter, zones, clampingLengthR, clampingWidthR);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
 		// start monitoring thread at creation of this object
 		ThreadManager.submit(cncMachineMonitoringThread);
 	}
 	
-	public CNCMillingMachine(final String name, final SocketConnection socketConnection, final float clampingLengthR, final float clampingWidthR) {
-		this(name, new HashSet<Zone>(), socketConnection, clampingLengthR, clampingWidthR);
-		
+	public CNCMillingMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final SocketConnection socketConnection, final float clampingLengthR, final float clampingWidthR) {
+		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), socketConnection, clampingLengthR, clampingWidthR);
 	}
 	
 	public CNCMachineSocketCommunication getCNCMachineSocketCommunication() {
@@ -65,6 +72,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		int alarmReg1 = alarmInts.get(0);
 		int alarmReg2 = alarmInts.get(1);
 		setAlarms(CNCMachineAlarm.parseCNCAlarms(alarmReg1, alarmReg2, getCncMachineTimeout()));
+		if (getWayOfOperating() == WayOfOperating.M_CODES) {
+			// read robot service 
+			int robotServiceInputs = (cncMachineCommunication.readRegisters(CNCMachineConstants.IPC_READ_REQUEST_3, 1)).get(0);
+			getMCodeAdapter().updateRobotServiceInputs(robotServiceInputs);
+		}
 	}
 	
 	@Override
@@ -124,7 +136,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		//FIXME review! potential problems with reset in double processflow execution
 		clearIndications();
-		reset();
 		int command = CNCMachineConstants.CNC_PROCESS_TYPE_WA1_TASK;
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.CNC_PROCESS_TYPE, registers);
@@ -132,29 +143,40 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	@Override
 	public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws SocketResponseTimedOutException, SocketDisconnectedException, DeviceActionException, InterruptedException {
-		// check a valid workarea is selected 
-		if (!getWorkAreaNames().contains(startCylusSettings.getWorkArea().getName())) {
-			throw new IllegalArgumentException("Unknown workarea: " + startCylusSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
-		}
-		int command = 0;
-		command = command | CNCMachineConstants.IPC_CYCLESTART_WA1_REQUEST;
-		
-		int[] registers = {command};
-		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
-		boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
-		if (!cycleStartReady) {
-			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
-			waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1);
-			setCncMachineTimeout(null);
-		}
-		// we now wait for pick requested
-		boolean cycleFinished =  waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED, CYCLE_FINISHED_TIMEOUT);
-		if (!cycleFinished) {
-			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_END_TIMEOUT));
+		if (getWayOfOperating() == WayOfOperating.START_STOP) {
+			// check a valid workarea is selected 
+			if (!getWorkAreaNames().contains(startCylusSettings.getWorkArea().getName())) {
+				throw new IllegalArgumentException("Unknown workarea: " + startCylusSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
+			}
+			int command = 0;
+			command = command | CNCMachineConstants.IPC_CYCLESTART_WA1_REQUEST;
+			
+			int[] registers = {command};
+			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
+			boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
+			if (!cycleStartReady) {
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
+				waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1);
+				setCncMachineTimeout(null);
+			}
+			// we now wait for pick requested
 			waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED);
-			setCncMachineTimeout(null);
+		} else if (getWayOfOperating() == WayOfOperating.M_CODES) {
+			// we sign of the m code for put
+			if (getWayOfOperating() == WayOfOperating.M_CODES) {
+				Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
+				int command = 0;
+				if (robotServiceOutputs.contains(0)) {
+					logger.info("AFMELDEN M-CODE 0");
+					command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
+				}
+				int[] registers = {command};
+				cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+			}
+			waitForMCode(M_CODE_UNLOAD);
+		} else {
+			throw new IllegalStateException("Unknown way of operating: " + getWayOfOperating());
 		}
-		//nCReset();
 	}
 
 	@Override
@@ -163,6 +185,12 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (!getWorkAreaNames().contains(pickSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + pickSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
+
+		// if way of operation is m codes, await unloading m code!
+		if (getWayOfOperating() == WayOfOperating.M_CODES) {
+			waitForMCode(M_CODE_UNLOAD);
+		}
+		
 		int command = 0;
 		//TODO for now WA1 is always used
 		command = command | CNCMachineConstants.IPC_PICK_WA1_RQST;
@@ -170,7 +198,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 
-		// check put is prepared
+		// check pick is prepared
 		boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA1_READY, PREPARE_PICK_TIMEOUT);
 		if (!pickReady) {
 			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
@@ -185,6 +213,12 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
+		
+		// if way of operation is m codes, await unloading m code!
+		if (getWayOfOperating() == WayOfOperating.M_CODES) {
+			waitForMCode(M_CODE_LOAD);
+		}
+		
 		int command = 0;
 		//TODO for now WA1 is always used
 		command = command | CNCMachineConstants.IPC_PUT_WA1_REQUEST;
@@ -273,9 +307,23 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		indicateOperatorRequested(true);
 	}
 	
+	@Override 
+	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, InterruptedException {
+		if (getWayOfOperating() == WayOfOperating.M_CODES) {
+			Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD).getRobotServiceOutputsUsed();
+			int command = 0;
+			if (robotServiceOutputs.contains(0)) {
+				logger.info("AFMELDEN M-CODE 0");
+				command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
+			}
+			int[] registers = {command};
+			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+		}	
+	}
+	
+	@Override 
+	public void putFinished(final DevicePutSettings putSettings) throws AbstractCommunicationException, InterruptedException {}
 	// these are not taken into account by the machine for now...
-	@Override public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException { }
-	@Override public void putFinished(final DevicePutSettings putSettings) throws AbstractCommunicationException { }
 	@Override public void interventionFinished(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException { }
 	@Override public void prepareForStartCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException { }
 

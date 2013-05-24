@@ -23,6 +23,7 @@ import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.GripperHead;
 import eu.robojob.millassist.external.robot.RobotManager;
 import eu.robojob.millassist.external.robot.RobotSettings;
+import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
@@ -127,9 +128,13 @@ public class ProcessFlowManager {
 						Clamping clamping = workArea.getClampings().iterator().next();
 						deviceSettings.get(deviceStep.getDevice()).setClamping(workArea, clamping);
 						if (step instanceof PickStep) {
-							((PickStep) step).getRobotSettings().setSmoothPoint(clamping.getSmoothFromPoint());
+							if (((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
+								((PickStep) step).getRobotSettings().setSmoothPoint(new Coordinates(clamping.getSmoothFromPoint()));
+							}
 						} else if (step instanceof PutStep) {
-							((PutStep) step).getRobotSettings().setSmoothPoint(clamping.getSmoothToPoint());
+							if (((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
+								((PutStep) step).getRobotSettings().setSmoothPoint(new Coordinates(clamping.getSmoothToPoint()));
+							}
 						}
 					}
 				}

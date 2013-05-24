@@ -128,7 +128,7 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 			btnOverwrite.setDisable(true);
 			btnSaveAsNew.setDisable(true);
 		} else {
-			btnSaveAsNew.setDisable(true);
+			btnSaveAsNew.setDisable(false);
 			if (processFlow.getId() > 0) {
 				btnOverwrite.setDisable(false);
 				btnDelete.setDisable(false);

@@ -149,9 +149,14 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 		hbox.getChildren().add(label);
 		HBox.setHgrow(label, Priority.ALWAYS);
 		hbox.setPrefSize(width, height);
+		hbox.setMinSize(width, height);
+		hbox.setMaxSize(width, height);
 		hbox.getStyleClass().add(CSS_CLASS_FORM_BUTTON_PANEL);
 		button.setOnAction(handler);
 		button.setGraphic(hbox);
+		button.setPrefSize(width, height);
+		button.setMinSize(width, height);
+		button.setMaxSize(width, height);
 		button.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
 		return button;
 	}
@@ -171,7 +176,12 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 		hbox.getChildren().add(label);
 		HBox.setHgrow(label, Priority.ALWAYS);
 		hbox.setPrefSize(width, height);
+		hbox.setMinSize(width, height);
+		hbox.setMaxSize(width, height);
 		hbox.getStyleClass().add(CSS_CLASS_FORM_BUTTON_PANEL);
+		button.setPrefSize(width, height);
+		button.setMinSize(width, height);
+		button.setMaxSize(width, height);
 		button.setOnAction(handler);
 		button.setGraphic(hbox);
 		button.getStyleClass().add(CSS_CLASS_FORM_BUTTON);

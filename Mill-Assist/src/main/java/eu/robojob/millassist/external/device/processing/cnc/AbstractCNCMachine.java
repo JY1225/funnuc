@@ -3,6 +3,7 @@ package eu.robojob.millassist.external.device.processing.cnc;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,31 +16,35 @@ import eu.robojob.millassist.external.device.DeviceType;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
+import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
 
 public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 
 	private Set<CNCMachineListener> listeners;
-	
 	private Set<CNCMachineAlarm> alarms;
 	private int currentStatus;
-	
 	private boolean statusChanged;
 	private Object syncObject;
-	
 	private boolean stopAction;
-	
 	private CNCMachineAlarm cncMachineTimeout;
-
 	private float clampingWidthR;
-
 	private float clampingLengthR;
+	private WayOfOperating wayOfOperating;
+	private MCodeAdapter mCodeAdapter;
+	
+	public enum WayOfOperating {
+		START_STOP, M_CODES
+	};
 	
 	private static Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());
 	
 	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "AbstractCNCMachine.disconnectedWhileWaiting";
+	private static final String EXCEPTION_WHILE_WAITING = "AbstractCNCMachine.exceptionWhileWaiting";
 	
-	public AbstractCNCMachine(final String name, final Set<Zone> zones, final float clampingLengthR, final float clampingWidthR) {
+	public AbstractCNCMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final float clampingLengthR, final float clampingWidthR) {
 		super(name, zones, true);
+		this.mCodeAdapter = mCodeAdapter;
+		this.wayOfOperating = wayOfOperating;
 		this.statusChanged = false;
 		syncObject = new Object();
 		this.alarms = new HashSet<CNCMachineAlarm>();
@@ -50,10 +55,26 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.clampingWidthR = clampingWidthR;
 	}
 	
-	public AbstractCNCMachine(final String name, final float clampingLengthR, final float clampingWidthR) {
-		this(name, new HashSet<Zone>(), clampingLengthR, clampingWidthR);
+	public AbstractCNCMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final float clampingLengthR, final float clampingWidthR) {
+		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), clampingLengthR, clampingWidthR);
 	}
 	
+	public WayOfOperating getWayOfOperating() {
+		return wayOfOperating;
+	}
+
+	public void setWayOfOperating(final WayOfOperating wayOfOperating) {
+		this.wayOfOperating = wayOfOperating;
+	}
+	
+	public MCodeAdapter getMCodeAdapter() {
+		return mCodeAdapter;
+	}
+	
+	public void setMCodeAdapter(final MCodeAdapter mCodeAdapter) {
+		this.mCodeAdapter = mCodeAdapter;
+	}
+
 	public CNCMachineAlarm getCncMachineTimeout() {
 		return cncMachineTimeout;
 	}
@@ -148,11 +169,25 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	public abstract void clearIndications() throws AbstractCommunicationException, InterruptedException;
 	
 	protected boolean waitForStatus(final int status, final long timeout) throws InterruptedException, DeviceActionException {
+		return waitForStatusCondition(new Callable<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				return ((currentStatus & status) > 0);
+			}
+		}, timeout);
+	}
+	
+	protected boolean waitForStatusCondition(final Callable<Boolean> condition, final long timeout) throws InterruptedException, DeviceActionException {
 		long waitedTime = 0;
 		stopAction = false;
 		// check status before we start
-		if ((currentStatus & status) > 0) {
-			return true;
+		try {
+			if (condition.call()) {
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new DeviceActionException(this, EXCEPTION_WHILE_WAITING);
 		}
 		// also check connection status
 		if (!isConnected()) {
@@ -164,6 +199,14 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 			if ((timeout == 0) || ((timeout > 0) && (timeout > waitedTime))) {
 				long timeBeforeWait = System.currentTimeMillis();
 				synchronized (syncObject) {
+					try {
+						if (condition.call()) {
+							return true;
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw new DeviceActionException(this, EXCEPTION_WHILE_WAITING);
+					}
 					if (timeout > 0) {
 						syncObject.wait(timeout - waitedTime);
 					} else {
@@ -173,16 +216,21 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 				// at this point the wait is finished, either by a notify (status changed, or request to stop), or by a timeout
 				if (stopAction) {
 					stopAction = false;
-					throw new InterruptedException("Waiting for status: " + status + " got interrupted");
+					throw new InterruptedException("Waiting for status got interrupted");
 				}
 				// just to be sure, check connection
 				if (!isConnected()) {
 					throw new DeviceActionException(this, EXCEPTION_DISCONNECTED_WHILE_WAITING);
 				}
 				// check if status has changed
-				if ((statusChanged) && ((currentStatus & status) > 0)) {
-					statusChanged = false;
-					return true;
+				try {
+					if ((statusChanged) && (condition.call())) {
+						statusChanged = false;
+						return true;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw new DeviceActionException(this, EXCEPTION_WHILE_WAITING);
 				}
 				// update waited time
 				waitedTime += System.currentTimeMillis() - timeBeforeWait;
@@ -195,6 +243,16 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	protected void waitForStatus(final int status) throws DeviceActionException, InterruptedException {
 		waitForStatus(status, 0);
+	}
+	
+	protected boolean waitForMCode(final int index) throws InterruptedException, DeviceActionException {
+		logger.info("Waiting for M CODE: " + index);
+		return waitForStatusCondition(new Callable<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				return mCodeAdapter.isMCodeActive(index);
+			}
+		}, 0);
 	}
 	
 	@Override

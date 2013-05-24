@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.threading.MonitoringThread;
 
 public class CNCMachineMonitoringThread extends Thread implements MonitoringThread {
@@ -17,12 +18,14 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 	private boolean alive;
 	private int previousStatus;
 	private Set<CNCMachineAlarm> previousAlarms;
+	private Set<Integer> previousActiveMCodes;
 	
 	private static Logger logger = LogManager.getLogger(CNCMachineMonitoringThread.class.getName());
 	
 	public CNCMachineMonitoringThread(final AbstractCNCMachine cncMachine) {
 		this.cncMachine = cncMachine;
 		this.alive = true;
+		this.previousActiveMCodes = new HashSet<Integer>();
 		this.previousAlarms = new HashSet<CNCMachineAlarm>();
 	}
 	
@@ -34,10 +37,22 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 					try {
 						cncMachine.updateStatusAndAlarms();
 						int status = cncMachine.getStatus();
-						if (status != previousStatus) {
-							cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.STATUS_CHANGED));
+						if (cncMachine.getWayOfOperating() == WayOfOperating.START_STOP) {
+							if (status != previousStatus) {
+								cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.STATUS_CHANGED));
+							}
+							this.previousStatus = status;
+						} else if (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES) {
+							Set<Integer> activeMCodes = new HashSet<Integer>();
+							activeMCodes = cncMachine.getMCodeAdapter().getActiveMCodes();
+							if ((status != previousStatus) || (!previousActiveMCodes.containsAll(activeMCodes)) 
+									|| (!activeMCodes.containsAll(previousActiveMCodes))) {
+								logger.info("STATUS CHANGED! : " + activeMCodes);
+								cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.STATUS_CHANGED));
+							}
+							this.previousStatus = status;
+							this.previousActiveMCodes = new HashSet<Integer>(activeMCodes);
 						}
-						this.previousStatus = status;
 						Set<CNCMachineAlarm> alarms = cncMachine.getAlarms();
 						if ((!previousAlarms.containsAll(alarms)) || (!alarms.containsAll(previousAlarms))) {
 							cncMachine.processCNCMachineEvent(new CNCMachineAlarmsOccuredEvent(cncMachine, alarms));
@@ -51,6 +66,7 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 						}
 					} catch (Exception e) {
 						logger.error(e);
+						e.printStackTrace();
 					}
 				}
 				try {

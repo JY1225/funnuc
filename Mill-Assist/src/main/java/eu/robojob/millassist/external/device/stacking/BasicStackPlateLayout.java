@@ -298,6 +298,9 @@ public class BasicStackPlateLayout {
 			return false;
 		}
 		double overflowHorR = length - remainingStuds * horizontalHoleDistance + studDiameter/2 - horizontalPadding;
+		if ((overflowHorR + horizontalPadding - studDiameter/2)/width >= 0.5) {
+			return false;
+		}
 		if ((overflowHorR < 0) || ((Math.pow(overflowHorR, 2)/surface < overFlowPercentage) && (overflowHorR < MAX_OVERFLOW))) {
 			return true;
 		}
@@ -382,7 +385,7 @@ public class BasicStackPlateLayout {
 		}
 		// no corner piece used, or corner piece because of width
 		int extraStudsLeft = 0;
-		while (width - a - extraStudsLeft*b - extraSpace > interferenceDistance) {
+		while (a + extraStudsLeft*b + extraSpace - width < interferenceDistance) {
 			extraStudsLeft++;
 		}
 		int amountOfStudsLeftOther = extraStudsLeft + 2;	// also added the aligning stud of this one and the wp to the left

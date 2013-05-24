@@ -103,7 +103,7 @@
 /* ---------- TRANSPORT BUTTON ---------- */
 
 .transport-button, .transport-button-wrapper:pressed .transport-button.unclickable {
-	-fx-background-color: linear-gradient(#39bee5 0%, #0fa3ce 100%), #5bd8fc, #35bfe7;
+	-fx-background-color: linear-gradient(#41caf2 0%, #0fa3ce 100%), #41caf2, #35bfe7;
 	-fx-background-insets: 0, 1, 2 1 1 1;
 	-fx-effect: dropshadow(one-pass-box, #b4b4b4, 5, 0.0, 0, 2);
 }

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.db.external.device.DeviceMapper;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
@@ -188,12 +190,15 @@ public class DeviceManager {
 		}		
 	}
 	
-	public void updateCNCMachineData(final CNCMillingMachine cncMachine, final String name, final String ipAddress, 
-			final int port, final String workAreaName, final String userFramename, final float clampingLengthR, 
-				final float clampingWidthR) {
+	public void updateCNCMachineData(final CNCMillingMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
+			final String ipAddress, final int port, final String workAreaName, final String userFramename, 
+				final float clampingLengthR, final float clampingWidthR, final List<String> robotServiceInputNames, 
+					final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
+						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) {
 		try {
-			deviceMapper.updateCNCMachine(cncMachine, name, ipAddress, port, workAreaName, userFramename, clampingLengthR, 
-					clampingWidthR);
+			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port, workAreaName, userFramename, clampingLengthR, 
+					clampingWidthR, robotServiceInputNames, robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs,
+						mCodeRobotServiceOutputs);
 		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();

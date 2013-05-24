@@ -1,11 +1,12 @@
 package eu.robojob.millassist.ui.admin.device.cnc;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javafx.application.Platform;
-
 import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
@@ -24,10 +25,11 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		super(view);
 		this.deviceManager = deviceManager;
 		this.cncMachine = (CNCMillingMachine) deviceManager.getCNCMachines().iterator().next();
+		getView().build();
 		getView().setCNCMachine(cncMachine);
 		cncMachine.addListener(this);
-		getView().build();
 		getView().refresh();
+		setWayOfOperating(cncMachine.getWayOfOperating());
 	}
 
 	@Override
@@ -52,9 +54,29 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		getView().setUserFrameNames(userFrameNames);
 	}
 	
-	public void saveData(final String name, final String ip, final int port, final String workAreaName, final String userFramename,
-			final float clampingLengthR, final float clampingWidthR) {
-		deviceManager.updateCNCMachineData(cncMachine, name, ip, port, workAreaName, userFramename, clampingLengthR, clampingWidthR);
+	public void setWayOfOperating(final WayOfOperating wayOfOperating) {
+		if (wayOfOperating == WayOfOperating.M_CODES) {
+			getView().setMCodeActive(true);
+		} else {
+			getView().setMCodeActive(false);
+		}
+	}
+	
+	public void saveData() {
+		String name = getView().getName();
+		String ip = getView().getIp();
+		int port = getView().getPort();
+		String workAreaName = getView().getWA1();
+		String userFrameName = getView().getUserFrameName();
+		float clampingLengthR = getView().getLengthR();
+		float clampingWidthR = getView().getWidthR();
+		WayOfOperating wayOfOperating = getView().getWayOfOperating();
+		List<String> robotServiceInputNames = getView().getRobotServiceInputNames();
+		List<String> robotServiceOutputNames = getView().getRobotServiceOutputNames();
+		deviceManager.updateCNCMachineData(cncMachine, name, wayOfOperating, ip, port, workAreaName, userFrameName, clampingLengthR, 
+				clampingWidthR, robotServiceInputNames, robotServiceOutputNames, 
+					getView().getMCodeNames(), getView().getMCodeRobotServiceInputs(), 
+						getView().getMCodeRobotServiceOutputs());
 		getView().refresh();
 	}
 
@@ -63,7 +85,7 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				getView().refresh();
+				getView().refreshStatus();
 			}
 		});
 	}
@@ -73,7 +95,7 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				getView().refresh();
+				getView().refreshStatus();
 			}
 		});
 	}
@@ -83,7 +105,7 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				getView().refresh();
+				getView().refreshStatus();
 			}
 		});
 	}
