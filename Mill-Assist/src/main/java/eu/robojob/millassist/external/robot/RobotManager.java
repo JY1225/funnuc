@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.db.external.robot.RobotMapper;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
-import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlowManager;
 
 public class RobotManager {
@@ -94,14 +93,6 @@ public class RobotManager {
 	}
 	
 	public void deleteGripper(final Gripper gripper) {
-		// delete all processes using this gripper!
-		for (ProcessFlow processFlow : processFlowManager.getProcessFlows()) {
-			for (RobotSettings robotSettings : processFlow.getRobotSettings().values()) {
-				if (robotSettings.getGrippers().values().contains(gripper)) {
-					processFlowManager.deleteProcessFlow(processFlow);
-				}
-			}
-		}
 		for (RobotSettings robotSettings : processFlowManager.getActiveProcessFlow().getRobotSettings().values()) {
 			for (Entry<GripperHead, Gripper> entry : robotSettings.getGrippers().entrySet()) {
 				if (entry.getValue().equals(gripper)) {

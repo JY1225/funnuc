@@ -241,7 +241,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		});
 		btnTilted.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
 		orientationsBox.getChildren().add(btnTilted);
-		orientationsBox.setAlignment(Pos.CENTER);
+		orientationsBox.setAlignment(Pos.CENTER_LEFT);
 		row = 0;
 		column = 4;
 		getContents().add(lblOrientation, column++, row);

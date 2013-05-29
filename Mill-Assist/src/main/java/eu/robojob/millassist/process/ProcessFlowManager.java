@@ -41,6 +41,7 @@ public class ProcessFlowManager {
 	public ProcessFlowManager(final ProcessFlowMapper processFlowMapper, final DeviceManager deviceManager, final RobotManager robotManager) {
 		this.processFlowMapper = processFlowMapper;
 		this.deviceManager = deviceManager;
+		this.deviceManager.setProcessFlowManager(this);
 		this.robotManager = robotManager;
 		this.robotManager.setProcessFlowManager(this);
 	}
@@ -123,7 +124,7 @@ public class ProcessFlowManager {
 					if (step instanceof RobotStep) {
 						((RobotStep) step).getRobotSettings().setWorkArea(workArea);						
 					}
-					// if only one clamping present: use it
+					// if clampings present: use them
 					if (workArea.getClampings().size() > 0) {
 						Clamping clamping = workArea.getClampings().iterator().next();
 						deviceSettings.get(deviceStep.getDevice()).setClamping(workArea, clamping);
@@ -132,7 +133,7 @@ public class ProcessFlowManager {
 								((PickStep) step).getRobotSettings().setSmoothPoint(new Coordinates(clamping.getSmoothFromPoint()));
 							}
 						} else if (step instanceof PutStep) {
-							if (((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
+							if (((PutStep) step).getDevice() instanceof AbstractCNCMachine) {
 								((PutStep) step).getRobotSettings().setSmoothPoint(new Coordinates(clamping.getSmoothToPoint()));
 							}
 						}

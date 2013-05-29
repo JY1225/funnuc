@@ -43,6 +43,7 @@
 	-fx-background-color: #45474b, #3a3d42, #5d6067, linear-gradient(#4f5157 0%, #43454a 100%); 
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1, 3 2 3 2;
 	-fx-background-radius: 3, 3, 2, 2;
+	-fx-padding: 0;
 }
 
 .yellow {
@@ -111,3 +112,4 @@
 .yellow {
 	-fx-background-color: yellow;
 }
+

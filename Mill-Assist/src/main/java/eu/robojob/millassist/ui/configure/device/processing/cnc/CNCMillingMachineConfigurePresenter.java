@@ -138,6 +138,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 				&& (robotPickSettings.getWorkArea() != null)
 				&& (pickSettings.getWorkArea().equals(robotPickSettings.getWorkArea()))
 				&& (pickSettings.getWorkArea().getActiveClamping() != null)
+				&& (deviceSettings.getClamping(pickSettings.getWorkArea()) != null)
 				&& (deviceSettings.getClamping(pickSettings.getWorkArea()).equals(pickSettings.getWorkArea().getActiveClamping()))
 				&& (startCyclusSettings.getWorkArea() != null)
 				&& (startCyclusSettings.getWorkArea().getActiveClamping() != null)

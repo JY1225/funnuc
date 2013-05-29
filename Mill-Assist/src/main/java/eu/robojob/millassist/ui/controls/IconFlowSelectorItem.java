@@ -1,11 +1,14 @@
 package eu.robojob.millassist.ui.controls;
 
+import java.io.File;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import eu.robojob.millassist.util.UIConstants;
 
 public class IconFlowSelectorItem extends VBox {
 		
@@ -40,12 +43,18 @@ public class IconFlowSelectorItem extends VBox {
 	
 	private void build() {
 		this.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM);
-		if (iconUrl != null) {
-			imgIcon = new Image(iconUrl, IMG_WIDTH, IMG_HEIGHT, true, true);
-			imgvwIconVw = new ImageView(imgIcon);
-			imgvwIconVw.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM_ICON);
-			this.getChildren().add(imgvwIconVw);
+		String url = iconUrl;
+		if (url != null) {
+			url = url.replace("file:///", "");
 		}
+		if ((url != null) && ((new File(url)).exists() || getClass().getClassLoader().getResource(url) != null)) {
+			imgIcon = new Image(iconUrl, IMG_WIDTH, IMG_HEIGHT, true, true);
+		} else {
+			imgIcon = new Image(UIConstants.IMG_NOT_FOUND_URL, IMG_WIDTH, IMG_HEIGHT, true, true);
+		}
+		imgvwIconVw = new ImageView(imgIcon);
+		imgvwIconVw.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM_ICON);
+		this.getChildren().add(imgvwIconVw);
 		if (name != null) {
 			lblName = new Label(name);
 			lblName.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM_LABEL);

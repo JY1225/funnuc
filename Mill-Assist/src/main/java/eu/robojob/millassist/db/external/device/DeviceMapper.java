@@ -15,6 +15,7 @@ import eu.robojob.millassist.db.external.util.ConnectionMapper;
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.Clamping.Type;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
@@ -95,8 +96,10 @@ public class DeviceMapper {
 			float overflowPercentage = results.getFloat("OVERFLOWPERCENTAGE");
 			float horizontalR = results.getFloat("HORIZONTAL_R");
 			float tiltedR = results.getFloat("TILTED_R");
+			double maxOverflow = results.getDouble("MAX_OVERFLOW");
+			double minOverlap = results.getDouble("MIN_OVERLAP");
 			BasicStackPlateLayout layout = new BasicStackPlateLayout(horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, horizontalPadding, verticalPaddingTop, 
-					verticalPaddingBottom, horizontalHoleDistance, interferenceDistance, overflowPercentage, horizontalR, tiltedR);
+					verticalPaddingBottom, horizontalHoleDistance, interferenceDistance, overflowPercentage, horizontalR, tiltedR, maxOverflow, minOverlap);
 			stackPlate = new BasicStackPlate(name, zones, layout);
 			stackPlate.setId(id);
 		}
@@ -358,7 +361,8 @@ public class DeviceMapper {
 	public void updateBasicStackPlate(final BasicStackPlate basicStackPlate, final String name, final String userFrameName, final int horizontalHoleAmount, final int verticalHoleAmount, 
 			final float holeDiameter, final float studDiameter, final float horizontalHoleDistance, final float horizontalPadding, 
 			final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage,
-			final float horizontalR, final float tiltedR, final float smoothToX, final float smoothToY, final float smoothToZ,
+			final float horizontalR, final float tiltedR, final float maxOverlow, final float minOverlap, 
+			final float smoothToX, final float smoothToY, final float smoothToZ,
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		if ((!basicStackPlate.getWorkAreas().get(0).getUserFrame().getName().equals(userFrameName))) {
@@ -368,7 +372,7 @@ public class DeviceMapper {
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE STACKPLATE SET HORIZONTALHOLEAMOUNT = ?, VERTICALHOLEAMOUNT = ?, HOLEDIAMETER = ?, " +
 				"STUDDIAMETER = ?, HORIZONTALPADDING = ?, VERTICALPADDINGTOP = ?, VERTICALPADDINGBOTTOM = ?, HORIZONTALHOLEDISTANCE = ?, INTERFERENCEDISTANCE = ?, " +
-				" OVERFLOWPERCENTAGE = ?, HORIZONTAL_R = ?, TILTED_R = ? WHERE ID = ?");
+				" OVERFLOWPERCENTAGE = ?, HORIZONTAL_R = ?, TILTED_R = ?, MAX_OVERFLOW = ?, MIN_OVERLAP = ? WHERE ID = ?");
 		stmt.setInt(1, horizontalHoleAmount);
 		stmt.setInt(2, verticalHoleAmount);
 		stmt.setFloat(3, holeDiameter);
@@ -381,7 +385,9 @@ public class DeviceMapper {
 		stmt.setFloat(10, overflowPercentage);
 		stmt.setFloat(11, horizontalR);
 		stmt.setFloat(12, tiltedR);
-		stmt.setInt(13, basicStackPlate.getId());
+		stmt.setFloat(13, maxOverlow);
+		stmt.setFloat(14, minOverlap);
+		stmt.setInt(15, basicStackPlate.getId());
 		stmt.execute();
 		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
 		stmt2.setString(1, name);
@@ -410,6 +416,8 @@ public class DeviceMapper {
 		basicStackPlate.getLayout().setHorizontalHoleDistance(horizontalHoleDistance);
 		basicStackPlate.getLayout().setInterferenceDistance(interferenceDistance);
 		basicStackPlate.getLayout().setOverflowPercentage(overflowPercentage);
+		basicStackPlate.getLayout().setMaxOverflow(maxOverlow);
+		basicStackPlate.getLayout().setMinOverlap(minOverlap);
 		basicStackPlate.getLayout().setHorizontalR(horizontalR);
 		basicStackPlate.getLayout().setTiltedR(tiltedR);
 	}
@@ -542,5 +550,112 @@ public class DeviceMapper {
 		}
 		mCodeAdapter.setGenericMCodes(mCodes);
 		return mCodeAdapter;
+	}
+	
+	public void updateClamping(final Clamping clamping, final String name, final Clamping.Type type, final float height, 
+			final String imagePath, final float x, final float y, final float z, final float r, final float smoothToX, 
+			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		Coordinates relPos = clamping.getRelativePosition();
+		relPos.setX(x);
+		relPos.setY(y);
+		relPos.setZ(z);
+		relPos.setR(r);
+		generalMapper.saveCoordinates(relPos);
+		Coordinates smoothTo = clamping.getSmoothToPoint();
+		smoothTo.setX(smoothToX);
+		smoothTo.setY(smoothToY);
+		smoothTo.setZ(smoothToZ);
+		generalMapper.saveCoordinates(smoothTo);
+		Coordinates smoothFrom = clamping.getSmoothFromPoint();
+		smoothFrom.setX(smoothFromX);
+		smoothFrom.setY(smoothFromY);
+		smoothFrom.setZ(smoothFromZ);
+		generalMapper.saveCoordinates(smoothFrom);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE CLAMPING " +
+				"SET NAME = ?, TYPE = ?, HEIGHT = ?, IMAGEPATH = ? WHERE ID = ?");
+		stmt.setString(1, name);
+		int typeInt = 0;
+		if (type == Type.CENTRUM) {
+			typeInt = CLAMPING_TYPE_CENTRUM;
+		} else if (type == Type.FIXED) {
+			typeInt = CLAMPING_TYPE_FIXED;
+		} else if (type == Type.NONE) {
+			typeInt = CLAMPING_TYPE_NONE;
+		}
+		stmt.setInt(2, typeInt);
+		stmt.setFloat(3, height);
+		stmt.setString(4, imagePath);
+		stmt.setInt(5, clamping.getId());
+		stmt.executeUpdate();
+		clamping.setName(name);
+		clamping.setType(type);
+		clamping.setHeight(height);
+		clamping.setImageUrl(imagePath);
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void saveClamping(final Clamping clamping, final Set<WorkArea> workAreas) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		generalMapper.saveCoordinates(clamping.getRelativePosition());
+		generalMapper.saveCoordinates(clamping.getSmoothToPoint());
+		generalMapper.saveCoordinates(clamping.getSmoothFromPoint());
+		int typeInt = 0;
+		if (clamping.getType() == Type.CENTRUM) {
+			typeInt = CLAMPING_TYPE_CENTRUM;
+		} else if (clamping.getType() == Type.FIXED) {
+			typeInt = CLAMPING_TYPE_FIXED;
+		} else if (clamping.getType() == Type.NONE) {
+			typeInt = CLAMPING_TYPE_NONE;
+		} else {
+			throw new IllegalStateException("Unknown clamp type: " + clamping.getType());
+		}
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO CLAMPING (NAME, TYPE, RELATIVE_POSITION, " +
+				"SMOOTH_TO, SMOOTH_FROM, IMAGE_URL, HEIGHT) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		stmt.setString(1, clamping.getName());
+		stmt.setInt(2, typeInt);
+		stmt.setInt(3, clamping.getRelativePosition().getId());
+		stmt.setInt(4, clamping.getSmoothToPoint().getId());
+		stmt.setInt(5, clamping.getSmoothFromPoint().getId());
+		stmt.setString(6, clamping.getImageUrl());
+		stmt.setFloat(7, clamping.getHeight());
+		try {
+			stmt.executeUpdate();
+			ResultSet resultSet = stmt.getGeneratedKeys();
+			if (resultSet.next()) {
+				clamping.setId(resultSet.getInt(1));
+				for (WorkArea workArea : workAreas) {
+					PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO WORKAREA_CLAMPING (WORKAREA, CLAMPING) VALUES (?, ?)");
+					stmt2.setInt(1, workArea.getId());
+					stmt2.setInt(2, clamping.getId());
+					stmt2.executeUpdate();
+				}
+				ConnectionManager.getConnection().commit();
+			}
+		} catch (SQLException e) {
+			ConnectionManager.getConnection().rollback();
+			throw e;
+		} finally {
+			ConnectionManager.getConnection().setAutoCommit(true);
+		}
+	}
+	
+	public void deleteClamping(final Clamping clamping) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		try {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM WORKAREA_CLAMPING WHERE CLAMPING = ?");
+			stmt.setInt(1, clamping.getId());
+			stmt.executeUpdate();
+			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("DELETE FROM CLAMPING WHERE ID = ?");
+			stmt2.setInt(1, clamping.getId());
+			stmt2.executeUpdate();
+			ConnectionManager.getConnection().commit();
+		} catch (SQLException e) {
+			ConnectionManager.getConnection().rollback();
+			throw e;
+		} finally {
+			ConnectionManager.getConnection().setAutoCommit(true);
+		}
 	}
 }

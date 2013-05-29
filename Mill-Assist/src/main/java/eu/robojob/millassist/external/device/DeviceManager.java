@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -21,6 +22,7 @@ import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
+import eu.robojob.millassist.process.ProcessFlowManager;
 
 public class DeviceManager {
 	
@@ -31,6 +33,7 @@ public class DeviceManager {
 	private Map<String, AbstractProcessingDevice> postProcessingDevicesByName;
 	private Map<String, AbstractStackingDevice> stackingFromDevicesByName;
 	private Map<String, AbstractStackingDevice> stackingToDevicesByName;
+	private ProcessFlowManager processFlowManager;
 	
 	private static Logger logger = LogManager.getLogger(DeviceManager.class.getName());
 	private DeviceMapper deviceMapper;
@@ -45,6 +48,10 @@ public class DeviceManager {
 		this.stackingFromDevicesByName = new HashMap<String, AbstractStackingDevice>();
 		this.stackingToDevicesByName = new HashMap<String, AbstractStackingDevice>();
 		initialize();
+	}
+	
+	public void setProcessFlowManager(final ProcessFlowManager processFlowManager) {
+		this.processFlowManager = processFlowManager;
 	}
 	
 	private void initialize() {
@@ -177,12 +184,12 @@ public class DeviceManager {
 	public void updateBasicStackPlate(final BasicStackPlate basicStackPlate, final String name, final String userFrameName, final int horizontalHoleAmount, 
 			final int verticalHoleAmount, final float holeDiameter, final float studDiameter, final float horizontalHoleDistance, final float horizontalPadding, 
 			final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage,
-			final float horizontalR, final float tiltedR, final float smoothToX, final float smoothToY, final float smoothToZ,
+			final float horizontalR, final float tiltedR, final float maxOverflow, final float minOverlap, final float smoothToX, final float smoothToY, final float smoothToZ,
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ) {
 		try {
 			deviceMapper.updateBasicStackPlate(basicStackPlate, name, userFrameName, horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, 
 					horizontalHoleDistance, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, interferenceDistance, overflowPercentage, horizontalR, tiltedR,
-					smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ);
+					maxOverflow, minOverlap, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ);
 			basicStackPlate.loadDeviceSettings(basicStackPlate.getDeviceSettings());
 		} catch (SQLException e) {
 			logger.error(e);
@@ -203,5 +210,62 @@ public class DeviceManager {
 			logger.error(e);
 			e.printStackTrace();
 		}	
+	}
+	
+	public void updateClamping(final Clamping clamping, final String name, final Clamping.Type type, final float height, 
+			final String imagePath, final float x, final float y, final float z, final float r, final float smoothToX, 
+			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, 
+			final float smoothFromZ) {
+		try {
+			deviceMapper.updateClamping(clamping, name, type, height, imagePath, x, y, z, r, smoothToX, smoothToY, smoothToZ, 
+				smoothFromX, smoothFromY, smoothFromZ);
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+	
+	public void saveClamping(final String name, final Clamping.Type type, final float height, final String imagePath, final float x, 
+			final float y, final float z, final float r, final float smoothToX, final float smoothToY, 
+			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ) {
+		try {
+			Clamping clamping = new Clamping(type, name, height, new Coordinates(x, y, z, 0, 0, r), 
+					new Coordinates(smoothToX, smoothToY, smoothToZ, 0, 0, 0), 
+					new Coordinates(smoothFromX, smoothFromY, smoothFromZ, 0, 0, 0), imagePath);
+			Set<WorkArea> workAreas = new HashSet<WorkArea>();
+			for (AbstractCNCMachine cncMachine : getCNCMachines()) {
+				for (WorkArea workArea : cncMachine.getWorkAreas()) {
+					workAreas.add(workArea);
+				}
+			}
+			deviceMapper.saveClamping(clamping, workAreas);
+			for (WorkArea workArea : workAreas) {
+				workArea.addClamping(clamping);
+			}
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+	
+	public void deleteClamping(final Clamping clamping) {
+		for (DeviceSettings deviceSettings : processFlowManager.getActiveProcessFlow().getDeviceSettings().values()) {
+			for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
+				if (entry.getValue().equals(clamping)) {
+					entry.setValue(null);
+				}
+			}
+		}
+		for (AbstractDevice device : devicesById.values()) {
+			for (WorkArea workArea : device.getWorkAreas()) {
+				workArea.getClampings().remove(clamping);
+			}
+		}
+		try {
+			deviceMapper.deleteClamping(clamping);
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
 	}
 }

@@ -33,14 +33,14 @@ public class BasicStackPlateLayout {
 	private StudPosition[][] studPositions;
 	private List<StackingPosition> stackingPositions;
 	
-	private static final float MIN_OVERLAP_DISTANCE = 5;
-	private static final double MAX_OVERFLOW = 25;
+	private double minOverlap;
+	private double maxOverflow;
 	
 	private static Logger logger = LogManager.getLogger(BasicStackPlateLayout.class.getName());
 		
 	public BasicStackPlateLayout(final int horizontalHoleAmount, final int verticalHoleAmount, final float holeDiameter, final float studDiameter, final float horizontalPadding,
 			final float verticalPaddingTop, final float verticalPaddingBottom, final float horizontalHoleDistance, final float interferenceDistance, final float overflowPercentage,
-				final float horizontalR, final float tiltedR) {
+				final float horizontalR, final float tiltedR, final double maxOverflow, final double minOverlap) {
 		this.horizontalHoleAmount = horizontalHoleAmount;
 		this.verticalHoleAmount = verticalHoleAmount;
 		this.holeDiameter = holeDiameter;
@@ -54,6 +54,8 @@ public class BasicStackPlateLayout {
 		this.overFlowPercentage = overflowPercentage;
 		this.horizontalR = horizontalR;
 		this.tiltedR = tiltedR;
+		this.maxOverflow = maxOverflow;
+		this.minOverlap = minOverlap;
 		// initialize stud positions
 		this.studPositions = new StudPosition[verticalHoleAmount][horizontalHoleAmount];
 		for (int i = 0; i < verticalHoleAmount; i++) {
@@ -99,6 +101,22 @@ public class BasicStackPlateLayout {
 		}
 	}
 	
+	public double getMinOverlap() {
+		return minOverlap;
+	}
+
+	public void setMinOverlap(final double minOverlap) {
+		this.minOverlap = minOverlap;
+	}
+
+	public double getMaxOverflow() {
+		return maxOverflow;
+	}
+
+	public void setMaxOverflow(final double maxOverflow) {
+		this.maxOverflow = maxOverflow;
+	}
+
 	/**
 	 * Configures the list of Stacking-positions and updates the 2D-array of studPositions 
 	 * @throws IncorrectWorkPieceDataException 
@@ -141,11 +159,11 @@ public class BasicStackPlateLayout {
 		
 		// check if corners are needed
 		boolean cornerLength = false;
-		if (length - MIN_OVERLAP_DISTANCE < horizontalHoleDistance) {
+		if (length - minOverlap < horizontalHoleDistance) {
 			cornerLength = true;
 		}
 		boolean cornerWidth = false;
-		if (width - MIN_OVERLAP_DISTANCE < verticalHoleDistance) {
+		if (width - minOverlap < verticalHoleDistance) {
 			cornerWidth = true;
 		}
 		
@@ -273,7 +291,7 @@ public class BasicStackPlateLayout {
 				}
 				if (!cornerLength) {
 					boolean ok = false;
-					int maxTimes = (int) Math.floor((dimensions.getLength() + studDiameter/2 - MIN_OVERLAP_DISTANCE)/horizontalHoleDistance);
+					int maxTimes = (int) Math.floor((dimensions.getLength() + studDiameter/2 - minOverlap)/horizontalHoleDistance);
 					while (!ok) {
 						if (maxTimes <= 1) {
 							ok = true;
@@ -301,7 +319,7 @@ public class BasicStackPlateLayout {
 		if ((overflowHorR + horizontalPadding - studDiameter/2)/width >= 0.5) {
 			return false;
 		}
-		if ((overflowHorR < 0) || ((Math.pow(overflowHorR, 2)/surface < overFlowPercentage) && (overflowHorR < MAX_OVERFLOW))) {
+		if ((overflowHorR < 0) || ((Math.pow(overflowHorR, 2)/surface < overFlowPercentage) && (overflowHorR < maxOverflow))) {
 			return true;
 		}
 		return false;
@@ -315,7 +333,7 @@ public class BasicStackPlateLayout {
 		}
 		if ((overflowTop < 0) || (Math.pow(overflowTop, 2)/surface < overFlowPercentage)) {
 			// check if max overflow isn't reached
-			if (overflowTop > MAX_OVERFLOW) {
+			if (overflowTop > maxOverflow) {
 				return false;
 			}
 			return true;
@@ -343,7 +361,7 @@ public class BasicStackPlateLayout {
 		int n = 0;
 		while(!ok) {
 			double overflowHorL = (width - a - n*b - c) / Math.sqrt(2) - horizontalPadding;	// check the horizontal distance overflowing the stacker to the left
-			if ((overflowHorL < 0) || ((Math.pow(overflowHorL, 2)/surface < overFlowPercentage) && (overflowHorL < MAX_OVERFLOW))) {	// if this distance is negative, or small enough, everything is ok
+			if ((overflowHorL < 0) || ((Math.pow(overflowHorL, 2)/surface < overFlowPercentage) && (overflowHorL < maxOverflow))) {	// if this distance is negative, or small enough, everything is ok
 				ok = true;
 			} else {
 				n++;	// if not, we increase the amount of studs to the left
@@ -356,11 +374,11 @@ public class BasicStackPlateLayout {
 		
 		// check if corners are needed
 		boolean cornerLength = false;
-		if ( (length - a - MIN_OVERLAP_DISTANCE) < Math.sqrt(2) * (2 * horizontalHoleDistance)) {
+		if ( (length - a - minOverlap) < Math.sqrt(2) * (2 * horizontalHoleDistance)) {
 			cornerLength = true;
 		}
 		boolean cornerWidth = false;
-		if ( (width - a - c - MIN_OVERLAP_DISTANCE) < 0) {
+		if ( (width - a - c - minOverlap) < 0) {
 			cornerWidth = true;
 		}
 		
@@ -482,7 +500,7 @@ public class BasicStackPlateLayout {
 				}
 				if (!cornerLength) {
 					boolean ok = false;
-					int maxTimes = (int) Math.floor((dimensions.getLength() - a - MIN_OVERLAP_DISTANCE) / ((horizontalHoleDistance*2) * Math.sqrt(2)));
+					int maxTimes = (int) Math.floor((dimensions.getLength() - a - minOverlap) / ((horizontalHoleDistance*2) * Math.sqrt(2)));
 					while (!ok) {
 						if (maxTimes <= 0) {
 							ok = true;
@@ -512,7 +530,7 @@ public class BasicStackPlateLayout {
 		double overflowHorR = (length - a - (remainingStudsRight-1)*horizontalHoleDistance*Math.sqrt(2) - c) / Math.sqrt(2) - horizontalPadding;
 		if ((overflowHorR < 0) || (Math.pow(overflowHorR, 2)/surface < overFlowPercentage)) {
 			// check if max overflow isn't reached
-			if (overflowHorR > MAX_OVERFLOW) {
+			if (overflowHorR > maxOverflow) {
 				return false;
 			}
 			return true;
@@ -529,7 +547,7 @@ public class BasicStackPlateLayout {
 		}
 		if ((overflowTop < 0) || (Math.pow(overflowTop, 2)/surface < overFlowPercentage)) {
 			// check if max overflow isn't reached
-			if (overflowTop > MAX_OVERFLOW) {
+			if (overflowTop > maxOverflow) {
 				return false;
 			}
 			return true;

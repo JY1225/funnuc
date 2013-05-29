@@ -55,6 +55,10 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	private NumericTextField numTxtHorizontalR;
 	private Label lblTiltedR;
 	private NumericTextField numTxtTiltedR;
+	private Label lblMaxOverflow;
+	private NumericTextField numTxtMaxOverflow;
+	private Label lblMinOverlap;
+	private NumericTextField numTxtMinOverlap;
 	
 	private Label lblSmoothTo;
 	private Label lblSmoothToX;
@@ -92,6 +96,8 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	private static final String SAVE = "BasicStackPlateConfigureView.save";
 	private static final String HORIZONTAL_R = "BasicStackPlateConfigureView.horizontalR";
 	private static final String TILTED_R = "BasicStackPlateConfigureView.tiltedR";
+	private static final String MAX_OVERFLOW = "BasicStackPlateConfigureView.maxOverflow";
+	private static final String MIN_OVERLAP = "BasicStackPlateConfigureView.minOverlap";
 	private static final String SMOOTH_TO = "BasicStackPlateConfigureView.smoothTo";
 	private static final String SMOOTH_FROM = "BasicStackPlateConfigureView.smoothFrom";
 	private static final String X = "BasicStackPlateConfigureView.x";
@@ -110,7 +116,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	
 	@Override
 	protected void build() {
-		getContents().setVgap(15);
+		getContents().setVgap(10);
 		getContents().setHgap(15);
 		getContents().setPadding(new Insets(25, 0, 0, 0));
 		getContents().setAlignment(Pos.TOP_CENTER);
@@ -148,6 +154,10 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numTxtHorizontalR = new NumericTextField(5);
 		lblTiltedR = new Label(Translator.getTranslation(TILTED_R));
 		numTxtTiltedR = new NumericTextField(5);
+		lblMaxOverflow = new Label(Translator.getTranslation(MAX_OVERFLOW));
+		numTxtMaxOverflow = new NumericTextField(5);
+		lblMinOverlap = new Label(Translator.getTranslation(MIN_OVERLAP));
+		numTxtMinOverlap = new NumericTextField(5);
 		
 		HBox hboxSmoothTo = new HBox();
 		lblSmoothTo = new Label(Translator.getTranslation(SMOOTH_TO));
@@ -184,6 +194,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 						Float.parseFloat(numtxtVerticalPaddingTop.getText()), Float.parseFloat(numtxtVerticalPaddingBottom.getText()), 
 						Float.parseFloat(numtxtInterferenceDistance.getText()), Float.parseFloat(numtxtOverflowPercentage.getText()), 
 						Float.parseFloat(numTxtHorizontalR.getText()), Float.parseFloat(numTxtTiltedR.getText()), 
+						Float.parseFloat(numTxtMaxOverflow.getText()), Float.parseFloat(numTxtMinOverlap.getText()),
 						Float.parseFloat(numtxtSmoothToX.getText()), Float.parseFloat(numtxtSmoothToY.getText()), 
 						Float.parseFloat(numtxtSmoothToZ.getText()), Float.parseFloat(numtxtSmoothFromX.getText()), 
 						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()));
@@ -234,6 +245,12 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		getContents().add(lblTiltedR, column++, row);
 		getContents().add(numTxtTiltedR, column++, row);
 		column = 0; row++;
+		getContents().add(lblMaxOverflow, column++, row);
+		getContents().add(numTxtMaxOverflow, column++, row);
+		column++;
+		getContents().add(lblMinOverlap, column++, row);
+		getContents().add(numTxtMinOverlap, column++, row);
+		column = 0; row++;
 		getContents().add(hboxSmoothTo, column++, row, 5, 1);
 		column = 0; row++;
 		getContents().add(hboxSmoothFrom, column++, row, 5, 1);
@@ -267,6 +284,8 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numtxtOverflowPercentage.setFocusListener(listener);
 		numTxtHorizontalR.setFocusListener(listener);
 		numTxtTiltedR.setFocusListener(listener);
+		numTxtMaxOverflow.setFocusListener(listener);
+		numTxtMinOverlap.setFocusListener(listener);
 		numtxtSmoothToX.setFocusListener(listener);
 		numtxtSmoothToY.setFocusListener(listener);
 		numtxtSmoothToZ.setFocusListener(listener);
@@ -291,6 +310,8 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numtxtOverflowPercentage.setText(basicStackPlate.getLayout().getOverflowPercentage() + "");
 		numTxtHorizontalR.setText(basicStackPlate.getLayout().getHorizontalR() + "");
 		numTxtTiltedR.setText(basicStackPlate.getLayout().getTiltedR() + "");
+		numTxtMaxOverflow.setText(basicStackPlate.getLayout().getMaxOverflow() + "");
+		numTxtMinOverlap.setText(basicStackPlate.getLayout().getMinOverlap() + "");
 		cbbUserFrames.valueProperty().set(basicStackPlate.getWorkAreas().get(0).getUserFrame().getName());
 		Coordinates smoothTo = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
 		Coordinates smoothFrom = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();

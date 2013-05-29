@@ -243,10 +243,10 @@ public class RobotMapper {
 	
 	public void deleteGripper(final Gripper gripper) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM GRIPPERHEAD_GRIPPER WHERE GRIPPER = ?");
-		stmt.setInt(1, gripper.getId());
-		stmt.executeUpdate();
 		try {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM GRIPPERHEAD_GRIPPER WHERE GRIPPER = ?");
+			stmt.setInt(1, gripper.getId());
+			stmt.executeUpdate();
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("DELETE FROM GRIPPER WHERE ID = ?");
 			stmt2.setInt(1, gripper.getId());
 			stmt2.executeUpdate();

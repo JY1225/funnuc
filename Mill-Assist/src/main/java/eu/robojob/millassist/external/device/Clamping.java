@@ -82,11 +82,11 @@ public class Clamping {
 		this.relativePosition = relativePosition;
 	}
 
-	public String getImageURL() {
+	public String getImageUrl() {
 		return imageURL;
 	}
 
-	public void setImageURL(final String imageURL) {
+	public void setImageUrl(final String imageURL) {
 		this.imageURL = imageURL;
 	}
 

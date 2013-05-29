@@ -99,6 +99,8 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		getContents().setAlignment(Pos.TOP_CENTER);
 		getContents().setPadding(new Insets(15, 0, 0, 0));
 		
+		getContents().getChildren().clear();
+		
 		ifsGrippers = new IconFlowSelector();
 		ifsGrippers.setPrefWidth(ICONFLOWSELECTOR_WIDTH);
 		
@@ -158,6 +160,9 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		imageVw.setFitHeight(IMG_HEIGHT);
 		spImage.getChildren().add(imageVw);
 		spImage.setPadding(new Insets(10, 10, 10, 10));
+		spImage.setPrefSize(IMG_HEIGHT + 20, IMG_HEIGHT + 20);
+		spImage.setMinSize(IMG_HEIGHT + 20, IMG_HEIGHT + 20);
+		spImage.setMaxSize(IMG_HEIGHT + 20, IMG_HEIGHT + 20);
 		lblName = new Label(Translator.getTranslation(NAME));
 		fulltxtName = new FullTextField(100);
 		fulltxtName.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
@@ -202,7 +207,7 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		hbox.getChildren().addAll(spImage, gpEditor);
 		hbox.setSpacing(20);
 		hbox.setPrefWidth(USE_COMPUTED_SIZE);
-		hbox.setAlignment(Pos.CENTER);
+		hbox.setAlignment(Pos.TOP_CENTER);
 		
 		btnSave = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
@@ -270,7 +275,15 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		fulltxtName.setText(gripper.getName());
 		numtxtHeight.setText("" + gripper.getHeight());
 		cbFixedHeight.setSelected(gripper.isFixedHeight());
-		imageVw.setImage(new Image(gripper.getImageUrl(), IMG_WIDTH, IMG_HEIGHT, true, true));
+		String url = gripper.getImageUrl();
+		if (url != null) {
+			url = url.replace("file:///", "");
+		}
+		if ((url != null) && ((new File(url)).exists() || getClass().getClassLoader().getResource(url) != null)) {
+			imageVw.setImage(new Image(gripper.getImageUrl(), IMG_WIDTH, IMG_HEIGHT, true, true));
+		} else {
+			imageVw.setImage(new Image(UIConstants.IMG_NOT_FOUND_URL, IMG_WIDTH, IMG_HEIGHT, true, true));
+		}
 		imagePath = gripper.getImageUrl();
 		GripperBody body = robot.getGripperBody();
 		cbA.setSelected((body.getGripperHeadByName("A") != null) && (body.getGripperHeadByName("A").getGripperById(gripper.getId()) != null));
