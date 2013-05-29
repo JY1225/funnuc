@@ -59,18 +59,13 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		}
 	}
 	
-	public void changedClamping(final String clampingId) {
-		logger.debug("Changed clamping [" + clampingId + "].");
-		Clamping clamping = null;
-		if (clampingId != null) {
-			clamping = deviceInfo.getPickStep().getDeviceSettings().getWorkArea().getClampingByName(clampingId);
-			if (clamping == null) {
-				throw new IllegalArgumentException("Unknown clamping-id [" + clampingId + "].");
-			} else {
-				if ((clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea()))
-						|| (clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea()))) {
-					setClamping(clamping);
-				}
+	public void changedClamping(final Clamping clamping) {
+		if (clamping == null) {
+			throw new IllegalArgumentException("Clamping is null.");
+		} else {
+			if ((clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea()))
+					|| (clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea()))) {
+				setClamping(clamping);
 			}
 		}
 	}
@@ -123,6 +118,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		deviceInfo.getPickStep().setRelativeTeachedOffset(null);
 		deviceInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPutStep().getProcessFlow(), deviceInfo.getPutStep(), true));
 		deviceInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPickStep().getProcessFlow(), deviceInfo.getPickStep(), true));
+		getView().selectClamping(clamping.getName());
 	}
 
 	@Override

@@ -6,13 +6,17 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
-import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.ui.controls.IconFlowSelector;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
@@ -29,18 +33,19 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	private Label lblWorkArea;
 	private ComboBox<String> cbbWorkArea;
 	private Label lblClampingName;
-	private ComboBox<String> cbbClamping;
+	private IconFlowSelector ifsClamping;
 	private Label lblClampingType;
 	private Button btnLength;
 	private Button btnWidth;
 	private DeviceInformation deviceInfo;
 	private Set<String> cncMillingMachineIds;
 	
-	private static final int HGAP = 15;
-	private static final int VGAP = 15;
-	private static final int COMBO_WIDTH = 220;
+	private static final int HGAP = 10;
+	private static final int VGAP = 10;
+	private static final int COMBO_WIDTH = 150;
 	private static final int COMBO_HEIGHT = 40;
 	private static final double BTN_WIDTH = 110;
+	private static final double ICONFLOWSELECTOR_WIDTH = 530;
 	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
 	
 	private static final String DEVICE = "CNCMillingMachineConfigureView.machine";
@@ -83,8 +88,6 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			}
 		});
 		getContents().add(cbbMachine, column++, row);
-		column = 0;
-		row++;
 		lblWorkArea = new Label(Translator.getTranslation(WORKAREA));
 		getContents().add(lblWorkArea, column++, row);
 		cbbWorkArea = new ComboBox<String>();
@@ -105,24 +108,12 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		column = 0;
 		row++;
 		lblClampingName = new Label(Translator.getTranslation(CLAMPING));
-		getContents().add(lblClampingName, column++, row);
-		cbbClamping = new ComboBox<String>();
-		cbbClamping.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
-		getContents().add(cbbClamping, column++, row);
-		cbbClamping.valueProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-				if (newValue != null) {
-					if ((oldValue == null) || (!oldValue.equals(newValue))) {
-						DeviceSettings deviceSettings = deviceInfo.getDeviceSettings();
-						Clamping currentClamping = deviceSettings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
-						if ((currentClamping == null) || (!newValue.equals(currentClamping.getName()))) {
-							getPresenter().changedClamping(newValue);
-						}
-					}
-				}
-			}
-		});
+		getContents().add(lblClampingName, column++, row, 4, 1);
+		column = 0;
+		row++;
+		ifsClamping = new IconFlowSelector();
+		ifsClamping.setPrefWidth(ICONFLOWSELECTOR_WIDTH);
+		getContents().add(ifsClamping, column++, row, 4, 1);
 		column = 0;
 		row++;
 		lblClampingType = new Label(Translator.getTranslation(CLAMPING_TYPE));
@@ -140,12 +131,14 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			}
 		});
 		btnWidth.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-		getContents().add(lblClampingType, column++, row);
 		HBox hboxBtns = new HBox();
+		hboxBtns.getChildren().add(lblClampingType);
 		hboxBtns.getChildren().add(btnLength);
 		hboxBtns.getChildren().add(btnWidth);
-		getContents().add(hboxBtns, column++, row);
-		
+		hboxBtns.setAlignment(Pos.CENTER_LEFT);
+		HBox.setMargin(lblClampingType, new Insets(0, 10, 0, 0));
+		getContents().add(hboxBtns, column++, row, 4, 1);
+		GridPane.setMargin(lblWorkArea, new Insets(0, 0, 0, 10));
 		refresh();
 	}
 	
@@ -182,19 +175,27 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		}
 	}
 
-	//TODO GRONDIGE REVIEW
 	public void refreshClampings() {
+		ifsClamping.clearItems();
 		if ((deviceInfo.getPutStep().getDeviceSettings() != null) && (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
-			cbbClamping.getItems().clear();
-			cbbClamping.getItems().addAll(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getClampingNames());
-			if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)
-					&& (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
-				if (deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping() != null) {
-					cbbClamping.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping().getName());
-				}
+			int itemIndex = 0;
+			for (final Clamping clamping : deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getClampings()) {
+				ifsClamping.addItem(itemIndex, clamping.getName(), clamping.getImageUrl(), new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(final MouseEvent arg0) {
+						getPresenter().changedClamping(clamping);
+					}
+				});
+				itemIndex++;
+			}
+			if (deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping() != null) {
+				ifsClamping.setSelected(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping().getName());
 			}
 		}
-		
+	}
+	
+	public void selectClamping(final String clampingName) {
+		ifsClamping.setSelected(clampingName);
 	}
 	
 	public void refreshClampType() {
