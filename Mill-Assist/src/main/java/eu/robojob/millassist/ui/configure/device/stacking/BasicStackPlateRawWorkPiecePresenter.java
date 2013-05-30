@@ -31,12 +31,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		this.pickStep = pickStep;	
 		this.deviceSettings = deviceSettings;
 		this.workPiece = pickStep.getRobotSettings().getWorkPiece();
-		this.dimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
-		if (dimensions == null) {
-			dimensions = new WorkPieceDimensions();
-			pickStep.getRobotSettings().getWorkPiece().setDimensions(dimensions);
-		}
-		deviceSettings.setRawWorkPieceDimensions(dimensions);		
+		deviceSettings.setRawWorkPiece(workPiece);	
+		this.dimensions = workPiece.getDimensions();
 		orientation = deviceSettings.getOrientation();
 		if (orientation == null) {
 			orientation = WorkPieceOrientation.HORIZONTAL;
@@ -53,8 +49,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public void recalcWeight() {
 		workPiece.calculateWeight();
-		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		recalculate();
 	}
 	
@@ -145,7 +141,6 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		workPiece.setWeight(weight);
 		getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
-		recalculate();
 	}
 
 	@Override

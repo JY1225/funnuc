@@ -98,5 +98,6 @@ public class TeachPresenter extends ExecutionPresenter {
 
 	@Override public void startListening(final ProcessFlow processFlow) { }
 	@Override public void stopListening(final ProcessFlow processFlow) { }
+	@Override public void clearMenuBuffer() { }
 
 }

@@ -57,7 +57,7 @@ public class AutomateProcessFlowPresenter extends FixedProcessFlowPresenter {
 	
 	public void buildFinished() {
 		for (DeviceButton deviceButton : getView().getDeviceButtons()) {
-			if (deviceMenuFactory.getDeviceMenu(deviceButton.getDeviceInformation()) != null) {
+			if (deviceMenuFactory.hasDeviceMenu(deviceButton.getDeviceInformation())) {
 				deviceButton.setClickable(true);
 			} else {
 				deviceButton.setClickable(false);

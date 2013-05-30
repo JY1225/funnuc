@@ -3,9 +3,6 @@ package eu.robojob.millassist.external.device.stacking;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.workpiece.WorkPiece;
-import eu.robojob.millassist.workpiece.WorkPiece.Material;
-import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class BasicStackPlateSettings extends DeviceSettings {
 
@@ -14,11 +11,6 @@ public class BasicStackPlateSettings extends DeviceSettings {
 	//TODO maybe in the future, a list of intermediate half-finished workpieces could be added
 	private WorkPieceOrientation orientation;
 	private int amount;
-	
-	public BasicStackPlateSettings(final WorkPieceDimensions dimensions, final WorkPieceDimensions finishedDimensions,
-			final WorkPieceOrientation orientation, final int amount) {
-		this(new WorkPiece(WorkPiece.Type.RAW, dimensions, Material.OTHER, 0.0f), new WorkPiece(WorkPiece.Type.FINISHED, finishedDimensions, Material.OTHER, 0.0f), orientation, amount);
-	}
 	
 	public BasicStackPlateSettings(final WorkPiece workPiece, final WorkPiece finishedWorkPiece, final WorkPieceOrientation orientation, final int amount) {
 		this.amount = amount;
@@ -31,20 +23,12 @@ public class BasicStackPlateSettings extends DeviceSettings {
 		return amount;
 	}
 
-	public void setRawWorkPieceDimensions(final WorkPieceDimensions dimensions) {
-		if (rawWorkPiece == null) {
-			rawWorkPiece = new WorkPiece(Type.RAW, dimensions, null, Float.NaN);
-		} else {
-			this.rawWorkPiece.setDimensions(dimensions);
-		}
+	public void setRawWorkPiece(final WorkPiece rawWorkPiece) {
+		this.rawWorkPiece = rawWorkPiece;
 	}
 	
-	public void setFinishedWorkPieceDimensions(final WorkPieceDimensions dimensions) {
-		if (finishedWorkPiece == null) {
-			finishedWorkPiece = new WorkPiece(Type.FINISHED, dimensions, null, Float.NaN);
-		} else {
-			this.finishedWorkPiece.setDimensions(dimensions);
-		}
+	public void setFinishedWorkPiece(final WorkPiece finishedWorkPiece) {
+		this.finishedWorkPiece = finishedWorkPiece;
 	}
 
 	public void setOrientation(final WorkPieceOrientation orientation) {
@@ -61,14 +45,6 @@ public class BasicStackPlateSettings extends DeviceSettings {
 	
 	public WorkPiece getFinishedWorkPiece() {
 		return this.finishedWorkPiece;
-	}
-	
-	public void clearRawWorkPiece() {
-		this.rawWorkPiece = null;
-	}
-
-	public void clearFinishedWorkPiece() {
-		this.finishedWorkPiece = null;
 	}
 	
 	public WorkPieceOrientation getOrientation() {

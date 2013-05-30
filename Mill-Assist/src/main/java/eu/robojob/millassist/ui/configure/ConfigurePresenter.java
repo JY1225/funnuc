@@ -14,7 +14,6 @@ import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.external.robot.RobotProcessingWhileWaitingSettings;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobotPickSettings;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobotPutSettings;
-import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.PickAfterWaitStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.ProcessFlow;
@@ -324,14 +323,14 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		FanucRobotPutSettings robotPutSettings = new FanucRobotPutSettings();
 		robotPutSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
 		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
-		robotPutSettings.setSmoothPoint(new Coordinates(clamping.getSmoothToPoint()));
+		robotPutSettings.setSmoothPoint(null);
 		robotPutSettings.setWorkArea(workArea);
 		robotPutSettings.setDoMachineAirblow(false);	
 		
 		RobotPickSettings robotPickSettings = new FanucRobotPickSettings();
 		robotPickSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
 		robotPickSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
-		robotPickSettings.setSmoothPoint(new Coordinates(clamping.getSmoothFromPoint()));
+		robotPickSettings.setSmoothPoint(null);
 		robotPickSettings.setWorkArea(workArea);
 		robotPickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		

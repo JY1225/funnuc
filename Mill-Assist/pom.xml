@@ -5,7 +5,7 @@
 	<groupId>eu.robojob</groupId>
 	<artifactId>millassist</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1-alpha</version>
 	<name>Mill-Assist</name>
 	<organization>
 		<name>RoboJob</name>

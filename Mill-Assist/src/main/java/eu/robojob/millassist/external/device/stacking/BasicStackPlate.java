@@ -157,15 +157,15 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			this.currentPickLocations = new ArrayList<StackingPosition>();
 			try {
 				if (settings.getRawWorkPiece() != null) {
-					layout.configureStackingPositions(settings.getRawWorkPiece(), settings.getOrientation());
 					this.rawWorkPiece = settings.getRawWorkPiece();
 					this.finishedWorkPiece = settings.getFinishedWorkPiece();
+					layout.configureStackingPositions(settings.getRawWorkPiece(), settings.getOrientation());
 					layout.placeRawWorkPieces(rawWorkPiece, settings.getAmount());
 				} else {
 					logger.info("Raw workpiece was null!");
-					layout.configureStackingPositions(null, settings.getOrientation());
 					this.rawWorkPiece = settings.getRawWorkPiece();
 					this.finishedWorkPiece = settings.getFinishedWorkPiece();
+					layout.configureStackingPositions(null, settings.getOrientation());
 				}
 			} catch (IncorrectWorkPieceDataException e) {
 				logger.error(e);
@@ -259,12 +259,12 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	
 	public void addListener(final BasicStackPlateListener listener) {
 		this.listeners.add(listener);
-		logger.info("ADDED LISTENER " + listeners.size());
+		logger.info("ADDED LISTENER " + listeners.size() + " - " + listener.getClass().getName());
 	}
 	
 	public void removeListener(final BasicStackPlateListener listener) {
 		this.listeners.remove(listener);
-		logger.info("REMOVED LISTENER " + listeners.size());
+		logger.info("REMOVED LISTENER " + listeners.size() + " - " + listener.getClass().getName());
 	}
 	
 	public void clearListeners() {

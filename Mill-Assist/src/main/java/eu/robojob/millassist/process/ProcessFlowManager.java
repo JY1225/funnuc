@@ -105,13 +105,15 @@ public class ProcessFlowManager {
 		}
 		deviceSettings.put(stackingFromDevice, stackingFromDevice.getDeviceSettings());
 		if (stackingFromDevice instanceof BasicStackPlate) {
-			((BasicStackPlateSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPieceDimensions(rawWorkPiece.getDimensions());
+			((BasicStackPlateSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);
 		}
 		if (stackingToDevice instanceof BasicStackPlate) {
-			((BasicStackPlateSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPieceDimensions(finishedWorkPiece.getDimensions());
+			((BasicStackPlateSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
 		deviceSettings.put(cncMachine, cncMachine.getDeviceSettings());
-		deviceSettings.put(stackingToDevice, stackingToDevice.getDeviceSettings());
+		if (!stackingToDevice.equals(stackingFromDevice)) {
+			deviceSettings.put(stackingToDevice, stackingToDevice.getDeviceSettings());
+		}
 		Map<AbstractRobot, RobotSettings> robotSettings = new HashMap<AbstractRobot, RobotSettings>();
 		robotSettings.put(robot, robot.getRobotSettings());
 		for (AbstractProcessStep step : processSteps) {
@@ -148,6 +150,7 @@ public class ProcessFlowManager {
 			}
 		}
 		ProcessFlow processFlow = new ProcessFlow("", processSteps, deviceSettings, robotSettings, new Timestamp(System.currentTimeMillis()), null);
+		
 		return processFlow;
 	}
 	

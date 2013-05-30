@@ -186,4 +186,9 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 	public void textFieldLostFocus(final TextInputControl textInputControl) {
 		closeKeyboard();
 	}
+
+	@Override
+	public void clearMenuBuffer() {
+		deviceMenuFactory.clearBuffer();
+	}
 }

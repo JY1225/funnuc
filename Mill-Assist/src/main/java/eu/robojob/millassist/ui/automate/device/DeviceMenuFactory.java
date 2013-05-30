@@ -1,5 +1,8 @@
 package eu.robojob.millassist.ui.automate.device;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.automate.AbstractMenuPresenter;
@@ -14,11 +17,21 @@ import eu.robojob.millassist.ui.general.model.DeviceInformation;
 public class DeviceMenuFactory {
 	
 	private ProcessFlow processFlow;		
-	
 	private BasicStackPlateMenuPresenter buffer;
+	
+	private static Logger logger = LogManager.getLogger(DeviceMenuFactory.class.getName());
 	
 	public DeviceMenuFactory(final ProcessFlow processFlow) {
 		this.processFlow = processFlow;
+	}
+	
+	public boolean hasDeviceMenu(final DeviceInformation deviceInfo) {
+		switch(deviceInfo.getType()) {
+			case BASIC_STACK_PLATE:
+				return true;
+			default:
+				return false;
+		}
 	}
 	
 	public synchronized AbstractMenuPresenter<?> getDeviceMenu(final DeviceInformation deviceInfo) {
@@ -56,7 +69,10 @@ public class DeviceMenuFactory {
 	}
 	
 	public void clearBuffer() {
-		buffer.unregisterListeners();
+		if (buffer != null) {
+			logger.info("Clearing buffer!!");
+			buffer.unregisterListeners();
+		}
 		buffer = null;
 	}
 }
