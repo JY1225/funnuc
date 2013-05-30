@@ -41,8 +41,11 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		if (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null) {
 			WorkPieceDimensions myDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
 			WorkPieceDimensions prevDimensions = getPreviousPickDimensions();
+			float prevWeight = getPreviousWorkPiece().getWeight();
 			if ((myDimensions.getWidth() > 0) && (myDimensions.getLength() > 0) && (myDimensions.getHeight() > 0) && (myDimensions.getWidth() <= prevDimensions.getWidth()) && (myDimensions.getLength() <= prevDimensions.getLength()) 
-					&& (myDimensions.getHeight() <= prevDimensions.getHeight())) {
+					&& (myDimensions.getHeight() <= prevDimensions.getHeight()) && 
+					(pickStep.getRobotSettings().getWorkPiece().getWeight() > 0) &&
+					(pickStep.getRobotSettings().getWorkPiece().getWeight() <= prevWeight)) {
 				return true;
 			}
 		}

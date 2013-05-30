@@ -10,6 +10,7 @@ import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataExce
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
@@ -23,6 +24,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	private WorkPiece workPiece;
 		
 	private static Logger logger = LogManager.getLogger(BasicStackPlateRawWorkPiecePresenter.class.getName());
+	private static final String WEIGHT_ZERO = "BasicStackPlateRawWorkPiecePresenter.weightZero";
 	
 	public BasicStackPlateRawWorkPiecePresenter(final BasicStackPlateRawWorkPieceView view, final PickStep pickStep, final BasicStackPlateSettings deviceSettings) {
 		super(view);
@@ -53,6 +55,11 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		workPiece.calculateWeight();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
+		recalculate();
+	}
+	
+	public boolean isWeightOk() {
+		return (deviceSettings.getRawWorkPiece().getWeight() > 0);
 	}
 	
 	public void changedMaterial(final Material material) {
@@ -66,6 +73,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 				pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 			}
 			getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
+			recalculate();
 		}
 	}
 	
@@ -113,6 +121,9 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			((BasicStackPlate) pickStep.getDevice()).getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation());
 			((BasicStackPlate) pickStep.getDevice()).getLayout().placeRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
 			getView().hideNotification();
+			if (!isWeightOk()) {
+				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO));
+			}
 		} catch (IncorrectWorkPieceDataException e) {
 			getView().showNotification(e.getLocalizedMessage());
 		}
@@ -133,6 +144,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public void changedWeight(final float weight) {
 		workPiece.setWeight(weight);
 		getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+		recalculate();
 	}
 
 	@Override

@@ -151,6 +151,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	}
 	
 	public void refreshMachines() {
+		getPresenter().refreshMachineNames();
 		cbbMachine.getItems().clear();
 		cbbMachine.getItems().addAll(cncMillingMachineIds);
 		lblMachine.setDisable(false);

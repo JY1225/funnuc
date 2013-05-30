@@ -367,6 +367,15 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	}
 	
 	public void showFormEdit() {
+		numtxtX.setDisable(true);
+		numtxtY.setDisable(true);
+		numtxtZ.setDisable(true);
+		numtxtR.setDisable(true);
+		lblRelativePosition.setDisable(true);
+		lblX.setDisable(true);
+		lblY.setDisable(true);
+		lblZ.setDisable(true);
+		lblR.setDisable(true);
 		gpDetails.setVisible(true);
 		btnNew.setDisable(true);
 		btnDelete.setVisible(true);
@@ -375,6 +384,15 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	}
 	
 	public void showFormNew() {
+		numtxtX.setDisable(false);
+		numtxtY.setDisable(false);
+		numtxtZ.setDisable(false);
+		numtxtR.setDisable(false);
+		lblRelativePosition.setDisable(false);
+		lblX.setDisable(false);
+		lblY.setDisable(false);
+		lblZ.setDisable(false);
+		lblR.setDisable(false);
 		gpDetails.setVisible(true);
 		btnEdit.setDisable(true);
 		btnDelete.setVisible(false);
@@ -383,6 +401,15 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	}
 	
 	public void reset() {
+		numtxtX.setDisable(false);
+		numtxtY.setDisable(false);
+		numtxtZ.setDisable(false);
+		numtxtR.setDisable(false);
+		lblRelativePosition.setDisable(false);
+		lblX.setDisable(false);
+		lblY.setDisable(false);
+		lblZ.setDisable(false);
+		lblR.setDisable(false);
 		fullTxtName.setText("");
 		numtxtHeight.setText("");
 		btnEdit.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);

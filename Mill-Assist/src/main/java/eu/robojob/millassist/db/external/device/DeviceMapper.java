@@ -573,7 +573,7 @@ public class DeviceMapper {
 		smoothFrom.setZ(smoothFromZ);
 		generalMapper.saveCoordinates(smoothFrom);
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE CLAMPING " +
-				"SET NAME = ?, TYPE = ?, HEIGHT = ?, IMAGEPATH = ? WHERE ID = ?");
+				"SET NAME = ?, TYPE = ?, HEIGHT = ?, IMAGE_URL = ? WHERE ID = ?");
 		stmt.setString(1, name);
 		int typeInt = 0;
 		if (type == Type.CENTRUM) {

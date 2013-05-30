@@ -84,6 +84,24 @@ public class DeviceManager {
 		return cncMachinesByName.keySet();
 	}
 	
+	public void refresh() {
+		cncMachinesByName.clear();
+		preProcessingDevicesByName.clear();
+		stackingFromDevicesByName.clear();
+		stackingToDevicesByName.clear();
+		for (AbstractDevice device : devicesById.values()) {
+			devicesByName.put(device.getName(), device);
+			if (device instanceof AbstractCNCMachine) {
+				cncMachinesByName.put(device.getName(), (AbstractCNCMachine) device);
+			} else if (device instanceof PrageDevice) {
+				preProcessingDevicesByName.put(device.getName(), (PrageDevice) device);
+			} else if (device instanceof BasicStackPlate) {
+				stackingFromDevicesByName.put(device.getName(), (BasicStackPlate) device);
+				stackingToDevicesByName.put(device.getName(), (BasicStackPlate) device);
+			}
+		}
+	}
+	
 	public Collection<AbstractProcessingDevice> getPreProcessingDevices() {
 		return preProcessingDevicesByName.values();
 	}
@@ -191,6 +209,7 @@ public class DeviceManager {
 					horizontalHoleDistance, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, interferenceDistance, overflowPercentage, horizontalR, tiltedR,
 					maxOverflow, minOverlap, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ);
 			basicStackPlate.loadDeviceSettings(basicStackPlate.getDeviceSettings());
+			refresh();
 		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();
@@ -206,6 +225,7 @@ public class DeviceManager {
 			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port, workAreaName, userFramename, clampingLengthR, 
 					clampingWidthR, robotServiceInputNames, robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs,
 						mCodeRobotServiceOutputs);
+			refresh();
 		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();

@@ -22,12 +22,14 @@ import eu.robojob.millassist.ui.general.model.DeviceInformation;
 public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<CNCMillingMachineConfigureView, CNCMillingMachineMenuPresenter> {
 
 	private DeviceInformation deviceInfo;
+	private DeviceManager deviceManager;
 	
 	private static Logger logger = LogManager.getLogger(CNCMillingMachineConfigurePresenter.class.getName());
 	
 	public CNCMillingMachineConfigurePresenter(final CNCMillingMachineConfigureView view, final DeviceInformation deviceInfo, final DeviceManager deviceManager) {
 		super(view);
 		this.deviceInfo = deviceInfo;
+		this.deviceManager = deviceManager;
 		view.setDeviceInfo(deviceInfo);
 		view.setCNCMillingMachineIds(deviceManager.getCNCMachineNames());
 		view.build();
@@ -40,6 +42,10 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	
 	public void changedDevice(final String deviceId) {
 		// TODO: change device!
+	}
+	
+	public void refreshMachineNames() {
+		getView().setCNCMillingMachineIds(deviceManager.getCNCMachineNames());
 	}
 	
 	public void changedWorkArea(final String workAreaId) {
