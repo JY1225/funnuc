@@ -34,6 +34,18 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	private NumericTextField numtxtZ;
 	private Label lblR;
 	private NumericTextField numtxtR;
+	private Label lblSmoothToX;
+	private NumericTextField numtxtSmoothToX;
+	private Label lblSmoothToY;
+	private NumericTextField numtxtSmoothToY;
+	private Label lblSmoothToZ;
+	private NumericTextField numtxtSmoothToZ;
+	private Label lblSmoothFromX;
+	private NumericTextField numtxtSmoothFromX;
+	private Label lblSmoothFromY;
+	private NumericTextField numtxtSmoothFromY;
+	private Label lblSmoothFromZ;
+	private NumericTextField numtxtSmoothFromZ;
 	private Button btnSave;
 	
 	private static final String NAME = "PrageDeviceConfigureView.name";

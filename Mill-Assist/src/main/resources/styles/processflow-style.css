@@ -145,6 +145,7 @@
 .progressbar-piece {
 	-fx-background-color: #f9f9f9, #bababa, #d9d9d9;
 	-fx-background-insets: 0, 0 0 1 0, 1 0 1 0;
+	-fx-opacity: 1;
 }
 
 .progressbar-piece-first {
