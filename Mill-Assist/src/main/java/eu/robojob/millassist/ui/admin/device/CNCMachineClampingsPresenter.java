@@ -22,6 +22,11 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 	public void setPresenter() {
 		getView().setPresenter(this);
 	}
+	
+	public void disableEditMode() {
+		this.selectedClamping = null;
+		this.editMode = false;
+	}
 
 	@Override
 	public boolean isConfigured() {

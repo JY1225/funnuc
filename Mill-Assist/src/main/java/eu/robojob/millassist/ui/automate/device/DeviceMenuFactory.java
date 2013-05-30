@@ -39,10 +39,9 @@ public class DeviceMenuFactory {
 		switch(deviceInfo.getType()) {
 			case BASIC_STACK_PLATE:
 				if (buffer == null) {
-					menuPresenter = getBasicStackPlateMenuPresenter(deviceInfo);
-				} else {
-					menuPresenter = buffer;
-				}
+					buffer = getBasicStackPlateMenuPresenter(deviceInfo);
+				} 
+				menuPresenter = buffer;
 				break;
 			default:
 				menuPresenter = null;

@@ -363,6 +363,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 				}
 			}
 		}
+		getPresenter().disableEditMode();
 		reset();
 	}
 	

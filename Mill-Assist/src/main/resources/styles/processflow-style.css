@@ -162,3 +162,7 @@
 .progressbar-piece-yellow {
 	-fx-background-color: #f9f9f9, #1ab71d, #1bc81f;
 }
+
+.progressbar-piece-unfocussed {
+	-fx-opacity: 0.2;
+}
