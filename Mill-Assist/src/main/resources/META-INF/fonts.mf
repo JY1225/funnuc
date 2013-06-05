@@ -1,0 +1,4 @@
+Open\ Sans = fonts/Open\ Sans/OpenSans-Regular.ttf
+Open\ Sans\ Light = fonts/Open\ Sans/OpenSans-Light.ttf
+Open\ Sans\ Bold = fonts/Open\ Sans/OpenSans-Bold.ttf
+Open\ Sans\ Semibold = fonts/Open\ Sans/OpenSans-Semibold.ttf

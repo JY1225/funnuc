@@ -17,7 +17,7 @@
 	-fx-background-radius: 0;
 	-fx-padding: 0;
 	-fx-text-alignment: center;
-	-fx-font-family: "Open Sans";
+	-fx-font-family: "Open Sans Bold";
 	-fx-font-weight: bold;
 	-fx-font-size: 12px;
 	-fx-font-smoothing-type: lcd;
@@ -40,8 +40,8 @@
 
 .header-button Text {
     -fx-fill: white;
-    -fx-font-family: "Open Sans";
-	-fx-font-weight: bold;
+    -fx-font-family: "Open Sans Bold";
+    -fx-font-weight: bold;
 	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
 }

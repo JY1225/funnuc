@@ -17,7 +17,7 @@
 }
 
 .info-msg-title {
-	-fx-font-family: "Open Sans";
+	-fx-font-family: "Open Sans Bold";
 	-fx-font-weight: bold;
 	-fx-font-size: 18px;
 }
@@ -48,7 +48,7 @@
 .btn-start-label, .teach-btn-text {
 	-fx-text-fill: white;
 	-fx-fill: white;
-	-fx-font-family: "Open Sans";
+	-fx-font-family: "Open Sans Bold";
 	-fx-font-weight: bold;
 	-fx-font-size: 14px;
 	-fx-font-smoothing-type: lcd;	
@@ -59,7 +59,6 @@
 .z-rest {
 	-fx-font-family: "Open Sans";
 	-fx-font-size: 24px;
-	-fx-font-weight: normal;
 	-fx-font-smoothing-type: lcd;
 }
 
@@ -109,7 +108,7 @@
 } 
 
 .info-msg-title {
-	-fx-font-family: "Open Sans";
+	-fx-font-family: "Open Sans Bold";
 	-fx-font-weight: bold;
 	-fx-font-size: 18px;
 }

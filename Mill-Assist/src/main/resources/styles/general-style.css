@@ -57,7 +57,7 @@
 	-fx-padding: 0 0 0 5;
 	-fx-text-fill: white;
 	-fx-text-alignment: center;
-	-fx-font-family: "Open Sans";
+	-fx-font-family: "Open Sans Bold";
 	-fx-font-weight: bold;
 	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
@@ -112,7 +112,7 @@
 .pop-up-btn Text {
 	-fx-fill: white;
 	-fx-text-alignment: center;
-	-fx-font-family: "Open Sans";
+	-fx-font-family: "Open Sans Bold";
 	-fx-font-weight: bold;
 	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
@@ -194,7 +194,7 @@
 .content-btn-text {
 	-fx-text-fill: white;
 	-fx-fill: white;
-	-fx-font-family: "Open Sans";
+	-fx-font-family: "Open Sans Bold";
 	-fx-font-weight: bold;
 	-fx-font-size: 14px;
 	-fx-font-smoothing-type: lcd;	
@@ -203,7 +203,7 @@
 }
 
 .content-msg-title {
-	-fx-font-family: "Open Sans";
+	-fx-font-family: "Open Sans Bold";
 	-fx-font-weight: bold;
 	-fx-font-size: 18px;
 }

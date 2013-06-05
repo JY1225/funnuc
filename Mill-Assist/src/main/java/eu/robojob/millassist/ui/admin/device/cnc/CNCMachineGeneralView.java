@@ -45,7 +45,7 @@ public class CNCMachineGeneralView extends GridPane {
 	private ToggleGroup tgWayOfOperating;
 	private Label lblClampingLengthR;
 	private NumericTextField numTxtClampingLengthR;
-	private Label lblnumTxtClampingWidthR;
+	private Label lblClampingWidthR;
 	private NumericTextField numTxtClampingWidthR;
 	private Region spacer;
 		
@@ -131,7 +131,7 @@ public class CNCMachineGeneralView extends GridPane {
 		
 		lblClampingLengthR = new Label(Translator.getTranslation(CLAMPING_LENGTH_R));
 		numTxtClampingLengthR = new NumericTextField(5);
-		lblnumTxtClampingWidthR = new Label(Translator.getTranslation(CLAMPING_WIDTH_R));
+		lblClampingWidthR = new Label(Translator.getTranslation(CLAMPING_WIDTH_R));
 		numTxtClampingWidthR = new NumericTextField(5);
 		
 		int row = 0;
@@ -160,7 +160,7 @@ public class CNCMachineGeneralView extends GridPane {
 		add(lblClampingLengthR, column++, row);
 		add(numTxtClampingLengthR, column++, row);
 		column++;
-		add(lblnumTxtClampingWidthR, column++, row);
+		add(lblClampingWidthR, column++, row);
 		add(numTxtClampingWidthR, column++, row);
 	}
 	

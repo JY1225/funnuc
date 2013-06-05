@@ -128,7 +128,7 @@
 .transport-label {
 	-fx-text-alignment: center;
 	-fx-font-size: 13px;
-	-fx-font-family: "Open Sans";
+	-fx-font-family: "Open Sans Bold";
 	-fx-font-weight: bold;
 	-fx-font-smoothing-type: lcd;
 	-fx-alignment: center;

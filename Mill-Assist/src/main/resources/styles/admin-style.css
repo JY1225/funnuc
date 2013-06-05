@@ -98,13 +98,13 @@
 }
 
 .warning-config {
-	-fx-font-family: "Open Sans";
+	-fx-font-family: "Open Sans Bold";
 	-fx-font-weight: bold;
 	-fx-font-size: 14px;
 }
 
 .alarm-popup-msg {
-	-fx-font-family: "Open Sans";
+	-fx-font-family: "Open Sans Bold";
 	-fx-font-weight: bold;
 	-fx-font-size: 14px;
 }
