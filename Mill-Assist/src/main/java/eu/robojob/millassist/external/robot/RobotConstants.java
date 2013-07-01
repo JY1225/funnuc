@@ -81,7 +81,7 @@ public final class RobotConstants {
 	public static final int COMMAND_ABORT						=	62;
 	public static final int COMMAND_CONTINUE					=	63;
 	public static final int COMMAND_RECALC_TCPS					=	64;
-	public static final int COMMAND_TO_HOME						=	65;
+	public static final int COMMAND_TO_HOME						=	71;
 	public static final int COMMAND_TO_JAW_CHANGE				=	66;
 	public static final int COMMAND_SET_SPEED					=	67;
 	public static final int COMMAND_TO_TRANSPORT_POINT			=	68;
@@ -102,7 +102,7 @@ public final class RobotConstants {
 	public static final int RESPONSE_ABORT						=	162;
 	public static final int RESPONSE_CONTINUE					=	163;
 	public static final int RESPONSE_RECALC_TCPS				=	164;
-	public static final int RESPONSE_TO_HOME					=	165;
+	public static final int RESPONSE_TO_HOME					=	171;
 	public static final int RESPONSE_TO_JAW_CHANGE				=	166;
 	public static final int RESPONSE_SET_SPEED					=	167;
 	public static final int RESPONSE_TO_TRANSPORT_POINT			=	168;
@@ -110,11 +110,11 @@ public final class RobotConstants {
 	
 	// SERVICE GRIPPER
 	public static final int SERVICE_GRIPPER_SERVICE_TYPE_TOOL_CHANGE = 1;
-	public static final int SERVICE_GRIPPER_SERVICE_TYPE_PICK = 2;
-	public static final int SERVICE_GRIPPER_SERVICE_TYPE_PUT = 3;
-	public static final int SERVICE_GRIPPER_SERVICE_TYPE_HOME = 4;
+	public static final int SERVICE_GRIPPER_SERVICE_TYPE_PICK = 12;
+	public static final int SERVICE_GRIPPER_SERVICE_TYPE_PUT = 13;
+	public static final int SERVICE_GRIPPER_SERVICE_TYPE_HOME = 15;
 	public static final int SERVICE_GRIPPER_SERVICE_TYPE_JAW_CHANGE = 5;
-	public static final int SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT = 7;
+	public static final int SERVICE_GRIPPER_SERVICE_TYPE_MOVE_WAIT = 14;
 	
 	// SERVICE HANDLING
 	public static final int SERVICE_HANDLING_PP_MODE_BAR_MOVE 		=	BIT0;

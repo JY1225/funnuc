@@ -1,5 +1,6 @@
 package eu.robojob.millassist.ui.admin.device;
 
+import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.ui.admin.AbstractSubMenuPresenter;
 import eu.robojob.millassist.ui.admin.device.cnc.CNCMachineConfigurePresenter;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -14,13 +15,18 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 	
 	public DeviceMenuPresenter(final DeviceMenuView view, final UserFramesConfigurePresenter userFramesConfigurePresenter,
 			final BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter, final CNCMachineConfigurePresenter cncMachineConfigurePresenter,
-				final CNCMachineClampingsPresenter cncMachineClamingsPresenter, final PrageDeviceConfigurePresenter prageDeviceConfigurePresenter) {
+				final CNCMachineClampingsPresenter cncMachineClamingsPresenter, final PrageDeviceConfigurePresenter prageDeviceConfigurePresenter,
+					final DeviceManager deviceManager) {
 		super(view);
 		this.userFramesConfigurePresenter = userFramesConfigurePresenter;
 		this.basicStackPlateConfigurePresenter = basicStackPlateConfigurePresenter;
 		this.cncMachineConfigurePresenter = cncMachineConfigurePresenter;
 		this.cncMachineClampingsPresenter = cncMachineClamingsPresenter;
 		this.prageDeviceConfigurePresenter = prageDeviceConfigurePresenter;
+		if (deviceManager.getPreProcessingDevices().size() == 0) {
+			//TODO review if other pre process devices are available!
+			getView().disablePrageMenuItem();
+		}
 	}
 
 	@Override

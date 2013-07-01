@@ -52,9 +52,6 @@ public class RobotSocketCommunication extends ExternalSocketCommunication {
 	public synchronized List<String> readValues(final int commandId, final int ackId, final int timeout) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
 		getExternalCommunicationThread().writeString(commandId + ";");
 		String responseString = awaitResponse(ackId + ";", timeout);
-		if (commandId == 70) {
-			logger.debug("Wrote [" + commandId + ";], and response was [" + responseString + "].");
-		}
 		return parseResult(responseString.substring((ackId + ";").length()));
 	}
 	

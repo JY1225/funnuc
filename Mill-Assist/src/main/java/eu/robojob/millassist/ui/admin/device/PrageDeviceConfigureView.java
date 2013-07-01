@@ -202,22 +202,24 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	@Override
 	public void refresh() {
 		getPresenter().updateUserFrames();
-		fulltxtName.setText(prageDevice.getName());
-		cbbUserFrame.valueProperty().set(prageDevice.getWorkAreas().get(0).getUserFrame().getName());
-		if (prageDevice.getWorkAreas().get(0).getActiveClamping() != null) {
-			Coordinates relClampingPosition = prageDevice.getWorkAreas().get(0).getActiveClamping().getRelativePosition();
-			numtxtX.setText("" + relClampingPosition.getX());
-			numtxtY.setText("" + relClampingPosition.getY());
-			numtxtZ.setText("" + relClampingPosition.getZ());
-			numtxtR.setText("" + relClampingPosition.getR());
-			Coordinates smoothTo = prageDevice.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
-			numtxtSmoothToX.setText("" + smoothTo.getX());
-			numtxtSmoothToY.setText("" + smoothTo.getY());
-			numtxtSmoothToZ.setText("" + smoothTo.getZ());
-			Coordinates smoothFrom = prageDevice.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
-			numtxtSmoothFromX.setText("" + smoothFrom.getX());
-			numtxtSmoothFromY.setText("" + smoothFrom.getY());
-			numtxtSmoothFromZ.setText("" + smoothFrom.getZ());
+		if (prageDevice != null) {
+			fulltxtName.setText(prageDevice.getName());
+			cbbUserFrame.valueProperty().set(prageDevice.getWorkAreas().get(0).getUserFrame().getName());
+			if (prageDevice.getWorkAreas().get(0).getActiveClamping() != null) {
+				Coordinates relClampingPosition = prageDevice.getWorkAreas().get(0).getActiveClamping().getRelativePosition();
+				numtxtX.setText("" + relClampingPosition.getX());
+				numtxtY.setText("" + relClampingPosition.getY());
+				numtxtZ.setText("" + relClampingPosition.getZ());
+				numtxtR.setText("" + relClampingPosition.getR());
+				Coordinates smoothTo = prageDevice.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
+				numtxtSmoothToX.setText("" + smoothTo.getX());
+				numtxtSmoothToY.setText("" + smoothTo.getY());
+				numtxtSmoothToZ.setText("" + smoothTo.getZ());
+				Coordinates smoothFrom = prageDevice.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
+				numtxtSmoothFromX.setText("" + smoothFrom.getX());
+				numtxtSmoothFromY.setText("" + smoothFrom.getY());
+				numtxtSmoothFromZ.setText("" + smoothFrom.getZ());
+			}
 		}
 	}
 

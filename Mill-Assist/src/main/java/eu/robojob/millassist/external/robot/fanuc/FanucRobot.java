@@ -47,7 +47,7 @@ public class FanucRobot extends AbstractRobot {
 	private static final int WRITE_REGISTER_TIMEOUT = 5000;
 	private static final int IOACTION_TIMEOUT = 2 * 60 * 1000;
 	
-	private static final List<Integer> VALID_USERFRAMES = Arrays.asList(1, 3, 6);
+	private static final List<Integer> VALID_USERFRAMES = Arrays.asList(1, 3, 6, 11);
 	
 	private static final String HEAD_A_ID = "A";
 	private static final String HEAD_B_ID = "B";
@@ -101,10 +101,11 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void abort() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public void abort() throws InterruptedException, AbstractCommunicationException {
 		setCurrentActionSettings(null);
 		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_ABORT, RobotConstants.RESPONSE_ABORT, WRITE_VALUES_TIMEOUT);
 		restartProgram();
+		setSpeed(this.getSpeed());
 	}
 	
 	public void disconnect() {
@@ -151,7 +152,7 @@ public class FanucRobot extends AbstractRobot {
 		if (smooth == null) {
 			smooth = fPutSettings.getWorkArea().getActiveClamping().getSmoothToPoint();
 		}
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), fPutSettings.getSmoothPoint(), fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -251,6 +252,7 @@ public class FanucRobot extends AbstractRobot {
 		writeServiceHandlingSet(pickSettings.isFreeAfter(), ppMode, pickSettings.getWorkPiece().getDimensions());
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
 		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getStep().getRelativeTeachedOffset(), smooth, fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getWorkArea().getActiveClamping());
+		logger.info("About to write start service!");
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -579,7 +581,10 @@ public class FanucRobot extends AbstractRobot {
 		}
 		values.add(df.format(location.getX()));		// x offset
 		values.add(df.format(location.getY()));		// y offset
-		values.add(df.format(location.getZ()));		// z offset
+		values.add(df.format(location.getZ()));		// z value
+		values.add(df.format(0));					// z correction
+		values.add(df.format(0));					// w angle
+		values.add(df.format(0));					// p angle
 		values.add(df.format(location.getR()));		// r offset							
 		if ((relativeTeachedCoordinates == null) || (relativeTeachedCoordinates.getZ() >= 0)) {
 			values.add(df.format(dimensions.getHeight() + location.getZ() + clamping.getHeight()));	// z safe plane offset 

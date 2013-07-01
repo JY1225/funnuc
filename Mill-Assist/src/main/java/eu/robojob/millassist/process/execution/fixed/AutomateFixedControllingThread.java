@@ -131,9 +131,11 @@ public class AutomateFixedControllingThread extends Thread {
 				if (step instanceof ProcessingStep) {
 					if (((ProcessingStep) step).getDevice() instanceof AbstractCNCMachine) {
 						if (processFlow.getCurrentIndex(WORKPIECE_1_ID) == 0) {
-							processFlowExecutor2 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_1_ID);
-							firstPiece = false;
-							ThreadManager.submit(processFlowExecutor2);
+							if (isConcurrentExecutionPossible()) {
+								processFlowExecutor2 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_1_ID);
+								firstPiece = false;
+								ThreadManager.submit(processFlowExecutor2);
+							}
 						}
 					}
 				}

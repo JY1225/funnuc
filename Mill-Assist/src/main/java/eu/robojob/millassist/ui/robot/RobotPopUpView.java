@@ -99,7 +99,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 				getPresenter().toChangePointClicked();
 			}
 		});
-		vBoxMenuItems.getChildren().add(btnToChange);
+		//vBoxMenuItems.getChildren().add(btnToChange);
 		
 		btn10 = new Button();
 		btn10.setGraphic(new Text("10%"));

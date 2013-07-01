@@ -123,7 +123,7 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 		if (!running) {
 			return;
 		}
-		putStep.getRobotSettings().setFreeAfter(true);
+		putStep.getRobotSettings().setFreeAfter(false);
 		checkStatus();
 		putStep.executeStep(workpieceId, this);
 		checkStatus();

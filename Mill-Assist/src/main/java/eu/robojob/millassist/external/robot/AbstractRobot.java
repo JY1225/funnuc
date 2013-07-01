@@ -121,6 +121,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 
 	public void interruptCurrentAction() {
 		logger.debug("Interrupting current action of: " + getName());
+		setRobotTimeout(null);
 		stopAction = true;
 		try {
 			abort();

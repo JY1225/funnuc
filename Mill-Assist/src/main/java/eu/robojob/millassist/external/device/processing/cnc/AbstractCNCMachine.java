@@ -86,6 +86,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	@Override
 	public void interruptCurrentAction() {
 		logger.debug("Interrupting current action of: " + getName());
+		setCncMachineTimeout(null);
 		stopAction = true;
 		synchronized (syncObject) {
 			syncObject.notifyAll();

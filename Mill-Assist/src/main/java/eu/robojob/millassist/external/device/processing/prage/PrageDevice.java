@@ -29,7 +29,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	private static final String EXCEPTION_PRAGE_TIMEOUT = "PrageDevice.prageTimeout";
 	
 	private static final float LENGTH_CLAMP_LOCATION_R = 90;
-	private static final float WIDTH_CLAMP_LOCATION_R = 0;
+	private static final float WIDTH_CLAMP_LOCATION_R = 180;
 	
 	public PrageDevice(final String name) {
 		super(name, false);

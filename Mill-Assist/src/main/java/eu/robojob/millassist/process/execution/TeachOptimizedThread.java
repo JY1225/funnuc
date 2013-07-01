@@ -98,6 +98,7 @@ public class TeachOptimizedThread extends TeachThread {
 						}
 						putInMachineStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
 					} else if (step.equals(putAndWaitOnPrageStep)) {
+						putAndWaitOnPrageStep.setRelativeTeachedOffset(null);
 						putAndWaitOnPrageStep.executeStepTeached(WORKPIECE_ID, this);
 						putAndWaitOnPrageStep.finalizeStep(this);
 						relTeachedOffsetMachineClamping = putAndWaitOnPrageStep.getRelativeTeachedOffset();
@@ -105,6 +106,7 @@ public class TeachOptimizedThread extends TeachThread {
 						putInMachineStep.setRelativeTeachedOffset(offsetInMachine);
 						//TODO what to do with y offset of Präge?
 					} else if (step.equals(putInMachineStep)) {
+						putInMachineStep.setRelativeTeachedOffset(null);
 						putInMachineStep.getRobotSettings().setFreeAfter(true);
 						putInMachineStep.executeStepTeached(WORKPIECE_ID, this);
 						putInMachineStep.finalizeStep(this);
@@ -114,6 +116,7 @@ public class TeachOptimizedThread extends TeachThread {
 						pickAfterWaitOnPrageStep.executeStep(WORKPIECE_ID, this);
 						pickAfterWaitOnPrageStep.finalizeStep(this);
 						knowEnough = true;
+						pickAfterWaitOnPrageStep.getRobot().moveToHome();
 					} else if (!(step instanceof InterventionStep)) {
 						step.executeStep(WORKPIECE_ID, this);
 					}

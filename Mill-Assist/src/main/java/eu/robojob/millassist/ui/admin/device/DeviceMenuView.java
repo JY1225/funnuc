@@ -55,6 +55,10 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 		});
 	}
 	
+	public void disablePrageMenuItem() {
+		getMenuItem(4).setDisable(true);
+	}
+	
 	public void setConfigureUserFramesActive() {
 		setMenuItemSelected(0);
 	}
