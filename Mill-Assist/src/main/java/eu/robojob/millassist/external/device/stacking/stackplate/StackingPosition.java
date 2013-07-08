@@ -1,9 +1,9 @@
-package eu.robojob.millassist.external.device.stacking;
+package eu.robojob.millassist.external.device.stacking.stackplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.robojob.millassist.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.workpiece.WorkPiece;
 

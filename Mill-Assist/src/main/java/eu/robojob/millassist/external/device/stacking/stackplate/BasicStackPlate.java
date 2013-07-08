@@ -1,4 +1,4 @@
-package eu.robojob.millassist.external.device.stacking;
+package eu.robojob.millassist.external.device.stacking.stackplate;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,6 +20,7 @@ import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.DeviceType;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
+import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.workpiece.WorkPiece;

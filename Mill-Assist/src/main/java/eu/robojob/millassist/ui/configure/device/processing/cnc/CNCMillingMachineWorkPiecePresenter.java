@@ -1,7 +1,7 @@
 package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.PickAfterWaitStep;
 import eu.robojob.millassist.process.PickStep;

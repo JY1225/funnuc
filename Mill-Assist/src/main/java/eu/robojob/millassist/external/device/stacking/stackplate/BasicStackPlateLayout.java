@@ -1,4 +1,4 @@
-package eu.robojob.millassist.external.device.stacking;
+package eu.robojob.millassist.external.device.stacking.stackplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.millassist.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.millassist.external.device.stacking.StudPosition.StudType;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.stackplate.StudPosition.StudType;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;

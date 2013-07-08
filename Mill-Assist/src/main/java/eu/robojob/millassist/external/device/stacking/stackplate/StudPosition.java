@@ -1,4 +1,4 @@
-package eu.robojob.millassist.external.device.stacking;
+package eu.robojob.millassist.external.device.stacking.stackplate;
 
 import eu.robojob.millassist.positioning.Coordinates;
 

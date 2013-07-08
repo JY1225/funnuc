@@ -1,8 +1,8 @@
 package eu.robojob.millassist.ui.automate.device.stacking;
 
 import javafx.application.Platform;
-import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.BasicStackPlateListener;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.device.stacking.BasicStackPlateLayoutView;
 

@@ -20,12 +20,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.ClampingManner;
-import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.millassist.external.device.stacking.BasicStackPlateLayout;
-import eu.robojob.millassist.external.device.stacking.StackingPosition;
-import eu.robojob.millassist.external.device.stacking.StudPosition;
-import eu.robojob.millassist.external.device.stacking.StudPosition.StudType;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateLayout;
+import eu.robojob.millassist.external.device.stacking.stackplate.StackingPosition;
+import eu.robojob.millassist.external.device.stacking.stackplate.StudPosition;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.stackplate.StudPosition.StudType;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormView;

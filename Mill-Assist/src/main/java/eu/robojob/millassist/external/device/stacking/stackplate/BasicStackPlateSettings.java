@@ -1,7 +1,7 @@
-package eu.robojob.millassist.external.device.stacking;
+package eu.robojob.millassist.external.device.stacking.stackplate;
 
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.stacking.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class BasicStackPlateSettings extends DeviceSettings {

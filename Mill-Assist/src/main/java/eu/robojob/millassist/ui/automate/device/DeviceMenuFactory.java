@@ -3,7 +3,7 @@ package eu.robojob.millassist.ui.automate.device;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.automate.AbstractMenuPresenter;
 import eu.robojob.millassist.ui.automate.device.stacking.BasicStackPlateLayoutPresenter;

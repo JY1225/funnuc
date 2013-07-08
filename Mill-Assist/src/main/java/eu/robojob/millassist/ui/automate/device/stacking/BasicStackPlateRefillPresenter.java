@@ -1,7 +1,7 @@
 package eu.robojob.millassist.ui.automate.device.stacking;
 
-import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
