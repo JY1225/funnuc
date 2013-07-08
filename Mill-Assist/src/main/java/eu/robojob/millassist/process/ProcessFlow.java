@@ -60,8 +60,8 @@ public class ProcessFlow {
 	
 	private static Logger logger = LogManager.getLogger(ProcessFlow.class.getName());
 	
-	private static final int WORKPIECE_0_ID = 0;
-	private static final int WORKPIECE_1_ID = 1;
+	public static final int WORKPIECE_0_ID = 0;
+	public static final int WORKPIECE_1_ID = 1;
 	
 	private ClampingManner clampingManner;
 	

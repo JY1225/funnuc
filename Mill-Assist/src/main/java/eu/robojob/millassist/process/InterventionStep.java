@@ -9,6 +9,7 @@ import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.robot.RobotActionException;
+import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.process.execution.ProcessExecutor;
 
@@ -37,7 +38,8 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 			throw new IllegalStateException("Device [" + getDevice() + "] was already locked by: [" + getDevice().getLockingProcess() + "].");
 		} else {
 			try {
-				if (isInterventionNeeded(getProcessFlow().getFinishedAmount())) {	// check if the the amount of finished pieces corresponds to the frequency
+				if (isInterventionNeeded()) {	// check if the the amount of finished pieces corresponds to the frequency
+					//TODO move robot to home!
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
 					logger.debug("About to prepare device: [" + getDevice() + "] for intervention.");
 					checkProcessExecutorStatus(executor);
@@ -50,6 +52,7 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 					}
 					logger.debug("Device: [" + getDevice() + "] prepared for intervention.");
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.INTERVENTION_READY, workPieceId));
+					getProcessFlow().setMode(Mode.PAUSED);
 				}
 			} catch(AbstractCommunicationException | DeviceActionException | InterruptedException e) {
 				throw e;
@@ -59,7 +62,30 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 		}
 	}
 	
-	public boolean isInterventionNeeded(final int finishedAmount) {
+	public void interventionFinished() throws AbstractCommunicationException, InterruptedException {
+		for (AbstractDevice device : getProcessFlow().getDevices()) {
+			if (device instanceof AbstractCNCMachine) {
+				((AbstractCNCMachine) device).indicateOperatorRequested(false);
+				logger.debug("OPERATOR NO LONGER REQUESTED");
+			}
+		}
+	}
+	
+	public boolean isInterventionNeeded() {
+		int finishedAmount = getProcessFlow().getFinishedAmount();
+		return isInterventionNeeded(finishedAmount);
+	}
+	
+	public boolean isInterventionNeeded(final int finAmount) {
+		int currentStepIndex = getProcessFlow().getStepIndex(this);
+		int finishedAmount = finAmount;
+		finishedAmount++;
+		if (currentStepIndex < getProcessFlow().getCurrentIndex(ProcessFlow.WORKPIECE_0_ID)) {
+			finishedAmount++;
+		}
+		if (currentStepIndex < getProcessFlow().getCurrentIndex(ProcessFlow.WORKPIECE_1_ID)) {
+			finishedAmount++;
+		}
 		return ((finishedAmount > 0) && (finishedAmount % frequency == 0));
 	}
 

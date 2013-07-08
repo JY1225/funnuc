@@ -162,6 +162,9 @@ public class MainPresenter implements ProcessFlowListener {
 			case TEACH:
 				setChangeContentEnabled(false);
 				break;
+			case PAUSED:
+				setChangeContentEnabled(false);
+				break;
 			default:
 				setChangeContentEnabled(true);
 				break;

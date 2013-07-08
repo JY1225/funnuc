@@ -92,7 +92,7 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 		HBox.setMargin(alarmIconPane, new Insets(0, ICON_PADDING, 0, 0));
 		hBoxAlarm.getChildren().addAll(alarmIconPane, lblAlarmMessage);
 		hBoxAlarm.getStyleClass().add(CSS_CLASS_INFO_BORDER_BOTTOM);
-		hBoxAlarm.setAlignment(Pos.BOTTOM_LEFT);
+		hBoxAlarm.setAlignment(Pos.CENTER_LEFT);
 		hBoxAlarm.setPadding(new Insets(10, 0, PADDING_BOTTOM, 10));
 		lblAlarmMessage.setMaxWidth(450 - ICON_WIDTH - ICON_PADDING);
 		lblAlarmMessage.getStyleClass().add(CSS_CLASS_WARNING_CONFIG);

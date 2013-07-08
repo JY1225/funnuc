@@ -29,7 +29,8 @@ public class AutomateTimingThread extends Thread {
 			while (running) {
 				long timeInCurrentFlow = processFlowTimer.getProcessTimeMeasurement(automatePresenter.getMainProcessFlowId());
 				long remainingTime = processFlowTimer.getRemainingTime(automatePresenter.getMainProcessFlowId());
-				automatePresenter.setTimers(toTimeString(processFlowTimer.getProcessFlowDuration()), toTimeString(timeInCurrentFlow), "--:--:--", toTimeString(remainingTime));
+				long timeTillIntervention = processFlowTimer.getTimeTillIntervention();
+				automatePresenter.setTimers(toTimeString(processFlowTimer.getProcessFlowDuration()), toTimeString(timeInCurrentFlow), toTimeString(timeTillIntervention), toTimeString(remainingTime));
 				Thread.sleep(SLEEP_INTERVAL);
 			}
 		} catch (InterruptedException e) {

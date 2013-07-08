@@ -114,6 +114,7 @@ public class FanucRobot extends AbstractRobot {
 	
 	@Override
 	public void restartProgram() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+		setCurrentActionSettings(null);
 		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_RESTART_PROGRAM, RobotConstants.RESPONSE_RESTART_PROGRAM, WRITE_VALUES_TIMEOUT);
 		setCurrentActionSettings(null);
 	}

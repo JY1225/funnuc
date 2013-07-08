@@ -145,8 +145,16 @@ public class ProcessFlowManager {
 			if (step instanceof RobotStep) {
 				RobotStep robotStep = (RobotStep) step;
 				// we assume there always is at least one head!
-				GripperHead head = robotStep.getRobot().getGripperBody().getGripperHeads().iterator().next();
-				robotStep.getRobotSettings().setGripperHead(head);
+				//TODO review for later (more than 2 heads, other steps after processing)
+				GripperHead headA = robotStep.getRobot().getGripperBody().getGripperHeadByName("A");
+				GripperHead headB = robotStep.getRobot().getGripperBody().getGripperHeadByName("B");
+				robotStep.getRobotSettings().setGripperHead(headA);
+				if ((robotStep instanceof PickStep) && (((PickStep) robotStep).getDevice() instanceof AbstractCNCMachine)) {
+					robotStep.getRobotSettings().setGripperHead(headB);
+				}
+				if ((robotStep instanceof PutStep) && (((PutStep) robotStep).getDevice() instanceof BasicStackPlate)) {
+					robotStep.getRobotSettings().setGripperHead(headB);
+				}
 			}
 		}
 		ProcessFlow processFlow = new ProcessFlow("", processSteps, deviceSettings, robotSettings, new Timestamp(System.currentTimeMillis()), null);

@@ -7,11 +7,14 @@ import eu.robojob.millassist.process.DuplicateProcessFlowNameException;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlowManager;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.util.Translator;
 
 public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView, ProcessMenuPresenter> {
 
 	private ProcessFlowManager processFlowManager;
 	private ProcessFlow processFlow;
+	
+	private static final String DUPLICATE_NAME = "ProcessSavePresenter.duplicateName";
 	
 	private static Logger logger = LogManager.getLogger(ProcessSavePresenter.class.getName());
 	
@@ -42,6 +45,7 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 	public void overwrite() {
 		try {
 			processFlowManager.updateProcessFlow(processFlow);
+			getView().hideNotification();
 		} catch (DuplicateProcessFlowNameException e) {
 			//FIXME handle this exception
 			logger.error(e);
@@ -52,10 +56,9 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 	public void saveAsNew() {
 		try {
 			processFlowManager.saveProcessFlow(processFlow);
+			getView().hideNotification();
 		} catch (DuplicateProcessFlowNameException e) {
-			//FIXME handle this exception
-			logger.error(e);
-			e.printStackTrace();
+			getView().showNotification(Translator.getTranslation(DUPLICATE_NAME));
 		}
 	}
 	
@@ -63,5 +66,6 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 		processFlowManager.deleteProcessFlow(processFlow);
 		processFlow.loadFromOtherProcessFlow(processFlowManager.getLastProcessFlow());
 		getMenuPresenter().configureProcess();
+		getView().hideNotification();
 	}
 }

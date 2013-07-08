@@ -43,6 +43,14 @@
 	-fx-text-fill: #9d9d9d;
 }
 
+.device-unfocussed .device-button.unclickable , .device-unfocussed .device-button.unclickable :pressed {
+	-fx-effect: dropshadow(one-pass-box, #e0e0e0, 7, 0.0, 0, 2);
+}
+
+.device-unfocussed .label-unclickable {
+	-fx-text-fill: #c5c5c5;
+}
+
 .device-button:pressed, .device-unfocussed .device-button:pressed {
 	-fx-effect: dropshadow(one-pass-box, #b4b4b4, 7, 0.0, 0, 2);
 	-fx-scale-x: 0.97;
@@ -68,8 +76,16 @@
 	-fx-background-color: linear-gradient(#d49a4f, #974803), linear-gradient(#d49a4f, #bf5b04);
 }
 
-.device-unfocussed .btn-pre, .device-button.unclickable .btn-pre, .device-button.unclickable:pressed .btn-pre {
+.device-unfocussed .btn-pre {
 	-fx-background-color: linear-gradient(#f1d6b4, #d7b18f), linear-gradient(#f1d6b4, #e7b990);
+}
+
+.device-button.unclickable .btn-pre, .device-button.unclickable:pressed .btn-pre {
+	-fx-background-color: linear-gradient(#d5d3d1, #b5b3b1), linear-gradient(#d5d3d1, #bdbbb9);
+} 
+
+.device-unfocussed .device-button.unclickable .btn-pre, .device-unfocussed .device-button.unclickable:pressed .btn-pre {
+	-fx-background-color: linear-gradient(#e1e0df, #d1d0cf), linear-gradient(#e1e0df, #d5d4d3);
 }
 
 /* -- BUTTON CNC -- */
@@ -82,8 +98,16 @@
 	-fx-background-color: linear-gradient(#4288d7, #033da8), linear-gradient(#4288d7, #0347c4);
 }
 
-.device-unfocussed .btn-cnc, .device-button.unclickable .btn-cnc, .device-button.unclickable:pressed .btn-cnc {
+.device-unfocussed .btn-cnc {
 	-fx-background-color: linear-gradient(#adcef3, #8fa9d9), linear-gradient(#adcef3, #90b0ea);
+}
+
+.device-button.unclickable .btn-cnc, .device-button.unclickable:pressed .btn-cnc {
+	-fx-background-color: linear-gradient(#c7c8ca, #a7a8aa), linear-gradient(#c7c8ca, #adafb2);
+}
+
+.device-unfocussed .device-button.unclickable .btn-cnc, .device-unfocussed .device-button.unclickable:pressed .btn-cnc {
+	-fx-background-color: linear-gradient(#dadadb, #cacacb), linear-gradient(#dadadb, #cdcecf);
 }
 
 /* -- BUTTON POST -- */
@@ -96,20 +120,38 @@
 	-fx-background-color: linear-gradient(#22b33c, #257609), linear-gradient(#22b33c, #2b8c0b);
 }
 
-.device-unfocussed .btn-post, .device-button.unclickable .btn-post, .device-button.unclickable:pressed .btn-post {
+.device-unfocussed .btn-post {
 	-fx-background-color: linear-gradient(#9ee2ab, #9fc692), linear-gradient(#9ee2ab, #a3cf93);
+}
+
+.device-button.unclickable .btn-post, .device-button.unclickable:pressed .btn-post {
+	-fx-background-color: linear-gradient(#babebb, #a8aaa8), linear-gradient(#babebb, #adb0ad);
+} 
+
+.device-unfocussed .device-button.unclickable .btn-post, .device-unfocussed .device-button.unclickable:pressed .btn-post {
+	-fx-background-color: linear-gradient(#d3d5d4, #cacbca), linear-gradient(#d3d5d4, #d3d5d4);
 }
 
 /* ---------- TRANSPORT BUTTON ---------- */
 
-.transport-button, .transport-button-wrapper:pressed .transport-button.unclickable {
+.transport-button {
 	-fx-background-color: linear-gradient(#41caf2 0%, #0fa3ce 100%), #41caf2, #35bfe7;
 	-fx-background-insets: 0, 1, 2 1 1 1;
 	-fx-effect: dropshadow(one-pass-box, #b4b4b4, 5, 0.0, 0, 2);
 }
 
-.transport-button.unclickable, .transport-button-wrapper:pressed .transport-button.unclickable, .transport-button.transport-unfocussed, .transport-button-wrapper:pressed .transport-button.transport-unfocussed.unclickable {
+.transport-button.transport-unfocussed{
 	-fx-background-color: linear-gradient(#c0e1eb 0%, #b5dae5 100%), #c8e8f1, #bfe1eb;
+	-fx-effect: dropshadow(one-pass-box, #d4d4d4, 5, 0.0, 0, 2);
+}
+
+.transport-button.transport-unfocussed.unclickable, .transport-button-wrapper:pressed .transport-button.transport-unfocussed.unclickable {
+	-fx-background-color: linear-gradient(#e1e2e2 0%, #dcdddd 100%), #e4e5e5, #e0e1e1;
+	-fx-effect: dropshadow(one-pass-box, #e0e0e0, 5, 0.0, 0, 2);
+}
+
+.transport-button.unclickable, .transport-button-wrapper:pressed .transport-button.unclickable {
+	-fx-background-color: linear-gradient(#d5d7d7 0%, #cccece 100%), #dcdede, #d4d6d6;
 	-fx-effect: dropshadow(one-pass-box, #d4d4d4, 5, 0.0, 0, 2);
 }
 
@@ -120,10 +162,6 @@
 .pause-shape {
 	-fx-fill: black;
 }
-
-.transport-unfocussed .pause-shape, .unclickable .pause-shape {
-	-fx-fill: #9d9d9d;
-} 
 
 .transport-label {
 	-fx-text-alignment: center;
@@ -136,8 +174,29 @@
 	-fx-padding: 0 0 0 4;
 }
 
-.transport-unfocussed .transport-label, .unclickable .transport-label {
+
+.transport-unfocussed .pause-shape {
+	-fx-fill: #9d9d9d;
+} 
+
+.unclickable .pause-shape {
+	-fx-fill: #9d9d9d;
+}
+
+.transport-unfocussed .transport-label {
 	-fx-text-fill: #9d9d9d;
+}
+
+.unclickable .transport-label {
+	-fx-text-fill: #9d9d9d;
+}
+
+.transport-unfocussed.unclickable .pause-shape {
+	-fx-fill: #c5c5c5;
+}
+
+.transport-unfocussed.unclickable .transport-label {
+	-fx-text-fill: #c5c5c5;
 }
 
 /* ----------PROGRESSBAR---------- */

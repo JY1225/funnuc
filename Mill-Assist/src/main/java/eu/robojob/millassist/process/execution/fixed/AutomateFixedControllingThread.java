@@ -112,6 +112,7 @@ public class AutomateFixedControllingThread extends Thread {
 				for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
 					checkStatus();
 					robot.recalculateTCPs();
+					robot.setCurrentActionSettings(null);
 				}
 				for (AbstractDevice device: processFlow.getDevices()) {	// prepare devices for this processflow
 					checkStatus();
@@ -245,6 +246,25 @@ public class AutomateFixedControllingThread extends Thread {
 		} else {
 			processFlowExecutor.continueExecution();
 		}
+	}
+	
+	public synchronized void notifyWaitingOnIntervention() {
+		if ((processFlowExecutor1 != null) && (processFlowExecutor1.isRunning())) {
+			processFlowExecutor1.waitForIntervention();
+		}
+		if ((processFlowExecutor2 != null) && (processFlowExecutor2.isRunning())) {
+			processFlowExecutor2.waitForIntervention();
+		}
+	}
+	
+	public void interventionFinished() {
+		if ((processFlowExecutor1 != null) && (processFlowExecutor1.isRunning())) {
+			processFlowExecutor1.interventionFinished();
+		}
+		if ((processFlowExecutor2 != null) && (processFlowExecutor2.isRunning())) {
+			processFlowExecutor2.interventionFinished();
+		}
+		processFlow.setMode(Mode.AUTO);
 	}
 	
 	public synchronized void notifyPickFromMachineFinished(final ProcessFlowExecutionThread processFlowExecutor) {

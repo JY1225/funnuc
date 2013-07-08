@@ -51,6 +51,7 @@ public class TeachOptimizedThread extends TeachThread {
 	}
 
 	//TODO generalize this method for more complex ProcessFlows
+	//TODO check what happens with interventions!
 	@Override
 	public void run() {
 		// This implementation will be less generic, and take into account two possible ProcessFlow layouts: 

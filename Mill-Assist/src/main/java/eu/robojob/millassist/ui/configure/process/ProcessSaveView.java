@@ -137,6 +137,7 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 				btnDelete.setDisable(true);
 			}
 		}
+		hideNotification();
 	}
 	
 }

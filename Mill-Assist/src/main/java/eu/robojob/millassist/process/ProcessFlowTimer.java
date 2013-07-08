@@ -27,13 +27,18 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	private ProcessFlow processFlow;
 	private boolean isPaused;
 	private long timeWon;
-	
+		
 	private static Logger logger = LogManager.getLogger(ProcessFlowTimer.class.getName());
 		
 	public ProcessFlowTimer(final ProcessFlow processFlow) {
 		this.processFlow = processFlow;
 		processFlow.addListener(this);
 		stepDurations = new ConcurrentHashMap<AbstractProcessStep, Long>();
+		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
+			if (step instanceof InterventionStep) {
+				stepDurations.put(step, 0l);
+			}
+		}
 		waitingTimeAfterStepDurations = new ConcurrentHashMap<AbstractProcessStep, Long>();
 		timeWon = 0;
 		reset();
@@ -62,6 +67,10 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		} else {
 			return -1;
 		}
+	}
+	
+	public long getTimeTillIntervention() {
+		return -1;
 	}
 	
 	public long getRemainingTime(final int currentMainWorkPieceId) {

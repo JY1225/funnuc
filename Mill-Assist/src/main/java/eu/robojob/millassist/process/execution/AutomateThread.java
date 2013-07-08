@@ -80,7 +80,7 @@ public class AutomateThread extends Thread implements ProcessExecutor {
 							}
 						}
 						if (step instanceof InterventionStep) {
-							if (((InterventionStep) step).isInterventionNeeded(processFlow.getFinishedAmount())) {
+							if (((InterventionStep) step).isInterventionNeeded()) {
 								for (AbstractRobot robot : processFlow.getRobots()) {
 									robot.moveToHome();	// send robots to home
 								}

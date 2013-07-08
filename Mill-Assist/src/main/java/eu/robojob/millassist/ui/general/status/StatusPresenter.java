@@ -34,6 +34,8 @@ public class StatusPresenter implements ProcessFlowListener {
 	private static final String ENDED_PUT = "Status.endedPut";
 	private static final String INTERVENTION_READY = "Status.interventionReady";
 	
+	private boolean isPaused;
+	
 	public StatusPresenter(final StatusView view) {
 		this.view = view;
 	}
@@ -50,56 +52,58 @@ public class StatusPresenter implements ProcessFlowListener {
 	@Override public void statusChanged(final StatusChangedEvent e) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
-				switch (e.getStatusId()) {
-					case StatusChangedEvent.INACTIVE:
-						view.setInfoMessage(Translator.getTranslation(NONE_ACTIVE));
-						break;
-					case StatusChangedEvent.STARTED:
-						if (e.getActiveStep() instanceof PickStep) {
-							view.setInfoMessage(Translator.getTranslation(EXECUTE_PICK) + ((DeviceStep) e.getActiveStep()).getDevice().getName() + ".");
-						} else if (e.getActiveStep() instanceof PutStep) {
-							view.setInfoMessage(Translator.getTranslation(EXECUTE_PUT) + ((DeviceStep) e.getActiveStep()).getDevice().getName() + ".");
-						}
-						break;
-					case StatusChangedEvent.PREPARE_DEVICE:
-						if (e.getActiveStep() instanceof PickStep) {
-							view.setInfoMessage(((PickStep) e.getActiveStep()).getDevice().getName() + " " + Translator.getTranslation(PREPARE_PICK) + ".");
-						} else if (e.getActiveStep() instanceof PutStep) {
-							view.setInfoMessage(((PutStep) e.getActiveStep()).getDevice().getName() + " " + Translator.getTranslation(PREPARE_PUT) + ".");
-						}
-						break;
-					case StatusChangedEvent.EXECUTE_TEACHED:
-					case StatusChangedEvent.EXECUTE_NORMAL:
-						if (e.getActiveStep() instanceof PickStep) {
-							view.setInfoMessage(Translator.getTranslation(EXECUTE_PICK) + ((DeviceStep) e.getActiveStep()).getDevice().getName() + ".");
-						} else if (e.getActiveStep() instanceof PutStep) {
-							view.setInfoMessage(Translator.getTranslation(EXECUTE_PUT) + ((DeviceStep) e.getActiveStep()).getDevice().getName() + ".");
-						}
-						break;
-					case StatusChangedEvent.INTERVENTION_READY:
-						view.setInfoMessage(Translator.getTranslation(INTERVENTION_READY));
-						break;
-					case StatusChangedEvent.PROCESSING_STARTED:
-						view.setInfoMessage(((DeviceStep) e.getActiveStep()).getDevice().getName() + " " + Translator.getTranslation(PROCESSING));
-						break;
-					case StatusChangedEvent.ENDED:
-						if (e.getActiveStep() instanceof PickStep) {
-							view.setInfoMessage(Translator.getTranslation(ENDED_PICK) + ((DeviceStep) e.getActiveStep()).getDevice().getName() + ".");
-						} else if (e.getActiveStep() instanceof PutStep) {
-							view.setInfoMessage(Translator.getTranslation(ENDED_PUT) + ((DeviceStep) e.getActiveStep()).getDevice().getName() + ".");
-						}
-						break;
-					case StatusChangedEvent.TEACHING_NEEDED:
-						view.setInfoMessage(Translator.getTranslation(TEACHING_NEEDED));
-						break;
-					case StatusChangedEvent.TEACHING_FINISHED:
-						view.setInfoMessage(Translator.getTranslation(TEACHING_FINISHED));
-						break;
-					case StatusChangedEvent.PREPARE:
-						view.setInfoMessage(Translator.getTranslation(INITIALIZING_PROCESS));
-						break;
-					default:
-						throw new IllegalArgumentException("Unknown status id: " + e.getStatusId());
+				if (!isPaused) {
+					switch (e.getStatusId()) {
+						case StatusChangedEvent.INACTIVE:
+							view.setInfoMessage(Translator.getTranslation(NONE_ACTIVE));
+							break;
+						case StatusChangedEvent.STARTED:
+							if (e.getActiveStep() instanceof PickStep) {
+								view.setInfoMessage(Translator.getTranslation(EXECUTE_PICK) + ((DeviceStep) e.getActiveStep()).getDevice().getName() + ".");
+							} else if (e.getActiveStep() instanceof PutStep) {
+								view.setInfoMessage(Translator.getTranslation(EXECUTE_PUT) + ((DeviceStep) e.getActiveStep()).getDevice().getName() + ".");
+							}
+							break;
+						case StatusChangedEvent.PREPARE_DEVICE:
+							if (e.getActiveStep() instanceof PickStep) {
+								view.setInfoMessage(((PickStep) e.getActiveStep()).getDevice().getName() + " " + Translator.getTranslation(PREPARE_PICK) + ".");
+							} else if (e.getActiveStep() instanceof PutStep) {
+								view.setInfoMessage(((PutStep) e.getActiveStep()).getDevice().getName() + " " + Translator.getTranslation(PREPARE_PUT) + ".");
+							}
+							break;
+						case StatusChangedEvent.EXECUTE_TEACHED:
+						case StatusChangedEvent.EXECUTE_NORMAL:
+							if (e.getActiveStep() instanceof PickStep) {
+								view.setInfoMessage(Translator.getTranslation(EXECUTE_PICK) + ((DeviceStep) e.getActiveStep()).getDevice().getName() + ".");
+							} else if (e.getActiveStep() instanceof PutStep) {
+								view.setInfoMessage(Translator.getTranslation(EXECUTE_PUT) + ((DeviceStep) e.getActiveStep()).getDevice().getName() + ".");
+							}
+							break;
+						case StatusChangedEvent.INTERVENTION_READY:
+							view.setInfoMessage(Translator.getTranslation(INTERVENTION_READY));
+							break;
+						case StatusChangedEvent.PROCESSING_STARTED:
+							view.setInfoMessage(((DeviceStep) e.getActiveStep()).getDevice().getName() + " " + Translator.getTranslation(PROCESSING));
+							break;
+						case StatusChangedEvent.ENDED:
+							if (e.getActiveStep() instanceof PickStep) {
+								view.setInfoMessage(Translator.getTranslation(ENDED_PICK) + ((DeviceStep) e.getActiveStep()).getDevice().getName() + ".");
+							} else if (e.getActiveStep() instanceof PutStep) {
+								view.setInfoMessage(Translator.getTranslation(ENDED_PUT) + ((DeviceStep) e.getActiveStep()).getDevice().getName() + ".");
+							}
+							break;
+						case StatusChangedEvent.TEACHING_NEEDED:
+							view.setInfoMessage(Translator.getTranslation(TEACHING_NEEDED));
+							break;
+						case StatusChangedEvent.TEACHING_FINISHED:
+							view.setInfoMessage(Translator.getTranslation(TEACHING_FINISHED));
+							break;
+						case StatusChangedEvent.PREPARE:
+							view.setInfoMessage(Translator.getTranslation(INITIALIZING_PROCESS));
+							break;
+						default:
+							throw new IllegalArgumentException("Unknown status id: " + e.getStatusId());
+					}
 				}
 			}
 		});
@@ -109,9 +113,16 @@ public class StatusPresenter implements ProcessFlowListener {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				if (e.getMode() == Mode.TEACH) {
+					isPaused = false;
 					view.setInfoMessage(Translator.getTranslation(PROCESS_TEACH_STARTED));
 				} else if (e.getMode() == Mode.READY) {
+					isPaused = false;
 					view.setInfoMessage(Translator.getTranslation(PROCESS_TEACH_FINISHED));
+				} else if (e.getMode() == Mode.PAUSED) {
+					isPaused = true;
+					view.setInfoMessage(Translator.getTranslation(INTERVENTION_READY));
+				} else if (e.getMode() == Mode.AUTO) {
+					isPaused = false;
 				}
 			}
 		});

@@ -18,6 +18,7 @@ import eu.robojob.millassist.db.ConnectionManager;
 import eu.robojob.millassist.db.GeneralMapper;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DevicePickSettings;
@@ -70,6 +71,9 @@ public class ProcessFlowMapper {
 	private static final int STACKPLATE_ORIENTATION_HORIZONTAL = 1;
 	private static final int STACKPLATE_ORIENTATION_TILTED = 2;
 	
+	private static final int CLAMPING_MANNER_LENGTH = 1;
+	private static final int CLAMPING_MANNER_WIDTH = 2;
+	
 	private static Logger logger = LogManager.getLogger(ProcessFlowMapper.class.getName());
 	
 	private DeviceManager deviceManager;
@@ -117,10 +121,15 @@ public class ProcessFlowMapper {
 	
 	public void updateProcessFlow(final ProcessFlow processFlow) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE PROCESSFLOW SET NAME = ?, LASTOPENED = ? WHERE ID = ?");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE PROCESSFLOW SET NAME = ?, LASTOPENED = ?, CLAMPING_MANNER = ? WHERE ID = ?");
 		stmt.setString(1, processFlow.getName());
 		stmt.setTimestamp(2, processFlow.getLastOpened());
-		stmt.setInt(3, processFlow.getId());
+		int clampingMannerId = CLAMPING_MANNER_LENGTH;
+		if (processFlow.getClampingType().getType() == ClampingManner.Type.WIDTH) {
+			clampingMannerId = CLAMPING_MANNER_WIDTH;
+		}
+		stmt.setInt(3, clampingMannerId);
+		stmt.setInt(4, processFlow.getId());
 		try {
 			stmt.executeUpdate();
 			deleteStepsAndSettings(processFlow);
@@ -140,10 +149,15 @@ public class ProcessFlowMapper {
 		clearProcessFlowStepsSettingsAndReferencedIds(processFlow);
 		processFlow.setCreation(new Timestamp(System.currentTimeMillis()));
 		processFlow.setLastOpened(new Timestamp(System.currentTimeMillis()));
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO PROCESSFLOW (NAME, CREATION, LASTOPENED) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO PROCESSFLOW (NAME, CREATION, LASTOPENED, CLAMPING_MANNER) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setString(1, processFlow.getName());
 		stmt.setTimestamp(2, processFlow.getCreation());
 		stmt.setTimestamp(3, processFlow.getLastOpened());
+		int clampingMannerId = CLAMPING_MANNER_LENGTH;
+		if (processFlow.getClampingType().getType() == ClampingManner.Type.WIDTH) {
+			clampingMannerId = CLAMPING_MANNER_WIDTH;
+		}
+		stmt.setInt(4, clampingMannerId);
 		try {
 			stmt.executeUpdate();
 			ResultSet resultSet = stmt.getGeneratedKeys();
@@ -451,11 +465,19 @@ public class ProcessFlowMapper {
 			String name = results.getString("NAME");
 			Timestamp creation = results.getTimestamp("CREATION");
 			Timestamp lastOpened = results.getTimestamp("LASTOPENED");
+			int clampingMannerId = results.getInt("CLAMPING_MANNER");
 			List<AbstractProcessStep> processSteps = getProcessSteps(id);
 			Map<AbstractDevice, DeviceSettings> deviceSettings = getDeviceSettings(id);
 			Map<AbstractRobot, RobotSettings> robotSettings = getRobotSettings(id);
 			processFlow = new ProcessFlow(name, processSteps, deviceSettings, robotSettings, creation, lastOpened);
 			processFlow.setId(id);
+			if (clampingMannerId == CLAMPING_MANNER_LENGTH) {
+				processFlow.getClampingType().setType(ClampingManner.Type.LENGTH);
+			} else if (clampingMannerId == CLAMPING_MANNER_WIDTH) {
+				processFlow.getClampingType().setType(ClampingManner.Type.WIDTH);
+			} else {
+				throw new IllegalStateException("Unknown clamping manner type: " + clampingMannerId);
+			}
 		}
 		return processFlow;
 	}

@@ -93,7 +93,7 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 	
 	public void continueAutomate() {
 		running = true;
-		ThreadManager.submit(automateThread);
+		automateThread.interventionFinished();
 		statusPresenter.getView().activateStopButton();
 	}
 

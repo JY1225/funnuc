@@ -10,6 +10,7 @@ import eu.robojob.millassist.external.device.stacking.BasicStackPlate;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
+import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.PutAndWaitStep;
@@ -25,6 +26,8 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 	private Object syncObject;
 	private boolean running;
 	private boolean canContinue;
+	private boolean waitingForIntervention;
+	private Object syncObject2;
 	
 	private static Logger logger = LogManager.getLogger(ProcessFlowExecutionThread.class.getName());
 	
@@ -35,6 +38,8 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 		this.workpieceId = workpieceId;
 		this.syncObject = new Object();
 		this.canContinue = false;
+		this.waitingForIntervention = false;
+		this.syncObject2 = new Object();
 	}
 	
 	private void checkStatus() throws InterruptedException {
@@ -49,6 +54,14 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 		try {
 			while (running) {
 				
+				if (waitingForIntervention) {
+					synchronized(syncObject2) {
+						logger.info("Waiting for intervention");
+						syncObject2.wait();
+						logger.info("Can continue after intervention");
+					}
+				}
+				
 				AbstractProcessStep currentStep = processFlow.getStep(processFlow.getCurrentIndex(workpieceId));
 				
 				checkStatus();
@@ -56,8 +69,9 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 				if (currentStep instanceof RobotStep) {
 					((RobotStep) currentStep).getRobotSettings().setFreeAfter(false);
 				}
-				
-				if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
+				if (currentStep instanceof InterventionStep) {
+					executeInterventionStep((InterventionStep) currentStep);
+				} else if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
 					checkStatus();
 					executePutInMachineStep((PutStep) currentStep);
 				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
@@ -105,6 +119,36 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 			controllingThread.notifyException(e);
 			//controllingThread.stopExecution();
 			controllingThread.stopRunning();
+		}
+	}
+	
+	public void executeInterventionStep(final InterventionStep interventionStep) throws AbstractCommunicationException, DeviceActionException, RobotActionException, InterruptedException {
+		if (interventionStep.isInterventionNeeded()) {
+			interventionStep.executeStep(workpieceId, this);
+			canContinue = false;
+			checkStatus();
+			controllingThread.notifyWaitingOnIntervention();
+			checkStatus();
+			if (waitingForIntervention) {
+				synchronized(syncObject2) {
+					logger.info("Waiting for intervention");
+					syncObject2.wait();
+					logger.info("Can continue after intervention");
+				}
+			}
+			checkStatus();
+			interventionStep.interventionFinished();
+		}
+	}
+	
+	public void waitForIntervention() {
+		this.waitingForIntervention = true;
+	}
+	
+	public void interventionFinished() {
+		this.waitingForIntervention = false;
+		synchronized(syncObject2) {
+			syncObject2.notify();
 		}
 	}
 	

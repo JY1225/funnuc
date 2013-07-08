@@ -128,6 +128,11 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 					getView().setProcessActive(true);
 				}
 				break;
+			case PAUSED: 
+				if (connected) {
+					getView().setProcessActive(true);
+				}
+				break;
 			default:
 				if (connected) {
 					getView().setProcessActive(false);
