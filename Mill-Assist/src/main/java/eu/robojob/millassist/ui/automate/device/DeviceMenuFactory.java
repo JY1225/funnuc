@@ -11,7 +11,7 @@ import eu.robojob.millassist.ui.automate.device.stacking.BasicStackPlateMenuPres
 import eu.robojob.millassist.ui.automate.device.stacking.BasicStackPlateMenuView;
 import eu.robojob.millassist.ui.automate.device.stacking.BasicStackPlateRefillPresenter;
 import eu.robojob.millassist.ui.automate.device.stacking.BasicStackPlateRefillView;
-import eu.robojob.millassist.ui.general.device.stacking.BasicStackPlateLayoutView;
+import eu.robojob.millassist.ui.general.device.stacking.stackplate.BasicStackPlateLayoutView;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
 public class DeviceMenuFactory {

@@ -112,6 +112,7 @@ public class DeviceButton extends VBox {
 	private void setImage() {
 		switch(deviceInfo.getType()) {
 			case BASIC_STACK_PLATE:
+			case CONVEYOR:
 			case STACKING:	
 				if (deviceInfo.getPutStep() == null) {
 					imagePath.setContent(preStackingPath);

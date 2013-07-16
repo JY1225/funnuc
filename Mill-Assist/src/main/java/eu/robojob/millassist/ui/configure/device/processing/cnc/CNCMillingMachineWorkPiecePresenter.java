@@ -41,11 +41,12 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		if (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null) {
 			WorkPieceDimensions myDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
 			WorkPieceDimensions prevDimensions = getPreviousPickDimensions();
+			float weight = pickStep.getRobotSettings().getWorkPiece().getWeight();
 			float prevWeight = getPreviousWorkPiece().getWeight();
 			if ((myDimensions.getWidth() > 0) && (myDimensions.getLength() > 0) && (myDimensions.getHeight() > 0) && (myDimensions.getWidth() <= prevDimensions.getWidth()) && (myDimensions.getLength() <= prevDimensions.getLength()) 
 					&& (myDimensions.getHeight() <= prevDimensions.getHeight()) && 
 					(pickStep.getRobotSettings().getWorkPiece().getWeight() > 0) &&
-					(pickStep.getRobotSettings().getWorkPiece().getWeight() <= prevWeight)) {
+					((weight <= prevWeight) || ((weight > prevWeight) && (Math.abs(weight - prevWeight) < 0.01)))) {
 				return true;
 			}
 		}
@@ -64,7 +65,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 			} else if ((myDimensions.getWidth() > prevDimensions.getWidth()) || (myDimensions.getLength() > prevDimensions.getLength())
 					 || (myDimensions.getHeight() > prevDimensions.getHeight())) {
 				getView().showNotification(Translator.getTranslation(DIMENSIONS_DO_NOT_MATCH));
-			} else if (weight > prevWeight) {
+			} else if ((weight > prevWeight) && (Math.abs(weight - prevWeight) > 0.01)) {
 				getView().showNotification(Translator.getTranslation(WEIGHTS_DO_NOT_MATCH));
 			} else {
 				getView().hideNotification();

@@ -1,4 +1,4 @@
-package eu.robojob.millassist.ui.configure.device.stacking;
+package eu.robojob.millassist.ui.configure.device.stacking.stackplate;
 
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -23,6 +23,7 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 	
 	public void changedDevice(final String deviceId) {
 		// TODO implement!
+		// throw new IllegalStateException("Not yet implemented");
 	}
 
 	@Override

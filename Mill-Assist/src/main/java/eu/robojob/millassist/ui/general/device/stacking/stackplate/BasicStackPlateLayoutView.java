@@ -1,4 +1,4 @@
-package eu.robojob.millassist.ui.general.device.stacking;
+package eu.robojob.millassist.ui.general.device.stacking.stackplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -253,9 +253,16 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
 							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
-					Rectangle rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
-							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-							5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+					Rectangle rp2 = null;
+					if (basicStackPlateLayout.getHorizontalR() >= -0.01) {
+						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
+								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
+								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+					} else {
+						rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength() / 2 - 10, 
+								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
+								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+					}
 					rp.getStyleClass().add(CSS_CLASS_WORKPIECE);
 					rp2.getStyleClass().add(CSS_CLASS_WORKPIECE_MARK);
 					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
@@ -272,9 +279,16 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
 							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
-					Rectangle rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
-							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-							5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+					Rectangle rp2 = null;
+					if (basicStackPlateLayout.getTiltedR() >= -0.01) {
+						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
+								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
+								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+					} else {
+						rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength() / 2 - 10, 
+								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
+								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+					}
 					Rotate rotate = new Rotate(-45, stackingPosition.getPosition().getX(), width - stackingPosition.getPosition().getY());
 					rp.getTransforms().add(rotate);
 					rp.getStyleClass().add(CSS_CLASS_WORKPIECE);

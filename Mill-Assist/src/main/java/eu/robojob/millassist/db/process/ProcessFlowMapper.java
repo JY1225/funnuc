@@ -27,9 +27,11 @@ import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings;
 import eu.robojob.millassist.external.robot.Gripper;
@@ -533,12 +535,32 @@ public class ProcessFlowMapper {
 			if (device instanceof BasicStackPlate) {
 				BasicStackPlateSettings stackPlateSettings = getBasicStackPlateSettings(processId, id, (BasicStackPlate) device, clampings);
 				settings.put(device, stackPlateSettings);
+			} else if (device instanceof Conveyor) {
+				ConveyorSettings conveyorSettings = getConveyorSettings(processId, id, (Conveyor) device, clampings);
+				settings.put(device, conveyorSettings);
 			} else {
 				DeviceSettings deviceSettings = new DeviceSettings(clampings);
 				settings.put(device, deviceSettings);
 			}
 		}
 		return settings;
+	}
+	
+	private ConveyorSettings getConveyorSettings(final int processFlowId, final int deviceSettingsId, final Conveyor conveyor, final Map<WorkArea, Clamping> clampings) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CONVEYORSETTINGS WHERE ID = ?");
+		stmt.setInt(1, deviceSettingsId);
+		ResultSet results = stmt.executeQuery();
+		ConveyorSettings conveyorSettings = null;
+		if (results.next()) {
+			int amount = results.getInt("AMOUNT");
+			int rawWorkPieceId = results.getInt("RAWWORKPIECE");
+			int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
+			WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(processFlowId, rawWorkPieceId);
+			WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
+			conveyorSettings = new ConveyorSettings(rawWorkPiece, finishedWorkPiece, amount);
+			conveyorSettings.setClampings(clampings);
+		}
+		return conveyorSettings;
 	}
 	
 	private BasicStackPlateSettings getBasicStackPlateSettings(final int processFlowId, final int deviceSettingsId, final BasicStackPlate stackPlate, final Map<WorkArea, Clamping> clampings) throws SQLException {

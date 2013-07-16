@@ -65,9 +65,9 @@ public class DeviceManager {
 					cncMachinesByName.put(device.getName(), (AbstractCNCMachine) device);
 				} else if (device instanceof PrageDevice) {
 					preProcessingDevicesByName.put(device.getName(), (PrageDevice) device);
-				} else if (device instanceof BasicStackPlate) {
-					stackingFromDevicesByName.put(device.getName(), (BasicStackPlate) device);
-					stackingToDevicesByName.put(device.getName(), (BasicStackPlate) device);
+				} else if (device instanceof AbstractStackingDevice) {
+					stackingFromDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
+					stackingToDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
 				}
 			}
 		} catch (SQLException e) {
@@ -95,9 +95,9 @@ public class DeviceManager {
 				cncMachinesByName.put(device.getName(), (AbstractCNCMachine) device);
 			} else if (device instanceof PrageDevice) {
 				preProcessingDevicesByName.put(device.getName(), (PrageDevice) device);
-			} else if (device instanceof BasicStackPlate) {
-				stackingFromDevicesByName.put(device.getName(), (BasicStackPlate) device);
-				stackingToDevicesByName.put(device.getName(), (BasicStackPlate) device);
+			} else if (device instanceof AbstractStackingDevice) {
+				stackingFromDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
+				stackingToDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
 			}
 		}
 	}

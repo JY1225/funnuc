@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
-import eu.robojob.millassist.ui.general.device.stacking.BasicStackPlateLayoutView;
+import eu.robojob.millassist.ui.general.device.stacking.stackplate.BasicStackPlateLayoutView;
 
 public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter>, BasicStackPlateMenuPresenter> 
 	implements BasicStackPlateListener {

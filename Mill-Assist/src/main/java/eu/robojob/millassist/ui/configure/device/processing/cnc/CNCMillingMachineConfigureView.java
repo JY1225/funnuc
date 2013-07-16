@@ -16,6 +16,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
+import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.ui.controls.IconFlowSelector;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -26,7 +27,9 @@ import eu.robojob.millassist.util.UIConstants;
 public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingMachineConfigurePresenter> {
 
 	private static final String CLAMP_WIDTH_ICON = "M 7 0 L 7 5.5625 L 7 11.15625 L 9 11.15625 L 9 0 L 7 0 z M 7 5.5625 L 3.5 2.0625 L 2.28125 3.3125 L 3.65625 4.6875 L 0 4.6875 L 0 6.46875 L 3.65625 6.46875 L 2.28125 7.84375 L 3.5 9.0625 L 7 5.5625 z M 11 0 L 11 11.15625 L 23.75 11.15625 L 23.75 5.5625 L 23.75 0 L 11 0 z M 23.75 5.5625 L 27.25 9.0625 L 28.5 7.84375 L 27.125 6.46875 L 30.75 6.46875 L 30.75 4.6875 L 27.125 4.6875 L 28.5 3.3125 L 27.25 2.0625 L 23.75 5.5625 z";
+	private static final String CLAMP_WIDTH_ICON2 = "M 7 0 L 7 5.5625 L 7 11.15625 L 19.75 11.15625 L 19.75 0 L 7 0 z M 7 5.5625 L 3.5 2.0625 L 2.25 3.3125 L 3.625 4.6875 L 0 4.6875 L 0 6.46875 L 3.625 6.46875 L 2.25 7.84375 L 3.5 9.0625 L 7 5.5625 z M 21.75 0 L 21.75 11.15625 L 23.75 11.15625 L 23.75 5.5625 L 23.75 0 L 21.75 0 z M 23.75 5.5625 L 27.25 9.0625 L 28.46875 7.84375 L 27.09375 6.46875 L 30.75 6.46875 L 30.75 4.6875 L 27.09375 4.6875 L 28.46875 3.3125 L 27.25 2.0625 L 23.75 5.5625 z";
 	private static final String CLAMP_HEIGHT_ICON = "M 6.96875 0 L 6.96875 2 L 18.125 2 L 18.125 0 L 6.96875 0 z M 6.96875 4 L 6.96875 8.375 L 6.96875 16.75 L 18.125 16.75 L 18.125 8.375 L 18.125 4 L 6.96875 4 z M 18.125 8.375 L 21.625 11.875 L 22.875 10.65625 L 21.5 9.28125 L 25.125 9.28125 L 25.125 7.5 L 21.5 7.5 L 22.875 6.125 L 21.625 4.875 L 18.125 8.375 z M 6.96875 8.375 L 3.46875 4.875 L 2.25 6.125 L 3.625 7.5 L -0.03125 7.5 L -0.03125 9.28125 L 3.625 9.28125 L 2.25 10.65625 L 3.46875 11.875 L 6.96875 8.375 z";
+	private static final String CLAMP_HEIGHT_ICON2 = "m 6.96875,0 0,8.375 0,4.375 11.15625,0 0,-4.375 0,-8.375 -11.15625,0 z m 11.15625,8.375 3.5,3.5 1.25,-1.25 -1.375,-1.375 3.625,0 0,-1.78125 -3.625,0 1.375,-1.375 -1.25,-1.21875 -3.5,3.5 z m -11.15625,0 -3.5,-3.5 -1.21875,1.21875 1.375,1.375 -3.65625,0 0,1.78125 3.65625,0 -1.375,1.375 1.21875,1.25 3.5,-3.5 z m 0,6.375 0,2 11.15625,0 0,-2 -11.15625,0 z";
 	
 	private Label lblMachine;
 	private ComboBox<String> cbbMachine;
@@ -36,7 +39,11 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	private IconFlowSelector ifsClamping;
 	private Label lblClampingType;
 	private Button btnLength;
+	private Button btnLength0;
+	private Button btnLengthOther;
 	private Button btnWidth;
+	private Button btnWidth90;
+	private Button btnWidthOther;
 	private DeviceInformation deviceInfo;
 	private Set<String> cncMillingMachineIds;
 	
@@ -123,8 +130,32 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 				getPresenter().changedClampingTypeLength();
 			}
 		});
+		btnLength0 = createButton(CLAMP_HEIGHT_ICON, CSS_CLASS_BUTTON_CLAMPING, Translator.getTranslation(LENGTH), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedClampingTypeLength();
+			}
+		});
+		btnLengthOther = createButton(CLAMP_HEIGHT_ICON2, CSS_CLASS_BUTTON_CLAMPING, Translator.getTranslation(LENGTH), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedClampingTypeLength();
+			}
+		});
 		btnLength.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
 		btnWidth = createButton(CLAMP_WIDTH_ICON, CSS_CLASS_BUTTON_CLAMPING, Translator.getTranslation(WIDTH), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedClampingTypeWidth();
+			}
+		});
+		btnWidth90 = createButton(CLAMP_WIDTH_ICON, CSS_CLASS_BUTTON_CLAMPING, Translator.getTranslation(WIDTH), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedClampingTypeWidth();
+			}
+		});
+		btnWidthOther = createButton(CLAMP_WIDTH_ICON2, CSS_CLASS_BUTTON_CLAMPING, Translator.getTranslation(WIDTH), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
 				getPresenter().changedClampingTypeWidth();
@@ -145,6 +176,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	@Override
 	public void refresh() {
 		refreshMachines();
+		refreshClampingButtons();
 		refreshWorkAreas();
 		refreshClampings();
 		refreshClampType();
@@ -173,9 +205,32 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 					&& (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 				cbbWorkArea.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getName());
 			}
+			if (deviceInfo.getDevice().getWorkAreaNames().size() > 1) {
+				cbbWorkArea.setDisable(false);
+				lblWorkArea.setDisable(false);
+			} else {
+				cbbWorkArea.setDisable(true);
+				lblWorkArea.setDisable(true);
+			}
 		}
 	}
 
+	public void refreshClampingButtons() {
+		if (deviceInfo.getDevice() != null) {
+			CNCMillingMachine machine = ((CNCMillingMachine) deviceInfo.getDevice());
+			if (machine.getClampingWidthR() >= -0.01) {
+				btnWidth.setGraphic(btnWidth90.getGraphic());
+			} else {
+				btnWidth.setGraphic(btnWidthOther.getGraphic());
+			}
+			if (machine.getClampingLengthR() >= -0.01) {
+				btnLength.setGraphic(btnLength0.getGraphic());
+			} else {
+				btnLength.setGraphic(btnLengthOther.getGraphic());
+			}
+		}
+	}
+	
 	public void refreshClampings() {
 		ifsClamping.clearItems();
 		if ((deviceInfo.getPutStep().getDeviceSettings() != null) && (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {

@@ -1,5 +1,7 @@
-package eu.robojob.millassist.ui.configure.device.stacking;
+package eu.robojob.millassist.ui.configure.device.stacking.stackplate;
 
+import eu.robojob.millassist.ui.configure.device.stacking.AbstractStackingDeviceMenuPresenter;
+import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceMenuView;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;

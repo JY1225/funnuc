@@ -1,4 +1,4 @@
-package eu.robojob.millassist.ui.configure.device.stacking;
+package eu.robojob.millassist.ui.configure.device.stacking.stackplate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

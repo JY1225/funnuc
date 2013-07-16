@@ -1,4 +1,4 @@
-package eu.robojob.millassist.ui.configure.device.stacking;
+package eu.robojob.millassist.ui.configure.device.stacking.stackplate;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

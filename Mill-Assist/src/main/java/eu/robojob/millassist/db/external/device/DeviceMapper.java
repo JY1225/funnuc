@@ -24,6 +24,8 @@ import eu.robojob.millassist.external.device.processing.cnc.mcode.GenericMCode;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
+import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorLayout;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateLayout;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -34,6 +36,7 @@ public class DeviceMapper {
 	private static final int DEVICE_TYPE_CNCMILLING = 1;
 	private static final int DEVICE_TYPE_STACKPLATE = 2;
 	private static final int DEVICE_TYPE_PRAGE = 3;
+	private static final int DEVICE_TYPE_CONVEYOR = 4;
 	private static final int CLAMPING_TYPE_CENTRUM = 1;
 	private static final int CLAMPING_TYPE_FIXED = 2;
 	private static final int CLAMPING_TYPE_NONE = 3;
@@ -71,11 +74,55 @@ public class DeviceMapper {
 					prageDevice.setId(id);
 					devices.add(prageDevice);
 					break;
+				case DEVICE_TYPE_CONVEYOR:
+					Conveyor conveyor = getConveyor(id, name, zones);
+					devices.add(conveyor);
+					break;
 				default:
 					throw new IllegalStateException("Unknown device type: [" + type + "].");
 			}
 		}
 		return devices;
+	}
+	
+	private Conveyor getConveyor(final int id, final String name, final Set<Zone> zones) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CONVEYOR WHERE ID = ?");
+		stmt.setInt(1, id);
+		ResultSet results = stmt.executeQuery();
+		Conveyor conveyor = null;
+		if (results.next()) {
+			int rawWorkAreaId = results.getInt("RAWWORKAREA");
+			int finishedWorkAreaId = results.getInt("FINISHEDWORKAREA");
+			float nomSpeed1 = results.getFloat("NOMSPEED1");
+			float nomSpeed2 = results.getFloat("NOMSPEED2");
+			int rawTrackAmount = results.getInt("RAWTRACKAMOUNT");
+			float rawTrackWidth = results.getFloat("RAWTRACKWIDTH");
+			float spaceBetweenTracks = results.getFloat("SPACEBETWEENTRACKS");
+			float supportWidth = results.getFloat("SUPPORTWIDTH");
+			float finishedConveyorWidth = results.getFloat("FINISHEDCONVEYORWIDTH");
+			float interferenceDistance = results.getFloat("INTERFERENCEDISTANCE");
+			float maxWorkPieceLength = results.getFloat("MAXWORKPIECELENGTH");
+			float rawConveyorLength = results.getFloat("RAWCONVEYORLENGTH");
+			float finishedConveyorLength = results.getFloat("FINISHEDCONVEYORLENGTH");
+			ConveyorLayout layout = new ConveyorLayout(rawTrackAmount, rawTrackWidth, spaceBetweenTracks, supportWidth, 
+					finishedConveyorWidth, interferenceDistance, maxWorkPieceLength, rawConveyorLength, 
+					finishedConveyorLength);
+			WorkArea rawWorkArea = null;
+			WorkArea finishedWorkArea = null;
+			for (Zone zone : zones) {
+				for (WorkArea workArea : zone.getWorkAreas()) {
+					if (workArea.getId() == rawWorkAreaId) {
+						rawWorkArea = workArea;
+					}
+					if (workArea.getId() == finishedWorkAreaId) {
+						finishedWorkArea = workArea;
+					}
+				}
+			}
+			conveyor = new Conveyor(name, zones, rawWorkArea, finishedWorkArea, layout, nomSpeed1, nomSpeed2);
+			conveyor.setId(id);
+		}
+		return conveyor;
 	}
 	
 	private BasicStackPlate getBasicStackPlate(final int id, final String name, final Set<Zone> zones) throws SQLException {
