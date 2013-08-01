@@ -120,15 +120,18 @@
 
 .yellow {
 	-fx-background-color: yellow;
-	-fx-opacity: 0.3;
+	-fx-opacity: 0.5;
+	-fx-fill: yellow;
 }
 
 .blue {
 	-fx-background-color: blue;
-	-fx-opacity: 0.3;
+	-fx-opacity: 0.5;
+	-fx-fill: blue;
 }
 
 .red {
 	-fx-background-color: red;
-	-fx-opacity: 0.3;
+	-fx-opacity: 0.5;
+	-fx-fill: red;
 }

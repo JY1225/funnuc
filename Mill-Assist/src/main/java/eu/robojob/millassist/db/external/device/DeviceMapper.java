@@ -104,9 +104,12 @@ public class DeviceMapper {
 			float maxWorkPieceLength = results.getFloat("MAXWORKPIECELENGTH");
 			float rawConveyorLength = results.getFloat("RAWCONVEYORLENGTH");
 			float finishedConveyorLength = results.getFloat("FINISHEDCONVEYORLENGTH");
+			float maxOverlap = results.getFloat("MAXOVERLAP");
+			float minDistRaw = results.getFloat("MIN_DIST_RAW");
+			float minDistFinished = results.getFloat("MIN_DIST_FINISHED");
 			ConveyorLayout layout = new ConveyorLayout(rawTrackAmount, rawTrackWidth, spaceBetweenTracks, supportWidth, 
 					finishedConveyorWidth, interferenceDistance, maxWorkPieceLength, rawConveyorLength, 
-					finishedConveyorLength);
+					finishedConveyorLength, maxOverlap, minDistRaw, minDistFinished);
 			WorkArea rawWorkArea = null;
 			WorkArea finishedWorkArea = null;
 			for (Zone zone : zones) {

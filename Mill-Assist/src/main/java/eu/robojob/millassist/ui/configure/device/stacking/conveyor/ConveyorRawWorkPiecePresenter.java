@@ -3,6 +3,8 @@ package eu.robojob.millassist.ui.configure.device.stacking.conveyor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
+import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorSettings;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
@@ -105,12 +107,16 @@ public class ConveyorRawWorkPiecePresenter extends AbstractFormPresenter<Conveyo
 	}
 	
 	public void recalculate() {
-		getView().hideNotification();
-		if (!isWeightOk()) {
-			getView().showNotification(Translator.getTranslation(WEIGHT_ZERO));
+		try {
+			((Conveyor) pickStep.getDevice()).getLayout().configureRawWorkPieceStackingPositions();
+			getView().hideNotification();
+			if (!isWeightOk()) {
+				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO));
+			}
+			getView().refresh();
+		} catch (IncorrectWorkPieceDataException e) {
+			getView().showNotification(e.getLocalizedMessage());
 		}
-		getView().refresh();
-		//TODO implement further
 	}
 	
 	public void changedWeight(final float weight) {

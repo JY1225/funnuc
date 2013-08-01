@@ -15,16 +15,12 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateLayout;
-import eu.robojob.millassist.external.device.stacking.stackplate.StackingPosition;
-import eu.robojob.millassist.external.device.stacking.stackplate.StudPosition;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateLayout;
+import eu.robojob.millassist.external.device.stacking.stackplate.StackPlateStackingPosition;
+import eu.robojob.millassist.external.device.stacking.stackplate.StudPosition;
 import eu.robojob.millassist.external.device.stacking.stackplate.StudPosition.StudType;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -63,9 +59,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	private static final String CSS_CLASS_WORKPIECE_MARK = "workpiece-mark";
 	private static final String CSS_CLASS_FINISHED = "finished";
 	private static final String CSS_CLASS_FINISHED_MARK = "workpiece-finished-mark";
-	
-	private static Logger logger = LogManager.getLogger(BasicStackPlateLayoutView.class.getName());
-	
+		
 	public BasicStackPlateLayoutView() {
 		super();
 		this.holes = new ArrayList<Circle>();
@@ -89,7 +83,6 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	@Override
 	public void build() {
-		logger.debug("**called build!!**");
 		this.setCache(false);
 		this.holes.clear();
 		this.studs.clear();
@@ -247,7 +240,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	}
 	
 	private void configureWorkPieces() {
-		for (StackingPosition stackingPosition : basicStackPlateLayout.getStackingPositions()) {
+		for (StackPlateStackingPosition stackingPosition : basicStackPlateLayout.getStackingPositions()) {
 			if (stackingPosition.getWorkPiece() != null) {
 				if (stackingPosition.getOrientation() == WorkPieceOrientation.HORIZONTAL) {
 					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 

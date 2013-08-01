@@ -1,8 +1,10 @@
 package eu.robojob.millassist.external.device.stacking.conveyor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.Clamping;
@@ -16,7 +18,6 @@ import eu.robojob.millassist.external.device.DeviceType;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.workpiece.WorkPiece;
@@ -27,19 +28,17 @@ public class Conveyor extends AbstractStackingDevice {
 	
 	private WorkPiece rawWorkPiece;
 	private WorkPiece finishedWorkPiece;
-	
 	private WorkArea rawWorkArea;
 	private WorkArea finishedWorkArea;
-	
 	private int lastFinishedWorkPieceIndex;
-	
 	private float nomSpeed1;
 	private float nomSpeed2;
-	
 	private int amount;
 	
-	private ConveyorLayout layout;
+	private List<ConveyorListener> listeners;
 	
+	private ConveyorLayout layout;
+		
 	public Conveyor(final String name, final Set<Zone> zones, final WorkArea rawWorkArea, final WorkArea finishedWorkArea, 
 			final ConveyorLayout layout, final float nomSpeed1, final float nomSpeed2) {
 		super(name, zones);
@@ -47,8 +46,10 @@ public class Conveyor extends AbstractStackingDevice {
 		this.finishedWorkArea = finishedWorkArea;
 		this.lastFinishedWorkPieceIndex = 0;
 		this.layout = layout;
+		layout.setParent(this);
 		this.nomSpeed1 = nomSpeed1;
 		this.nomSpeed2 = nomSpeed2;
+		this.listeners = new ArrayList<ConveyorListener>();
 	}
 	
 	public Conveyor(final String name, final WorkArea rawWorkArea, final WorkArea finishedWorkArea, final ConveyorLayout layout, 
@@ -101,12 +102,18 @@ public class Conveyor extends AbstractStackingDevice {
 	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException,
 			InterruptedException {
 		// release interlock
+		for (ConveyorListener listener : listeners) {
+			listener.layoutChanged();
+		}
 	}
 
 	@Override
 	public void putFinished(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException,
 			InterruptedException {
 		// if last piece: do shift
+		for (ConveyorListener listener : listeners) {
+			listener.layoutChanged();
+		}
 	}
 
 	@Override
@@ -174,4 +181,37 @@ public class Conveyor extends AbstractStackingDevice {
 		return DeviceType.CONVEYOR;
 	}
 	
+	public void notifyLayoutChanged() {
+		for (ConveyorListener listener : listeners) {
+			listener.layoutChanged();
+		}
+	}
+	
+	public void addListener(final ConveyorListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeListener(final ConveyorListener listener) {
+		listeners.remove(listener);
+	}
+	
+	public void clearListeners() {
+		listeners.clear();
+	}
+
+	public WorkPiece getRawWorkPiece() {
+		return rawWorkPiece;
+	}
+
+	public void setRawWorkPiece(final WorkPiece rawWorkPiece) {
+		this.rawWorkPiece = rawWorkPiece;
+	}
+
+	public WorkPiece getFinishedWorkPiece() {
+		return finishedWorkPiece;
+	}
+
+	public void setFinishedWorkPiece(final WorkPiece finishedWorkPiece) {
+		this.finishedWorkPiece = finishedWorkPiece;
+	}
 }

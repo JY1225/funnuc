@@ -6,6 +6,7 @@ import java.util.Map;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
@@ -28,8 +29,8 @@ import eu.robojob.millassist.ui.configure.device.processing.prage.PrageDeviceMen
 import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceMenuView;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorConfigurePresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorConfigureView;
+import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorFinishedWorkPieceLayoutPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorMenuPresenter;
-import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorRawWorkPieceLayoutPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorRawWorkPiecePresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorRawWorkPieceView;
 import eu.robojob.millassist.ui.configure.device.stacking.stackplate.BasicStackPlateConfigurePresenter;
@@ -39,6 +40,8 @@ import eu.robojob.millassist.ui.configure.device.stacking.stackplate.BasicStackP
 import eu.robojob.millassist.ui.configure.device.stacking.stackplate.BasicStackPlateRawWorkPiecePresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.stackplate.BasicStackPlateRawWorkPieceView;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.device.stacking.conveyor.ConveyorFinishedWorkPieceLayoutView;
+import eu.robojob.millassist.ui.general.device.stacking.conveyor.ConveyorRawWorkPieceLayoutPresenter;
 import eu.robojob.millassist.ui.general.device.stacking.conveyor.ConveyorRawWorkPieceLayoutView;
 import eu.robojob.millassist.ui.general.device.stacking.stackplate.BasicStackPlateLayoutView;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
@@ -159,13 +162,26 @@ public class DeviceMenuFactory {
 	
 	public ConveyorMenuPresenter getConveyorMenuPresenter(final DeviceInformation deviceInfo) {
 		StackingDeviceMenuView menuView = new StackingDeviceMenuView();
-		ConveyorMenuPresenter presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), getConveyorRawWorkPiecePresenter(deviceInfo), getRawWorkPieceLayoutPresenter(deviceInfo));
+		ConveyorMenuPresenter presenter = null;
+		if (deviceInfo.getPickStep() != null) {
+			// first device 
+			presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), getConveyorRawWorkPiecePresenter(deviceInfo), getRawWorkPieceLayoutPresenter(deviceInfo));
+		} else {
+			// last device
+			presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), null, getFinishedWorkPieceLayoutPresenter(deviceInfo));
+		}
 		return presenter;
 	}
 	
-	public ConveyorRawWorkPieceLayoutPresenter getRawWorkPieceLayoutPresenter(final DeviceInformation deviceInfo) {
-		ConveyorRawWorkPieceLayoutView<ConveyorRawWorkPieceLayoutPresenter> view = new ConveyorRawWorkPieceLayoutView<ConveyorRawWorkPieceLayoutPresenter>();
-		ConveyorRawWorkPieceLayoutPresenter presenter = new ConveyorRawWorkPieceLayoutPresenter(view);
+	public ConveyorRawWorkPieceLayoutPresenter<ConveyorMenuPresenter> getRawWorkPieceLayoutPresenter(final DeviceInformation deviceInfo) {
+		ConveyorRawWorkPieceLayoutView view = new ConveyorRawWorkPieceLayoutView();
+		ConveyorRawWorkPieceLayoutPresenter<ConveyorMenuPresenter> presenter = new ConveyorRawWorkPieceLayoutPresenter<ConveyorMenuPresenter>(view, (Conveyor) deviceInfo.getDevice());
+		return presenter;
+	}
+	
+	public ConveyorFinishedWorkPieceLayoutPresenter getFinishedWorkPieceLayoutPresenter(final DeviceInformation deviceInfo) {
+		ConveyorFinishedWorkPieceLayoutView view = new ConveyorFinishedWorkPieceLayoutView();
+		ConveyorFinishedWorkPieceLayoutPresenter presenter = new ConveyorFinishedWorkPieceLayoutPresenter(view, (Conveyor) deviceInfo.getDevice(), deviceInfo.getPutStep());
 		return presenter;
 	}
 	

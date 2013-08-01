@@ -3,9 +3,9 @@ package eu.robojob.millassist.ui.configure.device.stacking.stackplate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
-import eu.robojob.millassist.external.device.stacking.stackplate.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;

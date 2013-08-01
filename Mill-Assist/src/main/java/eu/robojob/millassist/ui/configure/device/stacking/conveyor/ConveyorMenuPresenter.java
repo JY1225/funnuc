@@ -3,25 +3,29 @@ package eu.robojob.millassist.ui.configure.device.stacking.conveyor;
 import eu.robojob.millassist.ui.configure.device.stacking.AbstractStackingDeviceMenuPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceMenuView;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.device.stacking.conveyor.AbstractWorkPieceLayoutPresenter;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
 public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 
 	private ConveyorConfigurePresenter configurePresenter;
 	private ConveyorRawWorkPiecePresenter rawWorkPiecePresenter;
-	private ConveyorRawWorkPieceLayoutPresenter rawWorkPieceLayoutPresenter;
+	private AbstractWorkPieceLayoutPresenter<?, ConveyorMenuPresenter> workPieceLayoutPresenter;
 	
 	public ConveyorMenuPresenter(final StackingDeviceMenuView view, final DeviceInformation deviceInfo,
 			final ConveyorConfigurePresenter configurePresenter, final ConveyorRawWorkPiecePresenter rawWorkPiecePresenter, 
-			final ConveyorRawWorkPieceLayoutPresenter rawWorkPieceLayoutPresenter) {
+				final AbstractWorkPieceLayoutPresenter<?, ConveyorMenuPresenter> workPieceLayoutPresenter) {
 		super(view, deviceInfo);
 		this.configurePresenter = configurePresenter;
 		configurePresenter.setMenuPresenter(this);
+		if (workPieceLayoutPresenter != null) {
+			this.workPieceLayoutPresenter = workPieceLayoutPresenter;
+			workPieceLayoutPresenter.setMenuPresenter(this);
+		}
 		if (rawWorkPiecePresenter != null) {
 			this.rawWorkPiecePresenter = rawWorkPiecePresenter;
 			rawWorkPiecePresenter.setMenuPresenter(this);
 		}
-		this.rawWorkPieceLayoutPresenter = rawWorkPieceLayoutPresenter;
 	}
 
 	@Override
@@ -39,15 +43,15 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 	@Override
 	public void showLayout() {
 		getView().setViewLayoutActive();
-		getParent().setBottomRightView(rawWorkPieceLayoutPresenter.getView());
+		getParent().setBottomRightView(workPieceLayoutPresenter.getView());
 	}
 
 	@Override
 	public boolean isConfigured() {
 		if (rawWorkPiecePresenter != null) {
-			return configurePresenter.isConfigured() && rawWorkPiecePresenter.isConfigured() && rawWorkPieceLayoutPresenter.isConfigured();
+			return configurePresenter.isConfigured() && rawWorkPiecePresenter.isConfigured() && workPieceLayoutPresenter.isConfigured();
 		} else {
-			return configurePresenter.isConfigured() && rawWorkPieceLayoutPresenter.isConfigured();
+			return configurePresenter.isConfigured() && workPieceLayoutPresenter.isConfigured();
 		}
 	}
 

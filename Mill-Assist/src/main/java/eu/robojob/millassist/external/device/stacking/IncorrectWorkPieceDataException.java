@@ -1,4 +1,4 @@
-package eu.robojob.millassist.external.device.stacking.stackplate;
+package eu.robojob.millassist.external.device.stacking;
 
 import eu.robojob.millassist.util.Translator;
 

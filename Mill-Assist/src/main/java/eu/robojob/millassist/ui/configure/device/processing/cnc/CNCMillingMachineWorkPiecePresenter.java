@@ -1,7 +1,7 @@
 package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.PickAfterWaitStep;
 import eu.robojob.millassist.process.PickStep;
@@ -163,7 +163,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 	public void dataChanged(final DataChangedEvent e) {
 		if (e.getStep() instanceof PickStep) {
 			PickStep pickStep = (PickStep) e.getStep();
-			if (pickStep.getDevice() instanceof BasicStackPlate) {
+			if (pickStep.getDevice() instanceof AbstractStackingDevice) {
 				WorkPieceDimensions currentDimensions = this.pickStep.getRobotSettings().getWorkPiece().getDimensions();
 				WorkPieceDimensions newDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
 				boolean reteach = false;
