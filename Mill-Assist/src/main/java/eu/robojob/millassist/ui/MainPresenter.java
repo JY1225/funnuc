@@ -72,6 +72,10 @@ public class MainPresenter implements ProcessFlowListener {
 		refreshStatus();
 	}
 	
+	public void indicateAlarmsPresent(final boolean alarmsPresent) {
+		menuBarPresenter.indicateAlarmsPresent(alarmsPresent);
+	}
+	
 	public void showTeach() {
 		menuBarPresenter.showTeachView();
 		setActiveMainContentPresenter(teachPresenter);

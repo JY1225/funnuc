@@ -190,6 +190,13 @@
 	-fx-fill: #f27e17;
 }
 
+.workpiece-c {
+	-fx-fill: #f27e17;
+	-fx-stroke: #d66b0d;
+	-fx-stroke-width: 1px;
+	-fx-stroke-type: centered;
+}
+
 .workpiece-mark {
 	-fx-fill: #a55015;
 }
@@ -482,21 +489,14 @@
 	-fx-stroke-type: centered;
 }
 
-.support-up {
-	-fx-fill: #ffff00;
-	-fx-stroke: #f1f102;
-	-fx-stroke-width: 1px;
-	-fx-stroke-type: inside;
-}
-
 .support-up-should-be-down {
-	-fx-fill: #ffff00;
+	-fx-fill: #cac8c8;
 	-fx-stroke: red;
 	-fx-stroke-width: 2px;
 	-fx-stroke-type: centered;
 }
 
-.support-fixed {
+.support-fixed, .support-up  {
 	-fx-fill: #cac8c8;
 	-fx-stroke: #bcb9b9;
 	-fx-stroke-width: 1px;	

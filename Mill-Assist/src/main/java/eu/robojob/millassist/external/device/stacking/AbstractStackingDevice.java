@@ -4,6 +4,7 @@ import java.util.Set;
 
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.ClampingManner;
+import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceType;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
@@ -20,7 +21,7 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 		super(name);
 	}
 	
-	public abstract Coordinates getLocation(WorkArea workArea, Type type, ClampingManner clampType);
+	public abstract Coordinates getLocation(WorkArea workArea, Type type, ClampingManner clampType) throws DeviceActionException, InterruptedException;
 	
 	@Override
 	public DeviceType getType() {

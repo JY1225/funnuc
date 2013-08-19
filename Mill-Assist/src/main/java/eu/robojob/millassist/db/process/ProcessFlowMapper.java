@@ -424,6 +424,16 @@ public class ProcessFlowMapper {
 			stmt4.setInt(4, bspSettings.getRawWorkPiece().getId());
 			stmt4.setInt(5, bspSettings.getFinishedWorkPiece().getId());
 			stmt4.executeUpdate();
+		} else if (deviceSettings instanceof ConveyorSettings) {
+			ConveyorSettings cSettings = (ConveyorSettings) deviceSettings;
+			generalMapper.saveWorkPiece(cSettings.getRawWorkPiece());
+			generalMapper.saveWorkPiece(cSettings.getFinishedWorkPiece());
+			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO CONVEYORSETTINGS (ID, AMOUNT, RAWWORKPIECE, FINISHEDWORKPIECE) VALUES (?, ?, ?, ?)");
+			stmt4.setInt(1, cSettings.getId());
+			stmt4.setInt(2, cSettings.getAmount());
+			stmt4.setInt(3, cSettings.getRawWorkPiece().getId());
+			stmt4.setInt(4, cSettings.getFinishedWorkPiece().getId());
+			stmt4.executeUpdate();
 		}
 	}
 	

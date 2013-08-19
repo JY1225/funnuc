@@ -8,6 +8,7 @@ import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
+import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
@@ -30,24 +31,24 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class TeachOptimizedThread extends TeachThread {
 	
-	private PickStep pickFromStackerStep = null;
+	private PickStep pickFromStackingDeviceStep = null;
 	private PutAndWaitStep putAndWaitOnPrageStep = null;
 	private PickAfterWaitStep pickAfterWaitOnPrageStep = null;
 	private PutStep putInMachineStep = null;
 	private PickStep pickFromMachineStep = null;
-	private PutStep putOnStackerStep = null;
+	private PutStep putOnStackingDeviceStep = null;
 
 	private static Logger logger = LogManager.getLogger(TeachOptimizedThread.class.getName());
 	private static final int WORKPIECE_ID = 0;
 	
 	public TeachOptimizedThread(final ProcessFlow processFlow) {
 		super(processFlow);
-		pickFromStackerStep = null;
+		pickFromStackingDeviceStep = null;
 		putAndWaitOnPrageStep = null;
 		pickAfterWaitOnPrageStep = null;
 		putInMachineStep = null;
 		pickFromMachineStep = null;
-		putOnStackerStep = null;
+		putOnStackingDeviceStep = null;
 	}
 
 	//TODO generalize this method for more complex ProcessFlows
@@ -55,9 +56,9 @@ public class TeachOptimizedThread extends TeachThread {
 	@Override
 	public void run() {
 		// This implementation will be less generic, and take into account two possible ProcessFlow layouts: 
-		// -  BasicStackPlate - PrageDevice - CNCMillingMachine - BasicStackPlate 
+		// -  StackingDevice - PrageDevice - CNCMillingMachine - StackingDevice 
 		//    or 
-		// -  BasicStackPlate - CNCMillingMachine - BasicStackPlate
+		// -  StackingDevice - CNCMillingMachine - StackingDevice
 		logger.debug("Started execution, processflow [" + getProcessFlow() + "].");
 		setRunning(true);
 		try {
@@ -77,23 +78,23 @@ public class TeachOptimizedThread extends TeachThread {
 				initializeSteps();
 				Coordinates relTeachedOffsetFinishedWp = null;
 				// before doing this, we fake the gripper holding a workpiece
-				putOnStackerStep.getRobotSettings().getGripperHead().getGripper().setWorkPiece(pickFromMachineStep.getRobotSettings().getWorkPiece());
-				relTeachedOffsetFinishedWp = getFinishedWorkPieceTeachedOffset(putOnStackerStep);
+				putOnStackingDeviceStep.getRobotSettings().getGripperHead().getGripper().setWorkPiece(pickFromMachineStep.getRobotSettings().getWorkPiece());
+				relTeachedOffsetFinishedWp = getFinishedWorkPieceTeachedOffset(putOnStackingDeviceStep);
 				//TODO review if this offset needs formatting (depending on clamp manner...)
 				logger.info("Relative offset finished work piece after added extra offset: [" + relTeachedOffsetFinishedWp + "].");
 				pickFromMachineStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
-				putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
+				putOnStackingDeviceStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
 				Coordinates relTeachedOffsetRawWp = null;
 				Coordinates relTeachedOffsetMachineClamping = null;
 				boolean knowEnough = false;
 				getProcessFlow().setCurrentIndex(WORKPIECE_ID, 0);
 				while ((getProcessFlow().getCurrentIndex(WORKPIECE_ID) < getProcessFlow().getProcessSteps().size()) && !knowEnough && isRunning()) {
 					AbstractProcessStep step = getProcessFlow().getProcessSteps().get((getProcessFlow().getCurrentIndex(WORKPIECE_ID)));
-					if (step.equals(pickFromStackerStep)) {
-						pickFromStackerStep.executeStepTeached(WORKPIECE_ID, this);
-						pickFromStackerStep.finalizeStep(this);
+					if (step.equals(pickFromStackingDeviceStep)) {
+						pickFromStackingDeviceStep.executeStepTeached(WORKPIECE_ID, this);
+						pickFromStackingDeviceStep.finalizeStep(this);
 						// update relative offset for upcoming steps
-						relTeachedOffsetRawWp = pickFromStackerStep.getRelativeTeachedOffset();
+						relTeachedOffsetRawWp = pickFromStackingDeviceStep.getRelativeTeachedOffset();
 						if (putAndWaitOnPrageStep != null) {
 							putAndWaitOnPrageStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
 						}
@@ -128,7 +129,7 @@ public class TeachOptimizedThread extends TeachThread {
 					pickFromMachineOffset.minus(relTeachedOffsetRawWp);
 					pickFromMachineOffset.plus(relTeachedOffsetFinishedWp);
 					pickFromMachineStep.setRelativeTeachedOffset(pickFromMachineOffset);
-					putOnStackerStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);		
+					putOnStackingDeviceStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);		
 					setRunning(false);
 					getProcessFlow().setMode(Mode.READY);
 				} else {
@@ -158,16 +159,18 @@ public class TeachOptimizedThread extends TeachThread {
 		logger.info(toString() + " ended...");
 	}
 	
-	private Coordinates getFinishedWorkPieceTeachedOffset(final PutStep putOnStackerStep) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+	private Coordinates getFinishedWorkPieceTeachedOffset(final PutStep putOnStackerStep) throws AbstractCommunicationException, RobotActionException, InterruptedException, DeviceActionException {
 		logger.debug("About to get teached offset of finished workpiece first.");
-		BasicStackPlate stackPlate = (BasicStackPlate) putOnStackerStep.getDevice();
+		AbstractStackingDevice stackingDevice = (AbstractStackingDevice) putOnStackerStep.getDevice();
 		FanucRobot fRobot = (FanucRobot) putOnStackerStep.getRobot();
 		FanucRobotPutSettings putSettings = (FanucRobotPutSettings) putOnStackerStep.getRobotSettings();
 		// we set the first work piece as a finished
 		putOnStackerStep.getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(putOnStackerStep.getProcessFlow(), putOnStackerStep, StatusChangedEvent.STARTED, WORKPIECE_ID));
-		stackPlate.getLayout().getStackingPositions().get(0).getWorkPiece().setType(WorkPiece.Type.FINISHED);
+		if (stackingDevice instanceof BasicStackPlate) {
+			((BasicStackPlate) stackingDevice).getLayout().getStackingPositions().get(0).getWorkPiece().setType(WorkPiece.Type.FINISHED);
+		}
 		getProcessFlow().setFinishedAmount(1);
-		Coordinates originalCoordinates = stackPlate.getLocation(putOnStackerStep.getRobotSettings().getWorkArea(), WorkPiece.Type.FINISHED, getProcessFlow().getClampingType());
+		Coordinates originalCoordinates = stackingDevice.getLocation(putOnStackerStep.getRobotSettings().getWorkArea(), WorkPiece.Type.FINISHED, getProcessFlow().getClampingType());
 		putSettings.setLocation(originalCoordinates);
 		putSettings.setTeachingNeeded(true);
 		putSettings.setFreeAfter(false);
@@ -176,7 +179,7 @@ public class TeachOptimizedThread extends TeachThread {
 			throw new IllegalStateException("Robot [" + fRobot + "] was already locked by [" + fRobot.getLockingProcess() + "].");
 		} else {
 			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.PREPARE_DEVICE, WORKPIECE_ID));
-			stackPlate.prepareForPut(putOnStackerStep.getDeviceSettings());
+			stackingDevice.prepareForPut(putOnStackerStep.getDeviceSettings());
 			logger.debug("Original coordinates: " + originalCoordinates + ".");
 			logger.debug("Initiating robot: [" + fRobot + "] move action.");
 			fRobot.initiateMoveWithoutPieceNoAction(putSettings);
@@ -199,8 +202,8 @@ public class TeachOptimizedThread extends TeachThread {
 	
 	private void initializeSteps() {
 		for (AbstractProcessStep step : getProcessFlow().getProcessSteps()) {
-			if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof BasicStackPlate) {
-				pickFromStackerStep = (PickStep) step;
+			if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof AbstractStackingDevice) {
+				pickFromStackingDeviceStep = (PickStep) step;
 			} else if ((step instanceof PutAndWaitStep) && ((PutAndWaitStep) step).getDevice() instanceof PrageDevice) {
 				putAndWaitOnPrageStep = (PutAndWaitStep) step;
 			} else if ((step instanceof PickAfterWaitStep) && ((PickAfterWaitStep) step).getDevice() instanceof PrageDevice) {
@@ -209,8 +212,8 @@ public class TeachOptimizedThread extends TeachThread {
 				putInMachineStep = (PutStep) step;
 			} else if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof CNCMillingMachine) {
 				pickFromMachineStep = (PickStep) step;
-			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice() instanceof BasicStackPlate) {
-				putOnStackerStep = (PutStep) step;
+			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice() instanceof AbstractStackingDevice) {
+				putOnStackingDeviceStep = (PutStep) step;
 			}
 		}
 	}

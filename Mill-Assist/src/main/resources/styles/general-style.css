@@ -94,9 +94,61 @@
 
 .alarms-popup {
 	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 8, 0, 0, 1);
-	-fx-background-color: rgba(49, 51, 56, 0.5), rgba(66, 68, 74, 0.3);
+	-fx-background-color: rgba(49, 51, 56, 1), rgba(66, 68, 74, 1);
 	-fx-background-insets: 0,  0 1 1 0;
 	-fx-background-radius: 0 0 3 0, 0 0 2 0;
+}
+
+.scroll-pane-alarms {
+	-fx-background-color: rgba(66, 68, 74, 1);
+	-fx-border-width: 0px;
+	-fx-effect: null;
+}
+
+
+.scroll-pane-alarms .scroll-bar {
+	-fx-font-size: 8px;
+	-fx-effect: null;
+}
+
+/* The main scrollbar **track** CSS class  */
+.scroll-pane-alarms .scroll-bar .track {
+	-fx-background-color: rgba(66, 68, 74, 1);
+	-fx-border-color: null;
+	-fx-border-width: 0px;
+	-fx-background-insets: 0;
+	-fx-background-radius: 0em;
+	-fx-stroke: transparent;
+	-fx-padding: 0px;
+	-fx-effect: null;
+}
+
+/* The increment and decrement button CSS class of scrollbar */
+.scroll-pane-alarms .scroll-bar:horizontal .increment-button ,.scroll-pane-alarms .scroll-bar:horizontal .decrement-button {
+    -fx-background-color:transparent;
+	-fx-background-radius: 0em;
+	 -fx-padding:0 0 10 0;
+}
+
+/* The increment and decrement button CSS class of scrollbar */
+
+.scroll-pane-alarms .scroll-bar:vertical .increment-button , .scroll-pane-alarms .scroll-bar:vertical .decrement-button {
+    -fx-background-color:transparent;
+	-fx-background-radius: 0em;
+	-fx-padding:0;
+}
+
+.scroll-pane-alarms .scroll-bar .increment-arrow, .scroll-pane-alarms .scroll-bar .decrement-arrow {
+	-fx-shape: " ";	
+	-fx-padding:0;
+}
+
+.scroll-pane-alarms .scroll-bar:horizontal .thumb, .scroll-pane-alarms .scroll-bar:vertical .thumb {
+    -fx-background-color: #636468;
+	-fx-background-insets: 2, 0, 0;
+	-fx-background-radius: 1em;
+	-fx-font-size: 4px;
+	-fx-padding: 0px;
 }
 
 .pop-up-btn {

@@ -55,6 +55,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	@Override public void interruptCurrentAction() { }
 	@Override public void prepareForProcess(final ProcessFlow process) throws AbstractCommunicationException, InterruptedException { }
+	@Override public void reset() throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
 	
 	@Override
 	public boolean canPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException {

@@ -123,6 +123,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	@Override public void releasePiece(final DevicePickSettings pickSettings) { }
 	@Override public void grabPiece(final DevicePutSettings putSettings) { }
 	@Override public void interruptCurrentAction() { }
+	@Override public void reset() throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
 
 	@Override
 	public synchronized void pickFinished(final DevicePickSettings pickSettings) {
@@ -295,4 +296,5 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		}
 		notifyLayoutChanged();
 	}
+
 }

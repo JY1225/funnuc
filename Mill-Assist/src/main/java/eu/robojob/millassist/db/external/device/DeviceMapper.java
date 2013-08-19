@@ -107,6 +107,7 @@ public class DeviceMapper {
 			float maxOverlap = results.getFloat("MAXOVERLAP");
 			float minDistRaw = results.getFloat("MIN_DIST_RAW");
 			float minDistFinished = results.getFloat("MIN_DIST_FINISHED");
+			int socketConnectionId = results.getInt("SOCKETCONNECTION");
 			ConveyorLayout layout = new ConveyorLayout(rawTrackAmount, rawTrackWidth, spaceBetweenTracks, supportWidth, 
 					finishedConveyorWidth, interferenceDistance, maxWorkPieceLength, rawConveyorLength, 
 					finishedConveyorLength, maxOverlap, minDistRaw, minDistFinished);
@@ -122,7 +123,8 @@ public class DeviceMapper {
 					}
 				}
 			}
-			conveyor = new Conveyor(name, zones, rawWorkArea, finishedWorkArea, layout, nomSpeed1, nomSpeed2);
+			SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
+			conveyor = new Conveyor(name, zones, rawWorkArea, finishedWorkArea, layout, socketConnection, nomSpeed1, nomSpeed2);
 			conveyor.setId(id);
 		}
 		return conveyor;

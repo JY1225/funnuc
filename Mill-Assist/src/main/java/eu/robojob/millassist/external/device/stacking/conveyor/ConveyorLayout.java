@@ -191,6 +191,7 @@ public class ConveyorLayout {
 		this.stackingPositionsFinishedWorkPieces = stackingPositionsFinishedWorkPieces;
 	}
 
+	//TODO rekening houden met overflow percentage!
 	public void configureRawWorkPieceStackingPositions() throws IncorrectWorkPieceDataException {
 		
 		WorkPiece workPiece = parent.getRawWorkPiece();
@@ -235,12 +236,13 @@ public class ConveyorLayout {
 			if (i > 0) {
 				y += (i * amount) * rawTrackWidth;
 				y += (i * amount) * spaceBetweenTracks;
+				//y += supportWidth;
+
 			}
 			// if not the first, add the distance of support and distance between support en 
 			// track below
 			// if not the first add the distance between the first support and the first track
 			// together = space between tracks
-			y += supportWidth;
 			/*if (i > 0) {
 				y += spaceBetweenTracks;
 			} else {
@@ -258,6 +260,7 @@ public class ConveyorLayout {
 		configureFinishedWorkPieceStackingPositions();
 	}
 	
+	//TODO rekening houden met overflow percentage!
 	public void configureFinishedWorkPieceStackingPositions() throws IncorrectWorkPieceDataException {
 		WorkPiece workPiece = parent.getFinishedWorkPiece();
 		this.stackingPositionsFinishedWorkPieces.clear();
@@ -318,7 +321,7 @@ public class ConveyorLayout {
 	}
 	
 	public float getWidthFinishedWorkPieceConveyorWithOverlap() {
-		return finishedConveyorWidth;
+		return finishedConveyorWidth + maxOverlap;
 	}
 	
 }

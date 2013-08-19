@@ -14,6 +14,12 @@ import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarm;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
+import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarm;
+import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarmsOccuredEvent;
+import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorEvent;
+import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorListener;
+import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorSensorValuesChangedEvent;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotAlarm;
 import eu.robojob.millassist.external.robot.RobotAlarmsOccuredEvent;
@@ -26,12 +32,13 @@ import eu.robojob.millassist.ui.general.flow.FixedProcessFlowPresenter;
 import eu.robojob.millassist.ui.general.status.StatusPresenter;
 import eu.robojob.millassist.util.Translator;
 
-public abstract class ExecutionPresenter implements CNCMachineListener, RobotListener, MainContentPresenter, ContentPresenter {
+public abstract class ExecutionPresenter implements CNCMachineListener, RobotListener, MainContentPresenter, ContentPresenter, ConveyorListener {
 
 	private FixedProcessFlowPresenter processFlowPresenter;
 	private StatusPresenter statusPresenter;
 	private ProcessFlow processFlow;
 	private Map<AbstractCNCMachine, Boolean> machines;
+	private Map<Conveyor, Boolean> conveyors;
 	private Map<AbstractRobot, Boolean> robots;	
 	
 	private static final String NOT_CONNECTED_TO = "TeachPresenter.notConnectedTo";
@@ -41,6 +48,7 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 		this.processFlow = processFlow;
 		this.statusPresenter = statusPresenter;
 		this.machines = new HashMap<AbstractCNCMachine, Boolean>();
+		this.conveyors = new HashMap<Conveyor, Boolean>();
 		this.robots = new HashMap<AbstractRobot, Boolean>();
 		updateAlarms();
 	}
@@ -81,6 +89,14 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 				} else {
 					machines.put(machine, false);
 				}
+			} else if (device instanceof Conveyor) {
+				Conveyor conveyor = (Conveyor) device;
+				conveyor.addListener(this);
+				if (conveyor.isConnected()) {
+					conveyors.put(conveyor, true);
+				} else {
+					conveyors.put(conveyor, false);
+				}
 			}
 		}
 		for (AbstractRobot robot : processFlow.getRobots()) {
@@ -103,6 +119,12 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 		boolean allConnected = true;
 		Set<String> disconnectedDevices = new HashSet<String>();
 		for (Entry<AbstractCNCMachine, Boolean> entry : machines.entrySet()) {
+			if (!entry.getValue()) {
+				allConnected = false;
+				disconnectedDevices.add(entry.getKey().getName());
+			}
+		}
+		for (Entry<Conveyor, Boolean> entry : conveyors.entrySet()) {
 			if (!entry.getValue()) {
 				allConnected = false;
 				disconnectedDevices.add(entry.getKey().getName());
@@ -132,11 +154,15 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 		for (AbstractCNCMachine machine : machines.keySet()) {
 			machine.removeListener(this);
 		}
+		for (Conveyor conveyor : conveyors.keySet()) {
+			conveyor.removeListener(this);
+		}
 		for (AbstractRobot robot : robots.keySet()) {
 			robot.removeListener(this);
 		}
 		processFlowPresenter.stopListening();
 		machines.clear();
+		conveyors.clear();
 		robots.clear();
 		processFlow.removeListener(statusPresenter);
 		stopListening(processFlow);
@@ -162,6 +188,11 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 			} else if (device instanceof AbstractCNCMachine) {
 				Set<CNCMachineAlarm> alarms = ((AbstractCNCMachine) device).getAlarms();
 				for (CNCMachineAlarm alarm : alarms) {
+					alarmStrings.add(alarm.getLocalizedMessage());
+				}
+			} else if (device instanceof Conveyor) {
+				Set<ConveyorAlarm> alarms = ((Conveyor) device).getAlarms();
+				for (ConveyorAlarm alarm : alarms) {
 					alarmStrings.add(alarm.getLocalizedMessage());
 				}
 			}
@@ -264,9 +295,50 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 		});
 	}
 	
+	@Override public void layoutChanged() {}
+	@Override public void conveyorStatusChanged(final ConveyorEvent event) {}
+	@Override public void sensorValuesChanged(final ConveyorSensorValuesChangedEvent event) {}
+	
+	@Override public void conveyorConnected(final ConveyorEvent event) {
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				conveyors.put(event.getSource(), true);
+				if (isRunning()) {
+					updateAlarms();
+				} else {
+					checkAllConnected();
+				}
+			}
+		});
+	}
+	
+	@Override public void conveyorDisconnected(final ConveyorEvent event) {
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				conveyors.put(event.getSource(), false);
+				if (isRunning()) {
+					updateAlarms();
+				} else {
+					checkAllConnected();
+				}
+			}
+		});
+	}
+	
+	@Override public void conveyorAlarmsOccured(final ConveyorAlarmsOccuredEvent event) {
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				updateAlarms();
+			}
+		});
+	}
+	
 	@Override public void unregister() {
 		for (AbstractCNCMachine machine : machines.keySet()) {
 			machine.removeListener(this);
+		}
+		for (Conveyor conveyor : conveyors.keySet()) {
+			conveyor.removeListener(this);
 		}
 		for (AbstractRobot robot : robots.keySet()) {
 			robot.removeListener(this);

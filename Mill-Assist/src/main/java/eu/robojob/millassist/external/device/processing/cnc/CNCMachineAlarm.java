@@ -34,7 +34,6 @@ public class CNCMachineAlarm {
 	public static final int PREPARE_PUT_TIMEOUT = 104;
 	public static final int UNCLAMP_TIMEOUT = 105;
 	public static final int CLAMP_TIMEOUT = 106;
-			
 	
 	private static final int DEFAULT_PRIORITY = 5;
 		

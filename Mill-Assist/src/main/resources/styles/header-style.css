@@ -38,6 +38,10 @@
     -fx-padding: 0 0 0 5;
 }
 
+ .alarms-present {
+	-fx-background-color: #ab2627, #ab2627, #ce5a5b, #901718, linear-gradient(#e84b4c 0%, #c53839 50%, #ba2e2f 50% , #d33e3f 100%);
+}
+
 .header-button Text {
     -fx-fill: white;
     -fx-font-family: "Open Sans Bold";
@@ -75,6 +79,10 @@
 .header-button-right:pressed, .header-button-right.header-button.selected, .last.selected {
 	-fx-background-color: #292d32, #3c4147, #2d2f36, #292d32, linear-gradient(#303238 0%, #2e3136 50%, #2a2d31 50%, #32363b 100%);
 }
+
+.alarms-present:pressed,  .alarms-present.selected {
+ 	-fx-background-color: #b63031, #b63031, #b63031, #b63031, linear-gradient(#b63031 0%, #b63031 50%, #b63031 50%, #b63031 100%);
+ }
 
 .header-button:disabled {
 	-fx-opacity: 1;

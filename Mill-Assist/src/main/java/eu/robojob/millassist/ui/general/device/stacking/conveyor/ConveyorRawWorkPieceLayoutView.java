@@ -1,5 +1,6 @@
 package eu.robojob.millassist.ui.general.device.stacking.conveyor;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorLayout;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractMenuPresenter;
+import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 
 public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<ConveyorRawWorkPieceLayoutPresenter<? extends AbstractMenuPresenter<?>>> {
@@ -51,8 +53,8 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 	private Group conveyorGroup;
 	private Pane p;
 	
-	private Rectangle reference;
-	
+	private DecimalFormat df;
+			
 	private static final String CSS_CLASS_SUPPORT_DOWN = "support-down";
 	private static final String CSS_CLASS_SUPPORT_UP = "support-up";
 	private static final String CSS_CLASS_SUPPORT_DOWN_SHOULD_BE_UP = "support-down-should-be-up";
@@ -67,6 +69,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 	private static final String CSS_CLASS_TRACK = "track";	
 	private static final String CSS_CLASS_SUPPORT_FIXED = "support-fixed";
 	private static final String CSS_CLASS_WORKPIECE_AREA = "workPiece-area";
+	private static final String CSS_CLASS_WORKPIECE  = "workpiece-c";
 	
 	private static final String ICON_NEARBY_PATH = "M 14.567901,0 12.888889,1.6790123 C 15.004695,3.8197474 16.320988,6.7523235 16.320988,10 c 0,3.247677 -1.316293,6.180252 -3.432099,8.320988 L 14.567901,20 c 2.544762,-2.569711 4.123457,-6.097751 4.123457,-10 0,-3.9022489 -1.578695,-7.4302893 -4.123457,-10 z M 10.666667,3.9012346 8.9876543,5.5802469 C 10.102866,6.7200183 10.790124,8.279423 10.790124,10 c 0,1.720578 -0.687258,3.279982 -1.8024697,4.419753 l 1.6790127,1.679012 C 12.210749,14.529986 13.160494,12.375095 13.160494,10 c 0,-2.375095 -0.949745,-4.5299853 -2.493827,-6.0987654 z M 4.4691358,6.8395062 C 2.7236434,6.8395062 1.308642,8.254507 1.308642,10 c 0,1.745493 1.4150014,3.160494 3.1604938,3.160494 1.7454926,0 3.1604939,-1.415001 3.1604939,-3.160494 0,-1.745493 -1.4150013,-3.1604938 -3.1604939,-3.1604938 z";
 	private static final String ICON_MANUAL_MODE = "M 10 0 C 4.4771526 0 0 4.477153 0 10 C 0 15.522847 4.4771526 20 10 20 C 15.522847 20 20 15.522847 20 10 C 20 4.477153 15.522847 0 10 0 z M 10 2.5 C 14.142136 2.5 17.5 5.857864 17.5 10 C 17.5 14.142136 14.142136 17.5 10 17.5 C 5.8578645 17.5 2.5 14.142136 2.5 10 C 2.5 5.857864 5.8578645 2.5 10 2.5 z M 5.84375 5.6875 L 5.84375 14.3125 L 7.53125 14.3125 L 7.53125 7.09375 L 9.125 14.3125 L 10.90625 14.3125 L 12.5 7.09375 L 12.5 14.3125 L 14.1875 14.3125 L 14.1875 5.6875 L 11.5625 5.6875 L 10.0625 12.4375 L 8.46875 5.6875 L 5.84375 5.6875 z";
@@ -74,6 +77,9 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 	private static final String ICON_ROTATING_PATH = "M 10.78125 0 L 6.09375 2.71875 L 10.78125 5.4375 L 10.78125 3.84375 C 12.50005 4.06635 14.08595 4.9975 15.09375 6.4375 L 16.875 5.1875 C 15.4584 3.1627 13.21105 1.88945 10.78125 1.65625 L 10.78125 0 z M 5.1875 3.125 C 3.1641 4.5442 1.89065 6.79035 1.65625 9.21875 L 0 9.21875 L 2.71875 13.90625 L 5.4375 9.21875 L 3.84375 9.21875 C 4.06775 7.50255 4.9973 5.91525 6.4375 4.90625 L 5.1875 3.125 z M 17.28125 6.09375 L 14.5625 10.78125 L 16.15625 10.78125 C 15.93225 12.49885 15.0025 14.08715 13.5625 15.09375 L 14.8125 16.875 C 16.8385 15.4584 18.11195 13.21085 18.34375 10.78125 L 20 10.78125 L 17.28125 6.09375 z M 4.90625 13.5625 L 3.125 14.8125 C 4.5416 16.8345 6.7603 18.11075 9.1875 18.34375 L 9.1875 20 L 13.90625 17.28125 L 9.21875 14.5625 L 9.21875 16.15625 C 7.50515 15.93225 5.91405 15.0013 4.90625 13.5625 z";
 	private static final String ICON_ARROW_DOWN = "m 327.07812,581.72831 0,6.40625 -2.6875,0 2.28125,3.5625 1.90625,2.9375 1.9375,-2.9375 2.28125,-3.5625 -2.65625,0 0,-6.40625 -3.0625,0 z m 9.6875,0 0,6.40625 -2.6875,0 2.28125,3.5625 1.90625,2.9375 1.9375,-2.9375 2.28125,-3.5625 -2.65625,0 0,-6.40625 -3.0625,0 z";
 	private static final String ICON_ARROW_BOTH = "M 6.09375 0 L 4.125 2.9375 L 1.875 6.5 L 4.53125 6.5 L 4.53125 12.90625 L 7.59375 12.90625 L 7.59375 6.5 L 10.28125 6.5 L 8 2.9375 L 6.09375 0 z M 12.40625 7.09375 L 12.40625 13.5 L 9.71875 13.5 L 12 17.0625 L 13.90625 20 L 15.84375 17.0625 L 18.125 13.5 L 15.46875 13.5 L 15.46875 7.09375 L 12.40625 7.09375 z";
+	
+	private static final String SETUP_SUPPORTS = "ConveyorRawWorkPieceLayoutView.setUpSupports";
+	private static final String ALL_SUPPORTS_DOWN = "ConveyorRawWorkPieceLayoutView.allSupportsDown";
 	
 	private static final float MAX_CONV_HEIGHT = 300;
 	
@@ -89,6 +95,8 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		this.p = new Pane();
 		p.getChildren().add(conveyorGroup);
 		getContents().add(p, 1, 0);
+		df = new DecimalFormat("#.00");
+		df.setDecimalSeparatorAlwaysShown(true);
 	}
 	
 	public void setConveyorLayout(final ConveyorLayout conveyorLayout) {
@@ -110,10 +118,10 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		
 		iconNearby = new SVGPath();
 		iconNearby.setContent(ICON_NEARBY_PATH);
-		iconNearby.getStyleClass().add(CSS_CLASS_STATUS_ICON);
+		iconNearby.getStyleClass().add(CSS_CLASS_STATUS_ICON_DISABLED);
 		iconManual = new SVGPath();
 		iconManual.setContent(ICON_MANUAL_MODE);
-		iconManual.getStyleClass().add(CSS_CLASS_STATUS_ICON_DISABLED);
+		iconManual.getStyleClass().add(CSS_CLASS_STATUS_ICON);
 		iconLock = new SVGPath();
 		iconLock.setContent(ICON_LOCK);
 		iconLock.getStyleClass().add(CSS_CLASS_STATUS_ICON_DISABLED);
@@ -139,18 +147,16 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		vboxStatusControls.getChildren().add(hboxStatus);
 		vboxStatusControls.setSpacing(10);
 		
-		btnConfigureSupports = createButton(ICON_ARROW_BOTH, CSS_CLASS_WHITE_ICON, "Set-up steunen", UIConstants.BUTTON_HEIGHT*4, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+		btnConfigureSupports = createButton(ICON_ARROW_BOTH, CSS_CLASS_WHITE_ICON, Translator.getTranslation(SETUP_SUPPORTS), UIConstants.BUTTON_HEIGHT*4, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				getPresenter().configureSupports();
-				setMoving(true);
 			}
 		});
-		btnAllSupportsDown = createButton(ICON_ARROW_DOWN, CSS_CLASS_WHITE_ICON, "Alle steunen neer", UIConstants.BUTTON_HEIGHT*4, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+		btnAllSupportsDown = createButton(ICON_ARROW_DOWN, CSS_CLASS_WHITE_ICON, Translator.getTranslation(ALL_SUPPORTS_DOWN), UIConstants.BUTTON_HEIGHT*4, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				getPresenter().allSupportsDown();
-				setMoving(false);
 			}
 		});
 		
@@ -182,12 +188,6 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		total.setWidth(VISIBLE_AREA);
 		total.setHeight(conveyorLayout.getWidthRawWorkPieceConveyorWithOverlap());
 		total.setOpacity(0);
-		reference = new Rectangle();
-		reference.setX(70);
-		reference.setY(-1);
-		reference.setWidth(1);
-		reference.setHeight(1);
-		conveyorGroup.getChildren().add(reference);
 		Rectangle bg = new Rectangle();
 		bg.setX(74);
 		bg.setY(- conveyorLayout.getWidthRawWorkPieceConveyor());
@@ -245,7 +245,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			trackPattern.setY(-(i * (conveyorLayout.getRawTrackWidth() + conveyorLayout.getSpaceBetweenTracks()) + yTrackFirst));
 			trackPattern.setHeight(conveyorLayout.getRawTrackWidth());
 			trackPattern.setFill(new ImagePattern(img, 10, 0, 23, 10, false));
-			TranslateTransition tt = new TranslateTransition(Duration.millis(2000), trackPattern);
+			TranslateTransition tt = new TranslateTransition(Duration.millis((23 /getPresenter().getConveyor().getNomSpeedRawConveyor()) * 60 * 1000), trackPattern);
 			tt.setInterpolator(Interpolator.LINEAR);
 			tt.setFromX(23);
 			tt.setByX(-23);
@@ -260,9 +260,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			txt.setY(-(i * (conveyorLayout.getRawTrackWidth() + conveyorLayout.getSpaceBetweenTracks()) + yTrackFirst - conveyorLayout.getRawTrackWidth()));
 			txt.setWrappingWidth(60);
 			txt.getStyleClass().add(CSS_CLASS_DISTANCE_TEXT);
-			if (i > 0) {
-				texts.add(txt);
-			}
+			texts.add(txt);
 			conveyorGroup.getChildren().add(spaceBetween);
 			conveyorGroup.getChildren().add(support);
 			conveyorGroup.getChildren().add(track);
@@ -309,17 +307,11 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 	
 	@Override
 	public void refresh() {
-		// set supports
-		for (int i = 0; i < conveyorLayout.getCurrentSupportStatus().length; i++) {
-			setSupport(supports.get(i), conveyorLayout.getCurrentSupportStatus()[i], conveyorLayout.getRequestedSupportStatus()[i]);
-			if (conveyorLayout.getRequestedSupportStatus()[i]) {
-				texts.get(i).setVisible(true);
-			} else {
-				texts.get(i).setVisible(false);
-			}
-		}
+		updateSupportStatus();
 		conveyorGroup.getChildren().removeAll(workPieceWindows);
+		conveyorGroup.getChildren().removeAll(workPieces);
 		workPieceWindows.clear();
+		workPieces.clear();
 		double scale = conveyorGroup.getScaleX();
 		double translateX = conveyorGroup.getTranslateX();
 		double translateY = conveyorGroup.getTranslateY();
@@ -328,19 +320,52 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		conveyorGroup.setScaleY(1);
 		conveyorGroup.setScaleX(1);
 		for (StackingPosition stPos : conveyorLayout.getStackingPositionsRawWorkPieces()) {
+			Rectangle wp = new Rectangle();
+			conveyorGroup.getChildren().add(wp);
+			wp.setLayoutX(200);
+			wp.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			wp.setWidth(stPos.getWorkPiece().getDimensions().getLength());
+			wp.setHeight(stPos.getWorkPiece().getDimensions().getWidth());
+			wp.getStyleClass().add(CSS_CLASS_WORKPIECE);
+			wp.setVisible(false);
+			this.workPieces.add(wp);			
+			
 			Rectangle ra = new Rectangle();
 			conveyorGroup.getChildren().add(ra);
 			ra.setX(stPos.getPosition().getX() + 70 - stPos.getWorkPiece().getDimensions().getLength()/2);
-			ra.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2));
+			ra.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
 			ra.setWidth(stPos.getWorkPiece().getDimensions().getLength());
 			ra.setHeight(stPos.getWorkPiece().getDimensions().getWidth());
 			ra.getStyleClass().add(CSS_CLASS_WORKPIECE_AREA);
+			
+			TranslateTransition tt = new TranslateTransition();
+			tt.setNode(wp);
+			tt.stop();
+			tt.setInterpolator(Interpolator.LINEAR);
 			this.workPieceWindows.add(ra);
 		}
 		conveyorGroup.setScaleX(scale);
 		conveyorGroup.setScaleY(scale);
 		conveyorGroup.setTranslateX(translateX);
 		conveyorGroup.setTranslateY(translateY);
+		
+		setSensorValues(getPresenter().getConveyor().getSensorValues());
+		setConnected(getPresenter().getConveyor().isConnected());
+		setModeManual(!getPresenter().getConveyor().isModeAuto());
+		setMoving(getPresenter().getConveyor().isMovingRaw());
+		setLocked(getPresenter().getConveyor().isInterlockRaw());
+	}
+	
+	public void updateSupportStatus() {
+		// set supports
+		for (int i = 0; i < conveyorLayout.getCurrentSupportStatus().length; i++) {
+			setSupport(supports.get(i), conveyorLayout.getCurrentSupportStatus()[i], conveyorLayout.getRequestedSupportStatus()[i]);
+			if (conveyorLayout.getRequestedSupportStatus()[i]) {
+				texts.get(i+1).setVisible(true);
+			} else {
+				texts.get(i+1).setVisible(false);
+			}
+		}
 	}
 	
 	private void setSupport(final Rectangle rectangle, final boolean currentState, final boolean requestedState) {
@@ -381,5 +406,76 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		}
 	}
 	
-
+	public void setConnected(final boolean connected) {
+		if (connected) {
+			hboxStatus.setDisable(false);
+			conveyorGroup.setOpacity(1);
+			hboxStatus.setOpacity(1);
+			btnAllSupportsDown.setDisable(false);
+			btnConfigureSupports.setDisable(false);
+		} else {
+			hboxStatus.setDisable(true);
+			setMoving(false);
+			setLocked(false);
+			setModeManual(false);
+			conveyorGroup.setOpacity(0.4);
+			hboxStatus.setOpacity(0.4);
+		}
+	}
+	
+	public void setModeManual(final boolean modeManual) {
+		iconManual.getStyleClass().remove(CSS_CLASS_STATUS_ICON);
+		iconManual.getStyleClass().remove(CSS_CLASS_STATUS_ICON_DISABLED);
+		if (modeManual) {
+			iconManual.getStyleClass().add(CSS_CLASS_STATUS_ICON);
+			if (getPresenter().getConveyor().isConnected()) {
+				btnAllSupportsDown.setDisable(false);
+				btnConfigureSupports.setDisable(false);
+			}
+		} else {
+			iconManual.getStyleClass().add(CSS_CLASS_STATUS_ICON_DISABLED);
+			btnAllSupportsDown.setDisable(true);
+			btnConfigureSupports.setDisable(true);
+		}
+	}
+	
+	public void setLocked(final boolean locked) {
+		iconLock.getStyleClass().remove(CSS_CLASS_STATUS_ICON);
+		iconLock.getStyleClass().remove(CSS_CLASS_STATUS_ICON_DISABLED);
+		if (locked) {
+			iconLock.getStyleClass().add(CSS_CLASS_STATUS_ICON);
+		} else {
+			iconLock.getStyleClass().add(CSS_CLASS_STATUS_ICON_DISABLED);
+		}
+	}
+	
+	public void setSensorValues(final List<Integer> sensorValues) {
+		boolean found = false;
+		int wpIndex = 0;
+		for (int i = 0; i < sensorValues.size(); i++) {
+			if (sensorValues.get(i) > 0) {
+				texts.get(i).setText(df.format(((float) sensorValues.get(i))/100));
+			} else {
+				texts.get(i).setText("--");
+			}
+			if ((i == 0)  || (conveyorLayout.getRequestedSupportStatus()[i-1])) {
+				double dest = 70 + ((float) sensorValues.get(i))/100; 
+				workPieces.get(wpIndex).setLayoutX(dest);
+				if (sensorValues.get(i) > 0) {
+					found = true;
+					workPieces.get(wpIndex).setVisible(true);
+				} else {
+					workPieces.get(wpIndex).setVisible(false);
+				}
+				wpIndex++;
+			}
+		}
+		iconNearby.getStyleClass().remove(CSS_CLASS_STATUS_ICON);
+		iconNearby.getStyleClass().remove(CSS_CLASS_STATUS_ICON_DISABLED);
+		if (found) {
+			iconNearby.getStyleClass().add(CSS_CLASS_STATUS_ICON);
+		} else {
+			iconNearby.getStyleClass().add(CSS_CLASS_STATUS_ICON_DISABLED);
+		}
+	}
 }

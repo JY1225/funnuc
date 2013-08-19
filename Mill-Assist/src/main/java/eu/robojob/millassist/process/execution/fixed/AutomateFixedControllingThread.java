@@ -7,6 +7,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
@@ -63,13 +64,12 @@ public class AutomateFixedControllingThread extends Thread {
 		PickStep pickFromMachine = null;
 		PutStep putToMachine = null;
 		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
-			if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof BasicStackPlate) {
+			if ((step instanceof PickStep) && ((((PickStep) step).getDevice() instanceof BasicStackPlate) || 
+					(((PickStep) step).getDevice() instanceof Conveyor))) {
 				pickFromStacker = (PickStep) step;
-			}
-			if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
+			}  else if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
 				pickFromMachine = (PickStep) step;
-			}
-			if ((step instanceof PutStep) && ((PutStep) step).getDevice() instanceof AbstractCNCMachine) {
+			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice() instanceof AbstractCNCMachine) {
 				putToMachine = (PutStep) step;
 			}
 		}
@@ -174,6 +174,8 @@ public class AutomateFixedControllingThread extends Thread {
 			notifyException(e);
 		} catch (RobotActionException e) {
 			stopRunning();
+			notifyException(e);
+		} catch (Exception e) {
 			notifyException(e);
 		}
 	}

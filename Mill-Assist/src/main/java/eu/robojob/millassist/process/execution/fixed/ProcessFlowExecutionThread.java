@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
@@ -64,6 +65,8 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 				
 				AbstractProcessStep currentStep = processFlow.getStep(processFlow.getCurrentIndex(workpieceId));
 				
+				logger.info("ProcessFlowExecution, current step = " + currentStep);
+				
 				checkStatus();
 				
 				if (currentStep instanceof RobotStep) {
@@ -78,10 +81,12 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 					checkStatus();
 					executePickFromMachineStep((PickStep) currentStep);
 				} else {
-					if ((currentStep instanceof PickStep) && ((PickStep) currentStep).getDevice() instanceof BasicStackPlate) {
+					if ((currentStep instanceof PickStep) && ((((PickStep) currentStep).getDevice() instanceof BasicStackPlate) || 
+							(((PickStep) currentStep).getDevice() instanceof Conveyor))) {
 						((PickStep) currentStep).getRobotSettings().setFreeAfter(true);
 					}
-					if ((currentStep instanceof PutStep) && ((PutStep) currentStep).getDevice() instanceof BasicStackPlate) {
+					if ((currentStep instanceof PutStep) && ((((PutStep) currentStep).getDevice() instanceof BasicStackPlate) || 
+							(((PutStep) currentStep).getDevice() instanceof Conveyor))) {
 						if ((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) || 
 								((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 2)) && controllingThread.isConcurrentExecutionPossible()) {
 							((PutStep) currentStep).getRobotSettings().setFreeAfter(true);

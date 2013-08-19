@@ -27,10 +27,12 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public abstract void pickFinished(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
 	public abstract void putFinished(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
-	public abstract void interventionFinished(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException;
+	public abstract void interventionFinished(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
 	
 	public abstract void releasePiece(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
 	public abstract void grabPiece(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
+	
+	public abstract void reset() throws AbstractCommunicationException, DeviceActionException, InterruptedException;
 	
 	public abstract void loadDeviceSettings(DeviceSettings deviceSettings);
 	public abstract DeviceSettings getDeviceSettings();
@@ -59,7 +61,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return false;
 	}
 	
-	public abstract Coordinates getPickLocation(WorkArea workArea, ClampingManner clampType);
+	public abstract Coordinates getPickLocation(WorkArea workArea, ClampingManner clampType) throws DeviceActionException, InterruptedException;
 	public abstract Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType);
 	
 	public abstract void interruptCurrentAction();

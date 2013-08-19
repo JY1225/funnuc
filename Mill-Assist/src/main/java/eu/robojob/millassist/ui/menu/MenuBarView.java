@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
+import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.util.Translator;
 
 public class MenuBarView extends ToolBar {
@@ -35,6 +36,8 @@ public class MenuBarView extends ToolBar {
 	private Button btnAutomate;
 	private Button btnExit;
 	
+	private ButtonStyleChangingThread changingThread;
+	
 	private MenuBarPresenter presenter;
 	
 	private Button selectedBtn;
@@ -53,6 +56,7 @@ public class MenuBarView extends ToolBar {
 	private static final String CSS_CLASS_BAR = "bar";
 	private static final String CSS_CLASS_FIRST = "first";
 	private static final String CSS_CLASS_LAST = "last";
+	private static final String CSS_CLASS_ALARMS_PRESENT = "alarms-present";
 	
 	private static final String CONFIGURE = "MenuBarView.configure";
 	private static final String TEACH = "MenuBarView.teach";
@@ -95,6 +99,8 @@ public class MenuBarView extends ToolBar {
 		
 		btnAlarms = new Button();
 		btnAlarms.setGraphic(alarmsShape);
+		
+		
 		btnAlarms.setPrefSize(BTN_WIDTH_SMALL, BTN_HEIGHT);
 		btnAlarms.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(final ActionEvent event) {
@@ -103,6 +109,10 @@ public class MenuBarView extends ToolBar {
 		});
 		btnAlarms.getStyleClass().add(CSS_CLASS_HEADER_BUTTON);
 		btnAlarms.setId("btnAlarms");
+		
+		changingThread = new ButtonStyleChangingThread(btnAlarms, "", CSS_CLASS_ALARMS_PRESENT, 500);
+		changingThread.setRunning(false);
+		ThreadManager.submit(changingThread);
 		
 		adminShape = new SVGPath();
 		adminShape.setContent(adminPath);
@@ -283,4 +293,12 @@ public class MenuBarView extends ToolBar {
 		btnExit.setDisable(!enabled);
 	}
 	
+	public void indicateAlarmsPresent(final boolean alarmsPresent) {
+		if (alarmsPresent) {
+			changingThread.setRunning(true);
+		} else {
+			changingThread.setRunning(false);
+			btnAlarms.getStyleClass().remove(CSS_CLASS_ALARMS_PRESENT);
+		}
+	}
 }

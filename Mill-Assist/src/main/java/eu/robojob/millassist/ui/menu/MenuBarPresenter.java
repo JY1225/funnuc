@@ -109,6 +109,10 @@ public class MenuBarPresenter {
 		view.setAlarmsActive();
 	}
 	
+	public void indicateAlarmsPresent(final boolean alarmsPresent) {
+		getView().indicateAlarmsPresent(alarmsPresent);
+	}
+	
 	public void setConfigureButtonEnabled(final boolean enabled) {
 		view.setConfigureButtonEnabled(enabled);
 	}

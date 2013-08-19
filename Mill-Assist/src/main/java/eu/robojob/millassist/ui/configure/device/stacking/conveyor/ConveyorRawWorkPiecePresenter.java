@@ -97,15 +97,6 @@ public class ConveyorRawWorkPiecePresenter extends AbstractFormPresenter<Conveyo
 		}
 	}
 	
-	public void changedAmount(final int amount) {
-		logger.info("Set amount [" + amount + "].");
-		if (amount != deviceSettings.getAmount()) {
-			deviceSettings.setAmount(amount);
-			recalculate();
-			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
-		}
-	}
-	
 	public void recalculate() {
 		try {
 			((Conveyor) pickStep.getDevice()).getLayout().configureRawWorkPieceStackingPositions();
@@ -125,36 +116,14 @@ public class ConveyorRawWorkPiecePresenter extends AbstractFormPresenter<Conveyo
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 	}
 	
-	public void changedAmountContinous() {
-		logger.info("Changed amount to continous");
-		if (deviceSettings.getAmount() != -1) {
-			deviceSettings.setAmount(-1);
-			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
-			recalculate();
-		}
-	}
-	
-	public void changedAmountFixedAmount() {
-		logger.info("Changed amount to fixed");
-		if (deviceSettings.getAmount() == -1) {
-			deviceSettings.setAmount(0);
-			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
-			recalculate();
-		}
-	}
-	
 	@Override
 	public boolean isConfigured() {
 		if ((dimensions != null) && (workPiece.getWeight() > 0) &&
-				dimensions.getLength() >= dimensions.getWidth() &&
-				((deviceSettings.getAmount() > 0) || (deviceSettings.getAmount() == -1))
+				dimensions.getLength() >= dimensions.getWidth() 
 				) {
 			return true;
 		}
 		return false;
 	}
-	
-	public void setMaxAmount() {
-		
-	}
+
 }

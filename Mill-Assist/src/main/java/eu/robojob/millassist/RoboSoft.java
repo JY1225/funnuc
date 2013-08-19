@@ -11,11 +11,11 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.robojob.millassist.db.ConnectionManager;
 import eu.robojob.millassist.db.GeneralMapper;
 import eu.robojob.millassist.db.external.device.DeviceMapper;
 import eu.robojob.millassist.db.external.robot.RobotMapper;
@@ -54,7 +54,7 @@ public class RoboSoft extends Application {
 		stage.setTitle("RoboSoft");
 		stage.centerOnScreen();
 		stage.setResizable(false);
-		stage.initStyle(StageStyle.UNDECORATED);
+		//stage.initStyle(StageStyle.UNDECORATED);
 		stage.getIcons().add(new Image("images/icon.png"));
 		stage.show();
 		ThreadManager.submit(new Thread () {
@@ -120,6 +120,7 @@ public class RoboSoft extends Application {
 	@Override
 	public void stop() {
 		logger.info("Closing application.");
+		ConnectionManager.shutDown();
 		ThreadManager.shutDown();
 		Platform.runLater(new Runnable() {
 			@Override

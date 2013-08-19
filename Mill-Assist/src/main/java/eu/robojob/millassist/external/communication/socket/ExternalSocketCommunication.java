@@ -10,7 +10,7 @@ import eu.robojob.millassist.threading.ThreadManager;
 
 public abstract class ExternalSocketCommunication {
 
-	public static final int READ_RETRY_INTERVAL = 50;
+	public static final int READ_RETRY_INTERVAL = 10;
 	public static final int DEFAULT_WAIT_TIMEOUT = 10000;
 	
 	private int defaultWaitTimeout;

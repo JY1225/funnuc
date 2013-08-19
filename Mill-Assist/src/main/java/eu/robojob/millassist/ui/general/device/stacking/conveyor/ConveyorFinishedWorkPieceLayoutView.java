@@ -57,7 +57,7 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 	private static final float MAX_CONV_HEIGHT = 300;
 	
 	private static final float VISIBLE_AREA = 275;
-	
+		
 	public ConveyorFinishedWorkPieceLayoutView() {
 		this.conveyorGroup = new Group();
 		this.workPieces = new ArrayList<Rectangle>();
@@ -80,7 +80,7 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 		
 		iconManual = new SVGPath();
 		iconManual.setContent(ICON_MANUAL_MODE);
-		iconManual.getStyleClass().add(CSS_CLASS_STATUS_ICON_DISABLED);
+		iconManual.getStyleClass().add(CSS_CLASS_STATUS_ICON);
 		iconLock = new SVGPath();
 		iconLock.setContent(ICON_LOCK);
 		iconLock.getStyleClass().add(CSS_CLASS_STATUS_ICON_DISABLED);
@@ -144,7 +144,7 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 		trackPattern.setY(- conveyorLayout.getFinishedConveyorWidth());
 		trackPattern.setHeight(conveyorLayout.getFinishedConveyorWidth());
 		trackPattern.setFill(new ImagePattern(img, 10, 0, 23, 10, false));
-		tt = new TranslateTransition(Duration.millis(2000), trackPattern);
+		tt = new TranslateTransition(Duration.millis((23 /getPresenter().getConveyor().getNomSpeedFinishedConveyor()) * 60 * 1000), trackPattern);
 		tt.setInterpolator(Interpolator.LINEAR);
 		tt.setFromX(0);
 		tt.setByX(23);
@@ -218,6 +218,22 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 		conveyorGroup.setScaleY(scale);
 		conveyorGroup.setTranslateX(translateX);
 		conveyorGroup.setTranslateY(translateY);
+		setConnected(getPresenter().getConveyor().isConnected());
+	}
+	
+	public void setConnected(final boolean connected) {
+		if (connected) {
+			hboxStatus.setDisable(false);
+			conveyorGroup.setOpacity(1);
+			hboxStatus.setOpacity(1);
+		} else {
+			hboxStatus.setDisable(true);
+			setMoving(false);
+			setLocked(false);
+			setModeManual(false);
+			conveyorGroup.setOpacity(0.4);
+			hboxStatus.setOpacity(0.4);
+		}
 	}
 
 	public void setMoving(final boolean moving) {
@@ -231,6 +247,26 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 			rt.pause();
 			tt.pause();
 			iconRotating.getStyleClass().add(CSS_CLASS_STATUS_ICON_DISABLED);
+		}
+	}
+	
+	public void setModeManual(final boolean modeManual) {
+		iconManual.getStyleClass().remove(CSS_CLASS_STATUS_ICON);
+		iconManual.getStyleClass().remove(CSS_CLASS_STATUS_ICON_DISABLED);
+		if (modeManual) {
+			iconManual.getStyleClass().add(CSS_CLASS_STATUS_ICON);
+		} else {
+			iconManual.getStyleClass().add(CSS_CLASS_STATUS_ICON_DISABLED);
+		}
+	}
+	
+	public void setLocked(final boolean locked) {
+		iconLock.getStyleClass().remove(CSS_CLASS_STATUS_ICON);
+		iconLock.getStyleClass().remove(CSS_CLASS_STATUS_ICON_DISABLED);
+		if (locked) {
+			iconLock.getStyleClass().add(CSS_CLASS_STATUS_ICON);
+		} else {
+			iconLock.getStyleClass().add(CSS_CLASS_STATUS_ICON_DISABLED);
 		}
 	}
 }

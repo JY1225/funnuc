@@ -14,7 +14,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorSettings;
-import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -42,12 +41,6 @@ public class ConveyorRawWorkPieceView extends AbstractFormView<ConveyorRawWorkPi
 	private Label lblWorkPieceHeight;
 	private Label lblWorkPieceWeight;	
 	
-	private Button btnContinue;
-	private Button btnFixedAmount;
-	
-	private Label lblWorkPieceAmount;
-	private Button btnMaxAmount;
-	
 	private Label lblMaterial;
 	private Button btnCalc;
 	
@@ -55,7 +48,6 @@ public class ConveyorRawWorkPieceView extends AbstractFormView<ConveyorRawWorkPi
 	private NumericTextField ntxtWorkPieceLength;
 	private NumericTextField ntxtWorkPieceHeight;
 	private NumericTextField ntxtWorkPieceWeight;
-	private IntegerTextField itxtWorkPieceAmount;
 	
 	private HBox materialsBox;
 	private Button btnAl;
@@ -79,13 +71,9 @@ public class ConveyorRawWorkPieceView extends AbstractFormView<ConveyorRawWorkPi
 	protected static final String LENGTH = "ConveyorRawWorkPieceView.length";
 	private static final String HEIGHT = "ConveyorRawWorkPieceView.height";
 	private static final String WEIGHT = "ConveyorRawWorkPieceView.weight";
-	private static final String AMOUNT = "ConveyorRawWorkPieceView.amount";
-	private static final String MAX = "ConveyorRawWorkPieceView.max";
 	private static final String MATERIAL = "ConveyorRawWorkPieceView.material";
 	private static final String CALC = "ConveyorRawWorkPieceView.calc";
 	private static final String OTHER = "ConveyorRawWorkPieceView.other";
-	private static final String CONTINU = "ConveyorRawWorkPieceView.continu";
-	private static final String FIXED_AMOUNT = "ConveyorRawWorkPieceView.fixedAmount";
 	
 	public void setDeviceSettings(final ConveyorSettings settings) {
 		this.settings = settings;
@@ -219,60 +207,7 @@ public class ConveyorRawWorkPieceView extends AbstractFormView<ConveyorRawWorkPi
 		column = 4; row = 0;
 		getContents().add(spacer, column++, row);
 		
-		column = 5; row = 0;
-		
-		btnFixedAmount = createButton(Translator.getTranslation(FIXED_AMOUNT), BTN_WIDTH * 1.33, BTN_HEIGHT, new EventHandler<ActionEvent>(){
-			@Override
-			public void handle(final ActionEvent arg0) {
-				getPresenter().changedAmountFixedAmount();
-			}
-		});
-		btnFixedAmount.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-		btnContinue = createButton(Translator.getTranslation(CONTINU), BTN_WIDTH * 1.33, BTN_HEIGHT, new EventHandler<ActionEvent>(){
-			@Override
-			public void handle(final ActionEvent arg0) {
-				getPresenter().changedAmountContinous();
-			}
-		});
-		btnContinue.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-		
-		HBox hBoxFixedAmountContinue = new HBox();
-		hBoxFixedAmountContinue.setAlignment(Pos.CENTER_LEFT);
-		hBoxFixedAmountContinue.getChildren().addAll(btnFixedAmount, btnContinue);
-		hBoxFixedAmountContinue.setSpacing(0);
-		getContents().add(hBoxFixedAmountContinue, column++, row, 3, 1);
-		
-		column = 5; row++;
-		lblWorkPieceAmount = new Label(Translator.getTranslation(AMOUNT));
-		getContents().add(lblWorkPieceAmount, column++, row);
-		
-		itxtWorkPieceAmount = new IntegerTextField(MAX_INTEGER_LENGTH);
-		itxtWorkPieceAmount.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
-		itxtWorkPieceAmount.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
-		itxtWorkPieceAmount.setOnChange(new ChangeListener<Integer>() {
-			@Override
-			public void changed(final ObservableValue<? extends Integer> observable, final Integer oldValue, final Integer newValue) {
-				getPresenter().changedAmount(newValue);
-			}
-		});
-		getContents().add(itxtWorkPieceAmount, column++, row);
-		
-		btnMaxAmount = new Button();
-		Label lblMaxAmount = new Label(Translator.getTranslation(MAX));
-		lblMaxAmount.getStyleClass().add(CSS_CLASS_FORM_BUTTON_LABEL);
-		btnMaxAmount.setGraphic(lblMaxAmount);
-		btnMaxAmount.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
-		btnMaxAmount.setPrefSize(UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT);
-		btnMaxAmount.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent arg0) {
-				getPresenter().setMaxAmount();
-			}
-		});
-		getContents().add(btnMaxAmount, column++, row);
-		
 		column = 5;
-		row++;
 		lblWorkPieceWeight = new Label(Translator.getTranslation(WEIGHT));
 		getContents().add(lblWorkPieceWeight, column++, row);
 		ntxtWorkPieceWeight = new NumericTextField(MAX_INTEGER_LENGTH);
@@ -301,7 +236,6 @@ public class ConveyorRawWorkPieceView extends AbstractFormView<ConveyorRawWorkPi
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
-		itxtWorkPieceAmount.setFocusListener(listener);
 		ntxtWorkPieceHeight.setFocusListener(listener);
 		ntxtWorkPieceLength.setFocusListener(listener);
 		ntxtWorkPieceWeight.setFocusListener(listener);
@@ -311,21 +245,6 @@ public class ConveyorRawWorkPieceView extends AbstractFormView<ConveyorRawWorkPi
 	@Override
 	public void refresh() {
 		setDimensions(settings.getRawWorkPiece().getDimensions());
-		btnContinue.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-		btnFixedAmount.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-		if (settings.getAmount() == -1) {
-			btnContinue.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-			itxtWorkPieceAmount.setText("");
-			lblWorkPieceAmount.setDisable(true);
-			itxtWorkPieceAmount.setDisable(true);
-			btnMaxAmount.setDisable(true);
-		} else {
-			btnFixedAmount.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-			itxtWorkPieceAmount.setText("" + settings.getAmount());
-			lblWorkPieceAmount.setDisable(false);
-			itxtWorkPieceAmount.setDisable(false);
-			btnMaxAmount.setDisable(false);
-		}
 		setWeight(settings.getRawWorkPiece().getMaterial(), settings.getRawWorkPiece().getWeight());
 	}
 	

@@ -19,6 +19,7 @@ import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.W
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
@@ -112,6 +113,16 @@ public class DeviceManager {
 	
 	public Collection<AbstractProcessingDevice> getPostProcessingDevices() {
 		return postProcessingDevicesByName.values();
+	}
+	
+	public Set<Conveyor> getConveyors() {
+		Set<Conveyor> conveyors = new HashSet<Conveyor>();
+		for (AbstractDevice device : getStackingFromDevices()) {
+			if (device instanceof Conveyor) {
+				conveyors.add((Conveyor) device);
+			}
+		}
+		return conveyors;
 	}
 	
 	public Set<String> getPostProcessingDeviceNames() {

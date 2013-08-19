@@ -3,6 +3,7 @@ package eu.robojob.millassist.db;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
@@ -39,6 +40,14 @@ public final class ConnectionManager {
 			connect();
 		}
 		return conn;
+	}
+	
+	public static void shutDown() {
+		try {
+			DriverManager.getConnection("jdbc:derby:;shutdown=true");
+		} catch (SQLException e) {
+			logger.error(e);
+		}
 	}
 	
 }

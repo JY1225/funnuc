@@ -226,6 +226,7 @@ public class SocketConnection {
 			try {
 			      int b = in.read();
 			      if (b < 0) {
+			    	  logger.info("Read negative char, so disconnected...");
 			    	  disconnect();
 			    	  throw new SocketDisconnectedException(this);
 				   } else {
@@ -248,6 +249,6 @@ public class SocketConnection {
 	
 	@Override
 	public String toString() {
-		return this.name;
+		return this.name + " [type=" + type + " - ip=" + ipAddress + " - port=" + portNumber + "]";
 	}
 }
