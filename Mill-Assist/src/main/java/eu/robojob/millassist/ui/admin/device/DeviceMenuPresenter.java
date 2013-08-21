@@ -1,6 +1,8 @@
 package eu.robojob.millassist.ui.admin.device;
 
 import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.ui.admin.AbstractSubMenuPresenter;
 import eu.robojob.millassist.ui.admin.device.cnc.CNCMachineConfigurePresenter;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -26,6 +28,15 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		if (deviceManager.getPreProcessingDevices().size() == 0) {
 			//TODO review if other pre process devices are available!
 			getView().disablePrageMenuItem();
+		}
+		boolean stackPlatePresent = false;
+		for (AbstractStackingDevice stackingDevice : deviceManager.getStackingFromDevices()) {
+			if (stackingDevice instanceof BasicStackPlate) {
+				stackPlatePresent = true;
+			}
+		}
+		if (!stackPlatePresent) {
+			getView().disableBasicStackPlateMenuItem();
 		}
 	}
 

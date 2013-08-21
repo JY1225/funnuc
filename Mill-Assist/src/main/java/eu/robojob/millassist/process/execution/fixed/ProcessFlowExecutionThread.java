@@ -6,8 +6,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
@@ -80,13 +79,14 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
 					checkStatus();
 					executePickFromMachineStep((PickStep) currentStep);
-				} else {
-					if ((currentStep instanceof PickStep) && ((((PickStep) currentStep).getDevice() instanceof BasicStackPlate) || 
-							(((PickStep) currentStep).getDevice() instanceof Conveyor))) {
+				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractStackingDevice)) {
+						// we can always return to home, as home is typically the same location as the stacker's IP
+						// if no pre-processing is needed, we will than be waiting in home before putting in machine
 						((PickStep) currentStep).getRobotSettings().setFreeAfter(true);
-					}
-					if ((currentStep instanceof PutStep) && ((((PutStep) currentStep).getDevice() instanceof BasicStackPlate) || 
-							(((PutStep) currentStep).getDevice() instanceof Conveyor))) {
+						executePickFromStackerStep((PickStep) currentStep);
+				} else {
+					if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractStackingDevice)) {
+						// check if after this step no more pick is needed, so we can return to home
 						if ((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) || 
 								((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 2)) && controllingThread.isConcurrentExecutionPossible()) {
 							((PutStep) currentStep).getRobotSettings().setFreeAfter(true);
@@ -94,6 +94,7 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 					}
 					if ((currentStep instanceof PutAndWaitStep) && controllingThread.isConcurrentExecutionPossible() && 
 							!controllingThread.isFirstPiece()) {
+						// if not the first: go to home after pre-processing step to wait before putting in machine
 						((PutAndWaitStep) currentStep).getRobotSettings().setFreeAfter(true);
 					}
 					checkStatus();
@@ -132,6 +133,7 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 			interventionStep.executeStep(workpieceId, this);
 			canContinue = false;
 			checkStatus();
+			// notify master of intervention, it will, in turn notify other running executor-threads
 			controllingThread.notifyWaitingOnIntervention();
 			checkStatus();
 			if (waitingForIntervention) {
@@ -155,6 +157,12 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 		synchronized(syncObject2) {
 			syncObject2.notify();
 		}
+	}
+	
+	public void executePickFromStackerStep(final PickStep pickStep) throws InterruptedException, AbstractCommunicationException, RobotActionException, DeviceActionException {
+		checkStatus();
+		pickStep.executeStep(workpieceId, this);
+		pickStep.finalizeStep(this);
 	}
 	
 	public void executePutInMachineStep(final PutStep putStep) throws InterruptedException, AbstractCommunicationException, RobotActionException, DeviceActionException {

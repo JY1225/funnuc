@@ -10,7 +10,9 @@
 	<organization>
 		<name>RoboJob</name>
 	</organization>
-
+	<properties>
+	    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -39,6 +41,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>

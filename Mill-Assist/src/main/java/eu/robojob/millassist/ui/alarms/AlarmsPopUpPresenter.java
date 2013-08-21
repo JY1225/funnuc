@@ -300,4 +300,5 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) { }
 	
+	@Override public void finishedShifted(final float distance) { }
 }

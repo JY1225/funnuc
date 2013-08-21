@@ -197,6 +197,13 @@
 	-fx-stroke-type: centered;
 }
 
+.workpiece-c-finished {
+	-fx-fill: #6fc955;	
+	-fx-stroke-width: 1px;
+	-fx-stroke-type: inside;
+	-fx-stroke: #4ca134;
+}
+
 .workpiece-mark {
 	-fx-fill: #a55015;
 }

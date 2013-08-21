@@ -15,6 +15,9 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
 import eu.robojob.millassist.external.robot.AbstractRobot;
@@ -40,6 +43,10 @@ public class ProcessFlow {
 		FINISHED	// The Execution of ProcessFlow has finished.
 	}
 	
+	public enum Type {
+		FIXED_AMOUNT, CONTINUOUS
+	}
+	
 	private List<AbstractProcessStep> processSteps;
 	
 	private Map<AbstractDevice, DeviceSettings> deviceSettings;		// device settings that are independent of the process steps
@@ -48,6 +55,7 @@ public class ProcessFlow {
 	private Integer finishedAmount;
 	
 	private int id;
+	private Type type;
 	
 	private String name;
 	private Timestamp creation;
@@ -77,6 +85,7 @@ public class ProcessFlow {
 		this.currentIndices = new HashMap<Integer, Integer>();
 		this.creation = creation;
 		this.lastOpened = lastOpened;
+		this.type = Type.FIXED_AMOUNT;
 		setUpProcess(processSteps);
 		this.currentIndices = new HashMap<Integer, Integer>();
 		//TODO more than two concurrent steps possible?
@@ -102,6 +111,27 @@ public class ProcessFlow {
 		setCurrentIndex(WORKPIECE_1_ID, -1);
 		loadAllSettings();
 		setFinishedAmount(0);
+		updateType();
+	}
+	
+	//TODO refactor!!
+	private void updateType() {
+		this.type = Type.FIXED_AMOUNT;
+		if (getStep(0) instanceof PickStep) {
+			if (((PickStep) getStep(0)).getDevice() instanceof Conveyor) {
+				this.type = Type.CONTINUOUS;
+			}
+		} else if (getStep(1) instanceof PickStep) {
+			if (((PickStep) getStep(1)).getDevice() instanceof Conveyor) {
+				this.type = Type.CONTINUOUS;
+			}
+		} else {
+			throw new IllegalStateException("Could not find first pick step");
+		}
+	}
+	
+	public Type getType() {
+		return type;
 	}
 	
 	public void setId(final int id) {
@@ -188,11 +218,21 @@ public class ProcessFlow {
 	}
 	
 	public int getTotalAmount() {
-		for (AbstractDevice device : deviceSettings.keySet()) {
-			if (device instanceof BasicStackPlate) {
-				BasicStackPlateSettings basicStackPlateSettings = (BasicStackPlateSettings) deviceSettings.get(device);
-				return basicStackPlateSettings.getAmount();
-			}
+		// get stacking device
+		AbstractStackingDevice stackingDevice;
+		if (getStep(0) instanceof PickStep) {
+			stackingDevice = (AbstractStackingDevice) ((PickStep) getStep(0)).getDevice();
+		} else if (getStep(1) instanceof PickStep) {
+			stackingDevice = (AbstractStackingDevice) ((PickStep) getStep(1)).getDevice();
+		} else {
+			throw new IllegalStateException("Could not find first pick step");
+		}
+		if (stackingDevice instanceof BasicStackPlate) {
+			BasicStackPlateSettings basicStackPlateSettings = (BasicStackPlateSettings) deviceSettings.get(stackingDevice);
+			return basicStackPlateSettings.getAmount();
+		} else if (stackingDevice instanceof Conveyor) {
+			ConveyorSettings conveyorSettings = (ConveyorSettings) deviceSettings.get(stackingDevice);
+			return conveyorSettings.getAmount();
 		}
 		return 0;
 	}
@@ -207,7 +247,16 @@ public class ProcessFlow {
 
 	public void setFinishedAmount(final int finishedAmount) {
 		this.finishedAmount = finishedAmount;
-		processProcessFlowEvent(new FinishedAmountChangedEvent(this, finishedAmount, getTotalAmount()));
+		if ((type == Type.CONTINUOUS) && (finishedAmount >= getTotalAmount())) {
+			for (AbstractDevice device : deviceSettings.keySet()) {
+				if (device instanceof Conveyor) {
+					ConveyorSettings conveyorSettings = (ConveyorSettings) deviceSettings.get(device);
+					conveyorSettings.setAmount(-1);
+					((Conveyor) device).setAmount(-1);
+				}
+			}
+		}
+		processProcessFlowEvent(new FinishedAmountChangedEvent(this, this.finishedAmount, getTotalAmount()));
 	}
 
 	public synchronized void processProcessFlowEvent(final ProcessFlowEvent event) {

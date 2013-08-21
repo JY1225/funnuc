@@ -42,7 +42,12 @@ public class ConveyorRawWorkPieceLayoutPresenter<T extends AbstractMenuPresenter
 
 	@Override
 	public void layoutChanged() {
-		getView().refresh();
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				getView().refresh();
+			}
+		});
 	}
 
 	@Override
@@ -75,8 +80,13 @@ public class ConveyorRawWorkPieceLayoutPresenter<T extends AbstractMenuPresenter
 				getView().setModeManual(!getConveyor().isModeAuto());
 				getView().updateSupportStatus();
 				getView().setMoving(getConveyor().isMovingRaw());
+				getView().setLocked(getConveyor().isInterlockRaw());
 			}
 		});
+	}
+	
+	public void hideButtons() {
+		getView().hideButtons();
 	}
 
 	@Override
@@ -95,4 +105,5 @@ public class ConveyorRawWorkPieceLayoutPresenter<T extends AbstractMenuPresenter
 		});
 	}
 
+	@Override public void finishedShifted(final float distance) { }
 }

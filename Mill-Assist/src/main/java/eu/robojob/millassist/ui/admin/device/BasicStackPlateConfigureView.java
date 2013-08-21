@@ -297,30 +297,32 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	@Override
 	public void refresh() {
 		getPresenter().updateUserFrames();
-		fulltxtName.setText(basicStackPlate.getName());
-		itxtHorizontalHoleAmount.setText(basicStackPlate.getLayout().getHorizontalHoleAmount() + "");
-		itxtVerticalHoleAmount.setText(basicStackPlate.getLayout().getVerticalHoleAmount() + "");
-		numtxtHoleDiameter.setText(basicStackPlate.getLayout().getHoleDiameter() + "");
-		numtxtStudDiameter.setText(basicStackPlate.getLayout().getStudDiameter() + "");
-		numtxtHorizontalPadding.setText(basicStackPlate.getLayout().getHorizontalPadding() + "");
-		numtxtVerticalPaddingTop.setText(basicStackPlate.getLayout().getVerticalPadding() + "");
-		numtxtVerticalPaddingBottom.setText(basicStackPlate.getLayout().getVerticalPaddingBottom() + "");
-		numtxtHorizontalHoleDistance.setText(basicStackPlate.getLayout().getHorizontalHoleDistance() + "");
-		numtxtInterferenceDistance.setText(basicStackPlate.getLayout().getInterferenceDistance() + "");
-		numtxtOverflowPercentage.setText(basicStackPlate.getLayout().getOverflowPercentage() + "");
-		numTxtHorizontalR.setText(basicStackPlate.getLayout().getHorizontalR() + "");
-		numTxtTiltedR.setText(basicStackPlate.getLayout().getTiltedR() + "");
-		numTxtMaxOverflow.setText(basicStackPlate.getLayout().getMaxOverflow() + "");
-		numTxtMinOverlap.setText(basicStackPlate.getLayout().getMinOverlap() + "");
-		cbbUserFrames.valueProperty().set(basicStackPlate.getWorkAreas().get(0).getUserFrame().getName());
-		Coordinates smoothTo = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
-		Coordinates smoothFrom = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
-		numtxtSmoothToX.setText(smoothTo.getX() + "");
-		numtxtSmoothToY.setText(smoothTo.getY() + "");
-		numtxtSmoothToZ.setText(smoothTo.getZ() + "");
-		numtxtSmoothFromX.setText(smoothFrom.getX() + "");
-		numtxtSmoothFromY.setText(smoothFrom.getY() + "");
-		numtxtSmoothFromZ.setText(smoothFrom.getZ() + "");
+		if (basicStackPlate != null) {
+			fulltxtName.setText(basicStackPlate.getName());
+			itxtHorizontalHoleAmount.setText(basicStackPlate.getLayout().getHorizontalHoleAmount() + "");
+			itxtVerticalHoleAmount.setText(basicStackPlate.getLayout().getVerticalHoleAmount() + "");
+			numtxtHoleDiameter.setText(basicStackPlate.getLayout().getHoleDiameter() + "");
+			numtxtStudDiameter.setText(basicStackPlate.getLayout().getStudDiameter() + "");
+			numtxtHorizontalPadding.setText(basicStackPlate.getLayout().getHorizontalPadding() + "");
+			numtxtVerticalPaddingTop.setText(basicStackPlate.getLayout().getVerticalPadding() + "");
+			numtxtVerticalPaddingBottom.setText(basicStackPlate.getLayout().getVerticalPaddingBottom() + "");
+			numtxtHorizontalHoleDistance.setText(basicStackPlate.getLayout().getHorizontalHoleDistance() + "");
+			numtxtInterferenceDistance.setText(basicStackPlate.getLayout().getInterferenceDistance() + "");
+			numtxtOverflowPercentage.setText(basicStackPlate.getLayout().getOverflowPercentage() + "");
+			numTxtHorizontalR.setText(basicStackPlate.getLayout().getHorizontalR() + "");
+			numTxtTiltedR.setText(basicStackPlate.getLayout().getTiltedR() + "");
+			numTxtMaxOverflow.setText(basicStackPlate.getLayout().getMaxOverflow() + "");
+			numTxtMinOverlap.setText(basicStackPlate.getLayout().getMinOverlap() + "");
+			cbbUserFrames.valueProperty().set(basicStackPlate.getWorkAreas().get(0).getUserFrame().getName());
+			Coordinates smoothTo = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
+			Coordinates smoothFrom = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
+			numtxtSmoothToX.setText(smoothTo.getX() + "");
+			numtxtSmoothToY.setText(smoothTo.getY() + "");
+			numtxtSmoothToZ.setText(smoothTo.getZ() + "");
+			numtxtSmoothFromX.setText(smoothFrom.getX() + "");
+			numtxtSmoothFromY.setText(smoothFrom.getY() + "");
+			numtxtSmoothFromZ.setText(smoothFrom.getZ() + "");
+		}
 	}
 
 }

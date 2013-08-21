@@ -2,6 +2,7 @@ package eu.robojob.millassist.external.device.stacking.conveyor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
@@ -30,6 +31,8 @@ public class ConveyorLayout {
 	private List<StackingPosition> stackingPositionsRawWorkPieces;
 	private List<StackingPosition> stackingPositionsFinishedWorkPieces;
 	
+	private List<Boolean> finishedStackingPositionWorkPieces;
+	
 	public ConveyorLayout(final int rawTrackAmount, final float rawTrackWidth, final float spaceBetweenTracks, 
 			final float supportWidth, final float finishedConveyorWidth, final float interferenceDistance, 
 			final float maxWorkPieceLength, final float rawConveyorLength, final float finishedConveyorLength, 
@@ -53,16 +56,24 @@ public class ConveyorLayout {
 		Arrays.fill(requestedSupportStatus, Boolean.FALSE);
 		this.stackingPositionsRawWorkPieces = new ArrayList<StackingPosition>();
 		this.stackingPositionsFinishedWorkPieces = new ArrayList<StackingPosition>();
+		this.finishedStackingPositionWorkPieces = new ArrayList<Boolean>();
 	}
 	
 	public void setParent(final Conveyor parent) {
 		this.parent = parent;
 	}
 
+	public Conveyor getParent() {
+		return this.parent;
+	}
+	
 	public int getRawTrackAmount() {
 		return rawTrackAmount;
 	}
 
+	public List<Boolean> getFinishedStackingPositionWorkPieces() {
+		return finishedStackingPositionWorkPieces;
+	}
 
 	public void setRawTrackAmount(final int rawTrackAmount) {
 		this.rawTrackAmount = rawTrackAmount;
@@ -78,7 +89,21 @@ public class ConveyorLayout {
 		this.rawTrackWidth = rawTrackWidth;
 	}
 
+	public void setFinishedStackingPositionWorkPiece(final int index, final boolean value) {
+		finishedStackingPositionWorkPieces.set(index, value);
+		parent.notifyLayoutChanged();
+	}
 
+	public void setFinishedStackingPositionsNoWorkPiece() {
+		Collections.fill(finishedStackingPositionWorkPieces, false);
+		parent.notifyLayoutChanged();
+	}
+	
+	public void shiftFinishedWorkPieces() {
+		Collections.fill(finishedStackingPositionWorkPieces, false);
+		parent.notifyFinishedShifted();
+	}
+	
 	public float getSpaceBetweenTracks() {
 		return spaceBetweenTracks;
 	}
@@ -264,6 +289,7 @@ public class ConveyorLayout {
 	public void configureFinishedWorkPieceStackingPositions() throws IncorrectWorkPieceDataException {
 		WorkPiece workPiece = parent.getFinishedWorkPiece();
 		this.stackingPositionsFinishedWorkPieces.clear();
+		this.finishedStackingPositionWorkPieces.clear();
 		// calculate the amount of workpieces that can fit in one row
 		float rowHeight = getWidthFinishedWorkPieceConveyorWithOverlap();
 		boolean finished = false;
@@ -298,6 +324,7 @@ public class ConveyorLayout {
 				StackingPosition stPos = new StackingPosition(x, y, 0, workPiece);
 				stackingPositionsFinishedWorkPieces.add(stPos);
 			}
+			finishedStackingPositionWorkPieces.add(false);
 		}
 		if (amountOneRow <= 0) {
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.TOO_LARGE);

@@ -1,4 +1,4 @@
-package eu.robojob.millassist.ui.automate.device.stacking;
+package eu.robojob.millassist.ui.automate.device.stacking.stackplate;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

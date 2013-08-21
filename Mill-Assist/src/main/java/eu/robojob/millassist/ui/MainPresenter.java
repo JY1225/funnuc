@@ -2,6 +2,7 @@ package eu.robojob.millassist.ui;
 
 import javafx.application.Platform;
 import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
@@ -186,7 +187,9 @@ public class MainPresenter implements ProcessFlowListener {
 			teachPresenter.loadProcessFlow(e.getSource());
 			automatePresenter.loadProcessFlow(e.getSource());
  		} else {
- 			refreshStatus();
+ 			if (e.getSource().getMode() == Mode.CONFIG) {
+ 				refreshStatus();
+ 			}
  		}
 	}
 

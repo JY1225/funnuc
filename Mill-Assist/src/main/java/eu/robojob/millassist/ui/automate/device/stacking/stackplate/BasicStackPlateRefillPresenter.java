@@ -1,4 +1,4 @@
-package eu.robojob.millassist.ui.automate.device.stacking;
+package eu.robojob.millassist.ui.automate.device.stacking.stackplate;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;

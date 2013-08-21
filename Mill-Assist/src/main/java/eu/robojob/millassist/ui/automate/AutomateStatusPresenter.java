@@ -2,6 +2,7 @@ package eu.robojob.millassist.ui.automate;
 
 import javafx.application.Platform;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
+import eu.robojob.millassist.process.ProcessFlow.Type;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
@@ -78,6 +79,7 @@ public class AutomateStatusPresenter implements ProcessFlowListener {
 	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) {
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
+				view.setTotalAmount(e.getTotalAmount());
 				view.setFinishedAmount(e.getFinishedAmount());
 			}
 		});
@@ -96,6 +98,11 @@ public class AutomateStatusPresenter implements ProcessFlowListener {
 			@Override public void run() {
 				if (e.getMode() == Mode.PAUSED) {
 					view.activateContinueButton();
+				}
+				if ((e.getMode() == Mode.AUTO) && (e.getSource().getType() == Type.CONTINUOUS)) {
+					view.enableContinuousAnimation(true);
+				} else {
+					view.enableContinuousAnimation(false);
 				}
 			}
 		});

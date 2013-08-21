@@ -1,5 +1,8 @@
 package eu.robojob.millassist.ui.automate;
 
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
+import javafx.animation.Transition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -17,6 +20,7 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Translate;
+import javafx.util.Duration;
 import eu.robojob.millassist.ui.general.status.StatusView;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
@@ -55,13 +59,20 @@ public class AutomateStatusView extends HBox {
 	private Label lblTotalAmount;
 	private Circle circleBack;
 	private Circle circleFront;
+	private Circle circleBackContinuous;
 	private StackPane spAmountContents;
+	
+	private boolean continuousEnabled;
+	
+	private RotateTransition rtContinuous;
 	
 	private static final String CSS_CLASS_AUTOMATE_BOTTOM = "content-bottom";
 	protected static final String CSS_CLASS_AUTOMATE_BUTTON_TEXT = "automate-btn-text";
 	protected static final String CSS_CLASS_AUTOMATE_BUTTON = "form-button";
 	private static final String CSS_CLASS_CIRCLE_BACK = "circle-back";
+	private static final String CSS_CLASS_CIRCLE_BACK_CONTINUOUS = "circle-back-continuous";
 	private static final String CSS_CLASS_CIRCLE_FRONT = "circle-front";
+	private static final String CSS_CLASS_CIRCLE_FRONT_DARK = "circle-front-dark";
 	private static final String CSS_CLASS_PROGRESS = "progress";
 	private static final String CSS_CLASS_TOTAL_AMOUNT = "total-amount";
 	private static final String CSS_CLASS_FINISHED_AMOUNT = "finished-amount";
@@ -118,6 +129,15 @@ public class AutomateStatusView extends HBox {
 		circleBack.setCenterY(PROGRESS_RADIUS);
 		circleBack.setRadius(PROGRESS_RADIUS);
 		circleBack.getStyleClass().add(CSS_CLASS_CIRCLE_BACK);
+		circleBackContinuous = new Circle();
+		circleBackContinuous.setCenterX(PROGRESS_RADIUS);
+		circleBackContinuous.setCenterY(PROGRESS_RADIUS);
+		circleBackContinuous.setRadius(PROGRESS_RADIUS);
+		circleBackContinuous.getStyleClass().add(CSS_CLASS_CIRCLE_BACK_CONTINUOUS);
+		rtContinuous = new RotateTransition(Duration.millis(2000), circleBackContinuous);
+		rtContinuous.setByAngle(360);
+		rtContinuous.setInterpolator(Interpolator.LINEAR);
+		rtContinuous.setCycleCount(Transition.INDEFINITE);
 		circleFront = new Circle();
 		circleFront.setCenterX(PROGRESS_RADIUS);
 		circleFront.setCenterY(PROGRESS_RADIUS);
@@ -127,6 +147,7 @@ public class AutomateStatusView extends HBox {
 		piePiecePath.getStyleClass().add(CSS_CLASS_PROGRESS);
 		piePiecePane = new Pane();
 		piePiecePane.getChildren().add(circleBack);
+		piePiecePane.getChildren().add(circleBackContinuous);
 		piePiecePane.getChildren().add(piePiecePath);
 		piePiecePane.getChildren().add(circleFront);
 		piePiecePane.setPrefSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
@@ -201,6 +222,7 @@ public class AutomateStatusView extends HBox {
 		bottomRight.getChildren().add(vboxBottomRight);
 		
 		setPercentage(0);
+		enableContinuousAnimation(false);
 	}
 	
 	public void activateStartButton() {
@@ -219,8 +241,33 @@ public class AutomateStatusView extends HBox {
 	}
 	
 	public void setTotalAmount(final int amount) {
-		totalAmount = amount;
-		lblTotalAmount.setText("/" + amount);
+		if (amount == -1) {
+			totalAmount = -1;
+			lblTotalAmount.setText("");
+			setPercentage(0);
+		} else {
+			totalAmount = amount;
+			lblTotalAmount.setText("/" + amount);
+			if ((totalAmount >= 0) && (finishedAmount >= 0)) {
+				setPercentage((int) Math.floor(((double) finishedAmount / (double) totalAmount) * 100));
+			}
+		}
+		enableContinuousAnimation(continuousEnabled);
+	}
+	
+	public synchronized void enableContinuousAnimation(final boolean enable) {
+		this.continuousEnabled = enable;
+		circleFront.getStyleClass().remove(CSS_CLASS_CIRCLE_FRONT_DARK);
+		if (enable && totalAmount == -1) {
+			piePiecePath.setVisible(false);
+			circleBackContinuous.setVisible(true);
+			circleFront.getStyleClass().add(CSS_CLASS_CIRCLE_FRONT_DARK);
+			rtContinuous.play();
+		} else {
+			piePiecePath.setVisible(true);
+			circleBackContinuous.setVisible(false);
+			rtContinuous.pause();
+		}
 	}
 	
 	public void setFinishedAmount(final int amount) {
@@ -228,6 +275,8 @@ public class AutomateStatusView extends HBox {
 		lblFinishedAmount.setText("" + amount);
 		if ((totalAmount >= 0) && (finishedAmount >= 0)) {
 			setPercentage((int) Math.floor(((double) finishedAmount / (double) totalAmount) * 100));
+		} else {
+			setPercentage(0);
 		}
 	}
 	

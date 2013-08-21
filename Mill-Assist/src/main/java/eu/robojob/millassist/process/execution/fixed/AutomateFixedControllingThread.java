@@ -7,14 +7,14 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
-import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
+import eu.robojob.millassist.process.ProcessFlow.Type;
 import eu.robojob.millassist.process.ProcessingStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
@@ -64,8 +64,7 @@ public class AutomateFixedControllingThread extends Thread {
 		PickStep pickFromMachine = null;
 		PutStep putToMachine = null;
 		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
-			if ((step instanceof PickStep) && ((((PickStep) step).getDevice() instanceof BasicStackPlate) || 
-					(((PickStep) step).getDevice() instanceof Conveyor))) {
+			if ((step instanceof PickStep) && (((PickStep) step).getDevice() instanceof AbstractStackingDevice)) {
 				pickFromStacker = (PickStep) step;
 			}  else if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
 				pickFromMachine = (PickStep) step;
@@ -128,6 +127,7 @@ public class AutomateFixedControllingThread extends Thread {
 			processFlowExecutor1 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_0_ID);
 			if (processFlow.getCurrentIndex(WORKPIECE_0_ID) > 0) {
 				// process has already passed some steps, check if current step is processing in machine
+				// than second process can start!
 				AbstractProcessStep step = processFlow.getStep(processFlow.getCurrentIndex(WORKPIECE_0_ID));
 				if (step instanceof ProcessingStep) {
 					if (((ProcessingStep) step).getDevice() instanceof AbstractCNCMachine) {
@@ -142,6 +142,7 @@ public class AutomateFixedControllingThread extends Thread {
 				}
 			}
 			ThreadManager.submit(processFlowExecutor1);
+			// wait until processing has finished
 			synchronized(finishedSyncObject) {
 				finishedSyncObject.wait();
 			}
@@ -166,9 +167,7 @@ public class AutomateFixedControllingThread extends Thread {
 			if (running) {
 				stopRunning();
 				notifyException(e);
-			} /*else {
-				stopRunning();
-			}*/
+			}
 		} catch (AbstractCommunicationException e) {
 			stopRunning();
 			notifyException(e);
@@ -284,7 +283,10 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	//TODO: also review for flows with 2 - 1 pieces?
 	public synchronized void notifyProcessFlowFinished(final ProcessFlowExecutionThread processFlowExecutor) {
-		if (processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) {
+		if (processFlow.getType() == Type.CONTINUOUS) {
+			// no action needed regarding last work piece
+			this.lastPiece = false;
+		} else if (processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) {
 			if (isConcurrentExecutionPossible) {
 				this.lastPiece = true;
 				processFlowExecutor.stopRunning();
@@ -296,8 +298,7 @@ public class AutomateFixedControllingThread extends Thread {
 				this.lastPiece = true;
 				logger.info("LAST PIECE!");
 			}
-		} 
-		if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
+		} else if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
 			processFlowExecutor.stopRunning();
 			finished = true;
 			synchronized(finishedSyncObject) {

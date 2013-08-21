@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.Transition;
@@ -39,16 +40,22 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 	private List<Rectangle> workPieceWindows;
 
 	private TranslateTransition tt;
+	private TranslateTransition ttShift;
+	private FadeTransition ftShift;
+	
+	private Group gpWorkPieces;
+	
 	private List<Rectangle> workPieces;
 	private Group conveyorGroup;
 	private Pane p;
-	
+		
 	private static final String CSS_CLASS_STATUS_ICON = "status-icon";
 	private static final String CSS_CLASS_STATUS_ICON_DISABLED = "status-icon-disabled";
 	private static final String CSS_CLASS_STATUS_AREA = "status-area";
 	private static final String CSS_CLASS_TRACK = "track";	
 	private static final String CSS_CLASS_CONVEYOR_BACKGROUND = "conveyor-background";
 	private static final String CSS_CLASS_WORKPIECE_AREA = "workPiece-area";
+	private static final String CSS_CLASS_WORKPIECE  = "workpiece-c-finished";
 	
 	private static final String ICON_MANUAL_MODE = "M 10 0 C 4.4771526 0 0 4.477153 0 10 C 0 15.522847 4.4771526 20 10 20 C 15.522847 20 20 15.522847 20 10 C 20 4.477153 15.522847 0 10 0 z M 10 2.5 C 14.142136 2.5 17.5 5.857864 17.5 10 C 17.5 14.142136 14.142136 17.5 10 17.5 C 5.8578645 17.5 2.5 14.142136 2.5 10 C 2.5 5.857864 5.8578645 2.5 10 2.5 z M 5.84375 5.6875 L 5.84375 14.3125 L 7.53125 14.3125 L 7.53125 7.09375 L 9.125 14.3125 L 10.90625 14.3125 L 12.5 7.09375 L 12.5 14.3125 L 14.1875 14.3125 L 14.1875 5.6875 L 11.5625 5.6875 L 10.0625 12.4375 L 8.46875 5.6875 L 5.84375 5.6875 z";
 	private static final String ICON_LOCK = "M 9.78125 0 C 6.80264 0 4.40625 2.52069 4.40625 5.5 L 4.40625 7.90625 C 4.05894 8.00555 3.75 8.09375 3.75 8.09375 C 3.6724 8.11965 2.8125 8.37272 2.8125 8.90625 L 2.8125 19.3125 C 2.8125 19.75537 3.21949 20 3.75 20 L 16.25 20 C 16.77957 20 17.1875 19.75537 17.1875 19.3125 L 17.1875 8.90625 C 17.1875 8.46409 16.76162 8.2935 16.25 8.09375 C 16.25 8.09375 16.0203 8.01791 15.59375 7.90625 L 15.59375 5.5 C 15.59375 2.52069 13.19713 0 10.21875 0 L 9.78125 0 z M 10 1.96875 C 11.9218 1.96875 13.1875 3.54696 13.1875 5.46875 L 13.1875 7.46875 C 12.3125 7.36783 11.26263 7.3125 10 7.3125 C 8.7383 7.3125 7.61245 7.36787 6.8125 7.46875 L 6.8125 5.46875 C 6.8125 3.54765 8.07936 1.96875 10 1.96875 z M 10 10.28125 C 10.96404 10.28125 11.75 11.06721 11.75 12.03125 C 11.75 12.54871 11.51357 13.08716 11.15625 13.40625 L 11.75 16.90625 C 11.75 16.90625 11.23442 17.3125 10 17.3125 C 8.7665 17.3125 8.25 16.90625 8.25 16.90625 L 8.84375 13.40625 C 8.48503 13.08762 8.25 12.54941 8.25 12.03125 C 8.25 11.06698 9.03688 10.28125 10 10.28125 z";
@@ -62,6 +69,7 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 		this.conveyorGroup = new Group();
 		this.workPieces = new ArrayList<Rectangle>();
 		this.workPieceWindows = new ArrayList<Rectangle>();
+		this.gpWorkPieces = new Group();
 		this.p = new Pane();
 		p.getChildren().add(conveyorGroup);
 		getContents().add(p, 1, 0);
@@ -196,7 +204,11 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 	@Override
 	public void refresh() {
 		conveyorGroup.getChildren().removeAll(workPieceWindows);
+		conveyorGroup.getChildren().removeAll(workPieces);
+		conveyorGroup.getChildren().remove(gpWorkPieces);
 		workPieceWindows.clear();
+		workPieces.clear();
+		gpWorkPieces.getChildren().clear();
 		double scale = conveyorGroup.getScaleX();
 		double translateX = conveyorGroup.getTranslateX();
 		double translateY = conveyorGroup.getTranslateY();
@@ -204,7 +216,30 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 		conveyorGroup.setTranslateX(-translateX);
 		conveyorGroup.setScaleY(1);
 		conveyorGroup.setScaleX(1);
+		conveyorGroup.getChildren().add(gpWorkPieces);
+		
+		if (ttShift != null) {
+			ttShift.stop();
+		}
+		if (ftShift != null) {
+			ftShift.stop();
+		}
+		
+		gpWorkPieces.setTranslateX(0.0);
+		gpWorkPieces.setOpacity(1.0);
+		
 		for (StackingPosition stPos : conveyorLayout.getStackingPositionsFinishedWorkPieces()) {
+			
+			Rectangle wp = new Rectangle();
+			gpWorkPieces.getChildren().add(wp);
+			wp.setLayoutX(stPos.getPosition().getX() - stPos.getWorkPiece().getDimensions().getLength()/2);
+			wp.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2));
+			wp.setWidth(stPos.getWorkPiece().getDimensions().getLength());
+			wp.setHeight(stPos.getWorkPiece().getDimensions().getWidth());
+			wp.getStyleClass().add(CSS_CLASS_WORKPIECE);
+			wp.setVisible(false);
+			this.workPieces.add(wp);			
+			
 			Rectangle ra = new Rectangle();
 			conveyorGroup.getChildren().add(ra);
 			ra.setX(stPos.getPosition().getX() - stPos.getWorkPiece().getDimensions().getLength()/2);
@@ -213,14 +248,32 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 			ra.setHeight(stPos.getWorkPiece().getDimensions().getWidth());
 			ra.getStyleClass().add(CSS_CLASS_WORKPIECE_AREA);
 			this.workPieceWindows.add(ra);
+			
 		}
+		
+		for (int i = 0; i < workPieces.size(); i++) {
+			boolean present = conveyorLayout.getFinishedStackingPositionWorkPieces().get(i);
+			if (present) {
+				workPieces.get(i).setVisible(true);
+			} else {
+				workPieces.get(i).setVisible(false);
+			}
+		}
+		
 		conveyorGroup.setScaleX(scale);
 		conveyorGroup.setScaleY(scale);
 		conveyorGroup.setTranslateX(translateX);
 		conveyorGroup.setTranslateY(translateY);
 		setConnected(getPresenter().getConveyor().isConnected());
+		setModeManual(!getPresenter().getConveyor().isModeAuto());
+		setMoving(getPresenter().getConveyor().isMovingRaw());
+		setLocked(getPresenter().getConveyor().isInterlockRaw());
 	}
 	
+	public List<Rectangle> getWorkPieces() {
+		return workPieces;
+	}
+
 	public void setConnected(final boolean connected) {
 		if (connected) {
 			hboxStatus.setDisable(false);
@@ -248,6 +301,20 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 			tt.pause();
 			iconRotating.getStyleClass().add(CSS_CLASS_STATUS_ICON_DISABLED);
 		}
+	}
+	
+	public void shiftFinishedWorkPieces(final float distance) {
+		ttShift = new TranslateTransition(Duration.millis((distance /getPresenter().getConveyor().getNomSpeedFinishedConveyor()) * 60 * 1000), gpWorkPieces);
+		ttShift.setInterpolator(Interpolator.LINEAR);
+		ttShift.setFromX(0);
+		ttShift.setByX(distance);
+		ttShift.setCycleCount(1);
+		ftShift = new FadeTransition(Duration.millis((distance /getPresenter().getConveyor().getNomSpeedFinishedConveyor()) * 60 * 1000), gpWorkPieces);
+		ftShift.setFromValue(1.0);
+		ftShift.setToValue(0.0);
+		ftShift.setCycleCount(1);
+		ttShift.play();
+		ftShift.play();
 	}
 	
 	public void setModeManual(final boolean modeManual) {

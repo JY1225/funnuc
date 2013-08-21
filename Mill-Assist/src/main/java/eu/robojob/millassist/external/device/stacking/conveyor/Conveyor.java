@@ -122,6 +122,15 @@ public class Conveyor extends AbstractStackingDevice {
 		}
 	}
 	
+	public boolean isRawConveyorEmpty() {
+		for (ConveyorAlarm alarm : getAlarms()) {
+			if (alarm.getId() == ConveyorAlarm.ALR_RAW_CONV_EMPTY) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void allSupportsDown() {
 		Boolean[] allDown = new Boolean[3];
 		Arrays.fill(allDown, false);
@@ -221,17 +230,21 @@ public class Conveyor extends AbstractStackingDevice {
 	}
 	
 	public void writeRawWorkPieceLength() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
-		int workPieceLength = (int) Math.round(rawWorkPiece.getDimensions().getLength() * 100);
+		int workPieceLength = (int) Math.round(rawWorkPiece.getDimensions().getLength());
 		workPieceLength +=  workPieceShift;
 		int[] length = {workPieceLength};
 		socketCommunication.writeRegisters(ConveyorConstants.LENGTH_WP_RAW, length);
 	}
 	
 	public void writeFinishedWorkPieceLength() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
-		int workPieceLength = (int) Math.round(finishedWorkPiece.getDimensions().getLength() * 100);
+		int workPieceLength = (int) Math.round(finishedWorkPiece.getDimensions().getLength());
 		workPieceLength +=  workPieceShift;
 		int[] length = {workPieceLength};
 		socketCommunication.writeRegisters(ConveyorConstants.LENGTH_WP_FINISHED_SHIFT, length);
+	}
+	
+	public float getWorkPieceShift() {
+		return workPieceShift;
 	}
 
 	@Override
@@ -346,20 +359,20 @@ public class Conveyor extends AbstractStackingDevice {
 		socketCommunication.writeRegisters(ConveyorConstants.COMMAND_REG, commandReg);
 		// if last piece: do shift
 		if (lastFinishedWorkPieceIndex == layout.getStackingPositionsFinishedWorkPieces().size() - 1) {
+			waitForStatusNot(ConveyorConstants.CONV_FINISHED_INTERLOCK);
 			// just to be sure, write the finished work piece shift length
-			writeFinishedWorkPieceLength();
+			//writeFinishedWorkPieceLength();
 			int command2 = 0;
 			command2 = command2 | ConveyorConstants.SHIFT_FINISHED_WP;
 			int[] commandReg2 = {command2};
+			logger.info("$$$Writing shift command: " + command2);
 			socketCommunication.writeRegisters(ConveyorConstants.COMMAND_REG, commandReg2);
 			//FIXME for now we don't wait for a confirmation!
 			lastFinishedWorkPieceIndex = 0;
+			layout.shiftFinishedWorkPieces();
 		} else {
 			lastFinishedWorkPieceIndex++;
 		}		
-		for (ConveyorListener listener : listeners) {
-			listener.layoutChanged();
-		}
 	}
 
 	@Override
@@ -381,7 +394,10 @@ public class Conveyor extends AbstractStackingDevice {
 	}
 
 	@Override public void releasePiece(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
-	@Override public void grabPiece(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
+	@Override public void grabPiece(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { 
+		layout.setFinishedStackingPositionWorkPiece(lastFinishedWorkPieceIndex, true);
+		notifyLayoutChanged();
+	}
 
 	@Override
 	public void loadDeviceSettings(final DeviceSettings deviceSettings) {
@@ -565,12 +581,20 @@ public class Conveyor extends AbstractStackingDevice {
 		}
 	}
 	
+	public void notifyFinishedShifted() {
+		for (ConveyorListener listener : listeners) {
+			listener.finishedShifted(finishedWorkPiece.getDimensions().getLength() + workPieceShift);
+		}
+	}
+	
 	public void addListener(final ConveyorListener listener) {
 		listeners.add(listener);
+		logger.debug("Now listening to [" + toString() + "]: " + listener.toString());
 	}
 	
 	public void removeListener(final ConveyorListener listener) {
 		listeners.remove(listener);
+		logger.debug("Stopped listening to [" + toString() + "]: " + listener.toString());
 	}
 	
 	public void clearListeners() {
@@ -595,6 +619,14 @@ public class Conveyor extends AbstractStackingDevice {
 	
 	public void setConveyorTimeout(final ConveyorAlarm conveyorTimeout) {
 		this.conveyorTimeout = conveyorTimeout;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(final int amount) {
+		this.amount = amount;
 	}
 
 	public void processConveyorEvent(final ConveyorEvent event) {
@@ -629,6 +661,11 @@ public class Conveyor extends AbstractStackingDevice {
 			default:
 				throw new IllegalArgumentException("Unknown event type: " + event.getId());
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return "Conveyor: " + getName();
 	}
 	
 	/**

@@ -1,4 +1,4 @@
-package eu.robojob.millassist.ui.automate.device.stacking;
+package eu.robojob.millassist.ui.automate.device.stacking.stackplate;
 
 import eu.robojob.millassist.ui.automate.AbstractMenuPresenter;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;

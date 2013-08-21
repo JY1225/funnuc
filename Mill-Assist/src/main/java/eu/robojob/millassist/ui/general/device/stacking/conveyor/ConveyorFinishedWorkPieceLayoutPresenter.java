@@ -31,7 +31,12 @@ public class ConveyorFinishedWorkPieceLayoutPresenter<T extends AbstractMenuPres
 
 	@Override
 	public void layoutChanged() {
-		getView().refresh();
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				getView().refresh();
+			}
+		});
 	}
 
 	@Override
@@ -61,6 +66,7 @@ public class ConveyorFinishedWorkPieceLayoutPresenter<T extends AbstractMenuPres
 	public void conveyorStatusChanged(final ConveyorEvent event) {
 		Platform.runLater(new Thread() {
 			@Override public void run() {
+				getView().setLocked(getConveyor().isInterlockFinished());
 				getView().setModeManual(!getConveyor().isModeAuto());
 				getView().setMoving(getConveyor().isMovingFinished());
 			}
@@ -69,5 +75,10 @@ public class ConveyorFinishedWorkPieceLayoutPresenter<T extends AbstractMenuPres
 
 	@Override public void conveyorAlarmsOccured(final ConveyorAlarmsOccuredEvent event) { }
 	@Override public void sensorValuesChanged(final ConveyorSensorValuesChangedEvent event) { }
+
+	@Override
+	public void finishedShifted(final float distance) {
+		getView().shiftFinishedWorkPieces(distance);
+	}
 
 }

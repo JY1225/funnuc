@@ -71,8 +71,7 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 
 	@Override
 	public void unregisterListeners() {
-		// TODO Auto-generated method stub
-		
+		workPieceLayoutPresenter.unregister();
 	}
 
 }

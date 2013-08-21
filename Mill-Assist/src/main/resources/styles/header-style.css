@@ -81,7 +81,7 @@
 }
 
 .alarms-present:pressed,  .alarms-present.selected {
- 	-fx-background-color: #b63031, #b63031, #b63031, #b63031, linear-gradient(#b63031 0%, #b63031 50%, #b63031 50%, #b63031 100%);
+ 	-fx-background-color: #8b2525, #8b2525, #8b2525, #8b2525, #8b2525;
  }
 
 .header-button:disabled {

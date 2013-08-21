@@ -344,4 +344,6 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 			robot.removeListener(this);
 		}
 	}
+	
+	@Override public void finishedShifted(final float distance) { }
 }

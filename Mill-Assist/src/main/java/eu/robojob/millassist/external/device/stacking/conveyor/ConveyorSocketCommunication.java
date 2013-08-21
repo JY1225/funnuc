@@ -140,13 +140,11 @@ public class ConveyorSocketCommunication extends ExternalSocketCommunication {
 	
 	@Override
 	public void connected() {
-		logger.info("Connected!!");
 		conveyor.processConveyorEvent(new ConveyorEvent(conveyor, ConveyorEvent.CONVEYOR_CONNECTED));
 	}
 	
 	@Override
 	public void disconnected() {
-		logger.info("Disconnected!!");
 		conveyor.processConveyorEvent(new ConveyorEvent(conveyor, ConveyorEvent.CONVEYOR_DISCONNECTED));
 	}
 	

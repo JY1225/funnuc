@@ -126,8 +126,10 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		try {
 			abort();
 		} catch (AbstractCommunicationException | InterruptedException e) {
-			e.printStackTrace();
-			logger.error("Could not abort current action of [" + getName() + "] because of " + e.getMessage());
+			if (isConnected()) {
+				e.printStackTrace();
+				logger.error("Could not abort current action of [" + getName() + "] because of " + e.getMessage());
+			}
 		}
 		synchronized (syncObject) {
 			syncObject.notifyAll();

@@ -12,10 +12,18 @@
 	-fx-background-insets: 0;
 }
 
+.circle-back-continuous {
+	-fx-fill: radial-gradient(focus-angle 90deg , focus-distance 100%, center 100% 50% , radius 20% , #0cd211, rgba(88, 91, 100, 0));
+}
+
 .circle-front {
 	-fx-fill: #60636c;
 	-fx-fill: rgba(88, 91, 100, 0.92);
 	-fx-background-insets: 0;
+}
+
+.circle-front-dark {
+	-fx-fill: rgba(88, 91, 100, 1);
 }
 
 .progress {

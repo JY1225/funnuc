@@ -174,6 +174,13 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		
 	}
 	
+	public void hideButtons() {
+		btnAllSupportsDown.setVisible(false);
+		btnConfigureSupports.setVisible(false);
+		btnAllSupportsDown.setManaged(false);
+		btnConfigureSupports.setManaged(false);
+	}
+	
 	private void createConveyorUsingShapes() {
 		tTransitions.clear();
 		workPieceWindows.clear();
@@ -459,7 +466,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 				texts.get(i).setText("--");
 			}
 			if ((i == 0)  || (conveyorLayout.getRequestedSupportStatus()[i-1])) {
-				double dest = 70 + ((float) sensorValues.get(i))/100; 
+				double dest = ((float) sensorValues.get(i))/100 + 70; 
 				workPieces.get(wpIndex).setLayoutX(dest);
 				if (sensorValues.get(i) > 0) {
 					found = true;
