@@ -28,6 +28,14 @@ public class TeachStatusPresenter {
 		parent.stopTeaching();
 	}
 	
+	public void saveProcess() {
+		parent.saveProcess();
+	}
+	
+	public void showSaveButton(final boolean show) {
+		view.showSaveButton(show);
+	}
+	
 	public StatusPresenter getStatusPresenter() {
 		return statusPresenter;
 	}

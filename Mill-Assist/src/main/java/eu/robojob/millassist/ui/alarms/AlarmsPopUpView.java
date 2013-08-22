@@ -68,16 +68,16 @@ public class AlarmsPopUpView extends PopUpView<AlarmsPopUpPresenter> {
 		this.setAlignment(Pos.CENTER_LEFT);
 		
 		hboxNoAlarms = new HBox();
-		hboxNoAlarms.setPrefHeight(55);
+		hboxNoAlarms.setMinHeight(MSG_MIN_HEIGHT + 15);
+		hboxNoAlarms.setPadding(new Insets(5, 10, 5, 15));
+		hboxNoAlarms.setAlignment(Pos.CENTER_LEFT);
 		noAlarmsIconPath = new SVGPath();
 		noAlarmsIconPath.setContent(NO_ALARMS_ICON);
 		noAlarmsIconPath.getStyleClass().add(CSS_CLASS_OK_ICON);
 		noAlarmsLabel = new Label(Translator.getTranslation(NO_ALARMS));
 		noAlarmsLabel.getStyleClass().add(CSS_CLASS_ALARM_MSG);
 		hboxNoAlarms.getChildren().addAll(noAlarmsIconPath, noAlarmsLabel);
-		hboxNoAlarms.setPadding(new Insets(15, 15, 15, 15));
-		hboxNoAlarms.setSpacing(15);
-	
+		HBox.setMargin(noAlarmsIconPath, new Insets(0, ICON_PADDING, 0, 0));
 		this.resetButtons = new HashMap<AbstractDevice, Button>();
 		
 		this.vboxChildren = new VBox();
@@ -108,7 +108,11 @@ public class AlarmsPopUpView extends PopUpView<AlarmsPopUpPresenter> {
 			hboxNoAlarms.setManaged(true);
 			vboxAlarmMsgs.setVisible(false);
 			vboxAlarmMsgs.setManaged(false);
+			spAlarmMsgs.setVisible(false);
+			spAlarmMsgs.setManaged(false);
 		} else {
+			spAlarmMsgs.setVisible(true);
+			spAlarmMsgs.setManaged(true);
 			for (String alarmMsg : sortedMessages) {
 				vboxAlarmMsgs.getChildren().add(getAlarmHBox(alarmMsg));
 			}
@@ -116,13 +120,13 @@ public class AlarmsPopUpView extends PopUpView<AlarmsPopUpPresenter> {
 			hboxNoAlarms.setManaged(false);
 			vboxAlarmMsgs.setVisible(true);
 			vboxAlarmMsgs.setManaged(true);
-		}
-		if (alarmMessages.size() * MSG_MIN_HEIGHT + 20 > MAX_HEIGHT) {
-			spAlarmMsgs.setPrefHeight(MAX_HEIGHT);
-			spAlarmMsgs.setMinHeight(MAX_HEIGHT);
-		} else {
-			spAlarmMsgs.setPrefHeight(alarmMessages.size() * MSG_MIN_HEIGHT + 20);
-			spAlarmMsgs.setMinHeight(alarmMessages.size() * MSG_MIN_HEIGHT + 20);
+			if (alarmMessages.size() * MSG_MIN_HEIGHT + 20 > MAX_HEIGHT) {
+				spAlarmMsgs.setPrefHeight(MAX_HEIGHT);
+				spAlarmMsgs.setMinHeight(MAX_HEIGHT);
+			} else {
+				spAlarmMsgs.setPrefHeight(alarmMessages.size() * MSG_MIN_HEIGHT + 15);
+				spAlarmMsgs.setMinHeight(alarmMessages.size() * MSG_MIN_HEIGHT + 15);
+			}
 		}
 	}
 	

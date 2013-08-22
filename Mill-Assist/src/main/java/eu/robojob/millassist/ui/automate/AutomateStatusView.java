@@ -69,6 +69,7 @@ public class AutomateStatusView extends HBox {
 	private static final String CSS_CLASS_AUTOMATE_BOTTOM = "content-bottom";
 	protected static final String CSS_CLASS_AUTOMATE_BUTTON_TEXT = "automate-btn-text";
 	protected static final String CSS_CLASS_AUTOMATE_BUTTON = "form-button";
+	protected static final String CSS_CLASS_ABORT_BUTTON = "abort-btn";
 	private static final String CSS_CLASS_CIRCLE_BACK = "circle-back";
 	private static final String CSS_CLASS_CIRCLE_BACK_CONTINUOUS = "circle-back-continuous";
 	private static final String CSS_CLASS_CIRCLE_FRONT = "circle-front";
@@ -181,7 +182,7 @@ public class AutomateStatusView extends HBox {
 		Text txtCancel = new Text(Translator.getTranslation(STOP));
 		txtCancel.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON_TEXT);
 		btnCancel.setGraphic(txtCancel);
-		btnCancel.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON);
+		btnCancel.getStyleClass().addAll(CSS_CLASS_AUTOMATE_BUTTON, CSS_CLASS_ABORT_BUTTON);
 		btnCancel.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
 		btnCancel.setOnAction(new EventHandler<ActionEvent>() {
 			@Override

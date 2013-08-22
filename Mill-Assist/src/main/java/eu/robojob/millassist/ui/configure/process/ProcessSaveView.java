@@ -104,11 +104,11 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 		
 		row++;
 		column = 0;
-		getContents().add(btnSaveAsNew, column++, row);
-		GridPane.setHalignment(btnSaveAsNew, HPos.CENTER);
-		row++; column = 0;
 		getContents().add(btnOverwrite, column++, row);
 		GridPane.setHalignment(btnOverwrite, HPos.CENTER);
+		row++; column = 0;
+		getContents().add(btnSaveAsNew, column++, row);
+		GridPane.setHalignment(btnSaveAsNew, HPos.CENTER);
 		row++; column = 0;
 		getContents().add(btnDelete, column++, row);
 		GridPane.setHalignment(btnDelete, HPos.CENTER);

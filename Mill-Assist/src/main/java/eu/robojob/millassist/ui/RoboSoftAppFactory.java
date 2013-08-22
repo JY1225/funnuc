@@ -172,7 +172,7 @@ public class RoboSoftAppFactory {
 		if (teachPresenter == null) {
 			MainContentView view = new MainContentView();
 			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
-			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, getGeneralInfoPresenter(), getTeachStatusPresenter());
+			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, getGeneralInfoPresenter(), getTeachStatusPresenter(), processFlowManager);
 		}
 		return teachPresenter;
 	}
