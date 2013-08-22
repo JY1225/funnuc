@@ -13,6 +13,7 @@ import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessFlow.Type;
 import eu.robojob.millassist.process.PutAndWaitStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.RobotStep;
@@ -30,6 +31,8 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 	private Object syncObject2;
 	
 	private static Logger logger = LogManager.getLogger(ProcessFlowExecutionThread.class.getName());
+	
+	private static final int POLLING_INTERVAL = 500;
 	
 	public ProcessFlowExecutionThread(final AutomateFixedControllingThread controllingThread,
 			final ProcessFlow processFlow, final int workpieceId) {
@@ -86,9 +89,9 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 						executePickFromStackerStep((PickStep) currentStep);
 				} else {
 					if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractStackingDevice)) {
-						// check if after this step no more pick is needed, so we can return to home
-						if ((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) || 
-								((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 2)) && controllingThread.isConcurrentExecutionPossible()) {
+						// check if after this step no more pick is needed, so we can return to home, only do this if the process is not continuous
+						if ((processFlow.getType() == Type.FIXED_AMOUNT) && ((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) || 
+								((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 2)) && controllingThread.isConcurrentExecutionPossible())) {
 							((PutStep) currentStep).getRobotSettings().setFreeAfter(true);
 						}
 					}
@@ -108,7 +111,17 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 				if (processFlow.getCurrentIndex(workpieceId) == processFlow.getProcessSteps().size() - 1) {
 					processFlow.setCurrentIndex(workpieceId, 0);
 					processFlow.incrementFinishedAmount();
+					canContinue = false;
 					controllingThread.notifyProcessFlowFinished(this);
+					checkStatus();
+					if (waitingForIntervention) {
+						synchronized(syncObject2) {
+							logger.info("Waiter after processflow finished.");
+							syncObject2.wait();
+							logger.info("Can continue new processflow.");
+						}
+					}
+					checkStatus();
 				} else {
 					processFlow.setCurrentIndex(workpieceId, processFlow.getCurrentIndex(workpieceId) + 1);
 				}
@@ -161,70 +174,88 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 	
 	public void executePickFromStackerStep(final PickStep pickStep) throws InterruptedException, AbstractCommunicationException, RobotActionException, DeviceActionException {
 		checkStatus();
+		canContinue = false;
+		controllingThread.notifyWaitingBeforePickFromStacker(this);
+		checkStatus();
+		if (!canContinue) {
+			synchronized(syncObject) {
+				logger.info("Waiting before pick from stacker.");
+				syncObject.wait();
+				logger.info("Can continue.");
+			}
+		}
+		if (!running) {
+			return;
+		}
+		while (!pickStep.getDevice().canPick(pickStep.getDeviceSettings())) {
+			Thread.sleep(POLLING_INTERVAL);
+		}
+		checkStatus();
+		canContinue = false;
+		controllingThread.notifyWorkPiecesPresent(this);
+		if (!canContinue) {
+			synchronized(syncObject) {
+				logger.info("Waiting for pick from stacker (work pieces present).");
+				syncObject.wait();
+				logger.info("Can continue.");
+			}
+		}
+		if (!running) {
+			return;
+		}
+		checkStatus();
 		pickStep.executeStep(workpieceId, this);
+		checkStatus();
 		pickStep.finalizeStep(this);
 	}
 	
 	public void executePutInMachineStep(final PutStep putStep) throws InterruptedException, AbstractCommunicationException, RobotActionException, DeviceActionException {
-		canContinue = false;
 		checkStatus();
-		controllingThread.notifyWaitingForPutInMachine(this);
+		canContinue = false;
+		controllingThread.notifyWaitingBeforePutInMachine(this);
 		checkStatus();
 		if (!canContinue) {
 			synchronized(syncObject) {
 				logger.info("Waiting before put in machine");
 				syncObject.wait();
-				logger.info("Can continue");
+				logger.info("Can continue.");
 			}
 		}
 		if (!running) {
 			return;
 		}
-		putStep.getRobotSettings().setFreeAfter(false);
+		putStep.getRobotSettings().setFreeAfter(true);	// we can always go back to home after putting a wp in the machine
 		checkStatus();
 		putStep.executeStep(workpieceId, this);
 		checkStatus();
 		putStep.finalizeStep(this);
-		canContinue = false;
 		checkStatus();
 		controllingThread.notifyPutInMachineFinished(this);
-		checkStatus();
-		if (!canContinue) {
-			synchronized(syncObject) {
-				logger.info("Waiting after put in machine");
-				syncObject.wait();
-				logger.info("Can continue");
-			}
-		}
 	}
 	
 	public void executePickFromMachineStep(final PickStep pickStep) throws AbstractCommunicationException, RobotActionException, InterruptedException, DeviceActionException {
-		canContinue = false;
 		checkStatus();
-		controllingThread.notifyWaitingForPickFromMachine(this);
+		canContinue = false;
+		controllingThread.notifyWaitingBeforePickFromMachine(this);
 		checkStatus();
 		if (!canContinue) {
 			synchronized(syncObject) {
-				logger.info("Waiting before pick from machine");
+				logger.info("Waiting before pick from machine.");
 				syncObject.wait();
-				logger.info("Can continue");
+				logger.info("Can continue.");
 			}
 		}
 		if (!running) {
 			return;
 		}
-		if (controllingThread.isConcurrentExecutionPossible() && (processFlow.getFinishedAmount() < (processFlow.getTotalAmount() - 1))) {
-			pickStep.getRobotSettings().setFreeAfter(false);
-		} else {
-			pickStep.getRobotSettings().setFreeAfter(true);
-		}
+		pickStep.getRobotSettings().setFreeAfter(false);
 		checkStatus();
 		pickStep.executeStep(workpieceId, this);
 		checkStatus();
 		pickStep.finalizeStep(this);
-		canContinue = false;
 		checkStatus();
-		controllingThread.notifyPickFromMachineFinished(this);
+		canContinue = false;
+		controllingThread.notifyWaitingAfterPickFromMachine(this);
 		checkStatus();
 		if (!canContinue) {
 			synchronized(syncObject) {
@@ -256,6 +287,7 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 	}
 	
 	public void continueExecution() {
+		logger.info("Continue!");
 		this.canContinue = true;
 		synchronized(syncObject) {
 			syncObject.notify();

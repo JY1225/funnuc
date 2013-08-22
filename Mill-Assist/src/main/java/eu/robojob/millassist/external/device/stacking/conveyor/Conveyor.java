@@ -250,7 +250,7 @@ public class Conveyor extends AbstractStackingDevice {
 	@Override
 	public boolean canPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException {
 		// only if mode = auto, work piece in position and interlock
-		return (((currentStatus & ConveyorConstants.RAW_WP_IN_POSITION) > 0) && isModeAuto() && isInterlockRaw());
+		return (((currentStatus & ConveyorConstants.RAW_WP_IN_POSITION) > 0) && isModeAuto());
 	}
 
 	@Override
@@ -528,10 +528,15 @@ public class Conveyor extends AbstractStackingDevice {
 		// get lowest non-zero sensor value
 		int sensorValue = Integer.MAX_VALUE;
 		int sensorIndex = -1;
+		int validIndex = 0;
 		for (int i = 0; i < sensorValues.size(); i++) {
-			if ((sensorValues.get(i) < sensorValue) && (sensorValues.get(i) > 0)) {
-				sensorIndex = i;
-				sensorValue = sensorValues.get(i);
+			if ((i == 0) || ((i > 0) && (layout.getRequestedSupportStatus()[i-1]))) {
+				logger.info("OK: " + i);
+				if ((sensorValues.get(i) < sensorValue) && (sensorValues.get(i) > 0)) {
+					sensorIndex = validIndex;
+					sensorValue = sensorValues.get(i);
+				}
+				validIndex++;
 			}
 		}
 		if (sensorIndex == -1) {

@@ -22,13 +22,27 @@ import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.threading.ThreadManager;
 
 public class AutomateFixedControllingThread extends Thread {
-
-	private ProcessFlowExecutionThread threadWaitingForPutInMachine;
-	private ProcessFlowExecutionThread threadWaitingForPickFromMachine;
 	
 	private ProcessFlow processFlow;
 	private ProcessFlowExecutionThread processFlowExecutor1;
 	private ProcessFlowExecutionThread processFlowExecutor2;
+	
+	private enum ExecutionThreadStatus {
+		IDLE,
+		WAITING_BEFORE_PICK_FROM_STACKER,
+		WAITING_FOR_WORKPIECES_STACKER,
+		WAITING_FOR_PICK_FROM_STACKER,
+		WORKING_WITH_ROBOT,
+		WORKING_WITHOUT_ROBOT,
+		WAITING_BEFORE_PUT_IN_MACHINE,
+		WAITING_BEFORE_PICK_FROM_MACHINE,
+		WAITING_AFTER_PICK_FROM_MACHINE,
+		WAITING_AFTER_PUT_IN_STACKER,
+		FINISHED
+	}
+	
+	private ExecutionThreadStatus statusExecutor1;
+	private ExecutionThreadStatus statusExecutor2;
 	
 	private static final int WORKPIECE_0_ID = 0;
 	private static final int WORKPIECE_1_ID = 1;
@@ -36,11 +50,8 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	private Object finishedSyncObject;
 	private boolean running = false;
-	
 	private boolean finished;
-	
 	private boolean firstPiece;
-	private boolean lastPiece;
 	private boolean isConcurrentExecutionPossible;
 	private int mainProcessFlowId;
 	
@@ -48,6 +59,8 @@ public class AutomateFixedControllingThread extends Thread {
 		this.processFlow = processFlow;
 		this.processFlowExecutor1 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_0_ID);
 		this.processFlowExecutor2 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_1_ID);
+		this.statusExecutor1 = ExecutionThreadStatus.IDLE;
+		this.statusExecutor2 = ExecutionThreadStatus.IDLE;
 		reset();
 	}
 	
@@ -59,7 +72,8 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	private void checkIfConcurrentExecutionIsPossible() {
 		// this is possible if the CNC machine is used only once, and the gripper used to put the piece in the 
-		// CNC machine is not the same as the gripper used to pick the piece from the CNC machine
+		// CNC machine is not the same as the gripper used to pick the piece from the CNC machine and the total weight
+		// is lower than the max work piece weight
 		PickStep pickFromStacker = null;
 		PickStep pickFromMachine = null;
 		PutStep putToMachine = null;
@@ -94,7 +108,6 @@ public class AutomateFixedControllingThread extends Thread {
 		processFlow.setCurrentIndex(WORKPIECE_0_ID, -1);
 		processFlow.setCurrentIndex(WORKPIECE_1_ID, -1);
 		this.firstPiece = true;
-		this.lastPiece = false;
 		this.finished = false;
 		this.finishedSyncObject = new Object();
 		this.mainProcessFlowId = WORKPIECE_0_ID;
@@ -131,6 +144,7 @@ public class AutomateFixedControllingThread extends Thread {
 				AbstractProcessStep step = processFlow.getStep(processFlow.getCurrentIndex(WORKPIECE_0_ID));
 				if (step instanceof ProcessingStep) {
 					if (((ProcessingStep) step).getDevice() instanceof AbstractCNCMachine) {
+						statusExecutor1 = ExecutionThreadStatus.WORKING_WITHOUT_ROBOT;
 						if (processFlow.getCurrentIndex(WORKPIECE_1_ID) == 0) {
 							if (isConcurrentExecutionPossible()) {
 								processFlowExecutor2 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_1_ID);
@@ -142,7 +156,7 @@ public class AutomateFixedControllingThread extends Thread {
 				}
 			}
 			ThreadManager.submit(processFlowExecutor1);
-			// wait until processing has finished
+			// wait until all processes have finished
 			synchronized(finishedSyncObject) {
 				finishedSyncObject.wait();
 			}
@@ -196,59 +210,6 @@ public class AutomateFixedControllingThread extends Thread {
 		return firstPiece;
 	}
 	
-	public synchronized void notifyWaitingForPutInMachine(final ProcessFlowExecutionThread processFlowExecutor) {
-		if (firstPiece || !isConcurrentExecutionPossible) {
-			processFlowExecutor.continueExecution();
-		} else	{
-			if (processFlowExecutor.equals(processFlowExecutor1)) {
-				threadWaitingForPutInMachine = processFlowExecutor1;
-			} else {
-				threadWaitingForPutInMachine = processFlowExecutor2;
-			}
-			if (threadWaitingForPickFromMachine != null) {
-				waitingForPutAndPick();
-			}
-		}
-	}
-	
-	public synchronized void notifyWaitingForPickFromMachine(final ProcessFlowExecutionThread processFlowExecutor) {
-		if (lastPiece || !isConcurrentExecutionPossible) {
-			processFlowExecutor.continueExecution();
-		} else {
-			if (processFlowExecutor.equals(processFlowExecutor1)) {
-				threadWaitingForPickFromMachine = processFlowExecutor1;
-			} else {
-				threadWaitingForPickFromMachine = processFlowExecutor2;
-			}
-			if (threadWaitingForPutInMachine != null) {
-				waitingForPutAndPick();
-			}
-		}
-	}
-	
-	private void waitingForPutAndPick() {
-		logger.info("First take care of picking");
-		threadWaitingForPickFromMachine.continueExecution();
-		threadWaitingForPickFromMachine = null;
-	}
-	
-	public synchronized void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor) {
-		// continue both flows
-		if (isConcurrentExecutionPossible) {
-			processFlowExecutor1.continueExecution();
-			if (firstPiece) {
-				logger.info("Initiating second flow");
-				processFlowExecutor2 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_1_ID);
-				firstPiece = false;
-				ThreadManager.submit(processFlowExecutor2);
-			} else {
-				processFlowExecutor2.continueExecution();
-			}
-		} else {
-			processFlowExecutor.continueExecution();
-		}
-	}
-	
 	public synchronized void notifyWaitingOnIntervention() {
 		if ((processFlowExecutor1 != null) && (processFlowExecutor1.isRunning())) {
 			processFlowExecutor1.waitForIntervention();
@@ -268,43 +229,134 @@ public class AutomateFixedControllingThread extends Thread {
 		processFlow.setMode(Mode.AUTO);
 	}
 	
-	public synchronized void notifyPickFromMachineFinished(final ProcessFlowExecutionThread processFlowExecutor) {
-		if (isConcurrentExecutionPossible && !lastPiece) {
-			threadWaitingForPutInMachine.continueExecution();
-			threadWaitingForPutInMachine = null;
+	public synchronized void notifyWaitingBeforePickFromStacker(final ProcessFlowExecutionThread processFlowExecutor) {
+		if (processFlowExecutor.equals(processFlowExecutor1)) {
+			statusExecutor1 = ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER;
+			if ((statusExecutor2 != ExecutionThreadStatus.WORKING_WITH_ROBOT) && (statusExecutor2 != ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER)) {
+				statusExecutor1 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
+				processFlowExecutor1.continueExecution();
+			}
 		} else {
-			processFlowExecutor.continueExecution();
+			statusExecutor2 = ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER;
+			if ((statusExecutor1 != ExecutionThreadStatus.WORKING_WITH_ROBOT) && (statusExecutor1 != ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER)) {
+				statusExecutor2 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
+				processFlowExecutor2.continueExecution();
+			}
 		}
 	}
 	
-	public int getMainProcessFlowId() {
-		return mainProcessFlowId;
+	public synchronized void notifyWorkPiecesPresent(final ProcessFlowExecutionThread processFlowExecutor) {
+		if (processFlowExecutor.equals(processFlowExecutor1)) {
+			statusExecutor1 = ExecutionThreadStatus.WAITING_FOR_PICK_FROM_STACKER;
+			if (statusExecutor2 != ExecutionThreadStatus.WORKING_WITH_ROBOT) {
+				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor1.continueExecution();
+			}
+		} else {
+			statusExecutor2 = ExecutionThreadStatus.WAITING_FOR_PICK_FROM_STACKER;
+			if (statusExecutor1 != ExecutionThreadStatus.WORKING_WITH_ROBOT) {
+				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor2.continueExecution();
+			}
+		}
+	}
+	
+	public synchronized void notifyWaitingBeforePutInMachine(final ProcessFlowExecutionThread processFlowExecutor) {
+		if (processFlowExecutor.equals(processFlowExecutor1)) {
+			statusExecutor1 = ExecutionThreadStatus.WAITING_BEFORE_PUT_IN_MACHINE;
+			if ((statusExecutor2 != ExecutionThreadStatus.WORKING_WITHOUT_ROBOT) && (statusExecutor2 != ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE) &&
+					(statusExecutor2 != ExecutionThreadStatus.WORKING_WITH_ROBOT)) {
+				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor1.continueExecution();
+			} else if (statusExecutor2 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE) {
+				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor2.continueExecution();
+			}
+		} else {
+			statusExecutor2 = ExecutionThreadStatus.WAITING_BEFORE_PUT_IN_MACHINE;
+			if ((statusExecutor1 != ExecutionThreadStatus.WORKING_WITHOUT_ROBOT) && (statusExecutor1 != ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE) &&
+					(statusExecutor1 != ExecutionThreadStatus.WORKING_WITH_ROBOT)) {
+				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor2.continueExecution();
+			} else if (statusExecutor1 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE) {
+				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor1.continueExecution();
+			}
+		}
+	}
+	
+	public synchronized void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor) {
+		logger.info("Put in machine finished.");
+		if (processFlowExecutor.equals(processFlowExecutor1)) {
+			statusExecutor1 = ExecutionThreadStatus.WORKING_WITHOUT_ROBOT;
+			// no continue needed
+			if ((!processFlowExecutor2.isRunning()) && isConcurrentExecutionPossible) {
+				logger.info("Second process not yet started");
+				statusExecutor2 = ExecutionThreadStatus.IDLE;
+				ThreadManager.submit(processFlowExecutor2);
+			} else if (statusExecutor2 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
+				statusExecutor2 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
+				processFlowExecutor2.continueExecution();
+			} else if ((statusExecutor2 == ExecutionThreadStatus.WAITING_FOR_PICK_FROM_STACKER) ||
+					(statusExecutor2 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) {
+				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor2.continueExecution();
+			} 
+		} else {
+			statusExecutor2 = ExecutionThreadStatus.WORKING_WITHOUT_ROBOT;
+			// no continue needed
+			if (statusExecutor1 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
+				statusExecutor1 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
+				processFlowExecutor1.continueExecution();
+			} else if ((statusExecutor1 == ExecutionThreadStatus.WAITING_FOR_PICK_FROM_STACKER) ||
+					(statusExecutor1 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) {
+				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor1.continueExecution();
+			}
+		}
+	}
+	
+	public synchronized void notifyWaitingBeforePickFromMachine(final ProcessFlowExecutionThread processFlowExecutor) {
+		if (processFlowExecutor.equals(processFlowExecutor1)) {
+			statusExecutor1 = ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE;
+			if (statusExecutor2 != ExecutionThreadStatus.WORKING_WITH_ROBOT) {
+				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor1.continueExecution();
+			}
+		} else {
+			statusExecutor2 = ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE;
+			if (statusExecutor1 != ExecutionThreadStatus.WORKING_WITH_ROBOT) {
+				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor2.continueExecution();
+			}
+		}
+	}
+	
+	public synchronized void notifyWaitingAfterPickFromMachine(final ProcessFlowExecutionThread processFlowExecutor) {
+		if (processFlowExecutor.equals(processFlowExecutor1)) {
+			statusExecutor1 = ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE;
+			if (statusExecutor2 == ExecutionThreadStatus.WAITING_BEFORE_PUT_IN_MACHINE) {
+				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor2.continueExecution();
+			} else {
+				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor1.continueExecution();
+			}
+		} else {
+			statusExecutor2 = ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE;
+			if (statusExecutor1 == ExecutionThreadStatus.WAITING_BEFORE_PUT_IN_MACHINE) {
+				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor1.continueExecution();
+			} else {
+				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor2.continueExecution();
+			}
+		}
 	}
 	
 	//TODO: also review for flows with 2 - 1 pieces?
 	public synchronized void notifyProcessFlowFinished(final ProcessFlowExecutionThread processFlowExecutor) {
-		if (processFlow.getType() == Type.CONTINUOUS) {
-			// no action needed regarding last work piece
-			this.lastPiece = false;
-		} else if (processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) {
-			if (isConcurrentExecutionPossible) {
-				this.lastPiece = true;
-				processFlowExecutor.stopRunning();
-				// last piece just finished, if another thread is waiting for picking from the machine it can continue
-				if (threadWaitingForPickFromMachine != null) {
-					threadWaitingForPickFromMachine.continueExecution();
-				}
-			} else {
-				this.lastPiece = true;
-				logger.info("LAST PIECE!");
-			}
-		} else if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
-			processFlowExecutor.stopRunning();
-			finished = true;
-			synchronized(finishedSyncObject) {
-				finishedSyncObject.notify();
-			}
-		}
+		// update main process flow
 		if (isConcurrentExecutionPossible) {
 			if (processFlowExecutor.equals(processFlowExecutor1)) {
 				mainProcessFlowId = WORKPIECE_1_ID;
@@ -312,6 +364,47 @@ public class AutomateFixedControllingThread extends Thread {
 				mainProcessFlowId = WORKPIECE_0_ID;
 			}
 		}
+		// check if this was the last run for this executor
+		if ((processFlow.getType() == Type.FIXED_AMOUNT) && 
+				((processFlow.getFinishedAmount() == processFlow.getTotalAmount()) | 
+						((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) 
+								&& isConcurrentExecutionPossible))) {
+			// this was the last work piece for this executor, so let's stop it
+			processFlowExecutor.stopRunning();
+			if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
+				// finished all pieces so also stop this thread
+				finished = true;
+				synchronized(finishedSyncObject) {
+					finishedSyncObject.notify();
+				}
+			}
+		} else if (processFlowExecutor == processFlowExecutor1) {
+			// continue
+			statusExecutor1 = ExecutionThreadStatus.IDLE;
+			processFlowExecutor1.continueExecution();
+			if (statusExecutor2 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
+				statusExecutor2 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
+				processFlowExecutor2.continueExecution();
+			} else if (statusExecutor2 == ExecutionThreadStatus.WAITING_FOR_PICK_FROM_STACKER) {
+				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor2.continueExecution();
+			}
+		} else {
+			// continue
+			statusExecutor2 = ExecutionThreadStatus.IDLE;
+			processFlowExecutor2.continueExecution();
+			if (statusExecutor1 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
+				statusExecutor1 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
+				processFlowExecutor1.continueExecution();
+			} else if (statusExecutor1 == ExecutionThreadStatus.WAITING_FOR_PICK_FROM_STACKER) {
+				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor1.continueExecution();
+			}
+		}
+	}
+	
+	public int getMainProcessFlowId() {
+		return mainProcessFlowId;
 	}
 	
 	public void notifyException(final Exception e) {
