@@ -39,6 +39,7 @@ public class ConveyorMenuPresenter extends AbstractMenuPresenter<ConveyorMenuVie
 	}
 	
 	public void showAmounts() {
+		amountsPresenter.getView().refresh();
 		getParent().setBottomRight(amountsPresenter.getView());
 		getView().setAmountsActive();
 	}

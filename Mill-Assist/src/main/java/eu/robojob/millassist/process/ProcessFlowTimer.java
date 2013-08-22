@@ -80,9 +80,10 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 			int remainingAmount = processFlow.getTotalAmount() - processFlow.getFinishedAmount();
 			if (remainingAmount > 1) {
 				remainingTime = (remainingAmount - 1) * (processFlowDuration - getTimeWon());
-			}
-			if (remainingAmount > 0) {
+			} else if (remainingAmount > 0) {
 				remainingTime += processFlowDuration - getProcessTimeMeasurement(currentMainWorkPieceId);
+			} else {
+				remainingTime = -1;
 			}
 			return remainingTime;
 		}

@@ -15,7 +15,6 @@ import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.ProcessFlow.Type;
-import eu.robojob.millassist.process.ProcessingStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
@@ -88,8 +87,7 @@ public class AutomateFixedControllingThread extends Thread {
 		}
 		float totalWorkPieceWeight = pickFromStacker.getRobotSettings().getWorkPiece().getWeight() + pickFromMachine.getRobotSettings().getWorkPiece().getWeight();
 		if (totalWorkPieceWeight < pickFromMachine.getRobot().getMaxWorkPieceWeight()) {
-			if (pickFromMachine.getRobotSettings().getGripperHead().equals(putToMachine.getRobotSettings().getGripperHead()) && 
-				processFlow.getFinishedAmount() < processFlow.getTotalAmount() - 1) {
+			if (pickFromMachine.getRobotSettings().getGripperHead().equals(putToMachine.getRobotSettings().getGripperHead())) {
 				isConcurrentExecutionPossible = false; 
 			} else {
 				isConcurrentExecutionPossible = true;
@@ -138,24 +136,29 @@ public class AutomateFixedControllingThread extends Thread {
 			}
 			checkStatus();
 			processFlowExecutor1 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_0_ID);
+			boolean startSecond = false;
 			if (processFlow.getCurrentIndex(WORKPIECE_0_ID) > 0) {
 				// process has already passed some steps, check if current step is processing in machine
 				// than second process can start!
-				AbstractProcessStep step = processFlow.getStep(processFlow.getCurrentIndex(WORKPIECE_0_ID));
-				if (step instanceof ProcessingStep) {
-					if (((ProcessingStep) step).getDevice() instanceof AbstractCNCMachine) {
+				AbstractProcessStep step = processFlow.getStep(processFlow.getCurrentIndex(WORKPIECE_0_ID) - 1);
+				if (step instanceof PutStep) {
+					if (((PutStep) step).getDevice() instanceof AbstractCNCMachine) {
 						statusExecutor1 = ExecutionThreadStatus.WORKING_WITHOUT_ROBOT;
 						if (processFlow.getCurrentIndex(WORKPIECE_1_ID) == 0) {
 							if (isConcurrentExecutionPossible()) {
-								processFlowExecutor2 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_1_ID);
-								firstPiece = false;
-								ThreadManager.submit(processFlowExecutor2);
+								startSecond = true;
 							}
 						}
 					}
-				}
+				} 
 			}
 			ThreadManager.submit(processFlowExecutor1);
+			if (startSecond) {
+				statusExecutor2 = ExecutionThreadStatus.IDLE;
+				processFlowExecutor2 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_1_ID);
+				firstPiece = false;
+				ThreadManager.submit(processFlowExecutor2);
+			}
 			// wait until all processes have finished
 			synchronized(finishedSyncObject) {
 				finishedSyncObject.wait();
@@ -322,13 +325,13 @@ public class AutomateFixedControllingThread extends Thread {
 			if (statusExecutor2 != ExecutionThreadStatus.WORKING_WITH_ROBOT) {
 				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
 				processFlowExecutor1.continueExecution();
-			}
+			} 
 		} else {
 			statusExecutor2 = ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE;
 			if (statusExecutor1 != ExecutionThreadStatus.WORKING_WITH_ROBOT) {
 				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
 				processFlowExecutor2.continueExecution();
-			}
+			} 
 		}
 	}
 	
@@ -370,6 +373,11 @@ public class AutomateFixedControllingThread extends Thread {
 						((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) 
 								&& isConcurrentExecutionPossible))) {
 			// this was the last work piece for this executor, so let's stop it
+			if (processFlowExecutor == processFlowExecutor1) {
+				statusExecutor1 = ExecutionThreadStatus.FINISHED;
+			} else {
+				statusExecutor2 = ExecutionThreadStatus.FINISHED;
+			}
 			processFlowExecutor.stopRunning();
 			if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
 				// finished all pieces so also stop this thread

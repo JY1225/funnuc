@@ -113,7 +113,6 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 					processFlow.incrementFinishedAmount();
 					canContinue = false;
 					controllingThread.notifyProcessFlowFinished(this);
-					checkStatus();
 					if (waitingForIntervention) {
 						synchronized(syncObject2) {
 							logger.info("Waiter after processflow finished.");
@@ -121,7 +120,6 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 							logger.info("Can continue new processflow.");
 						}
 					}
-					checkStatus();
 				} else {
 					processFlow.setCurrentIndex(workpieceId, processFlow.getCurrentIndex(workpieceId) + 1);
 				}
