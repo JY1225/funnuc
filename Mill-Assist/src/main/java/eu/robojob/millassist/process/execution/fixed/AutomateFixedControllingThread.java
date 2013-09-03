@@ -274,6 +274,13 @@ public class AutomateFixedControllingThread extends Thread {
 			} else if (statusExecutor2 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE) {
 				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
 				processFlowExecutor2.continueExecution();
+			} else if (statusExecutor2 == ExecutionThreadStatus.WORKING_WITHOUT_ROBOT) {
+				try {
+					processFlow.getRobots().iterator().next().moveToHome();
+				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
 			}
 		} else {
 			statusExecutor2 = ExecutionThreadStatus.WAITING_BEFORE_PUT_IN_MACHINE;
@@ -284,6 +291,13 @@ public class AutomateFixedControllingThread extends Thread {
 			} else if (statusExecutor1 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE) {
 				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
 				processFlowExecutor1.continueExecution();
+			} else if (statusExecutor1 == ExecutionThreadStatus.WORKING_WITHOUT_ROBOT) {
+				try {
+					processFlow.getRobots().iterator().next().moveToHome();
+				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
 			}
 		}
 	}
@@ -315,6 +329,28 @@ public class AutomateFixedControllingThread extends Thread {
 					(statusExecutor1 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) {
 				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
 				processFlowExecutor1.continueExecution();
+			}
+		}
+	}
+	
+	public synchronized void notifyNoWorkPiecesPresent(final ProcessFlowExecutionThread processFlowExecutor) {
+		if (processFlowExecutor.equals(processFlowExecutor1)) {
+			if (statusExecutor2 != ExecutionThreadStatus.WORKING_WITH_ROBOT) {
+				try {
+					processFlow.getRobots().iterator().next().moveToHome();
+				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
+			}
+		} else {
+			if (statusExecutor1 != ExecutionThreadStatus.WORKING_WITH_ROBOT) {
+				try {
+					processFlow.getRobots().iterator().next().moveToHome();
+				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
 			}
 		}
 	}
@@ -435,6 +471,8 @@ public class AutomateFixedControllingThread extends Thread {
 		if (processFlowExecutor2 != null) {
 			processFlowExecutor2.interrupt();
 		}
+		this.statusExecutor1 = ExecutionThreadStatus.IDLE;
+		this.statusExecutor2 = ExecutionThreadStatus.IDLE;
 		// just to be sure: 
 		for (AbstractRobot robot : processFlow.getRobots()) {
 			robot.setCurrentActionSettings(null);

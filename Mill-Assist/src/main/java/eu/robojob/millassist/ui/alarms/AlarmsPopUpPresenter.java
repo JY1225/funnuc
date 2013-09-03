@@ -80,7 +80,6 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 	}
 	
 	protected void updateAlarms() {
-		logger.debug("Updating alarms!");
 		Set<String> alarmStrings = new HashSet<String>();
 		for (AbstractDevice device : processFlow.getDevices()) {
 			if (!device.isConnected()) {
@@ -141,7 +140,7 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 				getParent().indicateAlarmsPresent(false);
 			}
 		}
-		
+		logger.debug("Updating alarms: " + alarmStrings);
 		getView().updateAlarms(alarmStrings);
 	}
 	

@@ -155,7 +155,8 @@ public class SocketConnection {
 		if (connected) {
 			if ((socket == null) || (out == null) || (in == null)) {
 				disconnect();
-				throw new IllegalStateException("Status indicates connection, but one or more objects are null");
+				//throw new IllegalStateException("Status indicates connection, but one or more objects are null");
+				return false;
 			} else {
 				return true;
 			}

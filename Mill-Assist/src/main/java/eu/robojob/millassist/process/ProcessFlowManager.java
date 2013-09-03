@@ -17,6 +17,9 @@ import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
 import eu.robojob.millassist.external.robot.AbstractRobot;
@@ -97,11 +100,11 @@ public class ProcessFlowManager {
 		processSteps.add(pickStep2);
 		processSteps.add(putStep2);
 		Map<AbstractDevice, DeviceSettings> deviceSettings = new HashMap<AbstractDevice, DeviceSettings>();
-		if (stackingFromDevice instanceof BasicStackPlate) {
-			((BasicStackPlate) stackingFromDevice).clearDeviceSettings();
+		if (stackingFromDevice instanceof AbstractStackingDevice) {
+			((AbstractStackingDevice) stackingFromDevice).clearDeviceSettings();
 		}
-		if (stackingToDevice instanceof BasicStackPlate) {
-			((BasicStackPlate) stackingToDevice).clearDeviceSettings();
+		if (stackingToDevice instanceof AbstractStackingDevice) {
+			((AbstractStackingDevice) stackingToDevice).clearDeviceSettings();
 		}
 		deviceSettings.put(stackingFromDevice, stackingFromDevice.getDeviceSettings());
 		if (stackingFromDevice instanceof BasicStackPlate) {
@@ -109,6 +112,12 @@ public class ProcessFlowManager {
 		}
 		if (stackingToDevice instanceof BasicStackPlate) {
 			((BasicStackPlateSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
+		}
+		if (stackingFromDevice instanceof Conveyor) {
+			((ConveyorSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);
+		}
+		if (stackingToDevice instanceof Conveyor) {
+			((ConveyorSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
 		deviceSettings.put(cncMachine, cncMachine.getDeviceSettings());
 		if (!stackingToDevice.equals(stackingFromDevice)) {
@@ -121,11 +130,20 @@ public class ProcessFlowManager {
 				// if only one work area present: use it
 				DeviceStep deviceStep = (DeviceStep) step;
 				if (deviceStep.getDevice().getWorkAreas().size() > 0) {
+					
 					WorkArea workArea = deviceStep.getDevice().getWorkAreas().get(0);
+
+					if ((deviceStep instanceof PickStep) && (deviceStep.getDevice() instanceof Conveyor)) {
+						workArea = ((Conveyor) deviceStep.getDevice()).getRawWorkArea();
+					} else if ((deviceStep instanceof PutStep) && (deviceStep.getDevice() instanceof Conveyor)) {
+						workArea = ((Conveyor) deviceStep.getDevice()).getFinishedWorkArea();
+					}
+					
 					deviceStep.getDeviceSettings().setWorkArea(workArea);
 					if (step instanceof RobotStep) {
 						((RobotStep) step).getRobotSettings().setWorkArea(workArea);						
 					}
+					
 					// if clampings present: use them
 					if (workArea.getClampings().size() > 0) {
 						Clamping clamping = workArea.getClampings().iterator().next();
@@ -152,7 +170,7 @@ public class ProcessFlowManager {
 				if ((robotStep instanceof PickStep) && (((PickStep) robotStep).getDevice() instanceof AbstractCNCMachine)) {
 					robotStep.getRobotSettings().setGripperHead(headB);
 				}
-				if ((robotStep instanceof PutStep) && (((PutStep) robotStep).getDevice() instanceof BasicStackPlate)) {
+				if ((robotStep instanceof PutStep) && (((PutStep) robotStep).getDevice() instanceof AbstractStackingDevice)) {
 					robotStep.getRobotSettings().setGripperHead(headB);
 				}
 			}

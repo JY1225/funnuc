@@ -31,6 +31,8 @@ import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorConfi
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorConfigureView;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorFinishedWorkPieceLayoutPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorMenuPresenter;
+import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorRawWorkPieceOffsetPresenter;
+import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorRawWorkPieceOffsetView;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorRawWorkPiecePresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorRawWorkPieceView;
 import eu.robojob.millassist.ui.configure.device.stacking.stackplate.BasicStackPlateConfigurePresenter;
@@ -165,12 +167,19 @@ public class DeviceMenuFactory {
 		ConveyorMenuPresenter presenter = null;
 		if (deviceInfo.getPickStep() != null) {
 			// first device 
-			presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), getConveyorRawWorkPiecePresenter(deviceInfo), getRawWorkPieceLayoutPresenter(deviceInfo));
+			presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), getConveyorRawWorkPiecePresenter(deviceInfo), getRawWorkPieceLayoutPresenter(deviceInfo), getConveyorRawWorkPieceOffsetPresenter(deviceInfo));
 		} else {
 			// last device
-			presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), null, getFinishedWorkPieceLayoutPresenter(deviceInfo));
+			presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), null, getFinishedWorkPieceLayoutPresenter(deviceInfo), null);
 		}
 		return presenter;
+	}
+	
+	public ConveyorRawWorkPieceOffsetPresenter getConveyorRawWorkPieceOffsetPresenter(final DeviceInformation deviceInfo) {
+		ConveyorRawWorkPieceOffsetView view = new ConveyorRawWorkPieceOffsetView();
+		ConveyorRawWorkPieceOffsetPresenter presenter = new ConveyorRawWorkPieceOffsetPresenter(view, (Conveyor) deviceInfo.getDevice(), deviceInfo.getPickStep().getProcessFlow());
+		return presenter;
+		
 	}
 	
 	public ConveyorRawWorkPieceLayoutPresenter<ConveyorMenuPresenter> getRawWorkPieceLayoutPresenter(final DeviceInformation deviceInfo) {

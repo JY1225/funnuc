@@ -21,6 +21,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	private Button btn10;
 	private Button btn25;
 	private Button btn50;
+	private Button btn75;
 	private Button btn100;
 	
 	private static final int BUTTON_HEIGHT = UIConstants.BUTTON_HEIGHT + 5;
@@ -137,6 +138,18 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		});
 		vBoxMenuItems.getChildren().add(btn50);
 		
+		btn75 = new Button();
+		btn75.setGraphic(new Text("75%"));
+		btn75.setPrefSize(WIDTH, BUTTON_HEIGHT);
+		btn75.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
+		btn75.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				getPresenter().setSpeedClicked(75);
+			}
+		});
+		vBoxMenuItems.getChildren().add(btn75);
+		
 		btn100 = new Button();
 		btn100.setGraphic(new Text("100%"));
 		btn100.setPrefSize(WIDTH, BUTTON_HEIGHT);
@@ -156,6 +169,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		if (this.speed != speed) {
 			btn25.getStyleClass().remove(CSS_CLASS_POPUP_BUTTON_PRESSED);
 			btn50.getStyleClass().remove(CSS_CLASS_POPUP_BUTTON_PRESSED);
+			btn75.getStyleClass().remove(CSS_CLASS_POPUP_BUTTON_PRESSED);
 			btn10.getStyleClass().remove(CSS_CLASS_POPUP_BUTTON_PRESSED);
 			btn100.getStyleClass().remove(CSS_CLASS_POPUP_BUTTON_PRESSED);
 			switch(speed) {
@@ -167,6 +181,9 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 					break;
 				case 50:
 					btn50.getStyleClass().add(CSS_CLASS_POPUP_BUTTON_PRESSED);
+					break;
+				case 75:
+					btn75.getStyleClass().add(CSS_CLASS_POPUP_BUTTON_PRESSED);
 					break;
 				case 100:
 					btn100.getStyleClass().add(CSS_CLASS_POPUP_BUTTON_PRESSED);
@@ -182,6 +199,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btn25.setDisable(!connected);
 		btn50.setDisable(!connected);
 		btn10.setDisable(!connected);
+		btn75.setDisable(!connected);
 		btn100.setDisable(!connected);
 		btnReset.setDisable(!connected);
 		btnRestart.setDisable(!connected);

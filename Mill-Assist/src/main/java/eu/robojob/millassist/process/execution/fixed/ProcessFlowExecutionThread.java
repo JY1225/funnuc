@@ -18,6 +18,7 @@ import eu.robojob.millassist.process.PutAndWaitStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.RobotStep;
 import eu.robojob.millassist.process.execution.ProcessExecutor;
+import eu.robojob.millassist.threading.ThreadManager;
 
 public class ProcessFlowExecutionThread extends Thread implements ProcessExecutor {
 
@@ -85,7 +86,7 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractStackingDevice)) {
 						// we can always return to home, as home is typically the same location as the stacker's IP
 						// if no pre-processing is needed, we will than be waiting in home before putting in machine
-						((PickStep) currentStep).getRobotSettings().setFreeAfter(true);
+						((PickStep) currentStep).getRobotSettings().setFreeAfter(false);
 						executePickFromStackerStep((PickStep) currentStep);
 				} else {
 					if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractStackingDevice)) {
@@ -185,6 +186,10 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 		if (!running) {
 			return;
 		}
+		if (!pickStep.getDevice().canPick(pickStep.getDeviceSettings())) {
+			controllingThread.notifyNoWorkPiecesPresent(this);
+			Thread.sleep(POLLING_INTERVAL);
+		}
 		while (!pickStep.getDevice().canPick(pickStep.getDeviceSettings())) {
 			Thread.sleep(POLLING_INTERVAL);
 		}
@@ -222,13 +227,29 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 		if (!running) {
 			return;
 		}
-		putStep.getRobotSettings().setFreeAfter(true);	// we can always go back to home after putting a wp in the machine
+		putStep.getRobotSettings().setFreeAfter(false);	// we can always go back to home after putting a wp in the machine
 		checkStatus();
 		putStep.executeStep(workpieceId, this);
 		checkStatus();
-		putStep.finalizeStep(this);
-		checkStatus();
-		controllingThread.notifyPutInMachineFinished(this);
+		ThreadManager.submit(new Thread() {
+			@Override
+			public void run() {
+				try {
+					putStep.finalizeStep(ProcessFlowExecutionThread.this);
+					checkStatus();
+				} catch (InterruptedException e) {
+					if (controllingThread.isRunning()) {
+						controllingThread.notifyException(e);
+						controllingThread.stopRunning();
+					}
+				} catch (Exception e) {
+					controllingThread.notifyException(e);
+					controllingThread.stopRunning();
+				}
+				controllingThread.notifyPutInMachineFinished(ProcessFlowExecutionThread.this);
+			}
+		});
+		
 	}
 	
 	public void executePickFromMachineStep(final PickStep pickStep) throws AbstractCommunicationException, RobotActionException, InterruptedException, DeviceActionException {

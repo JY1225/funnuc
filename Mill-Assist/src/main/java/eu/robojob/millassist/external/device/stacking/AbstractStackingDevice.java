@@ -27,4 +27,6 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 	public DeviceType getType() {
 		return DeviceType.STACKING;
 	}
+	
+	public abstract void clearDeviceSettings();
 }

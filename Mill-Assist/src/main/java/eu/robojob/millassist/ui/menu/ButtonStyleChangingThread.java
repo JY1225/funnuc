@@ -66,6 +66,15 @@ public class ButtonStyleChangingThread extends Thread {
 					alive = false;
 				}
 			} else {
+				// always set style 1 when not running
+				Platform.runLater(new Thread() {
+					@Override
+					public void run() {
+						button.getStyleClass().add(style1);
+						button.getStyleClass().remove(style2);
+						currentStyle1 = true;
+					}
+				});
 				synchronized (syncObject) {
 					try {
 						syncObject.wait();

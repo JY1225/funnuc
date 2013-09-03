@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.workpiece.WorkPiece;
@@ -27,12 +30,16 @@ public class ConveyorLayout {
 	private float minDistFinished;
 	private Boolean[] currentSupportStatus;
 	private Boolean[] requestedSupportStatus;
+	private float offsetSupport1;
+	private float offsetOtherSupports;
 	
 	private List<StackingPosition> stackingPositionsRawWorkPieces;
 	private List<StackingPosition> stackingPositionsFinishedWorkPieces;
 	
 	private List<Boolean> finishedStackingPositionWorkPieces;
 	
+	private static Logger logger = LogManager.getLogger(ConveyorLayout.class.getName());
+		
 	public ConveyorLayout(final int rawTrackAmount, final float rawTrackWidth, final float spaceBetweenTracks, 
 			final float supportWidth, final float finishedConveyorWidth, final float interferenceDistance, 
 			final float maxWorkPieceLength, final float rawConveyorLength, final float finishedConveyorLength, 
@@ -57,6 +64,17 @@ public class ConveyorLayout {
 		this.stackingPositionsRawWorkPieces = new ArrayList<StackingPosition>();
 		this.stackingPositionsFinishedWorkPieces = new ArrayList<StackingPosition>();
 		this.finishedStackingPositionWorkPieces = new ArrayList<Boolean>();
+		this.offsetSupport1 = 0.0f;
+		this.offsetOtherSupports = 0.0f;
+	}
+	
+	public void clearSettings() {
+		Arrays.fill(requestedSupportStatus, Boolean.FALSE);
+		this.offsetSupport1 = 0.0f;
+		this.offsetOtherSupports = 0.0f;
+		stackingPositionsRawWorkPieces.clear();
+		stackingPositionsFinishedWorkPieces.clear();
+		finishedStackingPositionWorkPieces.clear();
 	}
 	
 	public void setParent(final Conveyor parent) {
@@ -103,7 +121,25 @@ public class ConveyorLayout {
 		Collections.fill(finishedStackingPositionWorkPieces, false);
 		parent.notifyFinishedShifted();
 	}
-	
+
+	public float getOffsetSupport1() {
+		return offsetSupport1;
+	}
+
+	public void setOffsetSupport1(final float offsetSupport1) {
+		logger.info("setting offset 1: " + offsetSupport1);
+		this.offsetSupport1 = offsetSupport1;
+	}
+
+	public float getOffsetOtherSupports() {
+		return offsetOtherSupports;
+	}
+
+	public void setOffsetOtherSupports(final float offsetOtherSupports) {
+		logger.info("setting offset other: " + offsetOtherSupports);
+		this.offsetOtherSupports = offsetOtherSupports;
+	}
+
 	public float getSpaceBetweenTracks() {
 		return spaceBetweenTracks;
 	}
@@ -256,6 +292,15 @@ public class ConveyorLayout {
 		for (int i = 0; i < Math.floor(rawTrackAmount / amount); i++) {
 			float x = workPiece.getDimensions().getLength()/2 + minDistRaw;			
 			float y = workPiece.getDimensions().getWidth()/2;
+			//FIXME review
+			int currentSupportNr = i * amount;
+			if (currentSupportNr == 0) {
+				logger.info("Against 0: " + offsetSupport1);
+				y = y + offsetSupport1;
+			} else {
+				logger.info("Against other: " + offsetOtherSupports);
+				y = y + offsetOtherSupports;
+			}
 			// add the distance of the tracks used by previous work pieces
 			// add the distance of the space between tracks used by previous work pieces
 			if (i > 0) {
@@ -308,7 +353,7 @@ public class ConveyorLayout {
 			}
 		}
 		// calculate the amount of space left between pieces without the overlap 
-		float extraSpaceWithoutOverlap = getWidthFinishedWorkPieceConveyor() - 
+		float extraSpaceWithoutOverlap = getWidthFinishedWorkPieceConveyor() - 10 - 
 				amountOneRow * workPiece.getDimensions().getWidth() - (amountOneRow - 1) * interferenceDistance;
 		float spaceBetween = Math.abs(extraSpaceWithoutOverlap)/(amountOneRow - 1) + interferenceDistance;
 		// place the workPieces

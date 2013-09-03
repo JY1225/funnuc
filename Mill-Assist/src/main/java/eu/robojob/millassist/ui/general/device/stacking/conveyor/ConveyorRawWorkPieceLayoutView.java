@@ -466,15 +466,17 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 				texts.get(i).setText("--");
 			}
 			if ((i == 0)  || (conveyorLayout.getRequestedSupportStatus()[i-1])) {
-				double dest = ((float) sensorValues.get(i))/100 + 70; 
-				workPieces.get(wpIndex).setLayoutX(dest);
-				if (sensorValues.get(i) > 0) {
-					found = true;
-					workPieces.get(wpIndex).setVisible(true);
-				} else {
-					workPieces.get(wpIndex).setVisible(false);
+				if (wpIndex < workPieces.size()) {	// prevents from updating when workpieces are not yet recalculated but supports are
+					double dest = ((float) sensorValues.get(i))/100 + 70; 
+					workPieces.get(wpIndex).setLayoutX(dest);
+					if (sensorValues.get(i) > 0) {
+						found = true;
+						workPieces.get(wpIndex).setVisible(true);
+					} else {
+						workPieces.get(wpIndex).setVisible(false);
+					}
+					wpIndex++;
 				}
-				wpIndex++;
 			}
 		}
 		iconNearby.getStyleClass().remove(CSS_CLASS_STATUS_ICON);

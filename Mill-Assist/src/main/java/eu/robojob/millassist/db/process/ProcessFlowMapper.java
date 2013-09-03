@@ -428,11 +428,13 @@ public class ProcessFlowMapper {
 			ConveyorSettings cSettings = (ConveyorSettings) deviceSettings;
 			generalMapper.saveWorkPiece(cSettings.getRawWorkPiece());
 			generalMapper.saveWorkPiece(cSettings.getFinishedWorkPiece());
-			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO CONVEYORSETTINGS (ID, AMOUNT, RAWWORKPIECE, FINISHEDWORKPIECE) VALUES (?, ?, ?, ?)");
+			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO CONVEYORSETTINGS (ID, AMOUNT, RAWWORKPIECE, FINISHEDWORKPIECE, OFFSETSUPPORT1, OFFSETOTHERSUPPORTS) VALUES (?, ?, ?, ?, ?, ?)");
 			stmt4.setInt(1, cSettings.getId());
 			stmt4.setInt(2, cSettings.getAmount());
 			stmt4.setInt(3, cSettings.getRawWorkPiece().getId());
 			stmt4.setInt(4, cSettings.getFinishedWorkPiece().getId());
+			stmt4.setFloat(5, cSettings.getOffsetSupport1());
+			stmt4.setFloat(6, cSettings.getOffsetOtherSupports());
 			stmt4.executeUpdate();
 		}
 	}
@@ -565,9 +567,11 @@ public class ProcessFlowMapper {
 			int amount = results.getInt("AMOUNT");
 			int rawWorkPieceId = results.getInt("RAWWORKPIECE");
 			int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
+			float offsetSupport1 = results.getFloat("OFFSETSUPPORT1");
+			float offsetOtherSupports = results.getFloat("OFFSETOTHERSUPPORTS");
 			WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(processFlowId, rawWorkPieceId);
 			WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
-			conveyorSettings = new ConveyorSettings(rawWorkPiece, finishedWorkPiece, amount);
+			conveyorSettings = new ConveyorSettings(rawWorkPiece, finishedWorkPiece, amount, offsetSupport1, offsetOtherSupports);
 			conveyorSettings.setClampings(clampings);
 		}
 		return conveyorSettings;

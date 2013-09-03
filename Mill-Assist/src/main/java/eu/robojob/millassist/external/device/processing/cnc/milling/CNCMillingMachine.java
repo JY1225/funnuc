@@ -41,7 +41,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int UNCLAMP_TIMEOUT = 1 * 60 * 1000;
 	private static final int PUT_ALLOWED_TIMEOUT = 2 * 60 * 1000;
 	private static final int START_CYCLE_TIMEOUT = 1 * 60 * 1000;
-	private static final int SLEEP_TIME_AFTER_RESET = 2500;
+	private static final int SLEEP_TIME_AFTER_RESET = 500;
 	
 	private static final int M_CODE_LOAD = 0;
 	private static final int M_CODE_UNLOAD = 1;
@@ -161,6 +161,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			}
 			// we now wait for pick requested
 			waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED);
+			nCReset();
 		} else if (getWayOfOperating() == WayOfOperating.M_CODES) {
 			// we sign of the m code for put
 			if (getWayOfOperating() == WayOfOperating.M_CODES) {
@@ -323,6 +324,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	
 	@Override 
 	public void putFinished(final DevicePutSettings putSettings) throws AbstractCommunicationException, InterruptedException {}
+	
 	// these are not taken into account by the machine for now...
 	@Override public void interventionFinished(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException { }
 	@Override public void prepareForStartCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException { }

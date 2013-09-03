@@ -182,6 +182,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		return new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, layout.getOrientation(), layout.getRawWorkPieceAmount());
 	}
 	
+	@Override
 	public void clearDeviceSettings() {
 		this.rawWorkPiece = new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f);
 		this.finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(), Material.OTHER, 0.0f);

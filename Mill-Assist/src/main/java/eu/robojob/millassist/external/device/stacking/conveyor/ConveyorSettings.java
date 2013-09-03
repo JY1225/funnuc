@@ -8,11 +8,16 @@ public class ConveyorSettings extends DeviceSettings {
 	private WorkPiece rawWorkPiece;
 	private WorkPiece finishedWorkPiece;
 	private int amount;
+	private float offsetSupport1;
+	private float offsetOtherSupports;
 	
-	public ConveyorSettings(final WorkPiece rawWorkPiece, final WorkPiece finishedWorkPiece, final int amount) {
+	public ConveyorSettings(final WorkPiece rawWorkPiece, final WorkPiece finishedWorkPiece, final int amount, 
+			final float offsetSupport1, final float offsetOtherSupports) {
 		this.rawWorkPiece = rawWorkPiece;
 		this.finishedWorkPiece = finishedWorkPiece;
 		this.amount = amount;
+		this.offsetSupport1 = offsetSupport1;
+		this.offsetOtherSupports = offsetOtherSupports;
 	}
 
 	public WorkPiece getRawWorkPiece() {
@@ -38,5 +43,21 @@ public class ConveyorSettings extends DeviceSettings {
 	public void setAmount(final int amount) {
 		this.amount = amount;
 	}
-	
+
+	public float getOffsetSupport1() {
+		return offsetSupport1;
+	}
+
+	public void setOffsetSupport1(final float offsetSupport1) {
+		this.offsetSupport1 = offsetSupport1;
+	}
+
+	public float getOffsetOtherSupports() {
+		return offsetOtherSupports;
+	}
+
+	public void setOffsetOtherSupports(final float offsetOtherSupports) {
+		this.offsetOtherSupports = offsetOtherSupports;
+	}
+
 }

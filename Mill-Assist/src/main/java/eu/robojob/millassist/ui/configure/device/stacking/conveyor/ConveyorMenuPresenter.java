@@ -11,10 +11,12 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 	private ConveyorConfigurePresenter configurePresenter;
 	private ConveyorRawWorkPiecePresenter rawWorkPiecePresenter;
 	private AbstractWorkPieceLayoutPresenter<?, ConveyorMenuPresenter> workPieceLayoutPresenter;
+	private ConveyorRawWorkPieceOffsetPresenter conveyorRawWorkPieceOffsetPresenter;
 	
 	public ConveyorMenuPresenter(final StackingDeviceMenuView view, final DeviceInformation deviceInfo,
 			final ConveyorConfigurePresenter configurePresenter, final ConveyorRawWorkPiecePresenter rawWorkPiecePresenter, 
-				final AbstractWorkPieceLayoutPresenter<?, ConveyorMenuPresenter> workPieceLayoutPresenter) {
+				final AbstractWorkPieceLayoutPresenter<?, ConveyorMenuPresenter> workPieceLayoutPresenter, 
+					final ConveyorRawWorkPieceOffsetPresenter conveyorRawWorkPieceOffsetPresenter) {
 		super(view, deviceInfo);
 		this.configurePresenter = configurePresenter;
 		configurePresenter.setMenuPresenter(this);
@@ -25,6 +27,10 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 		if (rawWorkPiecePresenter != null) {
 			this.rawWorkPiecePresenter = rawWorkPiecePresenter;
 			rawWorkPiecePresenter.setMenuPresenter(this);
+		}
+		if (conveyorRawWorkPieceOffsetPresenter != null) {
+			this.conveyorRawWorkPieceOffsetPresenter = conveyorRawWorkPieceOffsetPresenter;
+			conveyorRawWorkPieceOffsetPresenter.setMenuPresenter(this);
 		}
 	}
 
@@ -40,6 +46,12 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 		getParent().setBottomRightView(rawWorkPiecePresenter.getView());
 	}
 
+	@Override
+	public void configureOffsets() {
+		getView().setConfigureOffsetsActive();
+		getParent().setBottomRightView(conveyorRawWorkPieceOffsetPresenter.getView());
+	}
+	
 	@Override
 	public void showLayout() {
 		getView().setViewLayoutActive();
@@ -66,6 +78,9 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 		configurePresenter.setTextFieldListener(listener);
 		if (rawWorkPiecePresenter != null) {
 			rawWorkPiecePresenter.setTextFieldListener(listener);
+		}
+		if (conveyorRawWorkPieceOffsetPresenter != null) {
+			conveyorRawWorkPieceOffsetPresenter.setTextFieldListener(listener);
 		}
 	}
 

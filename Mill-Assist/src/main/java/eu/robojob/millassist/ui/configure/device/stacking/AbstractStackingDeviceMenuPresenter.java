@@ -17,6 +17,8 @@ public abstract class AbstractStackingDeviceMenuPresenter extends AbstractMenuPr
 	
 	public abstract void configureWorkPiece();
 	
+	public abstract void configureOffsets();
+	
 	public abstract void showLayout();
 
 	@Override

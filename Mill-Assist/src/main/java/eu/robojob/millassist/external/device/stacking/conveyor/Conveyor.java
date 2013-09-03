@@ -32,6 +32,7 @@ import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
@@ -160,6 +161,14 @@ public class Conveyor extends AbstractStackingDevice {
 		socketCommunication.writeRegisters(ConveyorConstants.COMMAND_REG, values);
 	}
 	
+	@Override
+	public void clearDeviceSettings() {
+		this.rawWorkPiece = new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f);
+		this.finishedWorkPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(), Material.OTHER, 0.0f);
+		layout.clearSettings();
+		notifyLayoutChanged();
+	}
+	
 	public float getNomSpeedRawConveyor() {
 		return nomSpeed1;
 	}
@@ -198,6 +207,14 @@ public class Conveyor extends AbstractStackingDevice {
 	
 	public boolean isModeAuto() {
 		return (currentStatus & ConveyorConstants.MODE) > 0;
+	}
+
+	public WorkArea getRawWorkArea() {
+		return rawWorkArea;
+	}
+
+	public WorkArea getFinishedWorkArea() {
+		return finishedWorkArea;
 	}
 
 	public boolean isInterlockRaw() {
@@ -412,6 +429,8 @@ public class Conveyor extends AbstractStackingDevice {
 			if (settings.getFinishedWorkPiece() != null) {
 				this.finishedWorkPiece = settings.getFinishedWorkPiece();
 			}
+			layout.setOffsetSupport1(settings.getOffsetSupport1());
+			layout.setOffsetOtherSupports(settings.getOffsetOtherSupports());
 			this.amount = settings.getAmount();
 			try {
 				layout.configureRawWorkPieceStackingPositions();
@@ -513,7 +532,7 @@ public class Conveyor extends AbstractStackingDevice {
 	
 	@Override
 	public DeviceSettings getDeviceSettings() {
-		return new ConveyorSettings(rawWorkPiece, finishedWorkPiece, amount);
+		return new ConveyorSettings(rawWorkPiece, finishedWorkPiece, amount, layout.getOffsetSupport1(), layout.getOffsetOtherSupports());
 	}
 
 	@Override
