@@ -40,6 +40,7 @@ public class DeviceMapper {
 	private static final int CLAMPING_TYPE_CENTRUM = 1;
 	private static final int CLAMPING_TYPE_FIXED = 2;
 	private static final int CLAMPING_TYPE_NONE = 3;
+	private static final int CLAMPING_TYPE_DOUBLE = 4;
 	private static final int WAYOFOPERATING_STARTSTOP = 1;
 	private static final int WAYOFOPERATING_MCODES = 2;
 	
@@ -327,6 +328,9 @@ public class DeviceMapper {
 					break;
 				case CLAMPING_TYPE_NONE:
 					clamping = new Clamping(Clamping.Type.NONE, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+					break;
+				case CLAMPING_TYPE_DOUBLE:
+					clamping = new Clamping(Clamping.Type.DOUBLE, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
 					break;
 				default:
 					throw new IllegalStateException("Unknown clamping type: [" + type + "].");
@@ -634,6 +638,8 @@ public class DeviceMapper {
 			typeInt = CLAMPING_TYPE_FIXED;
 		} else if (type == Type.NONE) {
 			typeInt = CLAMPING_TYPE_NONE;
+		} else if (type == Type.DOUBLE) {
+			typeInt = CLAMPING_TYPE_DOUBLE;
 		}
 		stmt.setInt(2, typeInt);
 		stmt.setFloat(3, height);
@@ -660,6 +666,8 @@ public class DeviceMapper {
 			typeInt = CLAMPING_TYPE_FIXED;
 		} else if (clamping.getType() == Type.NONE) {
 			typeInt = CLAMPING_TYPE_NONE;
+		} else if (clamping.getType() == Type.DOUBLE) {
+			typeInt = CLAMPING_TYPE_DOUBLE;
 		} else {
 			throw new IllegalStateException("Unknown clamp type: " + clamping.getType());
 		}

@@ -373,9 +373,10 @@ public class ProcessFlowMapper {
 			stmt2.executeUpdate();
 		} else if (robotStep instanceof PutStep) {
 			RobotPutSettings robotPutSettings = ((PutStep) robotStep).getRobotSettings();
-			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPUTSETTINGS (ID, AIRBLOW) VALUES (?, ?)");
+			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPUTSETTINGS (ID, AIRBLOW, RELEASEBEFORE) VALUES (?, ?, ?)");
 			stmt2.setInt(1, robotStep.getRobotSettings().getId());
 			stmt2.setBoolean(2, robotPutSettings.isDoMachineAirblow());
+			stmt2.setBoolean(3, ((PutStep) robotStep).getRobotSettings().isReleaseBeforeMachine());
 			stmt2.executeUpdate();
 		}
 	}
@@ -840,11 +841,12 @@ public class ProcessFlowMapper {
 			int smoothPointId = results.getInt("SMOOTHPOINT");
 			int robotId = results.getInt("ROBOT");
 			boolean airblow = results.getBoolean("AIRBLOW");
+			boolean releaseBefore = results.getBoolean("RELEASEBEFORE");
 			AbstractRobot robot = robotManager.getRobotById(robotId);
 			GripperHead gripperHead = robot.getGripperHeadById(gripperHeadId);
 			Coordinates smoothPoint = generalMapper.getCoordinatesById(processFlowId, smoothPointId);
 			if (robot instanceof FanucRobot) {
-				robotPutSettings = new FanucRobotPutSettings(robot, workArea, gripperHead, smoothPoint, null, airblow);
+				robotPutSettings = new FanucRobotPutSettings(robot, workArea, gripperHead, smoothPoint, null, airblow, releaseBefore);
 				robotPutSettings.setId(id);
 			} else {
 				throw new IllegalStateException("Unknown robot type: " + robot);

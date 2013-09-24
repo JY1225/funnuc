@@ -34,6 +34,10 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	
 	private Button btnResetSmooth;
 	
+	private Label lblReleasePieceBeforeClamp;
+	private Button btnBeforeClamp;
+	private Button btnAfterClamp;
+	
 	private NumericTextField ntxtSmoothX;
 	private NumericTextField ntxtSmoothY;
 	private NumericTextField ntxtSmoothZ;
@@ -51,6 +55,9 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	private static final String SMOOTH_Z = "CNCMillingMachinePutView.smoothZ";
 	private static final String SMOOTH_RESET = "CNCMillingMachinePutView.resetSmooth";
 	private static final String AIRBLOW = "CNCMillingMachinePutView.airblow";
+	private static final String ROBOT_RELEASES = "CNCMillingMachinePutView.robotReleases";
+	private static final String AFTER_CLAMP = "CNCMillingMachinePutView.afterClamp";
+	private static final String BEFORE_CLAMP = "CNCMillingMachinePutView.beforeClamp";
 	
 	private static final String CSS_CLASS_CENTER_TEXT = "center-text";
 	
@@ -135,6 +142,30 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		hboxAirblow.getChildren().addAll(lblAirblow, cbAirblow);
 		hboxAirblow.setSpacing(10);
 		
+		lblReleasePieceBeforeClamp = new Label(Translator.getTranslation(ROBOT_RELEASES));
+		
+		HBox hboxReleaseButtons = new HBox();
+		hboxReleaseButtons.getChildren().add(lblReleasePieceBeforeClamp);
+		HBox.setMargin(lblReleasePieceBeforeClamp, new Insets(0, 10, 0, 0));
+		hboxReleaseButtons.setAlignment(Pos.CENTER_LEFT);
+		
+		btnBeforeClamp = createButton(Translator.getTranslation(BEFORE_CLAMP), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedReleaseBefore(true);
+			}
+		});
+		btnBeforeClamp.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
+		hboxReleaseButtons.getChildren().add(btnBeforeClamp);
+		btnAfterClamp = createButton(Translator.getTranslation(AFTER_CLAMP), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedReleaseBefore(false);
+			}
+		});
+		btnAfterClamp.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+		hboxReleaseButtons.getChildren().add(btnAfterClamp);
+		
 		int column = 0;
 		int row = 0;
 		getContents().add(lblSmoothInfo, column++, row);
@@ -145,8 +176,12 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		
 		column = 0;
 		row++;
+		getContents().add(hboxReleaseButtons, column++, row);
+			
+		column = 0;
+		row++;
 		getContents().add(hboxAirblow, column++, row);
-				
+		
 		refresh();
 	}
 
@@ -173,6 +208,13 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 			cbAirblow.setSelected(true);
 		} else {
 			cbAirblow.setSelected(false);
+		}
+		btnBeforeClamp.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnAfterClamp.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		if (putStep.getRobotSettings().isReleaseBeforeMachine()) {
+			btnBeforeClamp.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		} else {
+			btnAfterClamp.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		}
 	}
 

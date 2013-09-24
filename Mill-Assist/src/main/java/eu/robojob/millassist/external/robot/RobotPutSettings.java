@@ -7,10 +7,12 @@ import eu.robojob.millassist.process.PutStep;
 public abstract class RobotPutSettings extends AbstractRobotActionSettings<PutStep> {
 		
 	private boolean doMachineAirblow;
+	private boolean releaseBeforeMachine;
 
-	public RobotPutSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final boolean doMachineAirblow) {
+	public RobotPutSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final boolean doMachineAirblow, final boolean releaseBeforeMachine) {
 		super(robot, workArea, gripperHead, smoothPoint, location);
 		this.doMachineAirblow = doMachineAirblow;
+		this.releaseBeforeMachine = releaseBeforeMachine;
 	}
 	
 	public boolean isDoMachineAirblow() {
@@ -21,4 +23,11 @@ public abstract class RobotPutSettings extends AbstractRobotActionSettings<PutSt
 		this.doMachineAirblow = doMachineAirblow;
 	}
 
+	public boolean isReleaseBeforeMachine() {
+		return releaseBeforeMachine;
+	}
+
+	public void setReleaseBeforeMachine(final boolean releaseBeforeMachine) {
+		this.releaseBeforeMachine = releaseBeforeMachine;
+	}
 }

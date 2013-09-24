@@ -12,7 +12,7 @@ import eu.robojob.millassist.threading.MonitoringThread;
 
 public class CNCMachineMonitoringThread extends Thread implements MonitoringThread {
 
-	private static final int REFRESH_TIME = 500;
+	private static final int REFRESH_TIME = 250;
 	
 	private AbstractCNCMachine cncMachine;
 	private boolean alive;

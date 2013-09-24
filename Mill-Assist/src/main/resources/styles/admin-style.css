@@ -107,6 +107,8 @@
 	-fx-font-family: "Open Sans Bold";
 	-fx-font-weight: bold;
 	-fx-font-size: 14px;
+	-fx-alignment: center-left;
+	-fx-text-alignment: left;
 }
 
 .yellow {

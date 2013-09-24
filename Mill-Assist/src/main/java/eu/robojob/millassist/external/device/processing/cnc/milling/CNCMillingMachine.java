@@ -11,6 +11,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
 import eu.robojob.millassist.external.device.DeviceActionException;
@@ -247,6 +248,10 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		//TODO for now WA1 is always used
 		command = command | CNCMachineConstants.IPC_UNCLAMP_WA1_RQST;
 		
+		if (pickSettings.getWorkArea().getActiveClamping().getType() == Clamping.Type.DOUBLE) {
+			command = command | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
+		}
+		
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 		
@@ -267,6 +272,10 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		int command = 0;
 		//TODO for now WA1 is always used
 		command = command | CNCMachineConstants.IPC_CLAMP_WA1_REQUEST;
+		
+		if (putSettings.getWorkArea().getActiveClamping().getType() == Clamping.Type.DOUBLE) {
+			command = command | CNCMachineConstants.IPC_CLAMP_WA2_REQUEST;
+		}
 		
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);

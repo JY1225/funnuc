@@ -8,7 +8,7 @@ import eu.robojob.millassist.positioning.Coordinates;
 public class Clamping {
 	
 	public static enum Type {
-		CENTRUM, FIXED, NONE
+		CENTRUM, FIXED, NONE, DOUBLE
 	}
 	
 	private int id;

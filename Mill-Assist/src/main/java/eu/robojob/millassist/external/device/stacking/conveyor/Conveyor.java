@@ -555,6 +555,15 @@ public class Conveyor extends AbstractStackingDevice {
 					sensorIndex = validIndex;
 					sensorValue = sensorValues.get(i);
 				}
+				// also check next sensors if their supports are down
+				int j = 1;
+				while ((i+j-1) < layout.getRequestedSupportStatus().length && !layout.getRequestedSupportStatus()[i-1+j]) {
+					if ((sensorValues.get(j+i) < sensorValue) && (sensorValues.get(j+i) > 0)) {
+						sensorIndex = validIndex;
+						sensorValue = sensorValues.get(i+j);
+					}
+					j++;
+				}
 				validIndex++;
 			}
 		}

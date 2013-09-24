@@ -24,6 +24,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorLayout;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -84,6 +88,8 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 	private static final float MAX_CONV_HEIGHT = 300;
 	
 	private static final float VISIBLE_AREA = 275;
+	
+	private static Logger logger = LogManager.getLogger(ConveyorRawWorkPieceLayoutView.class.getName());
 	
 	public ConveyorRawWorkPieceLayoutView() {
 		this.tTransitions = new ArrayList<TranslateTransition>();
@@ -367,11 +373,11 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		// set supports
 		for (int i = 0; i < conveyorLayout.getCurrentSupportStatus().length; i++) {
 			setSupport(supports.get(i), conveyorLayout.getCurrentSupportStatus()[i], conveyorLayout.getRequestedSupportStatus()[i]);
-			if (conveyorLayout.getRequestedSupportStatus()[i]) {
+			/*if (conveyorLayout.getRequestedSupportStatus()[i]) {
 				texts.get(i+1).setVisible(true);
 			} else {
 				texts.get(i+1).setVisible(false);
-			}
+			}*/
 		}
 	}
 	
@@ -468,10 +474,28 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			if ((i == 0)  || (conveyorLayout.getRequestedSupportStatus()[i-1])) {
 				if (wpIndex < workPieces.size()) {	// prevents from updating when workpieces are not yet recalculated but supports are
 					double dest = ((float) sensorValues.get(i))/100 + 70; 
-					workPieces.get(wpIndex).setLayoutX(dest);
+					// check if other sensor indicates smaller value
+					int j = 1;
+					boolean foundThis = false;
 					if (sensorValues.get(i) > 0) {
-						found = true;
+						logger.info("found: " + sensorValues.get(i));
+						foundThis = true;
+					}
+					while ((i+j-1) < conveyorLayout.getRequestedSupportStatus().length && !conveyorLayout.getRequestedSupportStatus()[i-1+j]) {
+						if (((sensorValues.get(j+i) < sensorValues.get(i)) || (sensorValues.get(i) == 0)) && (sensorValues.get(j+i) > 0)) {
+							dest = ((float) sensorValues.get(i+j))/100 + 70;
+							if (sensorValues.get(i+j) > 0) {
+								foundThis = true;
+								logger.info("found: " + sensorValues.get(i+j) + " - " + j + " - " + wpIndex);
+							}
+						}
+						j++;
+					}
+					
+					workPieces.get(wpIndex).setLayoutX(dest);
+					if (foundThis) {
 						workPieces.get(wpIndex).setVisible(true);
+						found = true;
 					} else {
 						workPieces.get(wpIndex).setVisible(false);
 					}

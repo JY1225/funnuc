@@ -58,6 +58,13 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 		}
 	}
 
+	public void changedReleaseBefore(final boolean releaseBefore) {
+		if (putStep.getRobotSettings().isReleaseBeforeMachine() != releaseBefore) {
+			putStep.getRobotSettings().setReleaseBeforeMachine(releaseBefore);
+			getView().refresh();
+		}
+	}
+	
 	public void changedAirblow(final boolean airblow) {
 		putStep.getRobotSettings().setDoMachineAirblow(airblow);
 	}

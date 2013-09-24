@@ -142,6 +142,9 @@ public class FanucRobot extends AbstractRobot {
 		FanucRobotPutSettings fPutSettings = (FanucRobotPutSettings) putSettings;
 		writeServiceGripperSet(false, putSettings.getGripperHead().getName(), this.getGripperBody().getGripperHeadByName(HEAD_A_ID), this.getGripperBody().getGripperHeadByName(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PUT);
 		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
+		if (fPutSettings.isReleaseBeforeMachine()) {
+			ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_21;
+		}
 		if (fPutSettings.isDoMachineAirblow()) {
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 		}
@@ -692,7 +695,7 @@ public class FanucRobot extends AbstractRobot {
 
 	@Override
 	public RobotPutSettings getDefaultPutSettings() {
-		return new FanucRobotPutSettings(this, null, null, null, null, false);
+		return new FanucRobotPutSettings(this, null, null, null, null, false, false);
 	}
 
 	public RobotSocketCommunication getRobotSocketCommunication() {
