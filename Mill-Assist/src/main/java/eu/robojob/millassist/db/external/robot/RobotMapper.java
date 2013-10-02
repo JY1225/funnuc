@@ -14,6 +14,7 @@ import eu.robojob.millassist.db.external.util.ConnectionMapper;
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.Gripper;
+import eu.robojob.millassist.external.robot.Gripper.Type;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
@@ -21,6 +22,8 @@ import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
 public class RobotMapper {
 
 	private static final int ROBOT_TYPE_FANUC = 1;
+	private static final int GRIPPER_TYPE_TWOPOINT = 1;
+	private static final int GRIPPER_TYPE_VACUUM = 2;
 	private ConnectionMapper connectionMapper;
 	private Map<Integer, GripperBody> gripperBodiesBuffer;
 	private Map<Integer, GripperHead> gripperHeadsBuffer;
@@ -153,7 +156,16 @@ public class RobotMapper {
 				String name = results.getString("NAME");
 				String description = results.getString("DESCRIPTION");
 				String imageUrl = results.getString("IMAGE_URL");
-				gripper = new Gripper(name, height, description, imageUrl);
+				int typeId = results.getInt("TYPE");
+				Gripper.Type type = Gripper.Type.TWOPOINT;
+				if (typeId == GRIPPER_TYPE_TWOPOINT) {
+					type = Gripper.Type.TWOPOINT;
+				} else if (typeId == GRIPPER_TYPE_VACUUM) {
+					type = Gripper.Type.VACUUM;
+				} else {
+					throw new IllegalArgumentException("Unkown gripper type id: " + typeId);
+				}
+				gripper = new Gripper(name, type, height, description, imageUrl);
 				gripper.setFixedHeight(fixedHeight);
 				gripper.setId(id);
 			}
@@ -191,22 +203,32 @@ public class RobotMapper {
 		// TODO updating of gripper heads
 	}
 	
-	public void updateGripperData(final Gripper gripper, final String name, final String imgUrl, final float height, final boolean fixedHeight, 
+	public void updateGripperData(final Gripper gripper, final String name, final Gripper.Type type, final String imgUrl, final float height, final boolean fixedHeight, 
 			final boolean headA, final boolean headB, final boolean headC, final boolean headD) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		if ((!gripper.getName().equals(name)) || (!gripper.getImageUrl().equals(imgUrl)) || (gripper.getHeight() != height)
-				|| (gripper.isFixedHeight() != fixedHeight)) {
-			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE GRIPPER SET HEIGHT = ?, FIXEDHEIGHT = ?, NAME = ?, IMAGE_URL = ? WHERE ID = ?");
+				|| (gripper.isFixedHeight() != fixedHeight) || (gripper.getType() != type)) {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE GRIPPER SET HEIGHT = ?, FIXEDHEIGHT = ?, NAME = ?, IMAGE_URL = ?, TYPE = ? WHERE ID = ?");
 			stmt.setFloat(1, height);
 			stmt.setBoolean(2, fixedHeight);
 			stmt.setString(3, name);
 			stmt.setString(4, imgUrl);
-			stmt.setInt(5, gripper.getId());
+			int gripperTypeId = GRIPPER_TYPE_TWOPOINT;
+			if (type == Type.TWOPOINT) {
+				gripperTypeId = GRIPPER_TYPE_TWOPOINT;
+			} else if (type == Type.VACUUM) {
+				gripperTypeId = GRIPPER_TYPE_VACUUM;
+			} else {
+				throw new IllegalArgumentException("Unkwon gripper type: " + type);
+			}
+			stmt.setInt(5, gripperTypeId);
+			stmt.setInt(6, gripper.getId());
 			stmt.executeUpdate();
 			gripper.setName(name);
 			gripper.setImageUrl(imgUrl);
 			gripper.setHeight(height);
 			gripper.setFixedHeight(fixedHeight);
+			gripper.setType(type);
 		}
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
@@ -215,11 +237,18 @@ public class RobotMapper {
 	
 	public void saveGripper(final Gripper gripper, final GripperHead... heads) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO GRIPPER (NAME, IMAGE_URL, HEIGHT, FIXEDHEIGHT) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO GRIPPER (NAME, IMAGE_URL, HEIGHT, FIXEDHEIGHT, TYPE) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setString(1, gripper.getName());
 		stmt.setString(2, gripper.getImageUrl());
 		stmt.setFloat(3, gripper.getHeight());
 		stmt.setBoolean(4, gripper.isFixedHeight());
+		int typeInt = GRIPPER_TYPE_TWOPOINT;
+		if (gripper.getType() == Type.TWOPOINT) {
+			typeInt = GRIPPER_TYPE_TWOPOINT;
+		} else if (gripper.getType() == Type.VACUUM) {
+			typeInt = GRIPPER_TYPE_VACUUM;
+		}
+		stmt.setInt(5, typeInt);
 		try {
 			stmt.executeUpdate();
 			ResultSet resultSet = stmt.getGeneratedKeys();

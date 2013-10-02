@@ -27,4 +27,11 @@ public class GeneralInfoPresenter {
 		parent.startTeachAll();
 	}
 	
+	public void saveProcess() {
+		parent.saveProcess();
+	}
+	
+	public void clearTeachedData() {
+		parent.clearTeachedData();
+	}
 }

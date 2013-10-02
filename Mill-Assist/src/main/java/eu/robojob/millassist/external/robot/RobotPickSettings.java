@@ -10,8 +10,8 @@ public abstract class RobotPickSettings extends AbstractRobotActionSettings<Pick
 	private WorkPiece workPiece;
 	private boolean doMachineAirblow;
 
-	public RobotPickSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final WorkPiece workPiece, final boolean doMachineAirblow) {
-		super(robot, workArea, gripperHead, smoothPoint, location);
+	public RobotPickSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final WorkPiece workPiece, final boolean doMachineAirblow, final boolean gripInner) {
+		super(robot, workArea, gripperHead, smoothPoint, location, gripInner);
 		this.workPiece = workPiece;
 		this.doMachineAirblow = doMachineAirblow;
 	}

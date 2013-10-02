@@ -536,14 +536,15 @@ public class Conveyor extends AbstractStackingDevice {
 	}
 
 	@Override
-	public Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) throws DeviceActionException, InterruptedException {
+	public Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {
 		if (!workArea.equals(rawWorkArea)) {
 			throw new IllegalStateException("Can only pick from raw conveyor");
 		}
-		// wait until workpiece in position
+		//FIXME: review if this is still ok
+		/*// wait until workpiece in position
 		logger.info("Waiting for raw work piece in position status.");
 		waitForStatus((ConveyorConstants.RAW_WP_IN_POSITION));
-		logger.info("Work piece in position.");
+		logger.info("Work piece in position.");*/
 		// get lowest non-zero sensor value
 		int sensorValue = Integer.MAX_VALUE;
 		int sensorIndex = -1;
@@ -575,6 +576,25 @@ public class Conveyor extends AbstractStackingDevice {
 		c.setX((((float) sensorValue)/100) + stPos.getWorkPiece().getDimensions().getLength()/2);
 		logger.info("Pick location at sensor: " + sensorIndex + " - coordinates: " + c);
 		return c;
+	}
+	
+	@Override
+	public Coordinates getLocationOrientation(final WorkArea workArea) {
+		if (workArea.equals(rawWorkArea)) {
+			Coordinates c = new Coordinates(layout.getStackingPositionsRawWorkPieces().get(0).getPosition());
+			c.setX(0);
+			c.setY(0);
+			c.setZ(0);
+			return c;
+		} else if (workArea.equals(finishedWorkArea)) {
+			Coordinates c = new Coordinates(layout.getStackingPositionsFinishedWorkPieces().get(0).getPosition());
+			c.setX(0);
+			c.setY(0);
+			c.setZ(0);
+			return c;
+		} else {
+			throw new IllegalArgumentException("Unknown workarea: " + workArea);
+		}
 	}
 
 	@Override

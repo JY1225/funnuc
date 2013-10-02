@@ -64,7 +64,7 @@ public class TeachOptimizedThread extends TeachThread {
 		try {
 			getProcessFlow().initialize();
 			getProcessFlow().setMode(Mode.TEACH);
-			resetOffsets();
+			//resetOffsets();
 			try {
 				// process-initialization
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.PREPARE, WORKPIECE_ID));
@@ -171,7 +171,22 @@ public class TeachOptimizedThread extends TeachThread {
 		}
 		getProcessFlow().setFinishedAmount(1);
 		Coordinates originalCoordinates = stackingDevice.getLocation(putOnStackerStep.getRobotSettings().getWorkArea(), WorkPiece.Type.FINISHED, getProcessFlow().getClampingType());
-		putSettings.setLocation(originalCoordinates);
+		if (putOnStackerStep.needsTeaching()) {
+			Coordinates position = new Coordinates(originalCoordinates);
+			logger.debug("Original coordinates: " + position + ".");
+			if (putOnStackerStep.getRelativeTeachedOffset() != null) {
+				logger.debug("The teached offset that will be used: [" + putOnStackerStep.getRelativeTeachedOffset() + "].");
+				Coordinates absoluteOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, putOnStackerStep.getRelativeTeachedOffset());
+				logger.debug("The absolute offset that will be used: [" + absoluteOffset + "].");
+				position.offset(absoluteOffset);
+				logger.debug("Exact put location: [" + position + "].");
+			}
+			putSettings.setLocation(position);
+		} else {
+			Coordinates position = new Coordinates(originalCoordinates);
+			logger.debug("Exact put location (calculated without teaching): [" + position + "].");
+			putSettings.setLocation(position);
+		}
 		putSettings.setTeachingNeeded(true);
 		putSettings.setFreeAfter(false);
 		// TODO refactor, as the robot does not really have a piece

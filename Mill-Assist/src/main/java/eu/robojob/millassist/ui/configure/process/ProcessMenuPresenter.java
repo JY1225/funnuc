@@ -72,6 +72,10 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 		getParent().setNormalMode();
 		configurePresenter.setNormalMode();
 	}
+	
+	public void refreshParent() {
+		getParent().refresh();
+	}
 
 	@Override
 	public void setBlocked(final boolean blocked) {

@@ -174,7 +174,7 @@ public class PutStep extends AbstractTransportStep {
 			devicePutSettings.setStep(this);
 		}
 	}
-
+	
 	@Override
 	public boolean needsTeaching() {
 		//TODO implement

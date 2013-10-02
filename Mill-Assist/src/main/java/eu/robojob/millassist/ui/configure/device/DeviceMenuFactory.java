@@ -26,6 +26,8 @@ import eu.robojob.millassist.ui.configure.device.processing.cnc.CNCMillingMachin
 import eu.robojob.millassist.ui.configure.device.processing.prage.PrageDeviceConfigurePresenter;
 import eu.robojob.millassist.ui.configure.device.processing.prage.PrageDeviceConfigureView;
 import eu.robojob.millassist.ui.configure.device.processing.prage.PrageDeviceMenuPresenter;
+import eu.robojob.millassist.ui.configure.device.stacking.ConfigureSmoothPresenter;
+import eu.robojob.millassist.ui.configure.device.stacking.ConfigureSmoothView;
 import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceMenuView;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorConfigurePresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorConfigureView;
@@ -128,8 +130,18 @@ public class DeviceMenuFactory {
 	
 	public BasicStackPlateMenuPresenter getBasicStackPlateMenuPresenter(final DeviceInformation deviceInfo) {
 		StackingDeviceMenuView stackingDeviceMenuView = new StackingDeviceMenuView();
+		ConfigureSmoothView smoothView = new ConfigureSmoothView();
+		ConfigureSmoothPresenter<BasicStackPlateMenuPresenter> smoothPickPresenter = null;
+		ConfigureSmoothPresenter<BasicStackPlateMenuPresenter> smoothPutPresenter = null;
+		if (deviceInfo.hasPickStep()) {
+			smoothPickPresenter = new ConfigureSmoothPresenter<BasicStackPlateMenuPresenter>(smoothView, deviceInfo.getPickStep().getRobotSettings());
+		} else if (deviceInfo.hasPutStep()) {
+			smoothPutPresenter = new ConfigureSmoothPresenter<BasicStackPlateMenuPresenter>(smoothView, deviceInfo.getPutStep().getRobotSettings());
+		} else {
+			throw new IllegalStateException("No pick or put step for basic stack plate");
+		}
 		BasicStackPlateMenuPresenter basicStackPlateMenuPresenter = new BasicStackPlateMenuPresenter(stackingDeviceMenuView, deviceInfo, getBasicStackPlateConfigurePresenter(deviceInfo), 
-				getBasicStackPlateWorkPiecePresenter(deviceInfo), getBasicStackPlateLayoutPresenter(deviceInfo));
+				getBasicStackPlateWorkPiecePresenter(deviceInfo), getBasicStackPlateLayoutPresenter(deviceInfo), smoothPickPresenter, smoothPutPresenter);
 		return basicStackPlateMenuPresenter;
 	}
 	
@@ -165,12 +177,16 @@ public class DeviceMenuFactory {
 	public ConveyorMenuPresenter getConveyorMenuPresenter(final DeviceInformation deviceInfo) {
 		StackingDeviceMenuView menuView = new StackingDeviceMenuView();
 		ConveyorMenuPresenter presenter = null;
+		ConfigureSmoothView smoothView = new ConfigureSmoothView();
+		ConfigureSmoothPresenter<ConveyorMenuPresenter> smoothPresenter = null;
 		if (deviceInfo.getPickStep() != null) {
 			// first device 
-			presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), getConveyorRawWorkPiecePresenter(deviceInfo), getRawWorkPieceLayoutPresenter(deviceInfo), getConveyorRawWorkPieceOffsetPresenter(deviceInfo));
+			smoothPresenter = new ConfigureSmoothPresenter<ConveyorMenuPresenter>(smoothView, deviceInfo.getPickStep().getRobotSettings());
+			presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), getConveyorRawWorkPiecePresenter(deviceInfo), getRawWorkPieceLayoutPresenter(deviceInfo), getConveyorRawWorkPieceOffsetPresenter(deviceInfo), smoothPresenter, null);
 		} else {
 			// last device
-			presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), null, getFinishedWorkPieceLayoutPresenter(deviceInfo), null);
+			smoothPresenter = new ConfigureSmoothPresenter<ConveyorMenuPresenter>(smoothView, deviceInfo.getPutStep().getRobotSettings());
+			presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), null, getFinishedWorkPieceLayoutPresenter(deviceInfo), null, null, smoothPresenter);
 		}
 		return presenter;
 	}

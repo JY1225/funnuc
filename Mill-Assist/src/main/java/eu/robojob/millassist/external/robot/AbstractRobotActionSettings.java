@@ -15,8 +15,9 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 	private Coordinates location;
 	private boolean freeAfter;
 	private boolean teachingNeeded;
+	private boolean gripInner;
 	
-	public AbstractRobotActionSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location) {
+	public AbstractRobotActionSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final boolean gripInner) {
 		this.robot = robot;
 		this.workArea = workArea;
 		this.gripperHead = gripperHead;
@@ -24,6 +25,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		this.location = location;
 		this.freeAfter = false;
 		this.teachingNeeded = false;
+		this.gripInner = gripInner;
 	}
 	
 	public int getId() {
@@ -49,43 +51,59 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 	public T getStep() {
 		return step;
 	}
-	
+
 	public boolean isFreeAfter() {
 		return freeAfter;
 	}
-
+	
 	public void setFreeAfter(final boolean freeAfter) {
 		this.freeAfter = freeAfter;
 	}
-
+	
 	public WorkArea getWorkArea() {
 		return workArea;
 	}
+	
 	public GripperHead getGripperHead() {
 		return gripperHead;
 	}
+	
 	public void setGripperHead(final GripperHead gripperHead) {
 		this.gripperHead = gripperHead;
 	}
+	
 	public Coordinates getSmoothPoint() {
 		return smoothPoint;
 	}
+	
 	public void setSmoothPoint(final Coordinates smoothPoint) {
 		this.smoothPoint = smoothPoint;
 	}
+	
 	public Coordinates getLocation() {
 		return location;
 	}
+	
 	public void setLocation(final Coordinates location) {
 		this.location = location;
 	}
+	
 	public void setWorkArea(final WorkArea workArea) {
 		this.workArea = workArea;
 	}
-
+	
+	public boolean isGripInner() {
+		return gripInner;
+	}
+	
+	public void setGripInner(final boolean gripInner) {
+		this.gripInner = gripInner;
+	}
+	
 	public boolean isTeachingNeeded() {
 		return teachingNeeded;
 	}
+	
 	public void setTeachingNeeded(final boolean teachingNeeded) {
 		this.teachingNeeded = teachingNeeded;
 	}

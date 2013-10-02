@@ -1,6 +1,7 @@
 package eu.robojob.millassist.ui.configure.device.stacking.conveyor;
 
 import eu.robojob.millassist.ui.configure.device.stacking.AbstractStackingDeviceMenuPresenter;
+import eu.robojob.millassist.ui.configure.device.stacking.ConfigureSmoothPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceMenuView;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.device.stacking.conveyor.AbstractWorkPieceLayoutPresenter;
@@ -12,11 +13,15 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 	private ConveyorRawWorkPiecePresenter rawWorkPiecePresenter;
 	private AbstractWorkPieceLayoutPresenter<?, ConveyorMenuPresenter> workPieceLayoutPresenter;
 	private ConveyorRawWorkPieceOffsetPresenter conveyorRawWorkPieceOffsetPresenter;
+	private ConfigureSmoothPresenter<ConveyorMenuPresenter> configurePickPresenter;
+	private ConfigureSmoothPresenter<ConveyorMenuPresenter> configurePutPresenter;
 	
 	public ConveyorMenuPresenter(final StackingDeviceMenuView view, final DeviceInformation deviceInfo,
 			final ConveyorConfigurePresenter configurePresenter, final ConveyorRawWorkPiecePresenter rawWorkPiecePresenter, 
 				final AbstractWorkPieceLayoutPresenter<?, ConveyorMenuPresenter> workPieceLayoutPresenter, 
-					final ConveyorRawWorkPieceOffsetPresenter conveyorRawWorkPieceOffsetPresenter) {
+					final ConveyorRawWorkPieceOffsetPresenter conveyorRawWorkPieceOffsetPresenter, 
+					final ConfigureSmoothPresenter<ConveyorMenuPresenter> configurePickPresenter, 
+					final ConfigureSmoothPresenter<ConveyorMenuPresenter> configurePutPresenter) {
 		super(view, deviceInfo);
 		this.configurePresenter = configurePresenter;
 		configurePresenter.setMenuPresenter(this);
@@ -31,6 +36,14 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 		if (conveyorRawWorkPieceOffsetPresenter != null) {
 			this.conveyorRawWorkPieceOffsetPresenter = conveyorRawWorkPieceOffsetPresenter;
 			conveyorRawWorkPieceOffsetPresenter.setMenuPresenter(this);
+		}
+		if (configurePickPresenter != null) {
+			this.configurePickPresenter = configurePickPresenter;
+			configurePickPresenter.setMenuPresenter(this);
+		}
+		if (configurePutPresenter != null) {
+			this.configurePutPresenter = configurePutPresenter;
+			configurePutPresenter.setMenuPresenter(this);
 		}
 	}
 
@@ -82,11 +95,29 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 		if (conveyorRawWorkPieceOffsetPresenter != null) {
 			conveyorRawWorkPieceOffsetPresenter.setTextFieldListener(listener);
 		}
+		if (configurePickPresenter != null) {
+			configurePickPresenter.setTextFieldListener(listener);
+		}
+		if (configurePutPresenter != null) {
+			configurePutPresenter.setTextFieldListener(listener);
+		}
 	}
 
 	@Override
 	public void unregisterListeners() {
 		workPieceLayoutPresenter.unregister();
+	}
+
+	@Override
+	public void configurePick() {
+		getView().setConfigurePickActive();
+		getParent().setBottomRightView(configurePickPresenter.getView());
+	}
+
+	@Override
+	public void configurePut() {
+		getView().setConfigurePutActive();
+		getParent().setBottomRightView(configurePutPresenter.getView());
 	}
 
 }

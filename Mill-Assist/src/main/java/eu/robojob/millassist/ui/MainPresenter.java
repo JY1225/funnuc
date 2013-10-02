@@ -79,6 +79,7 @@ public class MainPresenter implements ProcessFlowListener {
 	
 	public void showTeach() {
 		menuBarPresenter.showTeachView();
+		teachPresenter.closeTransportMenu();
 		setActiveMainContentPresenter(teachPresenter);
 		refreshStatus();
 	}

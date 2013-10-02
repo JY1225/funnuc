@@ -6,7 +6,7 @@ import eu.robojob.millassist.process.ProcessingWhileWaitingStep;
 public class RobotProcessingWhileWaitingSettings extends AbstractRobotActionSettings<ProcessingWhileWaitingStep> {
 
 	public RobotProcessingWhileWaitingSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead) {
-		super(robot, workArea, gripperHead, null, null);
+		super(robot, workArea, gripperHead, null, null, false);
 	}
 
 }

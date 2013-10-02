@@ -81,11 +81,12 @@ public final class RobotConstants {
 	public static final int COMMAND_ABORT						=	62;
 	public static final int COMMAND_CONTINUE					=	63;
 	public static final int COMMAND_RECALC_TCPS					=	64;
-	public static final int COMMAND_TO_HOME						=	71;
-	public static final int COMMAND_TO_JAW_CHANGE				=	66;
 	public static final int COMMAND_SET_SPEED					=	67;
 	public static final int COMMAND_TO_TRANSPORT_POINT			=	68;
 	public static final int COMMAND_ASK_POSITION				=	70;
+	public static final int COMMAND_TO_HOME						=	71;
+	public static final int COMMAND_JAW_CH						=	72;
+	public static final int COMMAND_GRIPPER_ACTION 				=	73;
 	
 	// RESPONSE IDS
 	public static final int RESPONSE_ASK_STATUS					=	120;
@@ -102,11 +103,12 @@ public final class RobotConstants {
 	public static final int RESPONSE_ABORT						=	162;
 	public static final int RESPONSE_CONTINUE					=	163;
 	public static final int RESPONSE_RECALC_TCPS				=	164;
-	public static final int RESPONSE_TO_HOME					=	171;
-	public static final int RESPONSE_TO_JAW_CHANGE				=	166;
 	public static final int RESPONSE_SET_SPEED					=	167;
 	public static final int RESPONSE_TO_TRANSPORT_POINT			=	168;
 	public static final int RESPONSE_ASK_POSITION				=	170;
+	public static final int RESPONSE_TO_HOME					=	171;
+	public static final int RESPONSE_JAW_CH						=	172;
+	public static final int RESPONSE_GRIPPER_ACTION				= 	173;
 	
 	// SERVICE GRIPPER
 	public static final int SERVICE_GRIPPER_SERVICE_TYPE_TOOL_CHANGE = 1;

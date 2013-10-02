@@ -126,6 +126,12 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
+	public Coordinates getLocationOrientation(final WorkArea workArea) {
+		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		return c;
+	}
+	
+	@Override
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {

@@ -42,7 +42,7 @@ public class TeachThread extends Thread implements ProcessExecutor {
 		try {
 			getProcessFlow().initialize();
 			getProcessFlow().setMode(Mode.TEACH);
-			resetOffsets();
+			//resetOffsets();
 			try {
 				// process-initialization
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.PREPARE, WORKPIECE_ID));

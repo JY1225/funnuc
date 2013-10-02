@@ -226,3 +226,11 @@
 .progressbar-piece-unfocussed {
 	-fx-opacity: 0.2;
 }
+
+.process-name {
+	-fx-text-fill: #9d9d9d;
+	-fx-font-size: 13px;
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
+	-fx-text-alignment: right;
+}

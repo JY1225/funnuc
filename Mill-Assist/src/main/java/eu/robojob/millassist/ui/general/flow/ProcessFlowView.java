@@ -7,22 +7,26 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import eu.robojob.millassist.external.device.DeviceType;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.configure.ConfigureView;
 import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
 
-public class ProcessFlowView extends GridPane {
+public class ProcessFlowView extends StackPane {
 
 	public enum ProgressBarPieceMode {
 		GREEN, YELLOW, NONE
 	}
+	
+	private GridPane gpFlow;
 	
 	private ProcessFlowAdapter processFlowAdapter;
 	private AbstractProcessFlowPresenter presenter;
@@ -34,10 +38,13 @@ public class ProcessFlowView extends GridPane {
 	private List<List<Region>> transportProgressRegionsLeft;
 	private List<List<Region>> transportProgressRegionsRight;
 		
+	private Label lblProcessName;
+	
 	private static final int GAP = 10; 
 	private static final int PROGRESS_BAR_HEIGHT = 6;
 	private static final int PROGRESS_BAR_MARGIN_BOTTOM = 7;
 	private static final int PROGRESS_BAR_REGION_HEIGHT = 30;
+	private static final int LBL_MARGIN= 10;
 	private static final String CSS_CLASS_PROCESSFLOW_VIEW = "process-flow-view";
 	private static final String CSS_CLASS_PROGRESS_BAR_PIECE = "progressbar-piece";
 	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_FIRST = "progressbar-piece-first";
@@ -45,6 +52,7 @@ public class ProcessFlowView extends GridPane {
 	private static final String CSS_CLASS_PROGRESS_BAR_UNFOCUSSED = "progressbar-piece-unfocussed";
 	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_GREEN = "progressbar-piece-green";
 	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW = "progressbar-piece-yellow";
+	private static final String CSS_CLASS_PROCESS_NAME = "process-name";
 	private int progressBarAmount;
 		
 	public ProcessFlowView(final int progressBarAmount) {
@@ -70,8 +78,22 @@ public class ProcessFlowView extends GridPane {
 	
 	protected void build() {
 		this.getChildren().clear();
-		setVgap(GAP);
-		setPadding(new Insets(GAP, 0, GAP, 0));
+		gpFlow = new GridPane();
+		lblProcessName = new Label();
+		lblProcessName.setText(processFlowAdapter.getProcessFlow().getName());
+		lblProcessName.getStyleClass().add(CSS_CLASS_PROCESS_NAME);
+		this.getChildren().add(gpFlow);
+		this.getChildren().add(lblProcessName);
+		StackPane.setAlignment(lblProcessName, Pos.BOTTOM_RIGHT);
+		StackPane.setMargin(lblProcessName, new Insets(LBL_MARGIN, LBL_MARGIN, LBL_MARGIN, LBL_MARGIN));
+		StackPane.setAlignment(gpFlow, Pos.CENTER);
+		this.setPrefWidth(800);
+		this.setPrefHeight(225);
+		gpFlow.setPrefWidth(800);
+		gpFlow.setPrefHeight(225);
+		gpFlow.getChildren().clear();
+		gpFlow.setVgap(GAP);
+		gpFlow.setPadding(new Insets(GAP, 0, GAP, 0));
 		int column = 0;
 		int row = 0;
 		for (int i = 0; i < processFlowAdapter.getDeviceStepCount(); i++) {		
@@ -83,11 +105,11 @@ public class ProcessFlowView extends GridPane {
 			}
 			column++;
 		}
-		this.setAlignment(Pos.CENTER);
-		this.setPrefHeight(ConfigureView.HEIGHT_TOP);
-		this.setPrefWidth(ConfigureView.WIDTH);
-		this.getStyleClass().add(CSS_CLASS_PROCESSFLOW_VIEW);
-		this.setEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+		gpFlow.setAlignment(Pos.CENTER);
+		gpFlow.setPrefHeight(ConfigureView.HEIGHT_TOP);
+		gpFlow.setPrefWidth(ConfigureView.WIDTH);
+		gpFlow.getStyleClass().add(CSS_CLASS_PROCESSFLOW_VIEW);
+		gpFlow.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(final MouseEvent event) {
 				ProcessFlowView.this.requestFocus();
@@ -114,13 +136,13 @@ public class ProcessFlowView extends GridPane {
 				getPresenter().deviceClicked(index);
 			}
 		});
-		this.add(device, column, row);
+		gpFlow.add(device, column, row);
 		deviceButtons.add(device);
 		device.toFront();
 		VBox progressVBox = new VBox();
 		progressVBox.setMinHeight(PROGRESS_BAR_REGION_HEIGHT);
 		progressVBox.setPrefHeight(PROGRESS_BAR_REGION_HEIGHT);
-		this.add(progressVBox, column, (1 + row));
+		gpFlow.add(progressVBox, column, (1 + row));
 		setupDeviceProgressBarRegions(index, progressVBox);
 	}
 	
@@ -150,12 +172,12 @@ public class ProcessFlowView extends GridPane {
 				getPresenter().transportClicked(index);
 			}
 		});
-		this.add(transport, column, row);
+		gpFlow.add(transport, column, row);
 		transport.toBack();
 		GridPane.setMargin(transport, new Insets(0, -2, 0, -2));
 		transportButtons.add(transport);
 		HBox progressHBox = new HBox();
-		this.add(progressHBox, column, (1 + row));
+		gpFlow.add(progressHBox, column, (1 + row));
 		//left
 		VBox progress1VBox = new VBox();
 		progress1VBox.setMinHeight(PROGRESS_BAR_REGION_HEIGHT);

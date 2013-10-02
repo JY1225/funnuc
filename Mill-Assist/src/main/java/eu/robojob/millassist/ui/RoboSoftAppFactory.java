@@ -61,7 +61,6 @@ import eu.robojob.millassist.ui.controls.keyboard.NegativeNumericKeyboardView;
 import eu.robojob.millassist.ui.controls.keyboard.NumericKeyboardPresenter;
 import eu.robojob.millassist.ui.controls.keyboard.NumericKeyboardView;
 import eu.robojob.millassist.ui.general.MainContentView;
-import eu.robojob.millassist.ui.general.flow.FixedProcessFlowPresenter;
 import eu.robojob.millassist.ui.general.flow.ProcessFlowView;
 import eu.robojob.millassist.ui.general.status.DisconnectedDevicesView;
 import eu.robojob.millassist.ui.general.status.StatusPresenter;
@@ -75,6 +74,8 @@ import eu.robojob.millassist.ui.teach.GeneralInfoView;
 import eu.robojob.millassist.ui.teach.TeachPresenter;
 import eu.robojob.millassist.ui.teach.TeachStatusPresenter;
 import eu.robojob.millassist.ui.teach.TeachStatusView;
+import eu.robojob.millassist.ui.teach.flow.TeachProcessFlowPresenter;
+import eu.robojob.millassist.ui.teach.flow.TeachProcessFlowView;
 
 public class RoboSoftAppFactory {
 
@@ -85,7 +86,7 @@ public class RoboSoftAppFactory {
 	private TeachPresenter teachPresenter;
 	private AutomatePresenter automatePresenter;
 	private ConfigureProcessFlowPresenter configureProcessFlowPresenter;
-	private FixedProcessFlowPresenter teachProcessFlowPresenter;
+	private TeachProcessFlowPresenter teachProcessFlowPresenter;
 	private AutomateProcessFlowPresenter automateProcessFlowPresenter;
 	private AlarmsPopUpPresenter alarmsPopUpPresenter;
 	private RobotPopUpPresenter robotPopUpPresenter;
@@ -105,6 +106,7 @@ public class RoboSoftAppFactory {
 	private CNCMachineClampingsPresenter cncMachineClampingsPresenter;
 	private PrageDeviceConfigurePresenter prageDeviceConfigurePresenter;
 	private eu.robojob.millassist.ui.automate.device.DeviceMenuFactory automateDeviceMenuFactory;
+	private eu.robojob.millassist.ui.teach.transport.TransportMenuFactory teachTransportMenuFactory;
 	
 	private ProcessFlow processFlow;
 	private ProcessFlowTimer processFlowTimer;
@@ -172,9 +174,17 @@ public class RoboSoftAppFactory {
 		if (teachPresenter == null) {
 			MainContentView view = new MainContentView();
 			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
-			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, getGeneralInfoPresenter(), getTeachStatusPresenter(), processFlowManager);
+			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, getGeneralInfoPresenter(), getTeachStatusPresenter(), processFlowManager, 
+					getTeachTransportMenuFactory(), getKeyboardPresenter(), getNegativeNumericKeyboardPresenter());
 		}
 		return teachPresenter;
+	}
+	
+	private eu.robojob.millassist.ui.teach.transport.TransportMenuFactory getTeachTransportMenuFactory() {
+		if (teachTransportMenuFactory == null) {
+			teachTransportMenuFactory = new eu.robojob.millassist.ui.teach.transport.TransportMenuFactory(getProcessFlow());
+		}
+		return teachTransportMenuFactory;
 	}
 	
 	private GeneralInfoPresenter getGeneralInfoPresenter() {
@@ -262,10 +272,10 @@ public class RoboSoftAppFactory {
 		return configureProcessFlowPresenter;
 	}
 	
-	public FixedProcessFlowPresenter getTeachProcessFlowPresenter() {
+	public TeachProcessFlowPresenter getTeachProcessFlowPresenter() {
 		if (teachProcessFlowPresenter == null) {
-			ProcessFlowView processFlowView = new ProcessFlowView(1);
-			teachProcessFlowPresenter = new FixedProcessFlowPresenter(processFlowView);
+			TeachProcessFlowView processFlowView = new TeachProcessFlowView(1);
+			teachProcessFlowPresenter = new TeachProcessFlowPresenter(processFlowView);
 		}
 		return teachProcessFlowPresenter;
 	}

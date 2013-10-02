@@ -4,7 +4,12 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class Gripper {
 	
+	public enum Type {
+		TWOPOINT, VACUUM
+	}
+	
 	private int id;
+	private Type type;
 	private String name;
 	private float height;
 	private boolean fixedHeight;
@@ -12,8 +17,9 @@ public class Gripper {
 	private String imageUrl;
 	private WorkPiece workPiece;
 	
-	public Gripper(final String name, final float height, final String description, final String imageUrl) {
+	public Gripper(final String name, final Type type, final float height, final String description, final String imageUrl) {
 		this.name = name;
+		this.type = type;
 		this.height = height;
 		this.description = description;
 		this.imageUrl = imageUrl;
@@ -43,6 +49,14 @@ public class Gripper {
 
 	public void setName(final String name) {
 		this.name = name;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(final Type type) {
+		this.type = type;
 	}
 
 	public float getHeight() {

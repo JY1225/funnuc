@@ -55,12 +55,12 @@ public class RobotGripperPresenter extends AbstractFormPresenter<RobotGripperVie
 		}
 	}
 	
-	public void saveData(final String name, final String imgUrl, final float height, final boolean fixedHeight, final boolean headA, final boolean headB,
+	public void saveData(final String name, final Gripper.Type type, final String imgUrl, final float height, final boolean fixedHeight, final boolean headA, final boolean headB,
 			final boolean headC, final boolean headD) {
 		if (selectedGripper != null) {
-			robotManager.updateGripper(selectedGripper, name, imgUrl, height, fixedHeight, headA, headB, headC, headD);
+			robotManager.updateGripper(selectedGripper, name, type, imgUrl, height, fixedHeight, headA, headB, headC, headD);
 		} else {
-			robotManager.addGripper(name, imgUrl, height, fixedHeight, headA, headB, headC, headD);
+			robotManager.addGripper(name, type, imgUrl, height, fixedHeight, headA, headB, headC, headD);
 		}
 		selectedGripper = null;
 		editMode = false;

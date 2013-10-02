@@ -57,6 +57,11 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 				robotSettings.setGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead(), null);
 			} else {
 				robotSettings.setGripper(transportInfo.getPickStep().getRobotSettings().getGripperHead(), gripper);
+				if (gripper.getType() != Gripper.Type.TWOPOINT) {
+					// if not a two point gripper: set grip inner default to false
+					transportInfo.getPickStep().getRobotSettings().setGripInner(false);
+					transportInfo.getPutStep().getRobotSettings().setGripInner(false);
+				}
 			}
 			transportInfo.getRobot().loadRobotSettings(robotSettings);
 			transportInfo.getPickStep().setRelativeTeachedOffset(null);
@@ -68,6 +73,12 @@ public class TransportGripperPresenter extends AbstractFormPresenter<TransportGr
 			// TODO handle this error (warning dialog...)
 			logger.debug("Duplicate gripper usage!");
 		}
+	}
+	
+	public void changedClampingManner(final boolean gripInner) {
+		transportInfo.getPickStep().getRobotSettings().setGripInner(gripInner);
+		transportInfo.getPutStep().getRobotSettings().setGripInner(gripInner);
+		getView().setSelectedGripper();
 	}
 
 	@Override

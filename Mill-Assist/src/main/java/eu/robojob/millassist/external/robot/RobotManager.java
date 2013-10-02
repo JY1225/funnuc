@@ -79,13 +79,13 @@ public class RobotManager {
 		}
 	}
 	
-	public void updateGripper(final Gripper gripper, final String name, final String imgUrl, final float height, final boolean fixedHeight, 
+	public void updateGripper(final Gripper gripper, final String name, final Gripper.Type type, final String imgUrl, final float height, final boolean fixedHeight, 
 			final boolean headA, final boolean headB, final boolean headC, final boolean headD) {
 		try {
 			logger.info("About to update gripper [" + gripper.toString() + "] with following data: name [" + name +
 					"], imgUrl [" + imgUrl + "], height [" + height + "], fixedHeight [" + fixedHeight + "], " +
-					"heads (A, B, C, D) [" + headA + ", " + headB + ", " + headC + ", " + headD + "].");
-			robotMapper.updateGripperData(gripper, name, imgUrl, height, fixedHeight, headA, headB, headC, headD);
+					"heads (A, B, C, D) [" + headA + ", " + headB + ", " + headC + ", " + headD + "], type [" + type + "].");
+			robotMapper.updateGripperData(gripper, name, type, imgUrl, height, fixedHeight, headA, headB, headC, headD);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -115,9 +115,9 @@ public class RobotManager {
 		}
 	}
 	
-	public void addGripper(final String name, final String imgUrl, final float height, final boolean fixedHeight, final boolean headA, 
+	public void addGripper(final String name, final Gripper.Type type, final String imgUrl, final float height, final boolean fixedHeight, final boolean headA, 
 			final boolean headB, final boolean headC, final boolean headD) {
-		Gripper newGripper = new Gripper(name, height, null, imgUrl);
+		Gripper newGripper = new Gripper(name, type, height, null, imgUrl);
 		try {
 			robotMapper.saveGripper(newGripper, getRobots().iterator().next().getGripperBody().getGripperHeadByName("A"),
 					getRobots().iterator().next().getGripperBody().getGripperHeadByName("B"));

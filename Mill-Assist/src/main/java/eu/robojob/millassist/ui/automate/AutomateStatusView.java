@@ -11,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.ArcTo;
@@ -18,7 +19,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
-import javafx.scene.text.Text;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 import eu.robojob.millassist.ui.general.status.StatusView;
@@ -35,9 +36,18 @@ public class AutomateStatusView extends HBox {
 	public static final int PROGRESS_RADIUS = 80;
 	public static final int PROGRESS_RADIUS_INNER = 1;
 	public static final int PROGRESS_RADIUS_INNER_CIRCLE = 74;
-	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3;
-	private static final double BTN_HEIGHT = 40;
+	private static final double BTN_WIDTH = UIConstants.BUTTON_HEIGHT * 3.5;
 	private static final int TIMING_STATUS_WIDTH = 500;
+	
+	private static final int ICON_MARGIN = 8;
+	
+	private static final String CSS_CLASS_FORM_BUTTON_ICON = "form-button-icon";
+	private static final String CSS_CLASS_BUTTON_START_LABEL = "btn-start-label";
+	private static final String CSS_CLASS_BUTTON = "form-button";
+	private static final String CSS_CLASS_BUTTON_STOP = "delete-btn";
+	
+	private static final String STOP_ICON = "M 11.46875 0 C 5.1620208 0 0 5.1349468 0 11.5 C 0 17.865052 5.1620208 23 11.46875 23 C 17.775477 23 22.9375 17.865052 22.9375 11.5 C 22.9375 5.1349468 17.775478 0 11.46875 0 z M 11.46875 1.59375 C 17.003076 1.59375 21.40625 6.0239967 21.40625 11.5 C 21.40625 16.976002 17.003076 21.40625 11.46875 21.40625 C 5.9344209 21.40625 1.5 16.976002 1.5 11.5 C 1.5 6.0239967 5.9344209 1.59375 11.46875 1.59375 z M 6.40625 6.4375 L 6.40625 16.5625 L 16.53125 16.5625 L 16.53125 6.4375 L 6.40625 6.4375 z ";
+	private static final String START_ICON = "M 11.46875 0 C 5.1620208 0 0 5.1349468 0 11.5 C 0 17.865052 5.1620208 23 11.46875 23 C 17.775477 23 22.9375 17.865052 22.9375 11.5 C 22.9375 5.1349468 17.775478 0 11.46875 0 z M 11.46875 1.59375 C 17.003076 1.59375 21.40625 6.0239967 21.40625 11.5 C 21.40625 16.976002 17.003076 21.40625 11.46875 21.40625 C 5.9344209 21.40625 1.5 16.976002 1.5 11.5 C 1.5 6.0239967 5.9344209 1.59375 11.46875 1.59375 z M 6.875 5.34375 L 6.875 17.65625 L 19.125 11.5 L 6.875 5.34375 z";
 	
 	private int totalAmount;
 	private int finishedAmount;
@@ -49,7 +59,7 @@ public class AutomateStatusView extends HBox {
 	private VBox vboxBottomRight;
 	private StatusView statusView;
 	private TimingView timingView;
-	private StackPane spButton;
+	private VBox vboxButtons;
 	private Button btnCancel;
 	private Button btnStart;
 	private Button btnContinue;
@@ -158,7 +168,7 @@ public class AutomateStatusView extends HBox {
 		spAmountContents.setMaxSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
 		spAmountContents.setMinSize(PROGRESS_RADIUS * 2, PROGRESS_RADIUS * 2);
 		spAmountContents.setAlignment(Pos.CENTER);
-		spAmount.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM_RIGHT_TOP);
+		spAmount.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM_RIGHT_TOP*0.80);
 		spAmount.setAlignment(Pos.CENTER);
 		spAmountContents.getChildren().add(piePiecePane);
 		lblTotalAmount = new Label();
@@ -176,69 +186,62 @@ public class AutomateStatusView extends HBox {
 		
 		StackPane.setMargin(lblTotalAmount, new Insets(95, 0, 0, 30));
 		
-		spButton = new StackPane();
-		spButton.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM - HEIGHT_BOTTOM_RIGHT_TOP);
-		btnCancel = new Button();
-		Text txtCancel = new Text(Translator.getTranslation(STOP));
-		txtCancel.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON_TEXT);
-		btnCancel.setGraphic(txtCancel);
-		btnCancel.getStyleClass().addAll(CSS_CLASS_AUTOMATE_BUTTON, CSS_CLASS_ABORT_BUTTON);
-		btnCancel.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
-		btnCancel.setOnAction(new EventHandler<ActionEvent>() {
+		vboxButtons = new VBox();
+		vboxButtons.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM - HEIGHT_BOTTOM_RIGHT_TOP * 0.80);
+		btnCancel = createButton(STOP_ICON, Translator.getTranslation(STOP), CSS_CLASS_BUTTON_STOP, BTN_WIDTH, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				presenter.stopRunning();
 			}
 		});
-		btnStart = new Button();
-		Text txtStart = new Text(Translator.getTranslation(START));
-		txtStart.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON_TEXT);
-		btnStart.setGraphic(txtStart);
-		btnStart.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON);
-		btnStart.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
-		btnStart.setOnAction(new EventHandler<ActionEvent>() {
+		btnStart = createButton(START_ICON, Translator.getTranslation(START), "", BTN_WIDTH, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				presenter.startAutomate();
 			}
 		});
-		btnContinue = new Button();
-		Text txtContinue = new Text(Translator.getTranslation(CONTINUE));
-		txtContinue.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON_TEXT);
-		btnContinue.setGraphic(txtContinue);
-		btnContinue.getStyleClass().add(CSS_CLASS_AUTOMATE_BUTTON);
-		btnContinue.setPrefSize(BTN_WIDTH, BTN_HEIGHT);
-		btnContinue.setOnAction(new EventHandler<ActionEvent>() {
+		btnContinue = createButton(START_ICON, Translator.getTranslation(CONTINUE), "", BTN_WIDTH, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				presenter.continueAutomate();
 			}
 		});
-		spButton.setAlignment(Pos.CENTER);
+		vboxButtons.setAlignment(Pos.CENTER);
+		vboxButtons.getChildren().addAll(btnStart, btnCancel);
 		activateStartButton();
 		
 		vboxBottomRight = new VBox();
 		vboxBottomRight.getChildren().add(spAmount);
-		vboxBottomRight.getChildren().add(spButton);
+		vboxBottomRight.getChildren().add(vboxButtons);
 		bottomRight.getChildren().add(vboxBottomRight);
+		vboxButtons.setSpacing(10);
 		
 		setPercentage(0);
 		enableContinuousAnimation(false);
 	}
 	
 	public void activateStartButton() {
-		spButton.getChildren().clear();
-		spButton.getChildren().add(btnStart);
+		vboxButtons.getChildren().clear();
+		vboxButtons.getChildren().addAll(btnStart, btnCancel);
+		btnStart.setDisable(false);
+		btnContinue.setDisable(true);
+		btnCancel.setDisable(true);
 	}
 	
 	public void activateContinueButton() {
-		spButton.getChildren().clear();
-		spButton.getChildren().add(btnContinue);
+		vboxButtons.getChildren().clear();
+		vboxButtons.getChildren().addAll(btnContinue, btnCancel);
+		btnStart.setDisable(true);
+		btnContinue.setDisable(false);
+		btnCancel.setDisable(false);
 	}
 	
 	public void activateStopButton() {
-		spButton.getChildren().clear();
-		spButton.getChildren().add(btnCancel);
+		vboxButtons.getChildren().clear();
+		vboxButtons.getChildren().addAll(btnStart, btnCancel);
+		btnStart.setDisable(true);
+		btnContinue.setDisable(true);
+		btnCancel.setDisable(false);
 	}
 	
 	public void setTotalAmount(final int amount) {
@@ -342,5 +345,31 @@ public class AutomateStatusView extends HBox {
 		piePiecePath.getElements().add(moveTo2);
 		piePiecePath.getElements().add(arc);
 		piePiecePath.getTransforms().add(new Translate(PROGRESS_RADIUS, PROGRESS_RADIUS));
+	}
+	
+	private static Button createButton(final String iconPath, final String text, final String cssClass, final double width, final EventHandler<ActionEvent> action) {
+		Button button = new Button();
+		HBox hbox = new HBox();
+		StackPane iconPane = new StackPane();
+		SVGPath icon = new SVGPath();
+		icon.setContent(iconPath);
+		icon.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_ICON);
+		iconPane.getChildren().add(icon);
+		iconPane.setPrefSize(20, 20);
+		Label label = new Label(text);
+		label.getStyleClass().add(CSS_CLASS_BUTTON_START_LABEL);
+		label.setAlignment(Pos.CENTER);
+		label.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		hbox.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		hbox.setAlignment(Pos.CENTER_LEFT);
+		hbox.getChildren().add(iconPane);
+		hbox.getChildren().add(label);
+		HBox.setMargin(iconPane, new Insets(0, 0, 0, ICON_MARGIN));
+		HBox.setHgrow(label, Priority.ALWAYS);
+		button.setGraphic(hbox);
+		button.setOnAction(action);
+		button.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		button.getStyleClass().addAll(CSS_CLASS_BUTTON, cssClass);
+		return button;
 	}
 }

@@ -24,7 +24,7 @@ public abstract class AbstractTransportStep extends AbstractProcessStep implemen
 	public abstract void executeStepTeached(int workpieceId, ProcessExecutor executor) throws AbstractCommunicationException, DeviceActionException, RobotActionException, InterruptedException;
 
 	public abstract void finalizeStep(ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, InterruptedException;
-	
+		
 	public void setRelativeTeachedOffset(final Coordinates teachedOffset) {
 		this.relativeTeachedOffset = teachedOffset;
 	}

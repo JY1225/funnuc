@@ -1,6 +1,7 @@
 package eu.robojob.millassist.ui.configure.device.stacking.stackplate;
 
 import eu.robojob.millassist.ui.configure.device.stacking.AbstractStackingDeviceMenuPresenter;
+import eu.robojob.millassist.ui.configure.device.stacking.ConfigureSmoothPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceMenuView;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -11,9 +12,12 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 	private BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
 	private AbstractFormPresenter<?, BasicStackPlateMenuPresenter> basicStackPlateWorkPiecePresenter;
 	private BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter;
+	private ConfigureSmoothPresenter<BasicStackPlateMenuPresenter> configurePickPresenter;
+	private ConfigureSmoothPresenter<BasicStackPlateMenuPresenter> configurePutPresenter;
 	
 	public BasicStackPlateMenuPresenter(final StackingDeviceMenuView view, final DeviceInformation deviceInfo, final BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter,
-			final AbstractFormPresenter<?, BasicStackPlateMenuPresenter> basicStackPlateWorkPiecePresenter, final BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter) {
+			final AbstractFormPresenter<?, BasicStackPlateMenuPresenter> basicStackPlateWorkPiecePresenter, final BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter, 
+			final ConfigureSmoothPresenter<BasicStackPlateMenuPresenter> configurePickPresenter, final ConfigureSmoothPresenter<BasicStackPlateMenuPresenter> configurePutPresenter) {
 		super(view, deviceInfo);
 		this.basicStackPlateConfigurePresenter = basicStackPlateConfigurePresenter;
 		basicStackPlateConfigurePresenter.setMenuPresenter(this);
@@ -23,6 +27,14 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 		}
 		this.basicStackPlateLayoutPresenter = basicStackPlateLayoutPresenter;
 		basicStackPlateLayoutPresenter.setMenuPresenter(this);
+		if (configurePickPresenter != null) {
+			this.configurePickPresenter = configurePickPresenter;
+			configurePickPresenter.setMenuPresenter(this);
+		}
+		if (configurePutPresenter != null) {
+			this.configurePutPresenter = configurePutPresenter;
+			configurePutPresenter.setMenuPresenter(this);
+		}
 	}
 
 	@Override
@@ -51,6 +63,12 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 			basicStackPlateWorkPiecePresenter.setTextFieldListener(listener);
 		}
 		basicStackPlateLayoutPresenter.setTextFieldListener(listener);
+		if (configurePickPresenter != null) {
+			configurePickPresenter.setTextFieldListener(listener);
+		}
+		if (configurePutPresenter != null) {
+			configurePutPresenter.setTextFieldListener(listener);
+		}
 	}
 
 	@Override
@@ -73,5 +91,17 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 
 	@Override
 	public void configureOffsets() {}
+
+	@Override
+	public void configurePick() {
+		getView().setConfigurePickActive();
+		getParent().setBottomRightView(configurePickPresenter.getView());
+	}
+
+	@Override
+	public void configurePut() {
+		getView().setConfigurePutActive();
+		getParent().setBottomRightView(configurePutPresenter.getView());
+	}
 
 }

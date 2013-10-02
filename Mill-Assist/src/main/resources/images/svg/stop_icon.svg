@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="22.942499"
+   height="23"
+   viewBox="0 0 22.942499 23"
+   xml:space="preserve"
+   inkscape:version="0.48.2 r9819"
+   sodipodi:docname="start_icon.svg"><metadata
+   id="metadata9"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+   id="defs7" /><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="1028"
+   id="namedview5"
+   showgrid="false"
+   fit-margin-top="0"
+   fit-margin-left="0"
+   fit-margin-right="0"
+   fit-margin-bottom="0"
+   inkscape:zoom="8"
+   inkscape:cx="26.598272"
+   inkscape:cy="28.030279"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Layer_1"
+   showguides="true"
+   inkscape:guide-bbox="true" />
+<path
+   style="fill:#ff0000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+   d="M 11.46875 0 C 5.1620208 0 0 5.1349468 0 11.5 C 0 17.865052 5.1620208 23 11.46875 23 C 17.775477 23 22.9375 17.865052 22.9375 11.5 C 22.9375 5.1349468 17.775478 0 11.46875 0 z M 11.46875 1.59375 C 17.003076 1.59375 21.40625 6.0239967 21.40625 11.5 C 21.40625 16.976002 17.003076 21.40625 11.46875 21.40625 C 5.9344209 21.40625 1.5 16.976002 1.5 11.5 C 1.5 6.0239967 5.9344209 1.59375 11.46875 1.59375 z M 6.40625 6.4375 L 6.40625 16.5625 L 16.53125 16.5625 L 16.53125 6.4375 L 6.40625 6.4375 z "
+   id="path2986" />
+</svg>

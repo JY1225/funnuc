@@ -12,6 +12,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -23,6 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.Gripper;
+import eu.robojob.millassist.external.robot.Gripper.Type;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
 import eu.robojob.millassist.ui.controls.FullTextField;
@@ -49,6 +52,9 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 	private static final String NEW = "RobotGripperView.new";
 	private static final String SAVE = "RobotGripperView.save";
 	private static final String REMOVE = "RobotGripperView.remove";
+	private static final String GRIPPER_TYPE = "RobotGripperView.type";
+	private static final String GRIPPER_TYPE_TWOPOINT = "RobotGripperView.twoPoint";
+	private static final String GRIPPER_TYPE_VACUUM = "RobotGripperView.vacuum";
 	
 	private static final String EDIT_PATH = "M 15.71875,0 3.28125,12.53125 0,20 7.46875,16.71875 20,4.28125 C 20,4.28105 19.7362,2.486 18.625,1.375 17.5134,0.2634 15.71875,0 15.71875,0 z M 3.53125,12.78125 c 0,0 0.3421,-0.0195 1.0625,0.3125 C 4.85495,13.21295 5.1112,13.41 5.375,13.625 l 0.96875,0.96875 c 0.2258,0.2728 0.4471,0.5395 0.5625,0.8125 C 7.01625,15.66565 7.25,16.5 7.25,16.5 L 3,18.34375 C 2.5602,17.44355 2.55565,17.44 1.65625,17 l 1.875,-4.21875 z";
 	private static final String ADD_PATH = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 8.75 5 L 11.25 5 L 11.25 8.75 L 15 8.75 L 15 11.25 L 11.25 11.25 L 11.25 15 L 8.75 15 L 8.75 11.25 L 5 11.25 L 5 8.75 L 8.75 8.75 L 8.75 5 z";
@@ -71,6 +77,9 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 	private ImageView imageVw;
 	private Label lblName;
 	private FullTextField fulltxtName;
+	private Label lblGripperType;
+	private RadioButton rbGripperTypeTwoPoint;
+	private RadioButton rbGripperTypeVacuum;
 	private Label lblHeight;
 	private NumericTextField numtxtHeight;
 	private Region spacer;
@@ -166,6 +175,13 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		lblName = new Label(Translator.getTranslation(NAME));
 		fulltxtName = new FullTextField(100);
 		fulltxtName.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		lblGripperType = new Label(Translator.getTranslation(GRIPPER_TYPE));
+		rbGripperTypeTwoPoint = new RadioButton(Translator.getTranslation(GRIPPER_TYPE_TWOPOINT));
+		rbGripperTypeVacuum = new RadioButton(Translator.getTranslation(GRIPPER_TYPE_VACUUM));
+		ToggleGroup tgGripperType = new ToggleGroup();
+		rbGripperTypeTwoPoint.setToggleGroup(tgGripperType);
+		rbGripperTypeVacuum.setToggleGroup(tgGripperType);
+		rbGripperTypeTwoPoint.setSelected(true);
 		lblHeight = new Label(Translator.getTranslation(HEIGHT));
 		numtxtHeight = new NumericTextField(3);
 		numtxtHeight.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
@@ -187,6 +203,11 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		int row2 = 0;
 		gpEditor.add(lblName, column2++, row2);
 		gpEditor.add(fulltxtName, column2++, row2, 4, 1);
+		column2 = 0;
+		row2++;
+		gpEditor.add(lblGripperType, column2++, row2);
+		gpEditor.add(rbGripperTypeTwoPoint, column2++, row2);
+		gpEditor.add(rbGripperTypeVacuum, column2++, row2);		
 		column2 = 0;
 		row2++;
 		gpEditor.add(lblHeight, column2++, row2);
@@ -212,7 +233,15 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		btnSave = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				getPresenter().saveData(fulltxtName.getText(), imagePath, Float.parseFloat(numtxtHeight.getText()), cbFixedHeight.selectedProperty().get(),
+				Gripper.Type type = Gripper.Type.TWOPOINT;
+				if (rbGripperTypeTwoPoint.isSelected()) {
+					type = Gripper.Type.TWOPOINT;
+				} else if (rbGripperTypeVacuum.isSelected()) {
+					type = Type.VACUUM;
+				} else {
+					throw new IllegalStateException("No type radio button selected");
+				}
+				getPresenter().saveData(fulltxtName.getText(), type, imagePath, Float.parseFloat(numtxtHeight.getText()), cbFixedHeight.selectedProperty().get(),
 						cbA.selectedProperty().get(), cbB.selectedProperty().get(), cbC.selectedProperty().get(), cbD.selectedProperty().get());
 			}
 		});
@@ -275,6 +304,13 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		fulltxtName.setText(gripper.getName());
 		numtxtHeight.setText("" + gripper.getHeight());
 		cbFixedHeight.setSelected(gripper.isFixedHeight());
+		if (gripper.getType() == Type.TWOPOINT) {
+			rbGripperTypeTwoPoint.setSelected(true);
+		} else if (gripper.getType() == Type.VACUUM) {
+			rbGripperTypeVacuum.setSelected(true);
+		} else {
+			throw new IllegalStateException("Unknown gripper type: " + gripper.getType());
+		}
 		String url = gripper.getImageUrl();
 		if (url != null) {
 			url = url.replace("file:///", "");

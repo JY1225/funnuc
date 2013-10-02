@@ -95,6 +95,7 @@ public class MainContentView extends VBox {
 	}
 	
 	public void setBottom(final Node bottom) {
+		hideBottomHBox();
 		this.gpBottom.getChildren().clear();
 		this.gpBottom.getChildren().add(bottom);
 	}
@@ -117,11 +118,13 @@ public class MainContentView extends VBox {
 	}
 	
 	public void setBottomLeft(final Node node) {
+		showBottomHBox();
 		this.bottomLeft.getChildren().clear();
 		this.bottomLeft.getChildren().add(node);
 	}
 	
 	public void setBottomRight(final Node node) {
+		showBottomHBox();
 		this.bottomRight.getChildren().clear();
 		this.bottomRight.getChildren().add(node);
 	}

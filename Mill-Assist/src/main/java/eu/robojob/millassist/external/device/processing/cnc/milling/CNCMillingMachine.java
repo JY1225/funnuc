@@ -339,6 +339,12 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override public void prepareForStartCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException { }
 
 	@Override
+	public Coordinates getLocationOrientation(final WorkArea workArea) {
+		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		return c;
+	}
+	
+	@Override
 	public Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {

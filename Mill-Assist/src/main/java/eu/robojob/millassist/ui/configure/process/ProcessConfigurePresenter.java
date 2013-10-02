@@ -32,6 +32,7 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 	
 	public void nameChanged(final String name) {
 		processFlow.setName(name);
+		getMenuPresenter().refreshParent();
 	}
 	
 	public void removeDeviceStep() {
