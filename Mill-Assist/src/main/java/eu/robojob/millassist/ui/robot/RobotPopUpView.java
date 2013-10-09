@@ -99,6 +99,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btnToHome.setGraphic(new Text(Translator.getTranslation(TO_HOME)));
 		btnToHome.setPrefSize(WIDTH, BUTTON_HEIGHT);
 		btnToHome.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
+		btnToHome.getStyleClass().add("pop-up-first");
 		btnToHome.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {

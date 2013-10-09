@@ -8,6 +8,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
@@ -40,6 +41,7 @@ public class TransportTeachedOffsetView extends AbstractFormView<TransportTeache
 	private Label lblR;
 	private NumericTextField numtxtR;
 	private Button btnResetR;
+	private CheckBox cbAlsoUpdateNext;
 	private Region spacer;
 	
 	private DecimalFormat df;
@@ -47,6 +49,7 @@ public class TransportTeachedOffsetView extends AbstractFormView<TransportTeache
 	private Button btnSave;
 	
 	private static final String SAVE = "TransportTeachedOffsetView.save";
+	private static final String UPDATE_NEXT = "TransportTeachedOffsetView.updateNext";
 	private static final int NUM_WIDTH = 60;
 	private static final int SPACE = 15;
 	
@@ -133,12 +136,14 @@ public class TransportTeachedOffsetView extends AbstractFormView<TransportTeache
 				numtxtR.setText(df.format(coordinates.getR()));
 			}
 		});
+		cbAlsoUpdateNext = new CheckBox(Translator.getTranslation(UPDATE_NEXT));
+		cbAlsoUpdateNext.setSelected(true);
 		btnSave = createButton(SAVE_ICON, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				getPresenter().saveAbsoluteOffset(Float.parseFloat(numtxtX.getText()), Float.parseFloat(numtxtY.getText()),
 						Float.parseFloat(numtxtZ.getText()), Float.parseFloat(numtxtW.getText()), Float.parseFloat(numtxtP.getText()),
-						Float.parseFloat(numtxtR.getText()));
+						Float.parseFloat(numtxtR.getText()), cbAlsoUpdateNext.isSelected());
 			}
 		});
 		
@@ -180,9 +185,14 @@ public class TransportTeachedOffsetView extends AbstractFormView<TransportTeache
 		
 		row++;
 		column = 0;
+		getContents().add(cbAlsoUpdateNext, column++, row, 7, 1);
+		
+		row++;
+		column = 0;
 		getContents().add(btnSave, column++, row, 7, 1); 
+		GridPane.setHalignment(cbAlsoUpdateNext, HPos.CENTER);
 		GridPane.setHalignment(btnSave, HPos.CENTER);
-		GridPane.setMargin(btnSave, new Insets(10, 0, 0, 0));
+		GridPane.setMargin(cbAlsoUpdateNext, new Insets(10, 0, 0, 0));
 		
 	}
 
@@ -195,9 +205,15 @@ public class TransportTeachedOffsetView extends AbstractFormView<TransportTeache
 		numtxtP.setFocusListener(listener);
 		numtxtR.setFocusListener(listener);
 	}
+	
+	public void setCheckBoxUpdateNextEnabled(final boolean enable) {
+		cbAlsoUpdateNext.setSelected(false);
+		cbAlsoUpdateNext.setDisable(!enable);
+	}
 
 	@Override
 	public void refresh() {
+		getPresenter().refresh();
 		numtxtX.setText(df.format(coordinates.getX()));
 		numtxtY.setText(df.format(coordinates.getY()));
 		numtxtZ.setText(df.format(coordinates.getZ()));

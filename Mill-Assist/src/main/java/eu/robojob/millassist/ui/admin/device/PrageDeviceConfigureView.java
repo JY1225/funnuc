@@ -4,6 +4,8 @@ import java.util.Set;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -50,10 +52,11 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	private NumericTextField numtxtSmoothFromY;
 	private Label lblSmoothFromZ;
 	private NumericTextField numtxtSmoothFromZ;
-	private Label lblClampingLengthR;
-	private NumericTextField numTxtClampingLengthR;
 	private Label lblClampingWidthR;
-	private NumericTextField numTxtClampingWidthR;
+	private Button btnClampingWidthROffsetm90;
+	private Button btnClampingWidthROffsetp90;
+	
+	private int clampingWidthROffset;
 	
 	private Button btnSave;
 	
@@ -63,7 +66,6 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	private static final String RELATIVE_POSITION = "PrageDeviceConfigureView.relativePosition";
 	private static final String SMOOTH_TO = "PrageDeviceConfigureView.smoothTo";
 	private static final String SMOOTH_FROM = "PrageDeviceConfigureView.smoothFrom";
-	private static final String CLAMPING_LENGTH_R = "PrageDeviceConfigureView.clampingLengthR";
 	private static final String CLAMPING_WIDTH_R = "PrageDeviceConfigureView.clampingWidthR";
 	
 	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
@@ -73,6 +75,7 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	
 	@Override
 	protected void build() {
+		this.clampingWidthROffset = 0;
 		getContents().setAlignment(Pos.TOP_CENTER);
 		getContents().setPadding(new Insets(50, 0, 0, 0));
 		getContents().setVgap(15);
@@ -85,6 +88,7 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 		lblUserFrame = new Label (Translator.getTranslation(USERFRAME));
 		cbbUserFrame = new ComboBox<String>();
 		cbbUserFrame.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
+		cbbUserFrame.setDisable(true);
 		userFrameNames = FXCollections.observableArrayList();
 		cbbUserFrame.setItems(userFrameNames);
 		lblRelativePosition = new Label(Translator.getTranslation(RELATIVE_POSITION));
@@ -110,12 +114,35 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 		numtxtSmoothFromY = new NumericTextField(6);
 		lblSmoothFromZ = new Label("Z");
 		numtxtSmoothFromZ = new NumericTextField(6);
-		lblClampingLengthR = new Label(Translator.getTranslation(CLAMPING_LENGTH_R));
-		numTxtClampingLengthR = new NumericTextField(6);
 		lblClampingWidthR = new Label(Translator.getTranslation(CLAMPING_WIDTH_R));
-		numTxtClampingWidthR = new NumericTextField(6);
+		btnClampingWidthROffsetm90 = createButton("-90°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				clampingWidthROffset = -90;
+				btnClampingWidthROffsetm90.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+				btnClampingWidthROffsetp90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			}
+		});
+		btnClampingWidthROffsetm90.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
+		btnClampingWidthROffsetp90 = createButton("+90°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				clampingWidthROffset = 90;
+				btnClampingWidthROffsetm90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+				btnClampingWidthROffsetp90.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			}
+		});
+		btnClampingWidthROffsetp90.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
 		
-		btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, null);
+		btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				getPresenter().saveData(fulltxtName.getText(), Float.parseFloat(numtxtX.getText()), Float.parseFloat(numtxtY.getText()),
+						Float.parseFloat(numtxtZ.getText()), Float.parseFloat(numtxtR.getText()), Float.parseFloat(numtxtSmoothToX.getText()),
+						Float.parseFloat(numtxtSmoothToY.getText()), Float.parseFloat(numtxtSmoothToZ.getText()), Float.parseFloat(numtxtSmoothFromX.getText()), 
+						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()), clampingWidthROffset);
+			}
+		});
 		int row = 0;
 		int column = 0;
 		getContents().add(lblName, column++, row);
@@ -126,13 +153,14 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 		
 		column = 0; row++;
 		HBox hbox = new HBox();
-		hbox.getChildren().addAll(lblClampingLengthR, numTxtClampingLengthR, lblClampingWidthR, numTxtClampingWidthR);
-		HBox.setMargin(lblClampingWidthR, new Insets(0, 0, 0, 10));
-		hbox.setSpacing(13);
+		HBox hboxControls = new HBox();
+		hboxControls.setAlignment(Pos.CENTER_LEFT);
+		hboxControls.setSpacing(0);
+		hboxControls.getChildren().addAll(btnClampingWidthROffsetm90, btnClampingWidthROffsetp90);
+		hbox.getChildren().addAll(lblClampingWidthR, hboxControls);
+		hbox.setSpacing(9);
 		hbox.setAlignment(Pos.CENTER_LEFT);
-		getContents().add(hbox, column++, row, 2, 1);
-		
-		column = 0; row++;
+
 		
 		int column2 = 0;
 		int row2 = 0;
@@ -165,7 +193,10 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 		gp.add(lblSmoothFromZ, column2++, row2);
 		gp.add(numtxtSmoothFromZ, column2++, row2);
 		getContents().add(gp, column++, row, 2, 1);
-		gp.setAlignment(Pos.CENTER);
+		column = 0; row++;
+
+		getContents().add(hbox, column++, row, 2, 1);
+				gp.setAlignment(Pos.CENTER);
 		GridPane.setHalignment(gp, HPos.CENTER);
 		
 		column = 0; row++;
@@ -176,8 +207,6 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
 		fulltxtName.setFocusListener(listener);
-		numTxtClampingLengthR.setFocusListener(listener);
-		numTxtClampingWidthR.setFocusListener(listener);
 		numtxtX.setFocusListener(listener);
 		numtxtY.setFocusListener(listener);
 		numtxtZ.setFocusListener(listener);
@@ -219,6 +248,17 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 				numtxtSmoothFromX.setText("" + smoothFrom.getX());
 				numtxtSmoothFromY.setText("" + smoothFrom.getY());
 				numtxtSmoothFromZ.setText("" + smoothFrom.getZ());
+			}
+			btnClampingWidthROffsetm90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			btnClampingWidthROffsetp90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			if (prageDevice.getClampingWidthDeltaR() == 90) {
+				btnClampingWidthROffsetp90.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+				clampingWidthROffset = 90;
+			} else if (prageDevice.getClampingWidthDeltaR() == -90) {
+				btnClampingWidthROffsetm90.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+				clampingWidthROffset = -90;
+			} else {
+				throw new IllegalStateException("Clamping width delta r should be +/-90°");
 			}
 		}
 	}

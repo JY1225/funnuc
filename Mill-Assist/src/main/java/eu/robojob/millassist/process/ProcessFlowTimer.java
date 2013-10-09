@@ -24,6 +24,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	private Map<AbstractProcessStep, Long> stepDurations;
 	private Map<AbstractProcessStep, Long> waitingTimeAfterStepDurations;
 	private Map<Integer, AbstractProcessStep> lastActiveSteps;
+	private long startingTime;
 	private ProcessFlow processFlow;
 	private boolean isPaused;
 	private long timeWon;
@@ -41,6 +42,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		}
 		waitingTimeAfterStepDurations = new ConcurrentHashMap<AbstractProcessStep, Long>();
 		timeWon = 0;
+		startingTime = -1;
 		reset();
 	}
 	
@@ -52,6 +54,34 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		lastActiveSteps = new ConcurrentHashMap<Integer, AbstractProcessStep>();
 		startingTimeCurrentProcessFlow = new ConcurrentHashMap<Integer, Long>();
 		otherTimeCurrentProcessFlow = new ConcurrentHashMap<Integer, Long>();
+		startingTime = -1;
+	}
+	
+	public long getTotalTime() {
+		if (startingTime != -1) {
+			return System.currentTimeMillis() - startingTime;
+		} else {
+			return -1;
+		}
+	}
+	
+	public long getFinishedInterval() {
+		long processFlowDuration = getProcessFlowDuration();
+		if (processFlowDuration != -1) {
+			return processFlowDuration - timeWon;
+		} else {
+			return -1;
+		}
+	}
+	
+	public long getRemainingTimeCurrent(final int workPieceId) {
+		long timeInCurrent = getProcessTimeMeasurement(workPieceId);
+		long processFlowDuration = getProcessFlowDuration();
+		if ((timeInCurrent != -1) && (processFlowDuration != -1)) {
+			return processFlowDuration - timeInCurrent;
+		} else {
+			return -1;
+		}
 	}
 	
 	public long getProcessFlowDuration() {
@@ -79,7 +109,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 			long remainingTime = 0;
 			int remainingAmount = processFlow.getTotalAmount() - processFlow.getFinishedAmount();
 			if (remainingAmount > 1) {
-				remainingTime = (remainingAmount - 1) * (processFlowDuration - getTimeWon());
+				remainingTime = (remainingAmount-1) * (processFlowDuration - getTimeWon()) + processFlowDuration - getProcessTimeMeasurement(currentMainWorkPieceId);
 			} else if (remainingAmount > 0) {
 				remainingTime += processFlowDuration - getProcessTimeMeasurement(currentMainWorkPieceId);
 			} else {
@@ -94,6 +124,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	public synchronized void modeChanged(final ModeChangedEvent e) {
 		switch (e.getMode()) {
 			case STOPPED:
+				startingTime = -1;
 				reset();
 				break;
 			case READY:
@@ -102,6 +133,9 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 				isPaused = true;
 				break;
 			case AUTO:
+				if (startingTime == -1) {
+					startingTime = System.currentTimeMillis();
+				}
 				if (isPaused) {
 					continueTimeMeasurements();
 				}

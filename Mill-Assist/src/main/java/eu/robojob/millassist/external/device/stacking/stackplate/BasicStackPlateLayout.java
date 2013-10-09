@@ -29,6 +29,7 @@ public class BasicStackPlateLayout {
 	private float overFlowPercentage;
 	private float horizontalR;
 	private float tiltedR;
+	private int layers;
 	private WorkPieceOrientation orientation;
 
 	private StudPosition[][] studPositions;
@@ -57,6 +58,7 @@ public class BasicStackPlateLayout {
 		this.tiltedR = tiltedR;
 		this.maxOverflow = maxOverflow;
 		this.minOverlap = minOverlap;
+		this.layers = 1;
 		// initialize stud positions
 		this.studPositions = new StudPosition[verticalHoleAmount][horizontalHoleAmount];
 		for (int i = 0; i < verticalHoleAmount; i++) {
@@ -122,8 +124,9 @@ public class BasicStackPlateLayout {
 	 * Configures the list of Stacking-positions and updates the 2D-array of studPositions 
 	 * @throws IncorrectWorkPieceDataException 
 	 */
-	public void configureStackingPositions(final WorkPiece rawWorkPiece, final WorkPieceOrientation orientation) throws IncorrectWorkPieceDataException {
+	public void configureStackingPositions(final WorkPiece rawWorkPiece, final WorkPieceOrientation orientation, final int layers) throws IncorrectWorkPieceDataException {
 		stackingPositions.clear();
+		this.layers = layers;
 		clearStuds();
 		if (rawWorkPiece != null) {
 			WorkPieceDimensions dimensions = rawWorkPiece.getDimensions();
@@ -268,7 +271,7 @@ public class BasicStackPlateLayout {
 				double yBottomLeft = verticalPaddingBottom + (amountOfStudsBottom - 1)*verticalHoleDistance + studDiameter/2;
 				float x = (float) xBottomLeft + dimensions.getLength()/2;
 				float y = (float) yBottomLeft + dimensions.getWidth()/2;
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, horizontalR, null, WorkPieceOrientation.HORIZONTAL);
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, horizontalR, null, 0, WorkPieceOrientation.HORIZONTAL);
 				stackingPositions.add(stPos);
 				int firstStudPosX = j * amountOfStudsWorkPiece;
 				int firstStudPosY = i * amountOfStudsWorkPieceVertical;
@@ -469,7 +472,7 @@ public class BasicStackPlateLayout {
 				double extraY = (dimensions.getLength()/Math.sqrt(2) + dimensions.getWidth()/Math.sqrt(2))/2;
 				float x = (float) (xBottom + extraX);
 				float y = (float) (yBottom + extraY);
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, tiltedR, null, WorkPieceOrientation.TILTED);
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, tiltedR, null, 0, WorkPieceOrientation.TILTED);
 				stackingPositions.add(stPos);
 				int firstStudPosX = amountOfStudsLeftFirst + j * amountOfStudsLeftOther - 1;
 				int firstStudPosY = amountOfStudsVertical * i;
@@ -543,13 +546,34 @@ public class BasicStackPlateLayout {
 	
 	public void placeRawWorkPieces(final WorkPiece rawWorkPiece, final int amount) throws IncorrectWorkPieceDataException {
 		logger.debug("Placing raw workpieces: [" + amount + "].");
+		for (StackPlateStackingPosition stackingPos : stackingPositions) {
+			stackingPos.setWorkPiece(null);
+			stackingPos.setAmount(0);
+		}
 		if (amount <= getMaxRawWorkPiecesAmount()) {
-			for (int i = 0; i < amount; i++) {
-				StackPlateStackingPosition stackingPos = stackingPositions.get(i);
-				stackingPos.setWorkPiece(new WorkPiece(rawWorkPiece));
-				for (StudPosition studPos : stackingPos.getStuds()) {
+			// start filling up stackinPositions, if layers > 1, skip first stack
+			int placedAmount = 0;
+			int stackingPos = 0;
+			if (layers > 1) {
+				StackPlateStackingPosition stPos = stackingPositions.get(stackingPos);
+				for (StudPosition studPos : stPos.getStuds()) {
 					studPositions[studPos.getRowIndex()][studPos.getColumnIndex()] = studPos;
 				}
+				stackingPos++;
+			}
+			while (placedAmount < amount) {
+				StackPlateStackingPosition stPos = stackingPositions.get(stackingPos);
+				stPos.setWorkPiece(rawWorkPiece);
+				for (StudPosition studPos : stPos.getStuds()) {
+					studPositions[studPos.getRowIndex()][studPos.getColumnIndex()] = studPos;
+				}
+				int amountToPlace = layers;
+				if (amountToPlace > (amount - placedAmount)) {
+					amountToPlace = amount - placedAmount;
+				}
+				stPos.setAmount(amountToPlace);
+				placedAmount = placedAmount + amountToPlace;
+				stackingPos++;
 			}
 		} else {
 			logger.debug("Trying to place [" + amount + "] but maximum is [" + getMaxRawWorkPiecesAmount() + "].");
@@ -558,7 +582,11 @@ public class BasicStackPlateLayout {
 	}
 	
 	public int getMaxRawWorkPiecesAmount() {
-		return stackingPositions.size();
+		if (layers == 1) {
+			return stackingPositions.size();
+		} else {
+			return layers * (stackingPositions.size() - 1);
+		}
 	}
 	
 	public int getHorizontalHoleAmount() {
@@ -673,9 +701,17 @@ public class BasicStackPlateLayout {
 		int amount = 0;
 		for (StackPlateStackingPosition position : stackingPositions) {
 			if ((position.getWorkPiece() != null) && (position.getWorkPiece().getType() == Type.RAW)) {
-				amount++;
+				amount = amount + position.getAmount();
 			}
 		}
 		return amount;
+	}
+
+	public int getLayers() {
+		return layers;
+	}
+
+	public void setLayers(final int layers) {
+		this.layers = layers;
 	}
 }

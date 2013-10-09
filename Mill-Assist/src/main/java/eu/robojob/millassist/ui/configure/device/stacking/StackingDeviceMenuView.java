@@ -89,23 +89,6 @@ public class StackingDeviceMenuView extends AbstractMenuView<AbstractStackingDev
 				index++;
 			}
 		}
-		layoutIndex = index;
-		if (deviceInfo.getDevice() instanceof Conveyor) {
-			addMenuItem(index, LAYOUT_CONVEYOR_ICON, Translator.getTranslation(VIEW_LAYOUT), true, new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(final ActionEvent event) {
-					getPresenter().showLayout();
-				}
-			});
-		} else {
-			addMenuItem(index, LAYOUT_ICON, Translator.getTranslation(VIEW_LAYOUT), true, new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(final ActionEvent event) {
-					getPresenter().showLayout();
-				}
-			});
-		}
-		index++;
 		if (putStep) {
 			putIndex = index;
 			addMenuItem(index, PUT_ICON, Translator.getTranslation(PUT), true, new EventHandler<ActionEvent>() {
@@ -123,6 +106,24 @@ public class StackingDeviceMenuView extends AbstractMenuView<AbstractStackingDev
 				}
 			});
 		}
+		index++;
+		layoutIndex = index;
+		if (deviceInfo.getDevice() instanceof Conveyor) {
+			addMenuItem(index, LAYOUT_CONVEYOR_ICON, Translator.getTranslation(VIEW_LAYOUT), true, new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(final ActionEvent event) {
+					getPresenter().showLayout();
+				}
+			});
+		} else {
+			addMenuItem(index, LAYOUT_ICON, Translator.getTranslation(VIEW_LAYOUT), true, new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(final ActionEvent event) {
+					getPresenter().showLayout();
+				}
+			});
+		}
+		
 	}
 	
 	public void setConfigureDeviceActive()  {

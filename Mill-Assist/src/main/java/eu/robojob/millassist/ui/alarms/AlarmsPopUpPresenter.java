@@ -157,7 +157,7 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 				devices.add(device);
 			}
 		}
-		getView().updateResetButtons(devices);
+		getView().updateResetButtons(processFlow.getRobots(), devices);
 	}
 
 	@Override 
@@ -165,6 +165,7 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				updateAlarms();
+				getView().setRobotConnected(event.getSource(), true);
 			}
 		});
 	}
@@ -174,6 +175,7 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				updateAlarms();
+				getView().setRobotConnected(event.getSource(), false);
 			}
 		});
 	}
@@ -278,6 +280,15 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 		try {
 			device.reset();
 		} catch (AbstractCommunicationException | DeviceActionException | InterruptedException e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+	
+	public void resetRobot(final AbstractRobot robot) {
+		try {
+			robot.reset();
+		} catch (AbstractCommunicationException | InterruptedException e) {
 			e.printStackTrace();
 			logger.error(e);
 		}

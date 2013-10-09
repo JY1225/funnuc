@@ -61,8 +61,8 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 		return automateThread.getMainProcessFlowId();
 	}
 	
-	public void setTimers(final String cycleTime, final String timeInCycle, final String timeTillIntervention, final String timeTillFinished) {
-		statusPresenter.setTimers(cycleTime, timeInCycle, timeTillIntervention, timeTillFinished);
+	public void setTimers(final String totalTime, final String finishedInterval, final String remainingCurrent, final String timeTillFinished) {
+		statusPresenter.setTimers(totalTime, finishedInterval, remainingCurrent, timeTillFinished);
 	}
 
 	@Override

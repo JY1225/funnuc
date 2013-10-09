@@ -62,6 +62,7 @@ import eu.robojob.millassist.ui.controls.keyboard.NumericKeyboardPresenter;
 import eu.robojob.millassist.ui.controls.keyboard.NumericKeyboardView;
 import eu.robojob.millassist.ui.general.MainContentView;
 import eu.robojob.millassist.ui.general.flow.ProcessFlowView;
+import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
 import eu.robojob.millassist.ui.general.status.DisconnectedDevicesView;
 import eu.robojob.millassist.ui.general.status.StatusPresenter;
 import eu.robojob.millassist.ui.general.status.StatusView;
@@ -182,7 +183,7 @@ public class RoboSoftAppFactory {
 	
 	private eu.robojob.millassist.ui.teach.transport.TransportMenuFactory getTeachTransportMenuFactory() {
 		if (teachTransportMenuFactory == null) {
-			teachTransportMenuFactory = new eu.robojob.millassist.ui.teach.transport.TransportMenuFactory(getProcessFlow());
+			teachTransportMenuFactory = new eu.robojob.millassist.ui.teach.transport.TransportMenuFactory(getProcessFlow(), new ProcessFlowAdapter(getProcessFlow()));
 		}
 		return teachTransportMenuFactory;
 	}

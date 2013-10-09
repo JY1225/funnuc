@@ -28,15 +28,24 @@ public class PrageDevice extends AbstractProcessingDevice {
 		
 	private static final String EXCEPTION_PRAGE_TIMEOUT = "PrageDevice.prageTimeout";
 	
-	private static final float LENGTH_CLAMP_LOCATION_R = -180;
-	private static final float WIDTH_CLAMP_LOCATION_R = -90;
+	private int clampingWidthDeltaR;
 	
-	public PrageDevice(final String name) {
+	public PrageDevice(final String name, final int clampingWidthDeltaR) {
 		super(name, false);
+		this.clampingWidthDeltaR = clampingWidthDeltaR;
 	}
 	
-	public PrageDevice(final String name, final Set<Zone> zones) {
+	public PrageDevice(final String name, final Set<Zone> zones, final int clampingWidthDeltaR) {
 		super(name, zones, false);
+		this.clampingWidthDeltaR = clampingWidthDeltaR;
+	}
+
+	public int getClampingWidthDeltaR() {
+		return clampingWidthDeltaR;
+	}
+
+	public void setClampingWidthDeltaR(final int clampingWidthDeltaR) {
+		this.clampingWidthDeltaR = clampingWidthDeltaR;
 	}
 
 	@Override public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
@@ -136,10 +145,9 @@ public class PrageDevice extends AbstractProcessingDevice {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			c.offset(new Coordinates(0, workPieceDimensions.getWidth() / 2, 0, 0, 0, 0));
-			c.setR(LENGTH_CLAMP_LOCATION_R);
 		} else {
 			c.offset(new Coordinates(0, workPieceDimensions.getLength() / 2, 0, 0, 0, 0));
-			c.setR(WIDTH_CLAMP_LOCATION_R);
+			c.setR(clampingWidthDeltaR);
 		}
 		return c;
 	}

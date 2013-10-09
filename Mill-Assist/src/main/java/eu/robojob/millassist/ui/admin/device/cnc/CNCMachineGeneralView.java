@@ -6,12 +6,16 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
@@ -19,7 +23,6 @@ import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.W
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
-import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
@@ -43,11 +46,11 @@ public class CNCMachineGeneralView extends GridPane {
 	private RadioButton rbbWayOfOperatingStartStop;
 	private RadioButton rbbWayOfOperatingMCodes;
 	private ToggleGroup tgWayOfOperating;
-	private Label lblClampingLengthR;
-	private NumericTextField numTxtClampingLengthR;
 	private Label lblClampingWidthR;
-	private NumericTextField numTxtClampingWidthR;
+	private Button btnClampingWidthDeltaRp90;
+	private Button btnClampingWidthDeltaRm90;
 	private Region spacer;
+	private int clampingWidthDeltaR;
 		
 	private ObservableList<String> userFrameNames;
 	
@@ -63,8 +66,15 @@ public class CNCMachineGeneralView extends GridPane {
 	private static final String M_CODES = "CNCMachineGeneralView.mCodes";
 	private static final String STATUS_CONNECTED = "CNCMachineGeneralView.statusConnected";
 	private static final String STATUS_DISCONNECTED = "CNCMachineGeneralView.statusDisconnected";
-	private static final String CLAMPING_LENGTH_R = "CNCMachineGeneralView.clampingLengthR";
 	private static final String CLAMPING_WIDTH_R = "CNCMachineGeneralView.clampingWidthR";
+	
+	private static final String CSS_CLASS_BUTTON = "form-button";
+	private static final String CSS_CLASS_BUTTON_LABEL = "btn-start-label";
+
+	protected static final String CSS_CLASS_FORM_BUTTON_BAR_LEFT = "form-button-bar-left";
+	protected static final String CSS_CLASS_FORM_BUTTON_BAR_RIGHT = "form-button-bar-right";
+	protected static final String CSS_CLASS_FORM_BUTTON_BAR_CENTER = "form-button-bar-center";
+	protected static final String CSS_CLASS_FORM_BUTTON_ACTIVE = "form-button-active";
 	
 	public CNCMachineGeneralView() {
 		this.userFrameNames = FXCollections.observableArrayList();
@@ -128,11 +138,25 @@ public class CNCMachineGeneralView extends GridPane {
 		vboxRadioButtonsWayOfOperating.setSpacing(10);
 		vboxRadioButtonsWayOfOperating.getChildren().addAll(rbbWayOfOperatingStartStop, rbbWayOfOperatingMCodes);
 				
-		
-		lblClampingLengthR = new Label(Translator.getTranslation(CLAMPING_LENGTH_R));
-		numTxtClampingLengthR = new NumericTextField(5);
 		lblClampingWidthR = new Label(Translator.getTranslation(CLAMPING_WIDTH_R));
-		numTxtClampingWidthR = new NumericTextField(5);
+		btnClampingWidthDeltaRm90 = createButton("-90°", CSS_CLASS_FORM_BUTTON_BAR_LEFT, UIConstants.BUTTON_HEIGHT * 2, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				clampingWidthDeltaR = -90;
+				btnClampingWidthDeltaRm90.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+				btnClampingWidthDeltaRp90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			}
+		});
+		btnClampingWidthDeltaRp90 = createButton("+90°", CSS_CLASS_FORM_BUTTON_BAR_RIGHT, UIConstants.BUTTON_HEIGHT * 2, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				clampingWidthDeltaR = 90;
+				btnClampingWidthDeltaRm90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+				btnClampingWidthDeltaRp90.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			}
+		});
+		
+		this.clampingWidthDeltaR = 0;
 		
 		int row = 0;
 		int column = 0;
@@ -157,11 +181,13 @@ public class CNCMachineGeneralView extends GridPane {
 		add(lblWayOfOperating, column++, row);
 		add(vboxRadioButtonsWayOfOperating, column++, row, 4, 1);
 		column = 0; row++;
-		add(lblClampingLengthR, column++, row);
-		add(numTxtClampingLengthR, column++, row);
-		column++;
 		add(lblClampingWidthR, column++, row);
-		add(numTxtClampingWidthR, column++, row);
+		
+		HBox hboxWidthOffsetButtons = new HBox();
+		hboxWidthOffsetButtons.getChildren().addAll(btnClampingWidthDeltaRm90, btnClampingWidthDeltaRp90);
+		hboxWidthOffsetButtons.setSpacing(0);
+		hboxWidthOffsetButtons.setAlignment(Pos.CENTER_LEFT);
+		add(hboxWidthOffsetButtons, column++, row, 3, 1);
 	}
 	
 	public void refresh(final Set<String> userFrameNames, final AbstractCNCMachine cncMachine) {
@@ -173,8 +199,18 @@ public class CNCMachineGeneralView extends GridPane {
 		refreshStatus(cncMachine);
 		fulltxtNameWA1.setText(cncMachine.getWorkAreas().get(0).getName());
 		cbbUserFrameWA1.valueProperty().set(cncMachine.getWorkAreas().get(0).getUserFrame().getName());
-		numTxtClampingLengthR.setText(cncMachine.getClampingLengthR() + "");
-		numTxtClampingWidthR.setText(cncMachine.getClampingWidthR() + "");
+		btnClampingWidthDeltaRp90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnClampingWidthDeltaRm90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		if (cncMachine.getClampingWidthR() == 90) {
+			clampingWidthDeltaR = 90;
+			btnClampingWidthDeltaRp90.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		} else if (cncMachine.getClampingWidthR() == -90) {
+			btnClampingWidthDeltaRm90.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			clampingWidthDeltaR = 90;
+			
+		} else {
+			throw new IllegalStateException("Clamping width delta R machine should be 90 or -90.");
+		}
 		if (cncMachine.getWayOfOperating() == WayOfOperating.START_STOP) {
 			rbbWayOfOperatingStartStop.selectedProperty().set(true);
 			presenter.setWayOfOperating(WayOfOperating.START_STOP);
@@ -199,8 +235,6 @@ public class CNCMachineGeneralView extends GridPane {
 		fulltxtName.setFocusListener(listener);
 		fulltxtIp.setFocusListener(listener);
 		itxtPort.setFocusListener(listener);
-		numTxtClampingLengthR.setFocusListener(listener);
-		numTxtClampingWidthR.setFocusListener(listener);
 	}
 	
 	public String getName() {
@@ -223,12 +257,8 @@ public class CNCMachineGeneralView extends GridPane {
 		return Integer.parseInt(itxtPort.getText());
 	}
 	
-	public float getLengthR() {
-		return Float.parseFloat(numTxtClampingLengthR.getText());
-	}
-	
-	public float getWidthR() {
-		return Float.parseFloat(numTxtClampingWidthR.getText());
+	public int getWidthR() {
+		return clampingWidthDeltaR;
 	}
 	
 	public WayOfOperating getWayOfOperating() {
@@ -237,5 +267,18 @@ public class CNCMachineGeneralView extends GridPane {
 		} else {
 			return WayOfOperating.START_STOP;
 		}
+	}
+	
+	private static Button createButton(final String text, final String cssClass, final double width, final EventHandler<ActionEvent> action) {
+		Button button = new Button();
+		Label label = new Label(text);
+		label.getStyleClass().add(CSS_CLASS_BUTTON_LABEL);
+		label.setAlignment(Pos.CENTER);
+		label.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		button.setGraphic(label);
+		button.setOnAction(action);
+		button.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
+		button.getStyleClass().addAll(CSS_CLASS_BUTTON, cssClass);
+		return button;
 	}
 }

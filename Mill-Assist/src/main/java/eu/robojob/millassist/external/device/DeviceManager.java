@@ -227,13 +227,25 @@ public class DeviceManager {
 		}		
 	}
 	
+	public void updatePrageDeviceData(final PrageDevice prageDevice, final String name, final float relPosX, final float relPosY, 
+			final float relPosZ, final float relPosR, final float smoothToX, final float smoothToY, final float smoothToZ,
+			final float smoothFromX, final float smoothFromY, final float smoothFromZ, final int widthOffsetR) {
+		try {
+			deviceMapper.updatePrageDevice(prageDevice, name, relPosX, relPosY, relPosZ, relPosR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, widthOffsetR);
+			refresh();
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+	
 	public void updateCNCMachineData(final CNCMillingMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
 			final String ipAddress, final int port, final String workAreaName, final String userFramename, 
-				final float clampingLengthR, final float clampingWidthR, final List<String> robotServiceInputNames, 
+				final int clampingWidthR, final List<String> robotServiceInputNames, 
 					final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) {
 		try {
-			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port, workAreaName, userFramename, clampingLengthR, 
+			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port, workAreaName, userFramename, 
 					clampingWidthR, robotServiceInputNames, robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs,
 						mCodeRobotServiceOutputs);
 			refresh();
@@ -244,11 +256,12 @@ public class DeviceManager {
 	}
 	
 	public void updateClamping(final Clamping clamping, final String name, final Clamping.Type type, final float height, 
-			final String imagePath, final float x, final float y, final float z, final float r, final float smoothToX, 
+			final String imagePath, final float x, final float y, final float z, final float w, final float p, 
+			final float r, final float smoothToX, 
 			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, 
 			final float smoothFromZ) {
 		try {
-			deviceMapper.updateClamping(clamping, name, type, height, imagePath, x, y, z, r, smoothToX, smoothToY, smoothToZ, 
+			deviceMapper.updateClamping(clamping, name, type, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
 				smoothFromX, smoothFromY, smoothFromZ);
 		} catch (SQLException e) {
 			logger.error(e);
@@ -257,10 +270,10 @@ public class DeviceManager {
 	}
 	
 	public void saveClamping(final String name, final Clamping.Type type, final float height, final String imagePath, final float x, 
-			final float y, final float z, final float r, final float smoothToX, final float smoothToY, 
+			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
 			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ) {
 		try {
-			Clamping clamping = new Clamping(type, name, height, new Coordinates(x, y, z, 0, 0, r), 
+			Clamping clamping = new Clamping(type, name, height, new Coordinates(x, y, z, w, p, r), 
 					new Coordinates(smoothToX, smoothToY, smoothToZ, 0, 0, 0), 
 					new Coordinates(smoothFromX, smoothFromY, smoothFromZ, 0, 0, 0), imagePath);
 			Set<WorkArea> workAreas = new HashSet<WorkArea>();

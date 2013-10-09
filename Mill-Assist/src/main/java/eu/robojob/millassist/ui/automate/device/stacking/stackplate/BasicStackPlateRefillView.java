@@ -72,6 +72,10 @@ public class BasicStackPlateRefillView extends AbstractFormView<BasicStackPlateR
 	public void setTextFieldListener(final TextInputControlListener listener) {
 		itfAmount.setFocusListener(listener);
 	}
+	
+	public void setButtonEnabled(final boolean enabled) {
+		btnRefill.setDisable(!enabled);
+	}
 
 	@Override
 	public void refresh() {
@@ -80,6 +84,6 @@ public class BasicStackPlateRefillView extends AbstractFormView<BasicStackPlateR
 	}
 	
 	private void refreshMax() {
-		itfAmount.setText("" + basicStackPlate.getFinishedWorkPiecesPresentAmount());
+		itfAmount.setText("" + basicStackPlate.getFinishedWorkPiecesToRefillAmount());
 	}
 }

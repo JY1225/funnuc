@@ -5,8 +5,10 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -78,8 +80,16 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		if (width != dimensions.getWidth()) {
 			dimensions.setWidth(width);	
 			recalculate();
-			pickStep.setRelativeTeachedOffset(null);
+			clearTeachedOffsets();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		}
+	}
+	
+	private void clearTeachedOffsets() {
+		for (AbstractProcessStep step : pickStep.getProcessFlow().getProcessSteps()) {
+			if (step instanceof AbstractTransportStep) {
+				((AbstractTransportStep) step).setRelativeTeachedOffset(null);
+			}
 		}
 	}
 	
@@ -88,7 +98,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		if (length != dimensions.getLength()) {
 			dimensions.setLength(length);
 			recalculate();
-			pickStep.setRelativeTeachedOffset(null);
+			clearTeachedOffsets();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 		}
 	}
@@ -98,8 +108,17 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		if (height != dimensions.getHeight()) {
 			dimensions.setHeight(height);
 			recalculate();
-			pickStep.setRelativeTeachedOffset(null);
+			clearTeachedOffsets();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		}
+	}
+	
+	public void changedLayers(final int layers) {
+		logger.info("Set layers [" + layers + "].");
+		if (layers != deviceSettings.getLayers()) {
+			deviceSettings.setLayers(layers);
+			recalculate();
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		}
 	}
 	
@@ -114,7 +133,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public void recalculate() {
 		try {
-			((BasicStackPlate) pickStep.getDevice()).getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation());
+			((BasicStackPlate) pickStep.getDevice()).getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
 			((BasicStackPlate) pickStep.getDevice()).getLayout().placeRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
 			getView().hideNotification();
 			if (!isWeightOk()) {
@@ -147,8 +166,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public boolean isConfigured() {
 		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
 		if ((dimensions != null) && (orientation != null) && (plate.getLayout().getStackingPositions() != null)
-				&& (plate.getLayout().getStackingPositions().size() > 0) && (plate.getLayout().getStackingPositions().get(0).getWorkPiece() != null)
-					&& (workPiece.getWeight() > 0)
+				&& (plate.getLayout().getStackingPositions().size() > 0) && (workPiece.getWeight() > 0)
 				) {
 			return true;
 		}
@@ -157,7 +175,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public void setMaxAmount() {
 		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
-		deviceSettings.setAmount(plate.getLayout().getStackingPositions().size());
+		deviceSettings.setAmount(plate.getLayout().getMaxRawWorkPiecesAmount());
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
 		recalculate();
 		getView().refresh();

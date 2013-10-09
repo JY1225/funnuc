@@ -11,21 +11,22 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 public class StackPlateStackingPosition extends StackingPosition {
 	
 	private WorkPieceOrientation orientation;
-	
+	private int amount;	
 	private List<StudPosition> studs;
 	
-	public StackPlateStackingPosition(final Coordinates position, final WorkPiece workPiece, final WorkPieceOrientation orientation, final List<StudPosition> studs) {
+	public StackPlateStackingPosition(final Coordinates position, final WorkPiece workPiece, final int amount, final WorkPieceOrientation orientation, final List<StudPosition> studs) {
 		super(position, workPiece);
 		this.studs = studs;
 		this.orientation = orientation;
+		this.amount = amount;
 	}
 	
-	public StackPlateStackingPosition(final Coordinates position, final WorkPiece workPiece, final WorkPieceOrientation orientation) {
-		this(position, workPiece, orientation, new ArrayList<StudPosition>());
+	public StackPlateStackingPosition(final Coordinates position, final WorkPiece workPiece, final int amount, final WorkPieceOrientation orientation) {
+		this(position, workPiece, amount, orientation, new ArrayList<StudPosition>());
 	}
 
-	public StackPlateStackingPosition(final float horizontalPosition, final float verticalPosition, final float r, final WorkPiece workPiece, final WorkPieceOrientation orientation) {
-		this (new Coordinates(horizontalPosition, verticalPosition, 0, 0, 0, r), workPiece, orientation);
+	public StackPlateStackingPosition(final float horizontalPosition, final float verticalPosition, final float r, final WorkPiece workPiece, final int amount, final WorkPieceOrientation orientation) {
+		this (new Coordinates(horizontalPosition, verticalPosition, 0, 0, 0, r), workPiece, amount, orientation);
 	}
 	
 	public List<StudPosition> getStuds() {
@@ -38,6 +39,32 @@ public class StackPlateStackingPosition extends StackingPosition {
 	
 	public void addstud(final StudPosition stud) {
 		studs.add(stud);
+	}
+	
+	public Coordinates getPickPosition() {
+		// for pick the top workpiece shouldn't be used!
+		Coordinates position = new Coordinates(super.getPosition());
+		if (amount > 0) {
+			position.setZ((amount - 1) * getWorkPiece().getDimensions().getHeight());
+		} 
+		return position;
+	}
+	
+	public Coordinates getPutPosition() {
+		// for pick the top workpiece shouldn't be used!
+		Coordinates position = new Coordinates(super.getPosition());
+		if (amount > 0) {
+			position.setZ(amount * getWorkPiece().getDimensions().getHeight());
+		}
+		return position;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(final int amount) {
+		this.amount = amount;
 	}
 
 }

@@ -154,8 +154,8 @@
 
 .form-icon {
 	-fx-fill: #2a2d31;
-	-fx-scale-x: 0.9;
-	-fx-scale-y: 0.9;
+	-fx-scale-x: 0.80;
+	-fx-scale-y: 0.80;
 }
 
 .stackplate {
@@ -568,4 +568,11 @@
     -fx-stroke-dash-array: 4 4;
     -fx-stroke-line-cap: butt;
     -fx-stroke-type: centered;
+}
+
+.amount-text {
+	-fx-fill: white;
+	-fx-text-alignment: center;
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-size: 20px;
 }

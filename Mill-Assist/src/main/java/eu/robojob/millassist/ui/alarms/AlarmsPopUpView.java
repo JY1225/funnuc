@@ -22,6 +22,7 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.ui.general.PopUpView;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
@@ -58,7 +59,8 @@ public class AlarmsPopUpView extends PopUpView<AlarmsPopUpPresenter> {
 	private VBox vboxResetButtons;
 	private ScrollPane spAlarmMsgs;
 	
-	private Map<AbstractDevice, Button> resetButtons;
+	private Map<AbstractDevice, Button> deviceResetButtons;
+	private Map<AbstractRobot, Button> robotResetButtons;
 	
 	public AlarmsPopUpView() {
 		super(0, 0, WIDTH, 0);
@@ -79,7 +81,8 @@ public class AlarmsPopUpView extends PopUpView<AlarmsPopUpPresenter> {
 		noAlarmsLabel.getStyleClass().add(CSS_CLASS_ALARM_MSG);
 		hboxNoAlarms.getChildren().addAll(noAlarmsIconPath, noAlarmsLabel);
 		HBox.setMargin(noAlarmsIconPath, new Insets(0, ICON_PADDING, 0, 0));
-		this.resetButtons = new HashMap<AbstractDevice, Button>();
+		this.deviceResetButtons = new HashMap<AbstractDevice, Button>();
+		this.robotResetButtons = new HashMap<AbstractRobot, Button>();
 		
 		this.vboxChildren = new VBox();
 		this.spAlarmMsgs = new ScrollPane();
@@ -131,10 +134,36 @@ public class AlarmsPopUpView extends PopUpView<AlarmsPopUpPresenter> {
 		}
 	}
 	
-	public void updateResetButtons(final Set<AbstractDevice> devices) {
-		resetButtons.clear();
+	public void updateResetButtons(final Set<AbstractRobot> robots, final Set<AbstractDevice> devices) {
+		deviceResetButtons.clear();
+		robotResetButtons.clear();
 		vboxResetButtons.getChildren().clear();
 		int counter = 0;
+		for (final AbstractRobot robot : robots) {
+			Button btnReset = new Button();
+			btnReset.setGraphic(new Text(RESET + " " + robot.getName()));
+			btnReset.setPrefSize(WIDTH, BUTTON_HEIGHT);
+			btnReset.setMinSize(WIDTH, BUTTON_HEIGHT);
+			btnReset.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
+			if (counter == 0) {
+				btnReset.getStyleClass().add("pop-up-first");
+			}
+			if (counter == devices.size() + robots.size() - 1) {
+				btnReset.getStyleClass().add(CSS_CLASS_POPUP_BUTTON_BOTTOM);
+			}
+			btnReset.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(final ActionEvent arg0) {
+					getPresenter().resetRobot(robot);
+				}
+			});
+			if (!robot.isConnected()) {
+				btnReset.setDisable(true);
+			}
+			robotResetButtons.put(robot, btnReset);
+			vboxResetButtons.getChildren().add(btnReset);
+			counter++;
+		}
 		for (final AbstractDevice device : devices) {
 			Button btnReset = new Button();
 			btnReset.setGraphic(new Text(RESET + " " + device.getName()));
@@ -144,7 +173,7 @@ public class AlarmsPopUpView extends PopUpView<AlarmsPopUpPresenter> {
 			if (counter == 0) {
 				btnReset.getStyleClass().add("pop-up-first");
 			}
-			if (counter == devices.size() - 1) {
+			if (counter == devices.size() + robots.size() - 1) {
 				btnReset.getStyleClass().add(CSS_CLASS_POPUP_BUTTON_BOTTOM);
 			}
 			btnReset.setOnAction(new EventHandler<ActionEvent>() {
@@ -156,15 +185,21 @@ public class AlarmsPopUpView extends PopUpView<AlarmsPopUpPresenter> {
 			if (!device.isConnected()) {
 				btnReset.setDisable(true);
 			}
-			resetButtons.put(device, btnReset);
+			deviceResetButtons.put(device, btnReset);
 			vboxResetButtons.getChildren().add(btnReset);
 			counter++;
 		}
 	}
 	
 	public void setDeviceConnected(final AbstractDevice device, final boolean connected) {
-		if (resetButtons.containsKey(device)) {
-			resetButtons.get(device).setDisable(!connected);
+		if (deviceResetButtons.containsKey(device)) {
+			deviceResetButtons.get(device).setDisable(!connected);
+		}
+	}
+	
+	public void setRobotConnected(final AbstractRobot robot, final boolean connected) {
+		if (robotResetButtons.containsKey(robot)) {
+			robotResetButtons.get(robot).setDisable(!connected);
 		}
 	}
 	

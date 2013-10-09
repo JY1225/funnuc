@@ -32,7 +32,7 @@ public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicS
 
 	@Override
 	public boolean isConfigured() {
-		return ((basicStackPlate.getLayout().getStackingPositions().size() > 0) && (basicStackPlate.getLayout().getStackingPositions().get(0).getWorkPiece() != null));
+		return (basicStackPlate.getLayout().getStackingPositions().size() > 0);
 	}
 	
 	@Override

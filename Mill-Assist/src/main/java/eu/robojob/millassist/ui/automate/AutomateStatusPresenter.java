@@ -28,13 +28,13 @@ public class AutomateStatusPresenter implements ProcessFlowListener {
 		view.build();
 	}
 	
-	public void setTimers(final String cycleTime, final String timeInCycle, final String timeTillIntervention, final String timeTillFinished) {
+	public void setTimers(final String totalTime, final String finishedInterval, final String remainingCurrent, final String timeTillFinished) {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				timingView.setCycleTime(cycleTime);
-				timingView.setTimeInCycle(timeInCycle);
-				timingView.setTimeTillIntervention(timeTillIntervention);
+				timingView.setTotalTime(totalTime);
+				timingView.setFinishedInterval(finishedInterval);
+				timingView.setRemainingCurrent(remainingCurrent);
 				timingView.setTimeTillFinished(timeTillFinished);
 			}
 		});

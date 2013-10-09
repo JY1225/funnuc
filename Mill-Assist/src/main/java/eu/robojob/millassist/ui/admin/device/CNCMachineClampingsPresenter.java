@@ -62,23 +62,23 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 	}
 	
 	public void saveData(final String name, final float height, final String imagePath, final float x, 
-			final float y, final float z, final float r, final float smoothToX, final float smoothToY, 
+			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
 			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
 			final boolean controlSecond) {
 		if (selectedClamping != null) {
 			if (controlSecond) {
-				deviceManager.updateClamping(selectedClamping, name, Clamping.Type.DOUBLE, height, imagePath, x, y, z, r, smoothToX, smoothToY, smoothToZ, 
+				deviceManager.updateClamping(selectedClamping, name, Clamping.Type.DOUBLE, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
 					smoothFromX, smoothFromY, smoothFromZ);
 			} else {
-				deviceManager.updateClamping(selectedClamping, name, Clamping.Type.CENTRUM, height, imagePath, x, y, z, r, smoothToX, smoothToY, smoothToZ, 
+				deviceManager.updateClamping(selectedClamping, name, Clamping.Type.CENTRUM, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
 						smoothFromX, smoothFromY, smoothFromZ);
 			}
 		} else {
 			if (controlSecond) {
-				deviceManager.saveClamping(name, Clamping.Type.DOUBLE, height, imagePath, x, y, z, r, smoothToX, smoothToY, smoothToZ, 
+				deviceManager.saveClamping(name, Clamping.Type.DOUBLE, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
 					smoothFromX, smoothFromY, smoothFromZ);
 			} else {
-				deviceManager.saveClamping(name, Clamping.Type.CENTRUM, height, imagePath, x, y, z, r, smoothToX, smoothToY, smoothToZ, 
+				deviceManager.saveClamping(name, Clamping.Type.CENTRUM, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
 						smoothFromX, smoothFromY, smoothFromZ);
 			}
 		}

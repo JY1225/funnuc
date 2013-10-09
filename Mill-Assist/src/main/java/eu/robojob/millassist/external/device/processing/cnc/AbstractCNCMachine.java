@@ -27,8 +27,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private Object syncObject;
 	private boolean stopAction;
 	private CNCMachineAlarm cncMachineTimeout;
-	private float clampingWidthR;
-	private float clampingLengthR;
+	private int clampingWidthR;
 	private WayOfOperating wayOfOperating;
 	private MCodeAdapter mCodeAdapter;
 	
@@ -41,7 +40,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "AbstractCNCMachine.disconnectedWhileWaiting";
 	private static final String EXCEPTION_WHILE_WAITING = "AbstractCNCMachine.exceptionWhileWaiting";
 	
-	public AbstractCNCMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final float clampingLengthR, final float clampingWidthR) {
+	public AbstractCNCMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final int clampingWidthR) {
 		super(name, zones, true);
 		this.mCodeAdapter = mCodeAdapter;
 		this.wayOfOperating = wayOfOperating;
@@ -51,12 +50,11 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.currentStatus = 0;
 		this.listeners = new HashSet<CNCMachineListener>();
 		this.stopAction = false;
-		this.clampingLengthR = clampingLengthR;
 		this.clampingWidthR = clampingWidthR;
 	}
 	
-	public AbstractCNCMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final float clampingLengthR, final float clampingWidthR) {
-		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), clampingLengthR, clampingWidthR);
+	public AbstractCNCMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final int clampingWidthR) {
+		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), clampingWidthR);
 	}
 	
 	public WayOfOperating getWayOfOperating() {
@@ -278,19 +276,11 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		return new DeviceSettings(getWorkAreas());
 	}
 
-	public float getClampingWidthR() {
+	public int getClampingWidthR() {
 		return clampingWidthR;
 	}
 
-	public void setClampingWidthR(final float clampingWidthR) {
+	public void setClampingWidthR(final int clampingWidthR) {
 		this.clampingWidthR = clampingWidthR;
-	}
-
-	public float getClampingLengthR() {
-		return clampingLengthR;
-	}
-
-	public void setClampingLengthR(final float clampingLengthR) {
-		this.clampingLengthR = clampingLengthR;
 	}
 }

@@ -45,4 +45,11 @@ public class PrageDeviceConfigurePresenter extends AbstractFormPresenter<PrageDe
 		}
 		getView().setUserFrameNames(userFrameNames);
 	}
+	
+	public void saveData(final String name, final float relPosX, final float relPosY, 
+			final float relPosZ, final float relPosR, final float smoothToX, final float smoothToY, final float smoothToZ,
+			final float smoothFromX, final float smoothFromY, final float smoothFromZ, final int widthOffsetR) {
+		deviceManager.updatePrageDeviceData(prageDevice, name, relPosX, relPosY, relPosZ, relPosR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, widthOffsetR);
+		getView().refresh();
+	}
 }

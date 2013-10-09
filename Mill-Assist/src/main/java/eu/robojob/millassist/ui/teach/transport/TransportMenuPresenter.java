@@ -1,6 +1,5 @@
 package eu.robojob.millassist.ui.teach.transport;
 
-import javafx.application.Platform;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.teach.AbstractMenuPresenter;
 
@@ -14,7 +13,9 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 		super(view);
 		this.pickPresenter = pickPresenter;
 		this.putPresenter = putPresenter;
-		pickPresenter.setMenuPresenter(this);
+		if (pickPresenter != null) {
+			pickPresenter.setMenuPresenter(this);
+		}
 		putPresenter.setMenuPresenter(this);
 		view.build();
 	}
@@ -25,25 +26,13 @@ public class TransportMenuPresenter extends AbstractMenuPresenter<TransportMenuV
 	}
 	
 	public void configurePick() {
-		Platform.runLater(new Thread() {
-			@Override
-			public void run() {
-				getView().setConfigurePickActive();
-				pickPresenter.refresh();
-				getParent().setBottomRightView(pickPresenter.getView());
-			}
-		});
+		getView().setConfigurePickActive();
+		getParent().setBottomRightView(pickPresenter.getView());
 	}
 	
 	public void configurePut() {
-		Platform.runLater(new Thread() {
-			@Override
-			public void run() {
-				getView().setConfigurePutActive();
-				putPresenter.refresh();
-				getParent().setBottomRightView(putPresenter.getView());
-			}
-		});
+		getView().setConfigurePutActive();
+		getParent().setBottomRightView(putPresenter.getView());
 	}
 
 	@Override

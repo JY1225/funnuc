@@ -8,25 +8,25 @@ import eu.robojob.millassist.util.Translator;
 
 public class TimingView extends HBox {
 
-	private VBox vBoxCycleTime;
-	private Label lblCycleTimeTitle;
-	private Label lblCycleTime;
+	private VBox vBoxTotalTime;
+	private Label lblTotalTimeTitle;
+	private Label lblTotalTime;
 	
-	private VBox vBoxTimeInCycle;
-	private Label lblTimeInCycleTitle;
-	private Label lblTimeInCycle;
+	private VBox vBoxFinishedInterval;
+	private Label lblFinishedIntervalTitle;
+	private Label lblFinishedInterval;
 	
-	private VBox vBoxTimeTillIntervention;
-	private Label lblTimeTillInterventionTitle;
-	private Label lblTimeTillIntervention;
+	private VBox vBoxRemainingCurrent;
+	private Label lblRemainingCurrentTitle;
+	private Label lblRemainingCurrent;
 	
 	private VBox vBoxTimeTillFinished;
 	private Label lblTimeTillFinishedTitle;
 	private Label lblTimeTillFinished;
 	
-	private static final String CYCLE_TIME = "TimingView.cycleTime";
-	private static final String TIME_IN_CYCLE = "TimingView.timeInCycle";
-	private static final String TIME_TILL_INTERVENTION = "TimingView.timeTillIntervention";
+	private static final String TOTAL_TIME = "TimingView.totalTime";
+	private static final String FINISHED_INTERVAL = "TimingView.finishedInterval";
+	private static final String REMAINING_CURRENT = "TimingView.remainingCurrent";
 	private static final String TIME_TILL_FINISHED = "TimingView.timeTillFinished";
 	private static final String DEFAULT_VALUE = "00:00:00";
 	
@@ -41,38 +41,38 @@ public class TimingView extends HBox {
 		getChildren().clear();
 		setAlignment(Pos.CENTER);
 		
-		vBoxCycleTime = new VBox();
-		vBoxCycleTime.setAlignment(Pos.CENTER_LEFT);
-		lblCycleTimeTitle = new Label();
-		lblCycleTimeTitle.setText(Translator.getTranslation(CYCLE_TIME));
-		lblCycleTimeTitle.getStyleClass().add(CSS_TIMING_TITLE);
-		lblCycleTime = new Label();
-		lblCycleTime.setText(DEFAULT_VALUE);
-		lblCycleTime.getStyleClass().add(CSS_TIMING_VALUE);
-		vBoxCycleTime.getChildren().add(lblCycleTimeTitle);
-		vBoxCycleTime.getChildren().add(lblCycleTime);
+		vBoxTotalTime = new VBox();
+		vBoxTotalTime.setAlignment(Pos.CENTER_LEFT);
+		lblTotalTimeTitle = new Label();
+		lblTotalTimeTitle.setText(Translator.getTranslation(TOTAL_TIME));
+		lblTotalTimeTitle.getStyleClass().add(CSS_TIMING_TITLE);
+		lblTotalTime = new Label();
+		lblTotalTime.setText(DEFAULT_VALUE);
+		lblTotalTime.getStyleClass().add(CSS_TIMING_VALUE);
+		vBoxTotalTime.getChildren().add(lblTotalTimeTitle);
+		vBoxTotalTime.getChildren().add(lblTotalTime);
 		
-		vBoxTimeInCycle = new VBox();
-		vBoxTimeInCycle.setAlignment(Pos.CENTER_LEFT);
-		lblTimeInCycleTitle = new Label();
-		lblTimeInCycleTitle.setText(Translator.getTranslation(TIME_IN_CYCLE));
-		lblTimeInCycleTitle.getStyleClass().add(CSS_TIMING_TITLE);
-		lblTimeInCycle = new Label();
-		lblTimeInCycle.setText(DEFAULT_VALUE);
-		lblTimeInCycle.getStyleClass().add(CSS_TIMING_VALUE);
-		vBoxTimeInCycle.getChildren().add(lblTimeInCycleTitle);
-		vBoxTimeInCycle.getChildren().add(lblTimeInCycle);
+		vBoxFinishedInterval = new VBox();
+		vBoxFinishedInterval.setAlignment(Pos.CENTER_LEFT);
+		lblFinishedIntervalTitle = new Label();
+		lblFinishedIntervalTitle.setText(Translator.getTranslation(FINISHED_INTERVAL));
+		lblFinishedIntervalTitle.getStyleClass().add(CSS_TIMING_TITLE);
+		lblFinishedInterval = new Label();
+		lblFinishedInterval.setText(DEFAULT_VALUE);
+		lblFinishedInterval.getStyleClass().add(CSS_TIMING_VALUE);
+		vBoxFinishedInterval.getChildren().add(lblFinishedIntervalTitle);
+		vBoxFinishedInterval.getChildren().add(lblFinishedInterval);
 
-		vBoxTimeTillIntervention = new VBox();
-		vBoxTimeTillIntervention.setAlignment(Pos.CENTER_LEFT);
-		lblTimeTillInterventionTitle = new Label();
-		lblTimeTillInterventionTitle.setText(Translator.getTranslation(TIME_TILL_INTERVENTION));
-		lblTimeTillInterventionTitle.getStyleClass().add(CSS_TIMING_TITLE);
-		lblTimeTillIntervention = new Label();
-		lblTimeTillIntervention.setText(DEFAULT_VALUE);
-		lblTimeTillIntervention.getStyleClass().add(CSS_TIMING_VALUE);
-		vBoxTimeTillIntervention.getChildren().add(lblTimeTillInterventionTitle);
-		vBoxTimeTillIntervention.getChildren().add(lblTimeTillIntervention);
+		vBoxRemainingCurrent = new VBox();
+		vBoxRemainingCurrent.setAlignment(Pos.CENTER_LEFT);
+		lblRemainingCurrentTitle = new Label();
+		lblRemainingCurrentTitle.setText(Translator.getTranslation(REMAINING_CURRENT));
+		lblRemainingCurrentTitle.getStyleClass().add(CSS_TIMING_TITLE);
+		lblRemainingCurrent = new Label();
+		lblRemainingCurrent.setText(DEFAULT_VALUE);
+		lblRemainingCurrent.getStyleClass().add(CSS_TIMING_VALUE);
+		vBoxRemainingCurrent.getChildren().add(lblRemainingCurrentTitle);
+		vBoxRemainingCurrent.getChildren().add(lblRemainingCurrent);
 
 		vBoxTimeTillFinished = new VBox();
 		vBoxTimeTillFinished.setAlignment(Pos.CENTER_LEFT);
@@ -85,22 +85,22 @@ public class TimingView extends HBox {
 		vBoxTimeTillFinished.getChildren().add(lblTimeTillFinishedTitle);
 		vBoxTimeTillFinished.getChildren().add(lblTimeTillFinished);
 
-		getChildren().add(vBoxCycleTime);
-		getChildren().add(vBoxTimeInCycle);
-		getChildren().add(vBoxTimeTillIntervention);
+		getChildren().add(vBoxTotalTime);
+		getChildren().add(vBoxFinishedInterval);
+		getChildren().add(vBoxRemainingCurrent);
 		getChildren().add(vBoxTimeTillFinished);
 	}
 	
-	public void setCycleTime(final String timeString) {
-		lblCycleTime.setText(timeString);
+	public void setTotalTime(final String timeString) {
+		lblTotalTime.setText(timeString);
 	}
 	
-	public void setTimeInCycle(final String timeString) {
-		lblTimeInCycle.setText(timeString);
+	public void setFinishedInterval(final String timeString) {
+		lblFinishedInterval.setText(timeString);
 	}
 	
-	public void setTimeTillIntervention(final String timeString) {
-		lblTimeTillIntervention.setText(timeString);
+	public void setRemainingCurrent(final String timeString) {
+		lblRemainingCurrent.setText(timeString);
 	}
 	
 	public void setTimeTillFinished(final String timeString) {
@@ -112,15 +112,15 @@ public class TimingView extends HBox {
 		setPrefWidth(width);
 		setMaxWidth(width);
 		double vboxWidth = width / 4;
-		vBoxCycleTime.setPrefWidth(vboxWidth);
-		vBoxCycleTime.setMinWidth(vboxWidth);
-		vBoxCycleTime.setMaxWidth(vboxWidth);
-		vBoxTimeInCycle.setPrefWidth(vboxWidth);
-		vBoxTimeInCycle.setMinWidth(vboxWidth);
-		vBoxTimeInCycle.setMaxWidth(vboxWidth);
-		vBoxTimeTillIntervention.setPrefWidth(vboxWidth);
-		vBoxTimeTillIntervention.setMinWidth(vboxWidth);
-		vBoxTimeTillIntervention.setMaxWidth(vboxWidth);
+		vBoxTotalTime.setPrefWidth(vboxWidth);
+		vBoxTotalTime.setMinWidth(vboxWidth);
+		vBoxTotalTime.setMaxWidth(vboxWidth);
+		vBoxFinishedInterval.setPrefWidth(vboxWidth);
+		vBoxFinishedInterval.setMinWidth(vboxWidth);
+		vBoxFinishedInterval.setMaxWidth(vboxWidth);
+		vBoxRemainingCurrent.setPrefWidth(vboxWidth);
+		vBoxRemainingCurrent.setMinWidth(vboxWidth);
+		vBoxRemainingCurrent.setMaxWidth(vboxWidth);
 		vBoxTimeTillFinished.setPrefWidth(vboxWidth);
 		vBoxTimeTillFinished.setMinWidth(vboxWidth);
 		vBoxTimeTillFinished.setMaxWidth(vboxWidth);

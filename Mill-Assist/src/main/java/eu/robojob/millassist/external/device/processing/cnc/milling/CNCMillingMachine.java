@@ -49,16 +49,16 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	
 	private static Logger logger = LogManager.getLogger(CNCMillingMachine.class.getName());
 	
-	public CNCMillingMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final SocketConnection socketConnection, final float clampingLengthR, final float clampingWidthR) {
-		super(name, wayOfOperating, mCodeAdapter, zones, clampingLengthR, clampingWidthR);
+	public CNCMillingMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final SocketConnection socketConnection, final int clampingWidthR) {
+		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
 		// start monitoring thread at creation of this object
 		ThreadManager.submit(cncMachineMonitoringThread);
 	}
 	
-	public CNCMillingMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final SocketConnection socketConnection, final float clampingLengthR, final float clampingWidthR) {
-		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), socketConnection, clampingLengthR, clampingWidthR);
+	public CNCMillingMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final SocketConnection socketConnection, final int clampingWidthR) {
+		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), socketConnection, clampingWidthR);
 	}
 	
 	public CNCMachineSocketCommunication getCNCMachineSocketCommunication() {
@@ -348,7 +348,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			c.setR(c.getR() + getClampingLengthR());
+			c.setR(c.getR());
 		} else {
 			c.setR(c.getR() + getClampingWidthR());
 		}
@@ -359,7 +359,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			c.setR(c.getR() + getClampingLengthR());
+			c.setR(c.getR());
 		} else {
 			c.setR(c.getR() +  getClampingWidthR());
 		}

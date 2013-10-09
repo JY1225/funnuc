@@ -71,8 +71,7 @@ public class DeviceMapper {
 					devices.add(basicStackPlate);
 					break;
 				case DEVICE_TYPE_PRAGE:
-					PrageDevice prageDevice = new PrageDevice(name, zones);
-					prageDevice.setId(id);
+					PrageDevice prageDevice = getPrageDevice(id, name, zones);
 					devices.add(prageDevice);
 					break;
 				case DEVICE_TYPE_CONVEYOR:
@@ -84,6 +83,19 @@ public class DeviceMapper {
 			}
 		}
 		return devices;
+	}
+	
+	private PrageDevice getPrageDevice(final int id, final String name, final Set<Zone> zones) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PRAGEFIX WHERE ID = ?");
+		stmt.setInt(1, id);
+		ResultSet results = stmt.executeQuery();
+		PrageDevice prageDevice = null;
+		if (results.next()) {
+			int clampingWidthR = results.getInt("CLAMPING_WIDTH_R");
+			prageDevice = new PrageDevice(name, zones, clampingWidthR);
+			prageDevice.setId(id);
+		}
+		return prageDevice;
 	}
 	
 	private Conveyor getConveyor(final int id, final String name, final Set<Zone> zones) throws SQLException {
@@ -166,8 +178,7 @@ public class DeviceMapper {
 		AbstractCNCMachine cncMillingMachine = null;
 		if (results.next()) {
 			int deviceInterfaceId = results.getInt("DEVICEINTERFACE");
-			float clampingLengthR = results.getFloat("CLAMPING_LENGTH_R");
-			float clampingWidthR = results.getFloat("CLAMPING_WIDTH_R");
+			int clampingWidthR = results.getInt("CLAMPING_WIDTH_R");
 			int wayOfOperatingInt = results.getInt("WAYOFOPERATING");
 			WayOfOperating wayOfOperating;
 			if (wayOfOperatingInt == 1) {
@@ -183,7 +194,7 @@ public class DeviceMapper {
 			if (results2.next()) {
 				int socketConnectionId = results2.getInt("SOCKETCONNECTION");
 				SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
-				cncMillingMachine = new CNCMillingMachine(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingLengthR, clampingWidthR);
+				cncMillingMachine = new CNCMillingMachine(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR);
 				cncMillingMachine.setId(id);
 			}
 		}
@@ -480,7 +491,7 @@ public class DeviceMapper {
 	
 	public void updateCNCMachine(final CNCMillingMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
 			final String ipAddress, final int port, final String workAreaName, final String userFramename, 
-				final float clampingLengthR, final float clampingWidthR, final List<String> robotServiceInputNames, 
+				final int clampingWidthR, final List<String> robotServiceInputNames, 
 					final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
@@ -498,9 +509,8 @@ public class DeviceMapper {
 		stmt2.setString(1, name);
 		stmt2.setInt(2, cncMachine.getId());
 		stmt2.execute();
-		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CNCMILLINGMACHINE SET CLAMPING_LENGTH_R = ?, CLAMPING_WIDTH_R = ? , WAYOFOPERATING = ? WHERE ID = ?");
-		stmt3.setFloat(1, clampingLengthR);
-		stmt3.setFloat(2, clampingWidthR);
+		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CNCMILLINGMACHINE SET CLAMPING_WIDTH_R = ? , WAYOFOPERATING = ? WHERE ID = ?");
+		stmt3.setInt(1, clampingWidthR);
 		int wayOfOperatingInt = WAYOFOPERATING_STARTSTOP;
 		if (wayOfOperating == WayOfOperating.M_CODES) {
 			wayOfOperatingInt = WAYOFOPERATING_MCODES;
@@ -509,8 +519,8 @@ public class DeviceMapper {
 		} else {
 			throw new IllegalStateException("Unknown way of operating: " + cncMachine.getWayOfOperating());
 		}
-		stmt3.setInt(3, wayOfOperatingInt);
-		stmt3.setInt(4, cncMachine.getId());
+		stmt3.setInt(2, wayOfOperatingInt);
+		stmt3.setInt(3, cncMachine.getId());
 		stmt3.execute();
 		if (cncMachine.getMCodeAdapter() != null) {
 			updateMCodeAdapter(cncMachine.getId(), cncMachine.getMCodeAdapter(), robotServiceInputNames, 
@@ -523,12 +533,47 @@ public class DeviceMapper {
 		ConnectionManager.getConnection().setAutoCommit(true);
 		cncMachine.setName(name);
 		cncMachine.setWayOfOperating(wayOfOperating);
-		cncMachine.setClampingLengthR(clampingLengthR);
 		cncMachine.setClampingWidthR(clampingWidthR);
 		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setIpAddress(ipAddress);
 		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setPortNumber(port);
 		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setName(name);
 		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().disconnect();
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void updatePrageDevice(final PrageDevice prageDevice, final String name, final float relPosX, final float relPosY, 
+			final float relPosZ, final float relPosR, final float smoothToX, final float smoothToY, final float smoothToZ,
+			final float smoothFromX, final float smoothFromY, final float smoothFromZ, final int widthOffsetR) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		Coordinates c = prageDevice.getWorkAreas().get(0).getActiveClamping().getRelativePosition();
+		c.setX(relPosX);
+		c.setY(relPosY);
+		c.setZ(relPosZ);
+		c.setR(relPosR);
+		generalMapper.saveCoordinates(c);
+		Coordinates smoothTo = prageDevice.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
+		smoothTo.setX(smoothToX);
+		smoothTo.setY(smoothToY);
+		smoothTo.setZ(smoothToZ);
+		generalMapper.saveCoordinates(smoothTo);
+		Coordinates smoothFrom = prageDevice.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
+		smoothFrom.setX(smoothFromX);
+		smoothFrom.setY(smoothFromY);
+		smoothFrom.setZ(smoothFromZ);
+		generalMapper.saveCoordinates(smoothFrom);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE " +
+				"SET NAME = ? WHERE ID = ?");
+		stmt.setString(1, name);
+		stmt.setInt(2, prageDevice.getId());
+		stmt.execute();
+		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE PRAGEFIX "+
+				"SET CLAMPING_WIDTH_R = ? WHERE ID = ?");
+		stmt2.setInt(1, widthOffsetR);
+		stmt2.setInt(2, prageDevice.getId());
+		stmt2.execute();
+		prageDevice.setName(name);
+		prageDevice.setClampingWidthDeltaR(widthOffsetR);
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
@@ -609,13 +654,16 @@ public class DeviceMapper {
 	}
 	
 	public void updateClamping(final Clamping clamping, final String name, final Clamping.Type type, final float height, 
-			final String imagePath, final float x, final float y, final float z, final float r, final float smoothToX, 
+			final String imagePath, final float x, final float y, final float z, final float w, final float p, 
+			final float r, final float smoothToX, 
 			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		Coordinates relPos = clamping.getRelativePosition();
 		relPos.setX(x);
 		relPos.setY(y);
 		relPos.setZ(z);
+		relPos.setW(w);
+		relPos.setP(p);
 		relPos.setR(r);
 		generalMapper.saveCoordinates(relPos);
 		Coordinates smoothTo = clamping.getSmoothToPoint();

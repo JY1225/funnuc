@@ -190,11 +190,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		return cncMachineGeneralView.getPort();
 	}
 	
-	public float getLengthR() {
-		return cncMachineGeneralView.getLengthR();
-	}
-	
-	public float getWidthR() {
+	public int getWidthR() {
 		return cncMachineGeneralView.getWidthR();
 	}
 	

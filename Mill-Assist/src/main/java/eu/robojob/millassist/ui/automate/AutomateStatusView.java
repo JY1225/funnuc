@@ -212,6 +212,7 @@ public class AutomateStatusView extends HBox {
 		
 		vboxBottomRight = new VBox();
 		vboxBottomRight.getChildren().add(spAmount);
+		VBox.setMargin(spAmount, new Insets(10, 0, 0, 0));
 		vboxBottomRight.getChildren().add(vboxButtons);
 		bottomRight.getChildren().add(vboxBottomRight);
 		vboxButtons.setSpacing(10);

@@ -411,7 +411,7 @@ public class ProcessFlowMapper {
 			BasicStackPlateSettings bspSettings = (BasicStackPlateSettings) deviceSettings;
 			generalMapper.saveWorkPiece(bspSettings.getRawWorkPiece());
 			generalMapper.saveWorkPiece(bspSettings.getFinishedWorkPiece());
-			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO STACKPLATESETTINGS (ID, AMOUNT, ORIENTATION, RAWWORKPIECE, FINISHEDWORKPIECE) VALUES (?, ?, ?, ?, ?)");
+			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO STACKPLATESETTINGS (ID, AMOUNT, ORIENTATION, RAWWORKPIECE, FINISHEDWORKPIECE, LAYERS) VALUES (?, ?, ?, ?, ?, ?)");
 			stmt4.setInt(1, bspSettings.getId());
 			stmt4.setInt(2, bspSettings.getAmount());
 			int orientation = 0;
@@ -425,6 +425,7 @@ public class ProcessFlowMapper {
 			stmt4.setInt(3, orientation);
 			stmt4.setInt(4, bspSettings.getRawWorkPiece().getId());
 			stmt4.setInt(5, bspSettings.getFinishedWorkPiece().getId());
+			stmt4.setInt(6,  bspSettings.getLayers());
 			stmt4.executeUpdate();
 		} else if (deviceSettings instanceof ConveyorSettings) {
 			ConveyorSettings cSettings = (ConveyorSettings) deviceSettings;
@@ -589,12 +590,13 @@ public class ProcessFlowMapper {
 			int orientation = results.getInt("ORIENTATION");
 			int rawWorkPieceId = results.getInt("RAWWORKPIECE");
 			int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
+			int layers = results.getInt("LAYERS");
 			WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(processFlowId, rawWorkPieceId);
 			WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
 			if (orientation == STACKPLATE_ORIENTATION_HORIZONTAL) {
-				basicStackPlateSettings = new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.HORIZONTAL, amount);
+				basicStackPlateSettings = new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.HORIZONTAL, layers, amount);
 			} else if (orientation == STACKPLATE_ORIENTATION_TILTED) {
-				basicStackPlateSettings = new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.TILTED, amount);
+				basicStackPlateSettings = new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.TILTED, layers, amount);
 			} else {
 				throw new IllegalStateException("Unknown workpiece orientation: [" + orientation + "].");
 			}

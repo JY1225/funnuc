@@ -5,15 +5,18 @@ import java.util.Map;
 
 import eu.robojob.millassist.process.PickAfterWaitStep;
 import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
 import eu.robojob.millassist.ui.general.model.TransportInformation;
 import eu.robojob.millassist.ui.teach.AbstractMenuPresenter;
 
 public class TransportMenuFactory {
 
 	private Map<Integer, AbstractMenuPresenter<?>> presentersBuffer;
+	private ProcessFlowAdapter processFlowAdapter;
 	
-	public TransportMenuFactory(final ProcessFlow processFlow) {
+	public TransportMenuFactory(final ProcessFlow processFlow, final ProcessFlowAdapter processFlowAdapter) {
 		presentersBuffer = new HashMap<Integer, AbstractMenuPresenter<?>>();
+		this.processFlowAdapter = processFlowAdapter;
 	}
 	
 	public AbstractMenuPresenter<?> getTransportMenu(final TransportInformation transportInfo) {
@@ -36,14 +39,15 @@ public class TransportMenuFactory {
 			return null;
 		} else {
 			TransportTeachedOffsetView view = new TransportTeachedOffsetView();
-			TransportTeachedOffsetPresenter presenter = new TransportTeachedOffsetPresenter(view, transportInfo.getPickStep());
+			TransportTeachedOffsetPresenter presenter = new TransportTeachedOffsetPresenter(view, transportInfo.getPickStep(), transportInfo.getPutStep());
 			return presenter;
 		}
 	}
 	
 	public TransportTeachedOffsetPresenter getPutPresenter(final TransportInformation transportInfo) {
 		TransportTeachedOffsetView view = new TransportTeachedOffsetView();
-		TransportTeachedOffsetPresenter presenter = new TransportTeachedOffsetPresenter(view, transportInfo.getPutStep());
+		TransportInformation nextTransportInfo = processFlowAdapter.getTransportInformation(transportInfo.getIndex() + 1);
+		TransportTeachedOffsetPresenter presenter = new TransportTeachedOffsetPresenter(view, transportInfo.getPutStep(), nextTransportInfo.getPickStep());
 		return presenter;
 	}
 	

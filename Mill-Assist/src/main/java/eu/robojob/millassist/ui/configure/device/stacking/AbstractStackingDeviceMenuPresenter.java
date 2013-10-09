@@ -35,7 +35,7 @@ public abstract class AbstractStackingDeviceMenuPresenter extends AbstractMenuPr
 		if (deviceInfo.hasPickStep()) {
 			configureWorkPiece();
 		} else {
-			showLayout();
+			configurePut();
 		}
 	}
 

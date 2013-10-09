@@ -237,15 +237,15 @@ public class ProcessFlow {
 		return 0;
 	}
 
-	public int getFinishedAmount() {
+	public synchronized int getFinishedAmount() {
 		return finishedAmount;
 	}
 	
-	public void incrementFinishedAmount() {
+	public synchronized void incrementFinishedAmount() {
 		setFinishedAmount(finishedAmount + 1);
 	}
 
-	public void setFinishedAmount(final int finishedAmount) {
+	public synchronized void setFinishedAmount(final int finishedAmount) {
 		this.finishedAmount = finishedAmount;
 		if ((type == Type.CONTINUOUS) && (finishedAmount >= getTotalAmount())) {
 			for (AbstractDevice device : deviceSettings.keySet()) {

@@ -87,23 +87,17 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 	}
 	
 	public void closeTransportMenu() {
-		Platform.runLater(new Thread() {
-			@Override
-			public void run() {
-				processFlowPresenter.setNoneActive();
-				activeMenu = null;
-				checkAllConnected();
-			}
-		});
-		
+		activeMenu = null;
+		checkAllConnected();	
+		processFlowPresenter.setNoneActive();
 	}
 	
 	public boolean showTransportMenu(final int index) {
 		activeMenu = transportMenuFactory.getTransportMenu(processFlowAdapter.getTransportInformation(index));
-		activeMenu.setTextFieldListener(this);
 		activeMenu.setParent(this);
-		activeMenu.openFirst();
+		activeMenu.setTextFieldListener(this);
 		getView().setBottomLeft(activeMenu.getView());
+		activeMenu.openFirst();
 		return true;
 	}
 	

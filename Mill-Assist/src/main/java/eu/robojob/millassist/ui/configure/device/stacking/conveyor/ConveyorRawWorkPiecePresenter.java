@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorSettings;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -66,13 +68,21 @@ public class ConveyorRawWorkPiecePresenter extends AbstractFormPresenter<Conveyo
 			recalculate();
 		}
 	}
+
+	private void clearTeachedOffsets() {
+		for (AbstractProcessStep step : pickStep.getProcessFlow().getProcessSteps()) {
+			if (step instanceof AbstractTransportStep) {
+				((AbstractTransportStep) step).setRelativeTeachedOffset(null);
+			}
+		}
+	}
 	
 	public void changedWidth(final float width) {
 		logger.info("Set width [" + width + "].");
 		if (width != dimensions.getWidth()) {
 			dimensions.setWidth(width);	
 			recalculate();
-			pickStep.setRelativeTeachedOffset(null);
+			clearTeachedOffsets();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 		}
 	}
@@ -82,7 +92,7 @@ public class ConveyorRawWorkPiecePresenter extends AbstractFormPresenter<Conveyo
 		if (length != dimensions.getLength()) {
 			dimensions.setLength(length);
 			recalculate();
-			pickStep.setRelativeTeachedOffset(null);
+			clearTeachedOffsets();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 		}
 	}
@@ -92,7 +102,7 @@ public class ConveyorRawWorkPiecePresenter extends AbstractFormPresenter<Conveyo
 		if (height != dimensions.getHeight()) {
 			dimensions.setHeight(height);
 			recalculate();
-			pickStep.setRelativeTeachedOffset(null);
+			clearTeachedOffsets();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 		}
 	}

@@ -10,9 +10,11 @@ public class BasicStackPlateSettings extends DeviceSettings {
 	private WorkPiece finishedWorkPiece;
 	//TODO maybe in the future, a list of intermediate half-finished workpieces could be added
 	private WorkPieceOrientation orientation;
+	private int layers;
 	private int amount;
 	
-	public BasicStackPlateSettings(final WorkPiece workPiece, final WorkPiece finishedWorkPiece, final WorkPieceOrientation orientation, final int amount) {
+	public BasicStackPlateSettings(final WorkPiece workPiece, final WorkPiece finishedWorkPiece, final WorkPieceOrientation orientation, final int layers, final int amount) {
+		this.layers = layers;
 		this.amount = amount;
 		this.orientation = orientation;
 		this.rawWorkPiece = workPiece;
@@ -39,6 +41,14 @@ public class BasicStackPlateSettings extends DeviceSettings {
 		this.amount = amount;
 	}
 	
+	public int getLayers() {
+		return layers;
+	}
+
+	public void setLayers(final int layers) {
+		this.layers = layers;
+	}
+
 	public WorkPiece getRawWorkPiece() {
 		return this.rawWorkPiece;
 	}

@@ -26,7 +26,7 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	private static final int ICON_WIDTH = 20;
 	private static final int ICON_MARGIN = 6;
-	private static final int ALARM_HEIGHT = 50;
+	private static final int ALARM_HEIGHT = 45;
 	private static final int PADDING_BOTTOM = 10;
 	private static final int ICON_PADDING = 10;
 	
@@ -89,7 +89,7 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 		hBoxAlarm.setMinHeight(ALARM_HEIGHT);
 		hBoxAlarm.setMaxHeight(ALARM_HEIGHT);
 		hBoxAlarm.setPrefHeight(ALARM_HEIGHT);
-		HBox.setMargin(alarmIconPane, new Insets(0, ICON_PADDING, 0, 0));
+		HBox.setMargin(alarmIconPane, new Insets(0, ICON_PADDING, 5, 0));
 		hBoxAlarm.getChildren().addAll(alarmIconPane, lblAlarmMessage);
 		hBoxAlarm.getStyleClass().add(CSS_CLASS_INFO_BORDER_BOTTOM);
 		hBoxAlarm.setAlignment(Pos.CENTER_LEFT);

@@ -51,17 +51,19 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	private Label lblWorkPieceWeight;	
 	
 	private Label lblOrientation;
+	private Label lblLayers;
 	private Label lblWorkPieceAmount;
 	private Button btnMaxAmount;
 	
 	private Label lblMaterial;
 	private Button btnCalc;
-	
+		
 	private NumericTextField ntxtWorkPieceWidth;
 	private NumericTextField ntxtWorkPieceLength;
 	private NumericTextField ntxtWorkPieceHeight;
 	private NumericTextField ntxtWorkPieceWeight;
 	private IntegerTextField itxtWorkPieceAmount;
+	private IntegerTextField itxtLayers;
 	
 	private HBox orientationsBox;
 	private HBox materialsBox;
@@ -73,14 +75,15 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	private Button btnOther;
 	
 	private Region spacer;
+	private Region spacer2;
 	
 	protected static final int MAX_INTEGER_LENGTH = 6;
 	private static final int HGAP = 10;
 	private static final int VGAP = 0;
 	private static final double BTN_WIDTH = 80;
 	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
-	protected static final double ICON_PANE_WIDTH = 60;
-	protected static final double ICON_PANE_HEIGHT = 50;
+	protected static final double ICON_PANE_WIDTH = 55;
+	protected static final double ICON_PANE_HEIGHT = 46;
 	
 	protected static final String WIDTH = "BasicStackPlateWorkPieceView.width";
 	protected static final String LENGTH = "BasicStackPlateWorkPieceView.length";
@@ -94,6 +97,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	private static final String MATERIAL = "BasicStackPlateWorkPieceView.material";
 	private static final String CALC = "BasicStackPlateWorkPieceView.calc";
 	private static final String OTHER = "BasicStackPlateWorkPieceView.other";
+	private static final String STACKS = "BasicStackPlateWorkPieceView.layers";
 	
 	private static final String CSS_CLASS_BUTTON_ORIENTATION = "btn-orientation";
 	
@@ -115,6 +119,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		icon2Pane = new StackPane();
 		icon2Pane.getChildren().add(workPieceLengthPath);
 		icon2Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
+		icon2Pane.setMaxSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
 		StackPane.setAlignment(workPieceLengthPath, Pos.BOTTOM_RIGHT);
 		getContents().add(icon2Pane, column++, row);
 		lblWorkPieceLength = new Label(Translator.getTranslation(LENGTH));
@@ -138,6 +143,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		icon1Pane = new StackPane();
 		icon1Pane.getChildren().add(workPieceWidthPath);
 		icon1Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
+		icon1Pane.setMaxSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
 		StackPane.setAlignment(workPieceWidthPath, Pos.BOTTOM_RIGHT);
 		getContents().add(icon1Pane, column++, row);
 		lblWorkPieceWidth = new Label(Translator.getTranslation(WIDTH));
@@ -161,6 +167,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		icon3Pane = new StackPane();
 		icon3Pane.getChildren().add(workPieceHeightPath);
 		icon3Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
+		icon3Pane.setMaxSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
 		StackPane.setAlignment(workPieceHeightPath, Pos.BOTTOM_RIGHT);
 		getContents().add(icon3Pane, column++, row);
 		lblWorkPieceHeight = new Label(Translator.getTranslation(HEIGHT));
@@ -220,6 +227,34 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		getContents().add(lblMaterial, column++, row);
 		getContents().add(materialsBox, column++, row, 6, 1);
 		
+		spacer2 = new Region();
+		spacer2.setPrefHeight(10);
+		
+		column = 0; row++;
+		getContents().add(spacer2, column++, row);
+		
+		column = 1;
+		row++;
+		lblWorkPieceWeight = new Label(Translator.getTranslation(WEIGHT));
+		getContents().add(lblWorkPieceWeight, column++, row);
+		ntxtWorkPieceWeight = new NumericTextField(MAX_INTEGER_LENGTH);
+		ntxtWorkPieceWeight.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtWorkPieceWeight.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtWorkPieceWeight.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> observable, final Float oldValue, final Float newValue) {
+				getPresenter().changedWeight(newValue);
+			}
+		});
+		getContents().add(ntxtWorkPieceWeight, column++, row);
+		btnCalc = createButton(Translator.getTranslation(CALC), UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				getPresenter().recalcWeight();
+			}
+		});
+		getContents().add(btnCalc, column++, row, 2, 1);
+		
 		spacer = new Region();
 		spacer.setPrefSize(18, BTN_HEIGHT);
 		getContents().add(spacer, 3, 0);
@@ -246,6 +281,22 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		column = 4;
 		getContents().add(lblOrientation, column++, row);
 		getContents().add(orientationsBox, column, row, 2, 1);
+		column = 4;
+		row++;
+		
+		lblLayers = new Label(Translator.getTranslation(STACKS));
+		getContents().add(lblLayers, column++, row);
+		itxtLayers = new IntegerTextField(MAX_INTEGER_LENGTH);
+		itxtLayers.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		itxtLayers.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		itxtLayers.setOnChange(new ChangeListener<Integer>() {
+			@Override
+			public void changed(final ObservableValue<? extends Integer> observable, final Integer oldValue, final Integer newValue) {
+				getPresenter().changedLayers(newValue);
+			}
+		});
+		getContents().add(itxtLayers, column++, row);
+	
 		column = 4;
 		row++;
 		lblWorkPieceAmount = new Label(Translator.getTranslation(AMOUNT));
@@ -275,28 +326,6 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		});
 		getContents().add(btnMaxAmount, column++, row);
 		
-		column = 4;
-		row++;
-		lblWorkPieceWeight = new Label(Translator.getTranslation(WEIGHT));
-		getContents().add(lblWorkPieceWeight, column++, row);
-		ntxtWorkPieceWeight = new NumericTextField(MAX_INTEGER_LENGTH);
-		ntxtWorkPieceWeight.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
-		ntxtWorkPieceWeight.setMaxSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
-		ntxtWorkPieceWeight.setOnChange(new ChangeListener<Float>() {
-			@Override
-			public void changed(final ObservableValue<? extends Float> observable, final Float oldValue, final Float newValue) {
-				getPresenter().changedWeight(newValue);
-			}
-		});
-		getContents().add(ntxtWorkPieceWeight, column++, row);
-		btnCalc = createButton(Translator.getTranslation(CALC), UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent arg0) {
-				getPresenter().recalcWeight();
-			}
-		});
-		getContents().add(btnCalc, column++, row);
-		
 		hideNotification();
 		
 		
@@ -306,6 +335,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
 		itxtWorkPieceAmount.setFocusListener(listener);
+		itxtLayers.setFocusListener(listener);
 		ntxtWorkPieceHeight.setFocusListener(listener);
 		ntxtWorkPieceLength.setFocusListener(listener);
 		ntxtWorkPieceWeight.setFocusListener(listener);
@@ -317,6 +347,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		BasicStackPlateSettings settings = (BasicStackPlateSettings) ((BasicStackPlate) pickStep.getDevice()).getDeviceSettings();
 		setDimensions(settings.getRawWorkPiece().getDimensions());
 		itxtWorkPieceAmount.setText("" + settings.getAmount());
+		itxtLayers.setText("" + settings.getLayers());
 		setOrientation(settings.getOrientation());
 		setWeight(settings.getRawWorkPiece().getMaterial(), settings.getRawWorkPiece().getWeight());
 	}

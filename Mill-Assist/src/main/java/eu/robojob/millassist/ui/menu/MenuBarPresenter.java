@@ -28,6 +28,7 @@ public class MenuBarPresenter {
 	}
 	
 	public void clickedConfigure() {
+		parent.closePopUps();
 		parent.showConfigure();
 	}
 	
@@ -41,6 +42,7 @@ public class MenuBarPresenter {
 	}
 	
 	public void clickedTeach() {
+		parent.closePopUps();
 		parent.showTeach();
 	}
 	
@@ -49,6 +51,7 @@ public class MenuBarPresenter {
 	}
 	
 	public void clickedAutomate() {
+		parent.closePopUps();
 		parent.showAutomate();
 	}
 	
@@ -57,6 +60,7 @@ public class MenuBarPresenter {
 	}
 	
 	public void clickedAdmin() {
+		parent.closePopUps();
 		if (adminActive) {
 			parent.showConfigure();
 		} else {

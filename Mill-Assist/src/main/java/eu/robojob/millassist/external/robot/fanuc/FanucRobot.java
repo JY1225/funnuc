@@ -16,6 +16,7 @@ import eu.robojob.millassist.external.communication.socket.SocketDisconnectedExc
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
@@ -645,12 +646,24 @@ public class FanucRobot extends AbstractRobot {
 		values.add(df.format(0));					// z correction
 		values.add(df.format(location.getW()));		// w offset
 		values.add(df.format(location.getP()));		// p offset
-		values.add(df.format(location.getR()));		// r offset							
-		if ((relativeTeachedCoordinates == null) || (relativeTeachedCoordinates.getZ() >= 0)) {
-			values.add(df.format(dimensions.getHeight() + location.getZ() + clamping.getHeight()));	// z safe plane offset 
+		values.add(df.format(location.getR()));		// r offset			
+		
+		float zSafePlane = clamping.getRelativePosition().getZ();
+		/*if ((relativeTeachedCoordinates != null) && (relativeTeachedCoordinates.getZ() < 0)) {
+			zSafePlane = zSafePlane + Math.abs(relativeTeachedCoordinates.getZ());
+		}*/
+		// also add the workpiece height (for moving away)
+		zSafePlane = zSafePlane + dimensions.getHeight();
+		float wpHeight = dimensions.getHeight();
+		if (workArea.getZone().getDevice() instanceof BasicStackPlate) {
+			wpHeight = ((BasicStackPlate) workArea.getZone().getDevice()).getLayout().getLayers() * dimensions.getHeight();
+		} 
+		if (wpHeight < clamping.getHeight()) {
+			zSafePlane = zSafePlane + clamping.getHeight();
 		} else {
-			values.add(df.format(dimensions.getHeight() + location.getZ() - relativeTeachedCoordinates.getZ() + clamping.getHeight()));	// z safe plane offset 
+			zSafePlane = zSafePlane + wpHeight;
 		}
+		values.add(df.format(zSafePlane));
 		if (smoothPoint.getZ() > workArea.getUserFrame().getzSafeDistance()) {	// safety add z
 			values.add(df.format(smoothPoint.getZ()));
 		} else {

@@ -167,7 +167,8 @@ public class TeachOptimizedThread extends TeachThread {
 		// we set the first work piece as a finished
 		putOnStackerStep.getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(putOnStackerStep.getProcessFlow(), putOnStackerStep, StatusChangedEvent.STARTED, WORKPIECE_ID));
 		if (stackingDevice instanceof BasicStackPlate) {
-			((BasicStackPlate) stackingDevice).getLayout().getStackingPositions().get(0).getWorkPiece().setType(WorkPiece.Type.FINISHED);
+			((BasicStackPlate) stackingDevice).getLayout().getStackingPositions().get(0).setWorkPiece(((BasicStackPlate) stackingDevice).getFinishedWorkPiece());
+			((BasicStackPlate) stackingDevice).getLayout().getStackingPositions().get(0).setAmount(1);
 		}
 		getProcessFlow().setFinishedAmount(1);
 		Coordinates originalCoordinates = stackingDevice.getLocation(putOnStackerStep.getRobotSettings().getWorkArea(), WorkPiece.Type.FINISHED, getProcessFlow().getClampingType());
