@@ -98,17 +98,18 @@ public class TeachOptimizedThread extends TeachThread {
 						if (putAndWaitOnPrageStep != null) {
 							putAndWaitOnPrageStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
 						}
-						putInMachineStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
+						//putInMachineStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
 					} else if (step.equals(putAndWaitOnPrageStep)) {
-						putAndWaitOnPrageStep.setRelativeTeachedOffset(null);
+						//putAndWaitOnPrageStep.setRelativeTeachedOffset(null);
 						putAndWaitOnPrageStep.executeStepTeached(WORKPIECE_ID, this);
 						putAndWaitOnPrageStep.finalizeStep(this);
 						relTeachedOffsetMachineClamping = putAndWaitOnPrageStep.getRelativeTeachedOffset();
 						Coordinates offsetInMachine = new Coordinates(relTeachedOffsetMachineClamping);
 						putInMachineStep.setRelativeTeachedOffset(offsetInMachine);
 						//TODO what to do with y offset of Präge?
+						//FIXME test and take into account clamping type!!
 					} else if (step.equals(putInMachineStep)) {
-						putInMachineStep.setRelativeTeachedOffset(null);
+						//putInMachineStep.setRelativeTeachedOffset(null);
 						putInMachineStep.getRobotSettings().setFreeAfter(true);
 						putInMachineStep.executeStepTeached(WORKPIECE_ID, this);
 						putInMachineStep.finalizeStep(this);
