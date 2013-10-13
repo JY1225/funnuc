@@ -127,8 +127,23 @@ public class TeachOptimizedThread extends TeachThread {
 				}
 				if (isRunning()) {
 					Coordinates pickFromMachineOffset = new Coordinates(relTeachedOffsetMachineClamping);
-					pickFromMachineOffset.minus(relTeachedOffsetRawWp);
-					pickFromMachineOffset.plus(relTeachedOffsetFinishedWp);
+					
+					Coordinates wpInMachineOrientation = new Coordinates(putInMachineStep.getDevice().getLocationOrientation(putInMachineStep.getDeviceSettings().getWorkArea()));
+					wpInMachineOrientation.plus(relTeachedOffsetMachineClamping);
+					wpInMachineOrientation.minus(pickFromStackingDeviceStep.getRelativeTeachedOffset());
+					wpInMachineOrientation.setX(0);
+					wpInMachineOrientation.setY(0);
+					wpInMachineOrientation.setZ(0);
+					
+					Coordinates wpDiffRelativeOffset = new Coordinates(relTeachedOffsetFinishedWp);
+					wpDiffRelativeOffset.minus(relTeachedOffsetRawWp);
+					Coordinates extraWpRelOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(wpInMachineOrientation, wpDiffRelativeOffset);
+					extraWpRelOffset = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(new Coordinates(putInMachineStep.getDevice().getLocationOrientation(putInMachineStep.getDeviceSettings().getWorkArea())), extraWpRelOffset);
+					//pickFromMachineOffset.minus(relTeachedOffsetRawWp);
+					//pickFromMachineOffset.plus(relTeachedOffsetFinishedWp);
+					
+					pickFromMachineOffset.plus(extraWpRelOffset);
+					
 					pickFromMachineStep.setRelativeTeachedOffset(pickFromMachineOffset);
 					putOnStackingDeviceStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);		
 					setRunning(false);
