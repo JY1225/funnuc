@@ -12,7 +12,13 @@ public class BasicStackPlateConfigurePresenter extends AbstractFormPresenter<Bas
 		super(view);
 		this.deviceInfo = deviceInfo;
 		view.setDeviceInfo(deviceInfo);
-		view.setStackingDeviceIds(deviceManager.getStackingDeviceNames());
+		if (deviceInfo.hasPickStep()) {
+			view.setStackingDeviceIds(deviceManager.getStackingFromDeviceNames());
+		} else if (deviceInfo.hasPutStep()) {
+			view.setStackingDeviceIds(deviceManager.getStackingToDeviceNames());
+		} else {
+			throw new IllegalStateException("No pick or put step.");
+		}
 		view.build();
 	}
 

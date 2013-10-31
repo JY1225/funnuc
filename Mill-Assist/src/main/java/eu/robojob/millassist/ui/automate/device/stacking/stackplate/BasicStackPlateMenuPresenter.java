@@ -32,14 +32,14 @@ public class BasicStackPlateMenuPresenter extends AbstractMenuPresenter<BasicSta
 	}
 	
 	public void showLayout() {
-		getParent().setBottomRight(layoutPresenter.getView());
 		getView().setLayoutActive();
+		getParent().setBottomRight(layoutPresenter.getView());
 	}
 	
 	public void showRefill() {
+		getView().setRefillActive();
 		refillPresenter.getView().refresh();
 		getParent().setBottomRight(refillPresenter.getView());
-		getView().setRefillActive();
 	}
 
 	@Override

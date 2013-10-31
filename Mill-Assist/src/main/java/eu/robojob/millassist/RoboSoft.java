@@ -25,6 +25,7 @@ import eu.robojob.millassist.db.process.ProcessFlowMapper;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.robot.RobotManager;
 import eu.robojob.millassist.process.ProcessFlowManager;
+import eu.robojob.millassist.threading.MemoryUsageMonitoringThread;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.MainPresenter;
 import eu.robojob.millassist.ui.RoboSoftAppFactory;
@@ -46,8 +47,10 @@ public class RoboSoft extends Application {
 	public void start(final Stage stage) throws Exception {
 		logger.info("Started application.");
 		final Properties properties = new Properties();
-		//properties.load(new FileInputStream(new File("C:\\RoboJob\\settings.properties")));
 		properties.load(new FileInputStream(new File("settings.properties")));
+		if (properties.get("monitor-memory").equals("true")) {
+			ThreadManager.submit(new MemoryUsageMonitoringThread());
+		}
 		final RoboJobPreloader preloader = new RoboJobPreloader();
 		Scene scene2 = new Scene(preloader, WIDTH, HEIGHT);
 		scene2.getStylesheets().add("styles/preloader-style.css");

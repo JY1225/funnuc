@@ -173,6 +173,8 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 			if (activeMenu == null) {
 				showInfoMessage();
 			}
+		} else {
+			view.setBottom(statusPresenter.getView());
 		}
 	}
 

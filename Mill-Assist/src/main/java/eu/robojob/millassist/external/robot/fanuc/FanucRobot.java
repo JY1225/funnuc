@@ -596,7 +596,7 @@ public class FanucRobot extends AbstractRobot {
 		values.add("0");					// dy correction P2
 		values.add("0");					// dw correction
 		values.add("0");					// dp correction
-		if ((getSpeed() < 10) || (getSpeed() > 100)) {
+		if ((getSpeed() < 5) || (getSpeed() > 100)) {
 			throw new IllegalStateException("The current speed value: [" + getSpeed() + "] is illegal.");
 		}
 		WorkPiece wp1 = null;
@@ -692,7 +692,7 @@ public class FanucRobot extends AbstractRobot {
 	
 	@Override
 	public void moveToHome() throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException {
-		if ((getSpeed() < 10) || (getSpeed() > 100)) {
+		if ((getSpeed() < 5) || (getSpeed() > 100)) {
 			throw new IllegalStateException("The current speed value: [" + getSpeed() + "] is illegal.");
 		}
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_TO_HOME, RobotConstants.RESPONSE_TO_HOME, WRITE_VALUES_TIMEOUT, "" + getSpeed());

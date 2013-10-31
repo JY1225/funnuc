@@ -154,12 +154,14 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			
 			int[] registers = {command};
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
+			// fix for jametal, comment next lines and uncomment sleep
 			boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
 			if (!cycleStartReady) {
 				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
 				waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1);
 				setCncMachineTimeout(null);
 			}
+			//Thread.sleep(5000);
 			// we now wait for pick requested
 			waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED);
 			nCReset();

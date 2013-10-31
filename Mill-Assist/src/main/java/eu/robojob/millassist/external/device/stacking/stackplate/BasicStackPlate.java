@@ -309,7 +309,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 		this.listeners.clear();
 	}
 	
-	public int getFinishedWorkPiecesToRefillAmount() {
+	public synchronized int getFinishedWorkPiecesToRefillAmount() {
 		int amount = 0;
 		for (StackPlateStackingPosition location : layout.getStackingPositions()) {
 			if ((location.getWorkPiece() != null) && (location.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED))) {
@@ -329,7 +329,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 				if ((i == 0) && (layout.getLayers() > 1)) {
 					location.setWorkPiece(null);
 					location.setAmount(0);
-				} else if ((location.getWorkPiece() == null) || ((location.getWorkPiece() != null) && (location.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)))) {
+				} else if (((layout.getLayers() > 1) && (location.getWorkPiece() == null)) || ((location.getWorkPiece() != null) && (location.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)))) {
 					location.setWorkPiece(new WorkPiece(Type.RAW, rawWorkPiece.getDimensions(), null, Float.NaN));
 					int addedAmount = layout.getLayers();
 					if (readyAmount + addedAmount > amount) {
@@ -338,7 +338,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 						location.setAmount(addedAmount);
 					}
 					readyAmount = readyAmount + addedAmount;
-				} else if ((location.getWorkPiece() != null) && (location.getWorkPiece().getType().equals(WorkPiece.Type.RAW))) {
+				} else if ((location.getWorkPiece() != null) && (location.getWorkPiece().getType().equals(WorkPiece.Type.RAW) && (location.getAmount() > 0))) {
 					int addedAmount = layout.getLayers() - location.getAmount();
 					if (readyAmount + addedAmount > amount) {
 						location.setAmount(location.getAmount() + amount - readyAmount);
