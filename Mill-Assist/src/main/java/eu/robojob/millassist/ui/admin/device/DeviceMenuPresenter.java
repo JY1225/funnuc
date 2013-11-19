@@ -14,17 +14,19 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 	private CNCMachineConfigurePresenter cncMachineConfigurePresenter;
 	private CNCMachineClampingsPresenter cncMachineClampingsPresenter;
 	private PrageDeviceConfigurePresenter prageDeviceConfigurePresenter;
+	private OutputBinConfigurePresenter outputBinConfigurePresenter;
 	
 	public DeviceMenuPresenter(final DeviceMenuView view, final UserFramesConfigurePresenter userFramesConfigurePresenter,
 			final BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter, final CNCMachineConfigurePresenter cncMachineConfigurePresenter,
 				final CNCMachineClampingsPresenter cncMachineClamingsPresenter, final PrageDeviceConfigurePresenter prageDeviceConfigurePresenter,
-					final DeviceManager deviceManager) {
+					final OutputBinConfigurePresenter outputBinConfigurePresenter, final DeviceManager deviceManager) {
 		super(view);
 		this.userFramesConfigurePresenter = userFramesConfigurePresenter;
 		this.basicStackPlateConfigurePresenter = basicStackPlateConfigurePresenter;
 		this.cncMachineConfigurePresenter = cncMachineConfigurePresenter;
 		this.cncMachineClampingsPresenter = cncMachineClamingsPresenter;
 		this.prageDeviceConfigurePresenter = prageDeviceConfigurePresenter;
+		this.outputBinConfigurePresenter = outputBinConfigurePresenter;
 		if (deviceManager.getPreProcessingDevices().size() == 0) {
 			//TODO review if other pre process devices are available!
 			getView().disablePrageMenuItem();
@@ -47,6 +49,7 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		cncMachineConfigurePresenter.setTextFieldListener(listener);
 		cncMachineClampingsPresenter.setTextFieldListener(listener);
 		prageDeviceConfigurePresenter.setTextFieldListener(listener);
+		outputBinConfigurePresenter.setTextFieldListener(listener);
 	}
 
 	@Override
@@ -85,6 +88,11 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 	public void configurePrage() { 
 		getView().setConfigurePrageActive();
 		getParent().setContentView(prageDeviceConfigurePresenter.getView());
+	}
+	
+	public void configureOutputBin() {
+		getView().setConfigureOutputBinActive();
+		getParent().setContentView(outputBinConfigurePresenter.getView());
 	}
 	
 	@Override

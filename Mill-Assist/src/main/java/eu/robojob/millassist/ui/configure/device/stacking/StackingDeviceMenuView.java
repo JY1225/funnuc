@@ -3,6 +3,7 @@ package eu.robojob.millassist.ui.configure.device.stacking;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.ui.general.AbstractMenuView;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 import eu.robojob.millassist.util.Translator;
@@ -39,6 +40,7 @@ public class StackingDeviceMenuView extends AbstractMenuView<AbstractStackingDev
 		build();
 	}
 	
+	//FIXME: refactor, to much specific code here
 	@Override
 	protected void build() {
 		// three menu-items will be used: 
@@ -67,7 +69,6 @@ public class StackingDeviceMenuView extends AbstractMenuView<AbstractStackingDev
 				getPresenter().configureDevice();
 			}
 		});
-		getMenuItem(index).setDisable(true);
 		index++;
 		if (!putStep) {
 			workpieceIndex = index;
@@ -115,7 +116,7 @@ public class StackingDeviceMenuView extends AbstractMenuView<AbstractStackingDev
 					getPresenter().showLayout();
 				}
 			});
-		} else {
+		} else if (deviceInfo.getDevice() instanceof BasicStackPlate){
 			addMenuItem(index, LAYOUT_ICON, Translator.getTranslation(VIEW_LAYOUT), true, new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(final ActionEvent event) {

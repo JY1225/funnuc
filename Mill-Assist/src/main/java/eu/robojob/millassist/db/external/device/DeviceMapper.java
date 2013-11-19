@@ -24,6 +24,7 @@ import eu.robojob.millassist.external.device.processing.cnc.mcode.GenericMCode;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
+import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorLayout;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
@@ -37,6 +38,7 @@ public class DeviceMapper {
 	private static final int DEVICE_TYPE_STACKPLATE = 2;
 	private static final int DEVICE_TYPE_PRAGE = 3;
 	private static final int DEVICE_TYPE_CONVEYOR = 4;
+	private static final int DEVICE_TYPE_BIN = 5;
 	private static final int CLAMPING_TYPE_CENTRUM = 1;
 	private static final int CLAMPING_TYPE_FIXED = 2;
 	private static final int CLAMPING_TYPE_NONE = 3;
@@ -78,11 +80,21 @@ public class DeviceMapper {
 					Conveyor conveyor = getConveyor(id, name, zones);
 					devices.add(conveyor);
 					break;
+				case DEVICE_TYPE_BIN:
+					OutputBin bin = getOutputBin(id, name, zones);
+					devices.add(bin);
+					break;
 				default:
 					throw new IllegalStateException("Unknown device type: [" + type + "].");
 			}
 		}
 		return devices;
+	}
+	
+	private OutputBin getOutputBin(final int id, final String name, final Set<Zone> zones) throws SQLException {
+		OutputBin bin = new OutputBin(name, zones);
+		bin.setId(id);
+		return bin;
 	}
 	
 	private PrageDevice getPrageDevice(final int id, final String name, final Set<Zone> zones) throws SQLException {
@@ -297,6 +309,10 @@ public class DeviceMapper {
 			WorkArea workArea = new WorkArea(name, userFrame, possibleClampings);
 			workArea.setId(id);
 			workAreas.add(workArea);
+			// set active clamping to first
+			if (possibleClampings.size() > 0) {
+				workArea.setActiveClamping(possibleClampings.iterator().next());
+			}
 		}
 		return workAreas;
 	}
@@ -574,6 +590,32 @@ public class DeviceMapper {
 		stmt2.execute();
 		prageDevice.setName(name);
 		prageDevice.setClampingWidthDeltaR(widthOffsetR);
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void updateOutputBin(final OutputBin outputBin, final String name, final String userFrame, final float x, final float y,
+			final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
+			final float smoothToZ) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		if ((!outputBin.getWorkAreas().get(0).getUserFrame().getName().equals(userFrame))) {
+			UserFrame newUserFrame = getUserFrameByName(userFrame);
+			outputBin.getWorkAreas().get(0).setUserFrame(newUserFrame);
+			updateWorkArea(outputBin.getWorkAreas().get(0));
+		}
+		Coordinates c = outputBin.getWorkAreas().get(0).getActiveClamping().getRelativePosition();
+		c.setX(x);
+		c.setY(y);
+		c.setZ(z);
+		c.setW(w);
+		c.setP(p);
+		c.setR(r);
+		generalMapper.saveCoordinates(c);
+		Coordinates smoothTo = outputBin.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
+		smoothTo.setX(smoothToX);
+		smoothTo.setY(smoothToY);
+		smoothTo.setZ(smoothToZ);
+		generalMapper.saveCoordinates(smoothTo);
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}

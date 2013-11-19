@@ -2,6 +2,7 @@ package eu.robojob.millassist.ui.configure.device.stacking.conveyor;
 
 import eu.robojob.millassist.ui.configure.device.stacking.AbstractStackingDeviceMenuPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.ConfigureSmoothPresenter;
+import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceConfigurePresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceMenuView;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.device.stacking.conveyor.AbstractWorkPieceLayoutPresenter;
@@ -9,7 +10,7 @@ import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
 public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 
-	private ConveyorConfigurePresenter configurePresenter;
+	private StackingDeviceConfigurePresenter configurePresenter;
 	private ConveyorRawWorkPiecePresenter rawWorkPiecePresenter;
 	private AbstractWorkPieceLayoutPresenter<?, ConveyorMenuPresenter> workPieceLayoutPresenter;
 	private ConveyorRawWorkPieceOffsetPresenter conveyorRawWorkPieceOffsetPresenter;
@@ -17,7 +18,7 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 	private ConfigureSmoothPresenter<ConveyorMenuPresenter> configurePutPresenter;
 	
 	public ConveyorMenuPresenter(final StackingDeviceMenuView view, final DeviceInformation deviceInfo,
-			final ConveyorConfigurePresenter configurePresenter, final ConveyorRawWorkPiecePresenter rawWorkPiecePresenter, 
+			final StackingDeviceConfigurePresenter configurePresenter, final ConveyorRawWorkPiecePresenter rawWorkPiecePresenter, 
 				final AbstractWorkPieceLayoutPresenter<?, ConveyorMenuPresenter> workPieceLayoutPresenter, 
 					final ConveyorRawWorkPieceOffsetPresenter conveyorRawWorkPieceOffsetPresenter, 
 					final ConfigureSmoothPresenter<ConveyorMenuPresenter> configurePickPresenter, 

@@ -13,6 +13,7 @@ import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.DeviceType;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
@@ -23,26 +24,29 @@ import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class OutputBin extends AbstractStackingDevice {
 	
-	private Coordinates relativePosition;
-
-	public OutputBin(final String name, final Coordinates relativePosition) {
+	public OutputBin(final String name) {
 		super(name);
-		this.relativePosition = relativePosition;
+		// set first clamping as active one!
+		for (WorkArea wa : getWorkAreas()) {
+			wa.setActiveClamping(wa.getClampings().iterator().next());
+		}
 	}
 
-	public OutputBin(final String name, final Set<Zone> zones, final Coordinates relativePosition) {
+	public OutputBin(final String name, final Set<Zone> zones) {
 		super(name, zones);
-		this.relativePosition = relativePosition;
+		// set first clamping as active one!
+		for (WorkArea wa : getWorkAreas()) {
+			wa.setActiveClamping(wa.getClampings().iterator().next());
+		}
 	}
 
 	@Override
 	public Coordinates getLocation(final WorkArea workArea, final Type type, final ClampingManner clampType) throws DeviceActionException, InterruptedException {
-		return relativePosition;
+		return workArea.getActiveClamping().getRelativePosition();
 	}
-
+	
 	@Override
 	public void clearDeviceSettings() {		
-		this.relativePosition = new Coordinates();
 	}
 
 	@Override
@@ -138,12 +142,12 @@ public class OutputBin extends AbstractStackingDevice {
 
 	@Override
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
-		return relativePosition;
+		return workArea.getActiveClamping().getRelativePosition();
 	}
 
 	@Override
 	public Coordinates getLocationOrientation(final WorkArea workArea) {
-		return relativePosition;
+		return workArea.getActiveClamping().getRelativePosition();
 	}
 
 	@Override
@@ -154,6 +158,11 @@ public class OutputBin extends AbstractStackingDevice {
 	@Override
 	public boolean isConnected() {
 		return true;
+	}
+	
+	@Override
+	public DeviceType getType() {
+		return DeviceType.OUTPUT_BIN;
 	}
 
 }

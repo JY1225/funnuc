@@ -170,6 +170,7 @@ public class ProcessFlowMapper {
 				ConnectionManager.getConnection().commit();
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
 			ConnectionManager.getConnection().rollback();
 		}
 		ConnectionManager.getConnection().setAutoCommit(true);

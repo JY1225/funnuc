@@ -12,6 +12,7 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 	private static final String PRAGE = "DeviceMenuView.prage";
 	private static final String CNCMACHINE = "DeviceMenuView.cncMachine";
 	private static final String CNCMACHINE_CLAMPINGS = "DeviceMenuView.cncMachineClampings";
+	private static final String OUTPUT_BIN = "DeviceMenuView.outputBin";
 	
 	public DeviceMenuView() {
 		build();
@@ -23,34 +24,41 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 		setPrefWidth(150);
 		setMinWidth(150);
 		setMaxWidth(150);
-		addTextMenuItem(0, Translator.getTranslation(USERFRAMES), true, new EventHandler<ActionEvent>() {
+		int index = 0;
+		addTextMenuItem(index++, Translator.getTranslation(USERFRAMES), true, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				getPresenter().configureUserFrames();
 			}
 		});
-		addTextMenuItem(1, Translator.getTranslation(BASICSTACKPLATE), true, new EventHandler<ActionEvent>() {
+		addTextMenuItem(index++, Translator.getTranslation(BASICSTACKPLATE), true, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				getPresenter().configureBasicStackPlate();
 			}
 		});
-		addTextMenuItem(2, Translator.getTranslation(CNCMACHINE), true, new EventHandler<ActionEvent>() {
+		addTextMenuItem(index++, Translator.getTranslation(CNCMACHINE), true, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				getPresenter().configureCNCMachine();
 			}
 		});
-		addTextMenuItem(3, Translator.getTranslation(CNCMACHINE_CLAMPINGS), true, new EventHandler<ActionEvent>() {
+		addTextMenuItem(index++, Translator.getTranslation(CNCMACHINE_CLAMPINGS), true, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				getPresenter().configureCNCMachineClampings();
 			}
 		});
-		addTextMenuItem(4, Translator.getTranslation(PRAGE), true, new EventHandler<ActionEvent>() {
+		addTextMenuItem(index++, Translator.getTranslation(PRAGE), true, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				getPresenter().configurePrage();
+			}
+		});
+		addTextMenuItem(index++, Translator.getTranslation(OUTPUT_BIN), true, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				getPresenter().configureOutputBin();
 			}
 		});
 	}
@@ -81,6 +89,10 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 	
 	public void setConfigurePrageActive() {
 		setMenuItemSelected(4);
+	}
+	
+	public void setConfigureOutputBinActive() {
+		setMenuItemSelected(5);
 	}
 
 }

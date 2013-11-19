@@ -18,6 +18,8 @@ import eu.robojob.millassist.ui.admin.device.CNCMachineClampingsView;
 import eu.robojob.millassist.ui.admin.device.DeviceAdminPresenter;
 import eu.robojob.millassist.ui.admin.device.DeviceMenuPresenter;
 import eu.robojob.millassist.ui.admin.device.DeviceMenuView;
+import eu.robojob.millassist.ui.admin.device.OutputBinConfigurePresenter;
+import eu.robojob.millassist.ui.admin.device.OutputBinConfigureView;
 import eu.robojob.millassist.ui.admin.device.PrageDeviceConfigurePresenter;
 import eu.robojob.millassist.ui.admin.device.PrageDeviceConfigureView;
 import eu.robojob.millassist.ui.admin.device.UserFramesConfigurePresenter;
@@ -106,6 +108,7 @@ public class RoboSoftAppFactory {
 	private CNCMachineConfigurePresenter cncMachineConfigurePresenter;
 	private CNCMachineClampingsPresenter cncMachineClampingsPresenter;
 	private PrageDeviceConfigurePresenter prageDeviceConfigurePresenter;
+	private OutputBinConfigurePresenter outputBinConfigurePresenter;
 	private eu.robojob.millassist.ui.automate.device.DeviceMenuFactory automateDeviceMenuFactory;
 	private eu.robojob.millassist.ui.teach.transport.TransportMenuFactory teachTransportMenuFactory;
 	
@@ -371,10 +374,16 @@ public class RoboSoftAppFactory {
 			DeviceMenuView menuView = new DeviceMenuView();
 			DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(menuView, getUserFramesConfigurePresenter(), getBasicStackPlateConfigurePresenter(),
 					getCNCMachineConfigurePresenter(), getCNCMachineClampingsPresenter(), getPrageDeviceConfigurePresenter(),
-					deviceManager);
+					getOutputBinConfigurePresenter(), deviceManager);
 			deviceAdminPresenter = new DeviceAdminPresenter(view, deviceMenuPresenter);
 		}
 		return deviceAdminPresenter;
+	}
+	
+	private OutputBinConfigurePresenter getOutputBinConfigurePresenter() {
+		OutputBinConfigureView view = new OutputBinConfigureView();
+		outputBinConfigurePresenter = new OutputBinConfigurePresenter(view, deviceManager);
+		return outputBinConfigurePresenter;
 	}
 	
 	public UserFramesConfigurePresenter getUserFramesConfigurePresenter() {

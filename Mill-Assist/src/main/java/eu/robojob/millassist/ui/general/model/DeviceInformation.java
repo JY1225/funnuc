@@ -6,6 +6,9 @@ import java.util.List;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
+import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;
@@ -47,7 +50,15 @@ public class DeviceInformation {
 			return device.getType();
 		} else {
 			if ((index == 0) || (index == (flowAdapter.getDeviceStepCount() - 1))) {	// first or last device
-				return DeviceType.STACKING;
+				if (device instanceof BasicStackPlate) {
+					return DeviceType.STACKING;
+				} else if (device instanceof Conveyor) {
+					return DeviceType.CONVEYOR;
+				} else if (device instanceof OutputBin) {
+					return DeviceType.OUTPUT_BIN;
+				} else {
+					throw new IllegalStateException("Unkown device type: " + device);
+				}
 			} else {
 				if (index < flowAdapter.getCNCMachineIndex()) {
 					return DeviceType.PRE_PROCESSING;

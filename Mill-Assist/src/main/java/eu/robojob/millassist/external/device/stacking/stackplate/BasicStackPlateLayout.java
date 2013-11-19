@@ -559,6 +559,11 @@ public class BasicStackPlateLayout {
 				for (StudPosition studPos : stPos.getStuds()) {
 					studPositions[studPos.getRowIndex()][studPos.getColumnIndex()] = studPos;
 				}
+				if (placedAmount < amount) {
+					stPos.setWorkPiece(rawWorkPiece);
+					stPos.setAmount(1);
+					placedAmount++;
+				}
 				stackingPos++;
 			}
 			while (placedAmount < amount) {
@@ -585,7 +590,7 @@ public class BasicStackPlateLayout {
 		if (layers == 1) {
 			return stackingPositions.size();
 		} else {
-			return layers * (stackingPositions.size() - 1);
+			return layers * (stackingPositions.size() - 1) + 1;
 		}
 	}
 	

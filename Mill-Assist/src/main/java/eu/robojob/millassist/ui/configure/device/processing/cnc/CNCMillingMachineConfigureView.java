@@ -168,6 +168,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		getPresenter().refreshMachineNames();
 		cbbMachine.getItems().clear();
 		cbbMachine.getItems().addAll(cncMillingMachineIds);
+		cbbMachine.setValue(null);
 		lblMachine.setDisable(false);
 		cbbMachine.setDisable(false);
 		if (cbbMachine.getItems().size() == 1) {
@@ -181,6 +182,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	
 	public void refreshWorkAreas() {
 		if ((deviceInfo.getDevice() != null) && (deviceInfo.getDevice().getWorkAreas() != null)) {
+			cbbWorkArea.setValue(null);
 			cbbWorkArea.getItems().clear();
 			cbbWorkArea.getItems().addAll(deviceInfo.getDevice().getWorkAreaNames());
 			if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)

@@ -23,4 +23,8 @@ public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> exten
 	public abstract boolean isConfigured();
 
 	public abstract void setBlocked(boolean blocked);
+	
+	public void refreshClearCache() {
+		parent.refreshClearCache();
+	}
 }

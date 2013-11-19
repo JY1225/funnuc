@@ -20,7 +20,6 @@ public class BasicStackPlateRefillPresenter extends AbstractFormPresenter<BasicS
 	public BasicStackPlateRefillPresenter(final BasicStackPlateRefillView view, final BasicStackPlate basicStackPlate, 
 			final ProcessFlow processFlow) {
 		super(view);
-		getView().setBasicStackPlate(basicStackPlate);
 		this.stackPlate = basicStackPlate;
 		this.processFlow = processFlow;
 		processFlow.addListener(this);
@@ -38,9 +37,13 @@ public class BasicStackPlateRefillPresenter extends AbstractFormPresenter<BasicS
 
 	public void refill(final int amount) {
 		try {
-			stackPlate.replaceFinishedWorkPieces(amount);
-			processFlow.setFinishedAmount(processFlow.getFinishedAmount() - amount);
-			getView().hideNotification();
+			if (amount <= processFlow.getFinishedAmount()) {
+				stackPlate.refillWorkPieces(amount);
+				processFlow.setFinishedAmount(processFlow.getFinishedAmount() - amount);
+				getView().hideNotification();
+			} else {
+				throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
+			}
 		} catch (IncorrectWorkPieceDataException e) {
 			getView().showNotification(e.getLocalizedMessage());
 		}
@@ -71,5 +74,9 @@ public class BasicStackPlateRefillPresenter extends AbstractFormPresenter<BasicS
 	@Override
 	public void unregister() {
 		processFlow.removeListener(this);
+	}
+	
+	public int getFinishedAmount() {
+		return processFlow.getFinishedAmount();
 	}
 }

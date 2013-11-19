@@ -19,6 +19,7 @@ import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.W
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -67,7 +68,9 @@ public class DeviceManager {
 				} else if (device instanceof PrageDevice) {
 					preProcessingDevicesByName.put(device.getName(), (PrageDevice) device);
 				} else if (device instanceof AbstractStackingDevice) {
-					stackingFromDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
+					if (!(device instanceof OutputBin)) {
+						stackingFromDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
+					}
 					stackingToDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
 				}
 			}
@@ -97,7 +100,9 @@ public class DeviceManager {
 			} else if (device instanceof PrageDevice) {
 				preProcessingDevicesByName.put(device.getName(), (PrageDevice) device);
 			} else if (device instanceof AbstractStackingDevice) {
-				stackingFromDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
+				if (!(device instanceof OutputBin)) {
+					stackingFromDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
+				}
 				stackingToDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
 			}
 		}
@@ -232,6 +237,18 @@ public class DeviceManager {
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ, final int widthOffsetR) {
 		try {
 			deviceMapper.updatePrageDevice(prageDevice, name, relPosX, relPosY, relPosZ, relPosR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, widthOffsetR);
+			refresh();
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+	
+	public void updateOutputBinData(final OutputBin outputBin, final String name, final String userFrame, final float x, 
+			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY,
+			final float smoothToZ) {
+		try {
+			deviceMapper.updateOutputBin(outputBin, name, userFrame, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ);
 			refresh();
 		} catch (SQLException e) {
 			logger.error(e);

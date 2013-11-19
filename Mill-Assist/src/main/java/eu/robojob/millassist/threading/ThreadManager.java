@@ -41,6 +41,7 @@ public final class ThreadManager {
 		ThreadManager.isShuttingDown = true;
 		for (ExternalCommunicationThread thread : communicationThreads) {
 			thread.disconnectAndStop();
+			thread.interrupt();
 		}
 		for (MonitoringThread thread : monitoringThreads) {
 			thread.stopExecution();

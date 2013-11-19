@@ -28,17 +28,16 @@ import eu.robojob.millassist.ui.configure.device.processing.prage.PrageDeviceCon
 import eu.robojob.millassist.ui.configure.device.processing.prage.PrageDeviceMenuPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.ConfigureSmoothPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.ConfigureSmoothView;
+import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceConfigurePresenter;
+import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceConfigureView;
 import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceMenuView;
-import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorConfigurePresenter;
-import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorConfigureView;
+import eu.robojob.millassist.ui.configure.device.stacking.bin.OutputBinMenuPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorFinishedWorkPieceLayoutPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorMenuPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorRawWorkPieceOffsetPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorRawWorkPieceOffsetView;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorRawWorkPiecePresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.ConveyorRawWorkPieceView;
-import eu.robojob.millassist.ui.configure.device.stacking.stackplate.BasicStackPlateConfigurePresenter;
-import eu.robojob.millassist.ui.configure.device.stacking.stackplate.BasicStackPlateConfigureView;
 import eu.robojob.millassist.ui.configure.device.stacking.stackplate.BasicStackPlateLayoutPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.stackplate.BasicStackPlateMenuPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.stackplate.BasicStackPlateRawWorkPiecePresenter;
@@ -71,6 +70,9 @@ public class DeviceMenuFactory {
 				case BASIC_STACK_PLATE:
 					menuPresenter = getBasicStackPlateMenuPresenter(deviceInfo);
 					break;
+				case OUTPUT_BIN:
+					menuPresenter = getOutputBinMenuPresenter(deviceInfo);
+					break;
 				case PRE_PROCESSING:
 					menuPresenter = getPrageDeviceMenuPresenter(deviceInfo);
 					break;
@@ -83,6 +85,25 @@ public class DeviceMenuFactory {
 			presentersBuffer.put(deviceInfo.getIndex(), menuPresenter);
 		}
 		return menuPresenter;
+	}
+	
+	private OutputBinMenuPresenter getOutputBinMenuPresenter(final DeviceInformation deviceInfo) {
+		StackingDeviceMenuView view = new StackingDeviceMenuView();
+		OutputBinMenuPresenter menuPresenter = new OutputBinMenuPresenter(view, deviceInfo, getOutputBinConfigurePresenter(deviceInfo), 
+				getOutputBinSmoothToPresenter(deviceInfo));
+		return menuPresenter;
+	}
+	
+	private ConfigureSmoothPresenter<OutputBinMenuPresenter> getOutputBinSmoothToPresenter(final DeviceInformation deviceInfo) {
+		ConfigureSmoothView view = new ConfigureSmoothView();
+		ConfigureSmoothPresenter<OutputBinMenuPresenter> presenter = new ConfigureSmoothPresenter<OutputBinMenuPresenter>(view, deviceInfo.getPutStep().getRobotSettings());
+		return presenter;
+	}
+	
+	private StackingDeviceConfigurePresenter getOutputBinConfigurePresenter(final DeviceInformation deviceInfo) {
+		StackingDeviceConfigureView view = new StackingDeviceConfigureView();
+		StackingDeviceConfigurePresenter presenter = new StackingDeviceConfigurePresenter(view, deviceInfo, deviceManager);
+		return presenter;
 	}
 	
 	private PrageDeviceMenuPresenter getPrageDeviceMenuPresenter(final DeviceInformation deviceInfo) {
@@ -146,9 +167,9 @@ public class DeviceMenuFactory {
 	}
 	
 	// we always create a new, because the stacker can (and probably will) be used more than once (first and last)
-	public BasicStackPlateConfigurePresenter getBasicStackPlateConfigurePresenter(final DeviceInformation deviceInfo) {
-		BasicStackPlateConfigureView view = new BasicStackPlateConfigureView();
-		BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter = new BasicStackPlateConfigurePresenter(view, deviceInfo, deviceManager);
+	public StackingDeviceConfigurePresenter getBasicStackPlateConfigurePresenter(final DeviceInformation deviceInfo) {
+		StackingDeviceConfigureView view = new StackingDeviceConfigureView();
+		StackingDeviceConfigurePresenter basicStackPlateConfigurePresenter = new StackingDeviceConfigurePresenter(view, deviceInfo, deviceManager);
 		return basicStackPlateConfigurePresenter;
 	}
 	
@@ -210,9 +231,9 @@ public class DeviceMenuFactory {
 		return presenter;
 	}
 	
-	public ConveyorConfigurePresenter getConveyorConfigurePresenter(final DeviceInformation deviceInfo) {
-		ConveyorConfigureView view = new ConveyorConfigureView();
-		ConveyorConfigurePresenter presenter = new ConveyorConfigurePresenter(view, deviceInfo, deviceManager);
+	public StackingDeviceConfigurePresenter getConveyorConfigurePresenter(final DeviceInformation deviceInfo) {
+		StackingDeviceConfigureView view = new StackingDeviceConfigureView();
+		StackingDeviceConfigurePresenter presenter = new StackingDeviceConfigurePresenter(view, deviceInfo, deviceManager);
 		return presenter;
 	}
 	

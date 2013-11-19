@@ -9,6 +9,8 @@ import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
+import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
@@ -182,10 +184,19 @@ public class TeachOptimizedThread extends TeachThread {
 		FanucRobotPutSettings putSettings = (FanucRobotPutSettings) putOnStackerStep.getRobotSettings();
 		// we set the first work piece as a finished
 		putOnStackerStep.getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(putOnStackerStep.getProcessFlow(), putOnStackerStep, StatusChangedEvent.STARTED, WORKPIECE_ID));
+		AbstractStackingDevice stackingDeviceBuffer = null;
+		if (stackingDevice instanceof OutputBin) {
+			// pretend to use first device for optimal teaching
+			stackingDeviceBuffer = stackingDevice;
+			stackingDevice = (AbstractStackingDevice) pickFromStackingDeviceStep.getDevice();
+		}
 		if (stackingDevice instanceof BasicStackPlate) {
 			((BasicStackPlate) stackingDevice).getLayout().getStackingPositions().get(0).setWorkPiece(((BasicStackPlate) stackingDevice).getFinishedWorkPiece());
 			((BasicStackPlate) stackingDevice).getLayout().getStackingPositions().get(0).setAmount(1);
-		}
+		} else if (stackingDevice instanceof Conveyor) {
+			// FIXME implement
+			throw new IllegalStateException("Not yet implemented!");
+		}  
 		getProcessFlow().setFinishedAmount(1);
 		Coordinates originalCoordinates = stackingDevice.getLocation(putOnStackerStep.getRobotSettings().getWorkArea(), WorkPiece.Type.FINISHED, getProcessFlow().getClampingType());
 		if (putOnStackerStep.needsTeaching()) {
@@ -214,8 +225,18 @@ public class TeachOptimizedThread extends TeachThread {
 			stackingDevice.prepareForPut(putOnStackerStep.getDeviceSettings());
 			logger.debug("Original coordinates: " + originalCoordinates + ".");
 			logger.debug("Initiating robot: [" + fRobot + "] move action.");
+			Coordinates smoothPointBuffer = null;
+			if (stackingDeviceBuffer != null) {
+				smoothPointBuffer = putSettings.getSmoothPoint();
+				putSettings.setSmoothPoint(pickFromStackingDeviceStep.getRobotSettings().getSmoothPoint());
+			}
 			fRobot.initiateMoveWithoutPieceNoAction(putSettings);
 			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.EXECUTE_TEACHED, WORKPIECE_ID));
+			// reset stacking device and smooth point if buffered
+			if (stackingDeviceBuffer != null) {
+				stackingDevice = stackingDeviceBuffer;
+				putSettings.setSmoothPoint(smoothPointBuffer);
+			}
 			fRobot.continueMoveTillAtLocation();
 			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.TEACHING_NEEDED, WORKPIECE_ID));
 			fRobot.continueMoveTillWait();

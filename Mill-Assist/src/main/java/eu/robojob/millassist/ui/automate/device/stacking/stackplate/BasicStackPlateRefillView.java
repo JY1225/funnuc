@@ -7,7 +7,6 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -16,7 +15,6 @@ import eu.robojob.millassist.util.UIConstants;
 
 public class BasicStackPlateRefillView extends AbstractFormView<BasicStackPlateRefillPresenter> {
 
-	private BasicStackPlate basicStackPlate;
 	private Label lblAmount;
 	private IntegerTextField itfAmount;
 	private Button btnMax;
@@ -28,10 +26,6 @@ public class BasicStackPlateRefillView extends AbstractFormView<BasicStackPlateR
 	
 	public BasicStackPlateRefillView() {
 		build();
-	}
-	
-	public void setBasicStackPlate(final BasicStackPlate basicStackPlate) {
-		this.basicStackPlate = basicStackPlate;
 	}
 	
 	@Override
@@ -84,6 +78,6 @@ public class BasicStackPlateRefillView extends AbstractFormView<BasicStackPlateR
 	}
 	
 	private void refreshMax() {
-		itfAmount.setText("" + basicStackPlate.getFinishedWorkPiecesToRefillAmount());
+		itfAmount.setText("" + getPresenter().getFinishedAmount());
 	}
 }

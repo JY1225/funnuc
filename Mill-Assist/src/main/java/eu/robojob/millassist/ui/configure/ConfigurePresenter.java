@@ -375,6 +375,12 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		refreshProgressBar();
 	}
 	
+	public void refreshClearCache() {
+		deviceMenuFactory.clearBuffer();
+		transportMenuFactory.clearBuffer();
+		refresh();
+	}
+	
 	public void processOpened() {
 		transportMenuFactory.clearBuffer();
 		deviceMenuFactory.clearBuffer();

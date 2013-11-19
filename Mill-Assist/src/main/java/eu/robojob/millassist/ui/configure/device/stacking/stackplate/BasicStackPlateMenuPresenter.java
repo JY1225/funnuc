@@ -2,6 +2,7 @@ package eu.robojob.millassist.ui.configure.device.stacking.stackplate;
 
 import eu.robojob.millassist.ui.configure.device.stacking.AbstractStackingDeviceMenuPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.ConfigureSmoothPresenter;
+import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceConfigurePresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceMenuView;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -9,13 +10,13 @@ import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
 public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 	
-	private BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
+	private StackingDeviceConfigurePresenter basicStackPlateConfigurePresenter;
 	private AbstractFormPresenter<?, BasicStackPlateMenuPresenter> basicStackPlateWorkPiecePresenter;
 	private BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter;
 	private ConfigureSmoothPresenter<BasicStackPlateMenuPresenter> configurePickPresenter;
 	private ConfigureSmoothPresenter<BasicStackPlateMenuPresenter> configurePutPresenter;
 	
-	public BasicStackPlateMenuPresenter(final StackingDeviceMenuView view, final DeviceInformation deviceInfo, final BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter,
+	public BasicStackPlateMenuPresenter(final StackingDeviceMenuView view, final DeviceInformation deviceInfo, final StackingDeviceConfigurePresenter basicStackPlateConfigurePresenter,
 			final AbstractFormPresenter<?, BasicStackPlateMenuPresenter> basicStackPlateWorkPiecePresenter, final BasicStackPlateLayoutPresenter basicStackPlateLayoutPresenter, 
 			final ConfigureSmoothPresenter<BasicStackPlateMenuPresenter> configurePickPresenter, final ConfigureSmoothPresenter<BasicStackPlateMenuPresenter> configurePutPresenter) {
 		super(view, deviceInfo);
