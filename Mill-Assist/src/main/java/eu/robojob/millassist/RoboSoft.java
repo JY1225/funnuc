@@ -31,6 +31,7 @@ import eu.robojob.millassist.ui.MainPresenter;
 import eu.robojob.millassist.ui.RoboSoftAppFactory;
 import eu.robojob.millassist.ui.controls.keyboard.FullKeyboardView.KeyboardType;
 import eu.robojob.millassist.ui.preloader.RoboJobPreloader;
+import eu.robojob.millassist.util.StdErrLog;
 import eu.robojob.millassist.util.Translator;
 
 public class RoboSoft extends Application {
@@ -46,6 +47,7 @@ public class RoboSoft extends Application {
 	@Override
 	public void start(final Stage stage) throws Exception {
 		logger.info("Started application.");
+		StdErrLog.tieSystemOutAndErrToLog();
 		final Properties properties = new Properties();
 		properties.load(new FileInputStream(new File("settings.properties")));
 		if (properties.get("monitor-memory").equals("true")) {

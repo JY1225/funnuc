@@ -69,6 +69,7 @@ public class MainPresenter implements ProcessFlowListener {
 	
 	public void showConfigure() {
 		menuBarPresenter.showConfigureView();
+		configurePresenter.getProcessFlowPresenter().backgroundClicked();
 		setActiveMainContentPresenter(configurePresenter);
 		refreshStatus();
 	}
@@ -79,13 +80,14 @@ public class MainPresenter implements ProcessFlowListener {
 	
 	public void showTeach() {
 		menuBarPresenter.showTeachView();
-		teachPresenter.closeTransportMenu();
+		teachPresenter.getProcessFlowPresenter().backgroundClicked();
 		setActiveMainContentPresenter(teachPresenter);
 		refreshStatus();
 	}
 	
 	public void showAutomate() {
 		menuBarPresenter.showAutomateView();
+		automatePresenter.getProcessFlowPresenter().backgroundClicked();
 		setActiveMainContentPresenter(automatePresenter);
 		refreshStatus();
 	}

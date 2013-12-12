@@ -3,6 +3,7 @@ package eu.robojob.millassist.ui.general.device.stacking.stackplate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
@@ -84,107 +85,112 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	@Override
 	public void build() {
-		this.setCache(false);
-		this.holes.clear();
-		this.studs.clear();
-		this.horizontalLabels.clear();
-		this.verticalLabels.clear();
-		
-		if (group != null) {
-			group.getChildren().clear();
-		}
-		group = null;
-		
-		if (root != null) {
-			root.getChildren().clear();
-			getChildren().remove(root);
-		}
-		
-		root = null;
-		getContents().getChildren().clear();
-		
-		getContents().setPrefSize(590, 300);
-		getContents().setMinSize(590, 300);
-		getContents().setMaxSize(590, 300);
-		
-		group = new Group();
-		group.setCache(true);
-		
-		// add plate
-		stackPlate = new Rectangle(0, 0, basicStackPlateLayout.getLength(), basicStackPlateLayout.getWidth());
-		stackPlate.getStyleClass().add(CSS_CLASS_STACKPLATE);
-		
-		group.getChildren().add(stackPlate);
-		
-		// add holes
-		int index = 1;
-		for (StudPosition[] horizontalPositions : basicStackPlateLayout.getStudPositions()) {
-			Text txt = new Text(""  + (char) ('A' + (index - 1)));
-			txt.setX(0);
-			txt.setY(width - horizontalPositions[0].getCenterPosition().getY() + TXT_HEIGHT / 2);
-			txt.setWrappingWidth(TXT_WIDTH);
-			txt.getStyleClass().add(CSS_CLASS_STACKER_TEXT);
-			group.getChildren().add(txt);
-			verticalLabels.add(txt);
-			int index2 = 1;
-			for (StudPosition pos : horizontalPositions) {
-				if (index == 1) {
-					if (index2 % 2 == 0) {
-						Text txt2 = new Text("" + index2);
-						txt2.setX(pos.getCenterPosition().getX() - TXT_WIDTH / 2);
-						txt2.setY(basicStackPlateLayout.getWidth() - TXT_HEIGHT / 8);
-						txt2.setWrappingWidth(TXT_WIDTH);
-						txt2.getStyleClass().add(CSS_CLASS_STACKER_TEXT);
-						group.getChildren().add(txt2);
-						horizontalLabels.add(txt2);
-					} else {
-						Text txt2 = new Text("\u00B7");
-						txt2.setX(pos.getCenterPosition().getX() - TXT_WIDTH / 2);
-						txt2.setY(basicStackPlateLayout.getWidth() - TXT_HEIGHT / 8);
-						txt2.setWrappingWidth(TXT_WIDTH);
-						txt2.getStyleClass().add(CSS_CLASS_STACKER_TEXT);
-						group.getChildren().add(txt2);
-						horizontalLabels.add(txt2);
-						// draw line
-						Path path = new Path();
-						MoveTo moveTo = new MoveTo();
-						moveTo.setX(pos.getCenterPosition().getX());
-						moveTo.setY(width - pos.getCenterPosition().getY());
-						LineTo lineTo = new LineTo();
-						lineTo.setX(pos.getCenterPosition().getX());
-						lineTo.setY(width - basicStackPlateLayout.getStudPositions()[basicStackPlateLayout.getStudPositions().length - 1][0].getCenterPosition().getY());
-						path.getElements().add(moveTo);
-						path.getElements().add(lineTo);
-						path.getStyleClass().add(CSS_CLASS_LINE);
-						group.getChildren().add(path);
-					}
-					index2++;
-				}
-				Circle hole = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), basicStackPlateLayout.getHoleDiameter() / 2);
-				holes.add(hole);
-				hole.getStyleClass().add(CSS_CLASS_HOLE);
-				group.getChildren().add(hole);
-			}
-			index++;
-		}
-		
-		if (basicStackPlateLayout.getStackingPositions().size() > 0) {
-			configureStuds();
-			configureWorkPieces();
-		}
-		
-		Scale s = new Scale(590 / group.getBoundsInParent().getWidth(), 300 / group.getBoundsInParent().getHeight());
-		group.getTransforms().add(s);
-		
-		root = new Pane();
-		root.setPrefSize(590, 300);
-		root.getChildren().clear();
-		root.getChildren().add(group);		
-		
-		group.setLayoutX(0 - group.getBoundsInParent().getMinX());
-		group.setLayoutY(0 - group.getBoundsInParent().getMinY());
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				setCache(false);
+				holes.clear();
+				studs.clear();
+				horizontalLabels.clear();
+				verticalLabels.clear();
 				
-		getContents().add(root, 0, 0);
+				if (group != null) {
+					group.getChildren().clear();
+				}
+				group = null;
+				
+				if (root != null) {
+					root.getChildren().clear();
+					getChildren().remove(root);
+				}
+				
+				root = null;
+				getContents().getChildren().clear();
+				
+				getContents().setPrefSize(590, 300);
+				getContents().setMinSize(590, 300);
+				getContents().setMaxSize(590, 300);
+				
+				group = new Group();
+				group.setCache(true);
+				
+				// add plate
+				stackPlate = new Rectangle(0, 0, basicStackPlateLayout.getLength(), basicStackPlateLayout.getWidth());
+				stackPlate.getStyleClass().add(CSS_CLASS_STACKPLATE);
+				
+				group.getChildren().add(stackPlate);
+				
+				// add holes
+				int index = 1;
+				for (StudPosition[] horizontalPositions : basicStackPlateLayout.getStudPositions()) {
+					Text txt = new Text(""  + (char) ('A' + (index - 1)));
+					txt.setX(0);
+					txt.setY(width - horizontalPositions[0].getCenterPosition().getY() + TXT_HEIGHT / 2);
+					txt.setWrappingWidth(TXT_WIDTH);
+					txt.getStyleClass().add(CSS_CLASS_STACKER_TEXT);
+					group.getChildren().add(txt);
+					verticalLabels.add(txt);
+					int index2 = 1;
+					for (StudPosition pos : horizontalPositions) {
+						if (index == 1) {
+							if (index2 % 2 == 0) {
+								Text txt2 = new Text("" + index2);
+								txt2.setX(pos.getCenterPosition().getX() - TXT_WIDTH / 2);
+								txt2.setY(basicStackPlateLayout.getWidth() - TXT_HEIGHT / 8);
+								txt2.setWrappingWidth(TXT_WIDTH);
+								txt2.getStyleClass().add(CSS_CLASS_STACKER_TEXT);
+								group.getChildren().add(txt2);
+								horizontalLabels.add(txt2);
+							} else {
+								Text txt2 = new Text("\u00B7");
+								txt2.setX(pos.getCenterPosition().getX() - TXT_WIDTH / 2);
+								txt2.setY(basicStackPlateLayout.getWidth() - TXT_HEIGHT / 8);
+								txt2.setWrappingWidth(TXT_WIDTH);
+								txt2.getStyleClass().add(CSS_CLASS_STACKER_TEXT);
+								group.getChildren().add(txt2);
+								horizontalLabels.add(txt2);
+								// draw line
+								Path path = new Path();
+								MoveTo moveTo = new MoveTo();
+								moveTo.setX(pos.getCenterPosition().getX());
+								moveTo.setY(width - pos.getCenterPosition().getY());
+								LineTo lineTo = new LineTo();
+								lineTo.setX(pos.getCenterPosition().getX());
+								lineTo.setY(width - basicStackPlateLayout.getStudPositions()[basicStackPlateLayout.getStudPositions().length - 1][0].getCenterPosition().getY());
+								path.getElements().add(moveTo);
+								path.getElements().add(lineTo);
+								path.getStyleClass().add(CSS_CLASS_LINE);
+								group.getChildren().add(path);
+							}
+							index2++;
+						}
+						Circle hole = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), basicStackPlateLayout.getHoleDiameter() / 2);
+						holes.add(hole);
+						hole.getStyleClass().add(CSS_CLASS_HOLE);
+						group.getChildren().add(hole);
+					}
+					index++;
+				}
+				
+				if (basicStackPlateLayout.getStackingPositions().size() > 0) {
+					configureStuds();
+					configureWorkPieces();
+				}
+				
+				Scale s = new Scale(590 / group.getBoundsInParent().getWidth(), 300 / group.getBoundsInParent().getHeight());
+				group.getTransforms().add(s);
+				
+				root = new Pane();
+				root.setPrefSize(590, 300);
+				root.getChildren().clear();
+				root.getChildren().add(group);		
+				
+				group.setLayoutX(0 - group.getBoundsInParent().getMinX());
+				group.setLayoutY(0 - group.getBoundsInParent().getMinY());
+						
+				getContents().add(root, 0, 0);
+			}
+		});
 	}
 	
 	private void configureStuds() {

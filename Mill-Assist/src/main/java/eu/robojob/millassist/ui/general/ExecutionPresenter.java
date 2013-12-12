@@ -65,6 +65,10 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 		}
 	}
 	
+	public FixedProcessFlowPresenter getProcessFlowPresenter() {
+		return processFlowPresenter;
+	}
+	
 	public void loadProcessFlow(final ProcessFlow processFlow) {
 		clearMenuBuffer();
 		processFlowPresenter.loadProcessFlow(processFlow);

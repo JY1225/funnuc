@@ -81,6 +81,10 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		configureProcess();
 	}
 	
+	public ConfigureProcessFlowPresenter getProcessFlowPresenter() {
+		return processFlowPresenter;
+	}
+	
 	public void configureProcess() {
 		view.setBottomLeft(processMenuPresenter.getView());
 		if (keyboardActive) {

@@ -153,6 +153,7 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 	}
 	
 	public void closeDeviceMenu() {
+		activeMenu = null;
 		view.hideBottomHBox();
 	}
 	
