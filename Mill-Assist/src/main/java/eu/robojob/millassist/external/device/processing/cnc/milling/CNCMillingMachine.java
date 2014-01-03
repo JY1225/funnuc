@@ -41,7 +41,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int CLAMP_TIMEOUT = 1 * 60 * 1000;
 	private static final int UNCLAMP_TIMEOUT = 1 * 60 * 1000;
 	private static final int PUT_ALLOWED_TIMEOUT = 2 * 60 * 1000;
-	private static final int START_CYCLE_TIMEOUT = 1 * 60 * 1000;
+	//private static final int START_CYCLE_TIMEOUT = 1 * 60 * 1000;
 	private static final int SLEEP_TIME_AFTER_RESET = 500;
 	
 	private static final int M_CODE_LOAD = 0;
@@ -140,6 +140,17 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		int command = CNCMachineConstants.CNC_PROCESS_TYPE_WA1_TASK;
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.CNC_PROCESS_TYPE, registers);
+		if (getWayOfOperating() == WayOfOperating.M_CODES) {
+			// wait half a second
+			Thread.sleep(500);
+			
+			//TODO add check for more work areas
+			command = 0;
+			command = command | CNCMachineConstants.IPC_CYCLESTART_WA1_REQUEST;
+			
+			int[] registers2 = {command};
+			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers2);
+		}
 	}
 
 	@Override

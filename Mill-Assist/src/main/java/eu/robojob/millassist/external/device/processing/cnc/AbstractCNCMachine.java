@@ -91,12 +91,12 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		}
 	}
 
-	public void addListener(final CNCMachineListener listener) {
+	public synchronized void addListener(final CNCMachineListener listener) {
 		listeners.add(listener);
 		logger.debug("Now listening to [" + toString() + "]: " + listener.toString());
 	}
 	
-	public void removeListener(final CNCMachineListener listener) {
+	public synchronized void removeListener(final CNCMachineListener listener) {
 		listeners.remove(listener);
 		logger.debug("Stopped listening to [" + toString() + "]: " + listener.toString());
 	}
@@ -120,7 +120,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		return alarms;
 	}
 	
-	public void processCNCMachineEvent(final CNCMachineEvent event) {
+	public synchronized void processCNCMachineEvent(final CNCMachineEvent event) {
 		switch(event.getId()) {
 			case CNCMachineEvent.CNC_MACHINE_CONNECTED : 
 				for (CNCMachineListener listener : listeners) {

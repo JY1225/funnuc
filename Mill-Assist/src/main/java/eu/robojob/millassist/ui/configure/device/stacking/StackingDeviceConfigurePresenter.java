@@ -38,6 +38,7 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			// change device for pick
 			deviceInfo.getPickStep().getProcessFlow().setDeviceSettings(device, device.getDeviceSettings());
 			deviceInfo.getPickStep().setDeviceSettings(device.getDefaultPickSettings());
+			deviceInfo.getPickStep().getRobotSettings().setWorkArea(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
 			deviceInfo.getPickStep().getRobotSettings().setSmoothPoint(new Coordinates(device.getDefaultPickSettings().getWorkArea().getActiveClamping().getSmoothFromPoint()));
 			//deviceInfo.getPickStep().setRelativeTeachedOffset(null);
 			deviceInfo.getPickStep().getProcessFlow().initialize();
@@ -45,6 +46,7 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			// change device for put
 			deviceInfo.getPutStep().getProcessFlow().setDeviceSettings(device, device.getDeviceSettings());
 			deviceInfo.getPutStep().setDeviceSettings(device.getDefaultPutSettings());
+			deviceInfo.getPutStep().getRobotSettings().setWorkArea(deviceInfo.getPutStep().getDeviceSettings().getWorkArea());
 			deviceInfo.getPutStep().getRobotSettings().setSmoothPoint(new Coordinates(device.getDefaultPutSettings().getWorkArea().getActiveClamping().getSmoothToPoint()));
 			//deviceInfo.getPutStep().setRelativeTeachedOffset(null);
 			deviceInfo.getPutStep().getProcessFlow().initialize();

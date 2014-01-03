@@ -16,6 +16,25 @@
 	-fx-scale-y: 0.85;
 }
 
+.device-info-label {
+	-fx-font-size: 12px;
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
+	-fx-text-alignment: right;
+	-fx-text-fill: #4093fb;
+	-fx-label-padding: 0;
+	-fx-wrap-text: true;
+	-fx-padding: 2px 5px 2px 5px;
+	-fx-background-color: #4093fb, #efefef;
+	-fx-background-insets: 0, 1, 2 1 1 1;
+	-fx-background-radius: 4, 3;
+}
+
+.device-unfocussed .device-info-label, .device-button-wrapper .label-info-unclickable, .device-button.unclickable .device-info-label {
+	-fx-text-fill: #9d9d9d;
+	-fx-background-color: #9d9d9d, #efefef;
+}
+
 .device-label {
 	-fx-font-size: 13px;
 	-fx-font-family: "Open Sans Semibold";

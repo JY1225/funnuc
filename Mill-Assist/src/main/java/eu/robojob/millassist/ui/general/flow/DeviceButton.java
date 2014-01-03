@@ -3,6 +3,7 @@ package eu.robojob.millassist.ui.general.flow;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -15,10 +16,15 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineEvent;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
+import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 import eu.robojob.millassist.util.Translator;
 
-public class DeviceButton extends VBox {
+public class DeviceButton extends VBox implements CNCMachineListener {
 	
 	private String preStackingPath = "M 26.875 2.34375 L 26.875 8.03125 C 3.7635748 9.263933 2.78125 33.144966 2.78125 33.375 L 6.78125 33.375 C 6.78125 33.33199 8.9323413 19.443885 26.875 18.53125 L 26.875 24.625 L 43.28125 13.5 L 26.875 2.34375 z";
 	private String postStackingPath = "M 2.78125 2.34375 C 2.78125 2.5737837 3.7635751 26.454816 26.875 27.6875 L 26.875 33.375 L 43.28125 22.25 L 26.875 11.125 L 26.875 17.1875 C 8.9323411 16.274865 6.78125 2.386761 6.78125 2.34375 L 2.78125 2.34375 z";
@@ -42,14 +48,19 @@ public class DeviceButton extends VBox {
 	private static final String CSS_CLASS_BTN_CNCMACHINE = "btn-cnc";
 	private static final String CSS_CLASS_BUTTON_SHAPE = "button-shape";
 	private static final String CSS_CLASS_DEVICE_BUTTON = "device-button";
+	private static final String CSS_CLASS_DEVICE_INFO_LABEL = "device-info-label";
 	private static final String CSS_CLASS_DEVICE_LABEL = "device-label";
 	private static final String CSS_CLASS_DEVICE_BUTTON_WRAPPER = "device-button-wrapper";
 	private static final String CSS_CLASS_UNCLICKABLE = "unclickable";
 	private static final String CSS_CLASS_UNCLICKABLE_NAME = "label-unclickable";
+	private static final String CSS_CLASS_UNCLICKABLE_INFO = "label-info-unclickable";
 	
+	private Label lblExtraInfo;
 	private Button mainButton;
 	private SVGPath imagePath;
 	private Label deviceName;
+	
+	private CNCMillingMachine machine;
 	
 	private RotateTransition rotateTransition;
 	
@@ -61,6 +72,9 @@ public class DeviceButton extends VBox {
 	}
 	
 	public void setDeviceInformation(final DeviceInformation deviceInfo) {
+		if (machine != null) {
+			machine.removeListener(this);
+		}
 		this.deviceInfo = deviceInfo;
 		if (deviceInfo.getDevice() != null) {
 			deviceName.setText(deviceInfo.getDevice().getName());
@@ -75,6 +89,9 @@ public class DeviceButton extends VBox {
 			rotateTransition.setToAngle(360);
 			rotateTransition.setInterpolator(Interpolator.LINEAR);
 			rotateTransition.setCycleCount(Timeline.INDEFINITE);
+			machine = ((CNCMillingMachine) deviceInfo.getDevice());
+			machine.addListener(this);
+			updateMCodes();
 		}
 	}
 	
@@ -83,6 +100,15 @@ public class DeviceButton extends VBox {
 	}
 	
 	private void build() {
+		lblExtraInfo = new Label("");
+		//lblExtraInfo.setPrefWidth(LABEL_WIDTH);
+		lblExtraInfo.setPrefHeight(20);
+		lblExtraInfo.setWrapText(true);
+		lblExtraInfo.setAlignment(Pos.TOP_CENTER);
+		lblExtraInfo.setTextAlignment(TextAlignment.CENTER);
+		lblExtraInfo.getStyleClass().add(CSS_CLASS_DEVICE_INFO_LABEL);
+		VBox.setMargin(lblExtraInfo, new Insets(0, 0, 8, 0));
+		
 		imagePath = new SVGPath();
 		imagePath.getStyleClass().add(CSS_CLASS_BUTTON_SHAPE);
 		mainButton = new Button();
@@ -101,9 +127,11 @@ public class DeviceButton extends VBox {
 		deviceName.getStyleClass().add(CSS_CLASS_DEVICE_LABEL);
 		VBox.setMargin(deviceName, new Insets(5, 0, 0, 0));
 		
+		this.getChildren().add(lblExtraInfo);
+		lblExtraInfo.setVisible(false);
 		this.getChildren().add(mainButton);
 		this.getChildren().add(deviceName);
-		this.setPadding(new Insets(20, -(LABEL_WIDTH - BUTTON_WIDTH) / 2 + 1, 0, -(LABEL_WIDTH - BUTTON_WIDTH) / 2));
+		this.setPadding(new Insets(-8, -(LABEL_WIDTH - BUTTON_WIDTH) / 2 + 1, 0, -(LABEL_WIDTH - BUTTON_WIDTH) / 2));
 		this.setPrefWidth(BUTTON_WIDTH);
 		this.setAlignment(Pos.CENTER);
 		
@@ -181,10 +209,57 @@ public class DeviceButton extends VBox {
 		this.getStyleClass().remove(CSS_CLASS_UNCLICKABLE);
 		mainButton.getStyleClass().remove(CSS_CLASS_UNCLICKABLE);
 		deviceName.getStyleClass().remove(CSS_CLASS_UNCLICKABLE_NAME);
+		lblExtraInfo.getStyleClass().remove(CSS_CLASS_UNCLICKABLE_INFO);
 		if (!clickable) {
 			this.getStyleClass().add(CSS_CLASS_UNCLICKABLE);
 			mainButton.getStyleClass().add(CSS_CLASS_UNCLICKABLE);
 			deviceName.getStyleClass().add(CSS_CLASS_UNCLICKABLE_NAME);
+			lblExtraInfo.getStyleClass().add(CSS_CLASS_UNCLICKABLE_INFO);
 		}
+	}
+
+	@Override public void cNCMachineConnected(final CNCMachineEvent event) {
+		updateMCodes();
+	}
+	@Override public void cNCMachineDisconnected(final CNCMachineEvent event) {
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				lblExtraInfo.setText("");
+				lblExtraInfo.setVisible(false);
+			}
+		});
+	}
+	@Override public void cNCMachineAlarmsOccured(final CNCMachineAlarmsOccuredEvent event) { }
+
+	@Override
+	public void cNCMachineStatusChanged(final CNCMachineEvent event) {
+		updateMCodes();
+	}
+	
+	private void updateMCodes() {
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				if ((machine.isConnected()) && (machine.getWayOfOperating() == WayOfOperating.M_CODES)) {
+					if (machine.getMCodeAdapter().getActiveMCodes().size() > 0) {
+						String mCodes = "GMC";
+						for (int i : machine.getMCodeAdapter().getActiveMCodes()) {
+							mCodes = mCodes + "-" + (i + 1);
+						}
+						lblExtraInfo.setText(mCodes);
+						lblExtraInfo.setVisible(true);
+					} else {
+						lblExtraInfo.setText("");
+						lblExtraInfo.setVisible(false);
+					}
+				}
+			}
+		});
+	}
+	
+	@Override
+	public void unregister() {
+		machine.removeListener(this);
 	}
 }
