@@ -172,7 +172,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1);
 				setCncMachineTimeout(null);
 			}*/
-			Thread.sleep(5000);
+			Thread.sleep(10000);
 			// we now wait for pick requested
 			waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED);
 			nCReset();
@@ -333,14 +333,19 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override 
 	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, InterruptedException {
 		if (getWayOfOperating() == WayOfOperating.M_CODES) {
-			Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD).getRobotServiceOutputsUsed();
-			int command = 0;
-			if (robotServiceOutputs.contains(0)) {
-				logger.info("AFMELDEN M-CODE 0");
-				command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
+			if (pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) {
+				// last work piece: send reset in stead of finishing m code
+				nCReset();
+			} else {
+				Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD).getRobotServiceOutputsUsed();
+				int command = 0;
+				if (robotServiceOutputs.contains(0)) {
+					logger.info("AFMELDEN M-CODE 0");
+					command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
+				}
+				int[] registers = {command};
+				cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 			}
-			int[] registers = {command};
-			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 		}	
 	}
 	
