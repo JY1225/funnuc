@@ -171,7 +171,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		return waitForStatusCondition(new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
-				return ((currentStatus & status) > 0);
+				return ((currentStatus & status) == status);
 			}
 		}, timeout);
 	}

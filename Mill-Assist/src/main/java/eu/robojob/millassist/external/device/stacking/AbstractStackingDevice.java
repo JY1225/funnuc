@@ -9,10 +9,14 @@ import eu.robojob.millassist.external.device.DeviceType;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
 public abstract class AbstractStackingDevice extends AbstractDevice {
 
+	private WorkPiece rawWorkPiece;
+	private WorkPiece finishedWorkPiece; 
+	
 	public AbstractStackingDevice(final String name, final Set<Zone> zones) {
 		super(name, zones);
 	}
@@ -28,5 +32,21 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 		return DeviceType.STACKING;
 	}
 	
+	public WorkPiece getRawWorkPiece() {
+		return rawWorkPiece;
+	}
+
+	public void setRawWorkPiece(final WorkPiece rawWorkPiece) {
+		this.rawWorkPiece = rawWorkPiece;
+	}
+
+	public WorkPiece getFinishedWorkPiece() {
+		return finishedWorkPiece;
+	}
+
+	public void setFinishedWorkPiece(final WorkPiece finishedWorkPiece) {
+		this.finishedWorkPiece = finishedWorkPiece;
+	}
+
 	public abstract void clearDeviceSettings();
 }

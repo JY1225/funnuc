@@ -1,11 +1,11 @@
-package eu.robojob.millassist.ui.configure.device.stacking.conveyor;
+package eu.robojob.millassist.ui.configure.device.stacking.conveyor.normal;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
-import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorSettings;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.PickStep;
@@ -33,6 +33,7 @@ public class ConveyorRawWorkPiecePresenter extends AbstractFormPresenter<Conveyo
 		this.deviceSettings = deviceSettings;
 		this.workPiece = pickStep.getRobotSettings().getWorkPiece();
 		deviceSettings.setRawWorkPiece(workPiece);	
+		pickStep.getDevice().loadDeviceSettings(deviceSettings);
 		this.dimensions = workPiece.getDimensions();
 		view.setDeviceSettings(deviceSettings);
 		view.build();

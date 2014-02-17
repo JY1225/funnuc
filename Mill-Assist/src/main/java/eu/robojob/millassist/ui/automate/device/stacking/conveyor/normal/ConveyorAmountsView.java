@@ -1,4 +1,4 @@
-package eu.robojob.millassist.ui.automate.device.stacking.conveyor;
+package eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

@@ -44,7 +44,6 @@ public class FanucRobot extends AbstractRobot {
 	private static final int ASK_POSITION_TIMEOUT = 50000;
 	private static final int ASK_STATUS_TIMEOUT = 5 * 1000;
 	private static final int TEACH_TIMEOUT = 10 * 60 * 1000;
-	private static final float MAX_WORKPIECE_WEIGHT = 15;
 	
 	private static final int WRITE_REGISTER_TIMEOUT = 5000;
 	private static final int IOACTION_TIMEOUT = 2 * 60 * 1000;
@@ -59,8 +58,8 @@ public class FanucRobot extends AbstractRobot {
 		
 	private static Logger logger = LogManager.getLogger(FanucRobot.class.getName());
 	
-	public FanucRobot(final String name, final Set<GripperBody> gripperBodies, final GripperBody gripperBody, final SocketConnection socketConnection) {
-		super(name, gripperBodies, gripperBody);
+	public FanucRobot(final String name, final Set<GripperBody> gripperBodies, final GripperBody gripperBody, final float payload, final SocketConnection socketConnection) {
+		super(name, gripperBodies, gripperBody, payload);
 		this.fanucRobotCommunication = new RobotSocketCommunication(socketConnection, this);
 		RobotMonitoringThread monitoringThread = new RobotMonitoringThread(this);
 		ThreadManager.submit(monitoringThread);
@@ -72,8 +71,8 @@ public class FanucRobot extends AbstractRobot {
 		df.setDecimalFormatSymbols(custom);
 	}
 	
-	public FanucRobot(final String name, final SocketConnection socketConnection) {
-		this(name, null, null, socketConnection);
+	public FanucRobot(final String name, final float payload, final SocketConnection socketConnection) {
+		this(name, null, null, payload, socketConnection);
 	}
 	
 	@Override
@@ -588,6 +587,7 @@ public class FanucRobot extends AbstractRobot {
 			values.add("0");
 		}
 		values.add(df.format(dimensions.getHeight()));	// WP thickness
+		values.add(df.format(Math.max(dimensions.getLength(), dimensions.getWidth())));	// WP diameter
 		values.add("0");					// WP Z grip
 		values.add("0");					// grip Z face till front
 		values.add("0");					// dx correction P1
@@ -744,11 +744,6 @@ public class FanucRobot extends AbstractRobot {
 
 	public RobotSocketCommunication getRobotSocketCommunication() {
 		return this.fanucRobotCommunication;
-	}
-
-	@Override
-	public float getMaxWorkPieceWeight() {
-		return MAX_WORKPIECE_WEIGHT;
 	}
 	
 }

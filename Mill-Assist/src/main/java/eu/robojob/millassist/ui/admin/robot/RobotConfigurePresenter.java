@@ -63,8 +63,8 @@ public class RobotConfigurePresenter extends AbstractFormPresenter<RobotConfigur
 	}
 	
 	public void saveData(final String name, final String ip, final int port, final boolean gripperHeadA, final boolean gripperHeadB, final boolean gripperHeadC,
-			final boolean gripperHeadD) {
-		robotManager.updateRobotData(robot, name, ip, port, gripperHeadA, gripperHeadB, gripperHeadC, gripperHeadD);
+			final boolean gripperHeadD, final float payload) {
+		robotManager.updateRobotData(robot, name, ip, port, gripperHeadA, gripperHeadB, gripperHeadC, gripperHeadD, payload);
 		getView().refresh();
 	}
 

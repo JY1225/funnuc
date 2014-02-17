@@ -1,4 +1,4 @@
-package eu.robojob.millassist.ui.general.device.stacking.conveyor;
+package eu.robojob.millassist.ui.general.device.stacking.conveyor.normal;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
-import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorLayout;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLayout;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractMenuPresenter;
 import eu.robojob.millassist.util.Translator;

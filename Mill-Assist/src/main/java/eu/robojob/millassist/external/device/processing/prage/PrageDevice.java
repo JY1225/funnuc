@@ -130,7 +130,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {
+	public Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		throw new IllegalStateException("This method should never be called");
 	}
 	
@@ -144,10 +144,51 @@ public class PrageDevice extends AbstractProcessingDevice {
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			c.offset(new Coordinates(0, workPieceDimensions.getWidth() / 2, 0, 0, 0, 0));
+			c.setR(c.getR());
+			switch (workArea.getActiveClamping().getType()) {
+				case CENTRUM:
+					// no action needed
+					break;
+				case FIXED_XM:
+					c.setX(c.getX() - workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_YM:
+					c.setY(c.getY() - workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_XP:
+					c.setX(c.getX() + workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_YP:
+					c.setY(c.getY() + workPieceDimensions.getWidth()/2);
+					break;
+				case NONE:
+					throw new IllegalArgumentException("Machine clamping type can't be NONE.");
+				default:
+					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
+			}
 		} else {
-			c.offset(new Coordinates(0, workPieceDimensions.getLength() / 2, 0, 0, 0, 0));
-			c.setR(clampingWidthDeltaR);
+			c.setR(c.getR() + clampingWidthDeltaR);
+			switch (workArea.getActiveClamping().getType()) {
+			case CENTRUM:
+				// no action needed
+				break;
+			case FIXED_XM:
+				c.setX(c.getX() - workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_YM:
+				c.setY(c.getY() - workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_XP:
+				c.setX(c.getX() + workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_YP:
+				c.setY(c.getY() + workPieceDimensions.getLength()/2);
+				break;
+			case NONE:
+				throw new IllegalArgumentException("Machine clamping type can't be NONE.");
+			default:
+				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
+			}
 		}
 		return c;
 	}

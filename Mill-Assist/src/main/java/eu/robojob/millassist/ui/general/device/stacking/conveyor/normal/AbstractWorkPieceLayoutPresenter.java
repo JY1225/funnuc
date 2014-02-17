@@ -1,7 +1,7 @@
-package eu.robojob.millassist.ui.general.device.stacking.conveyor;
+package eu.robojob.millassist.ui.general.device.stacking.conveyor.normal;
 
-import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
-import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorListener;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorListener;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.AbstractMenuPresenter;
 

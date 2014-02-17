@@ -1,10 +1,10 @@
-package eu.robojob.millassist.ui.general.device.stacking.conveyor;
+package eu.robojob.millassist.ui.general.device.stacking.conveyor.normal;
 
 import javafx.application.Platform;
-import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarmsOccuredEvent;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorEvent;
-import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorSensorValuesChangedEvent;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSensorValuesChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractMenuPresenter;
 
 public class ConveyorFinishedWorkPieceLayoutPresenter<T extends AbstractMenuPresenter<?>> extends AbstractWorkPieceLayoutPresenter<ConveyorFinishedWorkPieceLayoutView, T> {

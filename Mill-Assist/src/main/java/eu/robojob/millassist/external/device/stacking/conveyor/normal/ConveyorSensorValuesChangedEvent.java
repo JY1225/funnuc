@@ -1,4 +1,4 @@
-package eu.robojob.millassist.external.device.stacking.conveyor;
+package eu.robojob.millassist.external.device.stacking.conveyor.normal;
 
 import java.util.List;
 

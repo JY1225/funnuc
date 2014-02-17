@@ -14,6 +14,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.Clamping.Type;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.ui.controls.FullTextField;
@@ -27,6 +29,8 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 
 	private Label lblName;
 	private FullTextField fulltxtName;
+	private Label lblType;
+	private ComboBox<String> cbbType;
 	private Label lblUserFrame;
 	private ComboBox<String> cbbUserFrame;
 	private Label lblRelativePosition;
@@ -67,6 +71,13 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	private static final String SMOOTH_TO = "PrageDeviceConfigureView.smoothTo";
 	private static final String SMOOTH_FROM = "PrageDeviceConfigureView.smoothFrom";
 	private static final String CLAMPING_WIDTH_R = "PrageDeviceConfigureView.clampingWidthR";
+	private static final String TYPE = "PrageDeviceConfigureView.type";
+	
+	private static final String CLAMPING_TYPE_CENTRUM = "Centrum";
+	private static final String CLAMPING_TYPE_FIXED_XP = "Fix X +";
+	private static final String CLAMPING_TYPE_FIXED_XM = "Fix X -";
+	private static final String CLAMPING_TYPE_FIXED_YP = "Fix Y +";
+	private static final String CLAMPING_TYPE_FIXED_YM = "Fix Y -";
 	
 	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
 
@@ -85,6 +96,15 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 		fulltxtName.setPrefWidth(250);
 		fulltxtName.setMaxWidth(250);
 		fulltxtName.setMinWidth(250);
+		lblType = new Label(Translator.getTranslation(TYPE));
+		cbbType = new ComboBox<String>();
+		cbbType.setPrefSize(100, UIConstants.COMBO_HEIGHT);
+		cbbType.setMinSize(100, UIConstants.COMBO_HEIGHT);
+		cbbType.getItems().add(CLAMPING_TYPE_CENTRUM);
+		cbbType.getItems().add(CLAMPING_TYPE_FIXED_XM);
+		cbbType.getItems().add(CLAMPING_TYPE_FIXED_XP);
+		cbbType.getItems().add(CLAMPING_TYPE_FIXED_YM);
+		cbbType.getItems().add(CLAMPING_TYPE_FIXED_YP);
 		lblUserFrame = new Label (Translator.getTranslation(USERFRAME));
 		cbbUserFrame = new ComboBox<String>();
 		cbbUserFrame.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
@@ -137,7 +157,20 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 		btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				getPresenter().saveData(fulltxtName.getText(), Float.parseFloat(numtxtX.getText()), Float.parseFloat(numtxtY.getText()),
+				Clamping.Type type = null;
+				String selectedType = cbbType.getValue();
+				if (selectedType == CLAMPING_TYPE_CENTRUM) {
+					type = Type.CENTRUM;
+				} else if (selectedType == CLAMPING_TYPE_FIXED_XP) {
+					type = Type.FIXED_XP;
+				} else if (selectedType == CLAMPING_TYPE_FIXED_XM) {
+					type = Type.FIXED_XM;
+				} else if (selectedType == CLAMPING_TYPE_FIXED_YP) {
+					type = Type.FIXED_YP;
+				} else if (selectedType == CLAMPING_TYPE_FIXED_YM) {
+					type = Type.FIXED_YM;
+				}
+				getPresenter().saveData(fulltxtName.getText(), type, Float.parseFloat(numtxtX.getText()), Float.parseFloat(numtxtY.getText()),
 						Float.parseFloat(numtxtZ.getText()), Float.parseFloat(numtxtR.getText()), Float.parseFloat(numtxtSmoothToX.getText()),
 						Float.parseFloat(numtxtSmoothToY.getText()), Float.parseFloat(numtxtSmoothToZ.getText()), Float.parseFloat(numtxtSmoothFromX.getText()), 
 						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()), clampingWidthROffset);
@@ -147,6 +180,9 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 		int column = 0;
 		getContents().add(lblName, column++, row);
 		getContents().add(fulltxtName, column++, row);
+		column = 0; row++;
+		getContents().add(lblType, column++, row);
+		getContents().add(cbbType, column++, row);
 		column = 0; row++;
 		getContents().add(lblUserFrame, column++, row);
 		getContents().add(cbbUserFrame, column++, row);
@@ -248,6 +284,20 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 				numtxtSmoothFromX.setText("" + smoothFrom.getX());
 				numtxtSmoothFromY.setText("" + smoothFrom.getY());
 				numtxtSmoothFromZ.setText("" + smoothFrom.getZ());
+				Clamping clamping = prageDevice.getWorkAreas().get(0).getActiveClamping();
+				if (clamping.getType() == Type.CENTRUM) {
+					cbbType.setValue(CLAMPING_TYPE_CENTRUM);
+				} else if (clamping.getType() == Type.FIXED_XP) {
+					cbbType.setValue(CLAMPING_TYPE_FIXED_XP);
+				}  else if (clamping.getType() == Type.FIXED_XM) {
+					cbbType.setValue(CLAMPING_TYPE_FIXED_XM);
+				} else if (clamping.getType() == Type.FIXED_YP) {
+					cbbType.setValue(CLAMPING_TYPE_FIXED_YP);
+				} else if (clamping.getType() == Type.FIXED_YM) {
+					cbbType.setValue(CLAMPING_TYPE_FIXED_YM);
+				} else {
+					System.out.println("PROBLEM: " + clamping.getType());
+				}
 			}
 			btnClampingWidthROffsetm90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
 			btnClampingWidthROffsetp90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);

@@ -1,4 +1,4 @@
-package eu.robojob.millassist.external.device.stacking.conveyor;
+package eu.robojob.millassist.external.device.stacking.conveyor.normal;
 
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.workpiece.WorkPiece;

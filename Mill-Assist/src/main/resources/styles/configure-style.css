@@ -196,7 +196,7 @@
 	-fx-fill: #f27e17;
 	-fx-stroke: #d66b0d;
 	-fx-stroke-width: 1px;
-	-fx-stroke-type: centered;
+	-fx-stroke-type: inside;
 }
 
 .workpiece-c-finished {
@@ -225,6 +225,12 @@
 .line {
 	-fx-stroke-width: 2px;
 	-fx-stroke: #9e9e9e;
+}
+
+.scroll-pane {
+	-fx-background-color: transparent; 
+	-fx-background-insets: 0;
+	-fx-background-radius: 0;
 }
 
 .iconflow-selector {
@@ -561,13 +567,13 @@
 }
 
 .workPiece-area {
-	-fx-fill: rgba(255, 255, 255, 0.2);
+	-fx-fill: rgba(255, 255, 255, 0.4);
 	-fx-opacity: 1;
 	-fx-stroke: white;
     -fx-stroke-width: 0.5;
     -fx-stroke-dash-array: 4 4;
     -fx-stroke-line-cap: butt;
-    -fx-stroke-type: centered;
+    -fx-stroke-type: inside;
 }
 
 .amount-text {
@@ -575,4 +581,48 @@
 	-fx-text-alignment: center;
 	-fx-font-family: "Open Sans Semibold";
 	-fx-font-size: 20px;
+}
+
+.conveyor-eaton-bg {
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 30, 0.0, 0, 1);
+	-fx-fill: rgba(0, 0, 0, 1);
+	-fx-stroke-width: 0;
+}
+
+.conveyor-eaton-support {
+	-fx-fill: linear-gradient(from 0% 0% to 100% 0%, #d3d3d3 0%, #d3d3d3 15%, #9c9c9c 24%, #dedede 25%, #dedede 70%, #dedede 100%);
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0.0, 0, 2);
+}
+
+.conveyor-eaton-track {
+	-fx-fill: linear-gradient(from 0% 0% to 100% 0%, #07587a 0%, #007aaf 5%, #0087c1 9%, #0087c1 100%);
+	-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.15), 5, 0.0, 0, 2);
+}
+
+.tester {
+	-fx-fill: linear-gradient(from 0% 0% to 100% 0%, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 5%, rgba(0, 0, 0, 0) 15%, rgba(0, 0, 0, 0) 100%);
+}
+
+.conveyor-eaton-side1 {
+	-fx-effect: innershadow(two-pass-box, #989898, 2, 0.0, 0, -2);
+	-fx-fill: linear-gradient(from 0% 0% to 100% 100%, #c8c6c6 0%, #f1f1f1 20%, #c8c6c6 100%);
+	-fx-stroke: #f1f1f1;
+	-fx-stroke-width: 1;
+	-fx-stroke-type: inside;
+}
+
+.conveyor-eaton-side2 {
+	-fx-effect: innershadow(two-pass-box, #989898, 2, 0.0, 0, -2);
+	-fx-fill: linear-gradient(from 0% 0% to 100% 100%, #c8c6c6 0%, #f1f1f1 20%, #c8c6c6 100%);
+	-fx-stroke: #f1f1f1;
+	-fx-stroke-width: 1.5;
+	-fx-stroke-type: inside;
+}
+
+.conveyor-eaton-sensor {
+	-fx-fill: #f84d25;
+	-fx-stroke:#ff6a42;
+	-fx-stroke-width: 0.5;
+	-fx-stroke-type: centered;
+	-fx-effect: dropshadow(gaussian, rgba(255, 89, 51), 5, 0.0, 0, 0);
 }

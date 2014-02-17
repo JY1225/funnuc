@@ -1,8 +1,8 @@
-package eu.robojob.millassist.ui.configure.device.stacking.conveyor;
+package eu.robojob.millassist.ui.configure.device.stacking.conveyor.normal;
 
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
@@ -11,9 +11,9 @@ import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
 import eu.robojob.millassist.process.event.ProcessFlowListener;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
-import eu.robojob.millassist.ui.general.device.stacking.conveyor.ConveyorFinishedWorkPieceLayoutView;
+import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.ConveyorFinishedWorkPieceLayoutView;
 
-public class ConveyorFinishedWorkPieceLayoutPresenter extends eu.robojob.millassist.ui.general.device.stacking.conveyor.ConveyorFinishedWorkPieceLayoutPresenter<ConveyorMenuPresenter> 
+public class ConveyorFinishedWorkPieceLayoutPresenter extends eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.ConveyorFinishedWorkPieceLayoutPresenter<ConveyorMenuPresenter> 
 	implements ProcessFlowListener {
 
 	public ConveyorFinishedWorkPieceLayoutPresenter(final ConveyorFinishedWorkPieceLayoutView view, final Conveyor conveyor, final PutStep putStep) {

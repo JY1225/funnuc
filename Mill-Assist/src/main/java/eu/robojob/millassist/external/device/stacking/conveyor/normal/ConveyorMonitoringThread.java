@@ -1,4 +1,4 @@
-package eu.robojob.millassist.external.device.stacking.conveyor;
+package eu.robojob.millassist.external.device.stacking.conveyor.normal;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,6 +9,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarm;
+import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarmsOccuredEvent;
 import eu.robojob.millassist.threading.MonitoringThread;
 
 public class ConveyorMonitoringThread extends Thread implements MonitoringThread {

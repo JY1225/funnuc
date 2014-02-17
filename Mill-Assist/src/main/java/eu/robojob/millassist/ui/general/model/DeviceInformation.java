@@ -7,7 +7,7 @@ import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.DeviceType;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
-import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
@@ -56,6 +56,8 @@ public class DeviceInformation {
 					return DeviceType.CONVEYOR;
 				} else if (device instanceof OutputBin) {
 					return DeviceType.OUTPUT_BIN;
+				} else if (device instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
+					return DeviceType.CONVEYOR_EATON;
 				} else {
 					throw new IllegalStateException("Unkown device type: " + device);
 				}

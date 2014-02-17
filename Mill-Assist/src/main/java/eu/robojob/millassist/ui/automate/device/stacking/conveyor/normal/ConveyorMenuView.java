@@ -1,4 +1,4 @@
-package eu.robojob.millassist.ui.automate.device.stacking.conveyor;
+package eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

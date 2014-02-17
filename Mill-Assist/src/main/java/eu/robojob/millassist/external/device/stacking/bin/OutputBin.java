@@ -136,7 +136,7 @@ public class OutputBin extends AbstractStackingDevice {
 	}
 
 	@Override
-	public Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {
+	public Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		throw new IllegalStateException("Pick from this device is not possible.");
 	}
 

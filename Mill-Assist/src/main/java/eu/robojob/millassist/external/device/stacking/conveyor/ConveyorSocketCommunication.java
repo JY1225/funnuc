@@ -15,14 +15,14 @@ import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOu
 public class ConveyorSocketCommunication extends ExternalSocketCommunication {
 
 	private StringBuffer command;
-	private Conveyor conveyor;
+	private AbstractConveyor conveyor;
 
 	private static final int MAX_REGISTER_NR = 100;
 	private static final int NEEDS_DECIMAL = 10;
 	
 	private static Logger logger = LogManager.getLogger(ConveyorSocketCommunication.class.getName());
 	
-	public ConveyorSocketCommunication(final SocketConnection socketConnection, final Conveyor conveyor) {
+	public ConveyorSocketCommunication(final SocketConnection socketConnection, final AbstractConveyor conveyor) {
 		super(socketConnection);
 		this.conveyor = conveyor;
 		this.command = new StringBuffer();

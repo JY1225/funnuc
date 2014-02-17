@@ -1,11 +1,11 @@
-package eu.robojob.millassist.ui.configure.device.stacking.conveyor;
+package eu.robojob.millassist.ui.configure.device.stacking.conveyor.normal;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorLayout;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLayout;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;

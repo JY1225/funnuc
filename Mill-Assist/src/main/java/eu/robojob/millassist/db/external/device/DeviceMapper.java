@@ -25,8 +25,8 @@ import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
-import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
-import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorLayout;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLayout;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateLayout;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -39,10 +39,13 @@ public class DeviceMapper {
 	private static final int DEVICE_TYPE_PRAGE = 3;
 	private static final int DEVICE_TYPE_CONVEYOR = 4;
 	private static final int DEVICE_TYPE_BIN = 5;
+	private static final int DEVICE_TYPE_CONVEYOR_EATON = 6;
 	private static final int CLAMPING_TYPE_CENTRUM = 1;
-	private static final int CLAMPING_TYPE_FIXED = 2;
+	private static final int CLAMPING_TYPE_FIXED_XP = 2;
 	private static final int CLAMPING_TYPE_NONE = 3;
-	private static final int CLAMPING_TYPE_DOUBLE = 4;
+	private static final int CLAMPING_TYPE_FIXED_XM = 4;
+	private static final int CLAMPING_TYPE_FIXED_YP = 5;
+	private static final int CLAMPING_TYPE_FIXED_YM = 6;
 	private static final int WAYOFOPERATING_STARTSTOP = 1;
 	private static final int WAYOFOPERATING_MCODES = 2;
 	
@@ -80,6 +83,10 @@ public class DeviceMapper {
 					Conveyor conveyor = getConveyor(id, name, zones);
 					devices.add(conveyor);
 					break;
+				case DEVICE_TYPE_CONVEYOR_EATON:
+					eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor conveyorEaton = getConveyorEaton(id, name, zones);
+					devices.add(conveyorEaton);
+					break;
 				case DEVICE_TYPE_BIN:
 					OutputBin bin = getOutputBin(id, name, zones);
 					devices.add(bin);
@@ -95,6 +102,46 @@ public class DeviceMapper {
 		OutputBin bin = new OutputBin(name, zones);
 		bin.setId(id);
 		return bin;
+	}
+	
+	private eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor getConveyorEaton(final int id, final String name, final Set<Zone> zones) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CONVEYOREATON WHERE ID = ?");
+		stmt.setInt(1, id);
+		ResultSet results = stmt.executeQuery();
+		eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor conveyor = null;
+		if (results.next()) {
+			int workAreaAID = results.getInt("WORK_AREA_A");
+			int workAreaBID = results.getInt("WORK_AREA_B");
+			float nomSpeedA = results.getFloat("NOMSPEED_A");
+			float nomSpeedB = results.getFloat("NOMSPEED_B");
+			float nomSpeedASlow = results.getFloat("NOMSPEED_A_SLOW");
+			float nomSpeedBSlow = results.getFloat("NOMSPEED_B_SLOW");
+			float minWorkPieceWidth = results.getFloat("MIN_WP_WIDTH");
+			float maxWorkPieceWidth = results.getFloat("MAX_WP_WIDTH");
+			float trackWidth = results.getFloat("TRACK_WIDTH");
+			float supportWidth = results.getFloat("SUPPORT_WIDTH");
+			float xPosSensor1 = results.getFloat("X_POS_SENSOR_1");
+			float xPosSensor2 = results.getFloat("X_POS_SENSOR_2");
+			float sideWidth = results.getFloat("SIDE_WIDTH");
+			eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorLayout layout = new eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorLayout(minWorkPieceWidth, maxWorkPieceWidth, trackWidth, supportWidth, xPosSensor1, xPosSensor2, sideWidth);
+			int socketConnectionId = results.getInt("SOCKETCONNECTION");
+			SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
+			WorkArea workAreaA = null;
+			WorkArea workAreaB = null;
+			for (Zone zone : zones) {
+				for (WorkArea workArea : zone.getWorkAreas()) {
+					if (workArea.getId() == workAreaAID) {
+						workAreaA = workArea;
+					}
+					if (workArea.getId() == workAreaBID) {
+						workAreaB = workArea;
+					}
+				}
+			}
+			conveyor = new eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor(name, zones, workAreaA, workAreaB, layout, socketConnection, nomSpeedA, nomSpeedASlow, nomSpeedB, nomSpeedBSlow);
+			conveyor.setId(id);
+		}
+		return conveyor;
 	}
 	
 	private PrageDevice getPrageDevice(final int id, final String name, final Set<Zone> zones) throws SQLException {
@@ -350,14 +397,20 @@ public class DeviceMapper {
 				case CLAMPING_TYPE_CENTRUM:
 					clamping = new Clamping(Clamping.Type.CENTRUM, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
 					break;
-				case CLAMPING_TYPE_FIXED:
-					clamping = new Clamping(Clamping.Type.FIXED, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+				case CLAMPING_TYPE_FIXED_XP:
+					clamping = new Clamping(Clamping.Type.FIXED_XP, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
 					break;
 				case CLAMPING_TYPE_NONE:
 					clamping = new Clamping(Clamping.Type.NONE, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
 					break;
-				case CLAMPING_TYPE_DOUBLE:
-					clamping = new Clamping(Clamping.Type.DOUBLE, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+				case CLAMPING_TYPE_FIXED_XM:
+					clamping = new Clamping(Clamping.Type.FIXED_XM, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+					break;
+				case CLAMPING_TYPE_FIXED_YP:
+					clamping = new Clamping(Clamping.Type.FIXED_YP, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+					break;
+				case CLAMPING_TYPE_FIXED_YM:
+					clamping = new Clamping(Clamping.Type.FIXED_YM, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
 					break;
 				default:
 					throw new IllegalStateException("Unknown clamping type: [" + type + "].");
@@ -558,26 +611,13 @@ public class DeviceMapper {
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
-	public void updatePrageDevice(final PrageDevice prageDevice, final String name, final float relPosX, final float relPosY, 
+	public void updatePrageDevice(final PrageDevice prageDevice, final String name, final Clamping.Type type, final float relPosX, final float relPosY, 
 			final float relPosZ, final float relPosR, final float smoothToX, final float smoothToY, final float smoothToZ,
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ, final int widthOffsetR) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		Coordinates c = prageDevice.getWorkAreas().get(0).getActiveClamping().getRelativePosition();
-		c.setX(relPosX);
-		c.setY(relPosY);
-		c.setZ(relPosZ);
-		c.setR(relPosR);
-		generalMapper.saveCoordinates(c);
-		Coordinates smoothTo = prageDevice.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
-		smoothTo.setX(smoothToX);
-		smoothTo.setY(smoothToY);
-		smoothTo.setZ(smoothToZ);
-		generalMapper.saveCoordinates(smoothTo);
-		Coordinates smoothFrom = prageDevice.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
-		smoothFrom.setX(smoothFromX);
-		smoothFrom.setY(smoothFromY);
-		smoothFrom.setZ(smoothFromZ);
-		generalMapper.saveCoordinates(smoothFrom);
+		Clamping clamping = prageDevice.getWorkAreas().get(0).getActiveClamping();
+		updateClamping(clamping, clamping.getName(), type, clamping.getHeight(), clamping.getImageUrl(), relPosX, relPosY, relPosZ, clamping.getRelativePosition().getW(),
+				clamping.getRelativePosition().getP(), relPosR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ);
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE " +
 				"SET NAME = ? WHERE ID = ?");
 		stmt.setString(1, name);
@@ -724,12 +764,18 @@ public class DeviceMapper {
 		int typeInt = 0;
 		if (type == Type.CENTRUM) {
 			typeInt = CLAMPING_TYPE_CENTRUM;
-		} else if (type == Type.FIXED) {
-			typeInt = CLAMPING_TYPE_FIXED;
+		} else if (type == Type.FIXED_XP) {
+			typeInt = CLAMPING_TYPE_FIXED_XP;
 		} else if (type == Type.NONE) {
 			typeInt = CLAMPING_TYPE_NONE;
-		} else if (type == Type.DOUBLE) {
-			typeInt = CLAMPING_TYPE_DOUBLE;
+		} else if (type == Type.FIXED_XM) {
+			typeInt = CLAMPING_TYPE_FIXED_XM;
+		} else if (type == Type.FIXED_YP) {
+			typeInt = CLAMPING_TYPE_FIXED_YP;
+		} else if (type == Type.FIXED_YM) {
+			typeInt = CLAMPING_TYPE_FIXED_YM;
+		} else {
+			throw new IllegalStateException("Unkwon clamping type: " + type);
 		}
 		stmt.setInt(2, typeInt);
 		stmt.setFloat(3, height);
@@ -752,14 +798,18 @@ public class DeviceMapper {
 		int typeInt = 0;
 		if (clamping.getType() == Type.CENTRUM) {
 			typeInt = CLAMPING_TYPE_CENTRUM;
-		} else if (clamping.getType() == Type.FIXED) {
-			typeInt = CLAMPING_TYPE_FIXED;
+		} else if (clamping.getType() == Type.FIXED_XP) {
+			typeInt = CLAMPING_TYPE_FIXED_XP;
 		} else if (clamping.getType() == Type.NONE) {
 			typeInt = CLAMPING_TYPE_NONE;
-		} else if (clamping.getType() == Type.DOUBLE) {
-			typeInt = CLAMPING_TYPE_DOUBLE;
+		} else if (clamping.getType() == Type.FIXED_XM) {
+			typeInt = CLAMPING_TYPE_FIXED_XM;
+		} else if (clamping.getType() == Type.FIXED_YP) {
+			typeInt = CLAMPING_TYPE_FIXED_YP;
+		} else if (clamping.getType() == Type.FIXED_YM) {
+			typeInt = CLAMPING_TYPE_FIXED_YM;
 		} else {
-			throw new IllegalStateException("Unknown clamp type: " + clamping.getType());
+			throw new IllegalStateException("Unknown clamping type: " + clamping.getType());
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO CLAMPING (NAME, TYPE, RELATIVE_POSITION, " +
 				"SMOOTH_TO, SMOOTH_FROM, IMAGE_URL, HEIGHT) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);

@@ -27,8 +27,8 @@ import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
-import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
-import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorSettings;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
@@ -440,6 +440,16 @@ public class ProcessFlowMapper {
 			stmt4.setFloat(5, cSettings.getOffsetSupport1());
 			stmt4.setFloat(6, cSettings.getOffsetOtherSupports());
 			stmt4.executeUpdate();
+		} else if (deviceSettings instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) {
+			eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings cSettings = (eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings;
+			generalMapper.saveWorkPiece(cSettings.getRawWorkPiece());
+			generalMapper.saveWorkPiece(cSettings.getFinishedWorkPiece());
+			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO CONVEYOREATONSETTINGS (ID, AMOUNT, RAWWORKPIECE, FINISHEDWORKPIECE) VALUES (?, ?, ?, ?)");
+			stmt4.setInt(1, cSettings.getId());
+			stmt4.setInt(2, cSettings.getAmount());
+			stmt4.setInt(3, cSettings.getRawWorkPiece().getId());
+			stmt4.setInt(4, cSettings.getFinishedWorkPiece().getId());
+			stmt4.executeUpdate();
 		}
 	}
 	
@@ -554,6 +564,9 @@ public class ProcessFlowMapper {
 			} else if (device instanceof Conveyor) {
 				ConveyorSettings conveyorSettings = getConveyorSettings(processId, id, (Conveyor) device, clampings);
 				settings.put(device, conveyorSettings);
+			} else if (device instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
+				eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = getConveyorSettings(processId, id, (eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) device, clampings);
+				settings.put(device, conveyorSettings);
 			} else {
 				DeviceSettings deviceSettings = new DeviceSettings(clampings);
 				settings.put(device, deviceSettings);
@@ -576,6 +589,23 @@ public class ProcessFlowMapper {
 			WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(processFlowId, rawWorkPieceId);
 			WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
 			conveyorSettings = new ConveyorSettings(rawWorkPiece, finishedWorkPiece, amount, offsetSupport1, offsetOtherSupports);
+			conveyorSettings.setClampings(clampings);
+		}
+		return conveyorSettings;
+	}
+	
+	private eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings getConveyorSettings(final int processFlowId, final int deviceSettingsId, final eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor conveyor, final Map<WorkArea, Clamping> clampings) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CONVEYOREATONSETTINGS WHERE ID = ?");
+		stmt.setInt(1, deviceSettingsId);
+		ResultSet results = stmt.executeQuery();
+		eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = null;
+		if (results.next()) {
+			int amount = results.getInt("AMOUNT");
+			int rawWorkPieceId = results.getInt("RAWWORKPIECE");
+			int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
+			WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(processFlowId, rawWorkPieceId);
+			WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
+			conveyorSettings = new eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings(rawWorkPiece, finishedWorkPiece, amount);
 			conveyorSettings.setClampings(clampings);
 		}
 		return conveyorSettings;

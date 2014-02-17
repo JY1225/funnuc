@@ -6,7 +6,7 @@ public class ConveyorAlarmsOccuredEvent extends ConveyorEvent {
 
 	private Set<ConveyorAlarm> alarms;
 	
-	public ConveyorAlarmsOccuredEvent(final Conveyor source, final Set<ConveyorAlarm> alarms) {
+	public ConveyorAlarmsOccuredEvent(final AbstractConveyor source, final Set<ConveyorAlarm> alarms) {
 		super(source, ConveyorEvent.ALARM_OCCURED);
 		this.alarms = alarms;
 	}

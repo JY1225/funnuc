@@ -20,7 +20,7 @@ import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMa
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
-import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
@@ -120,11 +120,11 @@ public class DeviceManager {
 		return postProcessingDevicesByName.values();
 	}
 	
-	public Set<Conveyor> getConveyors() {
-		Set<Conveyor> conveyors = new HashSet<Conveyor>();
+	public Set<AbstractConveyor> getConveyors() {
+		Set<AbstractConveyor> conveyors = new HashSet<AbstractConveyor>();
 		for (AbstractDevice device : getStackingFromDevices()) {
-			if (device instanceof Conveyor) {
-				conveyors.add((Conveyor) device);
+			if (device instanceof AbstractConveyor) {
+				conveyors.add((AbstractConveyor) device);
 			}
 		}
 		return conveyors;
@@ -232,11 +232,11 @@ public class DeviceManager {
 		}		
 	}
 	
-	public void updatePrageDeviceData(final PrageDevice prageDevice, final String name, final float relPosX, final float relPosY, 
+	public void updatePrageDeviceData(final PrageDevice prageDevice, final String name, final Clamping.Type type, final float relPosX, final float relPosY, 
 			final float relPosZ, final float relPosR, final float smoothToX, final float smoothToY, final float smoothToZ,
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ, final int widthOffsetR) {
 		try {
-			deviceMapper.updatePrageDevice(prageDevice, name, relPosX, relPosY, relPosZ, relPosR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, widthOffsetR);
+			deviceMapper.updatePrageDevice(prageDevice, name, type, relPosX, relPosY, relPosZ, relPosR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, widthOffsetR);
 			refresh();
 		} catch (SQLException e) {
 			logger.error(e);

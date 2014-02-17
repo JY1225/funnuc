@@ -13,6 +13,7 @@ import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
+import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.util.Translator;
@@ -33,6 +34,8 @@ public class RobotConfigureView extends AbstractFormView<RobotConfigurePresenter
 	private CheckBox cbGripperHeadB;
 	private CheckBox cbGripperHeadC;
 	private CheckBox cbGripperHeadD;
+	private Label lblPayload;
+	private NumericTextField numtxtPayload;
 	private Region spacer;
 	private Button btnSave;
 	
@@ -46,6 +49,7 @@ public class RobotConfigureView extends AbstractFormView<RobotConfigurePresenter
 	private static final String SAVE = "RobotConfigureView.save";
 	private static final String STATUS_CONNECTED = "RobotConfigureView.statusConnected";
 	private static final String STATUS_DISCONNECTED = "RobotConfigureView.statusDisconnected";
+	private static final String PAYLOAD = "RobotConfigureView.payload";
 	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
@@ -79,7 +83,7 @@ public class RobotConfigureView extends AbstractFormView<RobotConfigurePresenter
 			@Override
 			public void handle(final ActionEvent arg0) {
 				getPresenter().saveData(fulltxtName.getText(), fulltxtIpAddress.getText(), Integer.parseInt(itxtPort.getText()), cbGripperHeadA.selectedProperty().get(), 
-						cbGripperHeadB.selectedProperty().get(), cbGripperHeadC.selectedProperty().get(), cbGripperHeadD.selectedProperty().get());
+						cbGripperHeadB.selectedProperty().get(), cbGripperHeadC.selectedProperty().get(), cbGripperHeadD.selectedProperty().get(), Float.parseFloat(numtxtPayload.getText()));
 			}
 		});
 		getContents().add(btnSave, column++, row);
@@ -122,6 +126,12 @@ public class RobotConfigureView extends AbstractFormView<RobotConfigurePresenter
 		getContents().add(lblStatus, column++, row);
 		lblStatusValue = new Label();
 		getContents().add(lblStatusValue, column++, row);
+		column = 0;
+		row++;
+		lblPayload = new Label(Translator.getTranslation(PAYLOAD));
+		getContents().add(lblPayload, column++, row);
+		numtxtPayload = new NumericTextField(6);
+		getContents().add(numtxtPayload, column++, row);
 	}
 
 	@Override
@@ -129,7 +139,7 @@ public class RobotConfigureView extends AbstractFormView<RobotConfigurePresenter
 		fulltxtName.setFocusListener(listener);
 		fulltxtIpAddress.setFocusListener(listener);
 		itxtPort.setFocusListener(listener);
-		
+		numtxtPayload.setFocusListener(listener);
 	}
 
 	@Override
@@ -150,6 +160,7 @@ public class RobotConfigureView extends AbstractFormView<RobotConfigurePresenter
 		cbGripperHeadB.setSelected((robot.getGripperBody().getGripperHeadByName("B") != null));
 		cbGripperHeadC.setSelected((robot.getGripperBody().getGripperHeadByName("C") != null));
 		cbGripperHeadD.setSelected((robot.getGripperBody().getGripperHeadByName("D") != null));
+		numtxtPayload.setText("" + robot.getPayload());
 	}
 
 	public void setRobot(final AbstractRobot robot) {

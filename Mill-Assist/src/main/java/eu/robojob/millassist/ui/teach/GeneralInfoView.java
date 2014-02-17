@@ -12,6 +12,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
+import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.PickAfterWaitStep;
 import eu.robojob.millassist.process.PickStep;
@@ -168,6 +170,11 @@ public class GeneralInfoView extends GridPane {
 	}
 
 	private boolean isOptimalPossible() {
+		for (AbstractDevice device : processFlow.getDevices()) {
+			if (device instanceof AbstractConveyor) {
+				return false;
+			}
+		}
 		WorkPieceDimensions firstPickStepDimensions = null;
 		WorkPieceDimensions lastPickStepDimensions = null;
 		for (AbstractProcessStep step : processFlow.getProcessSteps()) {

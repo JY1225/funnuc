@@ -294,7 +294,8 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		}
 		
 		if (device == null) {
-			throw new IllegalArgumentException("Not possible: no device to use");
+			//throw new IllegalArgumentException("Not possible: no device to use");
+			return;
 		}
 		
 		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);

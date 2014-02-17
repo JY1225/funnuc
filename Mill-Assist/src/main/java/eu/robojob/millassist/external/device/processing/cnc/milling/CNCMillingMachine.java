@@ -11,7 +11,6 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
-import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
 import eu.robojob.millassist.external.device.DeviceActionException;
@@ -261,10 +260,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		//TODO for now WA1 is always used
 		command = command | CNCMachineConstants.IPC_UNCLAMP_WA1_RQST;
 		
-		if (pickSettings.getWorkArea().getActiveClamping().getType() == Clamping.Type.DOUBLE) {
-			command = command | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
-		}
-		
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 		
@@ -285,10 +280,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		int command = 0;
 		//TODO for now WA1 is always used
 		command = command | CNCMachineConstants.IPC_CLAMP_WA1_REQUEST;
-		
-		if (putSettings.getWorkArea().getActiveClamping().getType() == Clamping.Type.DOUBLE) {
-			command = command | CNCMachineConstants.IPC_CLAMP_WA2_REQUEST;
-		}
 		
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
@@ -363,12 +354,54 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public Coordinates getPickLocation(final WorkArea workArea, final ClampingManner clampType) {
+	public Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			c.setR(c.getR());
+			switch (workArea.getActiveClamping().getType()) {
+				case CENTRUM:
+					// no action needed
+					break;
+				case FIXED_XM:
+					c.setX(c.getX() - workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_YM:
+					c.setY(c.getY() - workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_XP:
+					c.setX(c.getX() + workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_YP:
+					c.setY(c.getY() + workPieceDimensions.getWidth()/2);
+					break;
+				case NONE:
+					throw new IllegalArgumentException("Machine clamping type can't be NONE.");
+				default:
+					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
+			}
 		} else {
 			c.setR(c.getR() + getClampingWidthR());
+			switch (workArea.getActiveClamping().getType()) {
+			case CENTRUM:
+				// no action needed
+				break;
+			case FIXED_XM:
+				c.setX(c.getX() - workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_YM:
+				c.setY(c.getY() - workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_XP:
+				c.setX(c.getX() + workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_YP:
+				c.setY(c.getY() + workPieceDimensions.getLength()/2);
+				break;
+			case NONE:
+				throw new IllegalArgumentException("Machine clamping type can't be NONE.");
+			default:
+				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
+			}
 		}
 		return c;
 	}
@@ -378,8 +411,50 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			c.setR(c.getR());
+			switch (workArea.getActiveClamping().getType()) {
+				case CENTRUM:
+					// no action needed
+					break;
+				case FIXED_XM:
+					c.setX(c.getX() - workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_YM:
+					c.setY(c.getY() - workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_XP:
+					c.setX(c.getX() + workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_YP:
+					c.setY(c.getY() + workPieceDimensions.getWidth()/2);
+					break;
+				case NONE:
+					throw new IllegalArgumentException("Machine clamping type can't be NONE.");
+				default:
+					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
+			}
 		} else {
-			c.setR(c.getR() +  getClampingWidthR());
+			c.setR(c.getR() + getClampingWidthR());
+			switch (workArea.getActiveClamping().getType()) {
+			case CENTRUM:
+				// no action needed
+				break;
+			case FIXED_XM:
+				c.setX(c.getX() - workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_YM:
+				c.setY(c.getY() - workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_XP:
+				c.setX(c.getX() + workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_YP:
+				c.setY(c.getY() + workPieceDimensions.getLength()/2);
+				break;
+			case NONE:
+				throw new IllegalArgumentException("Machine clamping type can't be NONE.");
+			default:
+				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
+			}
 		}
 		return c;
 	}

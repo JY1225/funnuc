@@ -71,6 +71,10 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 		getMenuItem(1).setDisable(true);
 	}
 	
+	public void disableBinMenuItem() {
+		getMenuItem(5).setDisable(true);
+	}
+	
 	public void setConfigureUserFramesActive() {
 		setMenuItemSelected(0);
 	}

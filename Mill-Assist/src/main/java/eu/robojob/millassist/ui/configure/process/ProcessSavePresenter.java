@@ -57,6 +57,7 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 		try {
 			processFlowManager.saveProcessFlow(processFlow);
 			getView().hideNotification();
+			getView().refresh();
 		} catch (DuplicateProcessFlowNameException e) {
 			getView().showNotification(Translator.getTranslation(DUPLICATE_NAME));
 		}

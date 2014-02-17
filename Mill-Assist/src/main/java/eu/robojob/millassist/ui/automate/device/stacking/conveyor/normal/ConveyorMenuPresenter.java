@@ -1,8 +1,8 @@
-package eu.robojob.millassist.ui.automate.device.stacking.conveyor;
+package eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal;
 
 import eu.robojob.millassist.ui.automate.AbstractMenuPresenter;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
-import eu.robojob.millassist.ui.general.device.stacking.conveyor.AbstractWorkPieceLayoutPresenter;
+import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.AbstractWorkPieceLayoutPresenter;
 
 public class ConveyorMenuPresenter extends AbstractMenuPresenter<ConveyorMenuView> {
 

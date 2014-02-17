@@ -1,4 +1,4 @@
-package eu.robojob.millassist.ui.general.device.stacking.conveyor;
+package eu.robojob.millassist.ui.general.device.stacking.conveyor.normal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
-import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorLayout;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLayout;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractMenuPresenter;
 

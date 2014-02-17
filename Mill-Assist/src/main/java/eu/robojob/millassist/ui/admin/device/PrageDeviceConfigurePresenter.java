@@ -3,6 +3,7 @@ package eu.robojob.millassist.ui.admin.device;
 import java.util.HashSet;
 import java.util.Set;
 
+import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
@@ -46,10 +47,10 @@ public class PrageDeviceConfigurePresenter extends AbstractFormPresenter<PrageDe
 		getView().setUserFrameNames(userFrameNames);
 	}
 	
-	public void saveData(final String name, final float relPosX, final float relPosY, 
+	public void saveData(final String name, final Clamping.Type type, final float relPosX, final float relPosY, 
 			final float relPosZ, final float relPosR, final float smoothToX, final float smoothToY, final float smoothToZ,
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ, final int widthOffsetR) {
-		deviceManager.updatePrageDeviceData(prageDevice, name, relPosX, relPosY, relPosZ, relPosR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, widthOffsetR);
+		deviceManager.updatePrageDeviceData(prageDevice, name, type, relPosX, relPosY, relPosZ, relPosR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, widthOffsetR);
 		getView().refresh();
 	}
 }

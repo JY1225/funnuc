@@ -20,6 +20,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	private GripperBody activeGripperBody;
 	private Set<GripperBody> possibleGripperBodies;
 	private int speed;
+	private float payload;
 	
 	private Set<RobotListener> listeners;
 	private boolean stopAction;
@@ -37,7 +38,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	private AbstractRobotActionSettings<?> currentActionSettings;
 
-	public AbstractRobot(final String name, final Set<GripperBody> possibleGripperBodies, final GripperBody activeGripperBody) {
+	public AbstractRobot(final String name, final Set<GripperBody> possibleGripperBodies, final GripperBody activeGripperBody, 
+			final float payload) {
 		super(name);
 		this.speed = 10;
 		this.listeners = new HashSet<RobotListener>();
@@ -47,6 +49,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.alarms = new HashSet<RobotAlarm>();
 		this.currentStatus = 0;
 		this.currentActionSettings = null;
+		this.payload = payload;
 		this.zrest = -1;
 		if (possibleGripperBodies != null) {
 			this.possibleGripperBodies = possibleGripperBodies;
@@ -59,8 +62,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		}
 	}
 	
-	public AbstractRobot(final String name) {
-		this(name, null, null);
+	public AbstractRobot(final String name, final float payload) {
+		this(name, null, null, payload);
 	}
 	
 	public void addListener(final RobotListener listener) {
@@ -378,6 +381,16 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 
 	public abstract RobotPickSettings getDefaultPickSettings();
 	public abstract RobotPutSettings getDefaultPutSettings();
-	public abstract float getMaxWorkPieceWeight();
+	public float getMaxWorkPieceWeight() {
+		return payload;
+	}
+	
+	public float getPayload() {
+		return payload;
+	}
+	
+	public void setPayload(final float payload) {
+		this.payload = payload;
+	}
 	
 }

@@ -3,23 +3,23 @@ package eu.robojob.millassist.ui.automate.device;
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.automate.AbstractMenuPresenter;
-import eu.robojob.millassist.ui.automate.device.stacking.conveyor.ConveyorAmountsPresenter;
-import eu.robojob.millassist.ui.automate.device.stacking.conveyor.ConveyorAmountsView;
-import eu.robojob.millassist.ui.automate.device.stacking.conveyor.ConveyorMenuPresenter;
-import eu.robojob.millassist.ui.automate.device.stacking.conveyor.ConveyorMenuView;
+import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.ConveyorAmountsPresenter;
+import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.ConveyorAmountsView;
+import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.ConveyorMenuPresenter;
+import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.ConveyorMenuView;
 import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateLayoutPresenter;
 import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateMenuPresenter;
 import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateMenuView;
 import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateRefillPresenter;
 import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateRefillView;
-import eu.robojob.millassist.ui.general.device.stacking.conveyor.ConveyorFinishedWorkPieceLayoutPresenter;
-import eu.robojob.millassist.ui.general.device.stacking.conveyor.ConveyorFinishedWorkPieceLayoutView;
-import eu.robojob.millassist.ui.general.device.stacking.conveyor.ConveyorRawWorkPieceLayoutPresenter;
-import eu.robojob.millassist.ui.general.device.stacking.conveyor.ConveyorRawWorkPieceLayoutView;
+import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.ConveyorFinishedWorkPieceLayoutPresenter;
+import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.ConveyorFinishedWorkPieceLayoutView;
+import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.ConveyorRawWorkPieceLayoutPresenter;
+import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.ConveyorRawWorkPieceLayoutView;
 import eu.robojob.millassist.ui.general.device.stacking.stackplate.BasicStackPlateLayoutView;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
@@ -42,6 +42,8 @@ public class DeviceMenuFactory {
 				return true;
 			case CONVEYOR:
 				return true;
+			case CONVEYOR_EATON:
+				return true;
 			default:
 				return false;
 		}
@@ -57,6 +59,9 @@ public class DeviceMenuFactory {
 				case CONVEYOR:
 					menuPresenter = getConveyorMenuPresenter(deviceInfo);
 					break;
+				case CONVEYOR_EATON:
+					menuPresenter = getConveyorEatonMenuPresenter(deviceInfo);
+					break;
 				default:
 					menuPresenter = null;
 			}
@@ -65,6 +70,25 @@ public class DeviceMenuFactory {
 		return menuPresenter;
 	}
 	
+	public eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorMenuPresenter getConveyorEatonMenuPresenter(final DeviceInformation deviceInfo) {
+		eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorMenuView conveyorMenuView = new eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorMenuView();
+		eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorMenuPresenter conveyorMenuPresenter;
+		if (deviceInfo.getPickStep() != null) {
+			// first device
+			conveyorMenuPresenter = new eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorMenuPresenter(conveyorMenuView, getEatonRawWorkPieceLayoutPresenter(deviceInfo), getEatonAmountsPresenter(deviceInfo.getPickStep().getProcessFlow(), (eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) deviceInfo.getDevice()));
+		} else {
+			// last device
+			conveyorMenuPresenter = new eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorMenuPresenter(conveyorMenuView, getEatonFinishedWorkPieceLayoutPresenter(deviceInfo), getEatonAmountsPresenter(deviceInfo.getPutStep().getProcessFlow(), (eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) deviceInfo.getDevice()));
+		}
+		return conveyorMenuPresenter;
+	}
+	
+	public eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorAmountsPresenter getEatonAmountsPresenter(final ProcessFlow processFlow, final eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor conveyor) {
+		eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorAmountsView amountsView = new eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorAmountsView();
+		eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorAmountsPresenter amountsPresenter = new eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorAmountsPresenter(amountsView, processFlow, conveyor);
+		return amountsPresenter;
+	}
+			
 	public ConveyorMenuPresenter getConveyorMenuPresenter(final DeviceInformation deviceInfo) {
 		ConveyorMenuView conveyorMenuView = new ConveyorMenuView();
 		ConveyorMenuPresenter conveyorMenuPresenter;
@@ -82,6 +106,18 @@ public class DeviceMenuFactory {
 		ConveyorAmountsView amountsView = new ConveyorAmountsView();
 		ConveyorAmountsPresenter amountsPresenter = new ConveyorAmountsPresenter(amountsView, processFlow, conveyor);
 		return amountsPresenter;
+	}
+	
+	public eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton.ConveyorRawWorkPieceLayoutPresenter<eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorMenuPresenter> getEatonRawWorkPieceLayoutPresenter(final DeviceInformation deviceInfo) {
+		eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton.ConveyorRawWorkPieceLayoutView view = new eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton.ConveyorRawWorkPieceLayoutView();
+		eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton.ConveyorRawWorkPieceLayoutPresenter<eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorMenuPresenter> presenter = new eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton.ConveyorRawWorkPieceLayoutPresenter<eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorMenuPresenter>(view, (eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) deviceInfo.getDevice());
+		return presenter;
+	}
+	
+	public eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton.ConveyorFinishedWorkPieceLayoutPresenter<eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorMenuPresenter> getEatonFinishedWorkPieceLayoutPresenter(final DeviceInformation deviceInfo) {
+		eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton.ConveyorFinishedWorkPieceLayoutView view = new eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton.ConveyorFinishedWorkPieceLayoutView();
+		eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton.ConveyorFinishedWorkPieceLayoutPresenter<eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorMenuPresenter> presenter = new eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton.ConveyorFinishedWorkPieceLayoutPresenter<eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton.ConveyorMenuPresenter>(view, (eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) deviceInfo.getDevice());
+		return presenter;
 	}
 	
 	public ConveyorRawWorkPieceLayoutPresenter<ConveyorMenuPresenter> getRawWorkPieceLayoutPresenter(final DeviceInformation deviceInfo) {

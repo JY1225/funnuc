@@ -17,12 +17,11 @@ import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarm;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
-import eu.robojob.millassist.external.device.stacking.conveyor.Conveyor;
-import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarm;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarmsOccuredEvent;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorEvent;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorListener;
-import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorSensorValuesChangedEvent;
+import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarm;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotAlarm;
 import eu.robojob.millassist.external.robot.RobotAlarmsOccuredEvent;
@@ -46,7 +45,7 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 	private ProcessFlow processFlow;
 	private Set<AbstractCNCMachine> cncMachines;
 	private Set<AbstractRobot> robots;
-	private Set<Conveyor> conveyors;
+	private Set<AbstractConveyor> conveyors;
 		
 	private static final String NOT_CONNECTED_TO = "AlarmsPopUpPresenter.notConnectedTo";
 	private static Logger logger = LogManager.getLogger(AlarmsPopUpPresenter.class.getName());
@@ -55,9 +54,10 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 			final DeviceManager deviceMgr, final RobotManager robotMgr) {
 		super(view);
 		this.processFlow = processFlow;
+		processFlow.addListener(this);
 		cncMachines = new HashSet<AbstractCNCMachine>();
 		robots = new HashSet<AbstractRobot>();
-		conveyors = new HashSet<Conveyor>();
+		conveyors = new HashSet<AbstractConveyor>();
 		for (AbstractCNCMachine cncMachine: deviceMgr.getCNCMachines()) {
 			cncMachine.addListener(this);
 			cncMachines.add(cncMachine);
@@ -66,7 +66,7 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 			robot.addListener(this);
 			robots.add(robot);
 		}
-		for (Conveyor conveyor : deviceMgr.getConveyors()) {
+		for (AbstractConveyor conveyor : deviceMgr.getConveyors()) {
 			conveyor.addListener(this);
 			conveyors.add(conveyor);
 		}
@@ -89,8 +89,8 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 				for (CNCMachineAlarm alarm : alarms) {
 					alarmStrings.add(alarm.getLocalizedMessage());
 				}
-			} else if (device instanceof Conveyor) {
-				Set<ConveyorAlarm> alarms = ((Conveyor) device).getAlarms();
+			} else if (device instanceof AbstractConveyor) {
+				Set<ConveyorAlarm> alarms = ((AbstractConveyor) device).getAlarms();
 				for (ConveyorAlarm alarm : alarms) {
 					alarmStrings.add(alarm.getLocalizedMessage());
 				}
@@ -153,7 +153,7 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 	private void updateButtons() {
 		Set<AbstractDevice> devices = new HashSet<AbstractDevice>();
 		for (AbstractDevice device : processFlow.getDevices()) {
-			if ((device instanceof AbstractCNCMachine) || (device instanceof Conveyor)) {
+			if ((device instanceof AbstractCNCMachine) || (device instanceof AbstractConveyor)) {
 				devices.add(device);
 			}
 		}
@@ -230,9 +230,10 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 		for (AbstractRobot robot : robots) {
 			robot.removeListener(this);
 		}
-		for (Conveyor conveyor : conveyors) {
+		for (AbstractConveyor conveyor : conveyors) {
 			conveyor.removeListener(this);
 		}
+		processFlow.removeListener(this);
 		cncMachines.clear();
 		robots.clear();
 		conveyors.clear();
@@ -272,9 +273,6 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 			}
 		});
 	}
-
-	@Override
-	public void sensorValuesChanged(final ConveyorSensorValuesChangedEvent event) { }
 
 	public void resetDevice(final AbstractDevice device) {
 		try {

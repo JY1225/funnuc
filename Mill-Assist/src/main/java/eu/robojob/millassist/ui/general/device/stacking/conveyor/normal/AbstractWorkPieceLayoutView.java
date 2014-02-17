@@ -1,4 +1,4 @@
-package eu.robojob.millassist.ui.general.device.stacking.conveyor;
+package eu.robojob.millassist.ui.general.device.stacking.conveyor.normal;
 
 import eu.robojob.millassist.ui.general.AbstractFormView;
 

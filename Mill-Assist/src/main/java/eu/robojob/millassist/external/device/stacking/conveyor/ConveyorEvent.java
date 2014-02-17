@@ -2,7 +2,7 @@ package eu.robojob.millassist.external.device.stacking.conveyor;
 
 public class ConveyorEvent {
 
-	private Conveyor source;
+	private AbstractConveyor source;
 	private int id;
 	private long timestamp;
 	
@@ -10,15 +10,14 @@ public class ConveyorEvent {
 	public static final int CONVEYOR_DISCONNECTED = 2;
 	public static final int ALARM_OCCURED = 3;
 	public static final int STATUS_CHANGED = 4;
-	public static final int SENSOR_VALUES_CHANGED = 5;
 	
-	public ConveyorEvent(final Conveyor source, final int id) {
+	public ConveyorEvent(final AbstractConveyor source, final int id) {
 		this.source = source;
 		this.id = id;
 		this.timestamp = System.currentTimeMillis();
 	}
 
-	public Conveyor getSource() {
+	public AbstractConveyor getSource() {
 		return source;
 	}
 

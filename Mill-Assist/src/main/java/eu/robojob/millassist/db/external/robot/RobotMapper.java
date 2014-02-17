@@ -50,10 +50,11 @@ public class RobotMapper {
 			int id = results.getInt("ID");
 			String name = results.getString("NAME");
 			int type = results.getInt("TYPE");
+			float payload = results.getFloat("PAYLOAD");
 			Set<GripperBody> gripperBodies = getAllGripperBodiesByRobotId(id);
 			switch (type) {
 				case ROBOT_TYPE_FANUC:
-					FanucRobot fanucRobot = getFanucRobot(id, name, gripperBodies);
+					FanucRobot fanucRobot = getFanucRobot(id, name, gripperBodies, payload);
 					robots.add(fanucRobot);
 					break;
 				default:
@@ -63,7 +64,7 @@ public class RobotMapper {
 		return robots;
 	}
 	
-	private FanucRobot getFanucRobot(final int id, final String name, final Set<GripperBody> gripperBodies) throws SQLException {
+	private FanucRobot getFanucRobot(final int id, final String name, final Set<GripperBody> gripperBodies, final float payload) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM FANUCROBOT WHERE ID = ?");
 		stmt.setInt(1, id);
 		ResultSet results = stmt.executeQuery();
@@ -71,7 +72,7 @@ public class RobotMapper {
 		if (results.next()) {
 			int socketConnectionId = results.getInt("SOCKETCONNECTION");
 			SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
-			fanucRobot = new FanucRobot(name, gripperBodies, null, socketConnection);
+			fanucRobot = new FanucRobot(name, gripperBodies, null, payload, socketConnection);
 			fanucRobot.setId(id);
 		}
 		return fanucRobot;
@@ -175,12 +176,14 @@ public class RobotMapper {
 	}
 	
 	public void updateRobotData(final FanucRobot robot, final String name, final String ip, final int port, 
-			final boolean hasGripperHeadA, final boolean hasGripperHeadB, final boolean hasGripperHeadC, final boolean hasGripperHeadD) throws SQLException {
+			final boolean hasGripperHeadA, final boolean hasGripperHeadB, final boolean hasGripperHeadC, final boolean hasGripperHeadD,
+				final float payload) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		if (!robot.getName().equals(name)) {
-			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE ROBOT SET NAME = ? WHERE ID = ?");
+		if (!robot.getName().equals(name) || (robot.getPayload() != payload)) {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE ROBOT SET NAME = ?, PAYLOAD = ? WHERE ID = ?");
 			stmt.setString(1, name);
-			stmt.setInt(2, robot.getId());
+			stmt.setFloat(2,  payload);
+			stmt.setInt(3, robot.getId());
 			stmt.executeUpdate();
 			robot.setName(name);
 		}

@@ -1,11 +1,9 @@
-package eu.robojob.millassist.external.device.stacking.conveyor;
+package eu.robojob.millassist.external.device.stacking.conveyor.normal;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import eu.robojob.millassist.util.Translator;
-
-public class ConveyorAlarm {
+public class ConveyorAlarm extends eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarm {
 
 	public static final int ALR_EMERGENCY_STOP			=	0;
 	public static final int ALR_NO_POWER				=	1;
@@ -23,53 +21,13 @@ public class ConveyorAlarm {
 	public static final int ALR_MODE_MANUAL				= 	100;
 	
 	public static final int WAIT_FOR_RAW_WORKPIECE_TIMEOUT = 200;
-	
-	private static final int DEFAULT_PRIORITY = 5;
-
-	private int id;
-	
+		
 	public ConveyorAlarm(final int id) {
-		this.id = id;
+		super(id);
 	}
 	
-	public String getLocalizedMessage() {
-		return Translator.getTranslation("ConveyorAlarm." + id);
-	}
-	
-	public String getMessage() {
-		return "Conveyor alarm: id = " + id;
-	}
-	
-	//TODO implement priorities, for now: all the same
-	public int getPriority() {
-		return DEFAULT_PRIORITY;
-	}
-	
-	public int getId() {
-		return id;
-	}
-	
-	@Override
-	public int hashCode() {
-		return id;
-	}
-	
-	@Override
-	public boolean equals(final Object o) {
-		if (o instanceof ConveyorAlarm) {
-			if (((ConveyorAlarm) o).getId() == id) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public String toString() {
-		return "CNCMachineAlarm: " + id;
-	}
-	
-	public static Set<ConveyorAlarm> parseConveyorAlarms(final int alarmReg1, final int statusInt, final ConveyorAlarm timeout) {
-		Set<ConveyorAlarm> alarms = new HashSet<ConveyorAlarm>();
+	public static Set<eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarm> parseConveyorAlarms(final int alarmReg1, final int statusInt, final eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarm timeout) {
+		Set<eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarm> alarms = new HashSet<eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarm>();
 		if ((alarmReg1 & ConveyorConstants.ALR_EMERGENCY_STOP) > 0) {
 			alarms.add(new ConveyorAlarm(ConveyorAlarm.ALR_EMERGENCY_STOP));
 		}

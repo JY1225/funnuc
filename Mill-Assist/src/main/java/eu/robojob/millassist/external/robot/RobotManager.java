@@ -67,12 +67,13 @@ public class RobotManager {
 	}
 	
 	public void updateRobotData(final FanucRobot robot, final String name, final String ip, final int port, 
-			final boolean hasGripperHeadA, final boolean hasGripperHeadB, final boolean hasGripperHeadC, final boolean hasGripperHeadD) {
+			final boolean hasGripperHeadA, final boolean hasGripperHeadB, final boolean hasGripperHeadC, final boolean hasGripperHeadD,
+			final float payload) {
 		try {
 			logger.info("About to update robot [" + robot.toString() + "] with following data: name [" + name + "], ip [" + ip + 
 					"], port [" + port + "], gripperHead A [" + hasGripperHeadA + "], gripperHead B [" + hasGripperHeadB + "], gripperHead C [" +
 						hasGripperHeadC + "], gripperHeadD [" + hasGripperHeadD + "].");
-			robotMapper.updateRobotData(robot, name, ip, port, hasGripperHeadA, hasGripperHeadB, hasGripperHeadC, hasGripperHeadD);
+			robotMapper.updateRobotData(robot, name, ip, port, hasGripperHeadA, hasGripperHeadB, hasGripperHeadC, hasGripperHeadD, payload);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -95,7 +96,7 @@ public class RobotManager {
 	public void deleteGripper(final Gripper gripper) {
 		for (RobotSettings robotSettings : processFlowManager.getActiveProcessFlow().getRobotSettings().values()) {
 			for (Entry<GripperHead, Gripper> entry : robotSettings.getGrippers().entrySet()) {
-				if (entry.getValue().equals(gripper)) {
+				if ((entry.getValue() != null) && (entry.getValue().equals(gripper))) {
 					entry.setValue(null);
 				}
 			}
