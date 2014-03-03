@@ -1,5 +1,10 @@
 package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -11,6 +16,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.ui.controls.NumericTextField;
@@ -46,6 +55,8 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	private static final String SMOOTH_Z = "CNCMillingMachinePickView.smoothZ";
 	private static final String RESET = "CNCMillingMachinePickView.reset";
 	private static final String AIRBLOW = "CNCMillingMachinePickView.airblow";
+	
+	private static Logger logger = LogManager.getLogger(CNCMillingMachinePickView.class.getName());
 		
 	public CNCMillingMachinePickView() {
 		super();
@@ -136,6 +147,18 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		getContents().add(hboxAirblow, column++, row);
 				
 		refresh();
+		
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream(new File("settings.properties")));
+			if (properties.get("robot-airblow").equals("false")) {
+				hboxAirblow.setVisible(false);
+				hboxAirblow.setManaged(false);
+			}
+		} catch (IOException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
 	}
 
 	@Override

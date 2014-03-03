@@ -142,5 +142,12 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		}
 		fulltxtName.setText(processFlowAdapter.getProcessFlow().getName());
 	}
+	
+	public void disableAddRemove() {
+		btnAddDeviceStep.setVisible(false);
+		btnAddDeviceStep.setManaged(false);
+		btnRemoveDeviceStep.setVisible(false);
+		btnRemoveDeviceStep.setManaged(false);
+	}
 
 }

@@ -38,6 +38,8 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 			if (stackingDevice instanceof BasicStackPlate) {
 				stackPlatePresent = true;
 			}
+		}
+		for (AbstractStackingDevice stackingDevice : deviceManager.getStackingToDevices()) {
 			if (stackingDevice instanceof OutputBin) {
 				binPresent = true;
 			}

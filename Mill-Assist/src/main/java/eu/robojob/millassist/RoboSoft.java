@@ -70,6 +70,8 @@ public class RoboSoft extends Application {
 					Locale.setDefault(new Locale(properties.getProperty("locale")));
 					if (properties.getProperty("locale").equals("en")) {
 						Translator.setLanguageEN();
+					} else if (properties.getProperty("locale").equals("de")){
+						Translator.setLanguageDE();
 					} else {
 						Translator.setLanguageNL();
 					}

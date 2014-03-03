@@ -22,6 +22,11 @@ public final class Translator {
 		messages = ResourceBundle.getBundle("messages", locale);
 	}
 	
+	public static void setLanguageDE() {
+		locale = new Locale("de");
+		messages = ResourceBundle.getBundle("messages", locale);
+	}
+	
 	public static String getTranslation(final String key) {
 		return messages.getString(key);
 	}

@@ -53,7 +53,7 @@ public class AutomateTimingThread extends Thread {
 	}
 	
 	private String toTimeString(final long milliSeconds) {
-		if (milliSeconds == -1) {
+		if (milliSeconds < 0) {
 			return "--:--:--";
 		} else {
 			int hours = (int) ((milliSeconds / (1000 * 60 * 60)) % 24);

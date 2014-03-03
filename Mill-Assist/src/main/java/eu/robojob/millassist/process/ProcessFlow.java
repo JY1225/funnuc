@@ -16,6 +16,7 @@ import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
@@ -118,11 +119,11 @@ public class ProcessFlow {
 	private void updateType() {
 		this.type = Type.FIXED_AMOUNT;
 		if (getStep(0) instanceof PickStep) {
-			if (((PickStep) getStep(0)).getDevice() instanceof Conveyor) {
+			if (((PickStep) getStep(0)).getDevice() instanceof AbstractConveyor) {
 				this.type = Type.CONTINUOUS;
 			}
 		} else if (getStep(1) instanceof PickStep) {
-			if (((PickStep) getStep(1)).getDevice() instanceof Conveyor) {
+			if (((PickStep) getStep(1)).getDevice() instanceof AbstractConveyor) {
 				this.type = Type.CONTINUOUS;
 			}
 		} else {
@@ -233,6 +234,9 @@ public class ProcessFlow {
 		} else if (stackingDevice instanceof Conveyor) {
 			ConveyorSettings conveyorSettings = (ConveyorSettings) deviceSettings.get(stackingDevice);
 			return conveyorSettings.getAmount();
+		} else if (stackingDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
+			eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = (eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingDevice);
+			return conveyorSettings.getAmount();
 		}
 		return 0;
 	}
@@ -253,6 +257,11 @@ public class ProcessFlow {
 					ConveyorSettings conveyorSettings = (ConveyorSettings) deviceSettings.get(device);
 					conveyorSettings.setAmount(-1);
 					((Conveyor) device).setAmount(-1);
+				}
+				if (device instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
+					eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = (eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(device);
+					conveyorSettings.setAmount(-1);
+					((eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) device).setAmount(-1);
 				}
 			}
 		}

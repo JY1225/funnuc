@@ -63,6 +63,7 @@ public class Conveyor extends AbstractConveyor {
 		this.nomSpeedBSlow = nomSpeedBSlow;
 		this.workPieceShift = 20;
 		this.lastTrackPickedA = false;
+		this.amount = -1;
 		ConveyorMonitoringThread monitoringThread = new ConveyorMonitoringThread(this);
 		ThreadManager.submit(monitoringThread);
 	}
@@ -213,21 +214,25 @@ public class Conveyor extends AbstractConveyor {
 	public boolean canPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException {
 		if (!isTrackBModeLoad()) {
 			pickSettings.setWorkArea(workAreaA);
+			pickSettings.getStep().getRobotSettings().setWorkArea(workAreaA);
 		}
 		if (lastTrackPickedA) {
 			// first check track B
 			if (isTrackBModeLoad() && 
 					isModeAuto() && ((getStatus() & ConveyorConstants.CONV_B_WP_IN_POSITION) > 0) && isModeAuto()) {
 				pickSettings.setWorkArea(workAreaB);
+				pickSettings.getStep().getRobotSettings().setWorkArea(workAreaB);
 				return true;
 			}
 		}
 		if (isModeAuto() && ((getStatus() & ConveyorConstants.CONV_A_WP_IN_POSITION) > 0)  && isModeAuto()) {
 			pickSettings.setWorkArea(workAreaA);
+			pickSettings.getStep().getRobotSettings().setWorkArea(workAreaA);
 			return true;
 		} else if (isTrackBModeLoad() && 
 				isModeAuto() && ((getStatus() & ConveyorConstants.CONV_B_WP_IN_POSITION) > 0) && isModeAuto()) {
 			pickSettings.setWorkArea(workAreaB);
+			pickSettings.getStep().getRobotSettings().setWorkArea(workAreaB);
 			return true;
 		}
 		return false;
@@ -375,13 +380,15 @@ public class Conveyor extends AbstractConveyor {
 			getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, commandReg);
 			logger.debug("Waiting for confirmation interlock B released.");
 			waitForStatusNot(ConveyorConstants.CONV_B_INTERLOCK);
+			logger.info("No more interlock: " + getStatus());
 			// shift track B
-			command = 0;
-			command = command | ConveyorConstants.SHIFT_FINISHED_WP;
-			commandReg[0] = command;
+			int command2 = 0;
+			command2 = command2 | ConveyorConstants.SHIFT_FINISHED_WP;
+			int[] commandReg2 = {command2};
 			logger.debug("Writing shift command");
-			getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, commandReg);
+			getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, commandReg2);
 			layout.shiftFinishedWorkPieces();		
+			waitForStatus(ConveyorConstants.SHIFT_FINISHED_WP_OK);
 		} else {
 			throw new IllegalArgumentException("Illegal workarea: " + putSettings.getWorkArea());
 		}

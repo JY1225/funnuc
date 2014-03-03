@@ -263,7 +263,7 @@ public class RoboSoftAppFactory {
 	public ProcessConfigurePresenter getProcessConfigurePresenter() {
 		if (processConfigurationPresenter == null) {
 			ProcessConfigureView processConfigurationView = new ProcessConfigureView();
-			processConfigurationPresenter = new ProcessConfigurePresenter(processConfigurationView, getProcessFlow());
+			processConfigurationPresenter = new ProcessConfigurePresenter(processConfigurationView, getProcessFlow(), deviceManager);
 		}
 		return processConfigurationPresenter;
 	}

@@ -64,15 +64,18 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 	}
 	
 	public void disablePrageMenuItem() {
-		getMenuItem(4).setDisable(true);
+		getMenuItem(4).setVisible(false);
+		getMenuItem(4).setManaged(false);
 	}
 	
 	public void disableBasicStackPlateMenuItem() {
-		getMenuItem(1).setDisable(true);
+		getMenuItem(1).setVisible(false);
+		getMenuItem(1).setManaged(false);
 	}
 	
 	public void disableBinMenuItem() {
-		getMenuItem(5).setDisable(true);
+		getMenuItem(5).setVisible(false);
+		getMenuItem(5).setManaged(false);
 	}
 	
 	public void setConfigureUserFramesActive() {

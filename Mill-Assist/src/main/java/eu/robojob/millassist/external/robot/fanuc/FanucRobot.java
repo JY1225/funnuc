@@ -36,16 +36,16 @@ public class FanucRobot extends AbstractRobot {
 
 	private RobotSocketCommunication fanucRobotCommunication;
 	
-	private static final int WRITE_VALUES_TIMEOUT = 5000;
+	private static final int WRITE_VALUES_TIMEOUT = 2 * 5000;
 	private static final int MOVE_TO_LOCATION_TIMEOUT = 3 * 60 * 1000;
 	private static final int CLAMP_ACK_REQUEST_TIMEOUT = 10 * 1000;
 	private static final int MOVE_TO_IPPOINT_TIMEOUT = 3 * 60 * 1000;
 	private static final int MOVE_FINISH_TIMEOUT = 3 * 60 * 1000;
 	private static final int ASK_POSITION_TIMEOUT = 50000;
-	private static final int ASK_STATUS_TIMEOUT = 5 * 1000;
+	private static final int ASK_STATUS_TIMEOUT = 2 * 5 * 1000;
 	private static final int TEACH_TIMEOUT = 10 * 60 * 1000;
 	
-	private static final int WRITE_REGISTER_TIMEOUT = 5000;
+	private static final int WRITE_REGISTER_TIMEOUT = 2 * 5000;
 	private static final int IOACTION_TIMEOUT = 2 * 60 * 1000;
 	
 	private static final List<Integer> VALID_USERFRAMES = Arrays.asList(1, 3, 6, 11, 12, 13, 14);

@@ -154,13 +154,16 @@ public class GeneralInfoView extends GridPane {
 	
 	public void refresh() {
 		// get first Pick Step
-		boolean disable = true;
+		boolean visible = false;
 		if (isOptimalPossible()) {
-			disable = false;
+			visible = true;
 		}
-		lblInfoMessageOptimal.setDisable(disable);
-		lblInfoMessageOptimalTitle.setDisable(disable);
-		btnStartOptimal.setDisable(disable);
+		lblInfoMessageOptimal.setVisible(visible);
+		lblInfoMessageOptimalTitle.setVisible(visible);
+		btnStartOptimal.setVisible(visible);
+		lblInfoMessageOptimal.setManaged(visible);
+		lblInfoMessageOptimalTitle.setManaged(visible);
+		btnStartOptimal.setManaged(visible);
 
 		if (processFlow.getId() <= 0) {
 			btnSaveAll.setDisable(true);

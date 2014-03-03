@@ -113,11 +113,22 @@ public class ProcessFlowManager {
 		if (stackingToDevice instanceof BasicStackPlate) {
 			((BasicStackPlateSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
+		// always assign both raw and finished work piece to conveyor!
 		if (stackingFromDevice instanceof Conveyor) {
 			((ConveyorSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);
+			((ConveyorSettings) deviceSettings.get(stackingFromDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
 		if (stackingToDevice instanceof Conveyor) {
+			((ConveyorSettings) deviceSettings.get(stackingToDevice)).setRawWorkPiece(rawWorkPiece);
 			((ConveyorSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
+		}
+		if (stackingFromDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
+			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);
+			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingFromDevice)).setFinishedWorkPiece(finishedWorkPiece);
+		}
+		if (stackingToDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
+			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingToDevice)).setRawWorkPiece(rawWorkPiece);
+			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
 		deviceSettings.put(cncMachine, cncMachine.getDeviceSettings());
 		if (!stackingToDevice.equals(stackingFromDevice)) {

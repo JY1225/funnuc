@@ -309,6 +309,7 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 		workPieceWindowB.setY(conveyorLayout.getSideWidth() + (conveyorLayout.getTrackWidth()/2) - wpDimB.getWidth()/2);
 		raSupportB1.setY(conveyorLayout.getSideWidth() + (conveyorLayout.getTrackWidth()/2) - wpDimB.getWidth()/2 - conveyorLayout.getSupportWidth());
 		raSupportB2.setY(conveyorLayout.getSideWidth() + (conveyorLayout.getTrackWidth()/2) + wpDimB.getWidth()/2);
+		workPieceB.setVisible(conveyorLayout.getParent().isTrackBSensor1());
 	}
 	
 }

@@ -110,7 +110,7 @@ public class MenuBarView extends ToolBar {
 		btnAlarms.getStyleClass().add(CSS_CLASS_HEADER_BUTTON);
 		btnAlarms.setId("btnAlarms");
 		
-		changingThread = new ButtonStyleChangingThread(btnAlarms, "", CSS_CLASS_ALARMS_PRESENT, 500);
+		changingThread = new ButtonStyleChangingThread(btnAlarms, "", CSS_CLASS_ALARMS_PRESENT, 250);
 		changingThread.setRunning(false);
 		ThreadManager.submit(changingThread);
 		

@@ -40,7 +40,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int CLAMP_TIMEOUT = 1 * 60 * 1000;
 	private static final int UNCLAMP_TIMEOUT = 1 * 60 * 1000;
 	private static final int PUT_ALLOWED_TIMEOUT = 2 * 60 * 1000;
-	//private static final int START_CYCLE_TIMEOUT = 1 * 60 * 1000;
+	private static final int START_CYCLE_TIMEOUT = 3 * 60 * 1000;
 	private static final int SLEEP_TIME_AFTER_RESET = 500;
 	
 	private static final int M_CODE_LOAD = 0;
@@ -165,13 +165,13 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			int[] registers = {command};
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 			// fix for jametal, comment next lines and uncomment sleep
-			/*boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
+			boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
 			if (!cycleStartReady) {
 				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
 				waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1);
 				setCncMachineTimeout(null);
-			}*/
-			Thread.sleep(10000);
+			}
+			//Thread.sleep(10000);
 			// we now wait for pick requested
 			waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED);
 			nCReset();
@@ -324,7 +324,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override 
 	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, InterruptedException {
 		if (getWayOfOperating() == WayOfOperating.M_CODES) {
-			if (pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) {
+			if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) &&
+					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) {
 				// last work piece: send reset in stead of finishing m code
 				nCReset();
 			} else {

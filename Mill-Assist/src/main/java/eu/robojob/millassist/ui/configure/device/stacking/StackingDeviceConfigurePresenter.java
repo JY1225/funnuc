@@ -37,8 +37,12 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 		AbstractDevice device = deviceManager.getDeviceByName(deviceName);
 		AbstractDevice prevDevice = deviceInfo.getDevice();
 		if ((prevDevice instanceof AbstractStackingDevice) && (device instanceof AbstractStackingDevice)) {
-			((AbstractStackingDevice) device).setRawWorkPiece(((AbstractStackingDevice) prevDevice).getRawWorkPiece());
-			((AbstractStackingDevice) device).setFinishedWorkPiece(((AbstractStackingDevice) prevDevice).getFinishedWorkPiece());
+			if (((AbstractStackingDevice) prevDevice).getRawWorkPiece() != null) {
+				((AbstractStackingDevice) device).setRawWorkPiece(((AbstractStackingDevice) prevDevice).getRawWorkPiece());
+			}
+			if (((AbstractStackingDevice) prevDevice).getFinishedWorkPiece() != null) {
+				((AbstractStackingDevice) device).setFinishedWorkPiece(((AbstractStackingDevice) prevDevice).getFinishedWorkPiece());
+			}
 		}
 		if (deviceInfo.hasPickStep()) {
 			// TODO remove device settings currently present, only if this was only step with this device!

@@ -1,5 +1,6 @@
 package eu.robojob.millassist.ui.configure.process;
 
+import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
@@ -9,11 +10,14 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 	private boolean addDeviceActive;
 	private boolean removeDeviceActive;
 		
-	public ProcessConfigurePresenter(final ProcessConfigureView view, final ProcessFlow processFlow) {
+	public ProcessConfigurePresenter(final ProcessConfigureView view, final ProcessFlow processFlow, final DeviceManager deviceManager) {
 		super(view);
 		this.processFlow = processFlow;
 		view.setProcessFlow(processFlow);
 		view.build();
+		if ((deviceManager.getPostProcessingDevices().size() == 0) && (deviceManager.getPreProcessingDevices().size() == 0)) {
+			view.disableAddRemove();
+		}
 		addDeviceActive = false;
 		removeDeviceActive = false;
 	}

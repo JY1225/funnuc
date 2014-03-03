@@ -52,6 +52,11 @@ public class PickStep extends AbstractTransportStep {
 				throw new IllegalStateException("Robot [" + getRobot() + "] was already locked by [" + getRobot().getLockingProcess() + "].");
 			} else {
 				try {
+					while(!getDevice().canPick(devicePickSettings)) {
+						logger.info("Waiting till can pick");
+						Thread.sleep(500);
+					}
+					logger.info("Can pick - " + devicePickSettings.getWorkArea());
 					checkProcessExecutorStatus(executor);
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, workPieceId));
 					Coordinates originalPosition = new Coordinates(getDevice().getPickLocation(devicePickSettings.getWorkArea(), getRobotSettings().getWorkPiece().getDimensions(), getProcessFlow().getClampingType()));
