@@ -198,7 +198,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		Properties properties = new Properties();
 		try {
 			properties.load(new FileInputStream(new File("settings.properties")));
-			if (properties.get("robot-airblow").equals("false")) {
+			if ((properties.get("robot-airblow") != null) && (properties.get("robot-airblow").equals("false"))) {
 				hboxAirblow.setVisible(false);
 				hboxAirblow.setManaged(false);
 			}

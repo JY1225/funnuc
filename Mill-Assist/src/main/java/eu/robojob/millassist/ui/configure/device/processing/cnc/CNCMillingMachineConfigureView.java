@@ -166,7 +166,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		Properties properties = new Properties();
 		try {
 			properties.load(new FileInputStream(new File("settings.properties")));
-			if (properties.get("use-clamp-orientation").equals("false")) {
+			if ((properties.get("use-clamp-orientation") != null) && (properties.get("use-clamp-orientation").equals("false"))) {
 				hboxBtns.setVisible(false);
 				hboxBtns.setManaged(false);
 			}
