@@ -58,7 +58,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			} else {
 				if ((workArea != deviceInfo.getPutStep().getDeviceSettings().getWorkArea()) || (workArea != deviceInfo.getPickStep().getDeviceSettings().getWorkArea())) {
 					setWorkArea(workArea);
-					setClamping(null);
+					setClamping(workArea.getActiveClamping());
 					getView().refreshClampings();
 				}
 			}

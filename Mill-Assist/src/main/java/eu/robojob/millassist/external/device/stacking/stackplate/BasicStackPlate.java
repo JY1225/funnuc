@@ -89,6 +89,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	@Override
 	public Coordinates getLocationOrientation(final WorkArea workArea) {
 		Coordinates c = new Coordinates(layout.getStackingPositions().get(0).getPosition());
+		c.offset(workArea.getActiveClamping().getRelativePosition());
 		c.setX(0);
 		c.setY(0);
 		c.setZ(0);
@@ -102,6 +103,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 					(stackingPos.getAmount() > 0)) {
 				currentPickLocation = stackingPos;
 				Coordinates c = new Coordinates(stackingPos.getPickPosition());
+				c.offset(workArea.getActiveClamping().getRelativePosition());
 				return c;
 			}
 		}
@@ -114,6 +116,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == type) && 
 					(stackingPos.getAmount() > 0)) {
 				Coordinates c = new Coordinates(stackingPos.getPickPosition());
+				c.offset(workArea.getActiveClamping().getRelativePosition());
 				return c;
 			}
 		}
@@ -127,6 +130,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 					(stackingPos.getWorkPiece().getType() == Type.FINISHED) && (stackingPos.getAmount() < layout.getLayers()))) {
 				currentPutLocation = stackingPos;
 				Coordinates c = new Coordinates(stackingPos.getPutPosition());
+				c.offset(workArea.getActiveClamping().getRelativePosition());
 				return c;
 			}
 		}

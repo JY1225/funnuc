@@ -27,7 +27,9 @@ import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMonitoring
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
 import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessingStep;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
@@ -136,16 +138,36 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
 		//FIXME review! potential problems with reset in double processflow execution
 		clearIndications();
-		int command = CNCMachineConstants.CNC_PROCESS_TYPE_WA1_TASK;
+		// check work area
+		
+		int command = 0;
+		int ufNr = 0;
+		for (AbstractProcessStep step : process.getProcessSteps()) {
+			if ((step instanceof ProcessingStep) && ((ProcessingStep) step).getDevice().equals(this)) {
+				ufNr = ((ProcessingDeviceStartCyclusSettings) ((ProcessingStep) step).getDeviceSettings()).getWorkArea().getUserFrame().getNumber();
+			}
+		}
+		if (ufNr == 3) {
+			command = CNCMachineConstants.CNC_PROCESS_TYPE_WA1_TASK;
+		} else if (ufNr == 4) {
+			command = CNCMachineConstants.CNC_PROCESS_TYPE_WA2_TASK;
+		} else {
+			throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
+		}
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.CNC_PROCESS_TYPE, registers);
 		if (getWayOfOperating() == WayOfOperating.M_CODES) {
 			// wait half a second
 			Thread.sleep(500);
 			
-			//TODO add check for more work areas
 			command = 0;
-			command = command | CNCMachineConstants.IPC_CYCLESTART_WA1_REQUEST;
+			if (ufNr == 3) {
+				command = command | CNCMachineConstants.IPC_CYCLESTART_WA1_REQUEST;
+			} else if (ufNr == 4) {
+				command = command | CNCMachineConstants.IPC_CYCLESTART_WA2_REQUEST;
+			} else {
+				throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
+			}
 			
 			int[] registers2 = {command};
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers2);
@@ -154,26 +176,48 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	@Override
 	public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws SocketResponseTimedOutException, SocketDisconnectedException, DeviceActionException, InterruptedException {
+		int ufNr = startCylusSettings.getWorkArea().getUserFrame().getNumber();
 		if (getWayOfOperating() == WayOfOperating.START_STOP) {
 			// check a valid workarea is selected 
 			if (!getWorkAreaNames().contains(startCylusSettings.getWorkArea().getName())) {
 				throw new IllegalArgumentException("Unknown workarea: " + startCylusSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 			}
 			int command = 0;
-			command = command | CNCMachineConstants.IPC_CYCLESTART_WA1_REQUEST;
+			if (ufNr == 3) {
+				command = command | CNCMachineConstants.IPC_CYCLESTART_WA1_REQUEST;
+			} else if (ufNr == 4) {
+				command = command | CNCMachineConstants.IPC_CYCLESTART_WA2_REQUEST;
+			} else {
+				throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
+			}
 			
 			int[] registers = {command};
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 			// fix for jametal, comment next lines and uncomment sleep
-			boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
-			if (!cycleStartReady) {
-				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
-				waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1);
-				setCncMachineTimeout(null);
+			if (ufNr == 3) {
+				boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
+				if (!cycleStartReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
+					waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1);
+					setCncMachineTimeout(null);
+				}
+				//Thread.sleep(10000);
+				// we now wait for pick requested
+				waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED);
+			} else if (ufNr == 4) {
+				boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA2, START_CYCLE_TIMEOUT);
+				if (!cycleStartReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
+					waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA2);
+					setCncMachineTimeout(null);
+				}
+				//Thread.sleep(10000);
+				// we now wait for pick requested
+				waitForStatus(CNCMachineConstants.R_PICK_WA2_REQUESTED);
+			} else {
+				throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
 			}
-			//Thread.sleep(10000);
-			// we now wait for pick requested
-			waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED);
+			
 			nCReset();
 		} else if (getWayOfOperating() == WayOfOperating.M_CODES) {
 			// we sign of the m code for put
@@ -199,6 +243,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (!getWorkAreaNames().contains(pickSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + pickSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
+		int ufNr = pickSettings.getWorkArea().getUserFrame().getNumber();
 
 		// if way of operation is m codes, await unloading m code!
 		if (getWayOfOperating() == WayOfOperating.M_CODES) {
@@ -206,19 +251,36 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		}
 		
 		int command = 0;
-		//TODO for now WA1 is always used
-		command = command | CNCMachineConstants.IPC_PICK_WA1_RQST;
+		if (ufNr == 3) {
+			command = command | CNCMachineConstants.IPC_PICK_WA1_RQST;
+		} else if (ufNr == 4) {
+			command = command | CNCMachineConstants.IPC_PICK_WA2_RQST;
+		} else {
+			throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
+		}
 		
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 
 		// check pick is prepared
-		boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA1_READY, PREPARE_PICK_TIMEOUT);
-		if (!pickReady) {
-			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
-			waitForStatus(CNCMachineConstants.R_PICK_WA1_READY);
-			setCncMachineTimeout(null);
+		if (ufNr == 3) {
+			boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA1_READY, PREPARE_PICK_TIMEOUT);
+			if (!pickReady) {
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
+				waitForStatus(CNCMachineConstants.R_PICK_WA1_READY);
+				setCncMachineTimeout(null);
+			}
+		} else if (ufNr == 4) {
+			boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA2_READY, PREPARE_PICK_TIMEOUT);
+			if (!pickReady) {
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
+				waitForStatus(CNCMachineConstants.R_PICK_WA2_READY);
+				setCncMachineTimeout(null);
+			}
+		} else {
+			throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
 		}
+		
 	}
 
 	@Override
@@ -227,6 +289,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
+		int ufNr = putSettings.getWorkArea().getUserFrame().getNumber();
 		
 		// if way of operation is m codes, await unloading m code!
 		if (getWayOfOperating() == WayOfOperating.M_CODES) {
@@ -234,20 +297,37 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		}
 		
 		int command = 0;
-		//TODO for now WA1 is always used
-		command = command | CNCMachineConstants.IPC_PUT_WA1_REQUEST;
+		if (ufNr == 3) {
+			command = command | CNCMachineConstants.IPC_PUT_WA1_REQUEST;
+		} else if (ufNr == 4) {
+			command = command | CNCMachineConstants.IPC_PUT_WA2_REQUEST;
+		} else {
+			throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
+		}		
 	
 		int[] registers = {command};
 		
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 		
 		// check put is prepared
-		boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
-		if (!putReady) {
-			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PUT_TIMEOUT));
-			waitForStatus(CNCMachineConstants.R_PUT_WA1_READY);
-			setCncMachineTimeout(null);
-		} 
+		if (ufNr == 3) {
+			boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
+			if (!putReady) {
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PUT_TIMEOUT));
+				waitForStatus(CNCMachineConstants.R_PUT_WA1_READY);
+				setCncMachineTimeout(null);
+			} 
+		} else if (ufNr == 4) {
+			boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA2_READY, PREPARE_PUT_TIMEOUT);
+			if (!putReady) {
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PUT_TIMEOUT));
+				waitForStatus(CNCMachineConstants.R_PUT_WA2_READY);
+				setCncMachineTimeout(null);
+			} 
+		} else {
+			throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
+		}
+		
 	}
 
 	@Override
@@ -256,19 +336,38 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (!getWorkAreaNames().contains(pickSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + pickSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
+		int ufNr = pickSettings.getWorkArea().getUserFrame().getNumber();
+		
 		int command = 0;
-		//TODO for now WA1 is always used
-		command = command | CNCMachineConstants.IPC_UNCLAMP_WA1_RQST;
+		if (ufNr == 3) {
+			command = command | CNCMachineConstants.IPC_UNCLAMP_WA1_RQST;
+		} else if (ufNr == 4) {
+			command = command | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
+		} else {
+			throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
+		}	
 		
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 		
-		boolean clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY, UNCLAMP_TIMEOUT);
-		if (!clampReady) {
-			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
-			waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY);
-			setCncMachineTimeout(null);
-		}
+		if (ufNr == 3) {
+			boolean clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY, UNCLAMP_TIMEOUT);
+			if (!clampReady) {
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
+				waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY);
+				setCncMachineTimeout(null);
+			}
+		} else if (ufNr == 4) {
+			boolean clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA2_READY, UNCLAMP_TIMEOUT);
+			if (!clampReady) {
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
+				waitForStatus(CNCMachineConstants.R_UNCLAMP_WA2_READY);
+				setCncMachineTimeout(null);
+			}
+		} else {
+			throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
+		}	
+		
 	}
 
 	@Override
@@ -277,19 +376,37 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
+		int ufNr = putSettings.getWorkArea().getUserFrame().getNumber();
+		
 		int command = 0;
-		//TODO for now WA1 is always used
-		command = command | CNCMachineConstants.IPC_CLAMP_WA1_REQUEST;
+		if (ufNr == 3) {
+			command = command | CNCMachineConstants.IPC_CLAMP_WA1_REQUEST;
+		} else if (ufNr == 4) {
+			command = command | CNCMachineConstants.IPC_CLAMP_WA2_REQUEST;
+		} else {
+			throw new IllegalArgumentException("Invalid user frame number: " + putSettings.getWorkArea().getUserFrame().getNumber());
+		}
 		
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 		
-		boolean clampReady =  waitForStatus(CNCMachineConstants.R_CLAMP_WA1_READY, CLAMP_TIMEOUT);
-		if (!clampReady) {
-			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CLAMP_TIMEOUT));
-			waitForStatus(CNCMachineConstants.R_CLAMP_WA1_READY);
-			setCncMachineTimeout(null);
-		} 
+		if (ufNr == 3) {
+			boolean clampReady =  waitForStatus(CNCMachineConstants.R_CLAMP_WA1_READY, CLAMP_TIMEOUT);
+			if (!clampReady) {
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CLAMP_TIMEOUT));
+				waitForStatus(CNCMachineConstants.R_CLAMP_WA1_READY);
+				setCncMachineTimeout(null);
+			} 
+		} else if (ufNr == 4) {
+			boolean clampReady =  waitForStatus(CNCMachineConstants.R_CLAMP_WA2_READY, CLAMP_TIMEOUT);
+			if (!clampReady) {
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CLAMP_TIMEOUT));
+				waitForStatus(CNCMachineConstants.R_CLAMP_WA2_READY);
+				setCncMachineTimeout(null);
+			} 
+		} else {
+			throw new IllegalArgumentException("Invalid user frame number: " + putSettings.getWorkArea().getUserFrame().getNumber());
+		}
 	}
 
 	@Override
@@ -298,11 +415,23 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
-		boolean canPut =  waitForStatus(CNCMachineConstants.R_PUT_WA1_ALLOWED, PUT_ALLOWED_TIMEOUT);
-		if (canPut) {
-			return true;
+		int ufNr = putSettings.getWorkArea().getUserFrame().getNumber();
+		
+		if (ufNr == 3) {
+			boolean canPut =  waitForStatus(CNCMachineConstants.R_PUT_WA1_ALLOWED, PUT_ALLOWED_TIMEOUT);
+			if (canPut) {
+				return true;
+			}
+			return false;
+		} else if (ufNr == 4) {
+			boolean canPut =  waitForStatus(CNCMachineConstants.R_PUT_WA2_ALLOWED, PUT_ALLOWED_TIMEOUT);
+			if (canPut) {
+				return true;
+			}
+			return false;
+		} else {
+			throw new IllegalArgumentException("Invalid user frame number: " + putSettings.getWorkArea().getUserFrame().getNumber());
 		}
-		return false;
 	}
 	
 	// this is not taken into account on the Machine-side for now

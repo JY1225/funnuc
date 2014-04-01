@@ -10,7 +10,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
@@ -38,10 +37,6 @@ public class CNCMachineGeneralView extends GridPane {
 	private IntegerTextField itxtPort;
 	private Label lblStatus;
 	private Label lblStatusVal;
-	private Label lblNameWA1;
-	private FullTextField fulltxtNameWA1;
-	private Label lblUserFrameWA1;
-	private ComboBox<String> cbbUserFrameWA1;
 	private Label lblWayOfOperating;
 	private RadioButton rbbWayOfOperatingStartStop;
 	private RadioButton rbbWayOfOperatingMCodes;
@@ -57,9 +52,7 @@ public class CNCMachineGeneralView extends GridPane {
 	private static final String NAME = "CNCMachineGeneralView.name";
 	private static final String IP = "CNCMachineGeneralView.ipAddress";
 	private static final String PORT = "CNCMachineGeneralView.port";
-	private static final String USERFRAME = "CNCMachineGeneralView.userFrame";
 	private static final String STATUS = "CNCMachineGeneralView.status";
-	private static final String WA1 = "CNCMachineGeneralView.wa1";
 	
 	private static final String WAY_OF_OPERATING = "CNCMachineGeneralView.wayOfOperating";
 	private static final String START_STOP = "CNCMachineGeneralView.startStop";
@@ -104,13 +97,6 @@ public class CNCMachineGeneralView extends GridPane {
 		spacer.setPrefWidth(10);
 		spacer.setMinWidth(10);
 		spacer.setMaxWidth(10);
-		
-		lblNameWA1 = new Label(Translator.getTranslation(WA1));
-		fulltxtNameWA1 = new FullTextField(100);
-		lblUserFrameWA1 = new Label(Translator.getTranslation(USERFRAME));
-		cbbUserFrameWA1 = new ComboBox<String>();
-		cbbUserFrameWA1.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
-		cbbUserFrameWA1.setItems(userFrameNames);
 		
 		tgWayOfOperating = new ToggleGroup();
 		lblWayOfOperating = new Label(Translator.getTranslation(WAY_OF_OPERATING));
@@ -172,12 +158,6 @@ public class CNCMachineGeneralView extends GridPane {
 		add(lblStatus, column++, row);
 		add(lblStatusVal, column++, row);
 		column = 0; row++;
-		add(lblNameWA1, column++, row);
-		add(fulltxtNameWA1, column++, row, 4, 1);
-		column = 0; row++;
-		add(lblUserFrameWA1, column++, row);
-		add(cbbUserFrameWA1, column++, row, 4, 1);
-		column = 0; row++;
 		add(lblWayOfOperating, column++, row);
 		add(vboxRadioButtonsWayOfOperating, column++, row, 4, 1);
 		column = 0; row++;
@@ -197,8 +177,6 @@ public class CNCMachineGeneralView extends GridPane {
 		fulltxtIp.setText(((CNCMillingMachine) cncMachine).getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().getIpAddress());
 		itxtPort.setText(((CNCMillingMachine) cncMachine).getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().getPortNumber() + "");
 		refreshStatus(cncMachine);
-		fulltxtNameWA1.setText(cncMachine.getWorkAreas().get(0).getName());
-		cbbUserFrameWA1.valueProperty().set(cncMachine.getWorkAreas().get(0).getUserFrame().getName());
 		btnClampingWidthDeltaRp90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		btnClampingWidthDeltaRm90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		if (cncMachine.getClampingWidthR() == 90) {
@@ -231,7 +209,6 @@ public class CNCMachineGeneralView extends GridPane {
 	}
 	
 	public void setTextFieldListener(final TextInputControlListener listener) {
-		fulltxtNameWA1.setFocusListener(listener);
 		fulltxtName.setFocusListener(listener);
 		fulltxtIp.setFocusListener(listener);
 		itxtPort.setFocusListener(listener);
@@ -239,14 +216,6 @@ public class CNCMachineGeneralView extends GridPane {
 	
 	public String getName() {
 		return fulltxtName.getText();
-	}
-	
-	public String getWA1() {
-		return fulltxtNameWA1.getText();
-	}
-	
-	public String getUserFrameName() {
-		return cbbUserFrameWA1.getValue();
 	}
 	
 	public String getIp() {

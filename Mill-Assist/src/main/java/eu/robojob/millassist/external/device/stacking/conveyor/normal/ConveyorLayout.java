@@ -283,7 +283,8 @@ public class ConveyorLayout {
 			distance += (amount - 1) * spaceBetweenTracks;
 			// calculate extra space on bottom
 			distance += (spaceBetweenTracks -  supportWidth) / 2;
-			if (distance - interferenceDistance >= workPiece.getDimensions().getWidth()) {
+			//FIXME replace 5 by new parameter: interference distance raw
+			if (distance - 5 >= workPiece.getDimensions().getWidth()) {
 				finished = true;
 			} else {
 				amount++;

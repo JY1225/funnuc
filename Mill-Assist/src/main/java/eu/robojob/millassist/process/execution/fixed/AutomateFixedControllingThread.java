@@ -335,7 +335,10 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	public synchronized void notifyNoWorkPiecesPresent(final ProcessFlowExecutionThread processFlowExecutor) {
 		if (processFlowExecutor.equals(processFlowExecutor1)) {
-			if (statusExecutor2 != ExecutionThreadStatus.WORKING_WITH_ROBOT) {
+			if (statusExecutor2 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE) {
+				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor2.continueExecution();
+			} else if (statusExecutor2 != ExecutionThreadStatus.WORKING_WITH_ROBOT) {
 				try {
 					processFlow.getRobots().iterator().next().moveToHome();
 				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
@@ -344,7 +347,10 @@ public class AutomateFixedControllingThread extends Thread {
 				}
 			}
 		} else {
-			if (statusExecutor1 != ExecutionThreadStatus.WORKING_WITH_ROBOT) {
+			if (statusExecutor1 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE) {
+				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor1.continueExecution();
+			} else if (statusExecutor1 != ExecutionThreadStatus.WORKING_WITH_ROBOT) {
 				try {
 					processFlow.getRobots().iterator().next().moveToHome();
 				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
@@ -432,7 +438,7 @@ public class AutomateFixedControllingThread extends Thread {
 			} else if (statusExecutor2 == ExecutionThreadStatus.WAITING_FOR_PICK_FROM_STACKER) {
 				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
 				processFlowExecutor2.continueExecution();
-			}
+			} 
 		} else {
 			// continue
 			statusExecutor2 = ExecutionThreadStatus.IDLE;
@@ -443,7 +449,7 @@ public class AutomateFixedControllingThread extends Thread {
 			} else if (statusExecutor1 == ExecutionThreadStatus.WAITING_FOR_PICK_FROM_STACKER) {
 				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
 				processFlowExecutor1.continueExecution();
-			}
+			} 
 		}
 	}
 	

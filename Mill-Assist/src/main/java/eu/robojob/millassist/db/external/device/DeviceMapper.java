@@ -559,14 +559,10 @@ public class DeviceMapper {
 	}
 	
 	public void updateCNCMachine(final CNCMillingMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
-			final String ipAddress, final int port, final String workAreaName, final String userFramename, 
-				final int clampingWidthR, final List<String> robotServiceInputNames, 
+			final String ipAddress, final int port, final int clampingWidthR, final List<String> robotServiceInputNames, 
 					final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		cncMachine.getWorkAreas().get(0).setName(workAreaName);
-		cncMachine.getWorkAreas().get(0).setUserFrame(getUserFrameByName(userFramename));
-		updateWorkArea(cncMachine.getWorkAreas().get(0));
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE SOCKETCONNECTION " +
 				"SET IPADDRESS = ?, PORTNR = ?, NAME = ? WHERE ID = ?");
 		stmt.setString(1, ipAddress);

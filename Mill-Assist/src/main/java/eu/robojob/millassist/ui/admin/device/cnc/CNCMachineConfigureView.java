@@ -174,14 +174,6 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		return cncMachineGeneralView.getName();
 	}
 	
-	public String getWA1() {
-		return cncMachineGeneralView.getWA1();
-	}
-	
-	public String getUserFrameName() {
-		return cncMachineGeneralView.getUserFrameName();
-	}
-	
 	public String getIp() {
 		return cncMachineGeneralView.getIp();
 	}

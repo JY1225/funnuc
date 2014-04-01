@@ -48,7 +48,7 @@ public class FanucRobot extends AbstractRobot {
 	private static final int WRITE_REGISTER_TIMEOUT = 2 * 5000;
 	private static final int IOACTION_TIMEOUT = 2 * 60 * 1000;
 	
-	private static final List<Integer> VALID_USERFRAMES = Arrays.asList(1, 3, 6, 11, 12, 13, 14);
+	private static final List<Integer> VALID_USERFRAMES = Arrays.asList(1, 3, 4, 6, 11, 12, 13, 14);
 	
 	private static final String HEAD_A_ID = "A";
 	private static final String HEAD_B_ID = "B";
@@ -580,7 +580,7 @@ public class FanucRobot extends AbstractRobot {
 	private void writeServiceHandlingSet(final boolean freeAfterService, final int serviceHandlingPPMode, final WorkPieceDimensions dimensions, final float weight2) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
 		List<String> values = new ArrayList<String>();
 		// free after this service ; WP thickness ;  WP Z grip ; grip Z face till front ; dx correction P1 ; dy correction P1 ; dx correction P2 ; dy correction P2 ; dW correction ;
-		//    dP correction ; robot speed ; payload 1 ; payload 2 ; soft float range ; soft float force ; PP mode ; bar move distance
+		//    dP correction ; robot speed ; payload 1 ; payload 2 ; PP mode ; bar move distance
 		if (freeAfterService) {				// free after this service
 			values.add("1");
 		} else {
@@ -621,8 +621,6 @@ public class FanucRobot extends AbstractRobot {
 		values.add(getSpeed() + "");		// robot speed
 		values.add(df2.format(Math.ceil(payLoad1)));					// payload 1
 		values.add(df2.format(Math.ceil(payLoad2)));					// payload 2
-		values.add("0");					// soft float range
-		values.add("0");					// soft float force
 		values.add("" + serviceHandlingPPMode);		// PP mode
 		values.add("0");					// bar move distance
 		logger.debug("Writing service handling set: " + values);

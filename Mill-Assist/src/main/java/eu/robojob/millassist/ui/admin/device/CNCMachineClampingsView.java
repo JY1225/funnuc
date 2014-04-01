@@ -1,6 +1,8 @@
 package eu.robojob.millassist.ui.admin.device;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -449,16 +451,20 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	public void refresh() {
 		ifsClampings.clearItems();
 		int itemIndex = 0;
+		Set<Integer> addedClampingIds = new HashSet<Integer>();
 		for (AbstractCNCMachine machine : deviceManager.getCNCMachines()) {
 			for (WorkArea workArea : machine.getWorkAreas()) {
 				for (final Clamping clamping : workArea.getClampings()) {
-					ifsClampings.addItem(itemIndex, clamping.getName(), clamping.getImageUrl(), new EventHandler<MouseEvent>(){
-						@Override
-						public void handle(final MouseEvent arg0) {
-							getPresenter().selectedClamping(clamping);
-						}
-					});
-					itemIndex++;
+					if (!addedClampingIds.contains(clamping.getId())) {
+						ifsClampings.addItem(itemIndex, clamping.getName(), clamping.getImageUrl(), new EventHandler<MouseEvent>(){
+							@Override
+							public void handle(final MouseEvent arg0) {
+								getPresenter().selectedClamping(clamping);
+							}
+						});
+						itemIndex++;
+						addedClampingIds.add(clamping.getId());
+					}
 				}
 			}
 		}

@@ -257,12 +257,11 @@ public class DeviceManager {
 	}
 	
 	public void updateCNCMachineData(final CNCMillingMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
-			final String ipAddress, final int port, final String workAreaName, final String userFramename, 
-				final int clampingWidthR, final List<String> robotServiceInputNames, 
+			final String ipAddress, final int port, final int clampingWidthR, final List<String> robotServiceInputNames, 
 					final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) {
 		try {
-			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port, workAreaName, userFramename, 
+			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port, 
 					clampingWidthR, robotServiceInputNames, robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs,
 						mCodeRobotServiceOutputs);
 			refresh();

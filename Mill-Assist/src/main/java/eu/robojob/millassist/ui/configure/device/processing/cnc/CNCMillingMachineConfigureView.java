@@ -24,9 +24,11 @@ import javafx.scene.shape.SVGPath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.ui.controls.IconFlowSelector;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -230,6 +232,15 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 						if (deviceInfo.getProcessingStep().getDeviceSettings().getWorkArea().getActiveClamping() != null) {
 							double clampingR = deviceInfo.getProcessingStep().getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getR();
 							double clampingWidthDeltaR = ((CNCMillingMachine) deviceInfo.getDevice()).getClampingWidthR();
+							boolean conveyor = false;
+							for (AbstractDevice device : deviceInfo.getPickStep().getProcessFlow().getDevices()) {
+								if (device instanceof AbstractConveyor) {
+									conveyor = true;
+								}
+							} 
+							if (conveyor) {
+								clampingR = clampingR + 90;	// for conveyor: add extra 90° because pieces are picked differently
+							}
 							svgPathIconLength.setRotate(-clampingR);
 							svgPathIconWidth.setRotate(-(clampingR + clampingWidthDeltaR - 90));	// the -90 is because of the default image
 						}
@@ -260,6 +271,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	
 	public void selectClamping(final String clampingName) {
 		ifsClamping.setSelected(clampingName);
+		refreshClampingButtons();
 	}
 	
 	public void refreshClampType() {
