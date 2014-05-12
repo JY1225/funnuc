@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
@@ -104,6 +105,10 @@ public class ProcessFlow {
 		this(name, new ArrayList<AbstractProcessStep>(), new HashMap<AbstractDevice, DeviceSettings>(), new HashMap<AbstractRobot, RobotSettings>(), null, null);
 	}
 	
+	public Map<Integer, Integer> getCurrentIndices() {
+		return currentIndices;
+	}
+	
 	public void initialize() {
 		logger.info("Initializing [" + toString() + "].");
 		this.currentIndices = new HashMap<Integer, Integer>();
@@ -112,6 +117,11 @@ public class ProcessFlow {
 		setCurrentIndex(WORKPIECE_1_ID, -1);
 		loadAllSettings();
 		setFinishedAmount(0);
+		for (AbstractProcessStep step : processSteps) {
+			if (step instanceof ProcessingStep) {
+				((ProcessingStep) step).setNotProcessing();
+			}
+		}
 		updateType();
 	}
 	
@@ -482,6 +492,36 @@ public class ProcessFlow {
 	
 	public String toString() {
 		return "ProcessFlow: " + getName();
+	}
+	
+	public boolean isConcurrentExecutionPossible() {
+		// this is possible if the CNC machine is used only once, and the gripper used to put the piece in the 
+		// CNC machine is not the same as the gripper used to pick the piece from the CNC machine and the total weight
+		// is lower than the max work piece weight
+		PickStep pickFromStacker = null;
+		PickStep pickFromMachine = null;
+		PutStep putToMachine = null;
+		boolean isConcurrentExecutionPossible = false;
+		for (AbstractProcessStep step : getProcessSteps()) {
+			if ((step instanceof PickStep) && (((PickStep) step).getDevice() instanceof AbstractStackingDevice)) {
+				pickFromStacker = (PickStep) step;
+			}  else if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
+				pickFromMachine = (PickStep) step;
+			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice() instanceof AbstractCNCMachine) {
+				putToMachine = (PutStep) step;
+			}
+		}
+		float totalWorkPieceWeight = pickFromStacker.getRobotSettings().getWorkPiece().getWeight() + pickFromMachine.getRobotSettings().getWorkPiece().getWeight();
+		if (totalWorkPieceWeight < pickFromMachine.getRobot().getMaxWorkPieceWeight()) {
+			if (pickFromMachine.getRobotSettings().getGripperHead().equals(putToMachine.getRobotSettings().getGripperHead())) {
+				isConcurrentExecutionPossible = false; 
+			} else {
+				isConcurrentExecutionPossible = true;
+			}
+		} else {
+			isConcurrentExecutionPossible = false;
+		}
+		return isConcurrentExecutionPossible;
 	}
 	
 }

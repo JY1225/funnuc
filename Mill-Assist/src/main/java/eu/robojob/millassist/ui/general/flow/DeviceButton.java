@@ -259,7 +259,7 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 		Platform.runLater(new Thread() {
 			@Override
 			public void run() {
-				if ((machine.isConnected()) && (machine.getWayOfOperating() == WayOfOperating.M_CODES)) {
+				if ((machine.isConnected()) && ((machine.getWayOfOperating() == WayOfOperating.M_CODES) || (machine.getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD))) {
 					if (machine.getMCodeAdapter().getActiveMCodes().size() > 0) {
 						String mCodes = "GMC";
 						for (int i : machine.getMCodeAdapter().getActiveMCodes()) {

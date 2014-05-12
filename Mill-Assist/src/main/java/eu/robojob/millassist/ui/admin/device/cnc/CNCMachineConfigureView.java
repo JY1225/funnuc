@@ -69,7 +69,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		getPresenter().updateUserFrames();
 		if (cncMachine.getWayOfOperating() == WayOfOperating.START_STOP) {
 			btnMCodes.setDisable(true);
-		} else if (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES) {
+		} else if ((cncMachine.getWayOfOperating() == WayOfOperating.M_CODES) || (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
 			btnMCodes.setDisable(false);
 		} else {
 			throw new IllegalStateException("Unknown way of operating: " + cncMachine.getWayOfOperating());

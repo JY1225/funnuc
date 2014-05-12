@@ -17,15 +17,17 @@ public class Clamping {
 	private Coordinates smoothToPoint;
 	private Coordinates smoothFromPoint;
 	private float height;
+	private float defaultHeight;
 	private String imageURL;
 	private Type type;
 	
 	private Set<Clamping> relatedClampings;
 	
-	public Clamping(final Type type, final String name, final float height, final Coordinates relativePosition, final Coordinates smoothToPoint,
+	public Clamping(final Type type, final String name, final float defaultHeight, final Coordinates relativePosition, final Coordinates smoothToPoint,
 				final Coordinates smoothFromPoint, final String imageURL) {
 		this.name = name;
-		this.height = height;
+		this.height = defaultHeight;
+		this.defaultHeight = defaultHeight;
 		this.relativePosition = relativePosition;
 		this.smoothToPoint = smoothToPoint;
 		this.smoothFromPoint = smoothFromPoint;
@@ -34,8 +36,8 @@ public class Clamping {
 		this.type = type;
 	}
 	
-	public Clamping(final Type type, final String name, final float height, final Coordinates relativePosition, final Coordinates smoothPoint, final String imageURL) {
-		this(type, name, height, relativePosition, smoothPoint, smoothPoint, imageURL);
+	public Clamping(final Type type, final String name, final float defaultHeight, final Coordinates relativePosition, final Coordinates smoothPoint, final String imageURL) {
+		this(type, name, defaultHeight, relativePosition, smoothPoint, smoothPoint, imageURL);
 	}
 	
 	public String getName() {
@@ -112,5 +114,17 @@ public class Clamping {
 
 	public void setHeight(final float height) {
 		this.height = height;
+	}
+	
+	public float getDefaultHeight() {
+		return defaultHeight;
+	}
+
+	public void setDefaultHeight(final float defaultHeight) {
+		this.defaultHeight = defaultHeight;
+	}
+	
+	public void resetHeightToDefault() {
+		this.height = defaultHeight;
 	}
 }

@@ -40,6 +40,7 @@ public class CNCMachineGeneralView extends GridPane {
 	private Label lblWayOfOperating;
 	private RadioButton rbbWayOfOperatingStartStop;
 	private RadioButton rbbWayOfOperatingMCodes;
+	private RadioButton rbbWayOfOperatingMCodesDualLoad;
 	private ToggleGroup tgWayOfOperating;
 	private Label lblClampingWidthR;
 	private Button btnClampingWidthDeltaRp90;
@@ -57,6 +58,7 @@ public class CNCMachineGeneralView extends GridPane {
 	private static final String WAY_OF_OPERATING = "CNCMachineGeneralView.wayOfOperating";
 	private static final String START_STOP = "CNCMachineGeneralView.startStop";
 	private static final String M_CODES = "CNCMachineGeneralView.mCodes";
+	private static final String M_CODES_DUAL_LOAD = "CNCMachineGeneralView.mCodesDualLoad";
 	private static final String STATUS_CONNECTED = "CNCMachineGeneralView.statusConnected";
 	private static final String STATUS_DISCONNECTED = "CNCMachineGeneralView.statusDisconnected";
 	private static final String CLAMPING_WIDTH_R = "CNCMachineGeneralView.clampingWidthR";
@@ -120,9 +122,19 @@ public class CNCMachineGeneralView extends GridPane {
 				}
 			}
 		});
+		rbbWayOfOperatingMCodesDualLoad = new RadioButton(Translator.getTranslation(M_CODES_DUAL_LOAD));
+		rbbWayOfOperatingMCodesDualLoad.setToggleGroup(tgWayOfOperating);
+		rbbWayOfOperatingMCodesDualLoad.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> arg0, final Boolean oldValue, final Boolean newValue) {
+				if (newValue) {
+					presenter.setWayOfOperating(WayOfOperating.M_CODES_DUAL_LOAD);
+				}
+			}
+		});
 		VBox vboxRadioButtonsWayOfOperating = new VBox();
 		vboxRadioButtonsWayOfOperating.setSpacing(10);
-		vboxRadioButtonsWayOfOperating.getChildren().addAll(rbbWayOfOperatingStartStop, rbbWayOfOperatingMCodes);
+		vboxRadioButtonsWayOfOperating.getChildren().addAll(rbbWayOfOperatingStartStop, rbbWayOfOperatingMCodes, rbbWayOfOperatingMCodesDualLoad);
 				
 		lblClampingWidthR = new Label(Translator.getTranslation(CLAMPING_WIDTH_R));
 		btnClampingWidthDeltaRm90 = createButton("-90°", CSS_CLASS_FORM_BUTTON_BAR_LEFT, UIConstants.BUTTON_HEIGHT * 2, new EventHandler<ActionEvent>() {
@@ -195,6 +207,9 @@ public class CNCMachineGeneralView extends GridPane {
 		} else if (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES) {
 			rbbWayOfOperatingMCodes.selectedProperty().set(true);
 			presenter.setWayOfOperating(WayOfOperating.M_CODES);
+		} else if (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
+			rbbWayOfOperatingMCodesDualLoad.selectedProperty().set(true);
+			presenter.setWayOfOperating(WayOfOperating.M_CODES_DUAL_LOAD);
 		} else {
 			throw new IllegalStateException("Unkown way of operating: " + cncMachine.getWayOfOperating());
 		}
@@ -233,6 +248,8 @@ public class CNCMachineGeneralView extends GridPane {
 	public WayOfOperating getWayOfOperating() {
 		if (rbbWayOfOperatingMCodes.selectedProperty().getValue()) {
 			return WayOfOperating.M_CODES;
+		} else if (rbbWayOfOperatingMCodesDualLoad.selectedProperty().getValue()) {
+			return WayOfOperating.M_CODES_DUAL_LOAD;
 		} else {
 			return WayOfOperating.START_STOP;
 		}

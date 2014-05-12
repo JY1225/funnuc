@@ -24,6 +24,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	private Map<AbstractProcessStep, Long> stepDurations;
 	private Map<AbstractProcessStep, Long> waitingTimeAfterStepDurations;
 	private Map<Integer, AbstractProcessStep> lastActiveSteps;
+	private long stoppedTime;
 	private long startingTime;
 	private ProcessFlow processFlow;
 	private boolean isPaused;
@@ -43,6 +44,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		waitingTimeAfterStepDurations = new ConcurrentHashMap<AbstractProcessStep, Long>();
 		timeWon = 0;
 		startingTime = -1;
+		stoppedTime = -1;
 		reset();
 	}
 	
@@ -55,11 +57,16 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		startingTimeCurrentProcessFlow = new ConcurrentHashMap<Integer, Long>();
 		otherTimeCurrentProcessFlow = new ConcurrentHashMap<Integer, Long>();
 		startingTime = -1;
+		stoppedTime = -1;
 	}
 	
 	public long getTotalTime() {
 		if (startingTime != -1) {
-			return System.currentTimeMillis() - startingTime;
+			if (stoppedTime != -1) {
+				return stoppedTime - startingTime;
+			} else {
+				return System.currentTimeMillis() - startingTime;
+			}
 		} else {
 			return -1;
 		}
@@ -133,6 +140,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 				isPaused = true;
 				break;
 			case AUTO:
+				stoppedTime = -1;
 				if (startingTime == -1) {
 					startingTime = System.currentTimeMillis();
 				}
@@ -140,6 +148,8 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 					continueTimeMeasurements();
 				}
 				break;
+			case FINISHED:
+				stoppedTime = System.currentTimeMillis();
 			default:
 				break;
 		}

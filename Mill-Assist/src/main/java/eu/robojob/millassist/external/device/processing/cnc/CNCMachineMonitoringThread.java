@@ -42,7 +42,7 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 								cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.STATUS_CHANGED));
 							}
 							this.previousStatus = status;
-						} else if (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES) {
+						} else if ((cncMachine.getWayOfOperating() == WayOfOperating.M_CODES) || (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
 							Set<Integer> activeMCodes = new HashSet<Integer>();
 							activeMCodes = cncMachine.getMCodeAdapter().getActiveMCodes();
 							if ((status != previousStatus) || (!previousActiveMCodes.containsAll(activeMCodes)) 

@@ -27,6 +27,11 @@ public final class Translator {
 		messages = ResourceBundle.getBundle("messages", locale);
 	}
 	
+	public static void setLanguageSE() {
+		locale = new Locale("se");
+		messages = ResourceBundle.getBundle("messages", locale);
+	}
+	
 	public static String getTranslation(final String key) {
 		return messages.getString(key);
 	}

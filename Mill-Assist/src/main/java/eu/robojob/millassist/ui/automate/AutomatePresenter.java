@@ -4,10 +4,14 @@ import java.util.Set;
 
 import javafx.scene.Node;
 import javafx.scene.control.TextInputControl;
+import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.ProcessFlowTimer;
 import eu.robojob.millassist.process.execution.fixed.AutomateFixedControllingThread;
+import eu.robojob.millassist.process.execution.fixed.DualLoadAutomateFixedControllingThread;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.automate.device.DeviceMenuFactory;
 import eu.robojob.millassist.ui.automate.flow.AutomateProcessFlowPresenter;
@@ -50,7 +54,17 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 		statusPresenter.setFinishedAmount(processFlow.getFinishedAmount());
 		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		this.running = false;
-		automateThread = new AutomateFixedControllingThread(processFlow);
+		// other automate thread depending on processflow
+		for (AbstractDevice device : processFlow.getDevices()) {
+			if (device instanceof AbstractCNCMachine) {
+				AbstractCNCMachine cncMachine = (AbstractCNCMachine) device;
+				if (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
+					automateThread = new DualLoadAutomateFixedControllingThread(processFlow);
+				} else {
+					automateThread = new AutomateFixedControllingThread(processFlow);
+				}
+			}
+		}
 		this.deviceMenuFactory = deviceMenuFactory;
 		this.numericKeyboardPresenter = numericKeyboardPresenter;
 		numericKeyboardPresenter.setParent(this);

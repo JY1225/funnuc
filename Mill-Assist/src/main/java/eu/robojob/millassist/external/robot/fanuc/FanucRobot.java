@@ -16,6 +16,7 @@ import eu.robojob.millassist.external.communication.socket.SocketDisconnectedExc
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.GripperBody;
@@ -646,21 +647,23 @@ public class FanucRobot extends AbstractRobot {
 		values.add(df.format(location.getP()));		// p offset
 		values.add(df.format(location.getR()));		// r offset			
 		
-		float zSafePlane = clamping.getRelativePosition().getZ();
-		/*if ((relativeTeachedCoordinates != null) && (relativeTeachedCoordinates.getZ() < 0)) {
-			zSafePlane = zSafePlane + Math.abs(relativeTeachedCoordinates.getZ());
-		}*/
-		// also add the workpiece height (for moving away)
-		zSafePlane = zSafePlane + dimensions.getHeight();
-		float wpHeight = dimensions.getHeight();
-		if (workArea.getZone().getDevice() instanceof BasicStackPlate) {
+		float zSafePlane = clamping.getRelativePosition().getZ(); // position of the clamping
+		
+		float wpHeight = 0;
+		if (workArea.getZone().getDevice() instanceof BasicStackPlate) { // only multiple rows of work pieces possibly present on the stacker
 			wpHeight = ((BasicStackPlate) workArea.getZone().getDevice()).getLayout().getLayers() * dimensions.getHeight();
-		} 
-		if (wpHeight < clamping.getHeight()) {
-			zSafePlane = zSafePlane + clamping.getHeight();
-		} else {
-			zSafePlane = zSafePlane + wpHeight;
+		} else if (workArea.getZone().getDevice() instanceof AbstractStackingDevice) { // on other stacking devices one row possible present
+			wpHeight = dimensions.getHeight();
 		}
+
+		if (wpHeight > clamping.getHeight()) { // use clamp height or work piece height (highest)
+			zSafePlane = zSafePlane + wpHeight;
+		} else {
+			zSafePlane = zSafePlane + clamping.getHeight();
+		}
+		
+		zSafePlane = zSafePlane + dimensions.getHeight(); // add height of workpiece held by robot 
+		
 		values.add(df.format(zSafePlane));
 		if (smoothPoint.getZ() > workArea.getUserFrame().getzSafeDistance()) {	// safety add z
 			values.add(df.format(smoothPoint.getZ()));

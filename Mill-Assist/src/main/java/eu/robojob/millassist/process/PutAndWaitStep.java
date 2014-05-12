@@ -52,6 +52,12 @@ public class PutAndWaitStep extends PutStep {
 						Coordinates position = new Coordinates(originalPosition);
 						logger.debug("Original coordinates: " + position + ".");
 						if (getRelativeTeachedOffset() == null) {
+							if (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight() < getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) {
+								float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight());
+								setRelativeTeachedOffset(new Coordinates(0, 0, extraOffset, 0, 0, 0));
+							}
+						}
+						if (getRelativeTeachedOffset() == null) {
 							if (!teached) {
 								throw new IllegalStateException("Teaching was needed, but no relative offset value available and 'teach mode' is not active!");
 							}

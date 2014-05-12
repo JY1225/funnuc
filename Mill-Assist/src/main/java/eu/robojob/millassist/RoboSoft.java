@@ -72,6 +72,8 @@ public class RoboSoft extends Application {
 						Translator.setLanguageEN();
 					} else if (properties.getProperty("locale").equals("de")){
 						Translator.setLanguageDE();
+					} else if (properties.getProperty("locale").equals("se")){
+						Translator.setLanguageSE();
 					} else {
 						Translator.setLanguageNL();
 					}

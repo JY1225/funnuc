@@ -158,6 +158,7 @@ public class ProcessFlowView extends StackPane {
 				region.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_PIECE_LAST);
 			}
 			region.setPrefHeight(PROGRESS_BAR_HEIGHT);
+			region.setMinHeight(PROGRESS_BAR_HEIGHT);
 			vBox.getChildren().add(region);
 			VBox.setMargin(region, new Insets(0, 0, PROGRESS_BAR_MARGIN_BOTTOM, 0));
 			regions.add(region);
@@ -202,12 +203,14 @@ public class ProcessFlowView extends StackPane {
 			Region region1 = new Region();
 			region1.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_PIECE);
 			region1.setPrefHeight(PROGRESS_BAR_HEIGHT);
+			region1.setMinHeight(PROGRESS_BAR_HEIGHT);
 			vbox1.getChildren().add(region1);
 			VBox.setMargin(region1, new Insets(0, 0, PROGRESS_BAR_MARGIN_BOTTOM, 0));
 			regions1.add(i, region1);
 			Region region2 = new Region();
 			region2.getStyleClass().add(CSS_CLASS_PROGRESS_BAR_PIECE);
 			region2.setPrefHeight(PROGRESS_BAR_HEIGHT);
+			region2.setMinHeight(PROGRESS_BAR_HEIGHT);
 			vbox2.getChildren().add(region2);
 			regions2.add(i, region2);
 			VBox.setMargin(region2, new Insets(0, 0, PROGRESS_BAR_MARGIN_BOTTOM, 0));

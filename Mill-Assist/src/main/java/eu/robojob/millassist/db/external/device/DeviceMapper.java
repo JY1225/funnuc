@@ -48,6 +48,7 @@ public class DeviceMapper {
 	private static final int CLAMPING_TYPE_FIXED_YM = 6;
 	private static final int WAYOFOPERATING_STARTSTOP = 1;
 	private static final int WAYOFOPERATING_MCODES = 2;
+	private static final int WAYOFOPERATING_MCODESDUAL = 3;
 	
 	private GeneralMapper generalMapper;
 	private ConnectionMapper connectionMapper;
@@ -240,10 +241,12 @@ public class DeviceMapper {
 			int clampingWidthR = results.getInt("CLAMPING_WIDTH_R");
 			int wayOfOperatingInt = results.getInt("WAYOFOPERATING");
 			WayOfOperating wayOfOperating;
-			if (wayOfOperatingInt == 1) {
+			if (wayOfOperatingInt == WAYOFOPERATING_STARTSTOP) {
 				wayOfOperating = WayOfOperating.START_STOP;
-			} else if (wayOfOperatingInt == 2) {
+			} else if (wayOfOperatingInt == WAYOFOPERATING_MCODES) {
 				wayOfOperating = WayOfOperating.M_CODES;
+			} else if (wayOfOperatingInt == WAYOFOPERATING_MCODESDUAL) {
+				wayOfOperating = WayOfOperating.M_CODES_DUAL_LOAD;
 			} else {
 				 throw new IllegalStateException("Unkown way of operating!");
 			}
@@ -497,7 +500,7 @@ public class DeviceMapper {
 	public void updateBasicStackPlate(final BasicStackPlate basicStackPlate, final String name, final String userFrameName, final int horizontalHoleAmount, final int verticalHoleAmount, 
 			final float holeDiameter, final float studDiameter, final float horizontalHoleDistance, final float horizontalPadding, 
 			final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage,
-			final float horizontalR, final float tiltedR, final float maxOverlow, final float minOverlap, 
+			final float horizontalR, final float tiltedR, final float maxOverlow, final float minOverlap, final float studHeight,
 			final float smoothToX, final float smoothToY, final float smoothToZ,
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
@@ -556,6 +559,11 @@ public class DeviceMapper {
 		basicStackPlate.getLayout().setMinOverlap(minOverlap);
 		basicStackPlate.getLayout().setHorizontalR(horizontalR);
 		basicStackPlate.getLayout().setTiltedR(tiltedR);
+		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CLAMPING SET HEIGHT = ? WHERE ID = ?");
+		stmt3.setFloat(1, studHeight);
+		stmt3.setInt(2, basicStackPlate.getWorkAreas().get(0).getActiveClamping().getId());
+		stmt3.execute();
+		basicStackPlate.getWorkAreas().get(0).getActiveClamping().setDefaultHeight(studHeight);
 	}
 	
 	public void updateCNCMachine(final CNCMillingMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
@@ -581,6 +589,8 @@ public class DeviceMapper {
 			wayOfOperatingInt = WAYOFOPERATING_MCODES;
 		} else if (wayOfOperating == WayOfOperating.START_STOP) {
 			wayOfOperatingInt = WAYOFOPERATING_STARTSTOP;
+		} else if (wayOfOperating == WayOfOperating.M_CODES_DUAL_LOAD) {
+			wayOfOperatingInt = WAYOFOPERATING_MCODESDUAL;
 		} else {
 			throw new IllegalStateException("Unknown way of operating: " + cncMachine.getWayOfOperating());
 		}

@@ -13,16 +13,26 @@ import eu.robojob.millassist.process.execution.ProcessExecutor;
 public class ProcessingStep extends AbstractProcessStep implements DeviceStep {
 
 	private ProcessingDeviceStartCyclusSettings startCyclusSettings;
+	private int processing;
 	
 	private static Logger logger = LogManager.getLogger(ProcessingStep.class.getName());
 	
 	public ProcessingStep(final ProcessFlow processFlow, final ProcessingDeviceStartCyclusSettings startCyclusSettings) {
 		super(processFlow);
+		this.processing = 0;
 		setDeviceSettings(startCyclusSettings);
 	}
 	
 	public ProcessingStep(final ProcessingDeviceStartCyclusSettings startCyclusSettings) {
 		this(null, startCyclusSettings);
+	}
+	
+	public boolean isProcessing() {
+		return processing > 0;
+	}
+	
+	public void setNotProcessing() {
+		processing = 0;
 	}
 	
 	@Override
@@ -41,7 +51,10 @@ public class ProcessingStep extends AbstractProcessStep implements DeviceStep {
 				logger.debug("Device [" + getDevice() + "] prepared, starting processing.");
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PROCESSING_STARTED, workPieceId));
 				checkProcessExecutorStatus(executor);
+				processing++;
+				logger.info("Running: " + processing);
 				getDevice().startCyclus(startCyclusSettings);
+				processing--;
 				logger.debug("Finished processing in [" + getDevice() + "].");
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
 			} catch(Exception e) {

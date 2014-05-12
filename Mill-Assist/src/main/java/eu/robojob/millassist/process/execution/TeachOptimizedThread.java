@@ -202,6 +202,13 @@ public class TeachOptimizedThread extends TeachThread {
 		if (putOnStackerStep.needsTeaching()) {
 			Coordinates position = new Coordinates(originalCoordinates);
 			logger.debug("Original coordinates: " + position + ".");
+			// update teached offset based on clamp height
+			if (putOnStackerStep.getRelativeTeachedOffset() == null) {
+				if (position.getZ() + putOnStackerStep.getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight() < putOnStackerStep.getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + putOnStackerStep.getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) {
+					float extraOffset = (putOnStackerStep.getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + putOnStackerStep.getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - (position.getZ() + putOnStackerStep.getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight());
+					putOnStackerStep.setRelativeTeachedOffset(new Coordinates(0, 0, extraOffset, 0, 0, 0));
+				}
+			}
 			if (putOnStackerStep.getRelativeTeachedOffset() != null) {
 				logger.debug("The teached offset that will be used: [" + putOnStackerStep.getRelativeTeachedOffset() + "].");
 				Coordinates absoluteOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, putOnStackerStep.getRelativeTeachedOffset());

@@ -55,7 +55,7 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 	}
 	
 	public void setWayOfOperating(final WayOfOperating wayOfOperating) {
-		if (wayOfOperating == WayOfOperating.M_CODES) {
+		if ((wayOfOperating == WayOfOperating.M_CODES) || (wayOfOperating == WayOfOperating.M_CODES_DUAL_LOAD)) {
 			getView().setMCodeActive(true);
 		} else {
 			getView().setMCodeActive(false);

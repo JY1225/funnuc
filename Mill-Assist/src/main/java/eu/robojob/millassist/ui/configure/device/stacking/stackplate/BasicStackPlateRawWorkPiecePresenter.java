@@ -27,6 +27,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		
 	private static Logger logger = LogManager.getLogger(BasicStackPlateRawWorkPiecePresenter.class.getName());
 	private static final String WEIGHT_ZERO = "BasicStackPlateRawWorkPiecePresenter.weightZero";
+	private static final String STUD_HEIGHT_NOT_OK = "BasicStackPlateRawWorkPiecePresenter.studHeightNotOK";
 	
 	public BasicStackPlateRawWorkPiecePresenter(final BasicStackPlateRawWorkPieceView view, final PickStep pickStep, final BasicStackPlateSettings deviceSettings) {
 		super(view);
@@ -58,6 +59,10 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public boolean isWeightOk() {
 		return (deviceSettings.getRawWorkPiece().getWeight() > 0);
+	}
+	
+	public boolean isStudHeightOk() {
+		return (deviceSettings.getStudHeight() >= 0);
 	}
 	
 	public void changedMaterial(final Material material) {
@@ -113,6 +118,15 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		}
 	}
 	
+	public void changedStudHeight(final float studHeight) {
+		logger.info("Changed stud height [" + studHeight + "].");
+		if (studHeight != deviceSettings.getStudHeight()) {
+			deviceSettings.setStudHeight(studHeight);
+			((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+		}
+	}
+	
 	public void changedLayers(final int layers) {
 		logger.info("Set layers [" + layers + "].");
 		if (layers != deviceSettings.getLayers()) {
@@ -138,6 +152,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			getView().hideNotification();
 			if (!isWeightOk()) {
 				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO));
+			} else if (!isStudHeightOk()) {
+				getView().showNotification(Translator.getTranslation(STUD_HEIGHT_NOT_OK));
 			}
 		} catch (IncorrectWorkPieceDataException e) {
 			getView().showNotification(e.getLocalizedMessage());
@@ -166,7 +182,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public boolean isConfigured() {
 		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
 		if ((dimensions != null) && (orientation != null) && (plate.getLayout().getStackingPositions() != null)
-				&& (plate.getLayout().getStackingPositions().size() > 0) && (workPiece.getWeight() > 0)
+				&& (plate.getLayout().getStackingPositions().size() > 0) && (workPiece.getWeight() > 0) && (deviceSettings.getStudHeight() >= 0)
 				) {
 			return true;
 		}

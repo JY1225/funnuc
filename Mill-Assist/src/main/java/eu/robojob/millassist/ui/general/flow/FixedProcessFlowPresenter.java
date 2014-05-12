@@ -98,8 +98,10 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 		getView().setDeviceProgressBarPieceMode(deviceIndex, activeWorkPieceIndex, ProgressBarPieceMode.YELLOW);
 	}
 	
-	public void setProcessingStepFinished(final int activeWorkPieceIndex, final int deviceIndex) {
-		getView().animateDevice(deviceIndex, false);
+	public void setProcessingStepFinished(final int activeWorkPieceIndex, final int deviceIndex, final boolean isInProcess) {
+		if (!isInProcess) {
+			getView().animateDevice(deviceIndex, false);
+		}
 		getView().setDeviceProgressBarPieceMode(deviceIndex, activeWorkPieceIndex, ProgressBarPieceMode.GREEN);
 	}
 
@@ -121,7 +123,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 				}
 			} else if (step instanceof ProcessingStep) {
 				if (e.getStatusId() == StatusChangedEvent.ENDED) {
-					setProcessingStepFinished(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step));
+					setProcessingStepFinished(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step), ((ProcessingStep) step).isProcessing());
 				} else if (e.getStatusId() == StatusChangedEvent.STARTED) {
 					setProcessingStepActive(activeWorkPieceIndex, processFlowAdapter.getDeviceIndex((ProcessingStep) step));
 				}

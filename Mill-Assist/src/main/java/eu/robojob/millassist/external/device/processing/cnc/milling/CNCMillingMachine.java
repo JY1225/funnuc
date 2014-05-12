@@ -30,6 +30,7 @@ import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessingStep;
+import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
@@ -45,8 +46,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static final int START_CYCLE_TIMEOUT = 3 * 60 * 1000;
 	private static final int SLEEP_TIME_AFTER_RESET = 500;
 	
-	private static final int M_CODE_LOAD = 0;
-	private static final int M_CODE_UNLOAD = 1;
+	public static final int M_CODE_LOAD = 0;
+	public static final int M_CODE_UNLOAD = 1;
 	
 	private static Logger logger = LogManager.getLogger(CNCMillingMachine.class.getName());
 	
@@ -74,7 +75,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		int alarmReg1 = alarmInts.get(0);
 		int alarmReg2 = alarmInts.get(1);
 		setAlarms(CNCMachineAlarm.parseCNCAlarms(alarmReg1, alarmReg2, getCncMachineTimeout()));
-		if (getWayOfOperating() == WayOfOperating.M_CODES) {
+		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
 			// read robot service 
 			int robotServiceInputs = (cncMachineCommunication.readRegisters(CNCMachineConstants.IPC_READ_REQUEST_3, 1)).get(0);
 			getMCodeAdapter().updateRobotServiceInputs(robotServiceInputs);
@@ -156,7 +157,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		}
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.CNC_PROCESS_TYPE, registers);
-		if (getWayOfOperating() == WayOfOperating.M_CODES) {
+		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
 			// wait half a second
 			Thread.sleep(500);
 			
@@ -221,16 +222,34 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			nCReset();
 		} else if (getWayOfOperating() == WayOfOperating.M_CODES) {
 			// we sign of the m code for put
-			if (getWayOfOperating() == WayOfOperating.M_CODES) {
-				Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
-				int command = 0;
-				if (robotServiceOutputs.contains(0)) {
-					logger.info("AFMELDEN M-CODE 0");
-					command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
-				}
-				int[] registers = {command};
-				cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+			Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
+			int command = 0;
+			if (robotServiceOutputs.contains(0)) {
+				command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
 			}
+			int[] registers = {command};
+			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+			Thread.sleep(500);
+			waitForMCode(M_CODE_UNLOAD);
+		}  else if (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
+			// we sign of the m code for put
+			Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
+			int command = 0;
+			if (robotServiceOutputs.contains(0)) {
+				command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
+			}
+			int[] registers = {command};
+			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+			Thread.sleep(500);
+			waitForMCode(M_CODE_UNLOAD);
+			// now wait for next load and unload M-code
+			waitForMCode(M_CODE_LOAD);
+			// we should finish this M-code if in teach mode
+			if (startCylusSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) {
+				cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+				Thread.sleep(500);
+			}
+			waitForNoMCode(M_CODE_LOAD);
 			waitForMCode(M_CODE_UNLOAD);
 		} else {
 			throw new IllegalStateException("Unknown way of operating: " + getWayOfOperating());
@@ -246,7 +265,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		int ufNr = pickSettings.getWorkArea().getUserFrame().getNumber();
 
 		// if way of operation is m codes, await unloading m code!
-		if (getWayOfOperating() == WayOfOperating.M_CODES) {
+		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
 			waitForMCode(M_CODE_UNLOAD);
 		}
 		
@@ -292,10 +311,10 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		int ufNr = putSettings.getWorkArea().getUserFrame().getNumber();
 		
 		// if way of operation is m codes, await unloading m code!
-		if (getWayOfOperating() == WayOfOperating.M_CODES) {
+		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
 			waitForMCode(M_CODE_LOAD);
 		}
-		
+				
 		int command = 0;
 		if (ufNr == 3) {
 			command = command | CNCMachineConstants.IPC_PUT_WA1_REQUEST;
@@ -306,9 +325,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		}		
 	
 		int[] registers = {command};
-		
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
-		
+				
 		// check put is prepared
 		if (ufNr == 3) {
 			boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
@@ -326,8 +344,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			} 
 		} else {
 			throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
-		}
-		
+		}		
 	}
 
 	@Override
@@ -451,7 +468,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override 
-	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, InterruptedException {
+	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, InterruptedException, DeviceActionException {
 		if (getWayOfOperating() == WayOfOperating.M_CODES) {
 			if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) &&
 					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) {
@@ -467,7 +484,37 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				int[] registers = {command};
 				cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 			}
-		}	
+		} else if (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
+			if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) &&
+					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) {
+				// last work piece: send reset in stead of finishing m code
+				nCReset();
+			} else {
+				Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD).getRobotServiceOutputsUsed();
+				int command = 0;
+				if (robotServiceOutputs.contains(0)) {
+					logger.info("Finish M-C unload");
+					command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
+				}
+				int[] registers = {command};
+				cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+				Thread.sleep(500);
+				if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 2) &&
+						(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) {
+					// last but one work piece: no upcoming put, but we wait for the upcoming LOAD M-code and confirm it
+					waitForMCode(M_CODE_LOAD);
+					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
+					command = 0;
+					if (robotServiceOutputs.contains(0)) {
+						logger.info("Finish M-C load");
+						command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
+					}
+					registers[0] = command;
+					cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+					Thread.sleep(500);
+				}
+			}
+		}
 	}
 	
 	@Override 

@@ -192,6 +192,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 			BasicStackPlateSettings settings = (BasicStackPlateSettings) deviceSettings;
 			this.currentPickLocation = null;
 			this.currentPutLocation = null;
+			getWorkAreas().get(0).getActiveClamping().setHeight(settings.getStudHeight());
 			try {
 				if (settings.getRawWorkPiece() != null) {
 					setRawWorkPiece(settings.getRawWorkPiece());
@@ -215,13 +216,14 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public DeviceSettings getDeviceSettings() {
-		return new BasicStackPlateSettings(getRawWorkPiece(), getFinishedWorkPiece(), layout.getOrientation(), layout.getLayers(), layout.getRawWorkPieceAmount());
+		return new BasicStackPlateSettings(getRawWorkPiece(), getFinishedWorkPiece(), layout.getOrientation(), layout.getLayers(), layout.getRawWorkPieceAmount(), getWorkAreas().get(0).getActiveClamping().getHeight());
 	}
 	
 	@Override
 	public void clearDeviceSettings() {
 		setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f));
 		setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(), Material.OTHER, 0.0f));
+		getWorkAreas().get(0).getActiveClamping().resetHeightToDefault();
 		this.currentPickLocation = null;
 		this.currentPutLocation = null;
 		try {
@@ -268,7 +270,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public void prepareForProcess(final ProcessFlow process) throws AbstractCommunicationException, InterruptedException { }
+	public void prepareForProcess(final ProcessFlow process) throws AbstractCommunicationException, InterruptedException {}
 	
 	public BasicStackPlateLayout getLayout() {
 		return layout;
