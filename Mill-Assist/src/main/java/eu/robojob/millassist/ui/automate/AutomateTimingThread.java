@@ -48,6 +48,8 @@ public class AutomateTimingThread extends Thread {
 		} catch (Throwable t) {
 			logger.error(t);
 			t.printStackTrace();
+		} finally {
+			stopRunning();
 		}
 		logger.info(toString() + " ended...");
 	}
@@ -80,6 +82,11 @@ public class AutomateTimingThread extends Thread {
 	
 	@Override
 	public void interrupt() {
+		this.running = false;
+		super.interrupt();
+	}
+	
+	public void stopRunning() {
 		this.running = false;
 	}
 	

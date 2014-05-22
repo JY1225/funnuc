@@ -5,7 +5,7 @@
 	<groupId>eu.robojob</groupId>
 	<artifactId>millassist</artifactId>
 	<packaging>jar</packaging>
-	<version>1.5.1</version>
+	<version>1.6.0</version>
 	<name>Mill-Assist</name>
 	<organization>
 		<name>RoboJob</name>
@@ -34,8 +34,21 @@
 			<artifactId>javafx-runtime</artifactId>
 			<version>2.2</version>
 		</dependency>
+		<dependency>
+		   <groupId>com.sun</groupId>
+		   <artifactId>tools</artifactId>
+		   <version>1.7</version>
+		   <scope>system</scope>
+		   <systemPath>C:\Program Files (x86)\Java\jdk1.7.0_45\lib\tools.jar</systemPath>
+	 	</dependency>
+	 	<dependency>
+		   <groupId>com.sun</groupId>
+		   <artifactId>jconsole</artifactId>
+		   <version>1.7</version>
+		   <scope>system</scope>
+		   <systemPath>C:\Program Files (x86)\Java\jdk1.7.0_45\lib\jconsole.jar</systemPath>
+	 	</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>

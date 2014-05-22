@@ -313,6 +313,36 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					group.getChildren().add(rp);
 					group.getChildren().add(rp2);
 					group.getChildren().add(txtAmount);
+				} else if (stackingPosition.getOrientation() == WorkPieceOrientation.DEG90) {
+					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
+							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
+							stackingPosition.getWorkPiece().getDimensions().getWidth(), stackingPosition.getWorkPiece().getDimensions().getLength());
+					Rectangle rp2 = null;
+					if (basicStackPlateLayout.getHorizontalR() >= -0.01) {
+						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2 + 5, 
+								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
+								5, stackingPosition.getWorkPiece().getDimensions().getLength());
+					} else {
+						rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getWidth() / 2 - 10, 
+								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
+								5, stackingPosition.getWorkPiece().getDimensions().getLength());
+					}
+					Text txtAmount = new Text(stackingPosition.getAmount() + "");
+					txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);
+					txtAmount.setX(stackingPosition.getPosition().getX() - txtAmount.getBoundsInParent().getWidth()/2);
+					txtAmount.setY(width - stackingPosition.getPosition().getY() + txtAmount.getBoundsInParent().getHeight()/2);
+					rp.getStyleClass().add(CSS_CLASS_WORKPIECE);
+					rp2.getStyleClass().add(CSS_CLASS_WORKPIECE_MARK);
+					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
+						rp.getStyleClass().add(CSS_CLASS_FINISHED);
+						rp2.getStyleClass().add("workpiece-finished-mark");
+						rp2.getStyleClass().add(CSS_CLASS_FINISHED_MARK);
+					}
+					rp.setArcHeight(0);
+					rp.setArcWidth(0);
+					group.getChildren().add(rp);
+					group.getChildren().add(rp2);
+					group.getChildren().add(txtAmount);
 				} else {
 					throw new IllegalArgumentException("Unknown orientation");
 				}

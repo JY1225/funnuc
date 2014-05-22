@@ -357,7 +357,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 
 	public boolean validatePickSettings(final RobotPickSettings pickSettings) {
-		if ((pickSettings.getGripperHead() != null)
+		if ((pickSettings.getGripperHead() != null) && (getGripperBody().getActiveGripper(pickSettings.getGripperHead()) != null)
+				&& (pickSettings.getGripperHead().getGripper() != null) 
 				&& (getGripperBody().getActiveGripper(pickSettings.getGripperHead()).equals(pickSettings.getGripperHead().getGripper()))
 				//&& (pickSettings.getSmoothPoint() != null)
 				&& (pickSettings.getWorkArea() != null)
@@ -369,7 +370,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	}
 
 	public boolean validatePutSettings(final RobotPutSettings putSettings) {
-		if ((putSettings.getGripperHead() != null)
+		if ((putSettings.getGripperHead() != null) && (getGripperBody().getActiveGripper(putSettings.getGripperHead()) != null)
+				&& (putSettings.getGripperHead().getGripper() != null) 
 				&& (getGripperBody().getActiveGripper(putSettings.getGripperHead()).equals(putSettings.getGripperHead().getGripper()))
 				//&& (putSettings.getSmoothPoint() != null)
 				&& (putSettings.getWorkArea() != null)

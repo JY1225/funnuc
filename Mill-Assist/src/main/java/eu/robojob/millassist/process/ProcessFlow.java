@@ -21,6 +21,7 @@ import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotSettings;
@@ -72,6 +73,7 @@ public class ProcessFlow {
 	
 	public static final int WORKPIECE_0_ID = 0;
 	public static final int WORKPIECE_1_ID = 1;
+	public static final int WORKPIECE_2_ID = 2;
 	
 	private ClampingManner clampingManner;
 	
@@ -93,6 +95,7 @@ public class ProcessFlow {
 		//TODO more than two concurrent steps possible?
 		setCurrentIndex(WORKPIECE_0_ID, -1);
 		setCurrentIndex(WORKPIECE_1_ID, -1);
+		setCurrentIndex(WORKPIECE_2_ID, -1);
 		setFinishedAmount(0);
 	}
 	
@@ -111,10 +114,12 @@ public class ProcessFlow {
 	
 	public void initialize() {
 		logger.info("Initializing [" + toString() + "].");
+		getClampingType().setChanged(false);
 		this.currentIndices = new HashMap<Integer, Integer>();
 		//TODO more than two concurrent steps possible?
 		setCurrentIndex(WORKPIECE_0_ID, -1);
 		setCurrentIndex(WORKPIECE_1_ID, -1);
+		setCurrentIndex(WORKPIECE_2_ID, -1);
 		loadAllSettings();
 		setFinishedAmount(0);
 		for (AbstractProcessStep step : processSteps) {
@@ -404,6 +409,11 @@ public class ProcessFlow {
 	public void loadAllDeviceSettings() {
 		for (Entry<AbstractDevice, DeviceSettings> settings : deviceSettings.entrySet()) {
 			settings.getKey().loadDeviceSettings(settings.getValue());
+			if (settings.getValue() instanceof BasicStackPlateSettings) {
+				if (((BasicStackPlateSettings) settings.getValue()).getOrientation() == WorkPieceOrientation.DEG90) {
+					getClampingType().setChanged(true);
+				}
+			}
 		}
 	}
 	

@@ -36,6 +36,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	private static final String HEIGTH_ICON = "M 42.15625 9.625 L 10 24.75 L 24.65625 31.78125 L 56.875 16.53125 L 42.15625 9.625 z M 57.28125 17 L 25 32.25 L 25 48.25 L 57.28125 33.0625 L 57.28125 17 z M 0.3125 20.78125 A 0.3750375 0.3750375 0 0 0 0.15625 20.90625 A 0.3750375 0.3750375 0 0 0 0.34375 21.5 L 1.96875 22.25 L 1.75 23 L 0.5625 26.8125 L 0.25 27.78125 L 1.03125 27.0625 L 1.59375 26.53125 L 1.59375 32.5 L 1.03125 31.90625 L 0.3125 31.15625 L 0.59375 32.1875 L 1.59375 36.03125 L 1.78125 36.75 L 1.09375 36.40625 A 0.3750375 0.3750375 0 0 0 0.90625 36.375 A 0.38305158 0.38305158 0 0 0 0.75 37.125 L 9.4375 41.15625 A 0.37791833 0.37791833 0 0 0 9.625 41.1875 L 9.625 41.25 L 24.40625 48.21875 L 24.40625 32.28125 L 9.625 25.25 L 9.625 40.40625 L 1.875 36.78125 L 2.125 36.03125 L 3.28125 32.25 L 3.625 31.21875 L 2.84375 31.96875 L 2.21875 32.5625 L 2.21875 26.46875 L 2.8125 27.125 L 3.5625 27.875 L 3.28125 26.84375 L 2.28125 23 L 2.09375 22.3125 L 8.96875 25.53125 A 0.38173637 0.38173637 0 0 0 9.4375 24.96875 A 0.38173637 0.38173637 0 0 0 9.28125 24.84375 L 0.65625 20.8125 A 0.3750375 0.3750375 0 0 0 0.4375 20.78125 A 0.3750375 0.3750375 0 0 0 0.375 20.78125 A 0.3750375 0.3750375 0 0 0 0.34375 20.78125 A 0.3750375 0.3750375 0 0 0 0.3125 20.78125 z";
 	private static final String HORIZONTAL_ICON = "M 3.3125 3.28125 L 3.3125 14.4375 L 20.0625 14.4375 L 20.0625 3.28125 L 3.3125 3.28125 z ";
 	private static final String TILTED_ICON = "M 11.90625 0.03125 L 0.0625 11.875 L 7.96875 19.78125 L 19.8125 7.9375 L 11.90625 0.03125 z ";
+	private static final String VERTICAL_ICON = "m 6.109375,17.234375 11.15625,0 0,-16.75 -11.15625,0 0,16.75 z";
 	
 	private StackPane icon1Pane;
 	private SVGPath workPieceWidthPath;
@@ -50,7 +51,6 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	private Label lblStudHeight;
 	private Label lblWorkPieceWeight;	
 	
-	private Label lblOrientation;
 	private Label lblLayers;
 	private Label lblWorkPieceAmount;
 	private Button btnMaxAmount;
@@ -70,6 +70,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	private HBox materialsBox;
 	private Button btnHorizontal;
 	private Button btnTilted;
+	private Button btnVertical;
 	private Button btnAl;
 	private Button btnFe;
 	private Button btnCu;
@@ -89,7 +90,6 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	protected static final String LENGTH = "BasicStackPlateWorkPieceView.length";
 	private static final String HEIGHT = "BasicStackPlateWorkPieceView.height";
 	private static final String WEIGHT = "BasicStackPlateWorkPieceView.weight";
-	private static final String ORIENTATION = "BasicStackPlateWorkPieceView.orientation";
 	private static final String HORIZONTAL = "BasicStackPlateWorkPieceView.horizontal";
 	private static final String TILTED = "BasicStackPlateWorkPieceView.tilted";
 	private static final String AMOUNT = "BasicStackPlateWorkPieceView.amount";
@@ -223,11 +223,12 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 			}
 		});
 		btnOther.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+		materialsBox.setMaxWidth(4 * BTN_WIDTH);
 		materialsBox.getChildren().add(btnOther);
 		
 		column++;
 		getContents().add(lblMaterial, column++, row);
-		getContents().add(materialsBox, column++, row, 6, 1);
+		getContents().add(materialsBox, column++, row, 5, 1);
 		GridPane.setMargin(materialsBox, new Insets(10, 0, 0, 0));
 		
 		column = 0; row++;
@@ -275,9 +276,8 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		spacer = new Region();
 		spacer.setPrefSize(18, BTN_HEIGHT);
 		getContents().add(spacer, 3, 0);
-		lblOrientation = new Label(Translator.getTranslation(ORIENTATION));
 		orientationsBox = new HBox();
-		btnHorizontal = createButton(HORIZONTAL_ICON, CSS_CLASS_BUTTON_ORIENTATION, Translator.getTranslation(HORIZONTAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+		btnHorizontal = createButton(HORIZONTAL_ICON, CSS_CLASS_BUTTON_ORIENTATION, Translator.getTranslation(HORIZONTAL), BTN_WIDTH*0.9, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
 				getPresenter().changedOrientation(WorkPieceOrientation.HORIZONTAL);
@@ -285,20 +285,30 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		});
 		btnHorizontal.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
 		orientationsBox.getChildren().add(btnHorizontal);
-		btnTilted = createButton(TILTED_ICON, CSS_CLASS_BUTTON_ORIENTATION, Translator.getTranslation(TILTED), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+		btnTilted = createButton(TILTED_ICON, CSS_CLASS_BUTTON_ORIENTATION, Translator.getTranslation(TILTED), BTN_WIDTH*0.9, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
 				getPresenter().changedOrientation(WorkPieceOrientation.TILTED);
 			}
 		});
-		btnTilted.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+		btnTilted.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
 		orientationsBox.getChildren().add(btnTilted);
 		orientationsBox.setAlignment(Pos.CENTER_LEFT);
+		btnVertical = createButton(VERTICAL_ICON, CSS_CLASS_BUTTON_ORIENTATION, "90°", BTN_WIDTH*0.9, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedOrientation(WorkPieceOrientation.DEG90);
+			}
+		});
+		btnVertical.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+		orientationsBox.getChildren().add(btnVertical);
+		orientationsBox.setAlignment(Pos.CENTER_LEFT);
+		orientationsBox.setPrefWidth(3 * BTN_WIDTH * 0.9);
+		orientationsBox.setMaxWidth(3 * BTN_WIDTH * 0.9);
 		
 		row = 0;
 		column = 4;
-		getContents().add(lblOrientation, column++, row);
-		getContents().add(orientationsBox, column, row, 2, 1);
+		getContents().add(orientationsBox, column, row, 3, 1);
 		column = 4;
 		row++;
 		
@@ -343,7 +353,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 			}
 		});
 		getContents().add(btnMaxAmount, column++, row);
-		
+				
 		hideNotification();
 		
 		
@@ -375,10 +385,13 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	private void setOrientation(final WorkPieceOrientation orientation) {
 		btnHorizontal.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		btnTilted.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnVertical.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		if (orientation == WorkPieceOrientation.HORIZONTAL) {
 			btnHorizontal.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-		} else {
+		} else if (orientation == WorkPieceOrientation.TILTED){
 			btnTilted.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		} else {
+			btnVertical.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		}
 	}
 	

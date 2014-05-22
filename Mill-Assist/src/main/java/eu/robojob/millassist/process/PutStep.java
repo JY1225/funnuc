@@ -61,7 +61,8 @@ public class PutStep extends AbstractTransportStep {
 						logger.debug("Original coordinates: " + position + ".");
 						if (getRelativeTeachedOffset() == null) {
 							if (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight() < getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) {
-								float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight());
+								//float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight());
+								float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - originalPosition.getZ();
 								setRelativeTeachedOffset(new Coordinates(0, 0, extraOffset, 0, 0, 0));
 							}
 						}

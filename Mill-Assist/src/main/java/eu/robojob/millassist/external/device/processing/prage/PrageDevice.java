@@ -135,8 +135,21 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public Coordinates getLocationOrientation(final WorkArea workArea) {
+	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		if (clampType.getType() == Type.LENGTH) {
+			if (clampType.isChanged()) {
+				c.setR(c.getR() + clampingWidthDeltaR);
+			} else {
+				c.setR(c.getR());
+			}
+		} else {
+			if (clampType.isChanged()) {
+				c.setR(c.getR());
+			} else {
+				c.setR(c.getR() + clampingWidthDeltaR);
+			}
+		}
 		return c;
 	}
 	
@@ -144,7 +157,11 @@ public class PrageDevice extends AbstractProcessingDevice {
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			c.setR(c.getR());
+			if (clampType.isChanged()) {
+				c.setR(c.getR() + clampingWidthDeltaR);
+			} else {
+				c.setR(c.getR());
+			}
 			switch (workArea.getActiveClamping().getType()) {
 				case CENTRUM:
 					// no action needed
@@ -167,7 +184,11 @@ public class PrageDevice extends AbstractProcessingDevice {
 					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
 			}
 		} else {
-			c.setR(c.getR() + clampingWidthDeltaR);
+			if (clampType.isChanged()) {
+				c.setR(c.getR());
+			} else {
+				c.setR(c.getR() + clampingWidthDeltaR);
+			}
 			switch (workArea.getActiveClamping().getType()) {
 			case CENTRUM:
 				// no action needed

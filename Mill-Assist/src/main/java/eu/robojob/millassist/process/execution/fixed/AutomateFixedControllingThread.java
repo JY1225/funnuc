@@ -1,5 +1,7 @@
 package eu.robojob.millassist.process.execution.fixed;
 
+import java.util.concurrent.Future;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +24,9 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	protected ProcessFlow processFlow;
 	protected ProcessFlowExecutionThread processFlowExecutor1;
+	protected Future<?> processFlowExecutor1Future;
 	protected ProcessFlowExecutionThread processFlowExecutor2;
+	protected Future<?> processFlowExecutor2Future;
 	
 	protected enum ExecutionThreadStatus {
 		IDLE,
@@ -90,7 +94,7 @@ public class AutomateFixedControllingThread extends Thread {
 			processFlow.setMode(ProcessFlow.Mode.AUTO);
 			running = true;
 			checkIfConcurrentExecutionIsPossible();
-			if (processFlow.getCurrentIndex(WORKPIECE_0_ID) == -1) {
+			if ((processFlow.getCurrentIndex(WORKPIECE_0_ID) == -1) || (processFlow.getCurrentIndex(WORKPIECE_0_ID) == 0)) {
 				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.PREPARE, WORKPIECE_0_ID));
 				for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
 					checkStatus();
@@ -125,12 +129,12 @@ public class AutomateFixedControllingThread extends Thread {
 					}
 				} 
 			}
-			ThreadManager.submit(processFlowExecutor1);
+			processFlowExecutor1Future = ThreadManager.submit(processFlowExecutor1);
 			if (startSecond) {
 				statusExecutor2 = ExecutionThreadStatus.IDLE;
 				processFlowExecutor2 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_1_ID);
 				firstPiece = false;
-				ThreadManager.submit(processFlowExecutor2);
+				processFlowExecutor2Future = ThreadManager.submit(processFlowExecutor2);
 			}
 			// wait until all processes have finished
 			synchronized(finishedSyncObject) {
@@ -171,7 +175,9 @@ public class AutomateFixedControllingThread extends Thread {
 	
 	@Override
 	public void interrupt() {
+		logger.info("Called interrupt on AutomateFixedControllingThread");
 		running = false;
+		super.interrupt();
 		for (AbstractRobot robot : processFlow.getRobots()) {
 			robot.interruptCurrentAction();
 		}
@@ -283,7 +289,7 @@ public class AutomateFixedControllingThread extends Thread {
 			if ((!processFlowExecutor2.isRunning()) && isConcurrentExecutionPossible) {
 				logger.info("Second process not yet started");
 				statusExecutor2 = ExecutionThreadStatus.IDLE;
-				ThreadManager.submit(processFlowExecutor2);
+				processFlowExecutor2Future = ThreadManager.submit(processFlowExecutor2);
 			} else if ((!processFlowExecutor2.isRunning()) && !isConcurrentExecutionPossible) {
 				logger.info("No second process, move to home");
 				try {
@@ -460,11 +466,11 @@ public class AutomateFixedControllingThread extends Thread {
 		synchronized(finishedSyncObject) {
 			finishedSyncObject.notifyAll();
 		}
-		if (processFlowExecutor1 != null) {
-			processFlowExecutor1.interrupt();
+		if (processFlowExecutor1Future != null) {
+			processFlowExecutor1Future.cancel(true);
 		}
-		if (processFlowExecutor2 != null) {
-			processFlowExecutor2.interrupt();
+		if (processFlowExecutor2Future != null) {
+			processFlowExecutor2Future.cancel(true);
 		}
 		this.statusExecutor1 = ExecutionThreadStatus.IDLE;
 		this.statusExecutor2 = ExecutionThreadStatus.IDLE;

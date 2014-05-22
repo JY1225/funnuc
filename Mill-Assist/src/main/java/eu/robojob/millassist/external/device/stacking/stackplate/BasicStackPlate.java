@@ -38,7 +38,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public static final float STUD_HEIGHT = 30;
 	
 	public enum WorkPieceOrientation {
-		HORIZONTAL, TILTED
+		HORIZONTAL, TILTED, DEG90
 	}
 		
 	private static Logger logger = LogManager.getLogger(BasicStackPlate.class.getName());
@@ -87,7 +87,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	@Override
-	public Coordinates getLocationOrientation(final WorkArea workArea) {
+	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(layout.getStackingPositions().get(0).getPosition());
 		c.offset(workArea.getActiveClamping().getRelativePosition());
 		c.setX(0);

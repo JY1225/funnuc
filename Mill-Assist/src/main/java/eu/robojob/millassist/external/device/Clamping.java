@@ -9,7 +9,7 @@ public class Clamping {
 	
 	public static enum Type {
 		CENTRUM, FIXED_XP, FIXED_XM, FIXED_YP, FIXED_YM, NONE
-	}
+	} 
 	
 	private int id;
 	private String name;

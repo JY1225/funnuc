@@ -72,6 +72,7 @@ public class ProcessFlowMapper {
 	
 	private static final int STACKPLATE_ORIENTATION_HORIZONTAL = 1;
 	private static final int STACKPLATE_ORIENTATION_TILTED = 2;
+	private static final int STACKPLATE_ORIENTATION_VERTICAL = 3;
 	
 	private static final int CLAMPING_MANNER_LENGTH = 1;
 	private static final int CLAMPING_MANNER_WIDTH = 2;
@@ -420,6 +421,8 @@ public class ProcessFlowMapper {
 				orientation = STACKPLATE_ORIENTATION_HORIZONTAL;
 			} else if (bspSettings.getOrientation() == WorkPieceOrientation.TILTED) {
 				orientation = STACKPLATE_ORIENTATION_TILTED;
+			} else  if (bspSettings.getOrientation() == WorkPieceOrientation.DEG90) {
+				orientation = STACKPLATE_ORIENTATION_VERTICAL;
 			} else {
 				throw new IllegalStateException("Unknown workpiece orientation: [" + bspSettings.getOrientation() + "].");
 			}
@@ -630,6 +633,8 @@ public class ProcessFlowMapper {
 				basicStackPlateSettings = new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.HORIZONTAL, layers, amount, studHeight);
 			} else if (orientation == STACKPLATE_ORIENTATION_TILTED) {
 				basicStackPlateSettings = new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.TILTED, layers, amount, studHeight);
+			} else if (orientation == STACKPLATE_ORIENTATION_VERTICAL) {
+				basicStackPlateSettings = new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.DEG90, layers, amount, studHeight);
 			} else {
 				throw new IllegalStateException("Unknown workpiece orientation: [" + orientation + "].");
 			}

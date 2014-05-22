@@ -83,7 +83,6 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 
 	@Override
 	public void interruptCurrentAction() {
-		logger.debug("Interrupting current action of: " + getName());
 		setCncMachineTimeout(null);
 		stopAction = true;
 		synchronized (syncObject) {
@@ -206,6 +205,11 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 						e.printStackTrace();
 						throw new DeviceActionException(this, EXCEPTION_WHILE_WAITING);
 					}
+					// at this point the wait is finished, either by a notify (status changed, or request to stop), or by a timeout
+					if (stopAction) {
+						//stopAction = false;
+						throw new InterruptedException("Waiting for status got interrupted");
+					}
 					if (timeout > 0) {
 						syncObject.wait(timeout - waitedTime);
 					} else {
@@ -214,7 +218,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 				}
 				// at this point the wait is finished, either by a notify (status changed, or request to stop), or by a timeout
 				if (stopAction) {
-					stopAction = false;
+					//stopAction = false;
 					throw new InterruptedException("Waiting for status got interrupted");
 				}
 				// just to be sure, check connection

@@ -7,6 +7,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
@@ -127,6 +128,7 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 			}
 			logger.info(toString() + " ended...");
 		} catch (InterruptedException e) {
+			logger.error(e);
 			if (controllingThread.isRunning()) {
 				controllingThread.notifyException(e);
 				controllingThread.stopRunning();
@@ -137,6 +139,8 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 			controllingThread.notifyException(e);
 			//controllingThread.stopExecution();
 			controllingThread.stopRunning();
+		} finally {
+			stopRunning();
 		}
 	}
 	
@@ -227,6 +231,20 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 		if (!running) {
 			return;
 		}
+		if (!putStep.getDevice().canPut(putStep.getDeviceSettings())) {
+			// send robot to home
+			for (AbstractRobot robot : processFlow.getRobots()) {
+				checkStatus();
+				robot.moveToHome();
+			}
+			checkStatus();
+			Thread.sleep(POLLING_INTERVAL);
+		}
+		while (!putStep.getDevice().canPut(putStep.getDeviceSettings())) {
+			Thread.sleep(POLLING_INTERVAL);
+			checkStatus();
+		}
+		checkStatus();
 		putStep.getRobotSettings().setFreeAfter(false);	// we can always go back to home after putting a wp in the machine
 		checkStatus();
 		putStep.executeStep(workpieceId, this);
@@ -287,10 +305,14 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 	
 	@Override
 	public void interrupt() {
+		logger.info("Interrupt process flow executionthread " + this);
+		super.interrupt();
 		stopRunning();
+		logger.info("Interrupt finished");
 	}
 	
 	public void stopRunning() {
+		logger.info("Stop running processFlowExecutionThread");
 		this.running = false;
 		synchronized(syncObject) {
 			syncObject.notifyAll();

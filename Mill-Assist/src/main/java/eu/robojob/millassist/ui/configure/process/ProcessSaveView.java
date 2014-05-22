@@ -43,6 +43,9 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 	private static final String SAVE_TO_NEW = "ProcessSaveView.saveToNew";
 	private static final String DELETE = "ProcessSaveView.delete";
 	
+	private static final String ONLY_SAVE_AS_NAME = "ProcessSaveView.onlySaveAsName";
+	private static final String ONLY_SAVE_AS_CONFIGURED = "ProcessSaveView.onlySaveAsConfigured";
+	
 	public ProcessSaveView() {
 		super();
 	}
@@ -124,20 +127,32 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 	@Override
 	public void refresh() {
 		fulltxtName.setText(processFlow.getName());
-		if (processFlow.getName().equals("")) {
+		if (processFlow.isConfigured()) {
+			if (processFlow.getName().equals("")) {
+				showNotification(Translator.getTranslation(ONLY_SAVE_AS_NAME));
+				btnOverwrite.setDisable(true);
+				btnSaveAsNew.setDisable(true);
+			} else {
+				hideNotification();
+				btnSaveAsNew.setDisable(false);
+				if (processFlow.getId() > 0) {
+					btnOverwrite.setDisable(false);
+					btnDelete.setDisable(false);
+				} else {
+					btnOverwrite.setDisable(true);
+					btnDelete.setDisable(true);
+				}
+			}
+		} else {
+			showNotification(Translator.getTranslation(ONLY_SAVE_AS_CONFIGURED));
 			btnOverwrite.setDisable(true);
 			btnSaveAsNew.setDisable(true);
-		} else {
-			btnSaveAsNew.setDisable(false);
 			if (processFlow.getId() > 0) {
-				btnOverwrite.setDisable(false);
 				btnDelete.setDisable(false);
 			} else {
-				btnOverwrite.setDisable(true);
 				btnDelete.setDisable(true);
 			}
 		}
-		hideNotification();
 	}
 	
 }

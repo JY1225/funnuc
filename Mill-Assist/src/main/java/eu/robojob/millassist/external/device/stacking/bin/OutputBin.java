@@ -146,7 +146,7 @@ public class OutputBin extends AbstractStackingDevice {
 	}
 
 	@Override
-	public Coordinates getLocationOrientation(final WorkArea workArea) {
+	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
 		return workArea.getActiveClamping().getRelativePosition();
 	}
 

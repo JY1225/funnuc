@@ -40,6 +40,10 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 
 	private static final String CLAMP_WIDTH_ICON = "M 7 0 L 7 5.5625 L 7 11.15625 L 9 11.15625 L 9 0 L 7 0 z M 7 5.5625 L 3.5 2.0625 L 2.28125 3.3125 L 3.65625 4.6875 L 0 4.6875 L 0 6.46875 L 3.65625 6.46875 L 2.28125 7.84375 L 3.5 9.0625 L 7 5.5625 z M 11 0 L 11 11.15625 L 23.75 11.15625 L 23.75 5.5625 L 23.75 0 L 11 0 z M 23.75 5.5625 L 27.25 9.0625 L 28.5 7.84375 L 27.125 6.46875 L 30.75 6.46875 L 30.75 4.6875 L 27.125 4.6875 L 28.5 3.3125 L 27.25 2.0625 L 23.75 5.5625 z";
 	private static final String CLAMP_HEIGHT_ICON = "M 6.96875 0 L 6.96875 2 L 18.125 2 L 18.125 0 L 6.96875 0 z M 6.96875 4 L 6.96875 8.375 L 6.96875 16.75 L 18.125 16.75 L 18.125 8.375 L 18.125 4 L 6.96875 4 z M 18.125 8.375 L 21.625 11.875 L 22.875 10.65625 L 21.5 9.28125 L 25.125 9.28125 L 25.125 7.5 L 21.5 7.5 L 22.875 6.125 L 21.625 4.875 L 18.125 8.375 z M 6.96875 8.375 L 3.46875 4.875 L 2.25 6.125 L 3.625 7.5 L -0.03125 7.5 L -0.03125 9.28125 L 3.625 9.28125 L 2.25 10.65625 L 3.46875 11.875 L 6.96875 8.375 z";
+	//height = length
+	private static final String CLAMP_WIDTH_ICON2 = "M 4.6875 0 L 4.6875 3.625 L 3.3125 2.25 L 2.0625 3.5 L 5.5625 7 L 9.0625 3.5 L 7.84375 2.25 L 6.46875 3.625 L 6.46875 0 L 4.6875 0 z M 5.5625 7 L 4 7 L 4 23.75 L 5.5625 23.75 L 11.15625 23.75 L 11.15625 7 L 5.5625 7 z M 5.5625 23.75 L 2.0625 27.25 L 3.3125 28.46875 L 4.6875 27.09375 L 4.6875 30.75 L 6.46875 30.75 L 6.46875 27.09375 L 7.84375 28.46875 L 9.0625 27.25 L 5.5625 23.75 z M 0 7 L 0 23.75 L 2 23.75 L 2 7 L 0 7 z";
+	private static final String CLAMP_HEIGHT_ICON2 = "M 7.5 0 L 7.5 3.625 L 6.125 2.25 L 4.875 3.5 L 8.375 7 L 11.875 3.5 L 10.65625 2.25 L 9.28125 3.625 L 9.28125 0 L 7.5 0 z M 8.375 7 L 0 7 L 0 14.15625 L 16.75 14.15625 L 16.75 7 L 8.375 7 z M 0 16.15625 L 0 18.15625 L 8.375 18.15625 L 16.75 18.15625 L 16.75 16.15625 L 0 16.15625 z M 8.375 18.15625 L 4.875 21.65625 L 6.125 22.875 L 7.5 21.5 L 7.5 25.15625 L 9.28125 25.15625 L 9.28125 21.5 L 10.65625 22.875 L 11.875 21.65625 L 8.375 18.15625 z";
+	
 	
 	private Label lblMachine;
 	private ComboBox<String> cbbMachine;
@@ -233,13 +237,25 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 							double clampingR = deviceInfo.getProcessingStep().getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getR();
 							double clampingWidthDeltaR = ((CNCMillingMachine) deviceInfo.getDevice()).getClampingWidthR();
 							boolean conveyor = false;
+							boolean change = false;
 							for (AbstractDevice device : deviceInfo.getPickStep().getProcessFlow().getDevices()) {
 								if (device instanceof AbstractConveyor) {
 									conveyor = true;
+								} 
+								if (deviceInfo.getProcessingStep().getProcessFlow().getClampingType().isChanged()) {
+									change = true;
 								}
 							} 
 							if (conveyor) {
 								clampingR = clampingR + 90;	// for conveyor: add extra 90° because pieces are picked differently
+							}
+							if (change) {
+								clampingR = clampingR - clampingWidthDeltaR;
+								svgPathIconLength.setContent(CLAMP_HEIGHT_ICON2);
+								svgPathIconWidth.setContent(CLAMP_WIDTH_ICON2);
+							} else {
+								svgPathIconLength.setContent(CLAMP_HEIGHT_ICON);
+								svgPathIconWidth.setContent(CLAMP_WIDTH_ICON);
 							}
 							svgPathIconLength.setRotate(-clampingR);
 							svgPathIconWidth.setRotate(-(clampingR + clampingWidthDeltaR - 90));	// the -90 is because of the default image

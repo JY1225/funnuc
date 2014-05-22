@@ -451,7 +451,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	}
 	
 	@Override
-	public Coordinates getLocationOrientation(final WorkArea workArea) {
+	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
 		if (workArea.equals(rawWorkArea)) {
 			Coordinates c = new Coordinates(layout.getStackingPositionsRawWorkPieces().get(0).getPosition());
 			c.setX(0);

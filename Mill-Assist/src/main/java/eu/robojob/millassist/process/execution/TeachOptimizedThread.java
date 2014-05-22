@@ -130,7 +130,7 @@ public class TeachOptimizedThread extends TeachThread {
 				if (isRunning()) {
 					Coordinates pickFromMachineOffset = new Coordinates(relTeachedOffsetMachineClamping);
 					
-					Coordinates wpInMachineOrientation = new Coordinates(putInMachineStep.getDevice().getLocationOrientation(putInMachineStep.getDeviceSettings().getWorkArea()));
+					Coordinates wpInMachineOrientation = new Coordinates(putInMachineStep.getDevice().getLocationOrientation(putInMachineStep.getDeviceSettings().getWorkArea(), putInMachineStep.getProcessFlow().getClampingType()));
 					wpInMachineOrientation.plus(relTeachedOffsetMachineClamping);
 					wpInMachineOrientation.minus(pickFromStackingDeviceStep.getRelativeTeachedOffset());
 					wpInMachineOrientation.setX(0);
@@ -140,7 +140,7 @@ public class TeachOptimizedThread extends TeachThread {
 					Coordinates wpDiffRelativeOffset = new Coordinates(relTeachedOffsetFinishedWp);
 					wpDiffRelativeOffset.minus(relTeachedOffsetRawWp);
 					Coordinates extraWpRelOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(wpInMachineOrientation, wpDiffRelativeOffset);
-					extraWpRelOffset = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(new Coordinates(putInMachineStep.getDevice().getLocationOrientation(putInMachineStep.getDeviceSettings().getWorkArea())), extraWpRelOffset);
+					extraWpRelOffset = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(new Coordinates(putInMachineStep.getDevice().getLocationOrientation(putInMachineStep.getDeviceSettings().getWorkArea(), putInMachineStep.getProcessFlow().getClampingType())), extraWpRelOffset);
 					//pickFromMachineOffset.minus(relTeachedOffsetRawWp);
 					//pickFromMachineOffset.plus(relTeachedOffsetFinishedWp);
 					
@@ -158,14 +158,13 @@ public class TeachOptimizedThread extends TeachThread {
 			} catch (InterruptedException e) {
 				if ((!isRunning()) || ThreadManager.isShuttingDown()) {
 					logger.info("Execution of one or more steps got interrupted, so let't just stop");
-					indicateStopped();
-				} else {
-					handleException(new Exception(Translator.getTranslation(OTHER_EXCEPTION)));
-
+					//indicateStopped();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				handleException(new Exception(Translator.getTranslation(OTHER_EXCEPTION)));
+			} finally {
+				//stopRunning();
 			}
 		} catch (Exception e) {
 			logger.error(e);
@@ -173,6 +172,8 @@ public class TeachOptimizedThread extends TeachThread {
 		} catch (Throwable t) {
 			logger.error(t);
 			t.printStackTrace();
+		} finally {
+			stopRunning();
 		}
 		logger.info(toString() + " ended...");
 	}

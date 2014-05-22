@@ -500,7 +500,7 @@ public class Conveyor extends AbstractConveyor {
 	}
 
 	@Override
-	public Coordinates getLocationOrientation(final WorkArea workArea) {
+	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
 		if (workArea.equals(workAreaA)) {
 			return layout.getStackingPositionTrackA().getPosition();
 		} else if (workArea.equals(workAreaB)) {

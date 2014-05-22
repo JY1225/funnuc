@@ -1,9 +1,14 @@
 package eu.robojob.millassist.ui.teach;
 
 import java.util.Set;
+import java.util.concurrent.Future;
 
 import javafx.application.Platform;
 import javafx.scene.control.TextInputControl;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.DuplicateProcessFlowNameException;
@@ -43,6 +48,7 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 	private GeneralInfoPresenter generalInfoPresenter;
 	private TeachStatusPresenter statusPresenter;
 	private TeachThread teachThread;
+	private Future<?> teachFuture;
 	private TransportMenuFactory transportMenuFactory;
 	private ProcessFlowAdapter processFlowAdapter;
 	private AbstractMenuPresenter<?> activeMenu;
@@ -53,6 +59,8 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 	
 	private static final String SAVE_OK = "TeachPresenter.saveOK";
 	private static final String SAVE_NOK = "TeachPresenter.saveNotOK";
+	
+	private static final Logger logger = LogManager.getLogger(TeachPresenter.class.getName());
 		
 	public TeachPresenter(final MainContentView view, final TeachProcessFlowPresenter processFlowPresenter, final ProcessFlow processFlow, final DisconnectedDevicesView disconnectedDevicesView,
 			final GeneralInfoPresenter generalInfoPresenter, final TeachStatusPresenter statusPresenter, 
@@ -126,14 +134,13 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 			throw new IllegalStateException("Teach thread was already running: " + teachThread);
 		}
 		this.teachThread = teachThread;
-		ThreadManager.submit(teachThread);
+		teachFuture = ThreadManager.submit(teachThread);
 	}
 	
 	public void stopTeaching() {
-		if (teachThread.isRunning()) {
-			ThreadManager.stopRunning(teachThread);
+		if (teachFuture != null) {
+			teachFuture.cancel(true);
 		}
-		checkAllConnected();
 	}
 	
 	@Override
@@ -162,9 +169,11 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 
 	@Override
 	public void stopRunning() {
-		if (teachThread.isRunning()) {
-			teachThread.interrupt();
+		logger.info("Stop running!");
+		if (teachFuture != null) {
+			teachFuture.cancel(true);
 		}
+		checkAllConnected();
 	}
 
 	@Override
@@ -216,6 +225,12 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 			processFlowPresenter.setRunning(true);
 		} else {
 			processFlowPresenter.setRunning(false);
+			Platform.runLater(new Thread() {
+				@Override
+				public void run() {
+					checkAllConnected();
+				}
+			});
 		}
 		Platform.runLater(new Thread() {
 			@Override

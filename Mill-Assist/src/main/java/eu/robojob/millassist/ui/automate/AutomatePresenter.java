@@ -1,6 +1,7 @@
 package eu.robojob.millassist.ui.automate;
 
 import java.util.Set;
+import java.util.concurrent.Future;
 
 import javafx.scene.Node;
 import javafx.scene.control.TextInputControl;
@@ -30,6 +31,7 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 	private DisconnectedDevicesView disconnectedDevicesView;
 	private AutomateStatusPresenter statusPresenter;
 	private AutomateTimingThread automateTimingThread;
+	private Future<?> automateTimingFuture;
 	private DeviceMenuFactory deviceMenuFactory;
 	private AbstractMenuPresenter<?> activeMenu;
 	private ProcessFlowAdapter processFlowAdapter;
@@ -38,6 +40,7 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 	private boolean running;
 	
 	private AutomateFixedControllingThread automateThread;
+	private Future<?> automateFuture;
 	
 	public AutomatePresenter(final MainContentView view, final AutomateProcessFlowPresenter processFlowPresenter, final DisconnectedDevicesView disconnectedDevicesView,
 			final ProcessFlow processFlow, final ProcessFlowTimer processFlowTimer, final AutomateStatusPresenter statusPresenter,
@@ -87,12 +90,12 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 	@Override
 	public void stopRunning() {
 		running = false;
-		if (automateThread.isRunning()) {
-			automateThread.interrupt();
-		} else {
-			getProcessFlow().initialize();
-			getProcessFlow().setMode(Mode.STOPPED);
+		if (automateFuture != null) {
+			automateFuture.cancel(true);
+			automateThread.stopRunning();
 		}
+		getProcessFlow().initialize();
+		getProcessFlow().setMode(Mode.STOPPED);
 		//TODO reset devices
 		automateThread.reset();
 		statusPresenter.initializeView();
@@ -101,7 +104,7 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 	
 	public void startAutomate() {
 		running = true;
-		ThreadManager.submit(automateThread);
+		automateFuture = ThreadManager.submit(automateThread);
 		statusPresenter.getView().activateStopButton();
 	}
 	
@@ -143,13 +146,15 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 		//TODO review: doesn't look so clean
 		statusPresenter.setTotalAmount(processFlow.getTotalAmount());
 		statusPresenter.setFinishedAmount(processFlow.getFinishedAmount());
-		ThreadManager.submit(automateTimingThread);
+		automateTimingFuture = ThreadManager.submit(automateTimingThread);
 	}
 
 	@Override
 	public void stopListening(final ProcessFlow processFlow) {
 		processFlow.removeListener(statusPresenter);
-		ThreadManager.stopRunning(automateTimingThread);
+		if (automateTimingFuture != null) {
+			automateTimingFuture.cancel(true);
+		}
 	}
 
 	public boolean showDeviceMenu(final int deviceIndex) {

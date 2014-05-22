@@ -165,21 +165,24 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 			PickStep pickStep = (PickStep) e.getStep();
 			if (pickStep.getDevice() instanceof AbstractStackingDevice) {
 				WorkPieceDimensions currentDimensions = this.pickStep.getRobotSettings().getWorkPiece().getDimensions();
-				WorkPieceDimensions newDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
-				boolean reteach = false;
-				if ( (currentDimensions.getLength() != newDimensions.getLength())
-						|| (currentDimensions.getWidth() != newDimensions.getWidth()) 
-							|| (currentDimensions.getHeight() != newDimensions.getHeight())
-						) {
-					reteach = true;
-					this.pickStep.setRelativeTeachedOffset(null);
+				if (e.isReTeachingNeeded()) {
+					WorkPieceDimensions newDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
+					boolean reteach = false;
+					if ( (currentDimensions.getLength() != newDimensions.getLength())
+							|| (currentDimensions.getWidth() != newDimensions.getWidth()) 
+								|| (currentDimensions.getHeight() != newDimensions.getHeight())
+							) {
+						reteach = true;
+						this.pickStep.setRelativeTeachedOffset(null);
+					}
+					this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setLength(pickStep.getRobotSettings().getWorkPiece().getDimensions().getLength());
+					this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setWidth(pickStep.getRobotSettings().getWorkPiece().getDimensions().getWidth());
+					this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setHeight(pickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight());
+					this.pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.pickStep.getProcessFlow(), this.pickStep, reteach));
 				}
-				this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setLength(pickStep.getRobotSettings().getWorkPiece().getDimensions().getLength());
-				this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setWidth(pickStep.getRobotSettings().getWorkPiece().getDimensions().getWidth());
-				this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setHeight(pickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight());
-				this.pickStep.getRobotSettings().getWorkPiece().setWeight(pickStep.getRobotSettings().getWorkPiece().getWeight());
 				this.pickStep.getRobotSettings().getWorkPiece().setMaterial(pickStep.getRobotSettings().getWorkPiece().getMaterial());
-				this.pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.pickStep.getProcessFlow(), this.pickStep, reteach));
+				this.pickStep.getRobotSettings().getWorkPiece().setWeight(pickStep.getRobotSettings().getWorkPiece().getWeight());
+				this.pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.pickStep.getProcessFlow(), this.pickStep, false));
 			}
 		}
 	}

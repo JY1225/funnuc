@@ -141,7 +141,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		if (amount != deviceSettings.getAmount()) {
 			deviceSettings.setAmount(amount);
 			recalculate();
-			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		}
 	}
 	
@@ -149,6 +149,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		try {
 			((BasicStackPlate) pickStep.getDevice()).getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
 			((BasicStackPlate) pickStep.getDevice()).getLayout().placeRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
+			pickStep.getProcessFlow().getClampingType().setChanged((deviceSettings.getOrientation() == WorkPieceOrientation.DEG90));
 			getView().hideNotification();
 			if (!isWeightOk()) {
 				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO));
@@ -165,6 +166,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		logger.info("Set orientation [" + orientation + "].");
 		if (!orientation.equals(deviceSettings.getOrientation())) {
 			deviceSettings.setOrientation(orientation);
+			this.orientation = orientation;
 			recalculate();
 			getView().refresh();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
@@ -195,7 +197,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
 		recalculate();
 		getView().refresh();
-		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		//((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
 	}
 

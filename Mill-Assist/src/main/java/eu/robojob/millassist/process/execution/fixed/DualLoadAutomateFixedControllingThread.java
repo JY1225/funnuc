@@ -1,5 +1,7 @@
 package eu.robojob.millassist.process.execution.fixed;
 
+import java.util.concurrent.Future;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,6 +23,7 @@ import eu.robojob.millassist.threading.ThreadManager;
 public class DualLoadAutomateFixedControllingThread extends AutomateFixedControllingThread {
 
 	protected ProcessFlowExecutionThread processFlowExecutor3;
+	protected Future<?> processFlowExecutor3Future;
 	protected ExecutionThreadStatus statusExecutor3;
 	
 	private static final Logger logger = LogManager.getLogger(DualLoadAutomateFixedControllingThread.class.getName());
@@ -45,7 +48,7 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 			processFlow.setMode(ProcessFlow.Mode.AUTO);
 			running = true;
 			checkIfConcurrentExecutionIsPossible();
-			if (processFlow.getCurrentIndex(WORKPIECE_0_ID) == -1) {
+			if ((processFlow.getCurrentIndex(WORKPIECE_0_ID) == -1) || (processFlow.getCurrentIndex(WORKPIECE_0_ID) == 0)) {
 				processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.PREPARE, WORKPIECE_0_ID));
 				for (AbstractRobot robot :processFlow.getRobots()) {	// first recalculate TCPs
 					checkStatus();
@@ -82,12 +85,12 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 					}
 				} 
 			}
-			ThreadManager.submit(processFlowExecutor1);
+			processFlowExecutor1Future = ThreadManager.submit(processFlowExecutor1);
 			if (startSecond) {
 				statusExecutor2 = ExecutionThreadStatus.IDLE;
 				processFlowExecutor2 = new ProcessFlowExecutionThread(this, processFlow, WORKPIECE_1_ID);
 				firstPiece = false;
-				ThreadManager.submit(processFlowExecutor2);
+				processFlowExecutor2Future = ThreadManager.submit(processFlowExecutor2);
 			}
 			// wait until all processes have finished
 			synchronized(finishedSyncObject) {
@@ -279,7 +282,7 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 			} else if (!processFlowExecutor2.isRunning() && (processFlow.getTotalAmount() - processFlow.getFinishedAmount() > 1)) {
 				// always start second process if not running and more than one wp needed after current
 				statusExecutor2 = ExecutionThreadStatus.IDLE;
-				ThreadManager.submit(processFlowExecutor2);
+				processFlowExecutor2Future = ThreadManager.submit(processFlowExecutor2);
 			} else if ((!processFlowExecutor2.isRunning()) && (processFlow.getTotalAmount() - processFlow.getFinishedAmount() <= 1)) {
 				logger.info("No second process, move to home");
 				try {
@@ -304,7 +307,7 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 			} else if (!processFlowExecutor3.isRunning() && (processFlow.getTotalAmount() - processFlow.getFinishedAmount() > 2) && isConcurrentExecutionPossible) {
 				// always start second process if not running and more than one wp needed after current
 				statusExecutor3 = ExecutionThreadStatus.IDLE;
-				ThreadManager.submit(processFlowExecutor3);
+				processFlowExecutor3Future = ThreadManager.submit(processFlowExecutor3);
 			} else if (!processFlowExecutor3.isRunning()) {
 				logger.info("No third process, move to home");
 				try {
@@ -561,16 +564,37 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 		} 
 	}
 	
+	@Override
 	public void stopRunning() {
-		super.stopRunning();
-		if (processFlowExecutor3 != null) {
-			processFlowExecutor3.interrupt();
+		logger.info("Called stop running");
+		running = false;
+		synchronized(finishedSyncObject) {
+			finishedSyncObject.notifyAll();
 		}
+		if (processFlowExecutor1Future != null) {
+			processFlowExecutor1Future.cancel(true);
+		}
+		if (processFlowExecutor2Future != null) {
+			processFlowExecutor2Future.cancel(true);
+		}
+		if (processFlowExecutor3Future != null) {
+			processFlowExecutor3Future.cancel(true);
+		}
+		this.statusExecutor1 = ExecutionThreadStatus.IDLE;
+		this.statusExecutor2 = ExecutionThreadStatus.IDLE;
 		this.statusExecutor3 = ExecutionThreadStatus.IDLE;
+		// just to be sure: 
+		for (AbstractRobot robot : processFlow.getRobots()) {
+			robot.setCurrentActionSettings(null);
+		}
+		stopExecution();
 	}
 	
 	public void stopExecution() {
-		super.stopExecution();
+		processFlow.initialize();
+		processFlow.setMode(Mode.STOPPED);
+		processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
+		processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
 		processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_2_ID));
 	}
 }

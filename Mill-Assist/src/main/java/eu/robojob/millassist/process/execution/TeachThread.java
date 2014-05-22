@@ -104,13 +104,13 @@ public class TeachThread extends Thread implements ProcessExecutor {
 			} catch (InterruptedException e) {
 				if ((!isRunning()) || ThreadManager.isShuttingDown()) {
 					logger.info("Execution of one or more steps got interrupted, so let't just stop");
-					indicateStopped();
-				} else {
-					handleException(new Exception(Translator.getTranslation(OTHER_EXCEPTION)));
+					//indicateStopped();
 				}
 			} catch (Exception e) {
 				handleException(new Exception(Translator.getTranslation(OTHER_EXCEPTION)));
 				e.printStackTrace();
+			} finally {
+				//stopRunning();
 			}
 		} catch (Exception e) {
 			logger.error(e);
@@ -118,6 +118,8 @@ public class TeachThread extends Thread implements ProcessExecutor {
 		} catch (Throwable t) {
 			logger.error(t);
 			t.printStackTrace();
+		} finally {
+			stopRunning();
 		}
 		logger.info(toString() + " ended...");
 	}
@@ -138,16 +140,20 @@ public class TeachThread extends Thread implements ProcessExecutor {
 	@Override
 	public void interrupt() {
 		if (running) {
-			running = false;
-			for (AbstractRobot robot :processFlow.getRobots()) {
-				robot.interruptCurrentAction();
-			}
-			for (AbstractDevice device :processFlow.getDevices()) {
-				device.interruptCurrentAction();
-			}
-			processFlow.initialize();
-			indicateStopped();
+			stopRunning();
 		}
+	}
+	
+	public void stopRunning() {
+		running = false;
+		logger.info("running to false");
+		for (AbstractRobot robot :processFlow.getRobots()) {
+			robot.interruptCurrentAction();
+		}
+		for (AbstractDevice device :processFlow.getDevices()) {
+			device.interruptCurrentAction();
+		}
+		indicateStopped();
 	}
 
 	protected void resetOffsets() {

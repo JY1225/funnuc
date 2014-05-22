@@ -60,7 +60,9 @@ public class RoboSoft extends Application {
 		stage.setTitle("RoboSoft");
 		stage.centerOnScreen();
 		stage.setResizable(false);
-		stage.initStyle(StageStyle.UNDECORATED);
+		if (!(properties.containsKey("title-bar") && properties.get("title-bar").equals("true"))) {
+			stage.initStyle(StageStyle.UNDECORATED);
+		}
 		stage.getIcons().add(new Image("images/icon.png"));
 		stage.show();
 		ThreadManager.submit(new Thread () {

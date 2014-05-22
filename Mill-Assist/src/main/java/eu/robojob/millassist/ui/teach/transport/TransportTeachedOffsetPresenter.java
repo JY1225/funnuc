@@ -33,7 +33,7 @@ public class TransportTeachedOffsetPresenter extends AbstractFormPresenter<Trans
 		if (coordinates == null) {
 			coordinates = new Coordinates(0, 0, 0, 0, 0, 0);
 		}
-		position = transportStep.getDevice().getLocationOrientation(transportStep.getDeviceSettings().getWorkArea());
+		position = transportStep.getDevice().getLocationOrientation(transportStep.getDeviceSettings().getWorkArea(), transportStep.getProcessFlow().getClampingType());
 		coordinates = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, coordinates);
 		if (nextStep != null) {
 			coordinatesNext = nextStep.getRelativeTeachedOffset();
