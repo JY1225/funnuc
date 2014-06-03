@@ -140,6 +140,7 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 	public void stopTeaching() {
 		if (teachFuture != null) {
 			teachFuture.cancel(true);
+			teachThread.stopRunning();
 		}
 	}
 	

@@ -275,10 +275,10 @@ public class DeviceManager {
 			final String imagePath, final float x, final float y, final float z, final float w, final float p, 
 			final float r, final float smoothToX, 
 			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, 
-			final float smoothFromZ) {
+			final float smoothFromZ, final Clamping.FixtureType fixtureType) {
 		try {
 			deviceMapper.updateClamping(clamping, name, type, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-				smoothFromX, smoothFromY, smoothFromZ);
+				smoothFromX, smoothFromY, smoothFromZ, fixtureType);
 		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();
@@ -287,11 +287,11 @@ public class DeviceManager {
 	
 	public void saveClamping(final String name, final Clamping.Type type, final float height, final String imagePath, final float x, 
 			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
-			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ) {
+			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, final Clamping.FixtureType fixtureType) {
 		try {
 			Clamping clamping = new Clamping(type, name, height, new Coordinates(x, y, z, w, p, r), 
 					new Coordinates(smoothToX, smoothToY, smoothToZ, 0, 0, 0), 
-					new Coordinates(smoothFromX, smoothFromY, smoothFromZ, 0, 0, 0), imagePath);
+					new Coordinates(smoothFromX, smoothFromY, smoothFromZ, 0, 0, 0), imagePath, fixtureType);
 			Set<WorkArea> workAreas = new HashSet<WorkArea>();
 			for (AbstractCNCMachine cncMachine : getCNCMachines()) {
 				for (WorkArea workArea : cncMachine.getWorkAreas()) {

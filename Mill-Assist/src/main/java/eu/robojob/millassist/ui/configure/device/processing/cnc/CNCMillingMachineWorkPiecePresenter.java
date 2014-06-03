@@ -103,9 +103,9 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 	
 	public void changedHeight(final float height) {
 		pickStep.getRobotSettings().getWorkPiece().getDimensions().setHeight(height);
-		pickStep.setRelativeTeachedOffset(null);
+		//pickStep.setRelativeTeachedOffset(null);
 		recalculate();
-		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 	}
 	
 	public void resetHeight() {

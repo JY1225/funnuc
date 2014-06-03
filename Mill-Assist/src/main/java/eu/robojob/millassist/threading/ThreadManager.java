@@ -27,41 +27,26 @@ public final class ThreadManager {
 		ThreadManager.isShuttingDown = false;
 	}
 	
-	public static Future<?> submit(final Thread thread) {
-		logger.debug("New thread submitted: [" + thread + "].");
-		if (thread instanceof ExternalCommunicationThread) {
-			communicationThreads.add((ExternalCommunicationThread) thread);
-		} else if (thread instanceof MonitoringThread) {
-			monitoringThreads.add((MonitoringThread) thread);
+	public static Future<?> submit(final Runnable runnable) {
+		logger.debug("New runnable submitted: [" + runnable + "].");
+		if (runnable instanceof ExternalCommunicationThread) {
+			communicationThreads.add((ExternalCommunicationThread) runnable);
+		} else if (runnable instanceof MonitoringThread) {
+			monitoringThreads.add((MonitoringThread) runnable);
 		}
-		return executorService.submit(thread);
+		return executorService.submit(runnable);
 	}
 	
 	public static void shutDown() {
 		ThreadManager.isShuttingDown = true;
 		for (ExternalCommunicationThread thread : communicationThreads) {
 			thread.disconnectAndStop();
-			thread.interrupt();
+			//thread.interrupt();
 		}
 		for (MonitoringThread thread : monitoringThreads) {
 			thread.stopExecution();
 		}
 		executorService.shutdownNow();
-	}
-	
-	public static void stopRunning(final Thread thread) {
-		logger.info("About to stop: [" + thread + "].");
-		if (communicationThreads.contains(thread)) {
-			ExternalCommunicationThread exThread = (ExternalCommunicationThread) thread;
-			exThread.disconnectAndStop();
-			communicationThreads.remove(thread);
-		} else if (monitoringThreads.contains(thread)) {
-			MonitoringThread mThread = (MonitoringThread) thread;
-			mThread.stopExecution();
-			monitoringThreads.remove(mThread);
-		} else {
-			thread.interrupt();
-		}
 	}
 	
 	public static boolean isShuttingDown() {

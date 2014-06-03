@@ -15,6 +15,7 @@ import eu.robojob.millassist.db.external.util.ConnectionMapper;
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.Clamping.FixtureType;
 import eu.robojob.millassist.external.device.Clamping.Type;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
@@ -46,6 +47,10 @@ public class DeviceMapper {
 	private static final int CLAMPING_TYPE_FIXED_XM = 4;
 	private static final int CLAMPING_TYPE_FIXED_YP = 5;
 	private static final int CLAMPING_TYPE_FIXED_YM = 6;
+	private static final int CLAMPING_FIXTURE_TYPE_DEFAULT = 0;
+	private static final int CLAMPING_FIXTURE_TYPE_1 = 1;
+	private static final int CLAMPING_FIXTURE_TYPE_2 = 2;
+	private static final int CLAMPING_FIXTURE_TYPE_1_2 = 12;
 	private static final int WAYOFOPERATING_STARTSTOP = 1;
 	private static final int WAYOFOPERATING_MCODES = 2;
 	private static final int WAYOFOPERATING_MCODESDUAL = 3;
@@ -396,24 +401,43 @@ public class DeviceMapper {
 			float height = results.getFloat("HEIGHT");
 			String imageUrl = results.getString("IMAGE_URL");
 			String name = results.getString("NAME");
+			int fixtureTypeInt = results.getInt("FIXTURE_TYPE");
+			Clamping.FixtureType fixtureType = FixtureType.FIXTURE_1;
+			//FIXME TEMP: undo changes
+			switch (fixtureTypeInt) {
+				case CLAMPING_FIXTURE_TYPE_DEFAULT:
+					fixtureType = FixtureType.DEFAULT;
+					break;
+				case CLAMPING_FIXTURE_TYPE_1:
+					fixtureType = FixtureType.FIXTURE_1;
+					break;
+				case CLAMPING_FIXTURE_TYPE_2:
+					fixtureType = FixtureType.FIXTURE_2;
+					break;
+				case CLAMPING_FIXTURE_TYPE_1_2:
+					fixtureType = FixtureType.FIXTURE_1_2;
+					break;
+				default:
+					throw new IllegalStateException("Unknown clamping fixture type: [" + fixtureTypeInt + "].");
+			}
 			switch(type) {
 				case CLAMPING_TYPE_CENTRUM:
-					clamping = new Clamping(Clamping.Type.CENTRUM, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+					clamping = new Clamping(Clamping.Type.CENTRUM, name, height, relativePosition, smoothTo, smoothFrom, imageUrl, fixtureType);
 					break;
 				case CLAMPING_TYPE_FIXED_XP:
-					clamping = new Clamping(Clamping.Type.FIXED_XP, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+					clamping = new Clamping(Clamping.Type.FIXED_XP, name, height, relativePosition, smoothTo, smoothFrom, imageUrl, fixtureType);
 					break;
 				case CLAMPING_TYPE_NONE:
-					clamping = new Clamping(Clamping.Type.NONE, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+					clamping = new Clamping(Clamping.Type.NONE, name, height, relativePosition, smoothTo, smoothFrom, imageUrl, fixtureType);
 					break;
 				case CLAMPING_TYPE_FIXED_XM:
-					clamping = new Clamping(Clamping.Type.FIXED_XM, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+					clamping = new Clamping(Clamping.Type.FIXED_XM, name, height, relativePosition, smoothTo, smoothFrom, imageUrl, fixtureType);
 					break;
 				case CLAMPING_TYPE_FIXED_YP:
-					clamping = new Clamping(Clamping.Type.FIXED_YP, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+					clamping = new Clamping(Clamping.Type.FIXED_YP, name, height, relativePosition, smoothTo, smoothFrom, imageUrl, fixtureType);
 					break;
 				case CLAMPING_TYPE_FIXED_YM:
-					clamping = new Clamping(Clamping.Type.FIXED_YM, name, height, relativePosition, smoothTo, smoothFrom, imageUrl);
+					clamping = new Clamping(Clamping.Type.FIXED_YM, name, height, relativePosition, smoothTo, smoothFrom, imageUrl, fixtureType);
 					break;
 				default:
 					throw new IllegalStateException("Unknown clamping type: [" + type + "].");
@@ -623,7 +647,7 @@ public class DeviceMapper {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		Clamping clamping = prageDevice.getWorkAreas().get(0).getActiveClamping();
 		updateClamping(clamping, clamping.getName(), type, clamping.getHeight(), clamping.getImageUrl(), relPosX, relPosY, relPosZ, clamping.getRelativePosition().getW(),
-				clamping.getRelativePosition().getP(), relPosR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ);
+				clamping.getRelativePosition().getP(), relPosR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, clamping.getFixtureType());
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE " +
 				"SET NAME = ? WHERE ID = ?");
 		stmt.setString(1, name);
@@ -744,7 +768,8 @@ public class DeviceMapper {
 	public void updateClamping(final Clamping clamping, final String name, final Clamping.Type type, final float height, 
 			final String imagePath, final float x, final float y, final float z, final float w, final float p, 
 			final float r, final float smoothToX, 
-			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ) throws SQLException {
+			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ,
+			final Clamping.FixtureType fixtureType) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		Coordinates relPos = clamping.getRelativePosition();
 		relPos.setX(x);
@@ -765,7 +790,7 @@ public class DeviceMapper {
 		smoothFrom.setZ(smoothFromZ);
 		generalMapper.saveCoordinates(smoothFrom);
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE CLAMPING " +
-				"SET NAME = ?, TYPE = ?, HEIGHT = ?, IMAGE_URL = ? WHERE ID = ?");
+				"SET NAME = ?, TYPE = ?, HEIGHT = ?, IMAGE_URL = ?, FIXTURE_TYPE = ? WHERE ID = ?");
 		stmt.setString(1, name);
 		int typeInt = 0;
 		if (type == Type.CENTRUM) {
@@ -786,12 +811,24 @@ public class DeviceMapper {
 		stmt.setInt(2, typeInt);
 		stmt.setFloat(3, height);
 		stmt.setString(4, imagePath);
-		stmt.setInt(5, clamping.getId());
+		int fixtureTypeInt = 0;
+		if (fixtureType == FixtureType.DEFAULT) {
+			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_DEFAULT;
+		} else if (fixtureType == FixtureType.FIXTURE_1) {
+			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_1;
+		}  else if (fixtureType == FixtureType.FIXTURE_2) {
+			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_2;
+		} else if (fixtureType == FixtureType.FIXTURE_1_2) {
+			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_1_2;
+		}
+		stmt.setInt(5, fixtureTypeInt);
+		stmt.setInt(6, clamping.getId());
 		stmt.executeUpdate();
 		clamping.setName(name);
 		clamping.setType(type);
 		clamping.setHeight(height);
 		clamping.setImageUrl(imagePath);
+		clamping.setFixtureType(fixtureType);
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
@@ -818,7 +855,7 @@ public class DeviceMapper {
 			throw new IllegalStateException("Unknown clamping type: " + clamping.getType());
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO CLAMPING (NAME, TYPE, RELATIVE_POSITION, " +
-				"SMOOTH_TO, SMOOTH_FROM, IMAGE_URL, HEIGHT) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+				"SMOOTH_TO, SMOOTH_FROM, IMAGE_URL, HEIGHT, FIXTURE_TYPE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setString(1, clamping.getName());
 		stmt.setInt(2, typeInt);
 		stmt.setInt(3, clamping.getRelativePosition().getId());
@@ -826,6 +863,17 @@ public class DeviceMapper {
 		stmt.setInt(5, clamping.getSmoothFromPoint().getId());
 		stmt.setString(6, clamping.getImageUrl());
 		stmt.setFloat(7, clamping.getHeight());
+		int fixtureTypeInt = 0;
+		if (clamping.getFixtureType() == FixtureType.DEFAULT) {
+			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_DEFAULT;
+		} else if (clamping.getFixtureType() == FixtureType.FIXTURE_1) {
+			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_1;
+		}  else if (clamping.getFixtureType() == FixtureType.FIXTURE_2) {
+			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_2;
+		} else if (clamping.getFixtureType() == FixtureType.FIXTURE_1_2) {
+			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_1_2;
+		}
+		stmt.setInt(8, fixtureTypeInt);
 		try {
 			stmt.executeUpdate();
 			ResultSet resultSet = stmt.getGeneratedKeys();

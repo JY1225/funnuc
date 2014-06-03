@@ -6,7 +6,7 @@ import javafx.scene.control.Button;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ButtonStyleChangingThread extends Thread {
+public class ButtonStyleChangingThread implements Runnable {
 
 	private Button button;
 	
@@ -62,8 +62,7 @@ public class ButtonStyleChangingThread extends Thread {
 				try {
 					Thread.sleep(duration);
 				} catch (InterruptedException e) {
-					logger.error(e);
-					alive = false;
+					interrupted();
 				}
 			} else {
 				// always set style 1 when not running
@@ -79,8 +78,7 @@ public class ButtonStyleChangingThread extends Thread {
 					try {
 						syncObject.wait();
 					} catch (InterruptedException e) {
-						logger.error(e);
-						alive = false;
+						interrupted();
 					} catch (Exception e) {
 						logger.error(e);
 						alive = false;
@@ -91,8 +89,7 @@ public class ButtonStyleChangingThread extends Thread {
 		logger.info("ButtonStyleChangingThread ended...");
 	}
 	
-	@Override
-	public void interrupt() {
+	public void interrupted() {
 		this.alive = false;
 		synchronized (syncObject) {
 			syncObject.notify();

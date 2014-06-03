@@ -113,8 +113,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		if (height != dimensions.getHeight()) {
 			dimensions.setHeight(height);
 			recalculate();
-			clearTeachedOffsets();
-			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+			//clearTeachedOffsets();
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		}
 	}
 	

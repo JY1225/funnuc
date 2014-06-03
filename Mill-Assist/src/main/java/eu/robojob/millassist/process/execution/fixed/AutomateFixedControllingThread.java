@@ -20,7 +20,7 @@ import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.threading.ThreadManager;
 
-public class AutomateFixedControllingThread extends Thread {
+public class AutomateFixedControllingThread implements Runnable {
 	
 	protected ProcessFlow processFlow;
 	protected ProcessFlowExecutionThread processFlowExecutor1;
@@ -156,12 +156,12 @@ public class AutomateFixedControllingThread extends Thread {
 			}
 			processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_0_ID));
 			processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_1_ID));
+			if (Thread.currentThread().isInterrupted()) {
+				interrupted();
+			}
 			logger.info(toString() + " ended...");
 		} catch(InterruptedException e) {
-			if (running) {
-				stopRunning();
-				notifyException(e);
-			}
+			interrupted();
 		} catch (AbstractCommunicationException e) {
 			stopRunning();
 			notifyException(e);
@@ -173,18 +173,10 @@ public class AutomateFixedControllingThread extends Thread {
 		}
 	}
 	
-	@Override
-	public void interrupt() {
-		logger.info("Called interrupt on AutomateFixedControllingThread");
-		running = false;
-		super.interrupt();
-		for (AbstractRobot robot : processFlow.getRobots()) {
-			robot.interruptCurrentAction();
+	public void interrupted() {
+		if (running) {
+			stopRunning();
 		}
-		for (AbstractDevice device :processFlow.getDevices()) {
-			device.interruptCurrentAction();
-		}
-		stopRunning();
 		reset();
 	}
 	
@@ -455,7 +447,7 @@ public class AutomateFixedControllingThread extends Thread {
 	public void notifyException(final Exception e) {
 		processFlow.processProcessFlowEvent(new ExceptionOccuredEvent(processFlow, e));
 		processFlow.initialize();
-		interrupt();
+		interrupted();
 		e.printStackTrace();
 		logger.error(e);
 	}
@@ -463,6 +455,12 @@ public class AutomateFixedControllingThread extends Thread {
 	public void stopRunning() {
 		logger.info("Called stop running");
 		running = false;
+		for (AbstractRobot robot : processFlow.getRobots()) {
+			robot.interruptCurrentAction();
+		}
+		for (AbstractDevice device :processFlow.getDevices()) {
+			device.interruptCurrentAction();
+		}
 		synchronized(finishedSyncObject) {
 			finishedSyncObject.notifyAll();
 		}
@@ -479,6 +477,7 @@ public class AutomateFixedControllingThread extends Thread {
 			robot.setCurrentActionSettings(null);
 		}
 		stopExecution();
+		reset();
 	}
 	
 	public void stopExecution() {

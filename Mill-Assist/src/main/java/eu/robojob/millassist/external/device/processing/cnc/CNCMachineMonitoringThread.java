@@ -10,7 +10,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.threading.MonitoringThread;
 
-public class CNCMachineMonitoringThread extends Thread implements MonitoringThread {
+public class CNCMachineMonitoringThread implements Runnable, MonitoringThread {
 
 	private static final int REFRESH_TIME = 250;
 	
@@ -58,7 +58,9 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 							cncMachine.processCNCMachineEvent(new CNCMachineAlarmsOccuredEvent(cncMachine, alarms));
 						}
 						this.previousAlarms = alarms;
-					} catch (AbstractCommunicationException | InterruptedException e) {
+					} catch (InterruptedException e) {
+						interrupted();
+					} catch (AbstractCommunicationException e) {
 						//TODO do something with this exception
 						if (cncMachine.isConnected()) {
 							logger.error(e);
@@ -72,8 +74,7 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 				try {
 					Thread.sleep(REFRESH_TIME);
 				} catch (InterruptedException e) {
-					// interrupted, so let's just stop, the external communication thread takes care of disconnecting if needed at this point
-					alive = false;
+					interrupted();
 				}
 			}
 		} catch (Exception e) {
@@ -86,10 +87,11 @@ public class CNCMachineMonitoringThread extends Thread implements MonitoringThre
 		logger.info(toString() + " ended...");
 	}
 	
-	@Override
-	public void interrupt() {
+	public void interrupted() {
 		alive = false;
-		super.interrupt();
+		if (cncMachine.isConnected()) {
+			cncMachine.disconnect();
+		}
 	}
 	
 	@Override

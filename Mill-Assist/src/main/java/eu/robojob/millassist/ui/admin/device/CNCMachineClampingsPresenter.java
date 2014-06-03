@@ -64,13 +64,13 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 	public void saveData(final String name, final float height, final String imagePath, final float x, 
 			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
 			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
-			final Clamping.Type clampingType) {
+			final Clamping.Type clampingType, final Clamping.FixtureType fixtureType) {
 		if (selectedClamping != null) {
 			deviceManager.updateClamping(selectedClamping, name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-				smoothFromX, smoothFromY, smoothFromZ);
+				smoothFromX, smoothFromY, smoothFromZ, fixtureType);
 		} else {
 			deviceManager.saveClamping(name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-				smoothFromX, smoothFromY, smoothFromZ);
+				smoothFromX, smoothFromY, smoothFromZ, fixtureType);
 		}
 		selectedClamping = null;
 		editMode = false;

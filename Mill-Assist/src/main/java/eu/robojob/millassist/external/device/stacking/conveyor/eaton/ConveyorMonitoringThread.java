@@ -12,7 +12,7 @@ import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarmsOcc
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorEvent;
 import eu.robojob.millassist.threading.MonitoringThread;
 
-public class ConveyorMonitoringThread extends Thread implements MonitoringThread {
+public class ConveyorMonitoringThread implements Runnable, MonitoringThread {
 
 	public static final int REFRESH_TIME = 25;
 	
@@ -47,7 +47,9 @@ public class ConveyorMonitoringThread extends Thread implements MonitoringThread
 							conveyor.processConveyorEvent(new ConveyorAlarmsOccuredEvent(conveyor, alarms));
 						}
 						this.previousAlarms = alarms;
-					} catch (AbstractCommunicationException | InterruptedException e) {
+					} catch (InterruptedException e) {
+						interrupted();
+					} catch (AbstractCommunicationException e) {
 						if (conveyor.isConnected()) {
 							logger.error(e);
 							conveyor.disconnect();
@@ -60,8 +62,7 @@ public class ConveyorMonitoringThread extends Thread implements MonitoringThread
 				try {
 					Thread.sleep(REFRESH_TIME);
 				} catch (InterruptedException e) {
-					// interrupted, so let's just stop, the external communication thread takes care of disconnecting if needed at this point
-					alive = false;
+					interrupted();
 				}
 			}
 		} catch (Exception e) {
@@ -74,10 +75,11 @@ public class ConveyorMonitoringThread extends Thread implements MonitoringThread
 		logger.info(toString() + " ended...");
 	}
 	
-	@Override
-	public void interrupt() {
+	public void interrupted() {
 		alive = false;
-		super.interrupt();
+		if (conveyor.isConnected()) {
+			conveyor.disconnect();
+		}
 	}
 	
 	@Override

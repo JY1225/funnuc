@@ -27,7 +27,6 @@ import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.PutAndWaitStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
-import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.workpiece.WorkPiece;
 
@@ -156,25 +155,20 @@ public class TeachOptimizedThread extends TeachThread {
 			} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
 				handleException(e);
 			} catch (InterruptedException e) {
-				if ((!isRunning()) || ThreadManager.isShuttingDown()) {
-					logger.info("Execution of one or more steps got interrupted, so let't just stop");
-					//indicateStopped();
-				}
+				interrupted();
 			} catch (Exception e) {
 				e.printStackTrace();
 				handleException(new Exception(Translator.getTranslation(OTHER_EXCEPTION)));
-			} finally {
-				//stopRunning();
 			}
 		} catch (Exception e) {
+			stopRunning();
 			logger.error(e);
 			e.printStackTrace();
 		} catch (Throwable t) {
+			stopRunning();
 			logger.error(t);
 			t.printStackTrace();
-		} finally {
-			stopRunning();
-		}
+		} 
 		logger.info(toString() + " ended...");
 	}
 	

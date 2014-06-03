@@ -21,7 +21,7 @@ import eu.robojob.millassist.process.RobotStep;
 import eu.robojob.millassist.process.execution.ProcessExecutor;
 import eu.robojob.millassist.threading.ThreadManager;
 
-public class ProcessFlowExecutionThread extends Thread implements ProcessExecutor {
+public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 
 	private ProcessFlow processFlow;
 	private int workpieceId;
@@ -128,13 +128,7 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 			}
 			logger.info(toString() + " ended...");
 		} catch (InterruptedException e) {
-			logger.error(e);
-			if (controllingThread.isRunning()) {
-				controllingThread.notifyException(e);
-				controllingThread.stopRunning();
-			} /*else {
-				controllingThread.stopRunning();
-			}*/
+			interrupted();
 		} catch (Exception e) {
 			controllingThread.notifyException(e);
 			//controllingThread.stopExecution();
@@ -303,12 +297,11 @@ public class ProcessFlowExecutionThread extends Thread implements ProcessExecuto
 		}
 	}
 	
-	@Override
-	public void interrupt() {
-		logger.info("Interrupt process flow executionthread " + this);
-		super.interrupt();
+	public void interrupted() {
 		stopRunning();
-		logger.info("Interrupt finished");
+		if (controllingThread.isRunning()) {
+			controllingThread.stopRunning();
+		}
 	}
 	
 	public void stopRunning() {
