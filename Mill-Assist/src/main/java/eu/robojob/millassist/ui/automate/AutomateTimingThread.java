@@ -4,9 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.process.ProcessFlowTimer;
-import eu.robojob.millassist.threading.ThreadManager;
 
-public class AutomateTimingThread extends Thread {
+public class AutomateTimingThread implements Runnable {
 
 	private ProcessFlowTimer processFlowTimer;
 	private boolean running;
@@ -36,12 +35,7 @@ public class AutomateTimingThread extends Thread {
 				Thread.sleep(SLEEP_INTERVAL);
 			}
 		} catch (InterruptedException e) {
-			if (!running || ThreadManager.isShuttingDown()) {
-				logger.debug("Execution got interrupted, so let't just stop");
-			} else {
-				logger.error(e);
-				e.printStackTrace();
-			}
+			interrupted();
 		} catch (Exception e) {
 			logger.error(e);
 			e.printStackTrace();
@@ -80,10 +74,8 @@ public class AutomateTimingThread extends Thread {
 		}
 	}
 	
-	@Override
-	public void interrupt() {
+	public void interrupted() {
 		this.running = false;
-		super.interrupt();
 	}
 	
 	public void stopRunning() {

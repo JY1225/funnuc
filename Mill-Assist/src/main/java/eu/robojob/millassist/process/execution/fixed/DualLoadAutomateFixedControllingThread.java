@@ -115,10 +115,7 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 			processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, null, StatusChangedEvent.INACTIVE, WORKPIECE_2_ID));
 			logger.info(toString() + " ended...");
 		} catch(InterruptedException e) {
-			if (running) {
-				stopRunning();
-				notifyException(e);
-			}
+			interrupted();
 		} catch (AbstractCommunicationException e) {
 			stopRunning();
 			notifyException(e);
@@ -568,6 +565,12 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 	public void stopRunning() {
 		logger.info("Called stop running");
 		running = false;
+		for (AbstractRobot robot : processFlow.getRobots()) {
+			robot.interruptCurrentAction();
+		}
+		for (AbstractDevice device :processFlow.getDevices()) {
+			device.interruptCurrentAction();
+		}
 		synchronized(finishedSyncObject) {
 			finishedSyncObject.notifyAll();
 		}
@@ -588,6 +591,7 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 			robot.setCurrentActionSettings(null);
 		}
 		stopExecution();
+		reset();
 	}
 	
 	public void stopExecution() {

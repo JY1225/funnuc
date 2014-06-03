@@ -1,0 +1,11 @@
+// add column fixture type
+ALTER TABLE IRSCW.CLAMPING ADD COLUMN FIXTURE_TYPE INTEGER DEFAULT 0 NOT NULL
+
+// initialize fixture values for machine clampings to 1
+UPDATE IRSCW.CLAMPING SET FIXTURE_TYPE = 1 WHERE ID IN (
+        SELECT CLAMPING FROM WORKAREA_CLAMPING WHERE WORKAREA IN (
+                SELECT ID FROM WORKAREA WHERE USERFRAME IN (
+                        SELECT ID FROM USERFRAME WHERE NUMBER IN (3, 4)
+                )
+        )
+);

@@ -11,6 +11,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.device.Clamping.FixtureType;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
 import eu.robojob.millassist.external.device.DeviceActionException;
@@ -185,7 +186,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			}
 			int command = 0;
 			if (ufNr == 3) {
-				command = command | CNCMachineConstants.IPC_CYCLESTART_WA1_REQUEST;
+				if (startCylusSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_2) {
+					command = command | CNCMachineConstants.IPC_CYCLESTART_WA2_REQUEST;
+				} else {
+					command = command | CNCMachineConstants.IPC_CYCLESTART_WA1_REQUEST;
+				}
 			} else if (ufNr == 4) {
 				command = command | CNCMachineConstants.IPC_CYCLESTART_WA2_REQUEST;
 			} else {
@@ -196,15 +201,27 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 			// fix for jametal, comment next lines and uncomment sleep
 			if (ufNr == 3) {
-				boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
-				if (!cycleStartReady) {
-					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
-					waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1);
-					setCncMachineTimeout(null);
+				if (startCylusSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_2) {
+					boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA2, START_CYCLE_TIMEOUT);
+					if (!cycleStartReady) {
+						setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
+						waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA2);
+						setCncMachineTimeout(null);
+					}
+					//Thread.sleep(10000);
+					// we now wait for pick requested
+					waitForStatus(CNCMachineConstants.R_PICK_WA2_REQUESTED);
+				} else {
+					boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1, START_CYCLE_TIMEOUT);
+					if (!cycleStartReady) {
+						setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
+						waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA1);
+						setCncMachineTimeout(null);
+					}
+					//Thread.sleep(10000);
+					// we now wait for pick requested
+					waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED);
 				}
-				//Thread.sleep(10000);
-				// we now wait for pick requested
-				waitForStatus(CNCMachineConstants.R_PICK_WA1_REQUESTED);
 			} else if (ufNr == 4) {
 				boolean cycleStartReady = waitForStatus(CNCMachineConstants.R_CYCLE_STARTED_WA2, START_CYCLE_TIMEOUT);
 				if (!cycleStartReady) {
@@ -284,6 +301,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		int command = 0;
 		if (ufNr == 3) {
 			command = command | CNCMachineConstants.IPC_PICK_WA1_RQST;
+			if (pickSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_2) {
+				command = 0 | CNCMachineConstants.IPC_PICK_WA2_RQST;
+			} else if (pickSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_1_2) {
+				command = command | CNCMachineConstants.IPC_PICK_WA2_RQST;
+			}
 		} else if (ufNr == 4) {
 			command = command | CNCMachineConstants.IPC_PICK_WA2_RQST;
 		} else {
@@ -295,11 +317,27 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 		// check pick is prepared
 		if (ufNr == 3) {
-			boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA1_READY, PREPARE_PICK_TIMEOUT);
-			if (!pickReady) {
-				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
-				waitForStatus(CNCMachineConstants.R_PICK_WA1_READY);
-				setCncMachineTimeout(null);
+			if (pickSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_2) {
+				boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA2_READY, PREPARE_PICK_TIMEOUT);
+				if (!pickReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
+					waitForStatus(CNCMachineConstants.R_PICK_WA2_READY);
+					setCncMachineTimeout(null);
+				}
+			} else if (pickSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_1_2) {
+				boolean pickReady =  waitForStatus((CNCMachineConstants.R_PICK_WA1_READY | CNCMachineConstants.R_PICK_WA2_READY), PREPARE_PICK_TIMEOUT);
+				if (!pickReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
+					waitForStatus((CNCMachineConstants.R_PICK_WA1_READY | CNCMachineConstants.R_PICK_WA2_READY));
+					setCncMachineTimeout(null);
+				}
+			} else {
+				boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA1_READY, PREPARE_PICK_TIMEOUT);
+				if (!pickReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
+					waitForStatus(CNCMachineConstants.R_PICK_WA1_READY);
+					setCncMachineTimeout(null);
+				}
 			}
 		} else if (ufNr == 4) {
 			boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA2_READY, PREPARE_PICK_TIMEOUT);
@@ -330,6 +368,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		int command = 0;
 		if (ufNr == 3) {
 			command = command | CNCMachineConstants.IPC_PUT_WA1_REQUEST;
+			if (putSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_2) {
+				command = 0 | CNCMachineConstants.IPC_PUT_WA2_REQUEST;
+			} else if (putSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_1_2) {
+				command = command | CNCMachineConstants.IPC_PUT_WA2_REQUEST;
+			}
 		} else if (ufNr == 4) {
 			command = command | CNCMachineConstants.IPC_PUT_WA2_REQUEST;
 		} else {
@@ -341,12 +384,28 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				
 		// check put is prepared
 		if (ufNr == 3) {
-			boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
-			if (!putReady) {
-				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PUT_TIMEOUT));
-				waitForStatus(CNCMachineConstants.R_PUT_WA1_READY);
-				setCncMachineTimeout(null);
-			} 
+			if (putSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_2) {
+				boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA2_READY, PREPARE_PUT_TIMEOUT);
+				if (!putReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PUT_TIMEOUT));
+					waitForStatus(CNCMachineConstants.R_PUT_WA2_READY);
+					setCncMachineTimeout(null);
+				} 
+			} else if (putSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_1_2) {
+				boolean putReady =  waitForStatus((CNCMachineConstants.R_PUT_WA1_READY | CNCMachineConstants.R_PUT_WA2_READY), PREPARE_PUT_TIMEOUT);
+				if (!putReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PUT_TIMEOUT));
+					waitForStatus((CNCMachineConstants.R_PUT_WA1_READY | CNCMachineConstants.R_PUT_WA2_READY));
+					setCncMachineTimeout(null);
+				} 
+			} else {
+				boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA1_READY, PREPARE_PUT_TIMEOUT);
+				if (!putReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PUT_TIMEOUT));
+					waitForStatus(CNCMachineConstants.R_PUT_WA1_READY);
+					setCncMachineTimeout(null);
+				} 
+			}
 		} else if (ufNr == 4) {
 			boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA2_READY, PREPARE_PUT_TIMEOUT);
 			if (!putReady) {
@@ -370,6 +429,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		int command = 0;
 		if (ufNr == 3) {
 			command = command | CNCMachineConstants.IPC_UNCLAMP_WA1_RQST;
+			if (pickSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_2) {
+				command = 0 | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
+			} else if (pickSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_1_2) {
+				command = command | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
+			}
 		} else if (ufNr == 4) {
 			command = command | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
 		} else {
@@ -380,11 +444,27 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 		
 		if (ufNr == 3) {
-			boolean clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY, UNCLAMP_TIMEOUT);
-			if (!clampReady) {
-				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
-				waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY);
-				setCncMachineTimeout(null);
+			if (pickSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_2) {
+				boolean clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA2_READY, UNCLAMP_TIMEOUT);
+				if (!clampReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
+					waitForStatus(CNCMachineConstants.R_UNCLAMP_WA2_READY);
+					setCncMachineTimeout(null);
+				}
+			} else if (pickSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_1_2) {
+				boolean clampReady =  waitForStatus((CNCMachineConstants.R_UNCLAMP_WA1_READY | CNCMachineConstants.R_UNCLAMP_WA2_READY), UNCLAMP_TIMEOUT);
+				if (!clampReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
+					waitForStatus((CNCMachineConstants.R_UNCLAMP_WA1_READY | CNCMachineConstants.R_UNCLAMP_WA2_READY));
+					setCncMachineTimeout(null);
+				}
+			} else {
+				boolean clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY, UNCLAMP_TIMEOUT);
+				if (!clampReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
+					waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY);
+					setCncMachineTimeout(null);
+				}
 			}
 		} else if (ufNr == 4) {
 			boolean clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA2_READY, UNCLAMP_TIMEOUT);
@@ -410,6 +490,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		int command = 0;
 		if (ufNr == 3) {
 			command = command | CNCMachineConstants.IPC_CLAMP_WA1_REQUEST;
+			if (putSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_2) {
+				command = 0 | CNCMachineConstants.IPC_CLAMP_WA2_REQUEST;
+			} else if (putSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_1_2) {
+				command = command | CNCMachineConstants.IPC_CLAMP_WA2_REQUEST;
+			}
 		} else if (ufNr == 4) {
 			command = command | CNCMachineConstants.IPC_CLAMP_WA2_REQUEST;
 		} else {
@@ -420,12 +505,28 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 		
 		if (ufNr == 3) {
-			boolean clampReady =  waitForStatus(CNCMachineConstants.R_CLAMP_WA1_READY, CLAMP_TIMEOUT);
-			if (!clampReady) {
-				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CLAMP_TIMEOUT));
-				waitForStatus(CNCMachineConstants.R_CLAMP_WA1_READY);
-				setCncMachineTimeout(null);
-			} 
+			if (putSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_2) {
+				boolean clampReady =  waitForStatus(CNCMachineConstants.R_CLAMP_WA2_READY, CLAMP_TIMEOUT);
+				if (!clampReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CLAMP_TIMEOUT));
+					waitForStatus(CNCMachineConstants.R_CLAMP_WA2_READY);
+					setCncMachineTimeout(null);
+				} 
+			} else if (putSettings.getWorkArea().getActiveClamping().getFixtureType() == FixtureType.FIXTURE_1_2) {
+				boolean clampReady =  waitForStatus((CNCMachineConstants.R_CLAMP_WA1_READY | CNCMachineConstants.R_CLAMP_WA2_READY), CLAMP_TIMEOUT);
+				if (!clampReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CLAMP_TIMEOUT));
+					waitForStatus((CNCMachineConstants.R_CLAMP_WA1_READY | CNCMachineConstants.R_CLAMP_WA2_READY));
+					setCncMachineTimeout(null);
+				} 
+			} else {
+				boolean clampReady =  waitForStatus(CNCMachineConstants.R_CLAMP_WA1_READY, CLAMP_TIMEOUT);
+				if (!clampReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CLAMP_TIMEOUT));
+					waitForStatus(CNCMachineConstants.R_CLAMP_WA1_READY);
+					setCncMachineTimeout(null);
+				} 
+			}
 		} else if (ufNr == 4) {
 			boolean clampReady =  waitForStatus(CNCMachineConstants.R_CLAMP_WA2_READY, CLAMP_TIMEOUT);
 			if (!clampReady) {

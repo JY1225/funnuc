@@ -14,7 +14,7 @@ import eu.robojob.millassist.external.communication.socket.SocketDisconnectedExc
  * All external devices act as servers, so this communication-thread will continuously try to establish connection, read incoming messages, and will act as
  * a buffer for incoming messages
  */
-public class ExternalCommunicationThread extends Thread {
+public class ExternalCommunicationThread implements Runnable {
 
 	private static Logger logger = LogManager.getLogger(ExternalCommunicationThread.class.getName());
 	
@@ -66,7 +66,8 @@ public class ExternalCommunicationThread extends Thread {
 							Thread.sleep(CONNECTION_RETRY_INTERVAL);
 						} catch (InterruptedException e1) {
 							// we got interrupted, so let's just stop executing! Are already disconnected so no need to call disconnect().
-							alive = false;
+							//alive = false;
+							interrupted();
 						}
 					}
 				} else {
@@ -88,8 +89,11 @@ public class ExternalCommunicationThread extends Thread {
 						logger.info("Disconnected during reading, about to retry connection...");
 					}
 				}
+				if (Thread.currentThread().isInterrupted()) {
+					interrupted();
+				}
 			}
-		}  catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(e);
 			e.printStackTrace();
 		} catch (Throwable t) {
@@ -142,10 +146,8 @@ public class ExternalCommunicationThread extends Thread {
 		return socketConnection.isConnected();
 	}
 	
-	@Override
-	public void interrupt() {
+	public void interrupted() {
 		disconnectAndStop();
-		super.interrupt();
 	}
 	
 	public synchronized void disconnectAndStop() {

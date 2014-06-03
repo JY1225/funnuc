@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.threading.MonitoringThread;
 
-public class RobotMonitoringThread extends Thread implements MonitoringThread {
+public class RobotMonitoringThread implements Runnable, MonitoringThread {
 
 	private static final int REFRESH_TIME = 250;
 	
@@ -79,8 +79,7 @@ public class RobotMonitoringThread extends Thread implements MonitoringThread {
 				try {
 					Thread.sleep(REFRESH_TIME);
 				} catch (InterruptedException e) {
-					// interrupted, so let's just stop, the external communication thread takes care of disconnecting if needed at this point
-					alive = false;
+					interrupted();
 				}
 			}
 		} catch (Exception e) {
@@ -93,10 +92,8 @@ public class RobotMonitoringThread extends Thread implements MonitoringThread {
 		logger.info(toString() + " ended...");
 	}
 	
-	@Override
-	public void interrupt() {
+	public void interrupted() {
 		alive = false;
-		super.interrupt();
 	}
 	
 	@Override

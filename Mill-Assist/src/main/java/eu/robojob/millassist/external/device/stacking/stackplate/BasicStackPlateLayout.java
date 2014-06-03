@@ -1,7 +1,11 @@
 package eu.robojob.millassist.external.device.stacking.stackplate;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -141,7 +145,18 @@ public class BasicStackPlateLayout {
 					configureTiltedStackingPositions(dimensions);
 					break;
 				case DEG90:
-					configureDeg90StackingPositions(dimensions);
+					final Properties properties = new Properties();
+					boolean alignRight = false;
+					try {
+						properties.load(new FileInputStream(new File("settings.properties")));
+						if (properties.containsKey("align-right") && properties.get("align-right").equals("true")) {
+							alignRight = true;
+						}
+					} catch (IOException e) {
+						logger.error(e);
+						e.printStackTrace();
+					}
+					configureDeg90StackingPositions(dimensions, alignRight);
 					break;
 				default:
 					throw new IllegalArgumentException("Unknown work piece orientation");
@@ -150,7 +165,7 @@ public class BasicStackPlateLayout {
 		}
 	}
 	
-	private void configureDeg90StackingPositions(final WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
+	private void configureDeg90StackingPositions(final WorkPieceDimensions dimensions, final boolean alignRight) throws IncorrectWorkPieceDataException {
 		if (dimensions.getLength() < dimensions.getWidth()) {
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.LENGTH_SMALLER_WIDTH);
 		}
@@ -170,7 +185,7 @@ public class BasicStackPlateLayout {
 			cornerLength = true;
 		}
 		boolean cornerWidth = false;
-		if (width - minOverlap < horizontalHoleDistance) {
+		if (width - (horizontalHoleDistance - studDiameter/2) - minOverlap < horizontalHoleDistance) {
 			cornerWidth = true;
 		}
 		
@@ -259,8 +274,13 @@ public class BasicStackPlateLayout {
 			}
 		}
 
-		initializeRawWorkPiecePositionsDeg90(dimensions, amountOfStudsWorkPiece, amountOfStudsWorkPieceVertical, 
+		if (alignRight) {
+			initializeRawWorkPiecePositionsDeg90Right(dimensions, amountOfStudsWorkPiece, amountOfStudsWorkPieceVertical, 
 				(maxHorizontalIndex + 1), (maxVerticalIndex + 1), cornerLength, cornerWidth);
+		} else {
+			initializeRawWorkPiecePositionsDeg90(dimensions, amountOfStudsWorkPiece, amountOfStudsWorkPieceVertical, 
+					(maxHorizontalIndex + 1), (maxVerticalIndex + 1), cornerLength, cornerWidth);
+		}
 	}
 	
 	private void initializeRawWorkPiecePositionsDeg90(final WorkPieceDimensions dimensions, final int amountOfStudsWorkPiece,
@@ -289,7 +309,7 @@ public class BasicStackPlateLayout {
 					stPos.addstud(studPos);
 					stPos.addstud(studPos2);
 				}
-				if (!cornerLength) {
+				if (!cornerWidth) {
 					boolean ok = false;
 					int maxTimes = (int) Math.floor((dimensions.getWidth() + studDiameter/2 - minOverlap)/horizontalHoleDistance);
 					while (!ok) {
@@ -298,6 +318,78 @@ public class BasicStackPlateLayout {
 						} else if (studPositions[0].length > maxTimes + firstStudPosX) {
 							int positionX = maxTimes + firstStudPosX;
 							int positionY = firstStudPosY;
+							StudPosition studPos2 = new StudPosition(positionX, positionY, studPositions[positionY][positionX].getCenterPosition(), StudType.NORMAL);
+							stPos.addstud(studPos2);
+							ok = true;
+						} else {
+							maxTimes--;
+						}		
+					}
+				}
+			}
+		}
+	}
+	
+	private void initializeRawWorkPiecePositionsDeg90Right(final WorkPieceDimensions dimensions, final int amountOfStudsWorkPiece,
+			final int amountOfStudsWorkPieceVertical, final int amountHorizontal, final int amountVertical, 
+				final boolean cornerLength, final boolean cornerWidth) {
+		for (int i = 0; i < amountVertical; i++) {
+			for (int j = 0; j < amountHorizontal; j++) {
+				int amountOfStudsLeft = j * amountOfStudsWorkPiece;
+				int amountOfStudsBottom = 1 + i * amountOfStudsWorkPieceVertical;
+				double xBottomRight = horizontalPadding + (amountOfStudsLeft + amountOfStudsWorkPiece - 1) * horizontalHoleDistance - studDiameter/2;
+				if (amountHorizontal * amountOfStudsWorkPiece > horizontalHoleAmount) {
+					// normally: overflow right, here: left
+					xBottomRight = horizontalPadding + (amountOfStudsLeft + amountOfStudsWorkPiece - 1 - (amountHorizontal * amountOfStudsWorkPiece - horizontalHoleAmount)) * horizontalHoleDistance - studDiameter/2;
+				}
+				double yBottomLeft = verticalPaddingBottom + (amountOfStudsBottom - 1)*verticalHoleDistance + studDiameter/2;
+				float x = (float) xBottomRight - dimensions.getWidth()/2;
+				float y = (float) yBottomLeft + dimensions.getLength()/2;
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, horizontalR, null, 0, WorkPieceOrientation.DEG90);
+				stackingPositions.add(stPos);
+				int firstStudPosX = (j + 1) * amountOfStudsWorkPiece - 1;
+				if (amountHorizontal * amountOfStudsWorkPiece > horizontalHoleAmount) {
+					// normally: overflow right, here: left
+					firstStudPosX = (j + 1) * amountOfStudsWorkPiece - 1 - (amountHorizontal * amountOfStudsWorkPiece - horizontalHoleAmount);
+				}
+				int firstStudPosY = i * amountOfStudsWorkPieceVertical;
+				StudPosition studPos = null;
+				if (cornerLength || cornerWidth) {
+					studPos = new StudPosition(firstStudPosX, firstStudPosY, studPositions[firstStudPosY][firstStudPosX].getCenterPosition(), StudType.HORIZONTAL_CORNER_LEFT);
+					stPos.addstud(studPos);
+					// if the corner is not needed because of the length, we will add an extra stud for stability
+				} else {
+					studPos = new StudPosition(firstStudPosX - 1, firstStudPosY, studPositions[firstStudPosY][firstStudPosX - 1].getCenterPosition(), StudType.NORMAL);
+					StudPosition studPos2 = new StudPosition(firstStudPosX, firstStudPosY + 1, studPositions[firstStudPosY + 1][firstStudPosX].getCenterPosition(), StudType.NORMAL);
+					stPos.addstud(studPos);
+					stPos.addstud(studPos2);
+				}
+				if (!cornerWidth) {
+					boolean ok = false;
+					int maxTimes = (int) Math.floor((dimensions.getWidth() + studDiameter/2 - minOverlap)/horizontalHoleDistance);
+					while (!ok) {
+						if (maxTimes <= 1) {
+							ok = true;
+						} else if (firstStudPosX - maxTimes >= 0) {
+							int positionX = firstStudPosX - maxTimes;
+							int positionY = firstStudPosY;
+							StudPosition studPos2 = new StudPosition(positionX, positionY, studPositions[positionY][positionX].getCenterPosition(), StudType.NORMAL);
+							stPos.addstud(studPos2);
+							ok = true;
+						} else {
+							maxTimes--;
+						}		
+					}
+				}
+				if (!cornerLength) {
+					boolean ok = false;
+					int maxTimes = (int) Math.floor((dimensions.getLength() + studDiameter/2 - minOverlap)/verticalHoleDistance);
+					while (!ok) {
+						if (maxTimes <= 1) {
+							ok = true;
+						} else if (studPositions.length > firstStudPosY + maxTimes) {
+							int positionX = firstStudPosX;
+							int positionY = firstStudPosY + maxTimes;
 							StudPosition studPos2 = new StudPosition(positionX, positionY, studPositions[positionY][positionX].getCenterPosition(), StudType.NORMAL);
 							stPos.addstud(studPos2);
 							ok = true;

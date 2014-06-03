@@ -5,7 +5,7 @@ import eu.robojob.millassist.positioning.Coordinates;
 public class StudPosition {
 	
 	public enum StudType {
-		NONE, NORMAL, HORIZONTAL_CORNER, TILTED_CORNER
+		NONE, NORMAL, HORIZONTAL_CORNER, HORIZONTAL_CORNER_LEFT, TILTED_CORNER
 	}
 
 	private Coordinates centerPosition;

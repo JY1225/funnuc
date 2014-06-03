@@ -27,6 +27,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.Clamping.FixtureType;
 import eu.robojob.millassist.external.device.Clamping.Type;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.WorkArea;
@@ -51,6 +52,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private NumericTextField numtxtHeight;
 	private Label lblType;
 	private ComboBox<String> cbbType;
+	private ComboBox<String> cbbFixtureType;
 	// relative position
 	private Label lblRelativePosition;
 	private Label lblX;
@@ -125,6 +127,10 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private static final String CLAMPING_TYPE_FIXED_XM = "Fix X -";
 	private static final String CLAMPING_TYPE_FIXED_YP = "Fix Y +";
 	private static final String CLAMPING_TYPE_FIXED_YM = "Fix Y -";
+	
+	private static final String FIXTURE_TYPE_1 = "Fixture 1";
+	private static final String FIXTURE_TYPE_2 = "Fixture 2";
+	private static final String FIXTURE_TYPE_1_2 = "Fixture 1 + 2";
 	
 	public CNCMachineClampingsView() {
 		build();
@@ -223,6 +229,13 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		cbbType.getItems().add(CLAMPING_TYPE_FIXED_XP);
 		cbbType.getItems().add(CLAMPING_TYPE_FIXED_YM);
 		cbbType.getItems().add(CLAMPING_TYPE_FIXED_YP);
+		
+		cbbFixtureType = new ComboBox<String>();
+		cbbFixtureType.setPrefSize(125, UIConstants.COMBO_HEIGHT);
+		cbbFixtureType.setMinSize(125, UIConstants.COMBO_HEIGHT);
+		cbbFixtureType.getItems().add(FIXTURE_TYPE_1);
+		cbbFixtureType.getItems().add(FIXTURE_TYPE_2);
+		cbbFixtureType.getItems().add(FIXTURE_TYPE_1_2);
 		
 		lblRelativePosition = new Label(Translator.getTranslation(RELATIVE_POSITION));
 		lblRelativePosition.setPrefWidth(125);
@@ -327,6 +340,15 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 				} else if (selectedType == CLAMPING_TYPE_FIXED_YM) {
 					type = Type.FIXED_YM;
 				}
+				Clamping.FixtureType fixtureType = null;
+				String selectedFixtureType = cbbFixtureType.getValue();
+				if (selectedFixtureType == FIXTURE_TYPE_1) {
+					fixtureType = FixtureType.FIXTURE_1;
+				} else if (selectedFixtureType == FIXTURE_TYPE_2) {
+					fixtureType = FixtureType.FIXTURE_2;
+				} else if (selectedFixtureType == FIXTURE_TYPE_1_2) {
+					fixtureType = FixtureType.FIXTURE_1_2;
+				}
 				getPresenter().saveData(fullTxtName.getText(), Float.parseFloat(numtxtHeight.getText()), imagePath,
 						Float.parseFloat(numtxtX.getText()), Float.parseFloat(numtxtY.getText()), 
 						Float.parseFloat(numtxtZ.getText()), Float.parseFloat(numtxtW.getText()), 
@@ -334,7 +356,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 						Float.parseFloat(numtxtSmoothToX.getText()), Float.parseFloat(numtxtSmoothToY.getText()),
 						Float.parseFloat(numtxtSmoothToZ.getText()), Float.parseFloat(numtxtSmoothFromX.getText()), 
 						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()),
-						type);
+						type, fixtureType);
 			}
 		});
 		btnDelete = createButton(DELETE_ICON_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(REMOVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
@@ -374,7 +396,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		gpNameHeight.add(lblHeight, 0, 1);
 		gpNameHeight.add(numtxtHeight, 1, 1);
 		gpNameHeight.add(lblType, 0, 2);
-		gpNameHeight.add(cbbType, 1, 2, 3, 1);
+		gpNameHeight.add(cbbType, 1, 2, 1, 1);
+		gpNameHeight.add(cbbFixtureType, 2, 2, 1, 1);
 		//gpNameHeight.add(lblUseSecond, 3, 1);
 		//gpNameHeight.add(cbUseSecond, 4, 1);
 		gpDetails.add(gpNameHeight, column++, row, 2, 1);
@@ -551,6 +574,13 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			cbbType.setValue(CLAMPING_TYPE_FIXED_YP);
 		} else if (clamping.getType() == Type.FIXED_YM) {
 			cbbType.setValue(CLAMPING_TYPE_FIXED_YM);
+		}
+		if (clamping.getFixtureType() == FixtureType.FIXTURE_1) {
+			cbbFixtureType.setValue(FIXTURE_TYPE_1);
+		} else if (clamping.getFixtureType() == FixtureType.FIXTURE_2) {
+			cbbFixtureType.setValue(FIXTURE_TYPE_2);
+		} else if (clamping.getFixtureType() == FixtureType.FIXTURE_1_2) {
+			cbbFixtureType.setValue(FIXTURE_TYPE_1_2);
 		}
 		if (url != null) {
 			url = url.replace("file:///", "");

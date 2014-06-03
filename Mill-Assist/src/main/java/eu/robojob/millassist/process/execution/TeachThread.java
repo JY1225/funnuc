@@ -16,10 +16,9 @@ import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
-import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.util.Translator;
 
-public class TeachThread extends Thread implements ProcessExecutor {
+public class TeachThread implements Runnable, ProcessExecutor {
 
 	private ProcessFlow processFlow;
 	private boolean running;
@@ -88,6 +87,9 @@ public class TeachThread extends Thread implements ProcessExecutor {
 						}
 					}
 					getProcessFlow().setCurrentIndex(WORKPIECE_ID, getProcessFlow().getCurrentIndex(WORKPIECE_ID) + 1);
+					if (Thread.currentThread().isInterrupted()) {
+						interrupted();
+					}					
 				}
 				if (running) {
 					// everything went as it should
@@ -102,15 +104,10 @@ public class TeachThread extends Thread implements ProcessExecutor {
 			} catch (AbstractCommunicationException | RobotActionException | DeviceActionException e) {
 				handleException(e);
 			} catch (InterruptedException e) {
-				if ((!isRunning()) || ThreadManager.isShuttingDown()) {
-					logger.info("Execution of one or more steps got interrupted, so let't just stop");
-					//indicateStopped();
-				}
+				interrupted();
 			} catch (Exception e) {
 				handleException(new Exception(Translator.getTranslation(OTHER_EXCEPTION)));
 				e.printStackTrace();
-			} finally {
-				//stopRunning();
 			}
 		} catch (Exception e) {
 			logger.error(e);
@@ -118,8 +115,6 @@ public class TeachThread extends Thread implements ProcessExecutor {
 		} catch (Throwable t) {
 			logger.error(t);
 			t.printStackTrace();
-		} finally {
-			stopRunning();
 		}
 		logger.info(toString() + " ended...");
 	}
@@ -137,8 +132,7 @@ public class TeachThread extends Thread implements ProcessExecutor {
 		getProcessFlow().setMode(Mode.STOPPED);
 	}
 	
-	@Override
-	public void interrupt() {
+	public void interrupted() {
 		if (running) {
 			stopRunning();
 		}

@@ -11,11 +11,16 @@ public class Clamping {
 		CENTRUM, FIXED_XP, FIXED_XM, FIXED_YP, FIXED_YM, NONE
 	} 
 	
+	public static enum FixtureType {
+		DEFAULT, FIXTURE_1, FIXTURE_2, FIXTURE_1_2
+	}
+	
 	private int id;
 	private String name;
 	private Coordinates relativePosition;
 	private Coordinates smoothToPoint;
 	private Coordinates smoothFromPoint;
+	private FixtureType fixtureType; 
 	private float height;
 	private float defaultHeight;
 	private String imageURL;
@@ -24,7 +29,7 @@ public class Clamping {
 	private Set<Clamping> relatedClampings;
 	
 	public Clamping(final Type type, final String name, final float defaultHeight, final Coordinates relativePosition, final Coordinates smoothToPoint,
-				final Coordinates smoothFromPoint, final String imageURL) {
+				final Coordinates smoothFromPoint, final String imageURL, final FixtureType fixtureType) {
 		this.name = name;
 		this.height = defaultHeight;
 		this.defaultHeight = defaultHeight;
@@ -34,10 +39,11 @@ public class Clamping {
 		this.imageURL = imageURL;
 		this.relatedClampings = new HashSet<Clamping>();
 		this.type = type;
+		this.fixtureType = fixtureType;
 	}
 	
-	public Clamping(final Type type, final String name, final float defaultHeight, final Coordinates relativePosition, final Coordinates smoothPoint, final String imageURL) {
-		this(type, name, defaultHeight, relativePosition, smoothPoint, smoothPoint, imageURL);
+	public Clamping(final Type type, final String name, final float defaultHeight, final Coordinates relativePosition, final Coordinates smoothPoint, final String imageURL, final FixtureType fixtureType) {
+		this(type, name, defaultHeight, relativePosition, smoothPoint, smoothPoint, imageURL, fixtureType);
 	}
 	
 	public String getName() {
@@ -68,6 +74,14 @@ public class Clamping {
 		return relatedClampings;
 	}
 	
+	public FixtureType getFixtureType() {
+		return fixtureType;
+	}
+
+	public void setFixtureType(FixtureType fixtureType) {
+		this.fixtureType = fixtureType;
+	}
+
 	public int getId() {
 		return id;
 	}
