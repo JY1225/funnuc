@@ -341,6 +341,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 					} else {
 						location.setAmount(location.getAmount() + addedAmount);
 					}
+					readyAmount = readyAmount + addedAmount;
 				} 
 				if (readyAmount >= amount) {
 					break;
