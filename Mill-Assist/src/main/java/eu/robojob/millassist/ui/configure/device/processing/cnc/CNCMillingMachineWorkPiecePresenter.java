@@ -61,17 +61,17 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 			WorkPieceDimensions prevDimensions = getPreviousPickDimensions();
 			if ((myDimensions.getWidth() <= 0) || (myDimensions.getLength() <= 0) || (myDimensions.getHeight() <= 0) 
 					|| (weight <= 0)) {
-				getView().showNotification(Translator.getTranslation(INCORRECT_DATA));
+				getView().showNotification(Translator.getTranslation(INCORRECT_DATA), true);
 			} else if ((myDimensions.getWidth() > prevDimensions.getWidth()) || (myDimensions.getLength() > prevDimensions.getLength())
 					 || (myDimensions.getHeight() > prevDimensions.getHeight())) {
-				getView().showNotification(Translator.getTranslation(DIMENSIONS_DO_NOT_MATCH));
+				getView().showNotification(Translator.getTranslation(DIMENSIONS_DO_NOT_MATCH), true);
 			} else if ((weight > prevWeight) && (Math.abs(weight - prevWeight) > 0.01)) {
-				getView().showNotification(Translator.getTranslation(WEIGHTS_DO_NOT_MATCH));
+				getView().showNotification(Translator.getTranslation(WEIGHTS_DO_NOT_MATCH), true);
 			} else {
 				getView().hideNotification();
 			}
 		} else {
-			getView().showNotification(Translator.getTranslation(INCORRECT_DATA));
+			getView().showNotification(Translator.getTranslation(INCORRECT_DATA), true);
 		}
 	}
 	

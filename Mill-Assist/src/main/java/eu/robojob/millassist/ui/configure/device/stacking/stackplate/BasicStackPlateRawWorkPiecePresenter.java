@@ -152,12 +152,12 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			pickStep.getProcessFlow().getClampingType().setChanged((deviceSettings.getOrientation() == WorkPieceOrientation.DEG90));
 			getView().hideNotification();
 			if (!isWeightOk()) {
-				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO));
+				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO), true);
 			} else if (!isStudHeightOk()) {
-				getView().showNotification(Translator.getTranslation(STUD_HEIGHT_NOT_OK));
+				getView().showNotification(Translator.getTranslation(STUD_HEIGHT_NOT_OK), true);
 			}
 		} catch (IncorrectWorkPieceDataException e) {
-			getView().showNotification(e.getLocalizedMessage());
+			getView().showNotification(e.getLocalizedMessage(), true);
 		}
 		((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
 	}

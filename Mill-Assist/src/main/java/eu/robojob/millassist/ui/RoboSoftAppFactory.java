@@ -52,6 +52,8 @@ import eu.robojob.millassist.ui.configure.process.ProcessConfigurePresenter;
 import eu.robojob.millassist.ui.configure.process.ProcessConfigureView;
 import eu.robojob.millassist.ui.configure.process.ProcessMenuPresenter;
 import eu.robojob.millassist.ui.configure.process.ProcessMenuView;
+import eu.robojob.millassist.ui.configure.process.ProcessNewPresenter;
+import eu.robojob.millassist.ui.configure.process.ProcessNewView;
 import eu.robojob.millassist.ui.configure.process.ProcessOpenPresenter;
 import eu.robojob.millassist.ui.configure.process.ProcessOpenView;
 import eu.robojob.millassist.ui.configure.process.ProcessSavePresenter;
@@ -97,6 +99,7 @@ public class RoboSoftAppFactory {
 	private ProcessMenuPresenter processConfigurationMenuPresenter;
 	private ProcessOpenPresenter processOpenPresenter;
 	private ProcessSavePresenter processSavePresenter;
+	private ProcessNewPresenter processNewPresenter;
 	private AdminPresenter adminPresenter;
 	private MainMenuPresenter mainMenuPresenter;
 	private GeneralAdminPresenter generalAdminPresenter;
@@ -300,11 +303,11 @@ public class RoboSoftAppFactory {
 		if (processConfigurationMenuPresenter == null) {
 			ProcessMenuView processConfigurationMenuView = new ProcessMenuView();
 			processConfigurationMenuPresenter = new ProcessMenuPresenter(processConfigurationMenuView, getProcessConfigurePresenter(), getProcessSavePresenter(), 
-					getProcessOpenPresenter(), getProcessFlow(), processFlowManager);
+					getProcessOpenPresenter(), getProcessNewPresenter(), getProcessFlow(), processFlowManager);
 		}
 		return processConfigurationMenuPresenter;
 	}
-	
+
 	public ProcessSavePresenter getProcessSavePresenter() {
 		if (processSavePresenter == null) {
 			ProcessSaveView processSaveView = new ProcessSaveView();
@@ -320,6 +323,14 @@ public class RoboSoftAppFactory {
 			processOpenPresenter = new ProcessOpenPresenter(processOpenView, getProcessFlow(), processFlowManager);
 		}
 		return processOpenPresenter;
+	}
+	
+	public ProcessNewPresenter getProcessNewPresenter() {
+		if (processNewPresenter == null) {
+			ProcessNewView processNewView = new ProcessNewView();
+			processNewPresenter = new ProcessNewPresenter(processNewView, getProcessFlow(), processFlowManager);
+		}
+		return processNewPresenter;
 	}
 	
 	public ProcessFlow getProcessFlow() {

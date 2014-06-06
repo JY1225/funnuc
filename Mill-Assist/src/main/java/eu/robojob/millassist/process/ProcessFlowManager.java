@@ -190,10 +190,10 @@ public class ProcessFlowManager {
 		
 		return processFlow;
 	}
-	
+
 	public void updateProcessFlow(final ProcessFlow processFlow) throws DuplicateProcessFlowNameException {
 		try {
-			int idForName = processFlowMapper.getProcessFlowIdForName(processFlow.getName());
+			int idForName = ProcessFlowMapper.getProcessFlowIdForName(processFlow.getName());
 			if ((idForName == 0) || (idForName == processFlow.getId())) {
 				if (processFlow.getId() > 0) {
 					// update
@@ -222,7 +222,7 @@ public class ProcessFlowManager {
 	
 	public void saveProcessFlow(final ProcessFlow processFlow) throws DuplicateProcessFlowNameException {
 		try {
-			int idForName = processFlowMapper.getProcessFlowIdForName(processFlow.getName());
+			int idForName = ProcessFlowMapper.getProcessFlowIdForName(processFlow.getName());
 			if (idForName == 0) {
 				logger.info("Saving processflow with name: [" + processFlow.getName() + "].");
 				processFlowMapper.saveProcessFlow(processFlow);

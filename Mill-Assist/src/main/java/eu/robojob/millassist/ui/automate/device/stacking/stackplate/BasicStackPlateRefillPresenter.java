@@ -45,7 +45,7 @@ public class BasicStackPlateRefillPresenter extends AbstractFormPresenter<BasicS
 				throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
 			}
 		} catch (IncorrectWorkPieceDataException e) {
-			getView().showNotification(e.getLocalizedMessage());
+			getView().showNotification(e.getLocalizedMessage(), true);
 		}
 	}
 

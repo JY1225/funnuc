@@ -18,10 +18,11 @@ import eu.robojob.millassist.ui.controls.TextInputControlListener;
 public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> extends VBox {
 
 	private T presenter;
-	private SVGPath alarmBgPath;
+	private SVGPath alarmBgPath, alarmOKPath;
 	private SVGPath alarmPath;
 	private Label lblAlarmMessage;
 	private HBox hBoxAlarm;
+	private Pane alarmIconPane;
 	private GridPane gpContents;
 	
 	private static final int ICON_WIDTH = 20;
@@ -32,6 +33,7 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	private static final String TRIANGLE_ICON = "M 12.5,1.03125 C 11.993062,1.0311198 11.509776,1.3702678 11.125,2.0625 L 0.3125,21.46875 C -0.45731218,22.853735 0.22861858,24 1.8125,24 l 21.375,0 c 1.584142,0 2.268771,-1.145744 1.5,-2.53125 L 13.90625,2.0625 C 13.521995,1.3697471 13.006938,1.0313802 12.5,1.03125 z";
 	private static final String WARNING_ICON = "m 10.9375,7.15625 0,2.59375 0.625,6.96875 1.875,0 0.625,-6.96875 0,-2.59375 z m 0.125,11.15625 0,2.875 2.875,0 0,-2.875 z";
+	private static final String NO_ALARMS_ICON = "M 25 0 L 8.5625 12.78125 L 0 8.25 L 8.5625 19.25 L 25 0 z";
 	
 	private static final String CSS_CLASS_FORM_BUTTON_ICON = "form-button-icon";
 	protected static final String CSS_CLASS_FORM_BUTTON_LABEL = "form-button-label";
@@ -56,6 +58,7 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	protected static final String CSS_CLASS_STATUS_MESSAGE = "status-msg";
 	private static final String CSS_CLASS_INFO_BORDER_BOTTOM = "info-border-bottom";
 	private static final String CSS_CLASS_WARNING_CONFIG = "warning-config";
+	private static final String CSS_CLASS_OK_ICON = "icon-ok";
 	
 	public AbstractFormView() {
 		super();
@@ -78,8 +81,10 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 		alarmPath = new SVGPath();
 		alarmPath.setContent(WARNING_ICON);
 		alarmPath.getStyleClass().add(CSS_CLASS_WARNING_ICON);
-		Pane alarmIconPane = new Pane();
-		alarmIconPane.getChildren().addAll(alarmBgPath, alarmPath);
+		alarmOKPath = new SVGPath();
+		alarmOKPath.setContent(NO_ALARMS_ICON);
+		alarmOKPath.getStyleClass().add(CSS_CLASS_OK_ICON);
+		alarmIconPane = new Pane();
 		// label
 		lblAlarmMessage = new Label();
 		lblAlarmMessage.setWrapText(true);
@@ -102,8 +107,20 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 		hideNotification();
 	}
 	
-	public void showNotification(final String notification) {
+	private void showWarningSymbol(final boolean warning) {
+		alarmIconPane.getChildren().clear();
+		if(warning) {
+			alarmIconPane.getChildren().addAll(alarmBgPath, alarmPath);
+		} else {
+			alarmIconPane.getChildren().addAll(alarmOKPath);
+		}
+	}
+	
+	//KH - warning boolean added. If warning = true, then warning symbol will be shown. Else a green thick will be shown to
+	//indicate everything is all right
+	public void showNotification(final String notification, boolean warning) {
 		lblAlarmMessage.setText(notification);
+		showWarningSymbol(warning);
 		hBoxAlarm.setVisible(true);
 		hBoxAlarm.setManaged(true);
 	}

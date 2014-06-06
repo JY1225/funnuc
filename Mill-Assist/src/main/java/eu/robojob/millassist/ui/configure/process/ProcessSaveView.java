@@ -24,7 +24,6 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 	private Label lblName;
 	private FullTextField fulltxtName;
 	private Button btnOverwrite;
-	private Button btnSaveAsNew;
 	private Button btnDelete;
 
 	private static final int HGAP = 15;
@@ -33,14 +32,12 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 	private static final int BUTTON_WIDTH = 150;
 	private static final int MAX_NAME_LENGTH = 50;
 	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
-	private static final String SAVE_NEW_PATH = "M 10 0 C 4.4775 0 0 4.4787498 0 10 C 0 15.52375 4.4775 20 10 20 C 15.5225 20 20 15.52375 20 10 C 20 4.4787498 15.5225 0 10 0 z M 8.75 5 L 11.25 5 L 11.25 10 L 14.9375 10 L 10 15 L 5 10 L 8.75 10 L 8.75 5 z ";
 	private static final String DELETE_ICON_PATH = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 5 8.75 L 15 8.75 L 15 11.25 L 5 11.25 L 5 8.75 z";
 
 	private static final String CSS_CLASS_FORM_LABEL_NAME = "form-label-name";
 	private static final String CSS_CLASS_FORM_BUTTON_ICON = "form-button-icon";
 	private static final String NAME = "ProcessSaveView.name";
 	private static final String OVERWRITE = "ProcessSaveView.overwrite";
-	private static final String SAVE_TO_NEW = "ProcessSaveView.saveToNew";
 	private static final String DELETE = "ProcessSaveView.delete";
 	
 	private static final String ONLY_SAVE_AS_NAME = "ProcessSaveView.onlySaveAsName";
@@ -85,17 +82,10 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 		btnOverwrite = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON_ICON, Translator.getTranslation(OVERWRITE), BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				getPresenter().overwrite();
+				getPresenter().save(fulltxtName.getText());
 			}
 		});
 		btnOverwrite.getStyleClass().add(CSS_CLASS_SAVE_BUTTON);
-		btnSaveAsNew = createButton(SAVE_NEW_PATH, CSS_CLASS_FORM_BUTTON_ICON, Translator.getTranslation(SAVE_TO_NEW), BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent arg0) {
-				getPresenter().saveAsNew();
-			}
-		});
-		btnSaveAsNew.getStyleClass().add(CSS_CLASS_SAVE_BUTTON);
 		
 		btnDelete = createButton(DELETE_ICON_PATH, CSS_CLASS_FORM_BUTTON_ICON, Translator.getTranslation(DELETE), BUTTON_WIDTH, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
@@ -110,13 +100,9 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 		getContents().add(btnOverwrite, column++, row);
 		GridPane.setHalignment(btnOverwrite, HPos.CENTER);
 		row++; column = 0;
-		getContents().add(btnSaveAsNew, column++, row);
-		GridPane.setHalignment(btnSaveAsNew, HPos.CENTER);
 		row++; column = 0;
 		getContents().add(btnDelete, column++, row);
 		GridPane.setHalignment(btnDelete, HPos.CENTER);
-		
-		hideNotification();
 	}
 
 	@Override
@@ -129,24 +115,21 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 		fulltxtName.setText(processFlow.getName());
 		if (processFlow.isConfigured()) {
 			if (processFlow.getName().equals("")) {
-				showNotification(Translator.getTranslation(ONLY_SAVE_AS_NAME));
+				showNotification(Translator.getTranslation(ONLY_SAVE_AS_NAME), true);
 				btnOverwrite.setDisable(true);
-				btnSaveAsNew.setDisable(true);
 			} else {
-				hideNotification();
-				btnSaveAsNew.setDisable(false);
+				hideNotification();		
+				btnOverwrite.setDisable(false);
 				if (processFlow.getId() > 0) {
 					btnOverwrite.setDisable(false);
 					btnDelete.setDisable(false);
 				} else {
-					btnOverwrite.setDisable(true);
 					btnDelete.setDisable(true);
 				}
 			}
 		} else {
-			showNotification(Translator.getTranslation(ONLY_SAVE_AS_CONFIGURED));
+			showNotification(Translator.getTranslation(ONLY_SAVE_AS_CONFIGURED), true);
 			btnOverwrite.setDisable(true);
-			btnSaveAsNew.setDisable(true);
 			if (processFlow.getId() > 0) {
 				btnDelete.setDisable(false);
 			} else {

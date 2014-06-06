@@ -10,11 +10,11 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	private ProcessConfigurePresenter configurePresenter;
 	private ProcessSavePresenter savePresenter;
 	private ProcessOpenPresenter openPresenter;
-	private ProcessFlowManager processFlowManager;	
-	private ProcessFlow activeProcessFlow;
-	
+	private ProcessNewPresenter newPresenter;
+
 	public ProcessMenuPresenter(final ProcessMenuView view, final ProcessConfigurePresenter configurePresenter, final ProcessSavePresenter savePresenter,
-			final ProcessOpenPresenter openPresenter, final ProcessFlow activeProcessFlow, final ProcessFlowManager processFlowManager) {
+			final ProcessOpenPresenter openPresenter, final ProcessNewPresenter newPresenter, final ProcessFlow activeProcessFlow, 
+			final ProcessFlowManager processFlowManager) {
 		super(view);
 		this.configurePresenter = configurePresenter;
 		configurePresenter.setMenuPresenter(this);
@@ -22,8 +22,8 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 		savePresenter.setMenuPresenter(this);
 		this.openPresenter = openPresenter;
 		openPresenter.setMenuPresenter(this);
-		this.activeProcessFlow = activeProcessFlow;
-		this.processFlowManager = processFlowManager;
+		this.newPresenter = newPresenter;
+		newPresenter.setMenuPresenter(this);
 	}
 
 	@Override
@@ -47,8 +47,8 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 	}
 	
 	public void newProcess() {
-		activeProcessFlow.loadFromOtherProcessFlow(processFlowManager.createNewProcessFlow());
-		configureProcess();
+		getView().setNewActive();
+		getParent().setBottomRightView(newPresenter.getView());
 	}
 	
 	public void processOpened() {

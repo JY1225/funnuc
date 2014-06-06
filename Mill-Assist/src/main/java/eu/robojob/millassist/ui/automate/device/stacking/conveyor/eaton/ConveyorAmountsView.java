@@ -136,7 +136,7 @@ public class ConveyorAmountsView extends AbstractFormView<ConveyorAmountsPresent
 	}
 	
 	public void notifyIncorrectData() {
-		showNotification(Translator.getTranslation(INCORRECT_DATA));
+		showNotification(Translator.getTranslation(INCORRECT_DATA), true);
 		btnUpdate.setDisable(true);
 	}
 	

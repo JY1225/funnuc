@@ -113,11 +113,11 @@ public class ConveyorRawWorkPiecePresenter extends AbstractFormPresenter<Conveyo
 			((Conveyor) pickStep.getDevice()).getLayout().configureRawWorkPieceStackingPositions();
 			getView().hideNotification();
 			if (!isWeightOk()) {
-				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO));
+				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO), true);
 			}
 			getView().refresh();
 		} catch (IncorrectWorkPieceDataException e) {
-			getView().showNotification(e.getLocalizedMessage());
+			getView().showNotification(e.getLocalizedMessage(), true);
 		}
 	}
 	

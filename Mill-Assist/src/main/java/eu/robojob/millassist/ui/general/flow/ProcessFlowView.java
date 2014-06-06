@@ -76,10 +76,15 @@ public class ProcessFlowView extends StackPane {
 		}
 	}
 	
+	public void refreshProcessFlowName() {
+		lblProcessName.setText(processFlowAdapter.getProcessFlow().getName());
+	}
+	
 	protected void build() {
 		this.getChildren().clear();
 		gpFlow = new GridPane();
 		lblProcessName = new Label();
+		//This indicates the name of the active process. It will be shown in the bottom right corner of the flow region.
 		lblProcessName.setText(processFlowAdapter.getProcessFlow().getName());
 		lblProcessName.getStyleClass().add(CSS_CLASS_PROCESS_NAME);
 		this.getChildren().add(gpFlow);

@@ -1,8 +1,11 @@
 package eu.robojob.millassist.ui.configure.process;
 
+import java.sql.SQLException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.robojob.millassist.db.process.ProcessFlowMapper;
 import eu.robojob.millassist.process.DuplicateProcessFlowNameException;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlowManager;
@@ -15,6 +18,8 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 	private ProcessFlow processFlow;
 	
 	private static final String DUPLICATE_NAME = "ProcessSavePresenter.duplicateName";
+	private static final String SAVE_SUCCESSFULL = "ProcessSavePresenter.saveOK";
+	private static final String UPDATE_SUCCESSFULL = "ProcessSavePresenter.updateOK";
 	
 	private static Logger logger = LogManager.getLogger(ProcessSavePresenter.class.getName());
 	
@@ -41,25 +46,42 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 		getView().refresh();
 	}
 	
+	
 	//FIXME: make sure process can only be saved if configured correctly
-	public void overwrite() {
+	public void save(String saveProcessName) {
 		try {
-			processFlowManager.updateProcessFlow(processFlow);
-			getView().hideNotification();
-		} catch (DuplicateProcessFlowNameException e) {
-			//FIXME handle this exception
+			//in this case a new name is given, so we need to check whether we can create a copy or not
+			//when a process already exists with this name, we will create a warning and will not save
+			int saveProcessID = (ProcessFlowMapper.getProcessFlowIdForName(saveProcessName));
+			if(saveProcessID != 0) {
+				saveAsExisting();
+			} else {
+				saveAsNew();
+			}
+		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();
 		}
 	}
 	
-	public void saveAsNew() {
+	private void saveAsExisting() {
+		try {
+			processFlowManager.updateProcessFlow(processFlow);
+			getView().showNotification(Translator.getTranslation(UPDATE_SUCCESSFULL), false);
+		} catch (DuplicateProcessFlowNameException e) {
+			//We will come here when a user tries to save an existing process which is not the activeProcess
+			getView().showNotification(Translator.getTranslation(DUPLICATE_NAME), true);
+		}
+	}
+	
+	private void saveAsNew() {
 		try {
 			processFlowManager.saveProcessFlow(processFlow);
-			getView().hideNotification();
-			getView().refresh();
+			//Show the new processName in the flow region
+			getMenuPresenter().getParent().getProcessFlowPresenter().getView().refreshProcessFlowName();
+			getView().showNotification(Translator.getTranslation(SAVE_SUCCESSFULL), false);
 		} catch (DuplicateProcessFlowNameException e) {
-			getView().showNotification(Translator.getTranslation(DUPLICATE_NAME));
+			getView().showNotification(Translator.getTranslation(DUPLICATE_NAME), true);
 		}
 	}
 	
