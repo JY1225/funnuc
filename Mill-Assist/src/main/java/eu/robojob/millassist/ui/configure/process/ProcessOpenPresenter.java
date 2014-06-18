@@ -102,7 +102,6 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 			openProcess(processFlowManager.getLastProcessFlow());
 		}
 		getMenuPresenter().getParent().getProcessFlowPresenter().getView().refreshProcessFlowName();
-		System.out.println("ACTIVE PROCESS = " + activeProcessFlow.getName());
 		getView().refresh();
 	}
 }
