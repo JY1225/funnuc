@@ -2,7 +2,6 @@ package eu.robojob.millassist.ui.configure.process;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -29,6 +28,9 @@ public class ProcessNewView extends AbstractFormView<ProcessNewPresenter> {
 	private static final String CSS_CLASS_BUTTON_NEW = "btn-new";
 	//TODO add translation - Swedish/German
 	private static final String NEW = "ProcessNewView.new";
+	
+	private static final String UNSAVED_CHANGES = "ProcessOpenPresenter.unsavedChanges";
+	private static final String CONTINUE = "ProcessOpenPresenter.continue";
 		
 	public ProcessNewView() {
 		build();
@@ -52,7 +54,6 @@ public class ProcessNewView extends AbstractFormView<ProcessNewPresenter> {
 		getContents().add(btnNew, column++, row);
 		row++;
 		column = 0;		
-		setPadding(new Insets(15, 0, 0, 0));
 	}
 
 	@Override
@@ -65,6 +66,10 @@ public class ProcessNewView extends AbstractFormView<ProcessNewPresenter> {
 	public void setTextFieldListener(TextInputControlListener listener) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void showUnsavedNotificationMsg() {
+		showNotification(Translator.getTranslation(UNSAVED_CHANGES) + getPresenter().getProcessFlowManager().getActiveProcessFlow().getName() + ".\n" + Translator.getTranslation(CONTINUE), true, true);
 	}
 
 }

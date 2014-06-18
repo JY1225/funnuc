@@ -64,6 +64,8 @@ public class ProcessFlow {
 	private Timestamp creation;
 	private Timestamp lastOpened;
 	
+	private boolean hasChangesSinceLastSave;
+	
 	private Set<ProcessFlowListener> listeners;
 	private Mode mode;
 	
@@ -97,6 +99,7 @@ public class ProcessFlow {
 		setCurrentIndex(WORKPIECE_1_ID, -1);
 		setCurrentIndex(WORKPIECE_2_ID, -1);
 		setFinishedAmount(0);
+		this.hasChangesSinceLastSave = false;
 	}
 	
 	public ProcessFlow(final String name, final List<AbstractProcessStep> processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, RobotSettings> robotSettings,
@@ -158,6 +161,7 @@ public class ProcessFlow {
 		return id;
 	}
 	
+	//In case this functions is called by the activeProcessFlow, the activeProcessFlow will be changed to the one in the argument. (Actually this should be managed by the ProcessFlowManager)
 	public void loadFromOtherProcessFlow(final ProcessFlow processFlow) {
 		this.processSteps = processFlow.getProcessSteps();
 		for (AbstractProcessStep step : this.processSteps) {
@@ -178,6 +182,7 @@ public class ProcessFlow {
 			}
 		}
 		this.processProcessFlowEvent(new ProcessChangedEvent(this));
+		this.setChangesSinceLastSave(false);
 	}
 	
 	public int getCurrentIndex(final int workpieceId) {
@@ -470,6 +475,19 @@ public class ProcessFlow {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * This method will check whether the processFlow is up-to-date. The idea is to check the boolean before 
+	 * closing or creating/opening a new process. In case the result is false, we have to notify the user.
+	 */
+	public boolean hasChangesSinceLastSave() {
+		//boolean - bij elke wijziging aanpassen - reset bij save
+		return this.hasChangesSinceLastSave;
+	}
+	
+	public void setChangesSinceLastSave(boolean flag) {
+		this.hasChangesSinceLastSave = flag;
 	}
 	
 	public Set<AbstractDevice> getDevices() {

@@ -19,6 +19,7 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 	private ObservableList<ProcessFlow> filteredProcessFlows;
 	private ProcessFlowManager processFlowManager;	
 	private ProcessFlow activeProcessFlow;
+	private ProcessFlow tmpFlow;
 	
 	public ProcessOpenPresenter(final ProcessOpenView view, final ProcessFlow processFlow, final ProcessFlowManager processFlowManager) {
 		super(view);
@@ -54,11 +55,54 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 		}
 	}
 	
+	public String getActiveProcessFlowName() {
+		return activeProcessFlow.getName();
+	}
+	
+	/**
+	 * This action will be called when the user decides to save changes of his current process before opening the other process
+	 */
+	@Override
+	public void doYesAction() {
+		//FIXME - Keyboard is shown
+		logger.info("User action: clicked on YES button to continue his action.");
+		logger.info("loading process: " + tmpFlow.getId());
+		activeProcessFlow.loadFromOtherProcessFlow(tmpFlow);
+		processFlowManager.updateLastOpened(activeProcessFlow);
+		super.doYesAction();
+	}
+	
+	@Override
+	public void doNoAction() {
+		super.doNoAction();
+		logger.info("User action: clicked on NO button.");
+		//Maak "Bewaar" als actief scherm
+	}
+	
 	public void openProcess(final ProcessFlow processFlow) {
-		logger.info("loading process: " + processFlow.getId());
-		if (activeProcessFlow.getId() != processFlow.getId()) {
-			activeProcessFlow.loadFromOtherProcessFlow(processFlow);
-			processFlowManager.updateLastOpened(activeProcessFlow);
+		if(activeProcessFlow.hasChangesSinceLastSave()) {
+			logger.info("active process: " + activeProcessFlow.getId() + " contains unsaved changes.");
+			getView().showUnsavedNotificationMsg();
+			//Save the processFlow instead of retrieving it back from the view (in case user decides to skip saving)
+			tmpFlow = processFlow;
+		} else {
+			logger.info("loading process: " + processFlow.getId());
+			//otherwise we have the same process - no need to load it
+			if (activeProcessFlow.getId() != processFlow.getId()) {
+				activeProcessFlow.loadFromOtherProcessFlow(processFlow);
+				processFlowManager.updateLastOpened(activeProcessFlow);
+			}
 		}
+	}
+	
+	public void deleteProcess(ProcessFlow process) {
+		processFlowManager.deleteProcessFlow(process);
+		//Check whether we are deleting the current process or not
+		if(process.getId() != activeProcessFlow.getId()) {
+			openProcess(processFlowManager.getLastProcessFlow());
+		}
+		getMenuPresenter().getParent().getProcessFlowPresenter().getView().refreshProcessFlowName();
+		System.out.println("ACTIVE PROCESS = " + activeProcessFlow.getName());
+		getView().refresh();
 	}
 }

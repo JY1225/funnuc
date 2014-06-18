@@ -268,3 +268,8 @@
 .icon-ok {
 	-fx-fill: #1eda09;
 }
+
+.delete-open {
+	-fx-fill: #f72225;
+	-fx-alignment: CENTER-LEFT;
+}

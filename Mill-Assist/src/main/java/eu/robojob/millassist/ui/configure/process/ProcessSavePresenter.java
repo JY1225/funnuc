@@ -41,11 +41,14 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 		return true;
 	}
 	
+	public ProcessFlowManager getProcessFlowManager() {
+		return this.processFlowManager;
+	}
+	
 	public void nameChanged(final String name) {
 		processFlow.setName(name);
 		getView().refresh();
 	}
-	
 	
 	//FIXME: make sure process can only be saved if configured correctly
 	public void save(String saveProcessName) {
@@ -56,7 +59,11 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 			if(saveProcessID != 0) {
 				saveAsExisting();
 			} else {
-				saveAsNew();
+				if(processFlowManager.getActiveProcessFlow().hasChangesSinceLastSave()) {
+					getView().showUnsavedNotificationMsg();
+				} else {
+					saveAsNew();
+				}
 			}
 		} catch (SQLException e) {
 			logger.error(e);
@@ -67,6 +74,8 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 	private void saveAsExisting() {
 		try {
 			processFlowManager.updateProcessFlow(processFlow);
+			//reset the flag to indicate the latest changes are saved
+			processFlow.setChangesSinceLastSave(false);
 			getView().showNotification(Translator.getTranslation(UPDATE_SUCCESSFULL), false);
 		} catch (DuplicateProcessFlowNameException e) {
 			//We will come here when a user tries to save an existing process which is not the activeProcess
@@ -81,6 +90,7 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 			getMenuPresenter().getParent().getProcessFlowPresenter().getView().refreshProcessFlowName();
 			getView().showNotification(Translator.getTranslation(SAVE_SUCCESSFULL), false);
 		} catch (DuplicateProcessFlowNameException e) {
+			//this should never happen
 			getView().showNotification(Translator.getTranslation(DUPLICATE_NAME), true);
 		}
 	}
@@ -90,5 +100,19 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 		processFlow.loadFromOtherProcessFlow(processFlowManager.getLastProcessFlow());
 		getMenuPresenter().configureProcess();
 		getView().hideNotification();
+	}
+	
+	@Override
+	public void doYesAction() {
+		logger.info("User action: clicked on YES button to continue his action.");
+		saveAsNew();
+		super.doYesAction();
+	}
+	
+	@Override
+	public void doNoAction() {
+		super.doNoAction();
+		logger.info("User action: clicked on NO button.");
+		//Maak "Bewaar" als actief scherm
 	}
 }

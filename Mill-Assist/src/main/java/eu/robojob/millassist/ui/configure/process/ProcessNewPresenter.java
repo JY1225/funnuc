@@ -30,10 +30,34 @@ public class ProcessNewPresenter extends AbstractFormPresenter<ProcessNewView, P
 		return false;
 	}
 
-	//TODO add checks to see whether current process contains changes since last save
 	public void newProcess() {
+		if(processFlowManager.getActiveProcessFlow().hasChangesSinceLastSave()) {
+			getView().showUnsavedNotificationMsg();
+		} else {
+			createNewProcess();
+		}
+	}
+	
+	public ProcessFlowManager getProcessFlowManager() {
+		return this.processFlowManager;
+	}
+	
+	private void createNewProcess() {
 		logger.info("creating new process");
 		activeProcessFlow.loadFromOtherProcessFlow(processFlowManager.createNewProcessFlow());
 		getMenuPresenter().configureProcess();
+	}
+	
+	@Override
+	protected void doNoAction() {
+		logger.info("User action: clicked on NO button.");
+		super.doNoAction();
+	}
+	
+	@Override
+	protected void doYesAction() {
+		logger.info("User action: clicked on YES button to continue his action.");
+		createNewProcess();
+		super.doYesAction();
 	}
 }
