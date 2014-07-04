@@ -198,7 +198,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 					setRawWorkPiece(settings.getRawWorkPiece());
 					setFinishedWorkPiece(settings.getFinishedWorkPiece());
 					layout.configureStackingPositions(settings.getRawWorkPiece(), settings.getOrientation(), settings.getLayers());
-					layout.placeRawWorkPieces(getRawWorkPiece(), settings.getAmount());
+					layout.initRawWorkPieces(getRawWorkPiece(), settings.getAmount());
 				} else {
 					logger.info("Raw workpiece was null!");
 					setRawWorkPiece(settings.getRawWorkPiece());
@@ -216,7 +216,7 @@ public class BasicStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public DeviceSettings getDeviceSettings() {
-		return new BasicStackPlateSettings(getRawWorkPiece(), getFinishedWorkPiece(), layout.getOrientation(), layout.getLayers(), layout.getRawWorkPieceAmount(), getWorkAreas().get(0).getActiveClamping().getHeight());
+		return new BasicStackPlateSettings(getRawWorkPiece(), getFinishedWorkPiece(), layout.getOrientation(), layout.getLayers(), layout.getWorkPieceAmount(WorkPiece.Type.RAW), getWorkAreas().get(0).getActiveClamping().getHeight());
 	}
 	
 	@Override
@@ -277,15 +277,55 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	}
 	
 	public void placeFinishedWorkPieces(final int finishedAmount) {
-		for (int i = 0; i < layout.getStackingPositions().size(); i++) {
-			if (i < finishedAmount) {
-				//TODO improve, dimensions finished workpiece are not always the same as raw workpiece dimensions
+		int placedAmount = 0;
+		int nbLayers = layout.getLayers();
+		int position = 0;
+		int replacedAmount = 0;
+		while(placedAmount < finishedAmount) {
+			StackPlateStackingPosition stPos = layout.getStackingPositions().get(position);
+			if(!stPos.hasWorkPiece()) {
 				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, getRawWorkPiece().getDimensions(), null, Float.NaN);
-				layout.getStackingPositions().get(i).setWorkPiece(finishedWorkPiece);
-			} 
+				stPos.setWorkPiece(finishedWorkPiece);
+				while(stPos.getAmount() < nbLayers && placedAmount < finishedAmount) {
+					stPos.incrementAmount();
+					placedAmount++;
+				}
+			} else if (stPos.getWorkPiece().getType().equals(WorkPiece.Type.RAW)) {
+				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, getRawWorkPiece().getDimensions(), null, Float.NaN);
+				stPos.setWorkPiece(finishedWorkPiece);
+				replacedAmount += stPos.getAmount();
+				stPos.setAmount(0);
+				while(stPos.getAmount() < nbLayers && placedAmount < finishedAmount) {
+					stPos.incrementAmount();
+					placedAmount++;
+				} 
+			} else if (stPos.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)) {
+				while(stPos.getAmount() < nbLayers && placedAmount < finishedAmount) {
+					stPos.incrementAmount();
+					placedAmount++;
+				}
+			}
+			position++;
 		}
+		decreaseAmountOfFirstRawPieces(placedAmount - replacedAmount);
 		notifyLayoutChanged();
 	}
+	
+	private void decreaseAmountOfFirstRawPieces(final int amount) {
+		int position = layout.getFirstRawPosition();
+		layout.getStackingPositions().get(position).decrementAmountBy(amount);
+	}
+	
+//	public void placeFinishedWorkPieces(final int finishedAmount) {
+//		for (int i = 0; i < layout.getStackingPositions().size(); i++) {
+//			if (i < finishedAmount) {
+//				//TODO improve, dimensions finished workpiece are not always the same as raw workpiece dimensions
+//				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, getRawWorkPiece().getDimensions(), null, Float.NaN);
+//				layout.getStackingPositions().get(i).setWorkPiece(finishedWorkPiece);
+//			} 
+//		}
+//		notifyLayoutChanged();
+//	}
 	
 	public void notifyLayoutChanged() {
 		for (BasicStackPlateListener listener : listeners) {
@@ -304,51 +344,9 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	public void clearListeners() {
 		this.listeners.clear();
 	}
-	
-	public synchronized int getMaxRefillAmount() {
-		int rawAmount = 0;
-		for (StackPlateStackingPosition pos : layout.getStackingPositions()) {
-			if ((pos.getWorkPiece() != null) && (pos.getWorkPiece().getType() == Type.RAW)) {
-				rawAmount = rawAmount + pos.getAmount();
-			}
-		}
-		return (layout.getMaxRawWorkPiecesAmount() - rawAmount);
-	}
-	
-	public synchronized void refillWorkPieces(final int amount) throws IncorrectWorkPieceDataException {
-		if (amount > getMaxRefillAmount()) {
-			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
-		} else {
-			int readyAmount = 0;
-			for (int i = 0; i < layout.getStackingPositions().size(); i++) {
-				StackPlateStackingPosition location = layout.getStackingPositions().get(i);
-				if ((i == 0) && (layout.getLayers() > 1)) {
-					location.setWorkPiece(null);
-					location.setAmount(0);
-				} else if ((location.getWorkPiece() == null) || ((location.getWorkPiece() != null) && (location.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)))) {
-					location.setWorkPiece(new WorkPiece(Type.RAW, getRawWorkPiece().getDimensions(), null, Float.NaN));
-					int addedAmount = layout.getLayers();
-					if (readyAmount + addedAmount > amount) {
-						location.setAmount(amount - readyAmount);
-					} else {
-						location.setAmount(addedAmount);
-					}
-					readyAmount = readyAmount + addedAmount;
-				} else if ((location.getWorkPiece() != null) && (location.getWorkPiece().getType().equals(WorkPiece.Type.RAW) && (location.getAmount() > 0))) {
-					int addedAmount = layout.getLayers() - location.getAmount();
-					if (readyAmount + addedAmount > amount) {
-						location.setAmount(location.getAmount() + amount - readyAmount);
-					} else {
-						location.setAmount(location.getAmount() + addedAmount);
-					}
-					readyAmount = readyAmount + addedAmount;
-				} 
-				if (readyAmount >= amount) {
-					break;
-				}
-			}
-		}
+
+	public synchronized void addWorkPieces(final int amount, boolean reset) throws IncorrectWorkPieceDataException {
+		layout.placeRawWorkPieces(getRawWorkPiece(), amount, reset);
 		notifyLayoutChanged();
 	}
-
 }

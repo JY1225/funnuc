@@ -119,7 +119,6 @@ public class NotificationBox extends HBox {
 		alarmOKPath.getStyleClass().add(CSS_CLASS_OK_ICON);
 	}
 	
-	//FIXME - Font should be white
 	private void buildWarningTextLabel() {
 		lblAlarmMessage = new Text();
 		lblAlarmMessage.getStyleClass().addAll(CSS_CLASS_INFO_MESSAGE, CSS_CLASS_STATUS_MESSAGE);

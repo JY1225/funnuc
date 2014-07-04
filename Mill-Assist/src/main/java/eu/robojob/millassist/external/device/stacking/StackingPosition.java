@@ -29,6 +29,10 @@ public class StackingPosition {
 		this.workPiece = workPiece;
 	}
 	
+	public boolean hasWorkPiece() {
+		return this.workPiece != null;
+	}
+	
 	public String toString() {
 		return "StackingPosition: " + position + "  -  " + workPiece;
 	}

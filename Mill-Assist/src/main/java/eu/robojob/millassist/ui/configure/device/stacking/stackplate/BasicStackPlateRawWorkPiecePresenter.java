@@ -148,7 +148,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public void recalculate() {
 		try {
 			((BasicStackPlate) pickStep.getDevice()).getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
-			((BasicStackPlate) pickStep.getDevice()).getLayout().placeRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
+			((BasicStackPlate) pickStep.getDevice()).getLayout().initRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
 			pickStep.getProcessFlow().getClampingType().setChanged((deviceSettings.getOrientation() == WorkPieceOrientation.DEG90));
 			getView().hideNotification();
 			if (!isWeightOk()) {
@@ -170,7 +170,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			recalculate();
 			getView().refresh();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
-			//((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
+			((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
 		}
 	}
 	

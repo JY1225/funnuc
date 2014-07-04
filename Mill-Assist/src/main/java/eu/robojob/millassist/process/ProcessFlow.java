@@ -217,7 +217,7 @@ public class ProcessFlow {
 		this.lastOpened = lastOpened;
 	}
 
-	public Mode getMode() {
+	public synchronized Mode getMode() {
 		return mode;
 	}
 
@@ -238,7 +238,7 @@ public class ProcessFlow {
 		logger.debug("Stopped listening to [" + toString() + "]: " + listener.toString());
 	}
 	
-	public int getTotalAmount() {
+	public synchronized int getTotalAmount() {
 		// get stacking device
 		AbstractStackingDevice stackingDevice;
 		if (getStep(0) instanceof PickStep) {
@@ -259,6 +259,30 @@ public class ProcessFlow {
 			return conveyorSettings.getAmount();
 		}
 		return 0;
+	}
+	
+	//ADDED BY ME - TODO
+	public synchronized void setTotalAmount(int amount) {
+		// get stacking device
+		AbstractStackingDevice stackingDevice;
+		if (getStep(0) instanceof PickStep) {
+			stackingDevice = (AbstractStackingDevice) ((PickStep) getStep(0)).getDevice();
+		} else if (getStep(1) instanceof PickStep) {
+			stackingDevice = (AbstractStackingDevice) ((PickStep) getStep(1)).getDevice();
+		} else {
+			throw new IllegalStateException("Could not find first pick step");
+		}
+		if (stackingDevice instanceof BasicStackPlate) {
+			BasicStackPlateSettings basicStackPlateSettings = (BasicStackPlateSettings) deviceSettings.get(stackingDevice);
+			basicStackPlateSettings.setAmount(amount);
+		} else if (stackingDevice instanceof Conveyor) {
+			ConveyorSettings conveyorSettings = (ConveyorSettings) deviceSettings.get(stackingDevice);
+			conveyorSettings.setAmount(amount);
+		} else if (stackingDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
+			eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = (eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingDevice);
+			conveyorSettings.setAmount(amount);
+		}
+		processProcessFlowEvent(new FinishedAmountChangedEvent(this, this.finishedAmount, amount));
 	}
 
 	public synchronized int getFinishedAmount() {

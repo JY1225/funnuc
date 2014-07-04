@@ -63,7 +63,7 @@ public class BasicStackPlateLayout {
 		this.maxOverflow = maxOverflow;
 		this.minOverlap = minOverlap;
 		this.layers = 1;
-		// initialize stud positions
+		// initialize stud positions - studType = NONE
 		this.studPositions = new StudPosition[verticalHoleAmount][horizontalHoleAmount];
 		for (int i = 0; i < verticalHoleAmount; i++) {
 			for (int j = 0; j < horizontalHoleAmount; j++) {
@@ -134,6 +134,7 @@ public class BasicStackPlateLayout {
 		clearStuds();
 		if (rawWorkPiece != null) {
 			WorkPieceDimensions dimensions = rawWorkPiece.getDimensions();
+			//Check the dimensions. If length, width or height has a illogical value (0 or lower), throw an exception
 			if (!((dimensions != null) && (dimensions.getWidth() > 0) && (dimensions.getLength() > 0) && (dimensions.getHeight() > 0))) {
 				throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_DATA);
 			}
@@ -148,6 +149,7 @@ public class BasicStackPlateLayout {
 					final Properties properties = new Properties();
 					boolean alignRight = false;
 					try {
+						//Based on the properties file, you can choose to have your workpieces aligned to the right of the corners  
 						properties.load(new FileInputStream(new File("settings.properties")));
 						if (properties.containsKey("align-right") && properties.get("align-right").equals("true")) {
 							alignRight = true;
@@ -191,13 +193,13 @@ public class BasicStackPlateLayout {
 		
 		// check overflow to the right
 		int remainingStudsRight = horizontalHoleAmount - 1;
-		if (!isOverFlowRightDeg90Ok((cornerLength | cornerWidth), length, width, remainingStudsRight)) {
+		if (!isOverFlowRightHorizontalOk((cornerLength | cornerWidth), width, length,remainingStudsRight)) {
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.TOO_LARGE);
 		}
 
 		// check overflow to the top
 		int remainingStudsTop = verticalHoleAmount - 1;
-		if (!isOverFlowTopDeg90Ok((cornerLength | cornerWidth), length, width, remainingStudsTop)) {
+		if (!isOverFlowTopHorizontalOk((cornerLength | cornerWidth), width, length,remainingStudsTop)) {
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.TOO_LARGE);
 		}
 		
@@ -205,38 +207,16 @@ public class BasicStackPlateLayout {
 		// **NEXT WORK PIECES FIRST ROW**
 		// we calculate the amount of studs to the left of the next workpiece
 
-		int amountOfStudsWorkPiece = 2;
-		double remainingWidth = width;
-		
-		// the piece is moved studDiameter/2 from the center of its left-most stud (since it's aligned against it)
-		// the distance between the left-most side and the center of the second stud is removed from the remaining length
-		remainingWidth -= (horizontalHoleDistance - studDiameter / 2);
-		
-		// for real small work-pieces
-		if (remainingWidth < 0) {
-			remainingWidth = 0;
-		}
-				
-		// for each time the horizontal hole distance fits in the remaining length the amount of horizontal studs is incremented
-		while (remainingWidth > horizontalHoleDistance) {
-			remainingWidth -= horizontalHoleDistance;
-			amountOfStudsWorkPiece++;
-		}
-		
-		// the remaining distance is the space between the next stud and the end of the piece
-		double remainingDistance = horizontalHoleDistance - remainingWidth;
-		if (remainingDistance - studDiameter / 2 < interferenceDistance) {
-			remainingWidth = 0;
-			amountOfStudsWorkPiece++;
-		}
+		int amountOfHorizontalStudsWorkPiece = getNumberOfStudsPerWorkPiece(width, true);
 		
 		// calculate amount of pieces horizontally by checking overflow to the right
 		int maxHorizontalIndex = 0;
 		ok = false;
 		while (!ok) {
-			remainingStudsRight = horizontalHoleAmount - (maxHorizontalIndex) * amountOfStudsWorkPiece;
-			if (isOverFlowRightDeg90Ok((cornerLength | cornerWidth), length, width, remainingStudsRight)) {
+//			remainingStudsRight = horizontalHoleAmount - (maxHorizontalIndex) * amountOfHorizontalStudsWorkPiece;
+			if (isOverFlowRightHorizontalOk((cornerLength | cornerWidth), width, length, remainingStudsRight)) {
 				maxHorizontalIndex++;
+				remainingStudsRight -= amountOfHorizontalStudsWorkPiece;
 			} else {
 				maxHorizontalIndex = maxHorizontalIndex - 1;
 				ok = true;
@@ -246,28 +226,15 @@ public class BasicStackPlateLayout {
 		//------------------------
 		// **NEXT WORK PIECE ROWS**
 		
-		int amountOfStudsWorkPieceVertical = 1;
-		double remainingLength = length + studDiameter/2;
-		// for each remainingWidth the horizontal hole distance fits in the remaining length the amount of horizontal studs is incremented
-		while (remainingLength > verticalHoleDistance) {
-			remainingLength -= verticalHoleDistance;
-			amountOfStudsWorkPieceVertical++;
-		}
-		
-		// the remaining distance is the space between the next stud and the end of the piece
-		remainingDistance = verticalHoleDistance - remainingLength;
-		if (remainingDistance - studDiameter / 2 < interferenceDistance) {
-			remainingWidth = 0;
-			amountOfStudsWorkPieceVertical++;
-		}
+		int amountOfStudsWorkPieceVertical = getNumberOfStudsPerWorkPiece(length, false);
 		
 		// calculate amount of pieces horizontally by checking overflow to the right
 		int maxVerticalIndex = 0;
 		ok = false;
 		while (!ok) {
-			remainingStudsTop = verticalHoleAmount - maxVerticalIndex * amountOfStudsWorkPieceVertical - 1;
-			if (isOverFlowTopDeg90Ok((cornerLength | cornerWidth), length, width, remainingStudsTop)) {
+			if (isOverFlowTopHorizontalOk((cornerLength | cornerWidth), width, length, remainingStudsTop)) {
 				maxVerticalIndex++;
+				remainingStudsTop -= amountOfStudsWorkPieceVertical;
 			} else {
 				maxVerticalIndex = maxVerticalIndex - 1;
 				ok = true;
@@ -275,10 +242,10 @@ public class BasicStackPlateLayout {
 		}
 
 		if (alignRight) {
-			initializeRawWorkPiecePositionsDeg90Right(dimensions, amountOfStudsWorkPiece, amountOfStudsWorkPieceVertical, 
+			initializeRawWorkPiecePositionsDeg90Right(dimensions, amountOfHorizontalStudsWorkPiece, amountOfStudsWorkPieceVertical, 
 				(maxHorizontalIndex + 1), (maxVerticalIndex + 1), cornerLength, cornerWidth);
 		} else {
-			initializeRawWorkPiecePositionsDeg90(dimensions, amountOfStudsWorkPiece, amountOfStudsWorkPieceVertical, 
+			initializeRawWorkPiecePositionsDeg90(dimensions, amountOfHorizontalStudsWorkPiece, amountOfStudsWorkPieceVertical, 
 					(maxHorizontalIndex + 1), (maxVerticalIndex + 1), cornerLength, cornerWidth);
 		}
 	}
@@ -402,43 +369,6 @@ public class BasicStackPlateLayout {
 		}
 	}
 	
-	private boolean isOverFlowRightDeg90Ok(final boolean corner, final double length, final double width, final int remainingStuds) {
-		if (remainingStuds < 0) {
-			return false;
-		}
-		double surface = length * width;
-		if (((corner) && (remainingStuds <= 1)) || ((!corner) && (remainingStuds <= 2))) {
-			return false;
-		}
-		double overflowHorR = width - remainingStuds * horizontalHoleDistance + studDiameter/2 - horizontalPadding;
-		if ((overflowHorR + horizontalPadding - studDiameter/2)/width >= 0.5) {
-			return false;
-		}
-		if ((overflowHorR < 0) || ((Math.pow(overflowHorR, 2)/surface < overFlowPercentage) && (overflowHorR < maxOverflow))) {
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean isOverFlowTopDeg90Ok(final boolean corner, final double length, final double width, final int remainingStudsTop) {
-		if (remainingStudsTop < 0) {
-			return false;
-		}
-		double surface = length * width;
-		double overflowTop = length - verticalHoleDistance * remainingStudsTop - studDiameter/2 - verticalPaddingTop;
-		if ((!corner) && (remainingStudsTop <= 1)) {
-			return false;
-		}
-		if ((overflowTop < 0) || (Math.pow(overflowTop, 2)/surface < overFlowPercentage)) {
-			// check if max overflow isn't reached
-			if (overflowTop > maxOverflow) {
-				return false;
-			}
-			return true;
-		} 
-		return false;
-	}
-	
 	private void configureHorizontalStackingPositions(final WorkPieceDimensions dimensions) throws IncorrectWorkPieceDataException {
 		if (dimensions.getLength() < dimensions.getWidth()) {
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.LENGTH_SMALLER_WIDTH);
@@ -478,39 +408,16 @@ public class BasicStackPlateLayout {
 		//------------------------
 		// **NEXT WORK PIECES FIRST ROW**
 		// we calculate the amount of studs to the left of the next workpiece
-
-		int amountOfStudsWorkPiece = 2;
-		double remainingLength = length;
-		
-		// the piece is moved studDiameter/2 from the center of its left-most stud (since it's aligned against it)
-		// the distance between the left-most side and the center of the second stud is removed from the remaining length
-		remainingLength -= (horizontalHoleDistance - studDiameter / 2);
-		
-		// for real small work-pieces
-		if (remainingLength < 0) {
-			remainingLength = 0;
-		}
-				
-		// for each time the horizontal hole distance fits in the remaining length the amount of horizontal studs is incremented
-		while (remainingLength > horizontalHoleDistance) {
-			remainingLength -= horizontalHoleDistance;
-			amountOfStudsWorkPiece++;
-		}
-		
-		// the remaining distance is the space between the next stud and the end of the piece
-		double remainingDistance = horizontalHoleDistance - remainingLength;
-		if (remainingDistance - studDiameter / 2 < interferenceDistance) {
-			remainingLength = 0;
-			amountOfStudsWorkPiece++;
-		}
+		int amountOfHorizontalStudsWorkPiece = getNumberOfStudsPerWorkPiece(length, true);
 		
 		// calculate amount of pieces horizontally by checking overflow to the right
 		int maxHorizontalIndex = 0;
 		ok = false;
 		while (!ok) {
-			remainingStudsRight = horizontalHoleAmount - (maxHorizontalIndex) * amountOfStudsWorkPiece;
+//			remainingStudsRight = horizontalHoleAmount - (maxHorizontalIndex) * amountOfHorizontalStudsWorkPiece;
 			if (isOverFlowRightHorizontalOk((cornerLength | cornerWidth), length, width, remainingStudsRight)) {
 				maxHorizontalIndex++;
+				remainingStudsRight -= amountOfHorizontalStudsWorkPiece;
 			} else {
 				maxHorizontalIndex = maxHorizontalIndex - 1;
 				ok = true;
@@ -518,38 +425,71 @@ public class BasicStackPlateLayout {
 		}
 		
 		//------------------------
-		// **NEXT WORK PIECE ROWS**
+		// **NEXT WORK PIECE ROWS**	
+		int amountOfStudsWorkPieceVertical = getNumberOfStudsPerWorkPiece(width, false);
 		
-		int amountOfStudsWorkPieceVertical = 1;
-		double remainingWidth = width + studDiameter/2;
-		// for each remainingWidth the horizontal hole distance fits in the remaining length the amount of horizontal studs is incremented
-		while (remainingWidth > verticalHoleDistance) {
-			remainingWidth -= verticalHoleDistance;
-			amountOfStudsWorkPieceVertical++;
-		}
-		
-		// the remaining distance is the space between the next stud and the end of the piece
-		remainingDistance = verticalHoleDistance - remainingWidth;
-		if (remainingDistance - studDiameter / 2 < interferenceDistance) {
-			remainingWidth = 0;
-			amountOfStudsWorkPieceVertical++;
-		}
-		
-		// calculate amount of pieces horizontally by checking overflow to the right
+		// calculate amount of pieces vertically by checking overflow at the top
 		int maxVerticalIndex = 0;
 		ok = false;
 		while (!ok) {
-			remainingStudsTop = verticalHoleAmount - maxVerticalIndex * amountOfStudsWorkPieceVertical - 1;
 			if (isOverFlowTopHorizontalOk((cornerLength | cornerWidth), length, width, remainingStudsTop)) {
 				maxVerticalIndex++;
+				remainingStudsTop -= amountOfStudsWorkPieceVertical;
 			} else {
 				maxVerticalIndex = maxVerticalIndex - 1;
 				ok = true;
 			}
 		}
 
-		initializeRawWorkPiecePositionsHorizontal(dimensions, amountOfStudsWorkPiece, amountOfStudsWorkPieceVertical, 
+		initializeRawWorkPiecePositionsHorizontal(dimensions, amountOfHorizontalStudsWorkPiece, amountOfStudsWorkPieceVertical, 
 				(maxHorizontalIndex + 1), (maxVerticalIndex + 1), cornerLength, cornerWidth);
+	}
+	
+	/**
+	 * Calculate the number of stud positions covered by a workpiece.
+	 * 
+	 * @param dimension - length/width of the workpiece
+	 * @param isHorizontal - boolean indicating the direction of studs to calculate. If true, check horizontally; if false, check vertically.
+	 * @return number of stud positions covered by a workpiece
+	 */
+	private int getNumberOfStudsPerWorkPiece(final double dimension, final boolean isHorizontal) {
+		float holeDistance;
+		int amountOfStudsWorkPiece;
+		
+		// The workpiece is aligned to its left-most (or lower) stud, so it is in fact shifted with studDiameter/2 to the right (or up). 
+		double remainingWorkPieceDimension = dimension + (studDiameter /2);
+		
+		if(isHorizontal) {
+			//Initial value - 2 studs needed
+			amountOfStudsWorkPiece = 2;
+			holeDistance = horizontalHoleDistance;
+			// The first 2 studs are default. This means we can subtract the length of the horizontalHoleDistance already from the initial
+			// length of the workpiece since this distance is already covered by studs.
+			remainingWorkPieceDimension -= holeDistance;
+		} else {
+			//Initial value - 1 stud needed
+			amountOfStudsWorkPiece = 1;
+			holeDistance = verticalHoleDistance;
+		}		
+		// for real small work-pieces - smaller than the distance between 2 studs
+		if (remainingWorkPieceDimension < 0) {
+			remainingWorkPieceDimension = 0;
+		}		
+		// for each time the horizontal hole distance fits in the remaining length, the amount of horizontal studs is incremented
+		while (remainingWorkPieceDimension > holeDistance) {
+			remainingWorkPieceDimension -= holeDistance;
+			amountOfStudsWorkPiece++;
+		}		
+		// When the remainingLength is less than the distance between 2 studs, we still have a small piece of the workpiece 
+		// that we did not take into account. The remaining distance is the space between the next stud and the end of the piece
+		// (the distance to the nextWorkpiece - including the first left-most stud of the next workpiece)
+		double distanceToNextWorkPiece = holeDistance - (studDiameter / 2) - remainingWorkPieceDimension;
+		// If the distance between 2 successive workpieces becomes too small (safe distance - interferenceDistance), we include 1 more stud
+		if (distanceToNextWorkPiece < interferenceDistance) {
+			remainingWorkPieceDimension = 0;
+			amountOfStudsWorkPiece++;
+		}
+		return amountOfStudsWorkPiece;
 	}
 	
 	private void initializeRawWorkPiecePositionsHorizontal(final WorkPieceDimensions dimensions, final int amountOfStudsWorkPiece,
@@ -573,6 +513,7 @@ public class BasicStackPlateLayout {
 					stPos.addstud(studPos);
 					// if the corner is not needed because of the length, we will add an extra stud for stability
 				} else {
+					//first stud for the workpiece
 					studPos = new StudPosition(firstStudPosX + 1, firstStudPosY, studPositions[firstStudPosY][firstStudPosX + 1].getCenterPosition(), StudType.NORMAL);
 					StudPosition studPos2 = new StudPosition(firstStudPosX, firstStudPosY + 1, studPositions[firstStudPosY + 1][firstStudPosX].getCenterPosition(), StudType.NORMAL);
 					stPos.addstud(studPos);
@@ -580,11 +521,14 @@ public class BasicStackPlateLayout {
 				}
 				if (!cornerLength) {
 					boolean ok = false;
+					//max number of studs for 1 workpiece
 					int maxTimes = (int) Math.floor((dimensions.getLength() + studDiameter/2 - minOverlap)/horizontalHoleDistance);
 					while (!ok) {
 						if (maxTimes <= 1) {
 							ok = true;
-						} else if (studPositions[0].length > maxTimes + firstStudPosX) {
+						} 
+						//add stud at the last studpositions possible
+						else if (studPositions[0].length > maxTimes + firstStudPosX) {
 							int positionX = maxTimes + firstStudPosX;
 							int positionY = firstStudPosY;
 							StudPosition studPos2 = new StudPosition(positionX, positionY, studPositions[positionY][positionX].getCenterPosition(), StudType.NORMAL);
@@ -598,16 +542,19 @@ public class BasicStackPlateLayout {
 			}
 		}
 	}
-	
+
 	private boolean isOverFlowRightHorizontalOk(final boolean corner, final double length, final double width, final int remainingStuds) {
 		if (remainingStuds < 0) {
 			return false;
 		}
 		double surface = length * width;
+		//In case a corner is needed, we need at least 2 stud positions for the attachment of the cornerpieces (1 in the corner of the cornerpiece and one next to it)
+		//If we do not have corners, we need at least 3 stud positions for stability (2 to support the workpiece and 1 left of the workpiece)
 		if (((corner) && (remainingStuds <= 1)) || ((!corner) && (remainingStuds <= 2))) {
 			return false;
 		}
-		double overflowHorR = length - remainingStuds * horizontalHoleDistance + studDiameter/2 - horizontalPadding;
+		double overflowHorR = length + studDiameter/2 - remainingStuds * horizontalHoleDistance - horizontalPadding;
+		//If the piece sticking out after the last stud is more than 50% of the width, then return false.
 		if ((overflowHorR + horizontalPadding - studDiameter/2)/width >= 0.5) {
 			return false;
 		}
@@ -622,10 +569,10 @@ public class BasicStackPlateLayout {
 			return false;
 		}
 		double surface = length * width;
-		double overflowTop = width - verticalHoleDistance * remainingStudsTop - studDiameter/2 - verticalPaddingTop;
 		if ((!corner) && (remainingStudsTop <= 1)) {
 			return false;
 		}
+		double overflowTop = width - verticalHoleDistance * remainingStudsTop - studDiameter/2 - verticalPaddingTop;
 		if ((overflowTop < 0) || (Math.pow(overflowTop, 2)/surface < overFlowPercentage)) {
 			// check if max overflow isn't reached
 			if (overflowTop > maxOverflow) {
@@ -707,9 +654,10 @@ public class BasicStackPlateLayout {
 		int maxHorizontalIndex = 0;
 		ok = false;
 		while (!ok) {
-			remainingStudsRight = horizontalHoleAmount - amountOfStudsLeftFirst - (maxHorizontalIndex) * amountOfStudsLeftOther;
+//			remainingStudsRight = horizontalHoleAmount - amountOfStudsLeftFirst - (maxHorizontalIndex) * amountOfStudsLeftOther;
 			if (isOverFlowRightTiltedOk(a, b, c, length, width, remainingStudsRight)) {
 				maxHorizontalIndex++;
+				remainingStudsRight -= amountOfStudsLeftOther;
 			} else {
 				maxHorizontalIndex = maxHorizontalIndex - 1;
 				ok = true;
@@ -742,9 +690,9 @@ public class BasicStackPlateLayout {
 		int maxVerticalIndex = 0;
 		ok = false;
 		while (!ok) {
-			remainingStudsTop = verticalHoleAmount - maxVerticalIndex  * verticalRowIndex - 1;
 			if (isOverFlowTopTiltedOk((cornerLength | cornerWidth), a, c, length, width, remainingStudsTop)) {
 				maxVerticalIndex++;
+				remainingStudsTop -= verticalRowIndex;
 			} else {
 				maxVerticalIndex = maxVerticalIndex - 1;
 				ok = true;
@@ -842,45 +790,140 @@ public class BasicStackPlateLayout {
 		return false;
 	}
 	
-	public void placeRawWorkPieces(final WorkPiece rawWorkPiece, final int amount) throws IncorrectWorkPieceDataException {
-		logger.debug("Placing raw workpieces: [" + amount + "].");
+	private void clearStackingPositions() {
 		for (StackPlateStackingPosition stackingPos : stackingPositions) {
 			stackingPos.setWorkPiece(null);
 			stackingPos.setAmount(0);
 		}
-		if (amount <= getMaxRawWorkPiecesAmount()) {
-			// start filling up stackinPositions, if layers > 1, skip first stack
-			int placedAmount = 0;
-			int stackingPos = 0;
-			if (layers > 1) {
-				StackPlateStackingPosition stPos = stackingPositions.get(stackingPos);
-				for (StudPosition studPos : stPos.getStuds()) {
-					studPositions[studPos.getRowIndex()][studPos.getColumnIndex()] = studPos;
-				}
-				if (placedAmount < amount) {
-					stPos.setWorkPiece(rawWorkPiece);
-					stPos.setAmount(1);
-					placedAmount++;
-				}
-				stackingPos++;
-			}
-			while (placedAmount < amount) {
-				StackPlateStackingPosition stPos = stackingPositions.get(stackingPos);
-				stPos.setWorkPiece(rawWorkPiece);
-				for (StudPosition studPos : stPos.getStuds()) {
-					studPositions[studPos.getRowIndex()][studPos.getColumnIndex()] = studPos;
-				}
-				int amountToPlace = layers;
-				if (amountToPlace > (amount - placedAmount)) {
-					amountToPlace = amount - placedAmount;
-				}
-				stPos.setAmount(amountToPlace);
-				placedAmount = placedAmount + amountToPlace;
-				stackingPos++;
-			}
+	}
+	
+	/**
+	 * Clear the stackPlate and add a given amount of raw workPieces.
+	 * 
+	 * @param rawWorkPiece
+	 * @param amount
+	 * @throws IncorrectWorkPieceDataException
+	 */
+	public void initRawWorkPieces(final WorkPiece rawWorkPiece, final int amount) throws IncorrectWorkPieceDataException {
+		logger.debug("Placing raw workpieces: [" + amount + "].");
+		clearStackingPositions();
+		if(amount <= getMaxRawWorkPiecesAmount()) {
+			placeRawWorkPieces(rawWorkPiece, amount, false);
 		} else {
 			logger.debug("Trying to place [" + amount + "] but maximum is [" + getMaxRawWorkPiecesAmount() + "].");
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
+		}
+	}
+	
+	/**
+	 * Add a certain amount of raw workPieces to the stackPlate. The first place that is free, will be populated by
+	 * a workPiece.
+	 * 
+	 * @param rawWorkPiece
+	 * @param amount
+	 */
+	public void placeRawWorkPieces(final WorkPiece rawWorkPiece, final int amount, boolean resetFirst) {
+		logger.debug("Adding raw workpieces: [" + amount + "].");
+		int placedAmount = 0;
+		int stackingPos = 0;
+		StackPlateStackingPosition stPos = stackingPositions.get(0);
+		//For any number of layers, we only put 1 workPiece on the first position. This ensures that the robot
+		//places finished products always at the same position
+		if(placeFirstPiece(rawWorkPiece, resetFirst)) {
+			placedAmount++;
+		}
+		stackingPos++;
+		while (placedAmount < amount && stackingPos < stackingPositions.size()) {
+			stPos = stackingPositions.get(stackingPos);
+			while(placedAmount < amount && addOneWorkPiece(rawWorkPiece, stPos,getLayers(), false) ) {
+				placedAmount++;
+			}
+			stackingPos++;
+		}
+	}
+	
+	private boolean placeFirstPiece(final WorkPiece workPiece, boolean isEmptyPiece) {
+		if(isEmptyPiece) {
+			resetWorkPieceAt(0);
+			return false;
+		} else {
+			return addOneWorkPiece(workPiece, stackingPositions.get(0),1, false);
+		}
+	}
+	
+//	public void replaceFinishedPieces(final WorkPiece rawWorkPiece, final int amount) {	
+//		removeFinishedFromTable();
+//		int positionIndex = getFirstRawPosition();
+//		StackPlateStackingPosition stPos = stackingPositions.get(positionIndex);
+//		int placedAmount = 0;
+//		while (placedAmount < amount && positionIndex > 0) {
+//			stPos = stackingPositions.get(positionIndex);
+//			while(placedAmount < amount && addOneWorkPiece(rawWorkPiece, stPos,getLayers(), true) ) {
+//				placedAmount++;
+//			}
+//			positionIndex--;
+//		}
+//	}
+	
+	public void removeFinishedFromTable() {
+		for (StackPlateStackingPosition position : stackingPositions) {
+			if(position.hasWorkPiece() && position.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)) {
+				position.setWorkPiece(null);
+				position.setAmount(0);
+			}
+		}
+	}
+	
+	public int getFirstRawPosition() {
+		int lastPiece = -1;
+		for (StackPlateStackingPosition position : stackingPositions) {
+			if ((position.hasWorkPiece()) && (position.getWorkPiece().getType().equals(WorkPiece.Type.RAW))) {
+				return stackingPositions.indexOf(position);
+			} else if (position.hasWorkPiece()) {
+				lastPiece = stackingPositions.indexOf(position);
+			}
+		}
+		return lastPiece;
+	}	
+	
+	public void resetWorkPieceAt(int positionIndex) {
+		stackingPositions.get(positionIndex).setWorkPiece(null);
+		stackingPositions.get(positionIndex).setAmount(0);	
+	}
+	
+	/**
+	 * Try to place one given WorkPiece on a given position. In case a WorkPiece is already present on that
+	 * position, the count will be incremented. Otherwise, if a finished workPiece is there, nothing will be done
+	 * 
+	 * @param rawWorkPiece
+	 * @param position
+	 * @param maxNbOfPieces
+	 * 			- the maximum number of pieces stacked on each other
+	 * @return
+	 */
+	private boolean addOneWorkPiece(final WorkPiece workPiece, StackPlateStackingPosition position, int maxNbOfPieces, boolean overwrite) {
+		if(position.hasWorkPiece()) {
+			if(position.getWorkPiece().getType().equals(workPiece.getType())) {
+				if(position.getAmount() < maxNbOfPieces) {
+					position.incrementAmount();
+					return true;
+				}
+				return false;
+			}
+			if(overwrite) {
+				position.setWorkPiece(workPiece);
+				position.setAmount(1);
+				return true;
+			}
+			return false;
+		} 
+		else {
+			for (StudPosition studPos : position.getStuds()) {
+				studPositions[studPos.getRowIndex()][studPos.getColumnIndex()] = studPos;
+			}
+			position.setWorkPiece(workPiece);
+			position.setAmount(1);
+			return true;
 		}
 	}
 	
@@ -888,6 +931,7 @@ public class BasicStackPlateLayout {
 		if (layers == 1) {
 			return stackingPositions.size();
 		} else {
+			//Only 1 piece at the first position
 			return layers * (stackingPositions.size() - 1) + 1;
 		}
 	}
@@ -1000,11 +1044,11 @@ public class BasicStackPlateLayout {
 		return orientation;
 	}
 	
-	public int getRawWorkPieceAmount() {
+	public int getWorkPieceAmount(Type workPieceType) {
 		int amount = 0;
 		for (StackPlateStackingPosition position : stackingPositions) {
-			if ((position.getWorkPiece() != null) && (position.getWorkPiece().getType() == Type.RAW)) {
-				amount = amount + position.getAmount();
+			if ((position.hasWorkPiece()) && (position.getWorkPiece().getType().equals(workPieceType))) {
+				amount += position.getAmount();
 			}
 		}
 		return amount;
@@ -1017,4 +1061,41 @@ public class BasicStackPlateLayout {
 	public void setLayers(final int layers) {
 		this.layers = layers;
 	}
+	
+//	private boolean isOverFlowRightDeg90Ok(final boolean corner, final double length, final double width, final int remainingStuds) {
+//	if (remainingStuds < 0) {
+//		return false;
+//	}
+//	double surface = length * width;
+//	if (((corner) && (remainingStuds <= 1)) || ((!corner) && (remainingStuds <= 2))) {
+//		return false;
+//	}
+//	double overflowHorR = width + studDiameter/2 - remainingStuds * horizontalHoleDistance - horizontalPadding;
+//	if ((overflowHorR + horizontalPadding - studDiameter/2)/width >= 0.5) {
+//		return false;
+//	}
+//	if ((overflowHorR < 0) || ((Math.pow(overflowHorR, 2)/surface < overFlowPercentage) && (overflowHorR < maxOverflow))) {
+//		return true;
+//	}
+//	return false;
+//}
+	
+//	private boolean isOverFlowTopDeg90Ok(final boolean corner, final double length, final double width, final int remainingStudsTop) {
+//	if (remainingStudsTop < 0) {
+//		return false;
+//	}
+//	double surface = length * width;
+//	if ((!corner) && (remainingStudsTop <= 1)) {
+//		return false;
+//	}
+//	double overflowTop = length - verticalHoleDistance * remainingStudsTop - studDiameter/2 - verticalPaddingTop;
+//	if ((overflowTop < 0) || (Math.pow(overflowTop, 2)/surface < overFlowPercentage)) {
+//		// check if max overflow isn't reached
+//		if (overflowTop > maxOverflow) {
+//			return false;
+//		}
+//		return true;
+//	} 
+//	return false;
+//}
 }

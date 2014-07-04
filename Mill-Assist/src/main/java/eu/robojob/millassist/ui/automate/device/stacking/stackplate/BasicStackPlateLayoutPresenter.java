@@ -29,6 +29,10 @@ public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicS
 	public boolean isConfigured() {
 		return false;
 	}
+	
+	public BasicStackPlate getStackPlate() {
+		return this.stackPlate;
+	}
 
 	@Override
 	public void layoutChanged() {
