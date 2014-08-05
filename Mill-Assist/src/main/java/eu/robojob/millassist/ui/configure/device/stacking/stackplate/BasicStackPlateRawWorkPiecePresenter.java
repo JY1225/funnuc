@@ -150,6 +150,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			((BasicStackPlate) pickStep.getDevice()).getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
 			((BasicStackPlate) pickStep.getDevice()).getLayout().placeRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
 			pickStep.getProcessFlow().getClampingType().setChanged((deviceSettings.getOrientation() == WorkPieceOrientation.DEG90));
+			// FIXME: in principe ook hier, als de hoek voor 45° kleiner is dan de hoek voor 90°!!
 			getView().hideNotification();
 			if (!isWeightOk()) {
 				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO));

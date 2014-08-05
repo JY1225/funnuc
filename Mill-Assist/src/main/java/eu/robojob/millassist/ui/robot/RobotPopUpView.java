@@ -1,11 +1,20 @@
 package eu.robojob.millassist.ui.robot;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.millassist.ui.general.PopUpView;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
@@ -24,6 +33,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	private Button btnCloseA;
 	private Button btnOpenB;
 	private Button btnCloseB;
+	private Button btnToCustomPos;
 	
 	private Button btn5;
 	private Button btn10;
@@ -45,6 +55,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	private static final String CLOSE_A = "RobotPopUpView.closeA";
 	private static final String OPEN_B = "RobotPopUpView.openB";
 	private static final String CLOSE_B = "RobotPopUpView.closeB";
+	private static final String TO_CUSTOM_POS = "RobotPopUpView.toCustomPos";
 	
 	private static final String CSS_CLASS_POPUP_BUTTON = "pop-up-btn";
 	private static final String CSS_CLASS_POPUP_BUTTON_BOTTOM = "pop-up-btn-bottom";
@@ -53,10 +64,24 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	private static final int TOP_LEFT_X = 65;
 	private static final int TOP_LEFT_Y = 0;
 	
+	private static Logger logger = LogManager.getLogger(RobotPopUpView.class.getName());
+	
 	private int speed;
 	
 	public RobotPopUpView() {
 		super(TOP_LEFT_X, TOP_LEFT_Y, WIDTH * 2 - 1, HEIGHT);
+		final Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream(new File("settings.properties")));
+			if (properties.containsKey("to-custom-pos") && properties.get("to-custom-pos").equals("true")) {
+				vBoxMenuItems2.getChildren().add(btnToCustomPos);
+				setHeight((AMOUNT_OF_ITEMS + 1) * BUTTON_HEIGHT);
+				setPrefHeight((AMOUNT_OF_ITEMS + 1) * BUTTON_HEIGHT);
+				setMaxHeight((AMOUNT_OF_ITEMS + 1) * BUTTON_HEIGHT);
+			}
+		} catch (IOException e) {
+			logger.error(e);
+		}
 	}
 	
 	@Override
@@ -225,11 +250,23 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btnCloseB.setGraphic(new Text(Translator.getTranslation(CLOSE_B)));
 		btnCloseB.setPrefSize(WIDTH, BUTTON_HEIGHT);
 		btnCloseB.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
-		btnCloseB.getStyleClass().add(CSS_CLASS_POPUP_BUTTON_BOTTOM);
+		btnCloseB.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
 		btnCloseB.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
 				getPresenter().closeGripperB();
+			}
+		});
+		
+		btnToCustomPos = new Button();
+		btnToCustomPos.setGraphic(new Text(Translator.getTranslation(TO_CUSTOM_POS)));
+		btnToCustomPos.setPrefSize(WIDTH, BUTTON_HEIGHT);
+		btnToCustomPos.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
+		btnToCustomPos.getStyleClass().add(CSS_CLASS_POPUP_BUTTON_BOTTOM);
+		btnToCustomPos.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				getPresenter().toCustomPosition();
 			}
 		});
 		
@@ -240,7 +277,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		vBoxMenuItems1.getChildren().add(btn50);
 		vBoxMenuItems1.getChildren().add(btn75);
 		vBoxMenuItems1.getChildren().add(btn100);
-		
+				
 		vBoxMenuItems2.getChildren().add(btnToHome);
 		vBoxMenuItems2.getChildren().add(btnRestart);
 		vBoxMenuItems2.getChildren().add(btnToChange);
@@ -248,6 +285,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		vBoxMenuItems2.getChildren().add(btnCloseA);
 		vBoxMenuItems2.getChildren().add(btnOpenB);
 		vBoxMenuItems2.getChildren().add(btnCloseB);
+		
 	}
 	
 	public void refreshSpeed(final int speed) {
@@ -299,6 +337,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btnRestart.setDisable(!connected);
 		btnToChange.setDisable(!connected);
 		btnToHome.setDisable(!connected);
+		btnToCustomPos.setDisable(!connected);
 	}
 	
 	public void setProcessActive(final boolean active) {
@@ -309,5 +348,6 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btnRestart.setDisable(active);
 		btnToHome.setDisable(active);
 		btnToChange.setDisable(active);
+		btnToCustomPos.setDisable(active);
 	}
 }

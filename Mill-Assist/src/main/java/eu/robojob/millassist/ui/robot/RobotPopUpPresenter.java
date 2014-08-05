@@ -174,6 +174,14 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 			e.printStackTrace();
 		}
 	}
+
+	public void toCustomPosition() {
+		try {
+			robot.moveToCustomPosition();
+		} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@Override
 	public void robotSpeedChanged(final RobotEvent event) {

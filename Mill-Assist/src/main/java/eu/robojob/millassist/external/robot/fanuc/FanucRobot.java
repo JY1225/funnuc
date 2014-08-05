@@ -746,5 +746,10 @@ public class FanucRobot extends AbstractRobot {
 	public RobotSocketCommunication getRobotSocketCommunication() {
 		return this.fanucRobotCommunication;
 	}
+
+	@Override
+	public void moveToCustomPosition() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_TO_CUSTOM_POS, RobotConstants.RESPONSE_TO_CUSTOM_POS, WRITE_VALUES_TIMEOUT);
+	}
 	
 }
