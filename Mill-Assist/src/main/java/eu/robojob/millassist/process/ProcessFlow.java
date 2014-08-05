@@ -20,9 +20,9 @@ import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotSettings;
 import eu.robojob.millassist.process.event.DataChangedEvent;
@@ -178,6 +178,7 @@ public class ProcessFlow {
 		this.clampingManner.setType(processFlow.getClampingType().getType());
 		for (AbstractDevice device : getDevices()) {
 			if (device instanceof BasicStackPlate) {
+				((BasicStackPlate) device).setLayout(((BasicStackPlate) device).getBasicLayout());
 				((BasicStackPlate) device).placeFinishedWorkPieces(processFlow.getFinishedAmount());
 			}
 		}
@@ -249,7 +250,7 @@ public class ProcessFlow {
 			throw new IllegalStateException("Could not find first pick step");
 		}
 		if (stackingDevice instanceof BasicStackPlate) {
-			BasicStackPlateSettings basicStackPlateSettings = (BasicStackPlateSettings) deviceSettings.get(stackingDevice);
+			AbstractStackPlateDeviceSettings basicStackPlateSettings = (AbstractStackPlateDeviceSettings) deviceSettings.get(stackingDevice);
 			return basicStackPlateSettings.getAmount();
 		} else if (stackingDevice instanceof Conveyor) {
 			ConveyorSettings conveyorSettings = (ConveyorSettings) deviceSettings.get(stackingDevice);
@@ -273,7 +274,7 @@ public class ProcessFlow {
 			throw new IllegalStateException("Could not find first pick step");
 		}
 		if (stackingDevice instanceof BasicStackPlate) {
-			BasicStackPlateSettings basicStackPlateSettings = (BasicStackPlateSettings) deviceSettings.get(stackingDevice);
+			AbstractStackPlateDeviceSettings basicStackPlateSettings = (AbstractStackPlateDeviceSettings) deviceSettings.get(stackingDevice);
 			basicStackPlateSettings.setAmount(amount);
 		} else if (stackingDevice instanceof Conveyor) {
 			ConveyorSettings conveyorSettings = (ConveyorSettings) deviceSettings.get(stackingDevice);
@@ -438,8 +439,8 @@ public class ProcessFlow {
 	public void loadAllDeviceSettings() {
 		for (Entry<AbstractDevice, DeviceSettings> settings : deviceSettings.entrySet()) {
 			settings.getKey().loadDeviceSettings(settings.getValue());
-			if (settings.getValue() instanceof BasicStackPlateSettings) {
-				if (((BasicStackPlateSettings) settings.getValue()).getOrientation() == WorkPieceOrientation.DEG90) {
+			if (settings.getValue() instanceof AbstractStackPlateDeviceSettings) {
+				if (((AbstractStackPlateDeviceSettings) settings.getValue()).getOrientation() == WorkPieceOrientation.DEG90) {
 					getClampingType().setChanged(true);
 				}
 			}

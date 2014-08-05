@@ -1,7 +1,7 @@
 package eu.robojob.millassist.ui.automate.device.stacking.stackplate;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.DataChangedEvent;
@@ -48,6 +48,7 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 			addWorkPieces(amount, replaceFinishedPieces && processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
 			processFlow.setFinishedAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
 			processFlow.setTotalAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW) + stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
+			
 		} catch(IncorrectWorkPieceDataException e) {
 			getView().showNotification(e.getLocalizedMessage(), true);
 		}
@@ -70,9 +71,10 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 		return stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
 	}
 	
+	//FIXME - it does not necessarily mean that we have 2 workpiece in the flow when we are not FINISHED
 	public int getMaxAddAmount() {
-		int amount = stackPlate.getLayout().getMaxRawWorkPiecesAmount() - getMaxFinishedToReplaceAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
-		if(processFlow.getMode().equals(ProcessFlow.Mode.AUTO)) {
+		int amount = stackPlate.getLayout().getMaxPiecesPossibleAmount() - getMaxFinishedToReplaceAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
+		if(!processFlow.getMode().equals(ProcessFlow.Mode.FINISHED) ) {
 			//We assume 2 pieces are being processed
 			amount -= 2;
 		}

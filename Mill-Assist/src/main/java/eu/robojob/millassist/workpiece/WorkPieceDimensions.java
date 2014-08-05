@@ -46,6 +46,10 @@ public class WorkPieceDimensions {
 	public boolean isKnownShape() {
 		return knownShape;
 	}
+	
+	public boolean isValidDimension() {
+		return (width > 0 && length > 0 && height > 0);
+	}
 
 	public float getVolume() {
 		return width*height*length;

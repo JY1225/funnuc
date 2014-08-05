@@ -4,9 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout.HoleOrientation;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.PickStep;
@@ -19,7 +21,7 @@ import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<BasicStackPlateRawWorkPieceView, BasicStackPlateMenuPresenter> {
 
-	private BasicStackPlateSettings deviceSettings;
+	private AbstractStackPlateDeviceSettings deviceSettings;
 	private PickStep pickStep;
 	private WorkPieceDimensions dimensions;
 	private WorkPieceOrientation orientation;
@@ -28,8 +30,9 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	private static Logger logger = LogManager.getLogger(BasicStackPlateRawWorkPiecePresenter.class.getName());
 	private static final String WEIGHT_ZERO = "BasicStackPlateRawWorkPiecePresenter.weightZero";
 	private static final String STUD_HEIGHT_NOT_OK = "BasicStackPlateRawWorkPiecePresenter.studHeightNotOK";
+	private static final String GRIDPLATE_NOT_OK = "BasicStackPlateRawWorkPiecePresenter.gridplateNotOK";
 	
-	public BasicStackPlateRawWorkPiecePresenter(final BasicStackPlateRawWorkPieceView view, final PickStep pickStep, final BasicStackPlateSettings deviceSettings) {
+	public BasicStackPlateRawWorkPiecePresenter(final BasicStackPlateRawWorkPieceView view, final PickStep pickStep, final AbstractStackPlateDeviceSettings deviceSettings) {
 		super(view);
 		this.pickStep = pickStep;	
 		this.deviceSettings = deviceSettings;
@@ -41,8 +44,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			orientation = WorkPieceOrientation.HORIZONTAL;
 			deviceSettings.setOrientation(orientation);
 		}
-		view.setPickStep(pickStep);
 		view.build();
+		recalculate();
 	}
 
 	@Override
@@ -62,7 +65,34 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	}
 	
 	public boolean isStudHeightOk() {
-		return (deviceSettings.getStudHeight() >= 0);
+		return deviceSettings.getStudHeight() >= 0;
+	}
+	
+	public boolean isGridPlateOK() {
+		if (getStackPlate().hasGridPlate()) {
+			GridPlateLayout layout = ((GridPlateLayout) getStackPlate().getLayout());
+			//In case the gridplate is oriented with an angle of 45°, the workpiece has to be like that as well
+			if(deviceSettings.getOrientation() == WorkPieceOrientation.TILTED && layout.getHoleOrientation() != HoleOrientation.TILTED) {
+				return false;
+			} 
+			if(deviceSettings.getOrientation() != WorkPieceOrientation.TILTED && layout.getHoleOrientation() == HoleOrientation.TILTED) {
+				return false;
+			} 
+			if(deviceSettings.getOrientation() == WorkPieceOrientation.DEG90) {
+				if(dimensions.getWidth() > layout.getHoleLength())
+					return false;
+				if(dimensions.getLength() > layout.getHoleWidth())
+					return false;
+			} else {
+				if(dimensions.getLength() > layout.getHoleLength())
+					return false;
+				if(dimensions.getWidth() > layout.getHoleWidth())
+					return false;
+			} 
+			return true;
+		} else {
+			return true;
+		}
 	}
 	
 	public void changedMaterial(final Material material) {
@@ -120,7 +150,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public void changedStudHeight(final float studHeight) {
 		logger.info("Changed stud height [" + studHeight + "].");
-		if (studHeight != deviceSettings.getStudHeight()) {
+		if (studHeight != 	deviceSettings.getStudHeight()) {
 			deviceSettings.setStudHeight(studHeight);
 			((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
@@ -147,19 +177,21 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public void recalculate() {
 		try {
-			((BasicStackPlate) pickStep.getDevice()).getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
-			((BasicStackPlate) pickStep.getDevice()).getLayout().initRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
+			getStackPlate().getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
+			getStackPlate().getLayout().initRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
 			pickStep.getProcessFlow().getClampingType().setChanged((deviceSettings.getOrientation() == WorkPieceOrientation.DEG90));
 			getView().hideNotification();
 			if (!isWeightOk()) {
 				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO), true);
 			} else if (!isStudHeightOk()) {
 				getView().showNotification(Translator.getTranslation(STUD_HEIGHT_NOT_OK), true);
+			} else if (!isGridPlateOK()) {
+				getView().showNotification(Translator.getTranslation(GRIDPLATE_NOT_OK), true);
 			}
 		} catch (IncorrectWorkPieceDataException e) {
 			getView().showNotification(e.getLocalizedMessage(), true);
 		}
-		((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
+		getStackPlate().notifyLayoutChanged();
 	}
 	
 	public void changedOrientation(final WorkPieceOrientation orientation) {
@@ -170,7 +202,6 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			recalculate();
 			getView().refresh();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
-			((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
 		}
 	}
 	
@@ -182,23 +213,31 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 
 	@Override
 	public boolean isConfigured() {
-		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
+		BasicStackPlate plate = getStackPlate();
 		if ((dimensions != null) && (orientation != null) && (plate.getLayout().getStackingPositions() != null)
-				&& (plate.getLayout().getStackingPositions().size() > 0) && (workPiece.getWeight() > 0) && (deviceSettings.getStudHeight() >= 0)
-				) {
+				&& (plate.getLayout().getStackingPositions().size() > 0) && (workPiece.getWeight() > 0) 
+				&& (deviceSettings.getStudHeight() >= 0)) {
 			return true;
 		}
 		return false;
 	}
 	
 	public void setMaxAmount() {
-		BasicStackPlate plate = ((BasicStackPlate) pickStep.getDevice());
-		deviceSettings.setAmount(plate.getLayout().getMaxRawWorkPiecesAmount());
-		((BasicStackPlate) pickStep.getDevice()).loadDeviceSettings(deviceSettings);
+		BasicStackPlate plate = getStackPlate();
+		deviceSettings.setAmount(plate.getLayout().getMaxPiecesPossibleAmount());
+		plate.loadDeviceSettings(deviceSettings);
 		recalculate();
 		getView().refresh();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
-		//((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
+		//plate.notifyLayoutChanged();
+	}
+	
+	private BasicStackPlate getStackPlate() {
+		return ((BasicStackPlate) pickStep.getDevice());
 	}
 
+	public AbstractStackPlateDeviceSettings getDeviceSettings() {
+		return this.deviceSettings;
+	}
+	
 }

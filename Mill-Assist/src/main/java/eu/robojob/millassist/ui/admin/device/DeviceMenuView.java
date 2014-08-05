@@ -13,6 +13,7 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 	private static final String CNCMACHINE = "DeviceMenuView.cncMachine";
 	private static final String CNCMACHINE_CLAMPINGS = "DeviceMenuView.cncMachineClampings";
 	private static final String OUTPUT_BIN = "DeviceMenuView.outputBin";
+	private static final String GRIDPLATE = "DeviceMenuView.gridPlate";
 	
 	public DeviceMenuView() {
 		build();
@@ -61,6 +62,12 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 				getPresenter().configureOutputBin();
 			}
 		});
+		addTextMenuItem(index++, Translator.getTranslation(GRIDPLATE), true, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				getPresenter().configureGridPlate();
+			}
+		});
 	}
 	
 	public void disablePrageMenuItem() {
@@ -76,6 +83,11 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 	public void disableBinMenuItem() {
 		getMenuItem(5).setVisible(false);
 		getMenuItem(5).setManaged(false);
+	}
+	
+	public void disableGridPlateMenuItem() {
+		getMenuItem(6).setVisible(false);
+		getMenuItem(6).setManaged(false);
 	}
 	
 	public void setConfigureUserFramesActive() {
@@ -100,6 +112,10 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 	
 	public void setConfigureOutputBinActive() {
 		setMenuItemSelected(5);
+	}
+	
+	public void setConfigureGridPlateActive() {
+		setMenuItemSelected(6);
 	}
 
 }

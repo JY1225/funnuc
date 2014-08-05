@@ -1,7 +1,7 @@
 package eu.robojob.millassist.ui.automate.device.stacking.stackplate;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.DataChangedEvent;
@@ -36,7 +36,6 @@ public class BasicStackPlateReplacePresenter extends AbstractFormPresenter<Basic
 		return false;
 	}
 	
-	//TODO - possibility to enter an amount of workpieces that is already finished on the table (in case of stop for example)
 	public void replaceRawByFinished(final int amount) {
 		if(amount > 0) {
 			try {

@@ -8,7 +8,7 @@ import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.DeviceType;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;

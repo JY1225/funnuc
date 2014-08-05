@@ -8,8 +8,8 @@ import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.ui.configure.AbstractMenuPresenter;
@@ -179,7 +179,7 @@ public class DeviceMenuFactory {
 	public AbstractFormPresenter<?, BasicStackPlateMenuPresenter> getBasicStackPlateWorkPiecePresenter(final DeviceInformation deviceInfo) {
 		if (deviceInfo.getPickStep() != null) {
 			BasicStackPlateRawWorkPieceView view = new BasicStackPlateRawWorkPieceView();
-			BasicStackPlateRawWorkPiecePresenter basicStackPlateWorkPiecePresenter = new BasicStackPlateRawWorkPiecePresenter(view, deviceInfo.getPickStep(), (BasicStackPlateSettings) deviceInfo.getDeviceSettings());
+			BasicStackPlateRawWorkPiecePresenter basicStackPlateWorkPiecePresenter = new BasicStackPlateRawWorkPiecePresenter(view, deviceInfo.getPickStep(), (AbstractStackPlateDeviceSettings) deviceInfo.getDeviceSettings());
 			return basicStackPlateWorkPiecePresenter;
 		} else {
 			return null;

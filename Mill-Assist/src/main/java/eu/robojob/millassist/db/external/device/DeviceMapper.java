@@ -28,8 +28,9 @@ import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLayout;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateLayout;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlateLayout;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
 
@@ -451,6 +452,11 @@ public class DeviceMapper {
 		return generalMapper.getAllUserFrames();
 	}
 	
+
+	public Set<GridPlateLayout> getAllGridPlates() throws SQLException {
+		return generalMapper.getAllGridPlates();
+	}
+	
 	public UserFrame getUserFrameByName(final String name) throws SQLException {
 		return generalMapper.getUserFrameByName(name);
 	}
@@ -569,20 +575,20 @@ public class DeviceMapper {
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 		basicStackPlate.setName(name);
-		basicStackPlate.getLayout().setHorizontalHoleAmount(horizontalHoleAmount);
-		basicStackPlate.getLayout().setVerticalHoleAmount(verticalHoleAmount);
-		basicStackPlate.getLayout().setHoleDiameter(holeDiameter);
-		basicStackPlate.getLayout().setStudDiameter(studDiameter);
-		basicStackPlate.getLayout().setHorizontalPadding(horizontalPadding);
-		basicStackPlate.getLayout().setVerticalPadding(verticalPaddingTop);
-		basicStackPlate.getLayout().setVerticalPaddingBottom(verticalPaddingBottom);
-		basicStackPlate.getLayout().setHorizontalHoleDistance(horizontalHoleDistance);
-		basicStackPlate.getLayout().setInterferenceDistance(interferenceDistance);
-		basicStackPlate.getLayout().setOverflowPercentage(overflowPercentage);
-		basicStackPlate.getLayout().setMaxOverflow(maxOverlow);
-		basicStackPlate.getLayout().setMinOverlap(minOverlap);
-		basicStackPlate.getLayout().setHorizontalR(horizontalR);
-		basicStackPlate.getLayout().setTiltedR(tiltedR);
+		basicStackPlate.getBasicLayout().setHorizontalHoleAmount(horizontalHoleAmount);
+		basicStackPlate.getBasicLayout().setVerticalHoleAmount(verticalHoleAmount);
+		basicStackPlate.getBasicLayout().setHoleDiameter(holeDiameter);
+		basicStackPlate.getBasicLayout().setStudDiameter(studDiameter);
+		basicStackPlate.getBasicLayout().setHorizontalPadding(horizontalPadding);
+		basicStackPlate.getBasicLayout().setVerticalPaddingTop(verticalPaddingTop);
+		basicStackPlate.getBasicLayout().setVerticalPaddingBottom(verticalPaddingBottom);
+		basicStackPlate.getBasicLayout().setHorizontalHoleDistance(horizontalHoleDistance);
+		basicStackPlate.getBasicLayout().setInterferenceDistance(interferenceDistance);
+		basicStackPlate.getBasicLayout().setOverflowPercentage(overflowPercentage);
+		basicStackPlate.getBasicLayout().setMaxOverflow(maxOverlow);
+		basicStackPlate.getBasicLayout().setMinOverlap(minOverlap);
+		basicStackPlate.getBasicLayout().setHorizontalR(horizontalR);
+		basicStackPlate.getBasicLayout().setTiltedR(tiltedR);
 		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CLAMPING SET HEIGHT = ? WHERE ID = ?");
 		stmt3.setFloat(1, studHeight);
 		stmt3.setInt(2, basicStackPlate.getWorkAreas().get(0).getActiveClamping().getId());
@@ -690,6 +696,125 @@ public class DeviceMapper {
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
+	public void deleteGridPlate(GridPlateLayout gridPlate) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM GRIDPLATE WHERE ID = ?");
+		stmt.setInt(1, gridPlate.getId());
+		stmt.executeUpdate();
+		generalMapper.deleteCoordinates(gridPlate.getSmoothFrom());
+		generalMapper.deleteCoordinates(gridPlate.getSmoothTo());
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void updateGridPlate(final GridPlateLayout gridPlate, final String name, final float posFirstX, final float posFirstY, final float offsetX, final float offsetY,
+			final int nbRows, final int nbColumns, final float height, final float holeLength, final float holeWidth,
+			final float length, final float width, final float horizontalPadding, final float verticalPaddingTop, 
+			final float verticalPaddingBottom, final float horizontalR, final float tiltedR, final float smoothToX,
+			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, int orientation) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE GRIDPLATE SET " +
+				"NAME = ?, LENGTH = ?, WIDTH = ?, HEIGHT = ?, HOLELENGTH = ?, HOLEWIDTH = ?, NBHORIZONTAL = ?, NBVERTICAL = ?, "
+				+ "HORIZONTALPADDING = ?, VERTICALPADDINGTOP = ?, VERTICALPADDINGBOTTOM = ?, HOLE_X = ?, HOLE_Y = ?, OFFSET_X = ?,"
+				+ "OFFSET_Y = ?, HORIZONTAL_R = ?, TILTED_R = ?, ORIENTATION = ? WHERE ID = ?");
+		stmt.setString(1, name);
+		stmt.setFloat(2, length);
+		stmt.setFloat(3, width);
+		stmt.setFloat(4, height);
+		stmt.setFloat(5, holeLength);
+		stmt.setFloat(6, holeWidth);
+		stmt.setInt(7, nbColumns);
+		stmt.setInt(8, nbRows);
+		stmt.setFloat(9, horizontalPadding);
+		stmt.setFloat(10, verticalPaddingTop);
+		stmt.setFloat(11, verticalPaddingBottom);
+		stmt.setFloat(12, posFirstX);
+		stmt.setFloat(13, posFirstY);
+		stmt.setFloat(14, offsetX);
+		stmt.setFloat(15, offsetY);
+		stmt.setFloat(16, horizontalR);
+		stmt.setFloat(17, tiltedR);
+		stmt.setInt(18, orientation);
+		Coordinates smoothTo = gridPlate.getSmoothTo();
+		Coordinates smoothFrom = gridPlate.getSmoothFrom();
+		smoothTo.setX(smoothToX);
+		smoothTo.setY(smoothToY);
+		smoothTo.setZ(smoothToZ);
+		smoothFrom.setX(smoothFromX);
+		smoothFrom.setY(smoothFromY);
+		smoothFrom.setZ(smoothFromZ);
+		gridPlate.setName(name);
+		gridPlate.setLength(length);
+		gridPlate.setWidth(width);
+		gridPlate.setHeight(height);
+		gridPlate.setHoleLength(holeLength);
+		gridPlate.setHoleWidth(holeWidth);
+		gridPlate.setHorizontalAmount(nbColumns);
+		gridPlate.setVerticalAmount(nbRows);
+		gridPlate.setHorizontalPadding(horizontalPadding);
+		gridPlate.setVerticalPaddingTop(verticalPaddingTop);
+		gridPlate.setVerticalPaddingBottom(verticalPaddingBottom);
+		gridPlate.setFirstHolePosX(posFirstX);
+		gridPlate.setFirstHolePosY(posFirstY);
+		gridPlate.setHorizontalOffsetNxtPiece(offsetX);
+		gridPlate.setVerticalOffsetNxtPiece(offsetY);
+		gridPlate.setHorizontalR(horizontalR);
+		gridPlate.setTiltedR(tiltedR);
+		gridPlate.setHoleOrientation(orientation);
+		generalMapper.saveCoordinates(smoothTo);
+		generalMapper.saveCoordinates(smoothFrom);
+		stmt.setInt(19, gridPlate.getId());
+		stmt.executeUpdate();
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void saveGridPlate(final GridPlateLayout gridPlate, final float smoothToX,	final float smoothToY, final float smoothToZ, 
+			final float smoothFromX, final float smoothFromY, final float smoothFromZ) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO GRIDPLATE " +
+			"(NAME, LENGTH, WIDTH, HEIGHT, HOLELENGTH, HOLEWIDTH, NBHORIZONTAL, NBVERTICAL, HORIZONTALPADDING,"
+			+ "VERTICALPADDINGTOP, VERTICALPADDINGBOTTOM, HOLE_X, HOLE_Y, OFFSET_X, OFFSET_Y, HORIZONTAL_R, TILTED_R,"
+			+ "ORIENTATION, SMOOTH_TO, SMOOTH_FROM)"
+			+ "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+		stmt.setString(1, gridPlate.getName());
+		stmt.setFloat(2, gridPlate.getLength());
+		stmt.setFloat(3, gridPlate.getWidth());
+		stmt.setFloat(4, gridPlate.getHeight());
+		stmt.setFloat(5, gridPlate.getHoleLength());
+		stmt.setFloat(6, gridPlate.getHoleWidth());
+		stmt.setInt(7, gridPlate.getHorizontalAmount());
+		stmt.setInt(8, gridPlate.getVerticalAmount());
+		stmt.setFloat(9, gridPlate.getHorizontalPadding());
+		stmt.setFloat(10, gridPlate.getVerticalPaddingTop());
+		stmt.setFloat(11, gridPlate.getVerticalPaddingBottom());
+		stmt.setFloat(12, gridPlate.getFirstHolePosX());
+		stmt.setFloat(13, gridPlate.getFirstHolePosY());
+		stmt.setFloat(14, gridPlate.getHorizontalOffsetNxtPiece());
+		stmt.setFloat(15, gridPlate.getVerticalOffsetNxtPiece());
+		stmt.setFloat(16, gridPlate.getHorizontalR());
+		stmt.setFloat(17, gridPlate.getTiltedR());
+		stmt.setInt(18, gridPlate.getHoleOrientation().getId());
+		Coordinates smoothTo = new Coordinates();
+		Coordinates smoothFrom = new Coordinates();
+		smoothTo.setX(smoothToX);
+		smoothTo.setY(smoothToY);
+		smoothTo.setZ(smoothToZ);
+		smoothFrom.setX(smoothFromX);
+		smoothFrom.setY(smoothFromY);
+		smoothFrom.setZ(smoothFromZ);
+		gridPlate.setSmoothTo(smoothTo);
+		gridPlate.setSmoothFrom(smoothFrom);
+		generalMapper.saveCoordinates(smoothTo);
+		generalMapper.saveCoordinates(smoothFrom);
+		stmt.setInt(19,smoothTo.getId());
+		stmt.setInt(20,smoothFrom.getId());
+		stmt.executeUpdate();
+		ResultSet resultSet = stmt.getGeneratedKeys();
+		if (resultSet.next()) {
+			gridPlate.setId(resultSet.getInt(1));
+		}
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
 	public void updateMCodeAdapter(final int id, final MCodeAdapter mCodeAdapter, final List<String> robotServiceInputNames, 
 					final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
@@ -730,7 +855,7 @@ public class DeviceMapper {
 			final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO MCODEADAPTER " +
 				"(ID, ROBOTSERVICEINPUT1, ROBOTSERVICEINPUT2, ROBOTSERVICEINPUT3, " +
-				"ROBOTSERVICEINPUT4, ROBOTSERVICEINPUT5, ROBOTSERVICEOUTPUT1) VALUS (?, ?, ?, ?, ?, ?, ?)");
+				"ROBOTSERVICEINPUT4, ROBOTSERVICEINPUT5, ROBOTSERVICEOUTPUT1) VALUES (?, ?, ?, ?, ?, ?, ?)");
 		stmt.setInt(1, id);
 		stmt.setString(2, robotServiceInputNames.get(0));
 		stmt.setString(3, robotServiceInputNames.get(1));
@@ -912,4 +1037,5 @@ public class DeviceMapper {
 			ConnectionManager.getConnection().setAutoCommit(true);
 		}
 	}
+
 }

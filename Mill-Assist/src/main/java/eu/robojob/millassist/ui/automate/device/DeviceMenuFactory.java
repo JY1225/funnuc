@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.automate.AbstractMenuPresenter;
 import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.ConveyorAmountsPresenter;
