@@ -162,6 +162,10 @@
 	-fx-fill: #b4b4b4;
 }
 
+.gridplate {
+	-fx-fill: #484848;
+}
+
 .stacker-text {
 	-fx-font-size: 18px;
 	-fx-text-alignment: center;

@@ -29,9 +29,9 @@ import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings;
 import eu.robojob.millassist.external.robot.Gripper;
@@ -182,9 +182,9 @@ public class ProcessFlowMapper {
 		processFlow.setId(0);
 		for (DeviceSettings deviceSettings : processFlow.getDeviceSettings().values()) {
 			deviceSettings.setId(0);
-			if (deviceSettings instanceof BasicStackPlateSettings) {
-				((BasicStackPlateSettings) deviceSettings).getFinishedWorkPiece().setId(0);
-				((BasicStackPlateSettings) deviceSettings).getRawWorkPiece().setId(0);
+			if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
+				((AbstractStackPlateDeviceSettings) deviceSettings).getFinishedWorkPiece().setId(0);
+				((AbstractStackPlateDeviceSettings) deviceSettings).getRawWorkPiece().setId(0);
 			}
 		}
 		for (RobotSettings robotSettings : processFlow.getRobotSettings().values()) {
@@ -410,8 +410,8 @@ public class ProcessFlowMapper {
 				throw new IllegalStateException("Couldn't find entry for workarea: [" + entry.getKey() + "] and clamping: [" + entry.getValue() + "].");
 			}
 		}
-		if (deviceSettings instanceof BasicStackPlateSettings) {
-			BasicStackPlateSettings bspSettings = (BasicStackPlateSettings) deviceSettings;
+		if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
+			AbstractStackPlateDeviceSettings bspSettings = (AbstractStackPlateDeviceSettings) deviceSettings;
 			generalMapper.saveWorkPiece(bspSettings.getRawWorkPiece());
 			generalMapper.saveWorkPiece(bspSettings.getFinishedWorkPiece());
 			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO STACKPLATESETTINGS (ID, AMOUNT, ORIENTATION, RAWWORKPIECE, FINISHEDWORKPIECE, LAYERS, STUDHEIGHT) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -433,6 +433,12 @@ public class ProcessFlowMapper {
 			stmt4.setInt(6,  bspSettings.getLayers());
 			stmt4.setFloat(7,  bspSettings.getStudHeight());
 			stmt4.executeUpdate();
+			if(bspSettings.getGridId() > 0) {
+				PreparedStatement stmt5 = ConnectionManager.getConnection().prepareStatement("UPDATE STACKPLATESETTINGS SET GRID_ID = ? WHERE ID = ?");
+				stmt5.setInt(1, bspSettings.getGridId());
+				stmt5.setInt(2, bspSettings.getId());
+				stmt5.executeUpdate();
+			}
 		} else if (deviceSettings instanceof ConveyorSettings) {
 			ConveyorSettings cSettings = (ConveyorSettings) deviceSettings;
 			generalMapper.saveWorkPiece(cSettings.getRawWorkPiece());
@@ -564,7 +570,7 @@ public class ProcessFlowMapper {
 				clampings.put(workArea, clamping);
 			}
 			if (device instanceof BasicStackPlate) {
-				BasicStackPlateSettings stackPlateSettings = getBasicStackPlateSettings(processId, id, (BasicStackPlate) device, clampings);
+				AbstractStackPlateDeviceSettings stackPlateSettings = getBasicStackPlateSettings(processId, id, (BasicStackPlate) device, clampings);
 				settings.put(device, stackPlateSettings);
 			} else if (device instanceof Conveyor) {
 				ConveyorSettings conveyorSettings = getConveyorSettings(processId, id, (Conveyor) device, clampings);
@@ -616,11 +622,11 @@ public class ProcessFlowMapper {
 		return conveyorSettings;
 	}
 	
-	private BasicStackPlateSettings getBasicStackPlateSettings(final int processFlowId, final int deviceSettingsId, final BasicStackPlate stackPlate, final Map<WorkArea, Clamping> clampings) throws SQLException {
+	private AbstractStackPlateDeviceSettings getBasicStackPlateSettings(final int processFlowId, final int deviceSettingsId, final BasicStackPlate stackPlate, final Map<WorkArea, Clamping> clampings) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM STACKPLATESETTINGS WHERE ID = ?");
 		stmt.setInt(1, deviceSettingsId);
 		ResultSet results = stmt.executeQuery();
-		BasicStackPlateSettings basicStackPlateSettings = null;
+		AbstractStackPlateDeviceSettings basicStackPlateSettings = null;
 		if (results.next()) {
 			int amount = results.getInt("AMOUNT");
 			int orientation = results.getInt("ORIENTATION");
@@ -628,14 +634,15 @@ public class ProcessFlowMapper {
 			int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
 			int layers = results.getInt("LAYERS");
 			float studHeight = results.getFloat("STUDHEIGHT");
+			int gridId = results.getInt("GRID_ID");
 			WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(processFlowId, rawWorkPieceId);
 			WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
 			if (orientation == STACKPLATE_ORIENTATION_HORIZONTAL) {
-				basicStackPlateSettings = new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.HORIZONTAL, layers, amount, studHeight);
+				basicStackPlateSettings = new AbstractStackPlateDeviceSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.HORIZONTAL, layers, amount, studHeight, gridId);
 			} else if (orientation == STACKPLATE_ORIENTATION_TILTED) {
-				basicStackPlateSettings = new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.TILTED, layers, amount, studHeight);
+				basicStackPlateSettings = new AbstractStackPlateDeviceSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.TILTED, layers, amount, studHeight, gridId);
 			} else if (orientation == STACKPLATE_ORIENTATION_VERTICAL) {
-				basicStackPlateSettings = new BasicStackPlateSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.DEG90, layers, amount, studHeight);
+				basicStackPlateSettings = new AbstractStackPlateDeviceSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.DEG90, layers, amount, studHeight, gridId);
 			} else {
 				throw new IllegalStateException("Unknown workpiece orientation: [" + orientation + "].");
 			}

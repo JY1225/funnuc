@@ -3,6 +3,9 @@ package eu.robojob.millassist.ui.general.device.stacking.stackplate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
@@ -17,20 +20,25 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import eu.robojob.millassist.external.device.ClampingManner;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate.WorkPieceOrientation;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateLayout;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.external.device.stacking.stackplate.StackPlateStackingPosition;
-import eu.robojob.millassist.external.device.stacking.stackplate.StudPosition;
-import eu.robojob.millassist.external.device.stacking.stackplate.StudPosition.StudType;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlateLayout;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.StudPosition;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.StudPosition.StudType;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout.HoleOrientation;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
+/*
+ * This class represents the BasicStackPlate (with or without a gridplate)
+ */
 public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> extends AbstractFormView<T> {
 
-	private BasicStackPlateLayout basicStackPlateLayout;
+	private BasicStackPlate basicStackPlate;
 	
 	private Group group;
 	private Rectangle stackPlate;
@@ -53,6 +61,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	private static final String CSS_CLASS_STACKER_TEXT = "stacker-text";
 	private static final String CSS_CLASS_STACKPLATE = "stackplate"; 
+	private static final String CSS_CLASS_GRIDPLATE = "gridplate";
 	private static final String CSS_CLASS_LINE = "line";
 	private static final String CSS_CLASS_HOLE = "hole";
 	private static final String CSS_CLASS_NORMALSTUD = "normal-stud";
@@ -62,6 +71,8 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	private static final String CSS_CLASS_FINISHED = "finished";
 	private static final String CSS_CLASS_FINISHED_MARK = "workpiece-finished-mark";
 	private static final String CSS_CLASS_AMOUNT = "amount-text";
+	
+	private static Logger logger = LogManager.getLogger(BasicStackPlateLayoutView.class.getName());
 		
 	public BasicStackPlateLayoutView() {
 		super();
@@ -72,8 +83,8 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	}
 	
 	public void setBasicStackPlate(final BasicStackPlate basicStackPlate) {
-		this.basicStackPlateLayout = basicStackPlate.getLayout();
-		this.width = basicStackPlateLayout.getWidth();
+		this.basicStackPlate = basicStackPlate;
+		this.width = basicStackPlate.getBasicLayout().getPlateWidth();
 	}
 	
 	public void setClampingType(final ClampingManner clampingManner) {
@@ -116,68 +127,22 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 				group.setCache(true);
 				
 				// add plate
-				stackPlate = new Rectangle(0, 0, basicStackPlateLayout.getLength(), basicStackPlateLayout.getWidth());
+				stackPlate = new Rectangle(0, 0, basicStackPlate.getBasicLayout().getPlateLength(), basicStackPlate.getBasicLayout().getPlateWidth());
 				stackPlate.getStyleClass().add(CSS_CLASS_STACKPLATE);
-				
 				group.getChildren().add(stackPlate);
 				
-				// add holes
-				int index = 1;
-				for (StudPosition[] horizontalPositions : basicStackPlateLayout.getStudPositions()) {
-					Text txt = new Text(""  + (char) ('A' + (index - 1)));
-					txt.setX(0);
-					txt.setY(width - horizontalPositions[0].getCenterPosition().getY() + TXT_HEIGHT / 2);
-					txt.setWrappingWidth(TXT_WIDTH);
-					txt.getStyleClass().add(CSS_CLASS_STACKER_TEXT);
-					group.getChildren().add(txt);
-					verticalLabels.add(txt);
-					int index2 = 1;
-					for (StudPosition pos : horizontalPositions) {
-						if (index == 1) {
-							if (index2 % 2 == 0) {
-								Text txt2 = new Text("" + index2);
-								txt2.setX(pos.getCenterPosition().getX() - TXT_WIDTH / 2);
-								txt2.setY(basicStackPlateLayout.getWidth() - TXT_HEIGHT / 8);
-								txt2.setWrappingWidth(TXT_WIDTH);
-								txt2.getStyleClass().add(CSS_CLASS_STACKER_TEXT);
-								group.getChildren().add(txt2);
-								horizontalLabels.add(txt2);
-							} else {
-								Text txt2 = new Text("\u00B7");
-								txt2.setX(pos.getCenterPosition().getX() - TXT_WIDTH / 2);
-								txt2.setY(basicStackPlateLayout.getWidth() - TXT_HEIGHT / 8);
-								txt2.setWrappingWidth(TXT_WIDTH);
-								txt2.getStyleClass().add(CSS_CLASS_STACKER_TEXT);
-								group.getChildren().add(txt2);
-								horizontalLabels.add(txt2);
-								// draw line
-								Path path = new Path();
-								MoveTo moveTo = new MoveTo();
-								moveTo.setX(pos.getCenterPosition().getX());
-								moveTo.setY(width - pos.getCenterPosition().getY());
-								LineTo lineTo = new LineTo();
-								lineTo.setX(pos.getCenterPosition().getX());
-								lineTo.setY(width - basicStackPlateLayout.getStudPositions()[basicStackPlateLayout.getStudPositions().length - 1][0].getCenterPosition().getY());
-								path.getElements().add(moveTo);
-								path.getElements().add(lineTo);
-								path.getStyleClass().add(CSS_CLASS_LINE);
-								group.getChildren().add(path);
-							}
-							index2++;
-						}
-						Circle hole = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), basicStackPlateLayout.getHoleDiameter() / 2);
-						holes.add(hole);
-						hole.getStyleClass().add(CSS_CLASS_HOLE);
-						group.getChildren().add(hole);
-					}
-					index++;
-				}
+				initStuds();
 				
-				if (basicStackPlateLayout.getStackingPositions().size() > 0) {
-					configureStuds();
+				if (basicStackPlate.getLayout().getStackingPositions().size() > 0) {
+					if(basicStackPlate.hasGridPlate()) {
+						logger.debug("Creating layout for gridplate");
+						GridPlateLayout layout = (GridPlateLayout) basicStackPlate.getLayout();
+						group.getChildren().add(getCompleteGridPlateLayoutView(layout));
+					} else {
+						configureStuds();
+					}
 					configureWorkPieces();
 				}
-				
 				Scale s = new Scale(590 / group.getBoundsInParent().getWidth(), 300 / group.getBoundsInParent().getHeight());
 				group.getTransforms().add(s);
 				
@@ -194,11 +159,66 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 		});
 	}
 	
+	private void initStuds() {
+		BasicStackPlateLayout layout = (BasicStackPlateLayout) basicStackPlate.getBasicLayout(); 
+		int index = 1;
+		for (StudPosition[] horizontalPositions : layout.getStudPositions()) {
+			Text txt = new Text(""  + (char) ('A' + (index - 1)));
+			txt.setX(0);
+			txt.setY(width - horizontalPositions[0].getCenterPosition().getY() + TXT_HEIGHT / 2);
+			txt.setWrappingWidth(TXT_WIDTH);
+			txt.getStyleClass().add(CSS_CLASS_STACKER_TEXT);
+			group.getChildren().add(txt);
+			verticalLabels.add(txt);
+			int index2 = 1;
+			for (StudPosition pos : horizontalPositions) {
+				if (index == 1) {
+					if (index2 % 2 == 0) {
+						Text txt2 = new Text("" + index2);
+						txt2.setX(pos.getCenterPosition().getX() - TXT_WIDTH / 2);
+						txt2.setY(layout.getPlateWidth() - TXT_HEIGHT / 8);
+						txt2.setWrappingWidth(TXT_WIDTH);
+						txt2.getStyleClass().add(CSS_CLASS_STACKER_TEXT);
+						group.getChildren().add(txt2);
+						horizontalLabels.add(txt2);
+					} else {
+						Text txt2 = new Text("\u00B7");
+						txt2.setX(pos.getCenterPosition().getX() - TXT_WIDTH / 2);
+						txt2.setY(layout.getPlateWidth() - TXT_HEIGHT / 8);
+						txt2.setWrappingWidth(TXT_WIDTH);
+						txt2.getStyleClass().add(CSS_CLASS_STACKER_TEXT);
+						group.getChildren().add(txt2);
+						horizontalLabels.add(txt2);
+						// draw line
+						Path path = new Path();
+						MoveTo moveTo = new MoveTo();
+						moveTo.setX(pos.getCenterPosition().getX());
+						moveTo.setY(width - pos.getCenterPosition().getY());
+						LineTo lineTo = new LineTo();
+						lineTo.setX(pos.getCenterPosition().getX());
+						lineTo.setY(width - layout.getStudPositions()[layout.getStudPositions().length - 1][0].getCenterPosition().getY());
+						path.getElements().add(moveTo);
+						path.getElements().add(lineTo);
+						path.getStyleClass().add(CSS_CLASS_LINE);
+						group.getChildren().add(path);
+					}
+					index2++;
+				}
+				Circle hole = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), layout.getHoleDiameter() / 2);
+				holes.add(hole);
+				hole.getStyleClass().add(CSS_CLASS_HOLE);
+				group.getChildren().add(hole);
+			}
+			index++;
+		}
+	}
+	
 	private void configureStuds() {
-		for (StudPosition[] horizontalPositions : basicStackPlateLayout.getStudPositions()) {
+		BasicStackPlateLayout layout = (BasicStackPlateLayout) basicStackPlate.getLayout(); 
+		for (StudPosition[] horizontalPositions : layout.getStudPositions()) {
 			for (StudPosition pos : horizontalPositions) {
 				if (pos.getStudType() == StudType.NORMAL) {
-					Circle circle = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), basicStackPlateLayout.getStudDiameter() / 2);
+					Circle circle = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), layout.getStudDiameter() / 2);
 					circle.getStyleClass().add(CSS_CLASS_NORMALSTUD);
 					studs.add(circle);
 					group.getChildren().add(circle);
@@ -212,12 +232,12 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					corner.getTransforms().add(tr);
 					group.getChildren().add(corner);
 					// add first stud
-					Circle circle = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), basicStackPlateLayout.getStudDiameter() / 2);
+					Circle circle = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), layout.getStudDiameter() / 2);
 					circle.getStyleClass().add(CSS_CLASS_NORMALSTUD);
 					studs.add(circle);
 					group.getChildren().add(circle);
 					// add second stud
-					Circle circle2 = new Circle(pos.getCenterPosition().getX() + basicStackPlateLayout.getHorizontalHoleDistance(), width - pos.getCenterPosition().getY(), basicStackPlateLayout.getStudDiameter() / 2);
+					Circle circle2 = new Circle(pos.getCenterPosition().getX() + layout.getHorizontalHoleDistance(), width - pos.getCenterPosition().getY(), layout.getStudDiameter() / 2);
 					circle2.getStyleClass().add(CSS_CLASS_NORMALSTUD);
 					studs.add(circle2);
 					group.getChildren().add(circle2);
@@ -231,12 +251,12 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					corner.getTransforms().add(tr);
 					group.getChildren().add(corner);
 					// add first stud
-					Circle circle = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), basicStackPlateLayout.getStudDiameter() / 2);
+					Circle circle = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), layout.getStudDiameter() / 2);
 					circle.getStyleClass().add(CSS_CLASS_NORMALSTUD);
 					studs.add(circle);
 					group.getChildren().add(circle);
 					// add second stud
-					Circle circle2 = new Circle(pos.getCenterPosition().getX() - basicStackPlateLayout.getHorizontalHoleDistance(), width - pos.getCenterPosition().getY(), basicStackPlateLayout.getStudDiameter() / 2);
+					Circle circle2 = new Circle(pos.getCenterPosition().getX() - layout.getHorizontalHoleDistance(), width - pos.getCenterPosition().getY(), layout.getStudDiameter() / 2);
 					circle2.getStyleClass().add(CSS_CLASS_NORMALSTUD);
 					studs.add(circle2);
 					group.getChildren().add(circle2);
@@ -252,12 +272,12 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					corner.getTransforms().add(rt);
 					group.getChildren().add(corner);
 					// add first stud
-					Circle circle = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), basicStackPlateLayout.getStudDiameter() / 2);
+					Circle circle = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), layout.getStudDiameter() / 2);
 					circle.getStyleClass().add(CSS_CLASS_NORMALSTUD);
 					studs.add(circle);
 					group.getChildren().add(circle);
 					// add second stud
-					Circle circle2 = new Circle(pos.getCenterPosition().getX() + basicStackPlateLayout.getHorizontalHoleDistance(), width - pos.getCenterPosition().getY(), basicStackPlateLayout.getStudDiameter() / 2);
+					Circle circle2 = new Circle(pos.getCenterPosition().getX() + layout.getHorizontalHoleDistance(), width - pos.getCenterPosition().getY(), layout.getStudDiameter() / 2);
 					circle2.getStyleClass().add(CSS_CLASS_NORMALSTUD);
 					studs.add(circle2);
 					group.getChildren().add(circle2);
@@ -266,15 +286,17 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 		}
 	}
 	
+	//FIXME - this can be made a lot simpler because every workpiece can be represented by the same rectangle which is in fact rotated (0,-90,-45) degrees
 	private void configureWorkPieces() {
-		for (StackPlateStackingPosition stackingPosition : basicStackPlateLayout.getStackingPositions()) {
+		logger.debug("Adding workpieces to the stackplate");
+		for (StackPlateStackingPosition stackingPosition : basicStackPlate.getLayout().getStackingPositions()) {
 			if (stackingPosition.getWorkPiece() != null) {
 				if (stackingPosition.getOrientation() == WorkPieceOrientation.HORIZONTAL) {
 					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
 							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
 					Rectangle rp2 = null;
-					if (basicStackPlateLayout.getHorizontalR() >= -0.01) {
+					if (basicStackPlate.getLayout().getHorizontalR() >= -0.01) {
 						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
 								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
@@ -291,12 +313,12 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					rp2.getStyleClass().add(CSS_CLASS_WORKPIECE_MARK);
 					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
 						rp.getStyleClass().add(CSS_CLASS_FINISHED);
-						rp2.getStyleClass().add("workpiece-finished-mark");
 						rp2.getStyleClass().add(CSS_CLASS_FINISHED_MARK);
 					}
 					rp.setArcHeight(0);
 					rp.setArcWidth(0);
 					group.getChildren().add(rp);
+					//RP2 is the orientation marker in the workpiece (grey line)
 					group.getChildren().add(rp2);
 					group.getChildren().add(txtAmount);
 				} else if (stackingPosition.getOrientation() == WorkPieceOrientation.TILTED) {
@@ -305,7 +327,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
 					Rectangle rp2 = null;
-					if (basicStackPlateLayout.getTiltedR() >= -0.01) {
+					if (basicStackPlate.getLayout().getR(basicStackPlate.getLayout().getOrientation()) >= -0.01) {
 						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
 								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
@@ -338,7 +360,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
 							stackingPosition.getWorkPiece().getDimensions().getWidth(), stackingPosition.getWorkPiece().getDimensions().getLength());
 					Rectangle rp2 = null;
-					if (basicStackPlateLayout.getHorizontalR() >= -0.01) {
+					if (basicStackPlate.getLayout().getHorizontalR() >= -0.01) {
 						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2 + 5, 
 								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
 								5, stackingPosition.getWorkPiece().getDimensions().getLength());
@@ -355,7 +377,6 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					rp2.getStyleClass().add(CSS_CLASS_WORKPIECE_MARK);
 					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
 						rp.getStyleClass().add(CSS_CLASS_FINISHED);
-						rp2.getStyleClass().add("workpiece-finished-mark");
 						rp2.getStyleClass().add(CSS_CLASS_FINISHED_MARK);
 					}
 					rp.setArcHeight(0);
@@ -370,7 +391,52 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 		}
 	}
 	
+	/**
+	 * Create a group for the gridplate layout. This group holds the gridplate inlcuding the holes.
+	 * Note that the group is already shifted in function of the padding defined in the layout.
+	 * 
+	 * @param layout
+	 * 		GridPlateLayout which defines the number of holes, the offsets, ...
+	 * @return
+	 * 		Group including Gridplate + holes (both represented by rectangles)
+	 */
+	private Group getCompleteGridPlateLayoutView(GridPlateLayout layout) {
+		Group gridGroup = new Group();
+		gridGroup.getChildren().add(getGridPlateView(layout));
+		gridGroup.getChildren().addAll(configureHoles(layout));
+		gridGroup.relocate(layout.getHorizontalPadding(), layout.getVerticalPaddingTop());
+		return gridGroup;
+	}
 	
+	private static Rectangle getGridPlateView(GridPlateLayout layout) {
+		Rectangle r = new Rectangle(0, 0, layout.getLength(), layout.getWidth());
+		r.getStyleClass().add(CSS_CLASS_GRIDPLATE);
+		return r;
+	}
+	
+	private static List<Rectangle> configureHoles(GridPlateLayout layout) {
+		List<Rectangle> holeList = new ArrayList<Rectangle>();
+		float xPos = 0;
+		float yPos = 0;
+		for(int hIndex = 0; hIndex < layout.getHorizontalAmount(); hIndex++) {
+			for(int vIndex = 0; vIndex < layout.getVerticalAmount(); vIndex++) {
+				xPos = layout.getHorizontalOffsetNxtPiece()*hIndex + layout.getFirstHolePosX();
+				yPos = layout.getVerticalOffsetNxtPiece()*vIndex + layout.getFirstHolePosY();
+				Rectangle hole = new Rectangle(xPos, layout.getWidth()-yPos - layout.getHoleWidth(), layout.getHoleLength(), layout.getHoleWidth());
+				if(layout.getHoleOrientation() == HoleOrientation.TILTED) {
+					Rotate rotate = new Rotate(-45, xPos, layout.getWidth()-yPos);
+					hole.getTransforms().add(rotate);
+				}
+//				} else if(layout.getHoleOrientation() == HoleOrientation.DEG90) {
+//					Rotate rotate = new Rotate(-90, xPos, layout.getWidth()-yPos - layout.getHoleWidth());
+//					hole.getTransforms().add(rotate);
+//				}
+				hole.getStyleClass().add(CSS_CLASS_STACKPLATE);
+				holeList.add(hole);
+			}
+		}
+		return holeList;
+	}
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {

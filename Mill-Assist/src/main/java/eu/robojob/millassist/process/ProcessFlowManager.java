@@ -20,8 +20,8 @@ import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlateSettings;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.GripperHead;
 import eu.robojob.millassist.external.robot.RobotManager;
@@ -108,10 +108,10 @@ public class ProcessFlowManager {
 		}
 		deviceSettings.put(stackingFromDevice, stackingFromDevice.getDeviceSettings());
 		if (stackingFromDevice instanceof BasicStackPlate) {
-			((BasicStackPlateSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);
+			((AbstractStackPlateDeviceSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);
 		}
 		if (stackingToDevice instanceof BasicStackPlate) {
-			((BasicStackPlateSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
+			((AbstractStackPlateDeviceSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
 		// always assign both raw and finished work piece to conveyor!
 		if (stackingFromDevice instanceof Conveyor) {

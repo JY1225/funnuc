@@ -21,7 +21,8 @@ import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
 import eu.robojob.millassist.process.ProcessFlowManager;
@@ -35,6 +36,8 @@ public class DeviceManager {
 	private Map<String, AbstractProcessingDevice> postProcessingDevicesByName;
 	private Map<String, AbstractStackingDevice> stackingFromDevicesByName;
 	private Map<String, AbstractStackingDevice> stackingToDevicesByName;
+	private Map<String, GridPlateLayout> gridPlatesByName;
+	private Map<Integer, GridPlateLayout> gridPlatesById;
 	private ProcessFlowManager processFlowManager;
 	
 	private static Logger logger = LogManager.getLogger(DeviceManager.class.getName());
@@ -49,6 +52,8 @@ public class DeviceManager {
 		this.postProcessingDevicesByName = new HashMap<String, AbstractProcessingDevice>();
 		this.stackingFromDevicesByName = new HashMap<String, AbstractStackingDevice>();
 		this.stackingToDevicesByName = new HashMap<String, AbstractStackingDevice>();
+		this.gridPlatesByName = new HashMap<String, GridPlateLayout>();
+		this.gridPlatesById = new HashMap<Integer, GridPlateLayout>();
 		initialize();
 	}
 	
@@ -73,6 +78,11 @@ public class DeviceManager {
 					}
 					stackingToDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
 				}
+			}
+			Set<GridPlateLayout> allGridPlates = deviceMapper.getAllGridPlates();
+			for(GridPlateLayout gridPlate: allGridPlates) {
+				gridPlatesByName.put(gridPlate.getName(), gridPlate);	
+				gridPlatesById.put(gridPlate.getId(), gridPlate);
 			}
 		} catch (SQLException e) {
 			logger.error(e);
@@ -194,6 +204,22 @@ public class DeviceManager {
 		}
 	}
 	
+	public GridPlateLayout getGridPlateByID(final int ID) {
+		return gridPlatesById.get(ID);
+	}
+	
+	public GridPlateLayout getGridPlateByName(final String name) {
+		return gridPlatesByName.get(name);
+	}
+
+	public Collection<GridPlateLayout> getAllGridPlates() {
+		return gridPlatesByName.values();
+	}
+	
+	public Set<String> getAllGridPlateNames() {
+		return gridPlatesByName.keySet();
+	}
+	
 	public void updateUserFrame(final UserFrame userFrame, final String name, final int number, final float zSafeDistance, 
 			final float x, final float y, final float z, final float w, final float p, final float r) {
 		try {
@@ -230,6 +256,58 @@ public class DeviceManager {
 			logger.error(e);
 			e.printStackTrace();
 		}		
+	}
+	
+	public void saveGridPlate(final String name, final float posFirstX, final float posFirstY, final float offsetX, final float offsetY,
+			final int nbRows, final int nbColumns, final float height, final float holeLength, final float holeWidth,
+			final float length, final float width, final float horizontalPadding, final float verticalPaddingTop, 
+			final float verticalPaddingBottom, final float horizontalR, final float tiltedR, final float smoothToX,
+			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, int orientation) {
+		GridPlateLayout gridPlate = new GridPlateLayout(name, length, width, height, posFirstX, posFirstY, holeLength, holeWidth, offsetX, offsetY, nbColumns, nbRows,
+				horizontalPadding, verticalPaddingTop, verticalPaddingBottom, tiltedR, horizontalR, orientation);
+		try {
+			if(gridPlatesByName.get(name) != null) {
+				deviceMapper.saveGridPlate(gridPlate, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ);
+				gridPlatesByName.put(name, gridPlate);
+				gridPlatesById.put(gridPlate.getId(), gridPlate);
+				refresh();	
+			} else {
+				//TODO - throw error: plate with this name already exists
+			}
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+	
+	public void updateGridPlate(final GridPlateLayout gridPlate, final String name, final float posFirstX, final float posFirstY, final float offsetX, final float offsetY,
+			final int nbRows, final int nbColumns, final float height, final float holeLength, final float holeWidth,
+			final float length, final float width, final float horizontalPadding, final float verticalPaddingTop, 
+			final float verticalPaddingBottom, final float horizontalR, final float tiltedR, final float smoothToX,
+			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, int orientation) {
+		try {
+			if(!gridPlate.getName().equals(name)) {
+				gridPlatesByName.remove(gridPlate.getName());
+				gridPlatesByName.put(name, gridPlate);
+			}
+			deviceMapper.updateGridPlate(gridPlate, name, posFirstX, posFirstY, offsetX, offsetY, nbRows, nbColumns, height, 
+					holeLength, holeWidth, length, width, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, 
+					horizontalR, tiltedR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, orientation);
+			refresh();
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+	
+	public void deleteGridPlate(final GridPlateLayout gridPlate) {
+		try{
+			deviceMapper.deleteGridPlate(gridPlate);
+			gridPlatesByName.remove(gridPlate.getName());
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
 	}
 	
 	public void updatePrageDeviceData(final PrageDevice prageDevice, final String name, final Clamping.Type type, final float relPosX, final float relPosY, 

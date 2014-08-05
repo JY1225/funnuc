@@ -17,7 +17,7 @@ import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOu
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;

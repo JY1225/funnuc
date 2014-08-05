@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
 import eu.robojob.millassist.workpiece.WorkPiece;
@@ -79,6 +80,78 @@ public class GeneralMapper {
 		}
 		stmt.close();
 		return uf;
+	}
+	
+	private GridPlateLayout getGridPlateByID(int gridPlateId) throws SQLException {
+		GridPlateLayout gridplate = null;
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM GRIDPLATE WHERE ID = ?");
+		stmt.setInt(1, gridPlateId);
+		ResultSet results = stmt.executeQuery();
+		while (results.next()) {
+			String name = results.getString("NAME");
+			float length = results.getFloat("LENGTH");
+			float width = results.getFloat("WIDTH");
+			float height = results.getFloat("HEIGHT");
+			float holeLength = results.getFloat("HOLELENGTH");
+			float holeWidth = results.getFloat("HOLEWIDTH");
+			int nbHorizontal = results.getInt("NBHORIZONTAL");
+			int nbVertical = results.getInt("NBVERTICAL");
+			float horizontalPadding = results.getFloat("HORIZONTALPADDING");
+			float verticalPaddingTop = results.getFloat("VERTICALPADDINGTOP");
+			float verticalPaddingBottom = results.getFloat("VERTICALPADDINGBOTTOM");
+			float holeX = results.getFloat("HOLE_X");
+			float holeY = results.getFloat("HOLE_Y");
+			float offsetX = results.getFloat("OFFSET_X");
+			float offsetY = results.getFloat("OFFSET_Y");
+			float horizontalR = results.getFloat("HORIZONTAL_R");
+			float tiltedR = results.getFloat("TILTED_R");
+			int orientationsId = results.getInt("ORIENTATION"); 
+			int smoothToId = results.getInt("SMOOTH_TO");
+			int smoothFromId = results.getInt("SMOOTH_FROM");
+			gridplate = new GridPlateLayout(name, length, width, height, holeX, holeY, holeLength, holeWidth, offsetX, offsetY, nbHorizontal
+					, nbVertical, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, tiltedR, horizontalR, orientationsId);
+			gridplate.setId(gridPlateId);
+			gridplate.setSmoothTo(getCoordinatesById(0, smoothToId));
+			gridplate.setSmoothFrom(getCoordinatesById(0, smoothFromId));
+		}
+		stmt.close();
+		return gridplate;
+	}
+	
+	public GridPlateLayout getGridPlateByName(final String gridPlateName) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM GRIDPLATE WHERE NAME = ?");
+		stmt.setString(1, gridPlateName);
+		ResultSet results = stmt.executeQuery();
+		GridPlateLayout gridPlate = null;
+		while (results.next()) {
+			int Id = results.getInt("ID");
+			float length = results.getFloat("LENGTH");
+			float width = results.getFloat("WIDTH");
+			float height = results.getFloat("HEIGHT");
+			float holeLength = results.getFloat("HOLELENGTH");
+			float holeWidth = results.getFloat("HOLEWIDTH");
+			int nbHorizontal = results.getInt("NBHORIZONTAL");
+			int nbVertical = results.getInt("NBVERTICAL");
+			float horizontalPadding = results.getFloat("HORIZONTALPADDING");
+			float verticalPaddingTop = results.getFloat("VERTICALPADDINGTOP");
+			float verticalPaddingBottom = results.getFloat("VERTICALPADDINGBOTTOM");
+			float holeX = results.getFloat("HOLE_X");
+			float holeY = results.getFloat("HOLE_Y");
+			float offsetX = results.getFloat("OFFSET_X");
+			float offsetY = results.getFloat("OFFSET_Y");
+			float horizontalR = results.getFloat("HORIZONTAL_R");
+			float tiltedR = results.getFloat("TILTED_R");
+			int orientationsId = results.getInt("ORIENTATION");
+			int smoothToId = results.getInt("SMOOTH_TO");
+			int smoothFromId = results.getInt("SMOOTH_FROM");
+			gridPlate = new GridPlateLayout(gridPlateName, length, width, height, holeX, holeY, holeLength, holeWidth, offsetX, offsetY, nbHorizontal
+					, nbVertical, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, tiltedR, horizontalR, orientationsId);
+			gridPlate.setId(Id);
+			gridPlate.setSmoothTo(getCoordinatesById(0, smoothToId));
+			gridPlate.setSmoothFrom(getCoordinatesById(0, smoothFromId));
+		}
+		stmt.close();
+		return gridPlate;
 	}
 	
 	public Coordinates getCoordinatesById(final int processFlowId, final int coordinatesId) throws SQLException {
@@ -206,7 +279,7 @@ public class GeneralMapper {
 		}
 		return workPiece;
 	}
-	
+	 
 	public void saveWorkPiece(final WorkPiece workPiece) throws SQLException {
 		int type = 0;
 		if (workPiece.getType().equals(WorkPiece.Type.RAW)) {
@@ -263,6 +336,17 @@ public class GeneralMapper {
 			userFrames.add(getUserFrameById(id));
 		}
 		return userFrames;
+	}
+
+	public Set<GridPlateLayout> getAllGridPlates() throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM GRIDPLATE");
+		ResultSet results = stmt.executeQuery();
+		Set<GridPlateLayout> gridPlates = new HashSet<GridPlateLayout>();
+		while (results.next()) {
+			int id = results.getInt("ID");
+			gridPlates.add(getGridPlateByID(id));
+		}
+		return gridPlates;
 	}
 	
 }

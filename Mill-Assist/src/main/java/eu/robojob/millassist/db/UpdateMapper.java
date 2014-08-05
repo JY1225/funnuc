@@ -134,6 +134,7 @@ public class UpdateMapper {
 	}
 	
 	private void updateDBVersion(Version versionId) throws SQLException {
+		//TODO - add timestamp
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO VERSION (MAJOR_RELEASE_ID, MINOR_RELEASE_ID, PATCH_RELEASE_ID) VALUES (?,?,?)");
 		stmt.setInt(1, versionId.getMajorReleaseId());
 		stmt.setInt(2, versionId.getMinorReleaseId());

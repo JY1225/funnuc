@@ -5,7 +5,7 @@ import java.util.List;
 
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceManager;
-import eu.robojob.millassist.external.device.stacking.stackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.positioning.UserFrame;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 

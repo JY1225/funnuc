@@ -1,4 +1,4 @@
-package eu.robojob.millassist.external.device.stacking.stackplate;
+package eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate;
 
 public interface BasicStackPlateListener {
 	
