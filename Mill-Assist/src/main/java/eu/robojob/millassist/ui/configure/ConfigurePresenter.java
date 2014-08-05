@@ -137,8 +137,14 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		return configured;
 	}
 	
+	@Override
 	public void setParent(final MainPresenter parent) {
 		this.parent = parent;
+	}
+	
+	@Override
+	public MainPresenter getParent() {
+		return parent;
 	}
 	
 	@Override

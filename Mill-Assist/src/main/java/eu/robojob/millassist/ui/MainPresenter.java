@@ -1,6 +1,10 @@
 package eu.robojob.millassist.ui;
 
 import javafx.application.Platform;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.DataChangedEvent;
@@ -15,6 +19,8 @@ import eu.robojob.millassist.ui.alarms.AlarmsPopUpPresenter;
 import eu.robojob.millassist.ui.automate.AutomatePresenter;
 import eu.robojob.millassist.ui.configure.ConfigurePresenter;
 import eu.robojob.millassist.ui.general.MainContentPresenter;
+import eu.robojob.millassist.ui.general.dialog.ConfirmationDialogPresenter;
+import eu.robojob.millassist.ui.general.dialog.ConfirmationDialogView;
 import eu.robojob.millassist.ui.menu.MenuBarPresenter;
 import eu.robojob.millassist.ui.robot.RobotPopUpPresenter;
 import eu.robojob.millassist.ui.teach.TeachPresenter;
@@ -34,6 +40,8 @@ public class MainPresenter implements ProcessFlowListener {
 	private AdminPresenter adminPresenter;
 	
 	private MainContentPresenter activeContentPresenter;
+	
+	private final Logger logger = LogManager.getLogger(MainPresenter.class.getName());
 			
 	public MainPresenter(final MainView view, final MenuBarPresenter menuBarPresenter, final ConfigurePresenter configurePresenter, final TeachPresenter teachPresenter, 
 			final AutomatePresenter automatePresenter, final AlarmsPopUpPresenter alarmsPopUpPresenter, 
@@ -201,4 +209,28 @@ public class MainPresenter implements ProcessFlowListener {
 		process.removeListener(this);
 	}
 	
+	public boolean askConfirmation(final String title, final String message) {
+		final ConfirmationDialogView view = new ConfirmationDialogView(title, message);
+		ConfirmationDialogPresenter confirmationDialogPresenter = new ConfirmationDialogPresenter(view);
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				getView().showDialog(view);
+			}
+		});
+		boolean returnValue = false;
+		try {
+			returnValue = confirmationDialogPresenter.getResult();
+		} catch (InterruptedException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				getView().hideDialog();
+			}
+		});
+		return returnValue;
+	}
 }

@@ -12,6 +12,7 @@ import eu.robojob.millassist.process.event.ModeChangedEvent;
 import eu.robojob.millassist.process.event.ProcessFlowListener;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
@@ -61,17 +62,17 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 			WorkPieceDimensions prevDimensions = getPreviousPickDimensions();
 			if ((myDimensions.getWidth() <= 0) || (myDimensions.getLength() <= 0) || (myDimensions.getHeight() <= 0) 
 					|| (weight <= 0)) {
-				getView().showNotification(Translator.getTranslation(INCORRECT_DATA), true);
+				getView().showNotification(Translator.getTranslation(INCORRECT_DATA), Type.WARNING);
 			} else if ((myDimensions.getWidth() > prevDimensions.getWidth()) || (myDimensions.getLength() > prevDimensions.getLength())
 					 || (myDimensions.getHeight() > prevDimensions.getHeight())) {
-				getView().showNotification(Translator.getTranslation(DIMENSIONS_DO_NOT_MATCH), true);
+				getView().showNotification(Translator.getTranslation(DIMENSIONS_DO_NOT_MATCH), Type.WARNING);
 			} else if ((weight > prevWeight) && (Math.abs(weight - prevWeight) > 0.01)) {
-				getView().showNotification(Translator.getTranslation(WEIGHTS_DO_NOT_MATCH), true);
+				getView().showNotification(Translator.getTranslation(WEIGHTS_DO_NOT_MATCH), Type.WARNING);
 			} else {
 				getView().hideNotification();
 			}
 		} else {
-			getView().showNotification(Translator.getTranslation(INCORRECT_DATA), true);
+			getView().showNotification(Translator.getTranslation(INCORRECT_DATA), Type.WARNING);
 		}
 	}
 	

@@ -2,6 +2,7 @@ package eu.robojob.millassist.ui.configure.process;
 
 import java.util.List;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -10,7 +11,10 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlowManager;
+import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.util.Translator;
 
 public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView, ProcessMenuPresenter> {
 	
@@ -19,7 +23,11 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 	private ObservableList<ProcessFlow> filteredProcessFlows;
 	private ProcessFlowManager processFlowManager;	
 	private ProcessFlow activeProcessFlow;
-	private ProcessFlow tmpFlow;
+	
+	private static final String OPEN_UNSAVED_TITLE = "ProcessOpenPresenter.openUnsavedTitle";
+	private static final String OPEN_UNSAVED = "ProcessOpenPresenter.openUnsaved";
+	private static final String DELETE_TITLE = "ProcessOpenPresenter.deleteTitle";
+	private static final String DELETE = "ProcessOpenPresenter.delete";
 	
 	public ProcessOpenPresenter(final ProcessOpenView view, final ProcessFlow processFlow, final ProcessFlowManager processFlowManager) {
 		super(view);
@@ -59,49 +67,65 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 		return activeProcessFlow.getName();
 	}
 	
-	/**
-	 * This action will be called when the user decides to save changes of his current process before opening the other process
-	 */
-	@Override
-	public void doYesAction() {
-		//FIXME - Keyboard is shown
-		logger.info("User action: clicked on YES button to continue his action.");
-		logger.info("loading process: " + tmpFlow.getId());
-		activeProcessFlow.loadFromOtherProcessFlow(tmpFlow);
-		processFlowManager.updateLastOpened(activeProcessFlow);
-		super.doYesAction();
-	}
-	
-	@Override
-	public void doNoAction() {
-		super.doNoAction();
-		logger.info("User action: clicked on NO button.");
-		//Maak "Bewaar" als actief scherm
-	}
-	
 	public void openProcess(final ProcessFlow processFlow) {
+		// Do this on seperate thread (not on UI thread)
 		if(activeProcessFlow.hasChangesSinceLastSave()) {
-			logger.info("active process: " + activeProcessFlow.getId() + " contains unsaved changes.");
-			getView().showUnsavedNotificationMsg();
-			//Save the processFlow instead of retrieving it back from the view (in case user decides to skip saving)
-			tmpFlow = processFlow;
+			ThreadManager.submit(new Thread() {
+				@Override
+				public void run() {
+					try {
+						if (getMenuPresenter().getParent().getParent().askConfirmation(Translator.getTranslation(OPEN_UNSAVED_TITLE), Translator.getTranslation(OPEN_UNSAVED))) {
+							Platform.runLater(new Thread() {
+								@Override
+								public void run() {
+									activeProcessFlow.loadFromOtherProcessFlow(processFlow);
+									processFlowManager.updateLastOpened(activeProcessFlow);
+									getMenuPresenter().refreshParent();
+								}
+							});
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						logger.error(e);
+					}
+				}
+			});
 		} else {
 			logger.info("loading process: " + processFlow.getId());
 			//otherwise we have the same process - no need to load it
 			if (activeProcessFlow.getId() != processFlow.getId()) {
 				activeProcessFlow.loadFromOtherProcessFlow(processFlow);
 				processFlowManager.updateLastOpened(activeProcessFlow);
+				getMenuPresenter().refreshParent();
 			}
 		}
+				
 	}
 	
-	public void deleteProcess(ProcessFlow process) {
-		processFlowManager.deleteProcessFlow(process);
-		//Check whether we are deleting the current process or not
-		if(process.getId() != activeProcessFlow.getId()) {
-			openProcess(processFlowManager.getLastProcessFlow());
-		}
-		getMenuPresenter().getParent().getProcessFlowPresenter().getView().refreshProcessFlowName();
-		getView().refresh();
+	public void deleteProcess(final ProcessFlow process) {
+		ThreadManager.submit(new Thread() {
+			@Override
+			public void run() {
+				try {
+					if (getMenuPresenter().getParent().getParent().askConfirmation(Translator.getTranslation(DELETE_TITLE), Translator.getTranslation(DELETE))) {
+						Platform.runLater(new Thread() {
+							@Override
+							public void run() {
+								if (process.getId() == activeProcessFlow.getId()) {
+									activeProcessFlow.processProcessFlowEvent(new DataChangedEvent(activeProcessFlow, null, false));
+								}
+								processFlowManager.deleteProcessFlow(process);
+								getMenuPresenter().refreshParent();
+								refreshProcessFlowList();
+								filterChanged(getView().getFilter());
+							}
+						});
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
+			}
+		});
 	}
 }

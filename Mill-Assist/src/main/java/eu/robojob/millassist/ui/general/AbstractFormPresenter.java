@@ -32,10 +32,4 @@ public abstract class AbstractFormPresenter<T extends AbstractFormView<?>, S ext
 	
 	public abstract boolean isConfigured();
 	
-	protected void doNoAction() {
-		getView().hideNotification();
-	}
-	protected void doYesAction() {
-		getView().hideNotification();
-	}
 }

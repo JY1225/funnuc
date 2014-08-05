@@ -113,7 +113,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		
 		int row = 0;
 		int column = 0;
-
+		
 		workPieceLengthPath = new SVGPath();
 		workPieceLengthPath.setContent(LENGTH_ICON);
 		workPieceLengthPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
@@ -355,7 +355,6 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		getContents().add(btnMaxAmount, column++, row);
 				
 		hideNotification();
-		
 		
 		refresh();
 	}

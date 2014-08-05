@@ -8,10 +8,13 @@ import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import eu.robojob.millassist.ui.general.PopUpView;
+import eu.robojob.millassist.ui.general.dialog.AbstractDialogView;
 import eu.robojob.millassist.ui.menu.MenuBarView;
 
 public class MainView extends BorderPane {
 	
+	private StackPane mainPane;
+	private BorderPane contents;
 	private MainPresenter presenter;
 	private StackPane contentPane;
 	
@@ -20,14 +23,24 @@ public class MainView extends BorderPane {
 		this.setPrefSize(800, 600);
 		this.setMinSize(800, 600);
 		this.setMaxSize(800, 600);
+		mainPane = new StackPane();
+		contents = new BorderPane();
+		mainPane.setPrefSize(800, 600);
+		mainPane.setMinSize(800, 600);
+		mainPane.setMaxSize(800, 600);
+		contents.setPrefSize(800, 600);
+		contents.setMinSize(800, 600);
+		contents.setMaxSize(800, 600);
+		this.setCenter(mainPane);
+		mainPane.getChildren().add(contents);
 		contentPane = new StackPane();
-		this.setCenter(contentPane);
+		contents.setCenter(contentPane);
 		contentPane.setAlignment(Pos.TOP_LEFT);
 		contentPane.toBack();
 	}
 
 	public void setMenuBarView(final MenuBarView menuBarView) {
-		this.setTop(menuBarView);
+		contents.setTop(menuBarView);
 		menuBarView.toFront();
 	}
 	
@@ -61,5 +74,19 @@ public class MainView extends BorderPane {
 	
 	public MainPresenter getPresenter() {
 		return presenter;
+	}
+	
+	public void showDialog(final AbstractDialogView<?> dialog) {
+		mainPane.getChildren().add(dialog);
+	}
+	
+	public void hideDialog() {
+		List<Node> toRemove = new ArrayList<Node>();
+		for (Node node : mainPane.getChildren()) {
+			if (node instanceof AbstractDialogView<?>) {
+				toRemove.add(node);
+			}
+		}
+		mainPane.getChildren().removeAll(toRemove);
 	}
 }

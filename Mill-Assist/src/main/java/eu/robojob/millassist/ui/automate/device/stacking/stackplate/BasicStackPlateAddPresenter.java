@@ -11,6 +11,7 @@ import eu.robojob.millassist.process.event.ModeChangedEvent;
 import eu.robojob.millassist.process.event.ProcessFlowListener;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStackPlateAddView, BasicStackPlateMenuPresenter> implements ProcessFlowListener {
@@ -49,7 +50,7 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 			processFlow.setFinishedAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
 			processFlow.setTotalAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW) + stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
 		} catch(IncorrectWorkPieceDataException e) {
-			getView().showNotification(e.getLocalizedMessage(), true);
+			getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
 		}
 	}
 	

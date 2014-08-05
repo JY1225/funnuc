@@ -313,7 +313,9 @@ public class BasicStackPlate extends AbstractStackingDevice {
 	
 	private void decreaseAmountOfFirstRawPieces(final int amount) {
 		int position = layout.getFirstRawPosition();
-		layout.getStackingPositions().get(position).decrementAmountBy(amount);
+		if (position >= 0) {
+			layout.getStackingPositions().get(position).decrementAmountBy(amount);
+		}
 	}
 	
 //	public void placeFinishedWorkPieces(final int finishedAmount) {

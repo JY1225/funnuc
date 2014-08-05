@@ -59,7 +59,7 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	}
 		
 	private void buildAlarmHBox() {
-		notificationBox = new NotificationBox(this);
+		notificationBox = new NotificationBox();
 		getChildren().add(notificationBox);
 		hideNotification();
 	}
@@ -71,14 +71,10 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	 * @param isWarning       - Flag to indicate that the notification should be a warning or a confirmation
 	 * @param askConfirmation - Flag that allows the user to choose whether to continue the action or to abort (e.g. to save changes or not)
 	 */
-	public void showNotification(final String notification, boolean isWarning, boolean askConfirmation) {
-		notificationBox.showNotification(notification, isWarning, askConfirmation);
+	public void showNotification(final String notification, NotificationBox.Type type) {
+		notificationBox.showNotification(notification, type);
 		notificationBox.setVisible(true);
 		notificationBox.setManaged(true);
-	}
-	
-	public void showNotification(final String notification, boolean isWarning) {
-		showNotification(notification, isWarning, false);
 	}
 	
 	public void hideNotification() {

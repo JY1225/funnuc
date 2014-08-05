@@ -11,6 +11,7 @@ import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
@@ -113,11 +114,11 @@ public class ConveyorRawWorkPiecePresenter extends AbstractFormPresenter<Conveyo
 			((Conveyor) pickStep.getDevice()).getLayout().configureRawWorkPieceStackingPositions();
 			getView().hideNotification();
 			if (!isWeightOk()) {
-				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO), true);
+				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO), Type.WARNING);
 			}
 			getView().refresh();
 		} catch (IncorrectWorkPieceDataException e) {
-			getView().showNotification(e.getLocalizedMessage(), true);
+			getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
 		}
 	}
 	

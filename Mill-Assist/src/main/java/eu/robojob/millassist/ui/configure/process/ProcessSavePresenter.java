@@ -9,7 +9,9 @@ import eu.robojob.millassist.db.process.ProcessFlowMapper;
 import eu.robojob.millassist.process.DuplicateProcessFlowNameException;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlowManager;
+import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.util.Translator;
 
 public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView, ProcessMenuPresenter> {
@@ -47,7 +49,8 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 	
 	public void nameChanged(final String name) {
 		processFlow.setName(name);
-		getView().refresh();
+		processFlow.processProcessFlowEvent(new DataChangedEvent(processFlow, null, false));
+		getMenuPresenter().refreshParent();
 	}
 	
 	//FIXME: make sure process can only be saved if configured correctly
@@ -59,12 +62,9 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 			if(saveProcessID != 0) {
 				saveAsExisting();
 			} else {
-				if(processFlowManager.getActiveProcessFlow().hasChangesSinceLastSave()) {
-					getView().showUnsavedNotificationMsg();
-				} else {
-					saveAsNew();
-				}
+				saveAsNew();
 			}
+			getMenuPresenter().refreshParent();
 		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();
@@ -76,43 +76,27 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 			processFlowManager.updateProcessFlow(processFlow);
 			//reset the flag to indicate the latest changes are saved
 			processFlow.setChangesSinceLastSave(false);
-			getView().showNotification(Translator.getTranslation(UPDATE_SUCCESSFULL), false);
+			getView().showNotification(Translator.getTranslation(UPDATE_SUCCESSFULL), Type.OK);
+			getMenuPresenter().refreshParent();
 		} catch (DuplicateProcessFlowNameException e) {
 			//We will come here when a user tries to save an existing process which is not the activeProcess
-			getView().showNotification(Translator.getTranslation(DUPLICATE_NAME), true);
+			getView().showNotification(Translator.getTranslation(DUPLICATE_NAME), Type.WARNING);
 		}
 	}
 	
 	private void saveAsNew() {
 		try {
 			processFlowManager.saveProcessFlow(processFlow);
+			//reset the flag to indicate the latest changes are saved
+			processFlow.setChangesSinceLastSave(false);
 			//Show the new processName in the flow region
 			getMenuPresenter().getParent().getProcessFlowPresenter().getView().refreshProcessFlowName();
-			getView().showNotification(Translator.getTranslation(SAVE_SUCCESSFULL), false);
+			getView().showNotification(Translator.getTranslation(SAVE_SUCCESSFULL), Type.OK);
+			getMenuPresenter().refreshParent();
 		} catch (DuplicateProcessFlowNameException e) {
 			//this should never happen
-			getView().showNotification(Translator.getTranslation(DUPLICATE_NAME), true);
+			getView().showNotification(Translator.getTranslation(DUPLICATE_NAME), Type.WARNING);
 		}
 	}
 	
-	public void deleteProcess() {
-		processFlowManager.deleteProcessFlow(processFlow);
-		processFlow.loadFromOtherProcessFlow(processFlowManager.getLastProcessFlow());
-		getMenuPresenter().configureProcess();
-		getView().hideNotification();
-	}
-	
-	@Override
-	public void doYesAction() {
-		logger.info("User action: clicked on YES button to continue his action.");
-		saveAsNew();
-		super.doYesAction();
-	}
-	
-	@Override
-	public void doNoAction() {
-		super.doNoAction();
-		logger.info("User action: clicked on NO button.");
-		//Maak "Bewaar" als actief scherm
-	}
 }

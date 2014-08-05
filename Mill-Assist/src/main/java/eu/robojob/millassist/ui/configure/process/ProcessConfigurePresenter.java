@@ -2,6 +2,7 @@ package eu.robojob.millassist.ui.configure.process;
 
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConfigureView, ProcessMenuPresenter> {
@@ -36,6 +37,7 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 	
 	public void nameChanged(final String name) {
 		processFlow.setName(name);
+		processFlow.processProcessFlowEvent(new DataChangedEvent(processFlow, null, false));
 		getMenuPresenter().refreshParent();
 	}
 	

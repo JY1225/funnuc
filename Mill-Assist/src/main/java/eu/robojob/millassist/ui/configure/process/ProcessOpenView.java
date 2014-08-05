@@ -52,8 +52,6 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 	private static final String NAME = "ProcessOpenView.name";
 	private static final String LAST_OPENED_DATE = "ProcessOpenView.lastOpenedDate";
 	private static final String NO_CONTENT = "ProcessOpenView.noContent";
-	private static final String UNSAVED_CHANGES = "ProcessOpenPresenter.unsavedChanges";
-	private static final String CONTINUE = "ProcessOpenPresenter.continue";
 		
 	public ProcessOpenView() {
 		super();
@@ -178,12 +176,12 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		HBox.setMargin(hbox2, new Insets(TOP_MARGIN, 0, 0, 0));
 	}
 	
-	public void setProcessFlows(final ObservableList<ProcessFlow> processflows) {
-		table.setItems(processflows);
+	public String getFilter() {
+		return fulltxtFilter.getText();
 	}
 	
-	public void showUnsavedNotificationMsg() {
-		showNotification(Translator.getTranslation(UNSAVED_CHANGES) + getPresenter().getActiveProcessFlowName() + ".\n" + Translator.getTranslation(CONTINUE), true, true);
+	public void setProcessFlows(final ObservableList<ProcessFlow> processflows) {
+		table.setItems(processflows);
 	}
 
 	@Override

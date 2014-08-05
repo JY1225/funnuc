@@ -39,6 +39,7 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 	private Map<AbstractCNCMachine, Boolean> machines;
 	private Map<AbstractConveyor, Boolean> conveyors;
 	private Map<AbstractRobot, Boolean> robots;	
+	private MainPresenter parent;
 	
 	private static final String NOT_CONNECTED_TO = "TeachPresenter.notConnectedTo";
 	
@@ -173,8 +174,12 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 
 	@Override
 	public void setParent(final MainPresenter mainPresenter) {
-		// TODO Auto-generated method stub
-		
+		this.parent = mainPresenter;
+	}
+	
+	@Override
+	public MainPresenter getParent() {
+		return parent;
 	}
 
 	@Override
