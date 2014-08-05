@@ -66,5 +66,24 @@ public class StackPlateStackingPosition extends StackingPosition {
 	public void setAmount(final int amount) {
 		this.amount = amount;
 	}
+	
+	public void incrementAmount() {
+		this.amount++;
+	}
+	
+	public void decrementAmount() {
+		this.amount--;
+	}
+	
+	public void incrementAmountBy(int count) {
+		this.amount += count;
+	}
+	
+	public void decrementAmountBy(int count) {
+		this.amount -= count;
+		if(this.amount <= 0) {
+			this.setWorkPiece(null);
+		}
+	}
 
 }

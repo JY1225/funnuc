@@ -13,7 +13,7 @@ import eu.robojob.millassist.external.communication.ExternalCommunicationThread;
 
 public final class ThreadManager {
 
-	private static final int MAX_THREAD_AMOUNT = 15;
+	private static final int MAX_THREAD_AMOUNT = 20;
 	
 	private static Logger logger = LogManager.getLogger(ThreadManager.class.getName());
 	

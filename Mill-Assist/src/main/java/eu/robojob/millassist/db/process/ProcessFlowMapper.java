@@ -149,6 +149,7 @@ public class ProcessFlowMapper {
 	
 	public void saveProcessFlow(final ProcessFlow processFlow) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
+		//We will clear all the IDs given by the software and assign new IDs that match with the ID given by the Database manager
 		clearProcessFlowStepsSettingsAndReferencedIds(processFlow);
 		processFlow.setCreation(new Timestamp(System.currentTimeMillis()));
 		processFlow.setLastOpened(new Timestamp(System.currentTimeMillis()));
@@ -898,7 +899,7 @@ public class ProcessFlowMapper {
 		return robotPutSettings;
 	}
 	
-	public int getProcessFlowIdForName(final String name) throws SQLException {
+	public static int getProcessFlowIdForName(final String name) throws SQLException {
 		int id = 0;
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW WHERE NAME = ?");
 		stmt.setString(1, name);

@@ -1,17 +1,25 @@
 package eu.robojob.millassist.ui.configure.process;
 
+import javafx.application.Platform;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlowManager;
+import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.configure.AbstractMenuPresenter;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.util.Translator;
 
 public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView> {
 	
 	private ProcessConfigurePresenter configurePresenter;
 	private ProcessSavePresenter savePresenter;
 	private ProcessOpenPresenter openPresenter;
-	private ProcessFlowManager processFlowManager;	
+	private ProcessFlowManager processFlowManager;
 	private ProcessFlow activeProcessFlow;
+	
+	private static final String CREATE_NEW_UNSAVED_CHANGES_TITLE = "ProcessMenuPresenter.createNewUnsavedChangesTitle";
+	private static final String CREATE_NEW_UNSAVED_CHANGES = "ProcessMenuPresenter.createNewUnsavedChanges";
+	private static final String CREATE_NEW_TITLE = "ProcessMenuPresenter.createNewTitle";
+	private static final String CREATE_NEW = "ProcessMenuPresenter.createNew";
 	
 	public ProcessMenuPresenter(final ProcessMenuView view, final ProcessConfigurePresenter configurePresenter, final ProcessSavePresenter savePresenter,
 			final ProcessOpenPresenter openPresenter, final ProcessFlow activeProcessFlow, final ProcessFlowManager processFlowManager) {
@@ -22,8 +30,8 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 		savePresenter.setMenuPresenter(this);
 		this.openPresenter = openPresenter;
 		openPresenter.setMenuPresenter(this);
-		this.activeProcessFlow = activeProcessFlow;
 		this.processFlowManager = processFlowManager;
+		this.activeProcessFlow = activeProcessFlow;
 	}
 
 	@Override
@@ -46,9 +54,40 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 		getParent().setBottomRightView(openPresenter.getView());
 	}
 	
-	public void newProcess() {
-		activeProcessFlow.loadFromOtherProcessFlow(processFlowManager.createNewProcessFlow());
-		configureProcess();
+	public ProcessFlow getActiveProcessFlow() {
+		return this.activeProcessFlow;
+	}
+	
+	public void newProcess() {		
+		if(activeProcessFlow.hasChangesSinceLastSave()) {
+			ThreadManager.submit(new Thread() {
+				@Override
+				public void run() {
+					if (getParent().getParent().askConfirmation(Translator.getTranslation(CREATE_NEW_UNSAVED_CHANGES_TITLE), Translator.getTranslation(CREATE_NEW_UNSAVED_CHANGES))) {
+						createNewProcess();
+					}
+				}
+			});
+		} else {
+			ThreadManager.submit(new Thread() {
+				@Override
+				public void run() {
+					if (getParent().getParent().askConfirmation(Translator.getTranslation(CREATE_NEW_TITLE), Translator.getTranslation(CREATE_NEW))) {
+						createNewProcess();
+					}
+				}
+			});
+		}
+	}
+	
+	public void createNewProcess() {
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				activeProcessFlow.loadFromOtherProcessFlow(processFlowManager.createNewProcessFlow());
+				refreshParent();
+			}
+		});
 	}
 	
 	public void processOpened() {

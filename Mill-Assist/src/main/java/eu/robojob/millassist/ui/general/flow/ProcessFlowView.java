@@ -53,8 +53,9 @@ public class ProcessFlowView extends StackPane {
 	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_GREEN = "progressbar-piece-green";
 	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW = "progressbar-piece-yellow";
 	private static final String CSS_CLASS_PROCESS_NAME = "process-name";
+	private static final String CSS_CLASS_PROCESS_NAME_UNSAVED = "unsaved";
 	private int progressBarAmount;
-		
+			
 	public ProcessFlowView(final int progressBarAmount) {
 		this.progressBarAmount = progressBarAmount;
 		refresh();
@@ -76,11 +77,22 @@ public class ProcessFlowView extends StackPane {
 		}
 	}
 	
+	public void refreshProcessFlowName() {
+		lblProcessName.setText(processFlowAdapter.getProcessFlow().getName());
+	}
+	
 	protected void build() {
 		this.getChildren().clear();
 		gpFlow = new GridPane();
 		lblProcessName = new Label();
-		lblProcessName.setText(processFlowAdapter.getProcessFlow().getName());
+		//This indicates the name of the active process. It will be shown in the bottom right corner of the flow region.
+		lblProcessName.getStyleClass().remove(CSS_CLASS_PROCESS_NAME_UNSAVED);
+		if (processFlowAdapter.getProcessFlow().hasChangesSinceLastSave()) {
+			lblProcessName.setText("*" + processFlowAdapter.getProcessFlow().getName());
+			lblProcessName.getStyleClass().add(CSS_CLASS_PROCESS_NAME_UNSAVED);
+		} else {
+			lblProcessName.setText(processFlowAdapter.getProcessFlow().getName());
+		}
 		lblProcessName.getStyleClass().add(CSS_CLASS_PROCESS_NAME);
 		this.getChildren().add(gpFlow);
 		this.getChildren().add(lblProcessName);

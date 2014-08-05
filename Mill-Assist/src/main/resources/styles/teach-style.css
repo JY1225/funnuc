@@ -101,6 +101,7 @@
 	-fx-alignment: center-left;
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
+	-fx-fill: white;
 	-fx-font-size: 15px;
 	-fx-font-family: "Open Sans";
 	-fx-font-smoothing-type: lcd;

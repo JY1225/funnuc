@@ -11,11 +11,13 @@ import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.Conveyo
 import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.ConveyorAmountsView;
 import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.ConveyorMenuPresenter;
 import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.ConveyorMenuView;
+import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateAddPresenter;
+import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateAddView;
 import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateLayoutPresenter;
 import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateMenuPresenter;
 import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateMenuView;
-import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateRefillPresenter;
-import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateRefillView;
+import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateReplacePresenter;
+import eu.robojob.millassist.ui.automate.device.stacking.stackplate.BasicStackPlateReplaceView;
 import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.ConveyorFinishedWorkPieceLayoutPresenter;
 import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.ConveyorFinishedWorkPieceLayoutView;
 import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.ConveyorRawWorkPieceLayoutPresenter;
@@ -135,7 +137,8 @@ public class DeviceMenuFactory {
 	
 	public BasicStackPlateMenuPresenter getBasicStackPlateMenuPresenter(final DeviceInformation deviceInfo) {
 		BasicStackPlateMenuView stackingDeviceMenuView = new BasicStackPlateMenuView();
-		BasicStackPlateMenuPresenter basicStackPlateMenuPresenter = new BasicStackPlateMenuPresenter(stackingDeviceMenuView, getBasicStackPlateLayoutPresenter(deviceInfo), getBasicStackPlateRefillPresenter(deviceInfo));
+		BasicStackPlateMenuPresenter basicStackPlateMenuPresenter = new BasicStackPlateMenuPresenter(stackingDeviceMenuView, getBasicStackPlateLayoutPresenter(deviceInfo), getBasicStackPlateRefillPresenter(deviceInfo),
+				getBasicStackPlateAddPresenter(deviceInfo));
 		return basicStackPlateMenuPresenter;
 	}
 	
@@ -145,10 +148,16 @@ public class DeviceMenuFactory {
 		return basicStackPlateLayoutPresenter;
 	}
 	
-	public BasicStackPlateRefillPresenter getBasicStackPlateRefillPresenter(final DeviceInformation deviceInfo) {
-		BasicStackPlateRefillView view = new BasicStackPlateRefillView();
-		BasicStackPlateRefillPresenter basicStackPlateRefillPresenter = new BasicStackPlateRefillPresenter(view, (BasicStackPlate) deviceInfo.getDevice(), processFlow);
+	public BasicStackPlateReplacePresenter getBasicStackPlateRefillPresenter(final DeviceInformation deviceInfo) {
+		BasicStackPlateReplaceView view = new BasicStackPlateReplaceView();
+		BasicStackPlateReplacePresenter basicStackPlateRefillPresenter = new BasicStackPlateReplacePresenter(view, (BasicStackPlate) deviceInfo.getDevice(), processFlow);
 		return basicStackPlateRefillPresenter;
+	}
+	
+	public BasicStackPlateAddPresenter getBasicStackPlateAddPresenter(final DeviceInformation deviceInfo) {
+		BasicStackPlateAddView view = new BasicStackPlateAddView();
+		BasicStackPlateAddPresenter basicStackPlateAddPresenter = new BasicStackPlateAddPresenter(view, (BasicStackPlate) deviceInfo.getDevice(), processFlow);
+		return basicStackPlateAddPresenter;
 	}
 	
 	public void clearBuffer() {

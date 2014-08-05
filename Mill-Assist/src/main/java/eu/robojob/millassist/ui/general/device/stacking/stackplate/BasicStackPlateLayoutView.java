@@ -369,6 +369,8 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 			}
 		}
 	}
+	
+	
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {

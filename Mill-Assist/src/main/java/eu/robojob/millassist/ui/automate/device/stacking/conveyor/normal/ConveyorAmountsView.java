@@ -14,6 +14,7 @@ import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 
@@ -136,7 +137,7 @@ public class ConveyorAmountsView extends AbstractFormView<ConveyorAmountsPresent
 	}
 	
 	public void notifyIncorrectData() {
-		showNotification(Translator.getTranslation(INCORRECT_DATA));
+		showNotification(Translator.getTranslation(INCORRECT_DATA), Type.WARNING);
 		btnUpdate.setDisable(true);
 	}
 	

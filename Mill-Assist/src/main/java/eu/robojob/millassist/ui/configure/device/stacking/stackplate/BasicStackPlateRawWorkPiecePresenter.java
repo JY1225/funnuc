@@ -12,6 +12,7 @@ import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
@@ -148,17 +149,17 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public void recalculate() {
 		try {
 			((BasicStackPlate) pickStep.getDevice()).getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
-			((BasicStackPlate) pickStep.getDevice()).getLayout().placeRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
+			((BasicStackPlate) pickStep.getDevice()).getLayout().initRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
 			pickStep.getProcessFlow().getClampingType().setChanged((deviceSettings.getOrientation() == WorkPieceOrientation.DEG90));
 			// FIXME: in principe ook hier, als de hoek voor 45° kleiner is dan de hoek voor 90°!!
 			getView().hideNotification();
 			if (!isWeightOk()) {
-				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO));
+				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO), Type.WARNING);
 			} else if (!isStudHeightOk()) {
-				getView().showNotification(Translator.getTranslation(STUD_HEIGHT_NOT_OK));
+				getView().showNotification(Translator.getTranslation(STUD_HEIGHT_NOT_OK), Type.WARNING);
 			}
 		} catch (IncorrectWorkPieceDataException e) {
-			getView().showNotification(e.getLocalizedMessage());
+			getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
 		}
 		((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
 	}
@@ -171,7 +172,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			recalculate();
 			getView().refresh();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
-			//((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
+			((BasicStackPlate) pickStep.getDevice()).notifyLayoutChanged();
 		}
 	}
 	

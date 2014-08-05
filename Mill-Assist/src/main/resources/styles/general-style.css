@@ -268,3 +268,77 @@
 .icon-ok {
 	-fx-fill: #1eda09;
 }
+
+.delete-open {
+	-fx-fill: #f72225;
+	-fx-alignment: CENTER-LEFT;
+}
+
+.overlay {
+	-fx-background-color: rgba(42, 45, 49, 0.7);
+}
+
+.dialog {
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 0);
+	-fx-background-color: #3d4046, #777a81, linear-gradient(#67696f 0%, #616369 100%);
+	-fx-background-insets: 0, 1, 2 1 1 1;
+	-fx-background-radius: 3, 2, 1;
+}
+
+.dialog-btn {
+	-fx-background-color: #3b3f46, #5b6068, linear-gradient(#52555c 0%, #4f5158 100%);
+	-fx-background-insets: 0, 1 1 1 1, 2 1 1 1;
+	-fx-background-radius: 0;
+}
+
+.dialog-btn.left {
+	-fx-background-radius: 0 0 0 3, 0 0 0 2, 0 0 0 1;
+}
+
+.dialog-btn.right {
+	-fx-background-radius: 0 0 3 0, 0 0 2 0, 0 0 1 0;
+}
+
+.dialog-btn Text {
+	-fx-fill: white;
+	-fx-text-alignment: center;
+	-fx-font-family: "Open Sans Bold";
+	-fx-font-weight: bold;
+	-fx-font-size: 13px;
+	-fx-font-smoothing-type: lcd;
+	-fx-padding: 0 0 0 5;
+}
+
+.dialog-title-label {
+	-fx-alignment: bottom-center ;
+	-fx-font-family: "Open Sans Bold";
+	-fx-font-weight: bold;
+	-fx-font-size: 16px;
+	-fx-font-smoothing-type: lcd;
+	-fx-text-alignment: center;
+}
+
+.dialog-msg {
+	-fx-padding: 20;
+	-fx-text-alignment: center;
+	-fx-alignment: center;
+	-fx-text-wrap: true;
+	-fx-text-fill: white;
+	-fx-font-size: 14px;
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-smoothing-type: lcd;
+	-fx-fill: white;
+	-fx-text-fill: white;
+}
+
+.dialog-btn:pressed {	
+	-fx-background-color: #292d32, #292d32, #292d32, #2a2d31;
+}
+
+.dialog-btn:disabled {
+	-fx-opacity: 1;
+}
+
+.dialog-btn:disabled Text {
+	-fx-opacity: 0.5;
+}

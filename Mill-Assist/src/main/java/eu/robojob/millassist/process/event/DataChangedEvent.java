@@ -12,6 +12,8 @@ public class DataChangedEvent extends ProcessFlowEvent {
 		super(source, ProcessFlowEvent.DATA_CHANGED);
 		this.step = step;
 		this.reTeachingNeeded = reTeachingNeeded;
+		//indicates that the processFlow has changes since it was last saved. A reset of this flag will be done when saving the flow.
+		source.setChangesSinceLastSave(true);
 	}
 
 	public AbstractProcessStep getStep() {

@@ -1,6 +1,8 @@
 package eu.robojob.millassist.ui.menu;
 
+import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.MainPresenter;
+import eu.robojob.millassist.util.Translator;
 
 public class MenuBarPresenter {
 	
@@ -10,6 +12,9 @@ public class MenuBarPresenter {
 	private boolean adminActive;
 	private boolean robotActive;
 	private boolean alarmsActive;
+	
+	private static final String UNSAVED_CHANGES_TITLE = "MenuBarPresenter.unsavedChangesTitle";
+	private static final String UNSAVED_CHANGES = "MenuBarPresenter.unsavedChanges";
 	
 	public MenuBarPresenter(final MenuBarView processMenuBarView) {
 		this.view = processMenuBarView;
@@ -138,7 +143,20 @@ public class MenuBarPresenter {
 	}
 	
 	public void clickedExit() {
-		parent.exit();
+		ThreadManager.submit(new Thread() {
+			@Override
+			public void run() {
+				boolean doExit = true;
+				if (parent.getProcessFlow().hasChangesSinceLastSave()) {
+					if (!parent.askConfirmation(Translator.getTranslation(UNSAVED_CHANGES_TITLE), Translator.getTranslation(UNSAVED_CHANGES))) {
+						doExit = false;
+					}
+				}
+				if (doExit) {
+					parent.exit();
+				}
+			}
+		});
 	}
 	
 }

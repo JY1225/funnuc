@@ -29,6 +29,7 @@ public final class ConnectionManager {
 			logger.info("About to create database connection.");
 			conn = DriverManager.getConnection(connectionString);
 			logger.info("Successfully created database connection.");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

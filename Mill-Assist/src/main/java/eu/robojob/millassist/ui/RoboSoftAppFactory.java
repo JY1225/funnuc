@@ -304,7 +304,7 @@ public class RoboSoftAppFactory {
 		}
 		return processConfigurationMenuPresenter;
 	}
-	
+
 	public ProcessSavePresenter getProcessSavePresenter() {
 		if (processSavePresenter == null) {
 			ProcessSaveView processSaveView = new ProcessSaveView();

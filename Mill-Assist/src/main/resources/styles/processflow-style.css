@@ -253,3 +253,7 @@
 	-fx-font-smoothing-type: lcd;
 	-fx-text-alignment: right;
 }
+
+.unsaved {
+	-fx-text-fill: #000000;
+}
