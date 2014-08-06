@@ -56,11 +56,9 @@
 .left-menu-button .left-menu-item-label {
 	-fx-padding: 0 0 0 5;
 	-fx-text-fill: white;
-	-fx-text-alignment: center;
-	-fx-font-family: "Open Sans Bold";
-	-fx-font-weight: bold;
+	-fx-font-family: 'Open Sans Semibold';
 	-fx-font-size: 13px;
-	-fx-font-smoothing-type: lcd;
+	-fx-alignment: center-left;
 }
 
 .left-menu-button:disabled .left-menu-item-label{
@@ -164,8 +162,7 @@
 .pop-up-btn Text {
 	-fx-fill: white;
 	-fx-text-alignment: center;
-	-fx-font-family: "Open Sans Bold";
-	-fx-font-weight: bold;
+	-fx-font-family: 'Open Sans Semibold';
 	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
 	-fx-padding: 0 0 0 5;
@@ -227,7 +224,7 @@
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
 	-fx-font-size: 15px;
-	-fx-font-family: "Open Sans Semibold";
+	-fx-font-family: "Open Sans";
 	-fx-font-smoothing-type: lcd;
 	-fx-background-color: transparent;
 	-fx-padding: 0;
@@ -246,9 +243,8 @@
 .content-btn-text {
 	-fx-text-fill: white;
 	-fx-fill: white;
-	-fx-font-family: "Open Sans Bold";
-	-fx-font-weight: bold;
-	-fx-font-size: 14px;
+	-fx-font-family: "Open Sans Semibold";
+	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;	
 	-fx-text-alignment: center;
 	-fx-alignment: center;
@@ -256,7 +252,6 @@
 
 .content-msg-title {
 	-fx-font-family: "Open Sans Bold";
-	-fx-font-weight: bold;
 	-fx-font-size: 18px;
 }
 
@@ -302,8 +297,7 @@
 .dialog-btn Text {
 	-fx-fill: white;
 	-fx-text-alignment: center;
-	-fx-font-family: "Open Sans Bold";
-	-fx-font-weight: bold;
+	-fx-font-family: "Open Sans Semiold";
 	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;
 	-fx-padding: 0 0 0 5;
@@ -312,7 +306,6 @@
 .dialog-title-label {
 	-fx-alignment: bottom-center ;
 	-fx-font-family: "Open Sans Bold";
-	-fx-font-weight: bold;
 	-fx-font-size: 16px;
 	-fx-font-smoothing-type: lcd;
 	-fx-text-alignment: center;
@@ -325,7 +318,7 @@
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
 	-fx-font-size: 14px;
-	-fx-font-family: "Open Sans Semibold";
+	-fx-font-family: "Open Sans";
 	-fx-font-smoothing-type: lcd;
 	-fx-fill: white;
 	-fx-text-fill: white;

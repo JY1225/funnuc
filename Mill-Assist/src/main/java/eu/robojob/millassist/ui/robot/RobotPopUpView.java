@@ -78,6 +78,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 				setHeight((AMOUNT_OF_ITEMS + 1) * BUTTON_HEIGHT);
 				setPrefHeight((AMOUNT_OF_ITEMS + 1) * BUTTON_HEIGHT);
 				setMaxHeight((AMOUNT_OF_ITEMS + 1) * BUTTON_HEIGHT);
+				//btnCloseB.getStyleClass().remove(CSS_CLASS_POPUP_BUTTON_BOTTOM);
 			}
 		} catch (IOException e) {
 			logger.error(e);
@@ -214,7 +215,6 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btnOpenA.setGraphic(new Text(Translator.getTranslation(OPEN_A)));
 		btnOpenA.setPrefSize(WIDTH, BUTTON_HEIGHT);
 		btnOpenA.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
-		btnOpenA.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
 		btnOpenA.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
@@ -225,7 +225,6 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btnCloseA = new Button();
 		btnCloseA.setGraphic(new Text(Translator.getTranslation(CLOSE_A)));
 		btnCloseA.setPrefSize(WIDTH, BUTTON_HEIGHT);
-		btnCloseA.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
 		btnCloseA.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
 		btnCloseA.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -238,7 +237,6 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btnOpenB.setGraphic(new Text(Translator.getTranslation(OPEN_B)));
 		btnOpenB.setPrefSize(WIDTH, BUTTON_HEIGHT);
 		btnOpenB.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
-		btnOpenB.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
 		btnOpenB.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
@@ -250,7 +248,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btnCloseB.setGraphic(new Text(Translator.getTranslation(CLOSE_B)));
 		btnCloseB.setPrefSize(WIDTH, BUTTON_HEIGHT);
 		btnCloseB.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
-		btnCloseB.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
+		btnCloseB.getStyleClass().add(CSS_CLASS_POPUP_BUTTON_BOTTOM);
 		btnCloseB.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
@@ -263,6 +261,7 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 		btnToCustomPos.setPrefSize(WIDTH, BUTTON_HEIGHT);
 		btnToCustomPos.getStyleClass().add(CSS_CLASS_POPUP_BUTTON);
 		btnToCustomPos.getStyleClass().add(CSS_CLASS_POPUP_BUTTON_BOTTOM);
+		btnToCustomPos.setTranslateY(-1);
 		btnToCustomPos.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {

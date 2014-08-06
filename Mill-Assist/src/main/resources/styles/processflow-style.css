@@ -17,8 +17,8 @@
 }
 
 .device-info-label {
-	-fx-font-size: 12px;
-	-fx-font-family: "Open Sans Semibold";
+	-fx-font-size: 11px;
+	-fx-font-family: 'Open Sans Semibold';
 	-fx-font-smoothing-type: lcd;
 	-fx-text-alignment: right;
 	-fx-text-fill: #4093fb;
@@ -36,14 +36,14 @@
 }
 
 .device-label {
-	-fx-font-size: 13px;
-	-fx-font-family: "Open Sans Semibold";
-	-fx-font-smoothing-type: lcd;
+	-fx-font-size: 12px;
+	-fx-font-family: 'Open Sans Semibold';
+	-fx-padding: 0 0 0 0;
+	-fx-translate-y: 4;
 	-fx-text-alignment: right;
 	-fx-text-fill: black;
 	-fx-label-padding: 0;
 	-fx-wrap-text: true;
-	-fx-padding: 0;
 }
 
 .unknown-device {
@@ -186,7 +186,6 @@
 	-fx-text-alignment: center;
 	-fx-font-size: 13px;
 	-fx-font-family: "Open Sans Bold";
-	-fx-font-weight: bold;
 	-fx-font-smoothing-type: lcd;
 	-fx-alignment: center;
 	-fx-text-fill: black;
@@ -249,7 +248,7 @@
 .process-name {
 	-fx-text-fill: #9d9d9d;
 	-fx-font-size: 13px;
-	-fx-font-family: "Open Sans Semibold";
+	-fx-font-family: "Open Sans";
 	-fx-font-smoothing-type: lcd;
 	-fx-text-alignment: right;
 }

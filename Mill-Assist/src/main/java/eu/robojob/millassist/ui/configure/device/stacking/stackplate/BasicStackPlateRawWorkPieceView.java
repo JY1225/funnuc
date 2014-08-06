@@ -295,6 +295,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		orientationsBox.setAlignment(Pos.CENTER_LEFT);
 		orientationsBox.setPrefWidth(3 * BTN_WIDTH * 0.9);
 		orientationsBox.setMaxWidth(3 * BTN_WIDTH * 0.9);
+		orientationsBox.setMinWidth(3 * BTN_WIDTH * 0.9);
 		
 		row = 0;
 		column = 4;

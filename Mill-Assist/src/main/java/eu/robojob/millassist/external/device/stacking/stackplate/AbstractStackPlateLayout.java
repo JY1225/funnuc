@@ -23,30 +23,20 @@ import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 public abstract class AbstractStackPlateLayout {
 
 	//General settings
-	private float horizontalPadding;
-	private float verticalPaddingTop;
-	private float verticalPaddingBottom;
 	private WorkPieceOrientation orientation;
 	private int horizontalAmount;
 	private int verticalAmount;
 	private int layers;
 	private float plateWidth;
 	private float plateLength;
-	private float tiltedR;
-	private float horizontalR;
 	private boolean alignRight;
+	private AbstractStackPlate stackPlate;
 	
 	private List<StackPlateStackingPosition> stackingPositions;
 	
 	private static Logger logger = LogManager.getLogger(AbstractStackPlateLayout.class.getName());
 	
-	protected AbstractStackPlateLayout(final float horizontalPadding,final float verticalPaddingTop, final float verticalPaddingBottom, 
-			final float tiltedR, final float horizontalR) {
-		this.horizontalPadding = horizontalPadding;
-		this.verticalPaddingBottom = verticalPaddingBottom;
-		this.verticalPaddingTop = verticalPaddingTop;
-		this.tiltedR = tiltedR;
-		this.horizontalR = horizontalR;
+	protected AbstractStackPlateLayout() {
 		setAlignRight();
 		//Default values
 		this.layers = 1;
@@ -126,13 +116,6 @@ public abstract class AbstractStackPlateLayout {
 			}
 		}
 		return amount;
-	}
-	
-	public float getR(WorkPieceOrientation orientation) {
-		if(orientation.equals(WorkPieceOrientation.TILTED))
-			return getTiltedR();
-		else
-			return getHorizontalR();
 	}
 	
 	/**************************************
@@ -278,30 +261,6 @@ public abstract class AbstractStackPlateLayout {
 	protected void setPlateLength(final float length) {
 		this.plateLength = length;
 	}
-	
-	public float getHorizontalPadding() {
-		return this.horizontalPadding;
-	}
-
-	public void setHorizontalPadding(final float horizontalPadding) {
-		this.horizontalPadding = horizontalPadding;
-	}
-
-	public float getVerticalPaddingTop() {
-		return this.verticalPaddingTop;
-	}
-
-	public void setVerticalPaddingTop(final float verticalPaddingTop) {
-		this.verticalPaddingTop = verticalPaddingTop;
-	}
-
-	public float getVerticalPaddingBottom() {
-		return this.verticalPaddingBottom;
-	}
-
-	public void setVerticalPaddingBottom(final float verticalPaddingBottom) {
-		this.verticalPaddingBottom = verticalPaddingBottom;
-	}
 
 	public WorkPieceOrientation getOrientation() {
 		return this.orientation;
@@ -343,22 +302,6 @@ public abstract class AbstractStackPlateLayout {
 		this.stackingPositions = stackingPositions;
 	}
 	
-	public float getTiltedR() {
-		return this.tiltedR;
-	}
-	
-	public void setTiltedR(float tiltedR) {
-		this.tiltedR = tiltedR;
-	}
-	
-	public float getHorizontalR() {
-		return this.horizontalR;
-	}
-	
-	public void setHorizontalR(float horizontalR) {
-		this.horizontalR = horizontalR;
-	}
-	
 	public boolean isRightAligned() {
 		return this.alignRight;
 	}
@@ -377,4 +320,13 @@ public abstract class AbstractStackPlateLayout {
 			e.printStackTrace();
 		}
 	}
+
+	public AbstractStackPlate getStackPlate() {
+		return stackPlate;
+	}
+
+	public void setStackPlate(AbstractStackPlate stackPlate) {
+		this.stackPlate = stackPlate;
+	}
+	
 }

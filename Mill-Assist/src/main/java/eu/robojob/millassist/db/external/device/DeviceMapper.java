@@ -452,9 +452,82 @@ public class DeviceMapper {
 		return generalMapper.getAllUserFrames();
 	}
 	
-
 	public Set<GridPlateLayout> getAllGridPlates() throws SQLException {
-		return generalMapper.getAllGridPlates();
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM GRIDPLATE");
+		ResultSet results = stmt.executeQuery();
+		Set<GridPlateLayout> gridPlates = new HashSet<GridPlateLayout>();
+		while (results.next()) {
+			int id = results.getInt("ID");
+			gridPlates.add(getGridPlateByID(id));
+		}
+		return gridPlates;
+	}
+	
+
+	private GridPlateLayout getGridPlateByID(int gridPlateId) throws SQLException {
+		GridPlateLayout gridplate = null;
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM GRIDPLATE WHERE ID = ?");
+		stmt.setInt(1, gridPlateId);
+		ResultSet results = stmt.executeQuery();
+		while (results.next()) {
+			String name = results.getString("NAME");
+			float length = results.getFloat("LENGTH");
+			float width = results.getFloat("WIDTH");
+			float height = results.getFloat("HEIGHT");
+			float holeLength = results.getFloat("HOLELENGTH");
+			float holeWidth = results.getFloat("HOLEWIDTH");
+			int nbHorizontal = results.getInt("NBHORIZONTAL");
+			int nbVertical = results.getInt("NBVERTICAL");
+			float posX = results.getFloat("POS_X");
+			float posY = results.getFloat("POS_Y");
+			float holeX = results.getFloat("HOLE_X");
+			float holeY = results.getFloat("HOLE_Y");
+			float offsetX = results.getFloat("OFFSET_X");
+			float offsetY = results.getFloat("OFFSET_Y");
+			int orientationsId = results.getInt("ORIENTATION"); 
+			int smoothToId = results.getInt("SMOOTH_TO");
+			int smoothFromId = results.getInt("SMOOTH_FROM");
+			gridplate = new GridPlateLayout(name, length, width, height, holeX, holeY, holeLength, holeWidth, offsetX, offsetY, nbHorizontal
+					, nbVertical, posX, posY, orientationsId);
+			gridplate.setId(gridPlateId);
+			gridplate.setSmoothTo(generalMapper.getCoordinatesById(0, smoothToId));
+			gridplate.setSmoothFrom(generalMapper.getCoordinatesById(0, smoothFromId));
+		}
+		stmt.close();
+		return gridplate;
+	}
+	
+	public GridPlateLayout getGridPlateByName(final String gridPlateName) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM GRIDPLATE WHERE NAME = ?");
+		stmt.setString(1, gridPlateName);
+		ResultSet results = stmt.executeQuery();
+		GridPlateLayout gridPlate = null;
+		while (results.next()) {
+			int Id = results.getInt("ID");
+			float length = results.getFloat("LENGTH");
+			float width = results.getFloat("WIDTH");
+			float height = results.getFloat("HEIGHT");
+			float holeLength = results.getFloat("HOLELENGTH");
+			float holeWidth = results.getFloat("HOLEWIDTH");
+			int nbHorizontal = results.getInt("NBHORIZONTAL");
+			int nbVertical = results.getInt("NBVERTICAL");
+			float posX = results.getFloat("POS_X");
+			float posY = results.getFloat("POS_Y");
+			float holeX = results.getFloat("HOLE_X");
+			float holeY = results.getFloat("HOLE_Y");
+			float offsetX = results.getFloat("OFFSET_X");
+			float offsetY = results.getFloat("OFFSET_Y");
+			int orientationsId = results.getInt("ORIENTATION");
+			int smoothToId = results.getInt("SMOOTH_TO");
+			int smoothFromId = results.getInt("SMOOTH_FROM");
+			gridPlate = new GridPlateLayout(gridPlateName, length, width, height, holeX, holeY, holeLength, holeWidth, offsetX, offsetY, nbHorizontal
+					, nbVertical, posX, posY, orientationsId);
+			gridPlate.setId(Id);
+			gridPlate.setSmoothTo(generalMapper.getCoordinatesById(0, smoothToId));
+			gridPlate.setSmoothFrom(generalMapper.getCoordinatesById(0, smoothFromId));
+		}
+		stmt.close();
+		return gridPlate;
 	}
 	
 	public UserFrame getUserFrameByName(final String name) throws SQLException {
@@ -708,13 +781,12 @@ public class DeviceMapper {
 	
 	public void updateGridPlate(final GridPlateLayout gridPlate, final String name, final float posFirstX, final float posFirstY, final float offsetX, final float offsetY,
 			final int nbRows, final int nbColumns, final float height, final float holeLength, final float holeWidth,
-			final float length, final float width, final float horizontalPadding, final float verticalPaddingTop, 
-			final float verticalPaddingBottom, final float horizontalR, final float tiltedR, final float smoothToX,
+			final float length, final float width, final float posX, final float posY, final float smoothToX,
 			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, int orientation) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE GRIDPLATE SET " +
 				"NAME = ?, LENGTH = ?, WIDTH = ?, HEIGHT = ?, HOLELENGTH = ?, HOLEWIDTH = ?, NBHORIZONTAL = ?, NBVERTICAL = ?, "
-				+ "HORIZONTALPADDING = ?, VERTICALPADDINGTOP = ?, VERTICALPADDINGBOTTOM = ?, HOLE_X = ?, HOLE_Y = ?, OFFSET_X = ?,"
-				+ "OFFSET_Y = ?, HORIZONTAL_R = ?, TILTED_R = ?, ORIENTATION = ? WHERE ID = ?");
+				+ "POS_X = ?, POS_Y = ?, HOLE_X = ?, HOLE_Y = ?, OFFSET_X = ?,"
+				+ "OFFSET_Y = ?, ORIENTATION = ? WHERE ID = ?");
 		stmt.setString(1, name);
 		stmt.setFloat(2, length);
 		stmt.setFloat(3, width);
@@ -723,16 +795,13 @@ public class DeviceMapper {
 		stmt.setFloat(6, holeWidth);
 		stmt.setInt(7, nbColumns);
 		stmt.setInt(8, nbRows);
-		stmt.setFloat(9, horizontalPadding);
-		stmt.setFloat(10, verticalPaddingTop);
-		stmt.setFloat(11, verticalPaddingBottom);
-		stmt.setFloat(12, posFirstX);
-		stmt.setFloat(13, posFirstY);
-		stmt.setFloat(14, offsetX);
-		stmt.setFloat(15, offsetY);
-		stmt.setFloat(16, horizontalR);
-		stmt.setFloat(17, tiltedR);
-		stmt.setInt(18, orientation);
+		stmt.setFloat(9, posX);
+		stmt.setFloat(10, posY);
+		stmt.setFloat(11, posFirstX);
+		stmt.setFloat(12, posFirstY);
+		stmt.setFloat(13, offsetX);
+		stmt.setFloat(14, offsetY);
+		stmt.setInt(15, orientation);
 		Coordinates smoothTo = gridPlate.getSmoothTo();
 		Coordinates smoothFrom = gridPlate.getSmoothFrom();
 		smoothTo.setX(smoothToX);
@@ -749,19 +818,16 @@ public class DeviceMapper {
 		gridPlate.setHoleWidth(holeWidth);
 		gridPlate.setHorizontalAmount(nbColumns);
 		gridPlate.setVerticalAmount(nbRows);
-		gridPlate.setHorizontalPadding(horizontalPadding);
-		gridPlate.setVerticalPaddingTop(verticalPaddingTop);
-		gridPlate.setVerticalPaddingBottom(verticalPaddingBottom);
+		gridPlate.setPosX(posX);
+		gridPlate.setPosY(posY);
 		gridPlate.setFirstHolePosX(posFirstX);
 		gridPlate.setFirstHolePosY(posFirstY);
 		gridPlate.setHorizontalOffsetNxtPiece(offsetX);
 		gridPlate.setVerticalOffsetNxtPiece(offsetY);
-		gridPlate.setHorizontalR(horizontalR);
-		gridPlate.setTiltedR(tiltedR);
 		gridPlate.setHoleOrientation(orientation);
 		generalMapper.saveCoordinates(smoothTo);
 		generalMapper.saveCoordinates(smoothFrom);
-		stmt.setInt(19, gridPlate.getId());
+		stmt.setInt(16, gridPlate.getId());
 		stmt.executeUpdate();
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
@@ -770,10 +836,9 @@ public class DeviceMapper {
 	public void saveGridPlate(final GridPlateLayout gridPlate, final float smoothToX,	final float smoothToY, final float smoothToZ, 
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO GRIDPLATE " +
-			"(NAME, LENGTH, WIDTH, HEIGHT, HOLELENGTH, HOLEWIDTH, NBHORIZONTAL, NBVERTICAL, HORIZONTALPADDING,"
-			+ "VERTICALPADDINGTOP, VERTICALPADDINGBOTTOM, HOLE_X, HOLE_Y, OFFSET_X, OFFSET_Y, HORIZONTAL_R, TILTED_R,"
-			+ "ORIENTATION, SMOOTH_TO, SMOOTH_FROM)"
-			+ "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			"(NAME, LENGTH, WIDTH, HEIGHT, HOLELENGTH, HOLEWIDTH, NBHORIZONTAL, NBVERTICAL, POS_X, POS_Y, "
+			+ "HOLE_X, HOLE_Y, OFFSET_X, OFFSET_Y, ORIENTATION, SMOOTH_TO, SMOOTH_FROM)"
+			+ "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setString(1, gridPlate.getName());
 		stmt.setFloat(2, gridPlate.getLength());
 		stmt.setFloat(3, gridPlate.getWidth());
@@ -782,16 +847,13 @@ public class DeviceMapper {
 		stmt.setFloat(6, gridPlate.getHoleWidth());
 		stmt.setInt(7, gridPlate.getHorizontalAmount());
 		stmt.setInt(8, gridPlate.getVerticalAmount());
-		stmt.setFloat(9, gridPlate.getHorizontalPadding());
-		stmt.setFloat(10, gridPlate.getVerticalPaddingTop());
-		stmt.setFloat(11, gridPlate.getVerticalPaddingBottom());
-		stmt.setFloat(12, gridPlate.getFirstHolePosX());
-		stmt.setFloat(13, gridPlate.getFirstHolePosY());
-		stmt.setFloat(14, gridPlate.getHorizontalOffsetNxtPiece());
-		stmt.setFloat(15, gridPlate.getVerticalOffsetNxtPiece());
-		stmt.setFloat(16, gridPlate.getHorizontalR());
-		stmt.setFloat(17, gridPlate.getTiltedR());
-		stmt.setInt(18, gridPlate.getHoleOrientation().getId());
+		stmt.setFloat(9, gridPlate.getPosX());
+		stmt.setFloat(10, gridPlate.getPosY());
+		stmt.setFloat(11, gridPlate.getFirstHolePosX());
+		stmt.setFloat(12, gridPlate.getFirstHolePosY());
+		stmt.setFloat(13, gridPlate.getHorizontalOffsetNxtPiece());
+		stmt.setFloat(14, gridPlate.getVerticalOffsetNxtPiece());
+		stmt.setInt(15, gridPlate.getHoleOrientation().getId());
 		Coordinates smoothTo = new Coordinates();
 		Coordinates smoothFrom = new Coordinates();
 		smoothTo.setX(smoothToX);
@@ -804,8 +866,8 @@ public class DeviceMapper {
 		gridPlate.setSmoothFrom(smoothFrom);
 		generalMapper.saveCoordinates(smoothTo);
 		generalMapper.saveCoordinates(smoothFrom);
-		stmt.setInt(19,smoothTo.getId());
-		stmt.setInt(20,smoothFrom.getId());
+		stmt.setInt(16,smoothTo.getId());
+		stmt.setInt(17,smoothFrom.getId());
 		stmt.executeUpdate();
 		ResultSet resultSet = stmt.getGeneratedKeys();
 		if (resultSet.next()) {

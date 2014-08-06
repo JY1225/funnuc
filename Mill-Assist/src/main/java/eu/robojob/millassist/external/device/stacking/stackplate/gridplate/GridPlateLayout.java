@@ -22,6 +22,9 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	//Positions first hole
 	private float firstX;
 	private float firstY;
+	// Position of the plate
+	private float posX;
+	private float posY;
 	//Name
 	private String name;
 	//Holeorientation
@@ -63,9 +66,8 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	
 	public GridPlateLayout(String name, float length, float width, float height, float firstX, float firstY, float holeLength,
 			float holeWidth, float horizontalOffsetNxtPiece, float verticalOffsetNxtPiece, 
-			int horizontalAmount, int verticalAmount, float horizontalPadding, float verticalPaddingTop, 
-			float verticalPaddingBottom,float tiltedR, float horizontalR, int holeOrientation) {
-		super(horizontalPadding, verticalPaddingTop, verticalPaddingBottom, tiltedR, horizontalR);
+			int horizontalAmount, int verticalAmount, float posX, float posY, int holeOrientation) {
+		super();
 		this.name = name;
 		this.width = width;
 		this.length = length;
@@ -81,18 +83,20 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 		this.smoothTo = new Coordinates();
 		setHorizontalAmount(horizontalAmount);
 		setVerticalAmount(verticalAmount);
+		this.posX = posX;
+		this.posY = posY;
 		calcPlateWidth();
 		calcPlateLength();
 	}	
 	
 	@Override
 	protected void calcPlateWidth() {
-		setPlateWidth(getVerticalPaddingTop() + getVerticalPaddingBottom() + width);
+		setPlateWidth(width);
 	}
 	
 	@Override
 	protected void calcPlateLength() {
-		setPlateLength(getHorizontalPadding() * 2 + length);
+		setPlateLength(length);
 	}
 
 	@Override
@@ -260,11 +264,11 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	private void initStackingPositionsHorizontal(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, WorkPieceOrientation orientation) {
 		for(int i = 0; i < nbVertical; i++) {
 			for(int j = 0; j < nbHorizontal; j++) {
-				double xBottomLeft = getHorizontalPadding() + j * horizontalOffsetNxtPiece + firstX;
-				double yBottomLeft = getVerticalPaddingBottom() + i * verticalOffsetNxtPiece + firstY;
+				double xBottomLeft = posX + j * horizontalOffsetNxtPiece + firstX;
+				double yBottomLeft = posY + i * verticalOffsetNxtPiece + firstY;
 				float x = (float) xBottomLeft + dimensions.getLength()/2;
 				float y = (float) yBottomLeft + dimensions.getWidth()/2;
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(orientation), null, 0, orientation);
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getStackPlate().getR(orientation), null, 0, orientation);
 				getStackingPositions().add(stPos);
 			}
 		}
@@ -273,11 +277,11 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	private void initStackingPositionsDeg90(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, WorkPieceOrientation orientation) {
 		for(int i = 0; i < nbVertical; i++) {
 			for(int j = 0; j < nbHorizontal; j++) {
-				double xBottomLeft = getHorizontalPadding() + j * horizontalOffsetNxtPiece + firstX;
-				double yBottomLeft = getVerticalPaddingBottom() + i * verticalOffsetNxtPiece + firstY;
+				double xBottomLeft = posX + j * horizontalOffsetNxtPiece + firstX;
+				double yBottomLeft = posY + i * verticalOffsetNxtPiece + firstY;
 				float x = (float) xBottomLeft + dimensions.getWidth()/2;
 				float y = (float) yBottomLeft + dimensions.getLength()/2;
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(orientation), null, 0, orientation);
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getStackPlate().getR(orientation), null, 0, orientation);
 				getStackingPositions().add(stPos);
 			}
 		}
@@ -286,11 +290,11 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	private void initStackingPositionsDeg90Right(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, WorkPieceOrientation orientation) {
 		for(int i = 0; i < nbVertical; i++) {
 			for(int j = 0; j < nbHorizontal; j++) {
-				double xBottomLeft = getHorizontalPadding() + j * horizontalOffsetNxtPiece + holeLength + firstX;
-				double yBottomLeft = getVerticalPaddingBottom() + i * verticalOffsetNxtPiece + firstY;
+				double xBottomLeft = posX + j * horizontalOffsetNxtPiece + holeLength + firstX;
+				double yBottomLeft = posY + i * verticalOffsetNxtPiece + firstY;
 				float x = (float) xBottomLeft - dimensions.getWidth()/2;
 				float y = (float) yBottomLeft + dimensions.getLength()/2;
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(orientation), null, 0, orientation);
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getStackPlate().getR(orientation), null, 0, orientation);
 				getStackingPositions().add(stPos);
 			}
 		}
@@ -299,16 +303,32 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	private void initStackingPositionsTilted(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, WorkPieceOrientation orientation) {
 		for (int i = 0; i < nbVertical; i++) {
 			for (int j = 0; j < nbHorizontal; j++) {
-				double xBottom = getHorizontalPadding() + j * horizontalOffsetNxtPiece + firstX;
-				double yBottom = getVerticalPaddingBottom()  + i * verticalOffsetNxtPiece + firstY;
+				double xBottom = posX + j * horizontalOffsetNxtPiece + firstX;
+				double yBottom = posY  + i * verticalOffsetNxtPiece + firstY;
 				double extraX = (dimensions.getLength()/Math.sqrt(2) - dimensions.getWidth()/Math.sqrt(2))/2;
 				double extraY = (dimensions.getLength()/Math.sqrt(2) + dimensions.getWidth()/Math.sqrt(2))/2;
 				float x = (float) (xBottom + extraX);
 				float y = (float) (yBottom + extraY);
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(getOrientation()), null, 0, WorkPieceOrientation.TILTED);
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getStackPlate().getR(getOrientation()), null, 0, WorkPieceOrientation.TILTED);
 				getStackingPositions().add(stPos);
 			}
 		}
+	}
+
+	public float getPosX() {
+		return posX;
+	}
+
+	public void setPosX(float posX) {
+		this.posX = posX;
+	}
+
+	public float getPosY() {
+		return posY;
+	}
+
+	public void setPosY(float posY) {
+		this.posY = posY;
 	}
 
 }

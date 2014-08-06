@@ -3,3 +3,8 @@ Open\ Sans\ Light = fonts/Open\ Sans/OpenSans-Light.ttf
 Open\ Sans\ Bold = fonts/Open\ Sans/OpenSans-Bold.ttf
 Open\ Sans\ Semibold = fonts/Open\ Sans/OpenSans-Semibold.ttf
 Open\ Sans\ Italic = fonts/Open\ Sans/OpenSans-Italic.ttf
+
+Helvetica\ Neue = fonts/Helvetica\ Neue/HelveticaNeue-Roman.otf
+Helvetica\ Neue\ Light = fonts/Helvetica\ Neue/HelveticaNeue-Light.otf
+Helvetica\ Neue\ Bold = fonts/Helvetica\ Neue/HelveticaNeue-Bold.otf
+Helvetica\ Neue\ Semibold = fonts/Helvetica\ Neue/HelveticaNeue-Medium.otf

@@ -260,11 +260,10 @@ public class DeviceManager {
 	
 	public void saveGridPlate(final String name, final float posFirstX, final float posFirstY, final float offsetX, final float offsetY,
 			final int nbRows, final int nbColumns, final float height, final float holeLength, final float holeWidth,
-			final float length, final float width, final float horizontalPadding, final float verticalPaddingTop, 
-			final float verticalPaddingBottom, final float horizontalR, final float tiltedR, final float smoothToX,
+			final float length, final float width, final float posX, final float posY, final float smoothToX,
 			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, int orientation) {
 		GridPlateLayout gridPlate = new GridPlateLayout(name, length, width, height, posFirstX, posFirstY, holeLength, holeWidth, offsetX, offsetY, nbColumns, nbRows,
-				horizontalPadding, verticalPaddingTop, verticalPaddingBottom, tiltedR, horizontalR, orientation);
+				posX, posY, orientation);
 		try {
 			if(!gridPlatesByName.containsKey(name)) {
 				deviceMapper.saveGridPlate(gridPlate, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ);
@@ -283,8 +282,7 @@ public class DeviceManager {
 	
 	public void updateGridPlate(final GridPlateLayout gridPlate, final String name, final float posFirstX, final float posFirstY, final float offsetX, final float offsetY,
 			final int nbRows, final int nbColumns, final float height, final float holeLength, final float holeWidth,
-			final float length, final float width, final float horizontalPadding, final float verticalPaddingTop, 
-			final float verticalPaddingBottom, final float horizontalR, final float tiltedR, final float smoothToX,
+			final float length, final float width, final float posX, final float posY, final float smoothToX,
 			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, int orientation) {
 		try {
 			if(!gridPlate.getName().equals(name)) {
@@ -292,8 +290,8 @@ public class DeviceManager {
 				gridPlatesByName.put(name, gridPlate);
 			}
 			deviceMapper.updateGridPlate(gridPlate, name, posFirstX, posFirstY, offsetX, offsetY, nbRows, nbColumns, height, 
-					holeLength, holeWidth, length, width, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, 
-					horizontalR, tiltedR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, orientation);
+					holeLength, holeWidth, length, width, posX, posY, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, 
+					smoothFromZ, orientation);
 			refresh();
 		} catch (SQLException e) {
 			logger.error(e);

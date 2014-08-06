@@ -78,6 +78,7 @@ public class MainPresenter implements ProcessFlowListener {
 	public void showConfigure() {
 		menuBarPresenter.showConfigureView();
 		configurePresenter.getProcessFlowPresenter().backgroundClicked();
+		configurePresenter.refreshClearCache();
 		setActiveMainContentPresenter(configurePresenter);
 		refreshStatus();
 	}

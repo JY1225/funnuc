@@ -10,7 +10,7 @@
 .check-box, .radio-button {
 	-fx-text-fill: white;
 	-fx-font-size: 14px;
-	-fx-font-family: "Open Sans";
+	-fx-font-family: 'HelveticaNeueCyr-Medium';
 	-fx-font-smoothing-type: lcd;
 }
 
@@ -98,14 +98,12 @@
 }
 
 .warning-config {
-	-fx-font-family: "Open Sans Bold";
-	-fx-font-weight: bold;
+	-fx-font-family: 'Open Sans Semibold';
 	-fx-font-size: 14px;
 }
 
 .alarm-popup-msg {
-	-fx-font-family: "Open Sans Bold";
-	-fx-font-weight: bold;
+	-fx-font-family: 'Open Sans';
 	-fx-font-size: 14px;
 	-fx-alignment: center-left;
 	-fx-text-alignment: left;

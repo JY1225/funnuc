@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -49,6 +50,10 @@ public class RoboSoft extends Application {
 	public void start(final Stage stage) throws Exception {
 		logger.info("Started application.");
 		StdErrLog.tieSystemOutAndErrToLog();
+		Font.loadFont(this.getClass().getResourceAsStream("/fonts/Open Sans/OpenSans-Light.ttf"), 12).getName();
+		Font.loadFont(this.getClass().getResourceAsStream("/fonts/Open Sans/OpenSans-Regular.ttf"), 12).getName();
+		Font.loadFont(this.getClass().getResourceAsStream("/fonts/Open Sans/OpenSans-Semibold.ttf"), 12).getName();
+		Font.loadFont(this.getClass().getResourceAsStream("/fonts/Open Sans/OpenSans-Bold.ttf"), 12).getName();
 		final Properties properties = new Properties();
 		properties.load(new FileInputStream(new File("settings.properties")));
 		if (properties.get("monitor-memory").equals("true")) {

@@ -70,6 +70,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	
 	public void setLayout(AbstractStackPlateLayout layout) {
 		this.layout = layout;
+		layout.setStackPlate(this);
 	}
 	
 	@Override 
@@ -387,5 +388,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 		getLayout().getStackingPositions().get(position).decrementAmountBy(amount);
 	}
 	
+	public abstract float getR(WorkPieceOrientation orientation);
 
 }

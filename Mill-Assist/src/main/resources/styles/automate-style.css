@@ -35,7 +35,7 @@
 }
 
 .finished-amount {
-	-fx-font-family: "Open Sans Semibold";
+	-fx-font-family: 'Open Sans Light';
 	-fx-font-smoothing-type: lcd;
 	-fx-font-size: 75px;
 	-fx-text-alignment: center;
@@ -43,7 +43,7 @@
 }
 
 .total-amount {
-	-fx-font-family: "Open Sans Semibold";
+	-fx-font-family: 'Open Sans Semibold';
 	-fx-font-smoothing-type: lcd;
 	-fx-font-size: 12px;
 	-fx-text-alignment: left;
@@ -54,8 +54,8 @@
 	-fx-alignment: center;
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
-	-fx-font-size: 16px;
-	-fx-font-family: "Open Sans Semibold";
+	-fx-font-size: 14px;
+	-fx-font-family: 'Open Sans';
 	-fx-font-smoothing-type: lcd;
 }
 
@@ -65,7 +65,7 @@
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
 	-fx-font-size: 16px;
-	-fx-font-family: "Open Sans Semibold";
+	-fx-font-family: 'Open Sans';
 	-fx-font-smoothing-type: lcd;
 	-fx-padding: 2 0 0 0;
 }
@@ -79,7 +79,7 @@
 	-fx-alignment: center;
 	-fx-text-wrap: true;
 	-fx-text-fill: white;
-	-fx-font-family: "Open Sans Semibold";
+	-fx-font-family: 'Open Sans';
 	-fx-font-smoothing-type: lcd;
 	-fx-font-size: 16px;
 }
@@ -103,11 +103,11 @@
 .automate-btn-text {
 	-fx-text-fill: white;
 	-fx-fill: white;
-	-fx-font-family: "Open Sans Bold";
-	-fx-font-weight: bold;
-	-fx-font-size: 14px;
+	-fx-font-family: 'Open Sans Semibold';
+	-fx-font-size: 13px;
 	-fx-font-smoothing-type: lcd;	
 	-fx-text-alignment: center;
+	-fx-translate-y: -1;
 	-fx-alignment: center;
 }
 
@@ -123,14 +123,13 @@
 .timing-title {
 	-fx-text-alignment: left;
 	-fx-alignment: center-left;
-	-fx-font-family: "Open Sans";
+	-fx-font-family: 'Open Sans Semibold';
 	-fx-font-smoothing-type: lcd;	
 	-fx-font-size: 12px;
 }
 
 .timing-value {
-	-fx-font-family: "Open Sans Bold";
-	-fx-font-weight: bold;
+	-fx-font-family: 'Open Sans';
 	-fx-font-size: 18px;
 	-fx-font-smoothing-type: lcd;	
 }

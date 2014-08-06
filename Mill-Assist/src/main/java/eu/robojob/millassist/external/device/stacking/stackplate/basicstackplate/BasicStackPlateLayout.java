@@ -11,6 +11,11 @@ import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 	
 	// general settings
+
+	private float horizontalPadding;
+	private float verticalPaddingTop;
+	private float verticalPaddingBottom;
+	
 	private int horizontalHoleAmount;
 	private int verticalHoleAmount;
 	private float holeDiameter;
@@ -20,6 +25,9 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 	private float verticalHoleDistance;
 	private float interferenceDistance;
 	private float overFlowPercentage;
+
+	private float tiltedR;
+	private float horizontalR;
 
 	private StudPosition[][] studPositions;
 
@@ -34,7 +42,10 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 	public BasicStackPlateLayout(final int horizontalHoleAmount, final int verticalHoleAmount, final float holeDiameter, final float studDiameter, final float horizontalPadding,
 			final float verticalPaddingTop, final float verticalPaddingBottom, final float horizontalHoleDistance, final float interferenceDistance, final float overflowPercentage,
 				final float horizontalR, final float tiltedR, final double maxOverflow, final double minOverlap) {
-		super(horizontalPadding, verticalPaddingTop, verticalPaddingBottom, tiltedR, horizontalR);
+		super();
+		this.horizontalPadding = horizontalPadding;
+		this.verticalPaddingBottom = verticalPaddingBottom;
+		this.verticalPaddingTop = verticalPaddingTop;
 		this.horizontalHoleAmount = horizontalHoleAmount;
 		this.verticalHoleAmount = verticalHoleAmount;
 		this.holeDiameter = holeDiameter;
@@ -45,6 +56,8 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		this.overFlowPercentage = overflowPercentage;
 		this.maxOverflow = maxOverflow;
 		this.minOverlap = minOverlap;
+		this.tiltedR = tiltedR;
+		this.horizontalR = horizontalR;
 		initStudPositions();
 		calcPlateWidth();
 		calcPlateLength();
@@ -868,5 +881,52 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 
 	public void setMaxOverflow(final double maxOverflow) {
 		this.maxOverflow = maxOverflow;
+	}
+	
+	public float getHorizontalPadding() {
+		return this.horizontalPadding;
+	}
+
+	public void setHorizontalPadding(final float horizontalPadding) {
+		this.horizontalPadding = horizontalPadding;
+	}
+
+	public float getVerticalPaddingTop() {
+		return this.verticalPaddingTop;
+	}
+
+	public void setVerticalPaddingTop(final float verticalPaddingTop) {
+		this.verticalPaddingTop = verticalPaddingTop;
+	}
+
+	public float getVerticalPaddingBottom() {
+		return this.verticalPaddingBottom;
+	}
+
+	public void setVerticalPaddingBottom(final float verticalPaddingBottom) {
+		this.verticalPaddingBottom = verticalPaddingBottom;
+	}
+	
+	public float getTiltedR() {
+		return this.tiltedR;
+	}
+	
+	public void setTiltedR(float tiltedR) {
+		this.tiltedR = tiltedR;
+	}
+	
+	public float getHorizontalR() {
+		return this.horizontalR;
+	}
+	
+	public void setHorizontalR(float horizontalR) {
+		this.horizontalR = horizontalR;
+	}
+
+	public float getR(WorkPieceOrientation orientation) {
+		if(orientation.equals(WorkPieceOrientation.TILTED))
+			return getTiltedR();
+		else
+			return getHorizontalR();
 	}
 }

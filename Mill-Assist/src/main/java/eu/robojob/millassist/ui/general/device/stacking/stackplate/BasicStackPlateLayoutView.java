@@ -145,6 +145,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					configureWorkPieces();
 				}
 				Scale s = new Scale(590 / group.getBoundsInParent().getWidth(), 300 / group.getBoundsInParent().getHeight());
+				logger.info("SCALE: " + s);
 				group.getTransforms().add(s);
 				
 				root = new Pane();
@@ -156,6 +157,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 				group.setLayoutY(0 - group.getBoundsInParent().getMinY());
 						
 				getContents().add(root, 0, 0);
+				
 			}
 		});
 	}
@@ -297,7 +299,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
 					Rectangle rp2 = null;
-					if (basicStackPlate.getLayout().getHorizontalR() >= -0.01) {
+					if (basicStackPlate.getBasicLayout().getHorizontalR() >= -0.01) {
 						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
 								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
@@ -328,7 +330,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
 					Rectangle rp2 = null;
-					if (basicStackPlate.getLayout().getR(basicStackPlate.getLayout().getOrientation()) >= -0.01) {
+					if (basicStackPlate.getR(basicStackPlate.getLayout().getOrientation()) >= -0.01) {
 						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
 								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
@@ -361,7 +363,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
 							stackingPosition.getWorkPiece().getDimensions().getWidth(), stackingPosition.getWorkPiece().getDimensions().getLength());
 					Rectangle rp2 = null;
-					if (basicStackPlate.getLayout().getHorizontalR() >= -0.01) {
+					if (basicStackPlate.getBasicLayout().getHorizontalR() >= -0.01) {
 						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2 + 5, 
 								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
 								5, stackingPosition.getWorkPiece().getDimensions().getLength());
@@ -401,8 +403,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	 * @return
 	 * 		Group including Gridplate + holes (both represented by rectangles)
 	 */
-	private Group getCompleteGridPlateLayoutView(GridPlateLayout layout) {
-		Group gridGroup = new Group();
+	private Shape getCompleteGridPlateLayoutView(GridPlateLayout layout) {
 		Shape gridPlate = getGridPlateView(layout);
 		for (Rectangle r : configureHoles(layout)) {
 			gridPlate = Shape.subtract(gridPlate, r);
@@ -410,9 +411,8 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 		gridPlate.getStyleClass().add(CSS_CLASS_GRIDPLATE);
 		//gridGroup.getChildren().add(getGridPlateView(layout));
 		//gridGroup.getChildren().addAll(configureHoles(layout));
-		gridGroup.getChildren().add(gridPlate);
-		gridGroup.relocate(layout.getHorizontalPadding(), (basicStackPlate.getBasicLayout().getPlateWidth() - (layout.getVerticalPaddingBottom() + layout.getWidth())));
-		return gridGroup;
+		gridPlate.relocate(layout.getPosX(), (basicStackPlate.getBasicLayout().getPlateWidth() - (layout.getPosY() + layout.getWidth())));
+		return gridPlate;
 	}
 	
 	private static Rectangle getGridPlateView(GridPlateLayout layout) {

@@ -68,17 +68,16 @@ public class GridPlateConfigurePresenter extends AbstractFormPresenter<GridPlate
 	
 	public void saveData(final String name, final float posFirstX, final float posFirstY, final float offsetX, final float offsetY,
 			final int nbRows, final int nbColumns, final float height, final float holeLength, final float holeWidth,
-			final float length, final float width, final float horizontalPadding, final float verticalPaddingTop, 
-			final float verticalPaddingBottom, final float horizontalR, final float tiltedR, final float smoothToX,
+			final float length, final float width, final float posX, final float posY, final float smoothToX,
 			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ) {
 		if(selectedGridPlate == null) {
 			deviceManager.saveGridPlate(name, posFirstX, posFirstY, offsetX, offsetY, nbRows, nbColumns, height, 
-					holeLength, holeWidth, length, width, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, 
-					horizontalR, tiltedR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, selectedOrientation);
+					holeLength, holeWidth, length, width, posX, posY, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, 
+					smoothFromZ, selectedOrientation);
 		} else {
 			deviceManager.updateGridPlate(selectedGridPlate, name, posFirstX, posFirstY, offsetX, offsetY, nbRows, nbColumns, height, 
-					holeLength, holeWidth, length, width, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, 
-					horizontalR, tiltedR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, selectedOrientation);
+					holeLength, holeWidth, length, width, posX, posY, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, 
+					smoothFromZ, selectedOrientation);
 		}
 	}
 

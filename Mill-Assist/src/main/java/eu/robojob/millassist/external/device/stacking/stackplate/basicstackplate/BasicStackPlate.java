@@ -117,4 +117,11 @@ public class BasicStackPlate extends AbstractStackPlate {
 		getLayout().placeRawWorkPieces(getRawWorkPiece(), amount, reset);
 		notifyLayoutChanged();
 	}
+	
+	public float getR(WorkPieceOrientation orientation) {
+		if(orientation.equals(WorkPieceOrientation.TILTED))
+			return basicLayout.getTiltedR();
+		else
+			return basicLayout.getHorizontalR();
+	}
 }
