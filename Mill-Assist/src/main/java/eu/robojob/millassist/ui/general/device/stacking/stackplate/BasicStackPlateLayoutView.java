@@ -15,6 +15,7 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
@@ -402,14 +403,23 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	 */
 	private Group getCompleteGridPlateLayoutView(GridPlateLayout layout) {
 		Group gridGroup = new Group();
-		gridGroup.getChildren().add(getGridPlateView(layout));
-		gridGroup.getChildren().addAll(configureHoles(layout));
-		gridGroup.relocate(layout.getHorizontalPadding(), layout.getVerticalPaddingTop());
+		Shape gridPlate = getGridPlateView(layout);
+		for (Rectangle r : configureHoles(layout)) {
+			gridPlate = Shape.subtract(gridPlate, r);
+		}
+		gridPlate.getStyleClass().add(CSS_CLASS_GRIDPLATE);
+		//gridGroup.getChildren().add(getGridPlateView(layout));
+		//gridGroup.getChildren().addAll(configureHoles(layout));
+		gridGroup.getChildren().add(gridPlate);
+		gridGroup.relocate(layout.getHorizontalPadding(), (basicStackPlate.getBasicLayout().getPlateWidth() - (layout.getVerticalPaddingBottom() + layout.getWidth())));
 		return gridGroup;
 	}
 	
 	private static Rectangle getGridPlateView(GridPlateLayout layout) {
 		Rectangle r = new Rectangle(0, 0, layout.getLength(), layout.getWidth());
+		r.setArcHeight(10);
+		r.setArcWidth(10);
+		r.setStrokeWidth(0);
 		r.getStyleClass().add(CSS_CLASS_GRIDPLATE);
 		return r;
 	}
@@ -423,14 +433,11 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 				xPos = layout.getHorizontalOffsetNxtPiece()*hIndex + layout.getFirstHolePosX();
 				yPos = layout.getVerticalOffsetNxtPiece()*vIndex + layout.getFirstHolePosY();
 				Rectangle hole = new Rectangle(xPos, layout.getWidth()-yPos - layout.getHoleWidth(), layout.getHoleLength(), layout.getHoleWidth());
+				hole.setStrokeWidth(0);
 				if(layout.getHoleOrientation() == HoleOrientation.TILTED) {
 					Rotate rotate = new Rotate(-45, xPos, layout.getWidth()-yPos);
 					hole.getTransforms().add(rotate);
 				}
-//				} else if(layout.getHoleOrientation() == HoleOrientation.DEG90) {
-//					Rotate rotate = new Rotate(-90, xPos, layout.getWidth()-yPos - layout.getHoleWidth());
-//					hole.getTransforms().add(rotate);
-//				}
 				hole.getStyleClass().add(CSS_CLASS_STACKPLATE);
 				holeList.add(hole);
 			}

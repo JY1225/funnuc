@@ -163,7 +163,8 @@
 }
 
 .gridplate {
-	-fx-fill: #484848;
+	-fx-fill: #ebeeef;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 7, 0, 0, 4);
 }
 
 .stacker-text {

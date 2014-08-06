@@ -266,13 +266,14 @@ public class DeviceManager {
 		GridPlateLayout gridPlate = new GridPlateLayout(name, length, width, height, posFirstX, posFirstY, holeLength, holeWidth, offsetX, offsetY, nbColumns, nbRows,
 				horizontalPadding, verticalPaddingTop, verticalPaddingBottom, tiltedR, horizontalR, orientation);
 		try {
-			if(gridPlatesByName.get(name) != null) {
+			if(!gridPlatesByName.containsKey(name)) {
 				deviceMapper.saveGridPlate(gridPlate, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ);
 				gridPlatesByName.put(name, gridPlate);
 				gridPlatesById.put(gridPlate.getId(), gridPlate);
 				refresh();	
 			} else {
-				//TODO - throw error: plate with this name already exists
+				logger.error("Plate name already exists");
+				throw new IllegalArgumentException("Plate name already exists: " + name);
 			}
 		} catch (SQLException e) {
 			logger.error(e);
