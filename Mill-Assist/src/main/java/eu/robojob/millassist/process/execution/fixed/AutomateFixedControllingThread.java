@@ -455,6 +455,12 @@ public class AutomateFixedControllingThread implements Runnable {
 	public void stopRunning() {
 		logger.info("Called stop running");
 		running = false;
+		if (processFlowExecutor1Future != null) {
+			processFlowExecutor1Future.cancel(true);
+		}
+		if (processFlowExecutor2Future != null) {
+			processFlowExecutor2Future.cancel(true);
+		}
 		for (AbstractRobot robot : processFlow.getRobots()) {
 			robot.interruptCurrentAction();
 		}

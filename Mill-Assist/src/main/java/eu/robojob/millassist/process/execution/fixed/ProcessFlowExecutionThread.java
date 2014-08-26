@@ -107,7 +107,8 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					if (currentStep instanceof AbstractTransportStep) {
 						checkStatus();
 						((AbstractTransportStep) currentStep).finalizeStep(this);
-					} 
+					}
+					checkStatus();
 				}
 				
 				if (processFlow.getCurrentIndex(workpieceId) == processFlow.getProcessSteps().size() - 1) {

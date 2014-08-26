@@ -32,7 +32,7 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
 	private static final String CSS_MESSAGE = "dialog-msg";
 	
 	private static final double WIDTH = 420;
-	private static final double HEIGHT = 190;
+	private static final double HEIGHT = 170;
 	
 	public ConfirmationDialogView(String title, String message) {
 		super(title);

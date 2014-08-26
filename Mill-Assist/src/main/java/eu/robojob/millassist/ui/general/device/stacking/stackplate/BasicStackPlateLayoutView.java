@@ -136,7 +136,6 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 				
 				if (basicStackPlate.getLayout().getStackingPositions().size() > 0) {
 					if(basicStackPlate.hasGridPlate()) {
-						logger.debug("Creating layout for gridplate");
 						GridPlateLayout layout = (GridPlateLayout) basicStackPlate.getLayout();
 						group.getChildren().add(getCompleteGridPlateLayoutView(layout));
 					} else {
@@ -145,7 +144,6 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					configureWorkPieces();
 				}
 				Scale s = new Scale(590 / group.getBoundsInParent().getWidth(), 300 / group.getBoundsInParent().getHeight());
-				logger.info("SCALE: " + s);
 				group.getTransforms().add(s);
 				
 				root = new Pane();
@@ -291,7 +289,6 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	//FIXME - this can be made a lot simpler because every workpiece can be represented by the same rectangle which is in fact rotated (0,-90,-45) degrees
 	private void configureWorkPieces() {
-		logger.debug("Adding workpieces to the stackplate");
 		for (StackPlateStackingPosition stackingPosition : basicStackPlate.getLayout().getStackingPositions()) {
 			if (stackingPosition.getWorkPiece() != null) {
 				if (stackingPosition.getOrientation() == WorkPieceOrientation.HORIZONTAL) {
