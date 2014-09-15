@@ -3,9 +3,6 @@ package eu.robojob.millassist.ui.general.device.stacking.stackplate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
@@ -72,9 +69,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	private static final String CSS_CLASS_FINISHED = "finished";
 	private static final String CSS_CLASS_FINISHED_MARK = "workpiece-finished-mark";
 	private static final String CSS_CLASS_AMOUNT = "amount-text";
-	
-	private static Logger logger = LogManager.getLogger(BasicStackPlateLayoutView.class.getName());
-		
+			
 	public BasicStackPlateLayoutView() {
 		super();
 		this.holes = new ArrayList<Circle>();
