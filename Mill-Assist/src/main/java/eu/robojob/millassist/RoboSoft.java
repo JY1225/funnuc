@@ -86,7 +86,7 @@ public class RoboSoft extends Application {
 						Translator.setLanguageNL();
 					}
 					GeneralMapper generalMapper = new GeneralMapper();
-					new UpdateMapper();
+					//new UpdateMapper();
 					ConnectionMapper connectionMapper = new ConnectionMapper();
 					DeviceMapper deviceMapper = new DeviceMapper(generalMapper, connectionMapper);
 					DeviceManager deviceManager = new DeviceManager(deviceMapper);
