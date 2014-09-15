@@ -75,7 +75,7 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 	//FIXME - it does not necessarily mean that we have 2 workpiece in the flow when we are not FINISHED
 	public int getMaxAddAmount() {
 		int amount = stackPlate.getLayout().getMaxPiecesPossibleAmount() - getMaxFinishedToReplaceAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
-		if(!processFlow.getMode().equals(ProcessFlow.Mode.FINISHED) ) {
+		if(processFlow.getMode().equals(ProcessFlow.Mode.AUTO) ) {
 			//We assume 2 pieces are being processed
 			amount -= 2;
 		}
