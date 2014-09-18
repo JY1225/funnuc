@@ -1,5 +1,6 @@
 package eu.robojob.millassist.ui.configure;
 
+import eu.robojob.millassist.ui.RoboSoftAppFactory;
 import eu.robojob.millassist.ui.general.AbstractMenuView;
 import eu.robojob.millassist.ui.general.ContentPresenter;
 
@@ -26,5 +27,9 @@ public abstract class AbstractMenuPresenter<T extends AbstractMenuView<?>> exten
 	
 	public void refreshClearCache() {
 		parent.refreshClearCache();
+	}
+	
+	public boolean askConfirmation(final String title, final String message) {
+		return RoboSoftAppFactory.getMainPresenter().askConfirmation(title, message);
 	}
 }

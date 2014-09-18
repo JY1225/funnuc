@@ -10,6 +10,8 @@ import eu.robojob.millassist.positioning.UserFrame;
 public class WorkArea {
 	
 	private int id;
+	// Default - WA 0
+	private int workAreaNr = 0;
 	private String name;
 	private Zone zone;
 	private UserFrame userFrame;
@@ -21,6 +23,11 @@ public class WorkArea {
 		this.userFrame = userFrame;
 		this.activeClamping = activeClamping;
 		this.clampings = clampings;
+		if(userFrame.getNumber() == 3) {
+			this.workAreaNr = 1;
+		} else if (userFrame.getNumber() == 4) {
+			this.workAreaNr = 2;
+		}
 	}
 	
 	public WorkArea(final String name, final UserFrame userFrame, final Set<Clamping> clampings) {
@@ -118,5 +125,9 @@ public class WorkArea {
 			}
 		}
 		return null;
+	}
+	
+	public int getWorkAreaNr() {
+		return this.workAreaNr;
 	}
 }

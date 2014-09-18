@@ -6,11 +6,11 @@ import java.util.Set;
 
 import javafx.application.Platform;
 import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
-import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.positioning.UserFrame;
 import eu.robojob.millassist.ui.admin.device.DeviceMenuPresenter;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -19,17 +19,18 @@ import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachineConfigureView, DeviceMenuPresenter> implements CNCMachineListener {
 
 	private DeviceManager deviceManager;
-	private CNCMillingMachine cncMachine;
+	private AbstractCNCMachine cncMachine;
 	
 	public CNCMachineConfigurePresenter(final CNCMachineConfigureView view, final DeviceManager deviceManager) {
 		super(view);
 		this.deviceManager = deviceManager;
-		this.cncMachine = (CNCMillingMachine) deviceManager.getCNCMachines().iterator().next();
+		this.cncMachine = (AbstractCNCMachine) deviceManager.getCNCMachines().iterator().next();
 		getView().build();
 		getView().setCNCMachine(cncMachine);
 		cncMachine.addListener(this);
 		getView().refresh();
 		setWayOfOperating(cncMachine.getWayOfOperating());
+		view.setNewDevInt(cncMachine.isUsingNewDevInt());
 	}
 
 	@Override
@@ -70,8 +71,9 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		WayOfOperating wayOfOperating = getView().getWayOfOperating();
 		List<String> robotServiceInputNames = getView().getRobotServiceInputNames();
 		List<String> robotServiceOutputNames = getView().getRobotServiceOutputNames();
+		boolean newDevInt = getView().getNewDevInt();
 		deviceManager.updateCNCMachineData(cncMachine, name, wayOfOperating, ip, port, 
-				clampingWidthR, robotServiceInputNames, robotServiceOutputNames, 
+				clampingWidthR, newDevInt, robotServiceInputNames, robotServiceOutputNames, 
 					getView().getMCodeNames(), getView().getMCodeRobotServiceInputs(), 
 						getView().getMCodeRobotServiceOutputs());
 		getView().refresh();

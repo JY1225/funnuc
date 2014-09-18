@@ -7,21 +7,23 @@ import java.util.Set;
 
 public class Zone {
 	
-	private int id; 
+	private int id;
+	private int zoneNr;
 	private String name;
 	private Set<WorkArea> workAreas;
 	private AbstractDevice device;
 
-	public Zone(final String name, final Set<WorkArea> workAreas) {
+	public Zone(final String name, final Set<WorkArea> workAreas, final int zoneNr) {
 		this.name = name;
 		this.workAreas =  new HashSet<WorkArea>();
 		for (WorkArea workArea : workAreas) {
 			addWorkArea(workArea);
 		}
+		this.zoneNr = zoneNr;
 	}
 	
 	public Zone(final String name) {
-		this(name, new HashSet<WorkArea>());
+		this(name, new HashSet<WorkArea>(), 0);
 	}
 	
 	public int getId() {
@@ -84,5 +86,9 @@ public class Zone {
 
 	public AbstractDevice getDevice() {
 		return device;
+	}
+	
+	public int getZoneNr() {
+		return this.zoneNr;
 	}
 }

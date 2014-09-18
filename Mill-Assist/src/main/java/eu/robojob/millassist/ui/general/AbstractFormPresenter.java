@@ -1,5 +1,6 @@
 	package eu.robojob.millassist.ui.general;
 
+import eu.robojob.millassist.ui.RoboSoftAppFactory;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 
 public abstract class AbstractFormPresenter<T extends AbstractFormView<?>, S extends AbstractMenuPresenter<?>> {
@@ -31,5 +32,9 @@ public abstract class AbstractFormPresenter<T extends AbstractFormView<?>, S ext
 	public abstract void setPresenter();
 	
 	public abstract boolean isConfigured();
+	
+	public boolean askConfirmation(final String title, final String message) {
+		return RoboSoftAppFactory.getMainPresenter().askConfirmation(title, message);
+	}
 	
 }

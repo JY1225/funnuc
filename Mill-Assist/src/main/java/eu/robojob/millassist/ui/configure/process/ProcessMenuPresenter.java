@@ -63,7 +63,7 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 			ThreadManager.submit(new Thread() {
 				@Override
 				public void run() {
-					if (getParent().getParent().askConfirmation(Translator.getTranslation(CREATE_NEW_UNSAVED_CHANGES_TITLE), Translator.getTranslation(CREATE_NEW_UNSAVED_CHANGES))) {
+					if (askConfirmation(Translator.getTranslation(CREATE_NEW_UNSAVED_CHANGES_TITLE), Translator.getTranslation(CREATE_NEW_UNSAVED_CHANGES))) {
 						createNewProcess();
 					}
 				}
@@ -72,7 +72,7 @@ public class ProcessMenuPresenter extends AbstractMenuPresenter<ProcessMenuView>
 			ThreadManager.submit(new Thread() {
 				@Override
 				public void run() {
-					if (getParent().getParent().askConfirmation(Translator.getTranslation(CREATE_NEW_TITLE), Translator.getTranslation(CREATE_NEW))) {
+					if (askConfirmation(Translator.getTranslation(CREATE_NEW_TITLE), Translator.getTranslation(CREATE_NEW))) {
 						createNewProcess();
 					}
 				}

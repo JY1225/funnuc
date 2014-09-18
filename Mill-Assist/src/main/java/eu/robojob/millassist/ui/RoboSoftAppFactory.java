@@ -85,58 +85,58 @@ import eu.robojob.millassist.ui.teach.flow.TeachProcessFlowView;
 
 public class RoboSoftAppFactory {
 
-	private MainPresenter mainPresenter;
-	private MenuBarPresenter menuBarPresenter;
-	private ConfigurePresenter configurePresenter;
-	private ProcessConfigurePresenter processConfigurationPresenter;
-	private TeachPresenter teachPresenter;
-	private AutomatePresenter automatePresenter;
-	private ConfigureProcessFlowPresenter configureProcessFlowPresenter;
-	private TeachProcessFlowPresenter teachProcessFlowPresenter;
-	private AutomateProcessFlowPresenter automateProcessFlowPresenter;
-	private AlarmsPopUpPresenter alarmsPopUpPresenter;
-	private RobotPopUpPresenter robotPopUpPresenter;
-	private ProcessMenuPresenter processConfigurationMenuPresenter;
-	private ProcessOpenPresenter processOpenPresenter;
-	private ProcessSavePresenter processSavePresenter;
-	private AdminPresenter adminPresenter;
-	private MainMenuPresenter mainMenuPresenter;
-	private GeneralAdminPresenter generalAdminPresenter;
-	private RobotAdminPresenter robotAdminPresenter;
-	private RobotConfigurePresenter robotConfigurePresenter;
-	private RobotGripperPresenter robotGripperPresenter;
-	private DeviceAdminPresenter deviceAdminPresenter;
-	private UserFramesConfigurePresenter userFramesConfigurePresenter;
-	private BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
-	private CNCMachineConfigurePresenter cncMachineConfigurePresenter;
-	private CNCMachineClampingsPresenter cncMachineClampingsPresenter;
-	private PrageDeviceConfigurePresenter prageDeviceConfigurePresenter;
-	private OutputBinConfigurePresenter outputBinConfigurePresenter;
-	private GridPlateConfigurePresenter gridPlateConfigurePresenter;
-	private eu.robojob.millassist.ui.automate.device.DeviceMenuFactory automateDeviceMenuFactory;
-	private eu.robojob.millassist.ui.teach.transport.TransportMenuFactory teachTransportMenuFactory;
+	private static MainPresenter mainPresenter;
+	private static MenuBarPresenter menuBarPresenter;
+	private static ConfigurePresenter configurePresenter;
+	private static ProcessConfigurePresenter processConfigurationPresenter;
+	private static TeachPresenter teachPresenter;
+	private static AutomatePresenter automatePresenter;
+	private static ConfigureProcessFlowPresenter configureProcessFlowPresenter;
+	private static TeachProcessFlowPresenter teachProcessFlowPresenter;
+	private static AutomateProcessFlowPresenter automateProcessFlowPresenter;
+	private static AlarmsPopUpPresenter alarmsPopUpPresenter;
+	private static RobotPopUpPresenter robotPopUpPresenter;
+	private static ProcessMenuPresenter processConfigurationMenuPresenter;
+	private static ProcessOpenPresenter processOpenPresenter;
+	private static ProcessSavePresenter processSavePresenter;
+	private static AdminPresenter adminPresenter;
+	private static MainMenuPresenter mainMenuPresenter;
+	private static GeneralAdminPresenter generalAdminPresenter;
+	private static RobotAdminPresenter robotAdminPresenter;
+	private static RobotConfigurePresenter robotConfigurePresenter;
+	private static RobotGripperPresenter robotGripperPresenter;
+	private static DeviceAdminPresenter deviceAdminPresenter;
+	private static UserFramesConfigurePresenter userFramesConfigurePresenter;
+	private static BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
+	private static CNCMachineConfigurePresenter cncMachineConfigurePresenter;
+	private static CNCMachineClampingsPresenter cncMachineClampingsPresenter;
+	private static PrageDeviceConfigurePresenter prageDeviceConfigurePresenter;
+	private static OutputBinConfigurePresenter outputBinConfigurePresenter;
+	private static GridPlateConfigurePresenter gridPlateConfigurePresenter;
+	private static eu.robojob.millassist.ui.automate.device.DeviceMenuFactory automateDeviceMenuFactory;
+	private static eu.robojob.millassist.ui.teach.transport.TransportMenuFactory teachTransportMenuFactory;
 	
-	private ProcessFlow processFlow;
-	private ProcessFlowTimer processFlowTimer;
+	private static ProcessFlow processFlow;
+	private static ProcessFlowTimer processFlowTimer;
 
-	private ProcessFlowManager processFlowManager;
-	private DeviceManager deviceManager;
-	private RobotManager robotManager;
+	private static ProcessFlowManager processFlowManager;
+	private static DeviceManager deviceManager;
+	private static RobotManager robotManager;
 	
-	private DeviceMenuFactory deviceMenuFactory;
-	private TransportMenuFactory transportMenuFactory;
+	private static DeviceMenuFactory deviceMenuFactory;
+	private static TransportMenuFactory transportMenuFactory;
 	
-	private KeyboardType keyboardType;
+	private static KeyboardType keyboardType;
 		
 	public RoboSoftAppFactory(final DeviceManager deviceManager, final RobotManager robotManager, 
 			final ProcessFlowManager processFlowManager, final KeyboardType keyboardType) {
-		this.deviceManager = deviceManager;
-		this.robotManager = robotManager;
-		this.processFlowManager = processFlowManager;
-		this.keyboardType = keyboardType;
+		RoboSoftAppFactory.deviceManager = deviceManager;
+		RoboSoftAppFactory.robotManager = robotManager;
+		RoboSoftAppFactory.processFlowManager = processFlowManager;
+		RoboSoftAppFactory.keyboardType = keyboardType;
 	}
 	
-	public MainPresenter getMainPresenter() {
+	public static MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
 			MainView mainView = new MainView();
 			mainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter(), getAutomatePresenter(), 
@@ -146,7 +146,7 @@ public class RoboSoftAppFactory {
 		return mainPresenter;
 	}
 	
-	public AlarmsPopUpPresenter getAlarmsPopUpPresenter() {
+	public static AlarmsPopUpPresenter getAlarmsPopUpPresenter() {
 		if (alarmsPopUpPresenter == null) {
 			AlarmsPopUpView view = new AlarmsPopUpView();
 			alarmsPopUpPresenter = new AlarmsPopUpPresenter(view, getProcessFlow(), deviceManager, robotManager);
@@ -154,7 +154,7 @@ public class RoboSoftAppFactory {
 		return alarmsPopUpPresenter;
 	}
 	
-	public MenuBarPresenter getMenuBarPresenter() {
+	public static MenuBarPresenter getMenuBarPresenter() {
 		if (menuBarPresenter == null) {
 			MenuBarView processMenuBarView = new MenuBarView();
 			menuBarPresenter = new MenuBarPresenter(processMenuBarView);
@@ -162,14 +162,14 @@ public class RoboSoftAppFactory {
 		return menuBarPresenter;
 	}
 	
-	public ProcessFlowTimer getProcessFlowTimer() {
+	public static ProcessFlowTimer getProcessFlowTimer() {
 		if (processFlowTimer == null) {
 			processFlowTimer = new ProcessFlowTimer(getProcessFlow());
 		}
 		return processFlowTimer;
 	}
 	
-	public ConfigurePresenter getConfigurePresenter() {
+	public static ConfigurePresenter getConfigurePresenter() {
 		if (configurePresenter == null) {
 			ConfigureView processConfigureView = new ConfigureView();
 			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNegativeNumericKeyboardPresenter(), getConfigureProcessFlowPresenter(), 
@@ -178,7 +178,7 @@ public class RoboSoftAppFactory {
 		return configurePresenter;
 	}
 	
-	public TeachPresenter getTeachPresenter() {
+	public static TeachPresenter getTeachPresenter() {
 		if (teachPresenter == null) {
 			MainContentView view = new MainContentView();
 			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
@@ -188,39 +188,39 @@ public class RoboSoftAppFactory {
 		return teachPresenter;
 	}
 	
-	private eu.robojob.millassist.ui.teach.transport.TransportMenuFactory getTeachTransportMenuFactory() {
+	private static eu.robojob.millassist.ui.teach.transport.TransportMenuFactory getTeachTransportMenuFactory() {
 		if (teachTransportMenuFactory == null) {
 			teachTransportMenuFactory = new eu.robojob.millassist.ui.teach.transport.TransportMenuFactory(getProcessFlow(), new ProcessFlowAdapter(getProcessFlow()));
 		}
 		return teachTransportMenuFactory;
 	}
 	
-	private GeneralInfoPresenter getGeneralInfoPresenter() {
+	private static GeneralInfoPresenter getGeneralInfoPresenter() {
 		GeneralInfoView generalInfoView = new GeneralInfoView(getProcessFlow());
 		GeneralInfoPresenter generalInfoPresenter = new GeneralInfoPresenter(generalInfoView);
 		return generalInfoPresenter;
 	}
 	
-	private TeachStatusPresenter getTeachStatusPresenter() {
+	private static TeachStatusPresenter getTeachStatusPresenter() {
 		TeachStatusView teachStatusView = new TeachStatusView();
 		TeachStatusPresenter teachStatusPresenter = new TeachStatusPresenter(teachStatusView, getStatusPresenter());
 		return teachStatusPresenter;
 	}
 	
-	private StatusPresenter getStatusPresenter() {
+	private static StatusPresenter getStatusPresenter() {
 		StatusView statusView = new StatusView();
 		StatusPresenter statusPresenter = new StatusPresenter(statusView);
 		return statusPresenter;
 	}
 	
-	private AutomateStatusPresenter getAutomateStatusPresenter() {
+	private static AutomateStatusPresenter getAutomateStatusPresenter() {
 		AutomateStatusView automateStatusView = new AutomateStatusView();
 		TimingView timingView = new TimingView();
 		AutomateStatusPresenter automateStatusPresenter = new AutomateStatusPresenter(automateStatusView, getStatusPresenter(), timingView);
 		return automateStatusPresenter;
 	}
 	
-	public AutomatePresenter getAutomatePresenter() {
+	public static AutomatePresenter getAutomatePresenter() {
 		if (automatePresenter == null) {
 			MainContentView view = new MainContentView();
 			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
@@ -230,14 +230,14 @@ public class RoboSoftAppFactory {
 		return automatePresenter;
 	}
 	
-	public eu.robojob.millassist.ui.automate.device.DeviceMenuFactory getAutomateDeviceMenuFactory() {
+	public static eu.robojob.millassist.ui.automate.device.DeviceMenuFactory getAutomateDeviceMenuFactory() {
 		if (automateDeviceMenuFactory == null) {
 			automateDeviceMenuFactory = new eu.robojob.millassist.ui.automate.device.DeviceMenuFactory(getProcessFlow());
 		}
 		return automateDeviceMenuFactory; 
 	}
 	
-	public RobotPopUpPresenter getRobotPopUpPresenter() {
+	public static RobotPopUpPresenter getRobotPopUpPresenter() {
 		if (robotPopUpPresenter == null) {
 			RobotPopUpView view = new RobotPopUpView();
 			// TODO review: now fixed robot
@@ -246,25 +246,25 @@ public class RoboSoftAppFactory {
 		return robotPopUpPresenter;
 	}
 	
-	public FullKeyboardPresenter getKeyboardPresenter() {
+	public static FullKeyboardPresenter getKeyboardPresenter() {
 		FullKeyboardView keyboardView = new FullKeyboardView(keyboardType);
 		FullKeyboardPresenter keyboardPresenter = new FullKeyboardPresenter(keyboardView);
 		return keyboardPresenter;
 	}
 	
-	public NumericKeyboardPresenter getNumericKeyboardPresenter() {
+	public static NumericKeyboardPresenter getNumericKeyboardPresenter() {
 		NumericKeyboardView numericKeyboardView = new NumericKeyboardView();
 		NumericKeyboardPresenter numericKeyboardPresenter = new NumericKeyboardPresenter(numericKeyboardView);
 		return numericKeyboardPresenter;
 	}
 	
-	public NumericKeyboardPresenter getNegativeNumericKeyboardPresenter() {
+	public static NumericKeyboardPresenter getNegativeNumericKeyboardPresenter() {
 		NegativeNumericKeyboardView numericKeyboardView = new NegativeNumericKeyboardView();
 		NumericKeyboardPresenter numericKeyboardPresenter = new NumericKeyboardPresenter(numericKeyboardView);
 		return numericKeyboardPresenter;
 	}
 	
-	public ProcessConfigurePresenter getProcessConfigurePresenter() {
+	public static ProcessConfigurePresenter getProcessConfigurePresenter() {
 		if (processConfigurationPresenter == null) {
 			ProcessConfigureView processConfigurationView = new ProcessConfigureView();
 			processConfigurationPresenter = new ProcessConfigurePresenter(processConfigurationView, getProcessFlow(), deviceManager);
@@ -272,7 +272,7 @@ public class RoboSoftAppFactory {
 		return processConfigurationPresenter;
 	}
 	
-	public ConfigureProcessFlowPresenter getConfigureProcessFlowPresenter() {
+	public static ConfigureProcessFlowPresenter getConfigureProcessFlowPresenter() {
 		if (configureProcessFlowPresenter == null) {
 			ProcessFlowView processFlowView = new ProcessFlowView(1);
 			configureProcessFlowPresenter = new ConfigureProcessFlowPresenter(processFlowView);
@@ -280,7 +280,7 @@ public class RoboSoftAppFactory {
 		return configureProcessFlowPresenter;
 	}
 	
-	public TeachProcessFlowPresenter getTeachProcessFlowPresenter() {
+	public static TeachProcessFlowPresenter getTeachProcessFlowPresenter() {
 		if (teachProcessFlowPresenter == null) {
 			TeachProcessFlowView processFlowView = new TeachProcessFlowView(1);
 			teachProcessFlowPresenter = new TeachProcessFlowPresenter(processFlowView);
@@ -288,7 +288,7 @@ public class RoboSoftAppFactory {
 		return teachProcessFlowPresenter;
 	}
 	
-	public AutomateProcessFlowPresenter getAutomateProcessFlowPresenter() {
+	public static AutomateProcessFlowPresenter getAutomateProcessFlowPresenter() {
 		if (automateProcessFlowPresenter == null) {
 			AutomateProcessFlowView processFlowView = new AutomateProcessFlowView(2);
 			if (deviceManager.getCNCMachines().iterator().next().getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
@@ -299,7 +299,7 @@ public class RoboSoftAppFactory {
 		return automateProcessFlowPresenter;
 	}
 	
-	public ProcessMenuPresenter getProcessConfigurationMenuPresenter() {
+	public static ProcessMenuPresenter getProcessConfigurationMenuPresenter() {
 		if (processConfigurationMenuPresenter == null) {
 			ProcessMenuView processConfigurationMenuView = new ProcessMenuView();
 			processConfigurationMenuPresenter = new ProcessMenuPresenter(processConfigurationMenuView, getProcessConfigurePresenter(), getProcessSavePresenter(), 
@@ -308,7 +308,7 @@ public class RoboSoftAppFactory {
 		return processConfigurationMenuPresenter;
 	}
 
-	public ProcessSavePresenter getProcessSavePresenter() {
+	public static ProcessSavePresenter getProcessSavePresenter() {
 		if (processSavePresenter == null) {
 			ProcessSaveView processSaveView = new ProcessSaveView();
 			processSavePresenter = new ProcessSavePresenter(processSaveView, processFlowManager, getProcessFlow());
@@ -316,7 +316,7 @@ public class RoboSoftAppFactory {
 		return processSavePresenter;
 	}
 	
-	public ProcessOpenPresenter getProcessOpenPresenter() {
+	public static ProcessOpenPresenter getProcessOpenPresenter() {
 		if (processOpenPresenter == null) {
 			ProcessOpenView processOpenView = new ProcessOpenView();
 			//TODO update!
@@ -325,7 +325,7 @@ public class RoboSoftAppFactory {
 		return processOpenPresenter;
 	}
 	
-	public ProcessFlow getProcessFlow() {
+	public static ProcessFlow getProcessFlow() {
 		if (processFlow == null) {
 			processFlow = processFlowManager.getLastProcessFlow();
 			if (processFlow == null) {
@@ -337,21 +337,21 @@ public class RoboSoftAppFactory {
 		return processFlow;
 	}
 	
-	private DeviceMenuFactory getDeviceMenuFactory() {
+	private static DeviceMenuFactory getDeviceMenuFactory() {
 		if (deviceMenuFactory == null) {
 			deviceMenuFactory = new DeviceMenuFactory(deviceManager);
 		}
 		return deviceMenuFactory;
 	}
 	
-	private TransportMenuFactory getTransportMenuFactory() {
+	private static TransportMenuFactory getTransportMenuFactory() {
 		if (transportMenuFactory == null) {
 			transportMenuFactory = new TransportMenuFactory(getProcessFlow());
 		}
 		return transportMenuFactory;
 	}
 	
-	private AdminPresenter getAdminPresenter() {
+	private static AdminPresenter getAdminPresenter() {
 		if (adminPresenter == null) {
 			AdminView view = new AdminView();
 			adminPresenter = new AdminPresenter(view, getMainMenuPresenter(), getKeyboardPresenter(), getNegativeNumericKeyboardPresenter());
@@ -359,7 +359,7 @@ public class RoboSoftAppFactory {
 		return adminPresenter;
 	}
 	
-	private MainMenuPresenter getMainMenuPresenter() {
+	private static MainMenuPresenter getMainMenuPresenter() {
 		if (mainMenuPresenter == null) {
 			MainMenuView view = new MainMenuView();
 			mainMenuPresenter = new MainMenuPresenter(view, getGeneralAdminPresenter(), getRobotAdminPresenter(), getDeviceAdminPresenter());
@@ -367,7 +367,7 @@ public class RoboSoftAppFactory {
 		return mainMenuPresenter;
 	}
 	
-	private GeneralAdminPresenter getGeneralAdminPresenter() {
+	private static GeneralAdminPresenter getGeneralAdminPresenter() {
 		if (generalAdminPresenter == null) {
 			GeneralAdminView view = new GeneralAdminView();
 			generalAdminPresenter = new GeneralAdminPresenter(view);
@@ -375,7 +375,7 @@ public class RoboSoftAppFactory {
 		return generalAdminPresenter;
 	}
 	
-	private DeviceAdminPresenter getDeviceAdminPresenter() {
+	private static DeviceAdminPresenter getDeviceAdminPresenter() {
 		if (deviceAdminPresenter == null) {
 			SubMenuAdminView view = new SubMenuAdminView(); 
 			DeviceMenuView menuView = new DeviceMenuView();
@@ -387,19 +387,19 @@ public class RoboSoftAppFactory {
 		return deviceAdminPresenter;
 	}
 	
-	private OutputBinConfigurePresenter getOutputBinConfigurePresenter() {
+	private static OutputBinConfigurePresenter getOutputBinConfigurePresenter() {
 		OutputBinConfigureView view = new OutputBinConfigureView();
 		outputBinConfigurePresenter = new OutputBinConfigurePresenter(view, deviceManager);
 		return outputBinConfigurePresenter;
 	}
 	
-	private GridPlateConfigurePresenter getGridPlateConfigurePresenter() {
+	private static GridPlateConfigurePresenter getGridPlateConfigurePresenter() {
 		GridPlateConfigureView view = new GridPlateConfigureView();
 		gridPlateConfigurePresenter = new GridPlateConfigurePresenter(view, deviceManager);
 		return gridPlateConfigurePresenter;
 	}
 	
-	public UserFramesConfigurePresenter getUserFramesConfigurePresenter() {
+	public static UserFramesConfigurePresenter getUserFramesConfigurePresenter() {
 		if (userFramesConfigurePresenter == null) {
 			UserFramesConfigureView view = new UserFramesConfigureView();
 			userFramesConfigurePresenter = new UserFramesConfigurePresenter(view, deviceManager);
@@ -407,7 +407,7 @@ public class RoboSoftAppFactory {
 		return userFramesConfigurePresenter;
 	}
 	
-	public BasicStackPlateConfigurePresenter getBasicStackPlateConfigurePresenter() {
+	public static BasicStackPlateConfigurePresenter getBasicStackPlateConfigurePresenter() {
 		if (basicStackPlateConfigurePresenter == null) {
 			BasicStackPlateConfigureView view = new BasicStackPlateConfigureView();
 			basicStackPlateConfigurePresenter = new BasicStackPlateConfigurePresenter(view, deviceManager);
@@ -415,7 +415,7 @@ public class RoboSoftAppFactory {
 		return basicStackPlateConfigurePresenter;
 	}
 	
-	private CNCMachineConfigurePresenter getCNCMachineConfigurePresenter() {
+	private static CNCMachineConfigurePresenter getCNCMachineConfigurePresenter() {
 		if (cncMachineConfigurePresenter == null) {
 			CNCMachineConfigureView view = new CNCMachineConfigureView();
 			cncMachineConfigurePresenter = new CNCMachineConfigurePresenter(view, deviceManager);
@@ -423,7 +423,7 @@ public class RoboSoftAppFactory {
 		return cncMachineConfigurePresenter;
 	}
 	
-	private CNCMachineClampingsPresenter getCNCMachineClampingsPresenter() {
+	private static CNCMachineClampingsPresenter getCNCMachineClampingsPresenter() {
 		if (cncMachineClampingsPresenter == null) {
 			CNCMachineClampingsView view = new CNCMachineClampingsView();
 			cncMachineClampingsPresenter = new CNCMachineClampingsPresenter(view, deviceManager);
@@ -431,7 +431,7 @@ public class RoboSoftAppFactory {
 		return cncMachineClampingsPresenter;
 	}
 	
-	private PrageDeviceConfigurePresenter getPrageDeviceConfigurePresenter() {
+	private static PrageDeviceConfigurePresenter getPrageDeviceConfigurePresenter() {
 		if (prageDeviceConfigurePresenter == null) {
 			PrageDeviceConfigureView view = new PrageDeviceConfigureView();
 			prageDeviceConfigurePresenter = new PrageDeviceConfigurePresenter(view, deviceManager);
@@ -439,7 +439,7 @@ public class RoboSoftAppFactory {
 		return prageDeviceConfigurePresenter;
 	}
 	
-	private RobotAdminPresenter getRobotAdminPresenter() {
+	private static RobotAdminPresenter getRobotAdminPresenter() {
 		if (robotAdminPresenter == null) {
 			SubMenuAdminView view = new SubMenuAdminView();
 			RobotMenuView menuView = new RobotMenuView();
@@ -449,7 +449,7 @@ public class RoboSoftAppFactory {
 		return robotAdminPresenter;
 	}
 	
-	private RobotConfigurePresenter getRobotConfigurePresenter() {
+	private static RobotConfigurePresenter getRobotConfigurePresenter() {
 		if (robotConfigurePresenter == null) {
 			RobotConfigureView view = new RobotConfigureView();
 			robotConfigurePresenter = new RobotConfigurePresenter(view, robotManager);
@@ -457,7 +457,7 @@ public class RoboSoftAppFactory {
 		return robotConfigurePresenter;
 	}
 	
-	private RobotGripperPresenter getRobotGripperPresenter() {
+	private static RobotGripperPresenter getRobotGripperPresenter() {
 		if (robotGripperPresenter == null) {
 			RobotGripperView view = new RobotGripperView();
 			robotGripperPresenter = new RobotGripperPresenter(view, robotManager);

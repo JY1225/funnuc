@@ -16,7 +16,6 @@ import eu.robojob.millassist.db.external.device.DeviceMapper;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
-import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
@@ -333,13 +332,13 @@ public class DeviceManager {
 		}
 	}
 	
-	public void updateCNCMachineData(final CNCMillingMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
-			final String ipAddress, final int port, final int clampingWidthR, final List<String> robotServiceInputNames, 
+	public void updateCNCMachineData(final AbstractCNCMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
+			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final List<String> robotServiceInputNames, 
 					final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) {
 		try {
 			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port, 
-					clampingWidthR, robotServiceInputNames, robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs,
+					clampingWidthR, newDevInt, robotServiceInputNames, robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs,
 						mCodeRobotServiceOutputs);
 			refresh();
 		} catch (SQLException e) {

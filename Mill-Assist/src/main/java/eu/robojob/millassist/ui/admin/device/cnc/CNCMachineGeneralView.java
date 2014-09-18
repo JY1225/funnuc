@@ -19,7 +19,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
-import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -38,15 +37,18 @@ public class CNCMachineGeneralView extends GridPane {
 	private Label lblStatus;
 	private Label lblStatusVal;
 	private Label lblWayOfOperating;
+	private Label lblDevInterface;
 	private RadioButton rbbWayOfOperatingStartStop;
 	private RadioButton rbbWayOfOperatingMCodes;
 	private RadioButton rbbWayOfOperatingMCodesDualLoad;
-	private ToggleGroup tgWayOfOperating;
+	private RadioButton rbbOldDevInt, rbbNewDevInt;
+	private ToggleGroup tgWayOfOperating, tgDevIntVersion;
 	private Label lblClampingWidthR;
 	private Button btnClampingWidthDeltaRp90;
 	private Button btnClampingWidthDeltaRm90;
 	private Region spacer;
-	private int clampingWidthDeltaR;
+	private int clampingWidthDeltaR; 
+	private boolean devIntVersion;
 		
 	private ObservableList<String> userFrameNames;
 	
@@ -61,7 +63,10 @@ public class CNCMachineGeneralView extends GridPane {
 	private static final String M_CODES_DUAL_LOAD = "CNCMachineGeneralView.mCodesDualLoad";
 	private static final String STATUS_CONNECTED = "CNCMachineGeneralView.statusConnected";
 	private static final String STATUS_DISCONNECTED = "CNCMachineGeneralView.statusDisconnected";
-	private static final String CLAMPING_WIDTH_R = "CNCMachineGeneralView.clampingWidthR";
+	private static final String CLAMPING_WIDTH_R = "CNCMachineGeneralView.clampingWidthR";	
+	private static final String LBL_DEV_INT = "CNCMachineGeneralView.deviceInterface";
+	private static final String NEW_DEV_INT = "CNCMachineGeneralView.newDevInterface";
+	private static final String OLD_DEV_INT = "CNCMachineGeneralView.oldDevInterface";
 	
 	private static final String CSS_CLASS_BUTTON = "form-button";
 	private static final String CSS_CLASS_BUTTON_LABEL = "btn-start-label";
@@ -154,6 +159,32 @@ public class CNCMachineGeneralView extends GridPane {
 			}
 		});
 		
+		tgDevIntVersion = new ToggleGroup();
+		lblDevInterface = new Label(Translator.getTranslation(LBL_DEV_INT));
+		rbbOldDevInt = new RadioButton(Translator.getTranslation(OLD_DEV_INT));
+		rbbOldDevInt.setToggleGroup(tgDevIntVersion);
+		rbbOldDevInt.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> arg0, final Boolean oldValue, final Boolean newValue) {
+				if (newValue) {
+					devIntVersion = false;
+				}
+			}
+		});
+		rbbNewDevInt = new RadioButton(Translator.getTranslation(NEW_DEV_INT));
+		rbbNewDevInt.setToggleGroup(tgDevIntVersion);
+		rbbNewDevInt.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> arg0, final Boolean oldValue, final Boolean newValue) {
+				if (newValue) {
+					devIntVersion = true;
+				}
+			}
+		});
+		VBox vboxRadioButtonsDevIntVersion = new VBox();
+		vboxRadioButtonsDevIntVersion.setSpacing(10);
+		vboxRadioButtonsDevIntVersion.getChildren().addAll(rbbOldDevInt, rbbNewDevInt);
+		
 		this.clampingWidthDeltaR = 0;
 		
 		int row = 0;
@@ -180,14 +211,18 @@ public class CNCMachineGeneralView extends GridPane {
 		hboxWidthOffsetButtons.setSpacing(0);
 		hboxWidthOffsetButtons.setAlignment(Pos.CENTER_LEFT);
 		add(hboxWidthOffsetButtons, column++, row, 3, 1);
+		
+		column = 0; row++;
+		add(lblDevInterface, column++, row);
+		add(vboxRadioButtonsDevIntVersion, column, row, 4, 1);
 	}
 	
 	public void refresh(final Set<String> userFrameNames, final AbstractCNCMachine cncMachine) {
 		this.userFrameNames.clear();
 		this.userFrameNames.addAll(userFrameNames);
 		fulltxtName.setText(cncMachine.getName());
-		fulltxtIp.setText(((CNCMillingMachine) cncMachine).getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().getIpAddress());
-		itxtPort.setText(((CNCMillingMachine) cncMachine).getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().getPortNumber() + "");
+		fulltxtIp.setText(cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().getIpAddress());
+		itxtPort.setText(cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().getPortNumber() + "");
 		refreshStatus(cncMachine);
 		btnClampingWidthDeltaRp90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		btnClampingWidthDeltaRm90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
@@ -196,8 +231,7 @@ public class CNCMachineGeneralView extends GridPane {
 			btnClampingWidthDeltaRp90.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		} else if (cncMachine.getClampingWidthR() == -90) {
 			btnClampingWidthDeltaRm90.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-			clampingWidthDeltaR = 90;
-			
+			clampingWidthDeltaR = 90;			
 		} else {
 			throw new IllegalStateException("Clamping width delta R machine should be 90 or -90.");
 		}
@@ -211,7 +245,12 @@ public class CNCMachineGeneralView extends GridPane {
 			rbbWayOfOperatingMCodesDualLoad.selectedProperty().set(true);
 			presenter.setWayOfOperating(WayOfOperating.M_CODES_DUAL_LOAD);
 		} else {
-			throw new IllegalStateException("Unkown way of operating: " + cncMachine.getWayOfOperating());
+			throw new IllegalStateException("Unknown way of operating: " + cncMachine.getWayOfOperating());
+		}
+		if (devIntVersion) {
+			rbbNewDevInt.selectedProperty().set(true);
+		} else {
+			rbbOldDevInt.selectedProperty().set(true);
 		}
 	}
 	
@@ -243,6 +282,14 @@ public class CNCMachineGeneralView extends GridPane {
 	
 	public int getWidthR() {
 		return clampingWidthDeltaR;
+	}
+	
+	public boolean getNewDevInt() {
+		return devIntVersion;
+	}
+	
+	public void setNewDevInt(boolean isNewDevInt) {
+		this.devIntVersion = isNewDevInt;
 	}
 	
 	public WayOfOperating getWayOfOperating() {
