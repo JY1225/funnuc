@@ -19,7 +19,6 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.db.ConnectionManager;
 import eu.robojob.millassist.db.GeneralMapper;
-import eu.robojob.millassist.db.UpdateMapper;
 import eu.robojob.millassist.db.external.device.DeviceMapper;
 import eu.robojob.millassist.db.external.robot.RobotMapper;
 import eu.robojob.millassist.db.external.util.ConnectionMapper;

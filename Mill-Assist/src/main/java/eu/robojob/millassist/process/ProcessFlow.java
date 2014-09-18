@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.DeviceType;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
@@ -56,7 +57,7 @@ public class ProcessFlow {
 	private Map<AbstractRobot, RobotSettings> robotSettings;		// robot settings that are independent of the process steps
 		
 	private Integer finishedAmount;
-	
+
 	private int id;
 	private Type type;
 	
@@ -533,6 +534,18 @@ public class ProcessFlow {
 			}
 		}
 		return robots;
+	}
+	
+	public boolean hasBinForFinishedPieces() {
+		for(AbstractProcessStep processStep: processSteps) {
+			if(processStep instanceof PutStep) {
+				processStep = (PutStep) processStep;
+				if(((PutStep) processStep).getDevice().getType().equals(DeviceType.OUTPUT_BIN)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public ClampingManner getClampingType() {
