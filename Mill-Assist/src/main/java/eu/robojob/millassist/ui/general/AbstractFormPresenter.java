@@ -37,4 +37,8 @@ public abstract class AbstractFormPresenter<T extends AbstractFormView<?>, S ext
 		return RoboSoftAppFactory.getMainPresenter().askConfirmation(title, message);
 	}
 	
+	public void showNotificationOverlay(final String title, final String message) {
+		RoboSoftAppFactory.getMainPresenter().showNotificationOverlay(title, message);
+	}
+	
 }

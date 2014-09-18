@@ -21,12 +21,14 @@ import eu.robojob.millassist.ui.configure.ConfigurePresenter;
 import eu.robojob.millassist.ui.general.MainContentPresenter;
 import eu.robojob.millassist.ui.general.dialog.ConfirmationDialogPresenter;
 import eu.robojob.millassist.ui.general.dialog.ConfirmationDialogView;
+import eu.robojob.millassist.ui.general.dialog.NotificationDialogPresenter;
+import eu.robojob.millassist.ui.general.dialog.NotificationDialogView;
 import eu.robojob.millassist.ui.menu.MenuBarPresenter;
 import eu.robojob.millassist.ui.robot.RobotPopUpPresenter;
 import eu.robojob.millassist.ui.teach.TeachPresenter;
 
 public class MainPresenter implements ProcessFlowListener {
-
+	
 	private MainView view;
 	
 	private ProcessFlow process;
@@ -233,5 +235,28 @@ public class MainPresenter implements ProcessFlowListener {
 			}
 		});
 		return returnValue;
+	}
+	
+	public void showNotificationOverlay(final String title, final String message) {
+		final NotificationDialogView view = new NotificationDialogView(title, message);
+		NotificationDialogPresenter confirmationDialogPresenter = new NotificationDialogPresenter(view);
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				getView().showDialog(view);
+			}
+		});
+		try {
+			confirmationDialogPresenter.getResult();
+		} catch (InterruptedException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				getView().hideDialog();
+			}
+		});
 	}
 }
