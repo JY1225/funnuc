@@ -20,10 +20,12 @@ import eu.robojob.millassist.external.device.Clamping.Type;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.GenericMCode;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachineDevIntv2;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
@@ -246,6 +248,7 @@ public class DeviceMapper {
 			int deviceInterfaceId = results.getInt("DEVICEINTERFACE");
 			int clampingWidthR = results.getInt("CLAMPING_WIDTH_R");
 			int wayOfOperatingInt = results.getInt("WAYOFOPERATING");
+			boolean usesNewDevInt = results.getBoolean("NEW_DEV_INT");
 			WayOfOperating wayOfOperating;
 			if (wayOfOperatingInt == WAYOFOPERATING_STARTSTOP) {
 				wayOfOperating = WayOfOperating.START_STOP;
@@ -254,7 +257,7 @@ public class DeviceMapper {
 			} else if (wayOfOperatingInt == WAYOFOPERATING_MCODESDUAL) {
 				wayOfOperating = WayOfOperating.M_CODES_DUAL_LOAD;
 			} else {
-				 throw new IllegalStateException("Unkown way of operating!");
+				 throw new IllegalStateException("Unknown way of operating!");
 			}
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICEINTERFACE WHERE ID = ?");
 			stmt2.setInt(1, deviceInterfaceId);
@@ -262,8 +265,13 @@ public class DeviceMapper {
 			if (results2.next()) {
 				int socketConnectionId = results2.getInt("SOCKETCONNECTION");
 				SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
-				cncMillingMachine = new CNCMillingMachine(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR);
+				if(usesNewDevInt) {
+					cncMillingMachine = new CNCMillingMachineDevIntv2(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR);
+				} else {
+					cncMillingMachine = new CNCMillingMachine(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR);
+				}
 				cncMillingMachine.setId(id);
+				
 			}
 		}
 		return cncMillingMachine;
@@ -343,8 +351,10 @@ public class DeviceMapper {
 		while (results.next()) {
 			int id = results.getInt("ID");
 			String name = results.getString("NAME");
+			int zoneNr = results.getInt("ZONE_NR");
 			Set<WorkArea> workAreas = getAllWorkAreasByZoneId(id);
-			Zone zone = new Zone(name, workAreas);
+			Zone zone;
+			zone = new Zone(name, workAreas, zoneNr);
 			zone.setId(id);
 			zones.add(zone);
 		}
@@ -669,8 +679,8 @@ public class DeviceMapper {
 		basicStackPlate.getWorkAreas().get(0).getActiveClamping().setDefaultHeight(studHeight);
 	}
 	
-	public void updateCNCMachine(final CNCMillingMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
-			final String ipAddress, final int port, final int clampingWidthR, final List<String> robotServiceInputNames, 
+	public void updateCNCMachine(final AbstractCNCMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
+			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final List<String> robotServiceInputNames, 
 					final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
@@ -679,13 +689,14 @@ public class DeviceMapper {
 		stmt.setString(1, ipAddress);
 		stmt.setInt(2, port);
 		stmt.setString(3, name);
-		stmt.setInt(4, cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().getId());
+		CNCMachineSocketCommunication cncSocketComm = cncMachine.getCNCMachineSocketCommunication();
+		stmt.setInt(4, cncSocketComm.getExternalCommunicationThread().getSocketConnection().getId());
 		stmt.execute();
 		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
 		stmt2.setString(1, name);
 		stmt2.setInt(2, cncMachine.getId());
 		stmt2.execute();
-		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CNCMILLINGMACHINE SET CLAMPING_WIDTH_R = ? , WAYOFOPERATING = ? WHERE ID = ?");
+		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CNCMILLINGMACHINE SET CLAMPING_WIDTH_R = ? , WAYOFOPERATING = ?, NEW_DEV_INT = ? WHERE ID = ?");
 		stmt3.setInt(1, clampingWidthR);
 		int wayOfOperatingInt = WAYOFOPERATING_STARTSTOP;
 		if (wayOfOperating == WayOfOperating.M_CODES) {
@@ -698,7 +709,8 @@ public class DeviceMapper {
 			throw new IllegalStateException("Unknown way of operating: " + cncMachine.getWayOfOperating());
 		}
 		stmt3.setInt(2, wayOfOperatingInt);
-		stmt3.setInt(3, cncMachine.getId());
+		stmt3.setBoolean(3, newDevInt);
+		stmt3.setInt(4, cncMachine.getId());
 		stmt3.execute();
 		if (cncMachine.getMCodeAdapter() != null) {
 			updateMCodeAdapter(cncMachine.getId(), cncMachine.getMCodeAdapter(), robotServiceInputNames, 
@@ -712,10 +724,10 @@ public class DeviceMapper {
 		cncMachine.setName(name);
 		cncMachine.setWayOfOperating(wayOfOperating);
 		cncMachine.setClampingWidthR(clampingWidthR);
-		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setIpAddress(ipAddress);
-		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setPortNumber(port);
-		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().setName(name);
-		cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().disconnect();
+		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setIpAddress(ipAddress);
+		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setPortNumber(port);
+		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setName(name);
+		cncSocketComm.getExternalCommunicationThread().getSocketConnection().disconnect();
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}

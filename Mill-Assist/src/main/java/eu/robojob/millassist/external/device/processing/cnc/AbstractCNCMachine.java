@@ -1,6 +1,8 @@
 package eu.robojob.millassist.external.device.processing.cnc;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -30,6 +32,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private int clampingWidthR;
 	private WayOfOperating wayOfOperating;
 	private MCodeAdapter mCodeAdapter;
+	private Map<Integer, Integer> statusMap;
 	
 	public enum WayOfOperating {
 		START_STOP, M_CODES, M_CODES_DUAL_LOAD
@@ -51,6 +54,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.listeners = new HashSet<CNCMachineListener>();
 		this.stopAction = false;
 		this.clampingWidthR = clampingWidthR;
+		this.statusMap = new HashMap<Integer, Integer>();
 	}
 	
 	public AbstractCNCMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final int clampingWidthR) {
@@ -106,6 +110,18 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	public void setStatus(final int status) {
 		this.currentStatus = status;
+	}
+	
+	public Map<Integer,Integer> getStatusMap() {
+		return statusMap;
+	}
+	
+	public int getStatus(final int registerIndex) {
+		return statusMap.get(registerIndex);
+	}
+	
+	public void setStatus(final int status, final int registerIndex) {
+		statusMap.put(registerIndex, status);
 	}
 	
 	public void setAlarms(final Set<CNCMachineAlarm> alarms) {
@@ -174,6 +190,24 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 			@Override
 			public Boolean call() throws Exception {
 				return ((currentStatus & status) == status);
+			}
+		}, timeout);
+	}
+	
+	protected boolean waitForStatusDevIntv2(final int registerIndex, final int status, final long timeout) throws InterruptedException, DeviceActionException {
+		return waitForStatusCondition(new Callable<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				return ((statusMap.get(registerIndex) & status) == status);
+			}
+		}, timeout);
+	}
+	
+	protected boolean waitForStatusGoneDevIntv2(final int registerIndex, final int status, final long timeout) throws InterruptedException, DeviceActionException {
+		return waitForStatusCondition(new Callable<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				return ((statusMap.get(registerIndex) | status) == (statusMap.get(registerIndex) ^ status));
 			}
 		}, timeout);
 	}
@@ -251,6 +285,14 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		waitForStatus(status, 0);
 	}
 	
+	protected void waitForStatusDevIntv2(final int registerIndex, final int status) throws DeviceActionException, InterruptedException {
+		waitForStatusDevIntv2(registerIndex, status, 0);
+	}
+	
+	protected void waitForStatusGoneDevIntv2(final int registerIndex, final int status) throws DeviceActionException, InterruptedException {
+		waitForStatusGoneDevIntv2(registerIndex, status, 0);
+	}
+	
 	protected boolean waitForMCode(final int index) throws InterruptedException, DeviceActionException {
 		logger.info("Waiting for M CODE: " + index);
 		return waitForStatusCondition(new Callable<Boolean>() {
@@ -300,4 +342,9 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	public void setClampingWidthR(final int clampingWidthR) {
 		this.clampingWidthR = clampingWidthR;
 	}
+	
+	public abstract boolean isUsingNewDevInt();
+	
+	public abstract CNCMachineSocketCommunication getCNCMachineSocketCommunication();
+	
 }

@@ -148,4 +148,25 @@ public class CNCMachineAlarm {
 		}
 		return alarms;
 	}
+	
+	//TODO - language file starting from CNCMachineAlarm.1000 - should only be used for the new type of devInt v2
+	public static Set<CNCMachineAlarm> parseCNCAlarms(final CNCMachineAlarm timeout, final int... alarmReg) {
+		Set<CNCMachineAlarm> alarms = new HashSet<CNCMachineAlarm>();
+		int i = 0;
+		int j = 1000;
+		for(int[] possibleAlarmsRegs: CNCMachineConstantsDevIntv2.ERROR_REGS_ARRAY) {
+			int alarmRegCNC = alarmReg[i];
+			for(int possibleError: possibleAlarmsRegs) {
+				if((alarmRegCNC & possibleError) > 0) {
+					alarms.add(new CNCMachineAlarm(j));
+				}
+				j++;
+			}
+			i++;
+		}
+		if(timeout != null) {
+			alarms.add(timeout);
+		}
+		return alarms;
+	}
 }

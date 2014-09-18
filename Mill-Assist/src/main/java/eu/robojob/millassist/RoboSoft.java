@@ -103,8 +103,8 @@ public class RoboSoft extends Application {
 					} else if (keyboardTypePropertyVal.equals("quertz")) {
 						keyboardType = KeyboardType.QWERTZ_DE;
 					}
-					RoboSoftAppFactory factory = new RoboSoftAppFactory(deviceManager, robotManager, processFlowManager, keyboardType);
-					final MainPresenter mainPresenter = factory.getMainPresenter();
+					new RoboSoftAppFactory(deviceManager, robotManager, processFlowManager, keyboardType);
+					final MainPresenter mainPresenter = RoboSoftAppFactory.getMainPresenter();
 					mainPresenter.showConfigure();
 					Platform.runLater(new Runnable() {
 						@Override

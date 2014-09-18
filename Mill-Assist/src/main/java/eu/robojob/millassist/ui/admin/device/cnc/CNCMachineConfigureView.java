@@ -189,6 +189,14 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	public WayOfOperating getWayOfOperating() {
 		return cncMachineGeneralView.getWayOfOperating();
 	}
+	
+	public boolean getNewDevInt() {
+		return cncMachineGeneralView.getNewDevInt();
+	}
+	
+	public void setNewDevInt(boolean isNewDevInt) {
+		cncMachineGeneralView.setNewDevInt(isNewDevInt);
+	}
 
 	public List<String> getMCodeNames() {
 		return cncMachineMCodeView.getMCodeNames();

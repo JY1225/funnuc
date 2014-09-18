@@ -16,11 +16,11 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
-import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 import eu.robojob.millassist.util.Translator;
 
@@ -63,7 +63,7 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 	private SVGPath imagePath;
 	private Label deviceName;
 	
-	private CNCMillingMachine machine;
+	private AbstractCNCMachine machine;
 	
 	private RotateTransition rotateTransition;
 	
@@ -92,7 +92,7 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 			rotateTransition.setToAngle(360);
 			rotateTransition.setInterpolator(Interpolator.LINEAR);
 			rotateTransition.setCycleCount(Timeline.INDEFINITE);
-			machine = ((CNCMillingMachine) deviceInfo.getDevice());
+			machine = ((AbstractCNCMachine) deviceInfo.getDevice());
 			machine.addListener(this);
 			updateMCodes();
 		}

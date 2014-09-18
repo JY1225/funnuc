@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
-import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.ui.controls.IconFlowSelector;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -235,7 +235,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 					if (deviceInfo.getProcessingStep().getDeviceSettings().getWorkArea() != null) {
 						if (deviceInfo.getProcessingStep().getDeviceSettings().getWorkArea().getActiveClamping() != null) {
 							double clampingR = deviceInfo.getProcessingStep().getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getR();
-							double clampingWidthDeltaR = ((CNCMillingMachine) deviceInfo.getDevice()).getClampingWidthR();
+							double clampingWidthDeltaR = ((AbstractCNCMachine) deviceInfo.getDevice()).getClampingWidthR();
 							boolean conveyor = false;
 							boolean change = false;
 							for (AbstractDevice device : deviceInfo.getPickStep().getProcessFlow().getDevices()) {

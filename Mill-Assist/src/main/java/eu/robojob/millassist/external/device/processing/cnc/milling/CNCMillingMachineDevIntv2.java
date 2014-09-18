@@ -1,0 +1,689 @@
+package eu.robojob.millassist.external.device.processing.cnc.milling;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.communication.socket.SocketConnection;
+import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
+import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.device.AbstractDeviceActionSettings;
+import eu.robojob.millassist.external.device.ClampingManner;
+import eu.robojob.millassist.external.device.ClampingManner.Type;
+import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.DeviceInterventionSettings;
+import eu.robojob.millassist.external.device.DevicePickSettings;
+import eu.robojob.millassist.external.device.DevicePutSettings;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.Zone;
+import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarm;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineConstantsDevIntv2;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMonitoringThread;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
+import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.process.ProcessFlow.Mode;
+import eu.robojob.millassist.threading.ThreadManager;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+
+public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
+	
+	private CNCMachineSocketCommunication cncMachineCommunication;
+
+	private static final int SLEEP_TIME_AFTER_RESET = 500;
+	private static final int OPERATOR_RQST_BLUE_LAMP_VAL = 5;
+	
+	public static final int M_CODE_LOAD = 0;
+	public static final int M_CODE_UNLOAD = 1;
+	
+	private static Logger logger = LogManager.getLogger(CNCMillingMachineDevIntv2.class.getName());
+	
+	public CNCMillingMachineDevIntv2(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final SocketConnection socketConnection, final int clampingWidthR) {
+		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR);
+		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
+		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
+		// start monitoring thread at creation of this object
+		ThreadManager.submit(cncMachineMonitoringThread);
+	}
+	
+	public CNCMillingMachineDevIntv2(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final SocketConnection socketConnection, final int clampingWidthR) {
+		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), socketConnection, clampingWidthR);
+	}
+	
+	@Override
+	public CNCMachineSocketCommunication getCNCMachineSocketCommunication() {
+		return this.cncMachineCommunication;
+	}
+	
+	@Override
+	public void updateStatusAndAlarms() throws InterruptedException, SocketResponseTimedOutException, SocketDisconnectedException {
+		List<Integer> statusInts = (cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, 2));
+		setStatus(statusInts.get(0), CNCMachineConstantsDevIntv2.STATUS_SLOT_1);
+		setStatus(statusInts.get(1), CNCMachineConstantsDevIntv2.STATUS_SLOT_2);
+		statusInts = (cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.IPC_BUSY, 3));
+		setStatus(statusInts.get(0), CNCMachineConstantsDevIntv2.IPC_BUSY);
+		setStatus(statusInts.get(1), CNCMachineConstantsDevIntv2.IPC_ERROR);
+		setStatus(statusInts.get(2), CNCMachineConstantsDevIntv2.IPC_OK);
+		List<Integer> alarmInts = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.ERROR_REG_1, 6);
+		int alarmReg1 = alarmInts.get(0);
+		int alarmReg2 = alarmInts.get(1);
+		int alarmReg3 = alarmInts.get(2);
+		int alarmReg4 = alarmInts.get(3);
+		int alarmReg5 = alarmInts.get(4);
+		int alarmReg6 = alarmInts.get(5);
+		setAlarms(CNCMachineAlarm.parseCNCAlarms(getCncMachineTimeout(), alarmReg1, alarmReg2, alarmReg3, alarmReg4, alarmReg5, alarmReg6));
+		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
+			// read robot service 
+			int robotServiceInputs = (cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, 1)).get(0);
+			getMCodeAdapter().updateRobotServiceInputsDevIntv2(robotServiceInputs);
+		}
+	}
+	
+	@Override
+	public void reset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+		int command = 0;
+		command = command | CNCMachineConstantsDevIntv2.IPC_RESET_CMD;
+		int[] registers = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
+		setCncMachineTimeout(null);
+	}
+	
+	@Override
+	public void nCReset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+		int command = 0;
+		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_NC_RESET_OK);
+		int maxResetTime = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_MACHINE_MAX_NC_RESET_TIME, 1).get(0);
+		command = command | CNCMachineConstantsDevIntv2.IPC_NC_RESET_CMD;
+		int[] registers = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
+		try {
+			waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_NC_RESET_OK, maxResetTime);
+		} catch (DeviceActionException e) {
+			e.printStackTrace();
+		}
+		Thread.sleep(SLEEP_TIME_AFTER_RESET);
+	}
+
+	@Override
+	public void powerOff() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+		int command = 0;
+		// Direct power off command
+		command = command | CNCMachineConstantsDevIntv2.OUT_MACHINE_POWER_OFF;
+		int[] registers = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.OUTPUT_SLOT_1, registers);
+		// normally no more commands after this, so multiple IPC requests problem can't occur
+	}
+
+	@Override
+	public void indicateAllProcessed() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+		// Still something todo?
+		nCReset();
+	}
+
+	@Override
+	public void indicateOperatorRequested(final boolean requested) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+		int command = 0;
+		if (requested) {
+			command = OPERATOR_RQST_BLUE_LAMP_VAL;
+		}
+		int[] registers = {command};
+		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.PAR_MACHINE_BLUE_LAMP, registers);
+	}
+	
+	@Override
+	public void clearIndications() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+		// reset blue lamp
+		indicateOperatorRequested(false);
+	}
+	
+	@Override
+	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+		//FIXME review! potential problems with reset in double processflow execution
+		clearIndications();		
+		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
+			// wait half a second
+			Thread.sleep(500);
+			
+			int selectionCommand = 0;
+			int zoneNr = this.getWorkAreas().get(0).getZone().getZoneNr();
+			if(zoneNr == 1) {
+				selectionCommand = selectionCommand |  CNCMachineConstantsDevIntv2.ZONE1_SELECT;
+			} else if (zoneNr == 2) {
+				selectionCommand = selectionCommand |  CNCMachineConstantsDevIntv2.ZONE2_SELECT;
+			} else {
+				throw new IllegalArgumentException("Unknown zone number: " + zoneNr);
+			}
+			int startCommand = 0;
+			startCommand = startCommand | CNCMachineConstantsDevIntv2.IPC_START_CNC_CMD;
+			
+			int[] registers = {selectionCommand, startCommand};
+			cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers);
+		}
+	}
+
+	@Override
+	public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws SocketResponseTimedOutException, SocketDisconnectedException, DeviceActionException, InterruptedException {
+		if (getWayOfOperating() == WayOfOperating.START_STOP) {
+			// check a valid workarea is selected 
+			if (!getWorkAreaNames().contains(startCylusSettings.getWorkArea().getName())) {
+				throw new IllegalArgumentException("Unknown workarea: " + startCylusSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
+			}
+			resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_START_CNC_OK);
+			int command = 0;
+			command = command | selectZone(startCylusSettings);
+			int startCommand = 0 | CNCMachineConstantsDevIntv2.IPC_START_CNC_CMD;
+			int[] registers = {command, startCommand};
+			cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers);
+			
+			int startCycleTimeout = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_MACHINE_MAX_START_CNC_TIME, 1).get(0);
+
+			// fix for jametal, comment next lines and uncomment sleep
+			boolean cycleStartReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_START_CNC_OK, startCycleTimeout);
+			if (!cycleStartReady) {
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
+				waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_START_CNC_OK);
+				setCncMachineTimeout(null);
+			}
+			//Thread.sleep(10000);
+			if(startCylusSettings.getWorkArea().getZone().getZoneNr() == 1) {		
+				waitForStatusGoneDevIntv2(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, CNCMachineConstantsDevIntv2.R_MACHINE_ZONE1_PROCESSING);
+			} else if(startCylusSettings.getWorkArea().getZone().getZoneNr() == 2) {
+				waitForStatusGoneDevIntv2(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, CNCMachineConstantsDevIntv2.R_MACHINE_ZONE2_PROCESSING);
+			} else {
+				throw new IllegalArgumentException("Unknown zone number: " + startCylusSettings.getWorkArea().getZone().getZoneNr());
+			}
+			
+			nCReset();
+		} else if (getWayOfOperating() == WayOfOperating.M_CODES) {
+			// we sign of the m code for put
+			Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
+			int command = 0;
+			if (robotServiceOutputs.contains(0)) {
+				command = command | CNCMachineConstantsDevIntv2.IPC_MC_FINISH_CMD;
+			}
+			int[] registers = {command};
+			cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
+			Thread.sleep(500);
+			waitForMCode(M_CODE_UNLOAD);
+		}  else if (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
+			// we sign of the m code for put
+			Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
+			int command = 0;
+			if (robotServiceOutputs.contains(0)) {
+				command = command | CNCMachineConstantsDevIntv2.IPC_MC_FINISH_CMD;
+			}
+			int[] registers = {command};
+			cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
+			Thread.sleep(5000);	// wait 5 sec before checking again for m-code
+			waitForMCode(M_CODE_UNLOAD);
+			// now wait for next load and unload M-code
+			waitForMCode(M_CODE_LOAD);
+			// we should finish this M-code if in teach mode
+			if ((startCylusSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) || (startCylusSettings.getStep().getProcessFlow().getTotalAmount() <= 1)) {
+				// first open fixtures 
+				//FIXME review 
+
+				resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK);
+				int fixSelectCommand = 0;
+				fixSelectCommand = fixSelectCommand | selectZone(startCylusSettings);
+				fixSelectCommand = fixSelectCommand | selectWorkArea(startCylusSettings);
+				fixSelectCommand = fixSelectCommand | selectFixture(startCylusSettings);
+				int actionCommand = 0 | CNCMachineConstantsDevIntv2.IPC_UNCLAMP_CMD;
+				
+				int[] registers2 = {fixSelectCommand, actionCommand};
+				cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers2);
+				
+				int clampedTimeout = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_FIX_TIMEOUT_CLAMPED, 1).get(0);
+				boolean clampReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK, clampedTimeout);
+				if(!clampReady) {
+					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
+					waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK);
+					setCncMachineTimeout(null);
+				}
+				// then finish m-code
+				cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
+				Thread.sleep(500);
+			}
+			waitForNoMCode(M_CODE_LOAD);
+			waitForMCode(M_CODE_UNLOAD);
+		} else {
+			throw new IllegalStateException("Unknown way of operating: " + getWayOfOperating());
+		}
+	}
+
+	@Override
+	public void prepareForPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+		// check a valid workarea is selected 
+		if (!getWorkAreaNames().contains(pickSettings.getWorkArea().getName())) {
+			throw new IllegalArgumentException("Unknown workarea: " + pickSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
+		}
+
+		// if way of operation is m codes, await unloading m code!
+		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
+			waitForMCode(M_CODE_UNLOAD);
+		}
+		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK);
+		int waSelectCommand = 0;
+		waSelectCommand = waSelectCommand | selectZone(pickSettings);
+		waSelectCommand = waSelectCommand | selectWorkArea(pickSettings);
+		int command2 = 0 | CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_CMD;
+		
+		int[] registers = {waSelectCommand, command2};
+		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers);
+
+		int maxPutPrepareTime = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_MACHINE_MAX_PICK_PREPARE_TIME, 1).get(0);
+		
+		boolean putReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK, maxPutPrepareTime);
+		if(!putReady) {
+			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
+			waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK);
+			setCncMachineTimeout(null);
+		}
+		
+	}
+
+	@Override
+	public void prepareForPut(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+		// check a valid workarea is selected 
+		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getName())) {
+			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
+		}		
+		// if way of operation is m codes, await unloading m code!
+		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
+			waitForMCode(M_CODE_LOAD);
+		}	
+		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_OK);
+		// Create prepare for put command
+		int waSelectCommand = 0;
+		waSelectCommand = waSelectCommand | selectZone(putSettings);
+		waSelectCommand = waSelectCommand | selectWorkArea(putSettings);
+		int command2 = 0 | CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_CMD;
+		int[] registers = {waSelectCommand, command2};
+		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers);
+		
+		// TODO - review check put is prepared
+		int maxPutPrepareTime = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_MACHINE_MAX_PUT_PREPARE_TIME, 1).get(0);
+		
+		boolean putReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_OK, maxPutPrepareTime);
+		if(!putReady) {
+			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PUT_TIMEOUT));
+			waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_OK);
+			setCncMachineTimeout(null);
+		}
+	}
+
+	@Override
+	public void releasePiece(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+		// check a valid workarea is selected 
+		if (!getWorkAreaNames().contains(pickSettings.getWorkArea().getName())) {
+			throw new IllegalArgumentException("Unknown workarea: " + pickSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
+		}
+		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK);
+		int fixSelectCommand = 0;
+		fixSelectCommand = fixSelectCommand | selectZone(pickSettings);
+		fixSelectCommand = fixSelectCommand | selectWorkArea(pickSettings);
+		fixSelectCommand = fixSelectCommand | selectFixture(pickSettings);
+		int actionCommand = 0 | CNCMachineConstantsDevIntv2.IPC_UNCLAMP_CMD;
+		
+		int[] registers = {fixSelectCommand, actionCommand};
+		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers);
+		
+		int clampedTimeout = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_FIX_TIMEOUT_CLAMPED, 1).get(0);
+		
+		boolean clampReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK, clampedTimeout);
+		if(!clampReady) {
+			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
+			waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK);
+			setCncMachineTimeout(null);
+		}
+	}
+
+	@Override
+	public void grabPiece(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+		// check a valid workarea is selected 
+		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getName())) {
+			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
+		}
+		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_CLAMP_OK);
+		int fixSelectCommand = 0;
+		fixSelectCommand = fixSelectCommand | selectZone(putSettings);
+		fixSelectCommand = fixSelectCommand | selectWorkArea(putSettings);
+		fixSelectCommand = fixSelectCommand | selectFixture(putSettings);
+		int actionCommand = 0 | CNCMachineConstantsDevIntv2.IPC_CLAMP_CMD;
+		
+		int[] registers = {fixSelectCommand, actionCommand};
+		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers);
+		
+		int clampedTimeout = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_FIX_TIMEOUT_CLAMPED, 1).get(0);
+		
+		boolean clampReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_CLAMP_OK, clampedTimeout);
+		if(!clampReady) {
+			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CLAMP_TIMEOUT));
+			waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_CLAMP_OK);
+			setCncMachineTimeout(null);
+		}
+	}
+
+	@Override
+	public boolean canPut(final DevicePutSettings putSettings) throws InterruptedException, DeviceActionException {
+		// check first workarea is selected 
+		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getName())) {
+			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
+		}
+		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
+			return getMCodeAdapter().isMCodeActive(M_CODE_LOAD);
+		}
+		return true;
+	}
+	
+	// this is not taken into account on the Machine-side for now
+	@Override
+	public boolean canPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException {
+		return true;
+	}
+	
+	@Override
+	public boolean canIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {
+		return true;
+	}
+
+	@Override
+	public void prepareForIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, InterruptedException {
+		indicateOperatorRequested(true);
+	}
+	
+	@Override 
+	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, InterruptedException, DeviceActionException {
+		if (getWayOfOperating() == WayOfOperating.M_CODES) {
+			if (((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) &&
+					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) || (pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH)) {
+				// last work piece: send reset in stead of finishing m code
+				nCReset();
+			} else {
+				Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD).getRobotServiceOutputsUsed();
+				int command = 0;
+				if (robotServiceOutputs.contains(0)) {
+					logger.info("AFMELDEN M-CODE 0");
+					command = command | CNCMachineConstantsDevIntv2.IPC_MC_FINISH_CMD;
+				}
+				int[] registers = {command};
+				cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
+			}
+		} else if (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
+			if (((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) &&
+					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) || (pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH)) {
+				// last work piece: send reset in stead of finishing m code
+				nCReset();
+				// also finish m code if still active after nc reset
+				Thread.sleep(500);
+				boolean finishMCode = false;
+				for (int activeMCode : getMCodeAdapter().getActiveMCodes()) {
+					if (getMCodeAdapter().getGenericMCode(activeMCode).getRobotServiceOutputsUsed().contains(0)) {
+						finishMCode = true;
+					}
+				}
+				if (finishMCode) {
+					int command = CNCMachineConstantsDevIntv2.IPC_MC_FINISH_CMD;
+					int[] registers = {command};
+					cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
+					Thread.sleep(500);
+				}
+			} else {
+				Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD).getRobotServiceOutputsUsed();
+				int command = 0;
+				if (robotServiceOutputs.contains(0)) {
+					logger.info("Finish M-C unload");
+					command = command | CNCMachineConstantsDevIntv2.IPC_MC_FINISH_CMD;
+				}
+				int[] registers = {command};
+				cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
+				Thread.sleep(500);
+				if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 2) &&
+						(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) {
+					// last but one work piece: no upcoming put, but we wait for the upcoming LOAD M-code and confirm it
+					waitForMCode(M_CODE_LOAD);
+					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
+					command = 0;
+					if (robotServiceOutputs.contains(0)) {
+						logger.info("Finish M-C load");
+						command = command | CNCMachineConstantsDevIntv2.IPC_MC_FINISH_CMD;
+					}
+					registers[0] = command;
+					cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
+					Thread.sleep(500);
+				}
+			}
+		}
+	}
+	
+	@Override 
+	public void putFinished(final DevicePutSettings putSettings) throws AbstractCommunicationException, InterruptedException {}
+	
+	// these are not taken into account by the machine for now...
+	@Override public void interventionFinished(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException { }
+	@Override public void prepareForStartCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException { }
+
+	@Override
+	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
+		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		if (clampType.getType() == Type.LENGTH) {
+			if (clampType.isChanged()) {
+				c.setR(c.getR() + getClampingWidthR());
+			} else {
+				c.setR(c.getR());
+			}
+		} else {
+			if (clampType.isChanged()) {
+				c.setR(c.getR());
+			} else {
+				c.setR(c.getR() + getClampingWidthR());
+			}
+		}
+		return c;
+	}
+	
+	@Override
+	public Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		if (clampType.getType() == Type.LENGTH) {
+			if (clampType.isChanged()) {
+				c.setR(c.getR() + getClampingWidthR());
+			} else {
+				c.setR(c.getR());
+			}
+			switch (workArea.getActiveClamping().getType()) {
+				case CENTRUM:
+					// no action needed
+					break;
+				case FIXED_XM:
+					c.setX(c.getX() - workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_YM:
+					c.setY(c.getY() - workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_XP:
+					c.setX(c.getX() + workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_YP:
+					c.setY(c.getY() + workPieceDimensions.getWidth()/2);
+					break;
+				case NONE:
+					throw new IllegalArgumentException("Machine clamping type can't be NONE.");
+				default:
+					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
+			}
+		} else {
+			if (clampType.isChanged()) {
+				c.setR(c.getR());
+			} else {
+				c.setR(c.getR() + getClampingWidthR());
+			}
+			switch (workArea.getActiveClamping().getType()) {
+			case CENTRUM:
+				// no action needed
+				break;
+			case FIXED_XM:
+				c.setX(c.getX() - workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_YM:
+				c.setY(c.getY() - workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_XP:
+				c.setX(c.getX() + workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_YP:
+				c.setY(c.getY() + workPieceDimensions.getLength()/2);
+				break;
+			case NONE:
+				throw new IllegalArgumentException("Machine clamping type can't be NONE.");
+			default:
+				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
+			}
+		}
+		return c;
+	}
+
+	@Override
+	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		if (clampType.getType() == Type.LENGTH) {
+			if (clampType.isChanged()) {
+				c.setR(c.getR() + getClampingWidthR());
+			} else {
+				c.setR(c.getR());
+			}
+			switch (workArea.getActiveClamping().getType()) {
+				case CENTRUM:
+					// no action needed
+					break;
+				case FIXED_XM:
+					c.setX(c.getX() - workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_YM:
+					c.setY(c.getY() - workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_XP:
+					c.setX(c.getX() + workPieceDimensions.getWidth()/2);
+					break;
+				case FIXED_YP:
+					c.setY(c.getY() + workPieceDimensions.getWidth()/2);
+					break;
+				case NONE:
+					throw new IllegalArgumentException("Machine clamping type can't be NONE.");
+				default:
+					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
+			}
+		} else {
+			if (clampType.isChanged()) {
+				c.setR(c.getR());
+			} else {
+				c.setR(c.getR() + getClampingWidthR());
+			}
+			switch (workArea.getActiveClamping().getType()) {
+			case CENTRUM:
+				// no action needed
+				break;
+			case FIXED_XM:
+				c.setX(c.getX() - workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_YM:
+				c.setY(c.getY() - workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_XP:
+				c.setX(c.getX() + workPieceDimensions.getLength()/2);
+				break;
+			case FIXED_YP:
+				c.setY(c.getY() + workPieceDimensions.getLength()/2);
+				break;
+			case NONE:
+				throw new IllegalArgumentException("Machine clamping type can't be NONE.");
+			default:
+				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
+			}
+		}
+		return c;
+	}
+	
+	private int selectZone(final AbstractDeviceActionSettings<?> deviceActionSettings) throws IllegalArgumentException {
+		int command = 0;
+		if(deviceActionSettings.getWorkArea().getZone().getZoneNr() == 1) {
+			command = command | CNCMachineConstantsDevIntv2.ZONE1_SELECT;
+		} else if (deviceActionSettings.getWorkArea().getZone().getZoneNr() == 2) {
+			command = command | CNCMachineConstantsDevIntv2.ZONE2_SELECT;
+		} else {
+			throw new IllegalArgumentException("Unknown zone number: " + deviceActionSettings.getWorkArea().getZone().getZoneNr());
+		}
+		return command;
+	}
+	
+	private int selectWorkArea(final AbstractDeviceActionSettings<?> deviceActionSettings) throws IllegalArgumentException {
+		int command = 0;
+		if(deviceActionSettings.getWorkArea().getWorkAreaNr() == 1) {
+			command = command | CNCMachineConstantsDevIntv2.ZONE1_SELECT;
+		} else if (deviceActionSettings.getWorkArea().getWorkAreaNr() == 2) {
+			command = command | CNCMachineConstantsDevIntv2.ZONE2_SELECT;
+		} else {
+			throw new IllegalArgumentException("Unknown workarea number: " + deviceActionSettings.getWorkArea().getWorkAreaNr());
+		}
+		return command;
+	}
+	
+	private int selectFixture(final AbstractDeviceActionSettings<?> deviceActionSettings) throws IllegalArgumentException {
+		int command = 0;
+		switch (deviceActionSettings.getWorkArea().getActiveClamping().getFixtureType()) {
+		case FIXTURE_1:
+			command = command | CNCMachineConstantsDevIntv2.FIX_SELECT_1;
+			break;
+		case FIXTURE_2:
+			command = command | CNCMachineConstantsDevIntv2.FIX_SELECT_2;
+			break;
+		case FIXTURE_1_2:
+			command = command | CNCMachineConstantsDevIntv2.FIX_SELECT_1;
+			command = command | CNCMachineConstantsDevIntv2.FIX_SELECT_2;
+			break;
+		default:
+			break;
+		}
+		return command;
+	}
+	
+	private void resetStatusValue(final int registerNr, final int value) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+		// Read current status from register
+		int currentStatus = cncMachineCommunication.readRegisters(registerNr, 1).get(0);
+		// Check whether the value is already low (bitwise AND operation)
+		if((currentStatus & value) > 0) {
+			// Exclusive OR operation 
+			int resultValue = currentStatus ^ value;
+			int[] registerValue = {resultValue};
+			cncMachineCommunication.writeRegisters(registerNr, registerValue);
+		}
+	}
+
+	@Override
+	public boolean isConnected() {
+		return cncMachineCommunication.isConnected();
+	}
+	
+	@Override
+	public void disconnect() {
+		cncMachineCommunication.disconnect();
+	}
+	
+	@Override
+	public String toString() {
+		return "CNCMillingMachine: " + getName();
+	}
+
+	@Override
+	public boolean isUsingNewDevInt() {
+		return true;
+	}
+
+}

@@ -64,6 +64,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), socketConnection, clampingWidthR);
 	}
 	
+	@Override
 	public CNCMachineSocketCommunication getCNCMachineSocketCommunication() {
 		return this.cncMachineCommunication;
 	}
@@ -792,6 +793,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public String toString() {
 		return "CNCMillingMachine: " + getName();
+	}
+
+	@Override
+	public boolean isUsingNewDevInt() {
+		return false;
 	}
 
 }

@@ -74,7 +74,7 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 				@Override
 				public void run() {
 					try {
-						if (getMenuPresenter().getParent().getParent().askConfirmation(Translator.getTranslation(OPEN_UNSAVED_TITLE), Translator.getTranslation(OPEN_UNSAVED))) {
+						if (askConfirmation(Translator.getTranslation(OPEN_UNSAVED_TITLE), Translator.getTranslation(OPEN_UNSAVED))) {
 							Platform.runLater(new Thread() {
 								@Override
 								public void run() {
@@ -107,7 +107,7 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 			@Override
 			public void run() {
 				try {
-					if (getMenuPresenter().getParent().getParent().askConfirmation(Translator.getTranslation(DELETE_TITLE), Translator.getTranslation(DELETE))) {
+					if (askConfirmation(Translator.getTranslation(DELETE_TITLE), Translator.getTranslation(DELETE))) {
 						Platform.runLater(new Thread() {
 							@Override
 							public void run() {
