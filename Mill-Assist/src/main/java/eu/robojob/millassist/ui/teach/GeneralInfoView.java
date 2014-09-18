@@ -164,7 +164,12 @@ public class GeneralInfoView extends GridPane {
 		lblInfoMessageOptimal.setManaged(visible);
 		lblInfoMessageOptimalTitle.setManaged(visible);
 		btnStartOptimal.setManaged(visible);
-
+		if (processFlow.hasBinForFinishedPieces()) {
+			btnStartOptimal.setDisable(true);
+		} else {
+			btnStartOptimal.setDisable(false);
+		}
+		
 		if (processFlow.getId() <= 0) {
 			btnSaveAll.setDisable(true);
 		} else {
