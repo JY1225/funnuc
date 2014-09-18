@@ -19,7 +19,6 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.db.ConnectionManager;
 import eu.robojob.millassist.db.GeneralMapper;
-import eu.robojob.millassist.db.UpdateMapper;
 import eu.robojob.millassist.db.external.device.DeviceMapper;
 import eu.robojob.millassist.db.external.robot.RobotMapper;
 import eu.robojob.millassist.db.external.util.ConnectionMapper;
@@ -86,7 +85,7 @@ public class RoboSoft extends Application {
 						Translator.setLanguageNL();
 					}
 					GeneralMapper generalMapper = new GeneralMapper();
-					new UpdateMapper();
+					//new UpdateMapper();
 					ConnectionMapper connectionMapper = new ConnectionMapper();
 					DeviceMapper deviceMapper = new DeviceMapper(generalMapper, connectionMapper);
 					DeviceManager deviceManager = new DeviceManager(deviceMapper);

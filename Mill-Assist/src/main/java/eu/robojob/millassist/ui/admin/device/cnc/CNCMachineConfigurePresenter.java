@@ -77,6 +77,7 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 					getView().getMCodeNames(), getView().getMCodeRobotServiceInputs(), 
 						getView().getMCodeRobotServiceOutputs());
 		getView().refresh();
+		getView().showNotificationDialog();
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
+import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.util.Translator;
@@ -31,6 +32,8 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	
 	private static final String GENERAL = "CNCMachineConfigureView.general";
 	private static final String M_CODES = "CNCMachineConfigureView.mCodes";
+	private static final String SAVE_DIALOG = "CNCMachineConfigureView.saveDialog";
+	private static final String ACTIVE_CHANGES = "CNCMachineConfigureView.activeChanges";
 	private static final String CSS_CLASS_PADDING_BTN = "padding-button";
 	private static final String CSS_CLASS_NAV_AREA = "nav-area";
 		
@@ -154,6 +157,15 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		contentPane.getChildren().clear();
 		contentPane.getChildren().add(cncMachineGeneralView);
 		setActiveButton(btnGeneral);
+	}
+	
+	public void showNotificationDialog() {
+		ThreadManager.submit(new Thread() {
+			@Override
+			public void run() {
+				getPresenter().showNotificationOverlay(Translator.getTranslation(SAVE_DIALOG), Translator.getTranslation(ACTIVE_CHANGES));
+			}
+		});
 	}
 	
 	public void setActiveButton(final Button button) {
