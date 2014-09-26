@@ -83,7 +83,7 @@ public class TeachOptimizedThread extends TeachThread {
 				relTeachedOffsetFinishedWp = getFinishedWorkPieceTeachedOffset(putOnStackingDeviceStep);
 				//TODO review if this offset needs formatting (depending on clamp manner...)
 				logger.info("Relative offset finished work piece after added extra offset: [" + relTeachedOffsetFinishedWp + "].");
-				pickFromMachineStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
+				//pickFromMachineStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
 				putOnStackingDeviceStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);
 				Coordinates relTeachedOffsetRawWp = null;
 				Coordinates relTeachedOffsetMachineClamping = null;
