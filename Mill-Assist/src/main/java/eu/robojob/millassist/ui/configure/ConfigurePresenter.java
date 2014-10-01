@@ -286,7 +286,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	}
 	
 	// TODO - review (duplicate code) - nieuwe instantie van CNC of een deel? - workArea hebben we nodig..., maar ook weer niet aangezien we nog steeds over
-	// dezelfde machine praten - zou dat gaan bij die nieuwe code? - volgens mij niet, want dan zouden we ook 
+	// dezelfde machine praten - zou dat gaan bij die nieuwe code? - volgens mij niet, want dan zouden we ook dubbele clamping pakken
 	private void addCNCMachineCopy() {
 		AbstractCNCMachine cncMachine = deviceManager.getCNCMachines().iterator().next();
 		int index = processFlowAdapter.getCNCMachineIndex();
