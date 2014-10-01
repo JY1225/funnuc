@@ -49,6 +49,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	
 	public static final int M_CODE_LOAD = 0;
 	public static final int M_CODE_UNLOAD = 1;
+	public static final int M_CODE_LOAD_REVERSAL = 2;
+	public static final int M_CODE_UNLOAD_REVERSAL = 3;
 	
 	private static Logger logger = LogManager.getLogger(CNCMillingMachine.class.getName());
 	
@@ -359,7 +361,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
 		int ufNr = putSettings.getWorkArea().getUserFrame().getNumber();
-		
 		// if way of operation is m codes, await unloading m code!
 		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
 			waitForMCode(M_CODE_LOAD);
@@ -378,7 +379,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		} else {
 			throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
 		}		
-	
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 				

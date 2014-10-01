@@ -25,6 +25,7 @@ import eu.robojob.millassist.external.device.processing.cnc.mcode.GenericMCode;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLayout;
@@ -42,6 +43,7 @@ public class DeviceMapper {
 	private static final int DEVICE_TYPE_CONVEYOR = 4;
 	private static final int DEVICE_TYPE_BIN = 5;
 	private static final int DEVICE_TYPE_CONVEYOR_EATON = 6;
+	private static final int DEVICE_TYPE_REVERSAL_UNIT = 7;
 	private static final int CLAMPING_TYPE_CENTRUM = 1;
 	private static final int CLAMPING_TYPE_FIXED_XP = 2;
 	private static final int CLAMPING_TYPE_NONE = 3;
@@ -97,6 +99,10 @@ public class DeviceMapper {
 				case DEVICE_TYPE_BIN:
 					OutputBin bin = getOutputBin(id, name, zones);
 					devices.add(bin);
+					break;
+				case DEVICE_TYPE_REVERSAL_UNIT:
+					ReversalUnit reversalUnit = getReversalUnit(id, name, zones);
+					devices.add(reversalUnit);
 					break;
 				default:
 					throw new IllegalStateException("Unknown device type: [" + type + "].");
@@ -162,6 +168,19 @@ public class DeviceMapper {
 			prageDevice.setId(id);
 		}
 		return prageDevice;
+	}
+	
+	private ReversalUnit getReversalUnit(final int id, final String name, final Set<Zone> zones) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM REVERSALUNIT WHERE ID = ?");
+		stmt.setInt(1, id);
+		ResultSet results = stmt.executeQuery();
+		ReversalUnit reversalUnit = null;
+		if (results.next()) {
+			int stationHeight = results.getInt("STATION_HEIGHT");
+			reversalUnit = new ReversalUnit(name, zones, stationHeight);
+			reversalUnit.setId(id);
+		}
+		return reversalUnit;
 	}
 	
 	private Conveyor getConveyor(final int id, final String name, final Set<Zone> zones) throws SQLException {
@@ -765,6 +784,44 @@ public class DeviceMapper {
 		smoothTo.setY(smoothToY);
 		smoothTo.setZ(smoothToZ);
 		generalMapper.saveCoordinates(smoothTo);
+		ConnectionManager.getConnection().commit();
+		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void updateReversalUnit(final ReversalUnit reversalUnit, final String name, final String userFrame, final float x, final float y,
+			final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
+			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
+			final float stationHeight) throws SQLException {
+		ConnectionManager.getConnection().setAutoCommit(false);
+		if ((!reversalUnit.getWorkAreas().get(0).getUserFrame().getName().equals(userFrame))) {
+			UserFrame newUserFrame = getUserFrameByName(userFrame);
+			reversalUnit.getWorkAreas().get(0).setUserFrame(newUserFrame);
+			updateWorkArea(reversalUnit.getWorkAreas().get(0));
+		}
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE REVERSALUNIT " +
+				"SET STATION_HEIGHT = ? WHERE ID = ?");
+		stmt.setFloat(1, stationHeight);
+		stmt.setInt(2, reversalUnit.getId());
+		stmt.execute();
+		reversalUnit.setStationHeight(stationHeight);
+		Coordinates c = reversalUnit.getWorkAreas().get(0).getActiveClamping().getRelativePosition();
+		c.setX(x);
+		c.setY(y);
+		c.setZ(z);
+		c.setW(w);
+		c.setP(p);
+		c.setR(r);
+		generalMapper.saveCoordinates(c);
+		Coordinates smoothTo = reversalUnit.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
+		smoothTo.setX(smoothToX);
+		smoothTo.setY(smoothToY);
+		smoothTo.setZ(smoothToZ);
+		generalMapper.saveCoordinates(smoothTo);
+		Coordinates smoothFrom = reversalUnit.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
+		smoothFrom.setX(smoothFromX);
+		smoothFrom.setY(smoothFromY);
+		smoothFrom.setZ(smoothFromZ);
+		generalMapper.saveCoordinates(smoothFrom);
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}

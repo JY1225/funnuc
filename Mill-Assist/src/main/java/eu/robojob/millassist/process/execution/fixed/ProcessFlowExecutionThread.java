@@ -31,6 +31,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	private boolean canContinue;
 	private boolean waitingForIntervention;
 	private Object syncObject2;
+	private boolean needsReversal;
 	
 	private static Logger logger = LogManager.getLogger(ProcessFlowExecutionThread.class.getName());
 	
@@ -44,6 +45,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		this.syncObject = new Object();
 		this.canContinue = false;
 		this.waitingForIntervention = false;
+		this.needsReversal = false;
 		this.syncObject2 = new Object();
 	}
 	
@@ -80,6 +82,12 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					executeInterventionStep((InterventionStep) currentStep);
 				} else if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
 					checkStatus();
+					// Reset the value for reversal
+					if (!needsReversal && processFlow.hasReversalUnit()) {
+						needsReversal = true;
+					} else {
+						needsReversal = false;
+					}
 					executePutInMachineStep((PutStep) currentStep);
 				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
 					checkStatus();
@@ -259,10 +267,9 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					controllingThread.notifyException(e);
 					controllingThread.stopRunning();
 				}
-				controllingThread.notifyPutInMachineFinished(ProcessFlowExecutionThread.this);
+				controllingThread.notifyPutInMachineFinished(ProcessFlowExecutionThread.this, needsReversal);
 			}
-		});
-		
+		});		
 	}
 	
 	public void executePickFromMachineStep(final PickStep pickStep) throws AbstractCommunicationException, RobotActionException, InterruptedException, DeviceActionException {
@@ -286,8 +293,13 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		checkStatus();
 		pickStep.finalizeStep(this);
 		checkStatus();
-		canContinue = false;
-		controllingThread.notifyWaitingAfterPickFromMachine(this);
+		if (!needsReversal) {
+			canContinue = false;
+			controllingThread.notifyWaitingAfterPickFromMachine(this);
+		} else {
+			canContinue = true;
+			logger.info("Going to reversal unit");
+		}
 		checkStatus();
 		if (!canContinue) {
 			synchronized(syncObject) {
@@ -307,6 +319,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	
 	public void stopRunning() {
 		logger.info("Stop running processFlowExecutionThread");
+		this.needsReversal = false;
 		this.running = false;
 		synchronized(syncObject) {
 			syncObject.notifyAll();

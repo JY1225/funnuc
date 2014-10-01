@@ -53,7 +53,7 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 	
 	public void resetSmooth() {
 		if (deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()) != null) {
-			putStep.getRobotSettings().setSmoothPoint(deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()).getSmoothFromPoint());
+			putStep.getRobotSettings().setSmoothPoint(deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()).getSmoothToPoint());
 			getView().refresh();
 		}
 	}

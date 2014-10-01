@@ -17,12 +17,14 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 	private PrageDeviceConfigurePresenter prageDeviceConfigurePresenter;
 	private OutputBinConfigurePresenter outputBinConfigurePresenter;
 	private GridPlateConfigurePresenter gridPlateConfigurePresenter;
+	private ReversalUnitConfigurePresenter reversalUnitConfigurePresenter;
 	
 	public DeviceMenuPresenter(final DeviceMenuView view, final UserFramesConfigurePresenter userFramesConfigurePresenter,
 			final BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter, final CNCMachineConfigurePresenter cncMachineConfigurePresenter,
 				final CNCMachineClampingsPresenter cncMachineClamingsPresenter, final PrageDeviceConfigurePresenter prageDeviceConfigurePresenter,
 					final OutputBinConfigurePresenter outputBinConfigurePresenter, final GridPlateConfigurePresenter
-					gridPlateConfigurePresenter, final DeviceManager deviceManager) {
+					gridPlateConfigurePresenter, final ReversalUnitConfigurePresenter reversalUnitConfigurePresenter, 
+					final DeviceManager deviceManager) {
 		super(view);
 		this.userFramesConfigurePresenter = userFramesConfigurePresenter;
 		this.basicStackPlateConfigurePresenter = basicStackPlateConfigurePresenter;
@@ -31,9 +33,14 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		this.prageDeviceConfigurePresenter = prageDeviceConfigurePresenter;
 		this.outputBinConfigurePresenter = outputBinConfigurePresenter;
 		this.gridPlateConfigurePresenter = gridPlateConfigurePresenter;
+		this.reversalUnitConfigurePresenter = reversalUnitConfigurePresenter;
 		if (deviceManager.getPreProcessingDevices().size() == 0) {
 			//TODO review if other pre process devices are available!
 			getView().disablePrageMenuItem();
+		}
+		if (deviceManager.getPostProcessingDevices().size() == 0) {
+			//TODO review if other post process devices are available!
+			getView().disableReversalUnitMenuItem();
 		}
 		boolean stackPlatePresent = false;
 		boolean binPresent = false;
@@ -64,6 +71,7 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		prageDeviceConfigurePresenter.setTextFieldListener(listener);
 		outputBinConfigurePresenter.setTextFieldListener(listener);
 		gridPlateConfigurePresenter.setTextFieldListener(listener);
+		reversalUnitConfigurePresenter.setTextFieldListener(listener);
 	}
 
 	@Override
@@ -113,6 +121,12 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		getView().setConfigureGridPlateActive();
 		getParent().setContentView(gridPlateConfigurePresenter.getView());
 	}
+	
+	public void configureReversalUnit() {
+		getView().setConfigureReversalUnitActive();
+		getParent().setContentView(reversalUnitConfigurePresenter.getView());
+	}
+	
 	
 	@Override
 	public boolean isConfigured() {

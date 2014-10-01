@@ -6,10 +6,13 @@ import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.DeviceType;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.external.robot.RobotProcessingWhileWaitingSettings;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobotPickSettings;
@@ -282,7 +285,67 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		mode = Mode.NORMAL;
 	}
 	
-	//TODO review
+	// TODO - review (duplicate code) - nieuwe instantie van CNC of een deel? - workArea hebben we nodig..., maar ook weer niet aangezien we nog steeds over
+	// dezelfde machine praten - zou dat gaan bij die nieuwe code? - volgens mij niet, want dan zouden we ook 
+	private void addCNCMachineCopy() {
+		AbstractCNCMachine cncMachine = deviceManager.getCNCMachines().iterator().next();
+		int index = processFlowAdapter.getCNCMachineIndex();
+		
+		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
+		WorkArea workArea = null;
+		Clamping clamping = null;
+		if (cncMachine.getWorkAreas().size() >= 1) {
+			workArea = cncMachine.getWorkAreas().iterator().next();
+			if (workArea == null) {
+				throw new IllegalArgumentException("Device [" + cncMachine + "] does not contain workarea");
+			}
+			if (workArea.getClampings().size() >= 1) {
+				clamping = workArea.getClampings().iterator().next();
+				if (clamping == null) {
+					throw new IllegalArgumentException("Device [" + cncMachine + "] with workarea [" + workArea + "] does not contain clamping");
+				}
+			}
+		}
+
+		DevicePickSettings devicePickSettings = cncMachine.getDefaultPickSettings();
+		devicePickSettings.setWorkArea(workArea);
+		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = cncMachine.getDefaultStartCyclusSettings();
+		deviceStartCyclusSettings.setWorkArea(workArea);
+		DevicePutSettings devicePutSettings = cncMachine.getDefaultPutSettings();
+		devicePutSettings.setWorkArea(workArea);
+		DeviceSettings deviceSettings = cncMachine.getDeviceSettings();
+		deviceSettings.setClamping(workArea, clamping);
+		processFlowAdapter.getProcessFlow().setDeviceSettings(cncMachine, deviceSettings);
+		cncMachine.loadDeviceSettings(deviceSettings);
+		
+		FanucRobotPutSettings robotPutSettings = new FanucRobotPutSettings();
+		robotPutSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
+		robotPutSettings.setGripperHead(deviceInfo.getPutStep().getRobotSettings().getGripperHead());
+		robotPutSettings.setSmoothPoint(null);
+		robotPutSettings.setWorkArea(workArea);
+		robotPutSettings.setDoMachineAirblow(false);
+		
+		RobotPickSettings robotPickSettings = new FanucRobotPickSettings();
+		robotPickSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
+		// Gebruik dezelfde gripperHead voor pick en put - 
+		robotPickSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
+		robotPickSettings.setSmoothPoint(null);
+		robotPickSettings.setWorkArea(workArea);
+		robotPickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
+		
+		DeviceInformation newDeviceInfo = new DeviceInformation((index + 1), processFlowAdapter);
+
+		PutStep putStep = new PutStep(devicePutSettings, robotPutSettings);
+		ProcessingStep processingStep = new ProcessingStep(deviceStartCyclusSettings);
+		PickStep pickStep = new PickStep(devicePickSettings, robotPickSettings);
+		
+		newDeviceInfo.setPickStep(pickStep);
+		newDeviceInfo.setPutStep(putStep);
+		newDeviceInfo.setProcessingStep(processingStep);
+		
+		processFlowAdapter.addDeviceSteps(index +1 , newDeviceInfo);
+	}
+	
 	public void addDevice(final int index) {
 		
 		AbstractProcessingDevice device = null;
@@ -297,7 +360,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			if (deviceManager.getPostProcessingDevices().size() > 0) {
 				device = deviceManager.getPostProcessingDevices().iterator().next();
 			}
-		}
+		} 
 		
 		if (device == null) {
 			//throw new IllegalArgumentException("Not possible: no device to use");
@@ -315,7 +378,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			if (workArea.getClampings().size() >= 1) {
 				clamping = workArea.getClampings().iterator().next();
 				if (clamping == null) {
-					throw new IllegalArgumentException("Device [" + device + "] with workarea [" + workArea + "] does not contain workarea");
+					throw new IllegalArgumentException("Device [" + device + "] with workarea [" + workArea + "] does not contain clamping");
 				}
 			}
 		}
@@ -336,7 +399,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
 		robotPutSettings.setSmoothPoint(null);
 		robotPutSettings.setWorkArea(workArea);
-		robotPutSettings.setDoMachineAirblow(false);	
+		robotPutSettings.setDoMachineAirblow(false);
 		
 		RobotPickSettings robotPickSettings = new FanucRobotPickSettings();
 		robotPickSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
@@ -351,11 +414,21 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			RobotProcessingWhileWaitingSettings procSettings = new RobotProcessingWhileWaitingSettings(deviceInfo.getPickStep().getRobotSettings().getRobot(), workArea, deviceInfo.getPickStep().getRobotSettings().getGripperHead());		
 			PutAndWaitStep putAndWait1 = new PutAndWaitStep(devicePutSettings, robotPutSettings);
 			ProcessingWhileWaitingStep processing2 = new ProcessingWhileWaitingStep(deviceStartCyclusSettings, procSettings);
-			PickAfterWaitStep pickAfterWait1 = new PickAfterWaitStep(devicePickSettings, robotPickSettings);
+			PickAfterWaitStep pickAfterWait1 = new PickAfterWaitStep(devicePickSettings, robotPickSettings);			
 			
 			newDeviceInfo.setPickStep(pickAfterWait1);
 			newDeviceInfo.setPutStep(putAndWait1);
-			newDeviceInfo.setProcessingStep(processing2);
+			newDeviceInfo.setProcessingStep(processing2);	
+			
+		} else if (device instanceof ReversalUnit) {
+			// No processing needed - only put & pick
+			PutStep putStep = new PutStep(devicePutSettings, robotPutSettings);
+			ProcessingStep processingStep = new ProcessingStep(deviceStartCyclusSettings);
+			PickStep pickStep = new PickStep(devicePickSettings, robotPickSettings);			
+			
+			newDeviceInfo.setPutStep(putStep);
+			newDeviceInfo.setPickStep(pickStep);
+			newDeviceInfo.setProcessingStep(processingStep);
 		} else {
 			PutStep putStep = new PutStep(devicePutSettings, robotPutSettings);
 			ProcessingStep processingStep = new ProcessingStep(deviceStartCyclusSettings);
@@ -367,6 +440,9 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		}
 		
 		processFlowAdapter.addDeviceSteps(index, newDeviceInfo);
+		if (device.getType().equals(DeviceType.POST_PROCESSING)) {
+			addCNCMachineCopy();
+		}
 		
 		deviceMenuFactory.clearBuffer();
 		transportMenuFactory.clearBuffer();
@@ -374,6 +450,10 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	}
 	
 	public void removeDevice(final int index) {
+		if (index > processFlowAdapter.getCNCMachineIndex()) {
+			// Must be post-processing reversalUnit - so remove 2nd CNC machine as well
+			processFlowAdapter.removeDeviceSteps(index + 1);
+		}
 		processFlowAdapter.removeDeviceSteps(index);
 		deviceMenuFactory.clearBuffer();
 		transportMenuFactory.clearBuffer();

@@ -19,7 +19,7 @@ import eu.robojob.millassist.process.event.DataChangedEvent;
 public class ProcessFlowAdapter {
 
 	//TODO review the max amount
-	private static final int MAX_DEVICE_AMOUNT = 4;
+	private static final int MAX_DEVICE_AMOUNT = 6;
 	
 	private ProcessFlow processFlow;
 	
@@ -138,7 +138,7 @@ public class ProcessFlowAdapter {
 	}
 	
 	public void addDeviceSteps(final int transportIndex, final DeviceInformation deviceInfo) {
-		if ((getDeviceStepCount() < MAX_DEVICE_AMOUNT) && (transportIndex < getCNCMachineIndex())) {			
+		if (canAddDevice()/* && (transportIndex < getCNCMachineIndex())*/) {			
 			DeviceInformation prevDeviceInfo = getDeviceInformation(transportIndex);
 			processFlow.addStepAfter(prevDeviceInfo.getPickStep(), deviceInfo.getPutStep());
 			if (deviceInfo.hasProcessingStep()) {

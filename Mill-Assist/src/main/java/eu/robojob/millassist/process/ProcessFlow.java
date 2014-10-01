@@ -539,7 +539,6 @@ public class ProcessFlow {
 	public boolean hasBinForFinishedPieces() {
 		for(AbstractProcessStep processStep: processSteps) {
 			if(processStep instanceof PutStep) {
-				processStep = (PutStep) processStep;
 				if(((PutStep) processStep).getDevice().getType().equals(DeviceType.OUTPUT_BIN)) {
 					return true;
 				}
@@ -547,6 +546,18 @@ public class ProcessFlow {
 		}
 		return false;
 	}
+	
+	public boolean hasReversalUnit() {
+		for(AbstractProcessStep processStep: processSteps) {
+			if(processStep instanceof ProcessingStep) {
+				if(((ProcessingStep) processStep).getDevice().getType().equals(DeviceType.POST_PROCESSING)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 
 	public ClampingManner getClampingType() {
 		return clampingManner;
@@ -580,11 +591,12 @@ public class ProcessFlow {
 		float totalWorkPieceWeight = pickFromStacker.getRobotSettings().getWorkPiece().getWeight() + pickFromMachine.getRobotSettings().getWorkPiece().getWeight();
 		if (totalWorkPieceWeight < pickFromMachine.getRobot().getMaxWorkPieceWeight()) {
 			if (pickFromMachine.getRobotSettings().getGripperHead().equals(putToMachine.getRobotSettings().getGripperHead())) {
+				//TODO - is dit correct? We checken hier enkel CNC machine 2 - die alleen maar gripper 2 gebruikt
 				isConcurrentExecutionPossible = false; 
 			} else {
 				isConcurrentExecutionPossible = true;
 			}
-		} else {
+		} else {				
 			isConcurrentExecutionPossible = false;
 		}
 		return isConcurrentExecutionPossible;

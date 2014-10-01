@@ -256,8 +256,8 @@ public class FanucRobot extends AbstractRobot {
 		if (getCurrentActionSettings() == null) {
 			throw new InterruptedException();
 		}
-		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PUT_FINISHED, MOVE_FINISH_TIMEOUT);
-		if (!waitingForPickFinished) {
+		boolean waitingForPutFinished = waitForStatus(RobotConstants.STATUS_PUT_FINISHED, MOVE_FINISH_TIMEOUT);
+		if (!waitingForPutFinished) {
 			setRobotTimeout(new RobotAlarm(RobotAlarm.FINALIZE_PUT_TIMEOUT));
 			waitForStatus(RobotConstants.STATUS_PUT_FINISHED);
 			setRobotTimeout(null);

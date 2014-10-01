@@ -146,6 +146,7 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 		if (processFlowExecutor.equals(processFlowExecutor1)) {
 			statusExecutor1 = ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER;
 			if ((statusExecutor2 != ExecutionThreadStatus.WORKING_WITH_ROBOT) && (statusExecutor2 != ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER) &&
+					(statusExecutor2 != ExecutionThreadStatus.WAITING_FOR_REVERSAL) && (statusExecutor3 != ExecutionThreadStatus.WAITING_FOR_REVERSAL) &&
 					(statusExecutor3 != ExecutionThreadStatus.WORKING_WITH_ROBOT) && (statusExecutor3 != ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER)) {
 				statusExecutor1 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
 				processFlowExecutor1.continueExecution();
@@ -153,6 +154,7 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 		} else if (processFlowExecutor.equals(processFlowExecutor2)) {
 			statusExecutor2 = ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER;
 			if ((statusExecutor1 != ExecutionThreadStatus.WORKING_WITH_ROBOT) && (statusExecutor1 != ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER) &&
+					(statusExecutor1 != ExecutionThreadStatus.WAITING_FOR_REVERSAL) && (statusExecutor3 != ExecutionThreadStatus.WAITING_FOR_REVERSAL) &&
 					(statusExecutor3 != ExecutionThreadStatus.WORKING_WITH_ROBOT) && (statusExecutor3 != ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER)) {
 				statusExecutor2 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
 				processFlowExecutor2.continueExecution();
@@ -160,6 +162,7 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 		} else if (processFlowExecutor.equals(processFlowExecutor3)) {
 			statusExecutor3 = ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER;
 			if ((statusExecutor1 != ExecutionThreadStatus.WORKING_WITH_ROBOT) && (statusExecutor1 != ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER) &&
+					(statusExecutor1 != ExecutionThreadStatus.WAITING_FOR_REVERSAL) && (statusExecutor2 != ExecutionThreadStatus.WAITING_FOR_REVERSAL) &&
 					(statusExecutor2 != ExecutionThreadStatus.WORKING_WITH_ROBOT) && (statusExecutor2 != ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER)) {
 				statusExecutor3 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
 				processFlowExecutor3.continueExecution();
@@ -190,6 +193,7 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 		}
 	}
 	
+	//FIXME - klopt niet voor dualLoad want je mag nog 1 stuk in de machine steken
 	public synchronized void notifyWaitingBeforePutInMachine(final ProcessFlowExecutionThread processFlowExecutor) {
 		// if one of other executor is waiting for pick: continue this first
 		// if one (or none) of other executors is working without robot, continue
@@ -263,73 +267,116 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 		} 
 	}
 	
-	public synchronized void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor) {
+	//FIXME - klopt niet voor dualLoad want je mag nog 1 stuk in de machine steken
+	public synchronized void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor, final boolean needsReversal) {
 		logger.info("Put in machine finished.");
 		// if other executor is running and waiting after pick from machine, continue that one
 		// else if next executor is waiting for pick from stacker, continue this one, if it hasn't started yet, start (if possible)
+		if (needsReversal) {
+			waitingBeforeReversal(processFlowExecutor);
+		} else {
+			if (processFlowExecutor.equals(processFlowExecutor1)) {
+				statusExecutor1 = ExecutionThreadStatus.WORKING_WITHOUT_ROBOT;
+				// no continue needed
+				if (statusExecutor3 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE) {
+					statusExecutor3 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+					processFlowExecutor3.continueExecution();
+				} else if (statusExecutor2 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE) {
+					statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+					processFlowExecutor2.continueExecution();
+				} else if (!processFlowExecutor2.isRunning() && (processFlow.getTotalAmount() - processFlow.getFinishedAmount() > 1)) {
+					// always start second process if not running and more than one wp needed after current
+					statusExecutor2 = ExecutionThreadStatus.IDLE;
+					processFlowExecutor2Future = ThreadManager.submit(processFlowExecutor2);
+				} else if ((!processFlowExecutor2.isRunning()) && (processFlow.getTotalAmount() - processFlow.getFinishedAmount() <= 1)) {
+					logger.info("No second process, move to home");
+					try {
+						processFlow.getRobots().iterator().next().moveToHome();
+					} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+						e.printStackTrace();
+						logger.error(e);
+					}
+				} else if (statusExecutor2 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
+					statusExecutor2 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
+					processFlowExecutor2.continueExecution();
+				}
+			} else if (processFlowExecutor.equals(processFlowExecutor2)) {
+				statusExecutor2 = ExecutionThreadStatus.WORKING_WITHOUT_ROBOT;
+				// no continue needed
+				if (statusExecutor1 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE) {
+					statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+					processFlowExecutor1.continueExecution();
+				} else if (statusExecutor3 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE) {
+					statusExecutor3 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+					processFlowExecutor3.continueExecution();
+				} else if (!processFlowExecutor3.isRunning() && (processFlow.getTotalAmount() - processFlow.getFinishedAmount() > 2) && isConcurrentExecutionPossible) {
+					// always start second process if not running and more than one wp needed after current
+					statusExecutor3 = ExecutionThreadStatus.IDLE;
+					processFlowExecutor3Future = ThreadManager.submit(processFlowExecutor3);
+				} else if (!processFlowExecutor3.isRunning()) {
+					logger.info("No third process, move to home");
+					try {
+						processFlow.getRobots().iterator().next().moveToHome();
+					} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+						e.printStackTrace();
+						logger.error(e);
+					}
+				} else if (statusExecutor3 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
+					statusExecutor3 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
+					processFlowExecutor3.continueExecution();
+				}
+			}  else {
+				statusExecutor3 = ExecutionThreadStatus.WORKING_WITHOUT_ROBOT;
+				// no continue needed
+				if (statusExecutor2 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE) {
+					statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+					processFlowExecutor2.continueExecution();
+				} else if (statusExecutor1 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE) {
+					statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+					processFlowExecutor1.continueExecution();
+				} else if (statusExecutor1 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
+					statusExecutor1 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
+					processFlowExecutor1.continueExecution();
+				}
+			}	
+		}
+	}
+	
+	//FIXME - klopt niet voor dualLoad want je mag nog 1 stuk in de machine steken
+	private void waitingBeforeReversal(final ProcessFlowExecutionThread processFlowExecutor) {
 		if (processFlowExecutor.equals(processFlowExecutor1)) {
-			statusExecutor1 = ExecutionThreadStatus.WORKING_WITHOUT_ROBOT;
-			// no continue needed
-			if (statusExecutor3 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE) {
-				statusExecutor3 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
-				processFlowExecutor3.continueExecution();
-			} else if (statusExecutor2 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE) {
+			statusExecutor1 = ExecutionThreadStatus.WAITING_FOR_REVERSAL;
+			if (statusExecutor2.equals(ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) {
 				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
 				processFlowExecutor2.continueExecution();
-			} else if (!processFlowExecutor2.isRunning() && (processFlow.getTotalAmount() - processFlow.getFinishedAmount() > 1)) {
-				// always start second process if not running and more than one wp needed after current
-				statusExecutor2 = ExecutionThreadStatus.IDLE;
-				processFlowExecutor2Future = ThreadManager.submit(processFlowExecutor2);
-			} else if ((!processFlowExecutor2.isRunning()) && (processFlow.getTotalAmount() - processFlow.getFinishedAmount() <= 1)) {
-				logger.info("No second process, move to home");
-				try {
-					processFlow.getRobots().iterator().next().moveToHome();
-				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
-					e.printStackTrace();
-					logger.error(e);
-				}
-			} else if (statusExecutor2 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
-				statusExecutor2 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
-				processFlowExecutor2.continueExecution();
-			}
-		} else if (processFlowExecutor.equals(processFlowExecutor2)) {
-			statusExecutor2 = ExecutionThreadStatus.WORKING_WITHOUT_ROBOT;
-			// no continue needed
-			if (statusExecutor1 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE) {
-				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
-				processFlowExecutor1.continueExecution();
-			} else if (statusExecutor3 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE) {
+			} else if (statusExecutor3.equals(ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) {
 				statusExecutor3 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
 				processFlowExecutor3.continueExecution();
-			} else if (!processFlowExecutor3.isRunning() && (processFlow.getTotalAmount() - processFlow.getFinishedAmount() > 2) && isConcurrentExecutionPossible) {
-				// always start second process if not running and more than one wp needed after current
-				statusExecutor3 = ExecutionThreadStatus.IDLE;
-				processFlowExecutor3Future = ThreadManager.submit(processFlowExecutor3);
-			} else if (!processFlowExecutor3.isRunning()) {
-				logger.info("No third process, move to home");
-				try {
-					processFlow.getRobots().iterator().next().moveToHome();
-				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
-					e.printStackTrace();
-					logger.error(e);
-				}
-			} else if (statusExecutor3 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
-				statusExecutor3 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
-				processFlowExecutor3.continueExecution();
 			}
-		}  else {
-			statusExecutor3 = ExecutionThreadStatus.WORKING_WITHOUT_ROBOT;
-			// no continue needed
-			if (statusExecutor2 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE) {
-				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
-				processFlowExecutor2.continueExecution();
-			} else if (statusExecutor1 == ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE) {
+		} else if (processFlowExecutor.equals(processFlowExecutor2)){
+			statusExecutor2 = ExecutionThreadStatus.WAITING_FOR_REVERSAL;
+			if (statusExecutor3.equals(ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) {
+				statusExecutor3 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor3.continueExecution();
+			} else if (statusExecutor1.equals(ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) {
 				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
 				processFlowExecutor1.continueExecution();
-			} else if (statusExecutor1 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
-				statusExecutor1 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
-				processFlowExecutor1.continueExecution();
 			}
+		} else {
+			statusExecutor3 = ExecutionThreadStatus.WAITING_FOR_REVERSAL;
+			if (statusExecutor1.equals(ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) {
+				statusExecutor1 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor1.continueExecution();
+			} else if (statusExecutor2.equals(ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) {
+				statusExecutor2 = ExecutionThreadStatus.WORKING_WITH_ROBOT;
+				processFlowExecutor2.continueExecution();
+			}
+		}
+		try {
+			processFlow.getRobots().iterator().next().moveToHome();
+		} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+			e.printStackTrace();
+			logger.error(e);
 		}
 	}
 	
@@ -510,7 +557,10 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 		} else if (processFlowExecutor == processFlowExecutor1) {
 			// continue
 			statusExecutor1 = ExecutionThreadStatus.IDLE;
-			processFlowExecutor1.continueExecution();
+			if (!statusExecutor2.equals(ExecutionThreadStatus.WAITING_FOR_REVERSAL) &&
+					!statusExecutor3.equals(ExecutionThreadStatus.WAITING_FOR_REVERSAL)) {
+				processFlowExecutor1.continueExecution();
+			}
 			if (statusExecutor2 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
 				statusExecutor2 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
 				processFlowExecutor2.continueExecution();
@@ -527,7 +577,10 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 		}  else if (processFlowExecutor == processFlowExecutor2) {
 			// continue
 			statusExecutor2 = ExecutionThreadStatus.IDLE;
-			processFlowExecutor2.continueExecution();
+			if (!statusExecutor1.equals(ExecutionThreadStatus.WAITING_FOR_REVERSAL) &&
+					!statusExecutor3.equals(ExecutionThreadStatus.WAITING_FOR_REVERSAL)) {
+				processFlowExecutor2.continueExecution();
+			}
 			if (statusExecutor3 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
 				statusExecutor3 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
 				processFlowExecutor3.continueExecution();
@@ -544,7 +597,10 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 		} else if (processFlowExecutor == processFlowExecutor3) {
 			// continue
 			statusExecutor3 = ExecutionThreadStatus.IDLE;
-			processFlowExecutor3.continueExecution();
+			if (!statusExecutor1.equals(ExecutionThreadStatus.WAITING_FOR_REVERSAL) &&
+					!statusExecutor2.equals(ExecutionThreadStatus.WAITING_FOR_REVERSAL)) {
+				processFlowExecutor3.continueExecution();
+			}
 			if (statusExecutor1 == ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER) {
 				statusExecutor1 = ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER;
 				processFlowExecutor1.continueExecution();
