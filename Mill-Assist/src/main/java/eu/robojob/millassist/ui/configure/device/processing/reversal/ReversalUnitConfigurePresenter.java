@@ -4,7 +4,6 @@ import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
-// TODO - ReversalUnit review
 public class ReversalUnitConfigurePresenter extends AbstractFormPresenter<ReversalUnitConfigureView, ReversalUnitMenuPresenter> {
 	
 	public ReversalUnitConfigurePresenter(final ReversalUnitConfigureView view, final DeviceInformation deviceInfo, final DeviceManager deviceManager) {

@@ -24,7 +24,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private Set<CNCMachineAlarm> alarms;
 	private int currentStatus;
 	private boolean statusChanged;
-	private Object syncObject;
+	private static Object syncObject;
 	private boolean stopAction;
 	private CNCMachineAlarm cncMachineTimeout;
 	private int clampingWidthR;
@@ -98,6 +98,14 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	public synchronized void removeListener(final CNCMachineListener listener) {
 		listeners.remove(listener);
 		logger.debug("Stopped listening to [" + toString() + "]: " + listener.toString());
+	}
+	
+	protected Set<CNCMachineListener> getCNCMachineListeners() {
+		return this.listeners;
+	}
+	
+	protected void setCNCMachineListeners(final Set<CNCMachineListener> listeners) {
+		this.listeners = listeners;
 	}
 	
 	public int getStatus() {
@@ -251,22 +259,39 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		waitForStatus(status, 0);
 	}
 	
-	protected boolean waitForMCode(final int index) throws InterruptedException, DeviceActionException {
-		logger.info("Waiting for M CODE: " + index);
+	protected boolean waitForMCodes(final int... indexList) throws InterruptedException, DeviceActionException {
+		String loggerString = "Waiting for M CODE: " + indexList[0];
+		for (int i = 1; i < indexList.length; i++) {
+			loggerString += " OR " + indexList[i];
+		}
+		logger.info(loggerString);
 		return waitForStatusCondition(new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
-				return mCodeAdapter.isMCodeActive(index);
+				for (int index: indexList) {
+					if (mCodeAdapter.isMCodeActive(index))
+						return true;
+				}
+				return false;
 			}
 		}, 0);
 	}
 	
-	protected boolean waitForNoMCode(final int index) throws InterruptedException, DeviceActionException {
-		logger.info("Waiting for M CODE gone: " + index);
+	protected boolean waitForNoMCode(final int... indexList) throws InterruptedException, DeviceActionException {
+		String loggerString = "Waiting for M CODE gone: " + indexList[0];
+		for (int i = 1; i < indexList.length; i++) {
+			loggerString += " OR " + indexList[i];
+		}
+		logger.info(loggerString);
 		return waitForStatusCondition(new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
-				return !mCodeAdapter.isMCodeActive(index);
+				for (int index: indexList) {
+					if (mCodeAdapter.isMCodeActive(index)) {
+						return false;
+					}
+				}
+				return true;
 			}
 		}, 0);
 	}
@@ -300,4 +325,5 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	public void setClampingWidthR(final int clampingWidthR) {
 		this.clampingWidthR = clampingWidthR;
 	}
+	
 }

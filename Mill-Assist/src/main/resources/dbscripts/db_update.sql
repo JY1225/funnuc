@@ -42,4 +42,27 @@ INSERT INTO WORKAREA_CLAMPING (WORKAREA, CLAMPING)
 INSERT INTO MCODE VALUES (3,2, 1, 'loadR', true, false, false, false, false, false);
 INSERT INTO MCODE VALUES (4,3, 1, 'unloadR', true, false, false, false, false, false);
 
+INSERT INTO WORKAREA (ZONE, USERFRAME, NAME)
+         (
+                SELECT WORKAREA.ZONE
+                      ,WORKAREA.USERFRAME
+                      ,'MAIN REV'
+                  from workarea 
+                 where userframe = 1
+                );
+
+insert into workarea_clamping (workarea, clamping ) 
+(
+        select workarea.id, clamping
+         from workarea_clamping, workarea
+        where workarea = 1
+          and workarea.name = 'MAIN REV'
+        );
+
+INSERT INTO WORKPIECETYPE VALUES (3, 'HALF_FINISHED');
+
+ALTER TABLE DEVICEACTIONSETTINGS ADD COLUMN WORKPIECE INTEGER;
+ALTER TABLE DEVICEACTIONSETTINGS ADD CONSTRAINT DEVICEACTIONSETTINGS_WORKPICE FOREIGN KEY (WORKPIECE) REFERENCES WORKPIECE (ID) ON
+    DELETE
+        SET NULL;
  

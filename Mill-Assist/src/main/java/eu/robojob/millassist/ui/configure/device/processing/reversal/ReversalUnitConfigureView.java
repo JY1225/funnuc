@@ -12,8 +12,6 @@ import eu.robojob.millassist.ui.general.model.DeviceInformation;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 
-//TODO - ReversalUnit review
-
 public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConfigurePresenter> {
 
 	private static final int HGAP = 15;

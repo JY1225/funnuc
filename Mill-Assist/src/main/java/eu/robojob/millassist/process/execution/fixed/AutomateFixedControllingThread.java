@@ -532,4 +532,19 @@ public class AutomateFixedControllingThread implements Runnable {
 	public String toString() {
 		return "AutomateFixedControllingThread - processflow [" + processFlow + "]";
 	}
+	
+	protected void setStatus(ExecutionThreadStatus newStatus, int workPieceId) {
+		logger.debug("STATUS WP[" + workPieceId + "] = " + newStatus);
+		switch (workPieceId) {
+		case WORKPIECE_0_ID:
+			statusExecutor1 = newStatus;
+			break;
+		case WORKPIECE_1_ID:
+			statusExecutor2 = newStatus;
+			break;
+		default:
+			break;
+		}
+	}
+	
 }

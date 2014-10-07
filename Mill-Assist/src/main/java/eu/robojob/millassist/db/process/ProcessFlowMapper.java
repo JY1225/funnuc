@@ -229,13 +229,22 @@ public class ProcessFlowMapper {
 		PreparedStatement stmtDeleteWorkPieces = ConnectionManager.getConnection().prepareStatement("" 	+
 				"delete from workpiece where workpiece.id in "											+ 
 				"	(" 																					+
-				"		select workpiece from robotpicksettings where robotpicksettings.id in" 			+
+				"		(select workpiece from robotpicksettings where robotpicksettings.id in" 		+
 				"			(" 																			+
 				"				select id from robotactionsettings where robotactionsettings.step in " 	+
 				"					(select id from step where step.processflow = ?)" 					+
 				"			)" 																			+
+				"		)" 																				+
+				"		union" 																			+
+				"		(select workpiece from deviceactionsettings where deviceactionsettings.id in" 	+
+				"			(" 																			+
+				"				select id from deviceactionsettings where deviceactionsettings.step in "+
+				"					(select id from step where step.processflow = ?)" 					+
+				"			)" 																			+
+				"		)" 																				+
 				"	) ");
 		stmtDeleteWorkPieces.setInt(1, processFlow.getId());
+		stmtDeleteWorkPieces.setInt(2, processFlow.getId());
 		stmtDeleteWorkPieces.executeUpdate();
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM DEVICESETTINGS WHERE PROCESSFLOW = ?");
 		stmt.setInt(1, processFlow.getId());
@@ -253,6 +262,15 @@ public class ProcessFlowMapper {
 			if (step instanceof PickStep) {
 				PickStep pStep = (PickStep) step;
 				pStep.getRobotSettings().getWorkPiece().setId(0);
+				pStep.getDeviceSettings().getWorkPiece().setId(0);
+			}
+			else if (step instanceof PutStep) {
+				PutStep putStep = (PutStep) step;
+				putStep.getDeviceSettings().getWorkPiece().setId(0);
+			}
+			else if (step instanceof ProcessingStep) {
+				ProcessingStep processingStep = (ProcessingStep) step;
+				processingStep.getDeviceSettings().getWorkPiece().setId(0);
 			}
 			if (step instanceof RobotStep) {
 				AbstractRobotActionSettings<?> robotActionSettings = ((RobotStep) step).getRobotSettings();
@@ -266,6 +284,7 @@ public class ProcessFlowMapper {
 					trStep.getRelativeTeachedOffset().setId(0);
 				}
 			}
+
 		}
 	}
 	
@@ -337,10 +356,12 @@ public class ProcessFlowMapper {
 	}
 	
 	private void saveDeviceActionSettings(final DeviceStep deviceStep) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICEACTIONSETTINGS (DEVICE, WORKAREA, STEP) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		generalMapper.saveWorkPiece(deviceStep.getDeviceSettings().getWorkPiece());
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICEACTIONSETTINGS (DEVICE, WORKAREA, STEP, WORKPIECE) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, deviceStep.getDevice().getId());
 		stmt.setInt(2, deviceStep.getDeviceSettings().getWorkArea().getId());
 		stmt.setInt(3, ((AbstractProcessStep) deviceStep).getId());
+		stmt.setInt(4, deviceStep.getDeviceSettings().getWorkPiece().getId());
 		stmt.executeUpdate();
 		ResultSet keys = stmt.getGeneratedKeys();
 		if ((keys != null) && (keys.next())) {
@@ -794,9 +815,11 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
+			int workPieceId = results.getInt("WORKPIECE");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			WorkArea workArea = device.getWorkAreaById(workAreaId);
-			deviceInterventionSettings = new DeviceInterventionSettings(device, workArea);
+			WorkPiece workPiece = generalMapper.getWorkPieceById(0, workPieceId);
+			deviceInterventionSettings = new DeviceInterventionSettings(device, workArea, workPiece);
 			deviceInterventionSettings.setId(id);
 		}
 		return deviceInterventionSettings;
@@ -811,9 +834,11 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
+			int workPieceId = results.getInt("WORKPIECE");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			WorkArea workArea = device.getWorkAreaById(workAreaId);
-			processingDeviceStartCyclusSettings = new ProcessingDeviceStartCyclusSettings((AbstractProcessingDevice) device, workArea);
+			WorkPiece workPiece = generalMapper.getWorkPieceById(0, workPieceId);
+			processingDeviceStartCyclusSettings = new ProcessingDeviceStartCyclusSettings((AbstractProcessingDevice) device, workArea, workPiece);
 			processingDeviceStartCyclusSettings.setId(id);
 		}
 		return processingDeviceStartCyclusSettings;
@@ -828,9 +853,11 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
+			int workPieceId = results.getInt("WORKPIECE");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			WorkArea workArea = device.getWorkAreaById(workAreaId);
-			devicePickSettings = new DevicePickSettings(device, workArea);
+			WorkPiece workPiece = generalMapper.getWorkPieceById(0, workPieceId);
+			devicePickSettings = new DevicePickSettings(device, workArea, workPiece);
 			devicePickSettings.setId(id);
 		}
 		return devicePickSettings;
@@ -845,9 +872,11 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
+			int workPieceId = results.getInt("WORKPIECE");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			WorkArea workArea = device.getWorkAreaById(workAreaId);
-			devicePutSettings = new DevicePutSettings(device, workArea);
+			WorkPiece workPiece = generalMapper.getWorkPieceById(0, workPieceId);
+			devicePutSettings = new DevicePutSettings(device, workArea, workPiece);
 			devicePutSettings.setId(id);
 		}
 		return devicePutSettings;

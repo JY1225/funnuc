@@ -4,7 +4,26 @@ package eu.robojob.millassist.workpiece;
 public class WorkPiece {
 
 	public enum Type {
-		RAW, FINISHED
+		RAW(1), FINISHED(2), HALF_FINISHED(3);
+		
+		private int id;
+		
+		private Type(int id) {
+			this.id = id;
+		}
+		
+		public int getTypeId() {
+			return this.id;
+		}
+		
+		public static Type getTypeById(int id) throws IllegalStateException {
+			for (Type workPieceType: Type.values()) {
+				if (workPieceType.getTypeId() == id) {
+					return workPieceType;
+				}
+			}
+			throw new IllegalStateException("Unknown workpiece type: [" + id + "].");
+		}
 	}
 	
 	public enum Material {
@@ -90,5 +109,10 @@ public class WorkPiece {
 	
 	public String toString() {
 		return "WorkPiece: " + type + " - " + dimensions;
+	}
+	
+	@Override
+	public WorkPiece clone() {
+		return new WorkPiece(this);
 	}
 }

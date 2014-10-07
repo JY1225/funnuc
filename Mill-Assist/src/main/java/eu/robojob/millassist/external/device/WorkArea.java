@@ -119,5 +119,10 @@ public class WorkArea {
 		}
 		return null;
 	}
+	
+	@Override
+	public WorkArea clone() {
+		return new WorkArea((this.name + "(2)") , this.userFrame, this.activeClamping, this.clampings);
+	}
 
 }

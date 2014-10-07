@@ -6,6 +6,7 @@ import java.util.Map;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
@@ -146,7 +147,8 @@ public class DeviceMenuFactory {
 	
 	private ReversalUnitPutPresenter getReversalUnitPutPresenter(final DeviceInformation deviceInfo) {
 		ReversalUnitPutView view = new ReversalUnitPutView();
-		ReversalUnitPutPresenter presenter = new ReversalUnitPutPresenter(view, deviceInfo.getPutStep(), deviceInfo.getDeviceSettings());
+		//FIXME
+		ReversalUnitPutPresenter presenter = new ReversalUnitPutPresenter(view, deviceInfo.getPutStep(), new ReversalUnitSettings());
 		return presenter;
 	}
 	

@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
@@ -58,6 +59,9 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	@Override 
 	public void run() {
 		this.running = true;
+		if (processFlow.hasReversalUnit()) {
+			needsReversal = true;
+		}
 		try {
 			while (running) {
 				
@@ -71,7 +75,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 				
 				AbstractProcessStep currentStep = processFlow.getStep(processFlow.getCurrentIndex(workpieceId));
 				
-				logger.info("ProcessFlowExecution, current step = " + currentStep);
+				logger.info("ProcessFlowExecution for WP[" + workpieceId +"], current step = " + currentStep);
 				
 				checkStatus();
 				
@@ -80,14 +84,16 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 				}
 				if (currentStep instanceof InterventionStep) {
 					executeInterventionStep((InterventionStep) currentStep);
-				} else if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
+				} 
+				if (currentStep instanceof PickStep && (((PickStep) currentStep).getDevice() instanceof ReversalUnit)) {
+					needsReversal = false;
 					checkStatus();
-					// Reset the value for reversal
-					if (!needsReversal && processFlow.hasReversalUnit()) {
-						needsReversal = true;
-					} else {
-						needsReversal = false;
-					}
+					currentStep.executeStep(workpieceId, this);
+					checkStatus();
+					((PickStep) currentStep).finalizeStep(this);
+				}
+				else if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
+					checkStatus();
 					executePutInMachineStep((PutStep) currentStep);
 				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
 					checkStatus();
@@ -122,6 +128,9 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 				if (processFlow.getCurrentIndex(workpieceId) == processFlow.getProcessSteps().size() - 1) {
 					processFlow.setCurrentIndex(workpieceId, 0);
 					processFlow.incrementFinishedAmount();
+					if (processFlow.hasReversalUnit()) {
+						needsReversal = true;
+					}
 					canContinue = false;
 					controllingThread.notifyProcessFlowFinished(this);
 					if (waitingForIntervention) {
@@ -332,6 +341,10 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	
 	public boolean isRunning() {
 		return this.running;
+	}
+	
+	public boolean needsReversal() {
+		return this.needsReversal;
 	}
 	
 	public void continueExecution() {

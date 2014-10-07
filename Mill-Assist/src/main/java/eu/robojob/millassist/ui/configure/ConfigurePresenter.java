@@ -39,6 +39,7 @@ import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.ui.general.MainContentPresenter;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
+import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class ConfigurePresenter implements TextInputControlListener, MainContentPresenter {
 
@@ -285,8 +286,19 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		mode = Mode.NORMAL;
 	}
 	
-	// TODO - review (duplicate code) - nieuwe instantie van CNC of een deel? - workArea hebben we nodig..., maar ook weer niet aangezien we nog steeds over
-	// dezelfde machine praten - zou dat gaan bij die nieuwe code? - volgens mij niet, want dan zouden we ook dubbele clamping pakken
+	/*
+	 * Update the workpieces from the first CNC machine in a way that it generates HALF_FINISHED workpieces
+	 */
+	private static void updateCNCWorkPieces(DeviceInformation deviceInfo) {
+		deviceInfo.getPutStep().getDeviceSettings().getWorkPiece().setType(WorkPiece.Type.RAW);
+		WorkPiece clonedPiecetoPick = deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone();
+		clonedPiecetoPick.setType(WorkPiece.Type.HALF_FINISHED);
+		deviceInfo.getPickStep().getDeviceSettings().setWorkPiece(clonedPiecetoPick);
+		deviceInfo.getPickStep().getRobotSettings().setWorkPiece(clonedPiecetoPick);
+		deviceInfo.getProcessingStep().getDeviceSettings().setWorkPiece(clonedPiecetoPick);
+	}
+	
+	// TODO - review (duplicate code)
 	private void addCNCMachineCopy() {
 		AbstractCNCMachine cncMachine = deviceManager.getCNCMachines().iterator().next();
 		int index = processFlowAdapter.getCNCMachineIndex();
@@ -295,7 +307,11 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		WorkArea workArea = null;
 		Clamping clamping = null;
 		if (cncMachine.getWorkAreas().size() >= 1) {
-			workArea = cncMachine.getWorkAreas().iterator().next();
+			for (WorkArea workA: cncMachine.getWorkAreas()) {
+				if (workArea == null || workA.getId() > workArea.getId()) {
+					workArea = workA;
+				}
+			}
 			if (workArea == null) {
 				throw new IllegalArgumentException("Device [" + cncMachine + "] does not contain workarea");
 			}
@@ -306,12 +322,18 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 				}
 			}
 		}
-
-		DevicePickSettings devicePickSettings = cncMachine.getDefaultPickSettings();
+		
+		updateCNCWorkPieces(deviceInfo);
+		
+		//Clone nemen van robotPick and PutSettings
+		DevicePickSettings devicePickSettings = cncMachine.getDefaultPickSettings(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
+		devicePickSettings.getWorkPiece().setType(WorkPiece.Type.FINISHED);
 		devicePickSettings.setWorkArea(workArea);
 		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = cncMachine.getDefaultStartCyclusSettings();
 		deviceStartCyclusSettings.setWorkArea(workArea);
-		DevicePutSettings devicePutSettings = cncMachine.getDefaultPutSettings();
+		deviceStartCyclusSettings.setWorkPiece(devicePickSettings.getWorkPiece());
+		DevicePutSettings devicePutSettings = cncMachine.getDefaultPutSettings(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
+		devicePutSettings.getWorkPiece().setType(WorkPiece.Type.HALF_FINISHED);
 		devicePutSettings.setWorkArea(workArea);
 		DeviceSettings deviceSettings = cncMachine.getDeviceSettings();
 		deviceSettings.setClamping(workArea, clamping);
@@ -319,19 +341,22 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		cncMachine.loadDeviceSettings(deviceSettings);
 		
 		FanucRobotPutSettings robotPutSettings = new FanucRobotPutSettings();
-		robotPutSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
-		robotPutSettings.setGripperHead(deviceInfo.getPutStep().getRobotSettings().getGripperHead());
+		robotPutSettings.setRobot(deviceInfo.getPutStep().getRobotSettings().getRobot());
+		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
+		robotPutSettings.getGripperHead().getGripper().setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
+		robotPutSettings.getGripperHead().getGripper().getWorkPiece().setType(WorkPiece.Type.HALF_FINISHED);
 		robotPutSettings.setSmoothPoint(null);
 		robotPutSettings.setWorkArea(workArea);
 		robotPutSettings.setDoMachineAirblow(false);
 		
 		RobotPickSettings robotPickSettings = new FanucRobotPickSettings();
 		robotPickSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
-		// Gebruik dezelfde gripperHead voor pick en put - 
 		robotPickSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
 		robotPickSettings.setSmoothPoint(null);
 		robotPickSettings.setWorkArea(workArea);
-		robotPickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
+		robotPickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
+		robotPickSettings.getWorkPiece().setType(WorkPiece.Type.FINISHED);
+		robotPickSettings.getGripperHead().getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
 		
 		DeviceInformation newDeviceInfo = new DeviceInformation((index + 1), processFlowAdapter);
 
@@ -383,12 +408,18 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			}
 		}
 		
-		DevicePickSettings devicePickSettings = device.getDefaultPickSettings();
+		//TODO - dit moet standaard een aparte methode worden
+		DevicePickSettings devicePickSettings = device.getDefaultPickSettings(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		devicePickSettings.setWorkArea(workArea);
+		devicePickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
+		devicePickSettings.getWorkPiece().setType(WorkPiece.Type.RAW);
 		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = device.getDefaultStartCyclusSettings();
 		deviceStartCyclusSettings.setWorkArea(workArea);
-		DevicePutSettings devicePutSettings = device.getDefaultPutSettings();
+		deviceStartCyclusSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
+		DevicePutSettings devicePutSettings = device.getDefaultPutSettings(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		devicePutSettings.setWorkArea(workArea);
+		devicePutSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
+		devicePutSettings.getWorkPiece().setType(WorkPiece.Type.RAW);
 		DeviceSettings deviceSettings = device.getDeviceSettings();
 		deviceSettings.setClamping(workArea, clamping);
 		processFlowAdapter.getProcessFlow().setDeviceSettings(device, deviceSettings);
@@ -397,6 +428,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		FanucRobotPutSettings robotPutSettings = new FanucRobotPutSettings();
 		robotPutSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
 		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
+		robotPutSettings.getGripperHead().getGripper().setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		robotPutSettings.setSmoothPoint(null);
 		robotPutSettings.setWorkArea(workArea);
 		robotPutSettings.setDoMachineAirblow(false);
@@ -421,10 +453,16 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			newDeviceInfo.setProcessingStep(processing2);	
 			
 		} else if (device instanceof ReversalUnit) {
-			// No processing needed - only put & pick
+			
+			
+			robotPutSettings.setRobot(deviceInfo.getPutStep().getRobotSettings().getRobot());
+			//robotPutSettings.setGripperHead(deviceInfo.getPutStep().getRobotSettings().getGripperHead());
 			PutStep putStep = new PutStep(devicePutSettings, robotPutSettings);
 			ProcessingStep processingStep = new ProcessingStep(deviceStartCyclusSettings);
 			PickStep pickStep = new PickStep(devicePickSettings, robotPickSettings);			
+
+			devicePutSettings.getWorkPiece().setType(WorkPiece.Type.HALF_FINISHED);
+			devicePickSettings.getWorkPiece().setType(WorkPiece.Type.HALF_FINISHED);
 			
 			newDeviceInfo.setPutStep(putStep);
 			newDeviceInfo.setPickStep(pickStep);

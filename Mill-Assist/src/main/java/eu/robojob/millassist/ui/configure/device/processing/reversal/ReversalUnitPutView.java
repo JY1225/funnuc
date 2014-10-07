@@ -10,8 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.process.PutStep;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings.LoadType;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -19,9 +18,6 @@ import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 
 public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresenter> {
-
-	private PutStep putStep;
-	private DeviceSettings deviceSettings;
 	
 	private static Label lblSmoothInfo;
 	
@@ -30,12 +26,19 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 	private static Label lblSmoothX;
 	private static Label lblSmoothY;
 	private static Label lblSmoothZ;
+	private static Label lblConfigWidth;
 	
 	private static Button btnResetSmooth;
+	
+	private static Label lblLoadType;
+	private static Button btnTopLoad;
+	private static Button btnFrontLoad;
+	private static Button btnBottomLoad;
 	
 	private static NumericTextField ntxtSmoothX;
 	private static NumericTextField ntxtSmoothY;
 	private static NumericTextField ntxtSmoothZ;
+	private static NumericTextField ntxtConfigWidth;
 	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
@@ -46,6 +49,12 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 	private static final String SMOOTH_Y = "ReversalUnitPutView.smoothY";
 	private static final String SMOOTH_Z = "ReversalUnitPutView.smoothZ";
 	private static final String SMOOTH_RESET = "ReversalUnitPutView.resetSmooth";
+	private static final String LOAD_TYPE = "ReversalUnitPutView.loadType";
+	private static final String FRONT_LOAD = "ReversalUnitPutView.frontLoad";
+	private static final String TOP_LOAD = "ReversalUnitPutView.topLoad";
+	private static final String BOTTOM_LOAD = "ReversalUnitPutView.bottomLoad";
+	private static final String CONFIG_WIDTH = "ReversalUnitPutView.configWidth";
+
 	
 	private static final String CSS_CLASS_CENTER_TEXT = "center-text";
 		
@@ -55,14 +64,6 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		getContents().setHgap(HGAP);
 	}
 	
-	public void setPutStep(final PutStep putStep) {
-		this.putStep = putStep;
-	}
-	
-	public void setDeviceSettings(final DeviceSettings deviceSettings) {
-		this.deviceSettings = deviceSettings;
-	}
-	
 	@Override
 	protected void build() {
 		lblSmoothInfo = new Label(Translator.getTranslation(SMOOTH_PUT_INFO));
@@ -70,6 +71,9 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		lblSmoothX = new Label(Translator.getTranslation(SMOOTH_X));
 		lblSmoothY = new Label(Translator.getTranslation(SMOOTH_Y));
 		lblSmoothZ = new Label(Translator.getTranslation(SMOOTH_Z));
+		lblConfigWidth = new Label(Translator.getTranslation(CONFIG_WIDTH));
+		
+		lblLoadType = new Label(Translator.getTranslation(LOAD_TYPE));
 		
 		ntxtSmoothX = new NumericTextField(MAX_INTEGER_LENGTH);
 		ntxtSmoothX.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
@@ -95,6 +99,14 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 				getPresenter().changedSmoothZ(newValue);
 			}
 		});
+		ntxtConfigWidth = new NumericTextField(MAX_INTEGER_LENGTH);
+		ntxtConfigWidth.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
+		ntxtConfigWidth.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> observable, final Float oldValue, final Float newValue) {
+				getPresenter().changedConfigWidth(newValue);
+			}
+		});
 		
 		btnResetSmooth = new Button();
 		Text txtBtnResetSmooth = new Text(Translator.getTranslation(SMOOTH_RESET));
@@ -110,6 +122,40 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		btnResetSmooth.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
 		btnResetSmooth.setPrefSize(UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT);
 		
+		HBox hboxLoadType = new HBox();
+		hboxLoadType.setAlignment(Pos.CENTER_LEFT);
+		
+		btnFrontLoad = createButton(Translator.getTranslation(FRONT_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedPutType(LoadType.FRONT);
+			}
+		});
+		btnFrontLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
+		hboxLoadType.getChildren().add(btnFrontLoad);
+		btnTopLoad = createButton(Translator.getTranslation(TOP_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedPutType(LoadType.TOP);
+			}
+		});
+		btnTopLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+		hboxLoadType.getChildren().add(btnTopLoad);
+		btnBottomLoad = createButton(Translator.getTranslation(BOTTOM_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedPutType(LoadType.BOTTOM);
+			}
+		});
+		btnBottomLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+		hboxLoadType.getChildren().add(btnBottomLoad);
+		
+		HBox hBoxConfigWidth = new HBox();
+		hBoxConfigWidth.getChildren().addAll(lblConfigWidth, ntxtConfigWidth);
+		HBox.setMargin(ntxtConfigWidth, new Insets(0, 20, 0, 10));
+		hBoxConfigWidth.setFillHeight(false);
+		hBoxConfigWidth.setAlignment(Pos.CENTER_LEFT);
+		
 		hBoxSmoothPoint = new HBox();
 		hBoxSmoothPoint.getChildren().addAll(lblSmoothX, ntxtSmoothX, lblSmoothY, ntxtSmoothY, lblSmoothZ, ntxtSmoothZ, btnResetSmooth);
 		HBox.setMargin(ntxtSmoothX, new Insets(0, 20, 0, 10));
@@ -120,11 +166,23 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		
 		int column = 0;
 		int row = 0;
+		getContents().add(hBoxConfigWidth, column, row);		
+		
+		column = 0;
+		row++;
 		getContents().add(lblSmoothInfo, column, row);
 		
 		column = 0;
 		row++;
 		getContents().add(hBoxSmoothPoint, column++, row);
+		
+		column = 0;
+		row++;
+		getContents().add(lblLoadType, column++, row);
+		
+		column = 0;
+		row++;
+		getContents().add(hboxLoadType, column++, row);
 		
 		refresh();
 	}
@@ -134,19 +192,33 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		ntxtSmoothX.setFocusListener(listener);
 		ntxtSmoothY.setFocusListener(listener);
 		ntxtSmoothZ.setFocusListener(listener);
+		ntxtConfigWidth.setFocusListener(listener);
 	}
 
 	@Override
 	public void refresh() {
-		if (putStep.getRobotSettings().getSmoothPoint() != null) {
-			ntxtSmoothX.setText("" + putStep.getRobotSettings().getSmoothPoint().getX());
-			ntxtSmoothY.setText("" + putStep.getRobotSettings().getSmoothPoint().getY());
-			ntxtSmoothZ.setText("" + putStep.getRobotSettings().getSmoothPoint().getZ());
+		if (getPresenter().getPutStep().getRobotSettings().getSmoothPoint() != null) {
+			ntxtSmoothX.setText("" + getPresenter().getPutStep().getRobotSettings().getSmoothPoint().getX());
+			ntxtSmoothY.setText("" + getPresenter().getPutStep().getRobotSettings().getSmoothPoint().getY());
+			ntxtSmoothZ.setText("" + getPresenter().getPutStep().getRobotSettings().getSmoothPoint().getZ());
 		}
-		if (deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()) == null) {
+		if (getPresenter().getDeviceSettings().getClamping(getPresenter().getPutStep().getDeviceSettings().getWorkArea()) == null) {
 			btnResetSmooth.setDisable(true);
 		} else {
 			btnResetSmooth.setDisable(false);
+		}
+		if (getPresenter().getDeviceSettings().getConfigWidth() > 0 ) {
+			ntxtConfigWidth.setText("" + getPresenter().getDeviceSettings().getConfigWidth());
+		}
+		btnFrontLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnTopLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnBottomLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		if (getPresenter().getDeviceSettings().getPutType().equals(LoadType.TOP)) {
+			btnFrontLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		} else if (getPresenter().getDeviceSettings().getPutType().equals(LoadType.FRONT)) {
+			btnTopLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		} else {
+			btnBottomLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		}
 	}
 
