@@ -27,6 +27,9 @@ import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings.LoadType;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
@@ -482,6 +485,14 @@ public class ProcessFlowMapper {
 			stmt4.setInt(3, cSettings.getRawWorkPiece().getId());
 			stmt4.setInt(4, cSettings.getFinishedWorkPiece().getId());
 			stmt4.executeUpdate();
+		} else if (deviceSettings instanceof ReversalUnitSettings) {
+			ReversalUnitSettings rSettings = (ReversalUnitSettings) deviceSettings;
+			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO REVERSALUNITSETTINGS (ID, PUTTYPE, PICKTYPE, CONFIGWIDTH) VALUES (?, ?, ?, ?)");
+			stmt4.setInt(1, rSettings.getId());
+			stmt4.setInt(2, rSettings.getPutType().getId());
+			stmt4.setInt(3, rSettings.getPickType().getId());
+			stmt4.setFloat(4, rSettings.getConfigWidth());
+			stmt4.executeUpdate();
 		}
 	}
 	
@@ -599,6 +610,9 @@ public class ProcessFlowMapper {
 			} else if (device instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
 				eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = getConveyorSettings(processId, id, (eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) device, clampings);
 				settings.put(device, conveyorSettings);
+			} else if (device instanceof ReversalUnit) {
+				ReversalUnitSettings reversalSettings = getReversalUnitSettings(id, clampings);
+				settings.put(device, reversalSettings);
 			} else {
 				DeviceSettings deviceSettings = new DeviceSettings(clampings);
 				settings.put(device, deviceSettings);
@@ -641,6 +655,21 @@ public class ProcessFlowMapper {
 			conveyorSettings.setClampings(clampings);
 		}
 		return conveyorSettings;
+	}
+	
+	private ReversalUnitSettings getReversalUnitSettings(final int deviceSettingsId, final Map<WorkArea, Clamping> clampings) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM REVERSALUNITSETTINGS WHERE ID = ?");
+		stmt.setInt(1, deviceSettingsId);
+		ResultSet results = stmt.executeQuery();
+		ReversalUnitSettings reversalSettings = null;
+		if (results.next()) {
+			int putType = results.getInt("PUTTYPE");
+			int pickType = results.getInt("PICKTYPE");
+			float configWidth = results.getInt("CONFIGWIDTH");
+			reversalSettings = new ReversalUnitSettings(LoadType.getById(putType), LoadType.getById(pickType), configWidth);
+			reversalSettings.setClampings(clampings);
+		}
+		return reversalSettings;
 	}
 	
 	private AbstractStackPlateDeviceSettings getBasicStackPlateSettings(final int processFlowId, final int deviceSettingsId, final BasicStackPlate stackPlate, final Map<WorkArea, Clamping> clampings) throws SQLException {

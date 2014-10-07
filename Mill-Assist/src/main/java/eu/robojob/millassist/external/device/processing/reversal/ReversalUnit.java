@@ -79,12 +79,12 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	public void grabPiece(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {	}
 	
 	@Override
-	public DeviceSettings getDeviceSettings() {
+	public ReversalUnitSettings getDeviceSettings() {
 		Map<WorkArea, Clamping> clampings = new HashMap<WorkArea, Clamping>();
 		for (WorkArea workArea : getWorkAreas()) {
 			clampings.put(workArea, workArea.getActiveClamping());
 		}
-		return new DeviceSettings();
+		return new ReversalUnitSettings();
 	}
 	
 	@Override

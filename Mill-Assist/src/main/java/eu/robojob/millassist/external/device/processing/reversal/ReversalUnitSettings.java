@@ -17,6 +17,10 @@ public class ReversalUnitSettings extends DeviceSettings {
 			this.id = id;
 		}
 		
+		public int getId() {
+			return this.id;
+		}
+		
 		public static LoadType getById(int id) {
 		    for(LoadType type : values()) {
 		        if(type.id == id) 
@@ -27,10 +31,10 @@ public class ReversalUnitSettings extends DeviceSettings {
 	}
 	
 	public ReversalUnitSettings() {
-		this(0, LoadType.TOP, LoadType.BOTTOM);
+		this(LoadType.TOP, LoadType.BOTTOM, 0.0f);
 	}
 
-	public ReversalUnitSettings(final float configWidth, final LoadType putType, final LoadType pickType) {
+	public ReversalUnitSettings(final LoadType putType, final LoadType pickType, final float configWidth) {
 		this.configWidth = configWidth;
 		this.putType = putType;
 		this.pickType = pickType;

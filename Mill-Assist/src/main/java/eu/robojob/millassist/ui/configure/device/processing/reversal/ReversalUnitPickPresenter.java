@@ -1,27 +1,35 @@
 package eu.robojob.millassist.ui.configure.device.processing.reversal;
 
-import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings.LoadType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class ReversalUnitPickPresenter extends AbstractFormPresenter<ReversalUnitPickView, ReversalUnitMenuPresenter> {
 
 	private PickStep pickStep;
-	private DeviceSettings deviceSettings;
+	private ReversalUnitSettings deviceSettings;
 	
-	public ReversalUnitPickPresenter(final ReversalUnitPickView view, final PickStep pickStep, final DeviceSettings deviceSettings) {
+	public ReversalUnitPickPresenter(final ReversalUnitPickView view, final PickStep pickStep, final ReversalUnitSettings deviceSettings) {
 		super(view);
 		this.pickStep = pickStep;
 		this.deviceSettings = deviceSettings;
-		view.setPickStep(pickStep);
-		view.setDeviceSettings(deviceSettings);
 		view.build();
 	}
 
 	@Override
 	public void setPresenter() {
 		getView().setPresenter(this);
+	}
+	
+	PickStep getPickStep() {
+		return this.pickStep;
+	}
+	
+	ReversalUnitSettings getDeviceSettings() {
+		return this.deviceSettings;
 	}
 
 	public void changedSmoothX(final float smoothX) {
@@ -58,14 +66,17 @@ public class ReversalUnitPickPresenter extends AbstractFormPresenter<ReversalUni
 		}
 	}
 	
-	
-	public void changedAirblow(final boolean airblow) {
-		pickStep.getRobotSettings().setDoMachineAirblow(airblow);
+	public void changedPickType(final LoadType loadType) {
+		if (!deviceSettings.getPickType().equals(loadType)) {
+			deviceSettings.setPickType(loadType);
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		}
 	}
 
 	@Override
 	public boolean isConfigured() {
-		if (pickStep.getRobotSettings().getSmoothPoint() != null) {
+		if (pickStep.getRobotSettings().getSmoothPoint() != null && 
+				!deviceSettings.getPickType().equals(deviceSettings.getPutType())) {
 			return true;
 		}
 		return false;

@@ -129,6 +129,8 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 			@Override
 			public void handle(final ActionEvent event) {
 				getPresenter().changedPutType(LoadType.FRONT);
+				refreshLoadType(LoadType.FRONT);
+				
 			}
 		});
 		btnFrontLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
@@ -137,6 +139,8 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 			@Override
 			public void handle(final ActionEvent event) {
 				getPresenter().changedPutType(LoadType.TOP);
+				refreshLoadType(LoadType.TOP);
+
 			}
 		});
 		btnTopLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
@@ -145,6 +149,7 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 			@Override
 			public void handle(final ActionEvent event) {
 				getPresenter().changedPutType(LoadType.BOTTOM);
+				refreshLoadType(LoadType.BOTTOM);
 			}
 		});
 		btnBottomLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
@@ -194,6 +199,25 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		ntxtSmoothZ.setFocusListener(listener);
 		ntxtConfigWidth.setFocusListener(listener);
 	}
+	
+	private void refreshLoadType(LoadType activeLoadType) {
+		btnFrontLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnTopLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnBottomLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		switch (activeLoadType) {
+		case FRONT:
+			btnFrontLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			break;
+		case BOTTOM:
+			btnBottomLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			break;
+		case TOP:
+			btnTopLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			break;
+		default:
+			break;
+		}
+	}
 
 	@Override
 	public void refresh() {
@@ -210,16 +234,7 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		if (getPresenter().getDeviceSettings().getConfigWidth() > 0 ) {
 			ntxtConfigWidth.setText("" + getPresenter().getDeviceSettings().getConfigWidth());
 		}
-		btnFrontLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		btnTopLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		btnBottomLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		if (getPresenter().getDeviceSettings().getPutType().equals(LoadType.TOP)) {
-			btnFrontLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		} else if (getPresenter().getDeviceSettings().getPutType().equals(LoadType.FRONT)) {
-			btnTopLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		} else {
-			btnBottomLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		}
+		refreshLoadType(getPresenter().getDeviceSettings().getPutType());
 	}
 
 }

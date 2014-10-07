@@ -141,14 +141,13 @@ public class DeviceMenuFactory {
 	
 	private ReversalUnitPickPresenter getReversalUnitPickPresenter(final DeviceInformation deviceInfo) {
 		ReversalUnitPickView view = new ReversalUnitPickView();
-		ReversalUnitPickPresenter presenter = new ReversalUnitPickPresenter(view, deviceInfo.getPickStep(), deviceInfo.getDeviceSettings());
+		ReversalUnitPickPresenter presenter = new ReversalUnitPickPresenter(view, deviceInfo.getPickStep(), (ReversalUnitSettings) deviceInfo.getDeviceSettings());
 		return presenter;
 	}
 	
 	private ReversalUnitPutPresenter getReversalUnitPutPresenter(final DeviceInformation deviceInfo) {
 		ReversalUnitPutView view = new ReversalUnitPutView();
-		//FIXME
-		ReversalUnitPutPresenter presenter = new ReversalUnitPutPresenter(view, deviceInfo.getPutStep(), new ReversalUnitSettings());
+		ReversalUnitPutPresenter presenter = new ReversalUnitPutPresenter(view, deviceInfo.getPutStep(), (ReversalUnitSettings) deviceInfo.getDeviceSettings());
 		return presenter;
 	}
 	

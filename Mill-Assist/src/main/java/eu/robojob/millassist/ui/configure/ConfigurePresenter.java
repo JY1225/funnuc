@@ -13,6 +13,7 @@ import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyc
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.external.robot.RobotProcessingWhileWaitingSettings;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobotPickSettings;
@@ -453,7 +454,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			newDeviceInfo.setProcessingStep(processing2);	
 			
 		} else if (device instanceof ReversalUnit) {
-			
+			deviceSettings = (ReversalUnitSettings) deviceSettings;
 			
 			robotPutSettings.setRobot(deviceInfo.getPutStep().getRobotSettings().getRobot());
 			//robotPutSettings.setGripperHead(deviceInfo.getPutStep().getRobotSettings().getGripperHead());

@@ -4,6 +4,7 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSet
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings.LoadType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.PutStep;
+import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 
 public class ReversalUnitPutPresenter extends AbstractFormPresenter<ReversalUnitPutView, ReversalUnitMenuPresenter> {
@@ -15,8 +16,6 @@ public class ReversalUnitPutPresenter extends AbstractFormPresenter<ReversalUnit
 		super(view);
 		this.putStep = putStep;
 		this.deviceSettings = deviceSettings;
-		setPutStep(putStep);
-		setDeviceSettings(deviceSettings);
 		view.build();
 	}
 
@@ -25,20 +24,12 @@ public class ReversalUnitPutPresenter extends AbstractFormPresenter<ReversalUnit
 		getView().setPresenter(this);
 	}
 	
-	public void setPutStep(final PutStep putStep) {
-		this.putStep = putStep;
-	}
-	
 	PutStep getPutStep() {
 		return this.putStep;
 	}
 	
 	ReversalUnitSettings getDeviceSettings() {
 		return this.deviceSettings;
-	}
-	
-	public void setDeviceSettings(final ReversalUnitSettings deviceSettings) {
-		this.deviceSettings = deviceSettings;
 	}
 
 	public void changedSmoothX(final float smoothX) {
@@ -80,14 +71,18 @@ public class ReversalUnitPutPresenter extends AbstractFormPresenter<ReversalUnit
 	}
 	
 	public void changedPutType(final LoadType loadType) {
-		deviceSettings.setPutType(loadType);
+		if (!deviceSettings.getPutType().equals(loadType)) {
+			deviceSettings.setPutType(loadType);
+			putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, true));
+		}
 	}
 	
 	// TODO
 	@Override
 	public boolean isConfigured() {
 		if (putStep.getRobotSettings().getSmoothPoint() != null &&
-				deviceSettings.getConfigWidth() > 0) {
+				deviceSettings.getConfigWidth() > 0 &&
+				!deviceSettings.getPickType().equals(deviceSettings.getPutType())) {
 			return true;
 		}
 		return false;
