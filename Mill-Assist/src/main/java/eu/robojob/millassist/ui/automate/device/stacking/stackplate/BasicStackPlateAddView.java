@@ -88,6 +88,11 @@ public class BasicStackPlateAddView extends AbstractFormView<BasicStackPlateAddP
 	public void setButtonEnabled(final boolean enabled) {
 		btnAdd.setDisable(!enabled);
 	}
+	
+	public void disableReplaceFinishedBox() {
+		cbReplaceFinishedPieces.setSelected(false);
+		cbReplaceFinishedPieces.setDisable(true);
+	}
 
 	@Override
 	public void refresh() {

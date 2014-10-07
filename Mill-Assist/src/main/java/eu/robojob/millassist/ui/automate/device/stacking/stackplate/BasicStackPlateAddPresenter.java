@@ -24,6 +24,9 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 		super(view);
 		this.stackPlate = basicStackPlate;
 		this.processFlow = processFlow;
+		if(processFlow.hasBinForFinishedPieces()) {
+			view.disableReplaceFinishedBox();
+		}
 		processFlow.addListener(this);
 	}
 
@@ -41,15 +44,15 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 		try{	
 			if(amount > getMaxPiecesToAdd(replaceFinishedPieces))
 				throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
+			int nbInFlow = processFlow.getTotalAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW) - processFlow.getFinishedAmount();
 			//Replace finished workpieces by new ones
 			if(replaceFinishedPieces) {
 				stackPlate.getLayout().removeFinishedFromTable();
 			}
 			//Add new pieces
-			addWorkPieces(amount, replaceFinishedPieces && processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
+			addWorkPieces(amount, (replaceFinishedPieces && processFlow.getMode().equals(ProcessFlow.Mode.AUTO)));
 			processFlow.setFinishedAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
-			processFlow.setTotalAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW) + stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
-			
+			processFlow.setTotalAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW) + stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);	
 		} catch(IncorrectWorkPieceDataException e) {
 			getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
 		}
@@ -72,13 +75,12 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 		return stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
 	}
 	
-	//FIXME - it does not necessarily mean that we have 2 workpiece in the flow when we are not FINISHED
 	public int getMaxAddAmount() {
 		int amount = stackPlate.getLayout().getMaxPiecesPossibleAmount() - getMaxFinishedToReplaceAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
-		if(!processFlow.getMode().equals(ProcessFlow.Mode.FINISHED) ) {
-			//We assume 2 pieces are being processed
-			amount -= 2;
-		}
+		int nbInFlow = processFlow.getTotalAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW) - processFlow.getFinishedAmount();
+		if(!processFlow.hasBinForFinishedPieces()) {
+			amount -= nbInFlow;
+		} 
 		return amount;
 	}
 

@@ -79,6 +79,6 @@ public class BasicStackPlateReplaceView extends AbstractFormView<BasicStackPlate
 	}
 	
 	private void refreshMax() {
-		itfFinishedAmount.setText("" + getPresenter().getNbRawWorkPieces());
+		itfFinishedAmount.setText("" + getPresenter().getNbRawWorkPiecesToReplace());
 	}
 }

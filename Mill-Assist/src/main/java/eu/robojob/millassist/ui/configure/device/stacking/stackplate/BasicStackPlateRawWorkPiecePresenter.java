@@ -13,6 +13,7 @@ import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.util.Translator;
@@ -170,6 +171,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public void changedAmount(final int amount) {
 		logger.info("Set amount [" + amount + "].");
 		if (amount != deviceSettings.getAmount()) {
+			pickStep.getProcessFlow().processProcessFlowEvent(new FinishedAmountChangedEvent(pickStep.getProcessFlow(), 0, amount));
 			deviceSettings.setAmount(amount);
 			recalculate();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
@@ -178,6 +180,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public void recalculate() {
 		try {
+			pickStep.getProcessFlow().setFinishedAmount(0);
 			getStackPlate().getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
 			getStackPlate().getLayout().initRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
 			pickStep.getProcessFlow().getClampingType().setChanged((deviceSettings.getOrientation() == WorkPieceOrientation.DEG90));

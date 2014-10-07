@@ -385,7 +385,9 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	
 	private void decreaseAmountOfFirstRawPieces(final int amount) {
 		int position = getLayout().getFirstRawPosition();
-		getLayout().getStackingPositions().get(position).decrementAmountBy(amount);
+		if(position >= 0) {
+			getLayout().getStackingPositions().get(position).decrementAmountBy(amount);
+		}
 	}
 	
 	public abstract float getR(WorkPieceOrientation orientation);
