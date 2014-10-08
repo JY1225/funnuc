@@ -268,7 +268,12 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int ERR_CONFIG_DOORS					=	BIT7;
 	public static final int ERR_OPEN_DOOR_ZONE_NOT_FREE			=	BIT8;
 	public static final int ERR_OPEN_DOOR_CYCLE_NOT_FINISHED	= 	BIT9;
-	// BITS 10-15 UNUSED
+	public static final int ERR_PREP_PUT_MACHINE_NOT_READY		=	BIT10;
+	public static final int ERR_PREP_PUT_OTHER_CMD_BUSY			=	BIT11;
+	public static final int ERR_PREP_PUT_TIMEOUT				= 	BIT12;
+	public static final int ERR_PREP_PUT_WRONG_ZONE_WA			=	BIT13;
+	public static final int ERR_PREP_PUT_WRONG_FIXTURE			=   BIT14;
+	public static final int ERR_PREP_PUT_ZONE_NOT_FREE			=	BIT15;
 	
 	public static final int[] ERROR_REG_1_ARRAY = new int[]{
 		ERR_GENERAL,
@@ -280,65 +285,69 @@ public final class CNCMachineConstantsDevIntv2 {
 		ERR_FIXTURE_CLAMP_RELEASED,
 		ERR_CONFIG_DOORS,
 		ERR_OPEN_DOOR_ZONE_NOT_FREE,
-		ERR_OPEN_DOOR_CYCLE_NOT_FINISHED};
-	
-	public static final int ERROR_REG_2 = 26;
-	// BITS 0-3 UNUSED
-	public static final int ERR_PREP_PUT_MACHINE_NOT_READY		=	BIT4;
-	public static final int ERR_PREP_PUT_OTHER_CMD_BUSY			=	BIT5;
-	public static final int ERR_PREP_PUT_TIMEOUT				= 	BIT6;
-	public static final int ERR_PREP_PUT_WRONG_ZONE_WA			=	BIT7;
-	public static final int ERR_PREP_PUT_ZONE_NOT_FREE			=	BIT8;
-	public static final int ERR_PREP_PUT_CYCLE_NOT_FINISHED		=	BIT9;
-	public static final int ERR_PREP_PUT_TIMEOUT_FXTR_OPEN		= 	BIT10;
-	public static final int ERR_PREP_PUT_TIMEOUT_DOOR_CLOSED	=	BIT11;
-	public static final int ERR_PREP_PUT_TIMEOUT_DOOR_OPEN		=	BIT12;
-	// BIT 13 UNUSED
-	public static final int ERR_PREP_PICK_MACHINE_NOT_READY		=	BIT14;
-	public static final int ERR_PREP_PICK_OTHER_CMD_BUSY		= 	BIT15;
-	
-	public static final int[] ERROR_REG_2_ARRAY = new int[]{
+		ERR_OPEN_DOOR_CYCLE_NOT_FINISHED,
 		ERR_PREP_PUT_MACHINE_NOT_READY,
 		ERR_PREP_PUT_OTHER_CMD_BUSY,
 		ERR_PREP_PUT_TIMEOUT,
 		ERR_PREP_PUT_WRONG_ZONE_WA,
-		ERR_PREP_PUT_ZONE_NOT_FREE,
+		ERR_PREP_PUT_WRONG_FIXTURE,
+		ERR_PREP_PUT_ZONE_NOT_FREE};
+	
+	public static final int ERROR_REG_2 = 26;
+	// BITS 0-3 UNUSED
+	public static final int ERR_PREP_PUT_CYCLE_NOT_FINISHED		=	BIT0;
+	public static final int ERR_PREP_PUT_TIMEOUT_FXTR_OPEN		= 	BIT1;
+	public static final int ERR_PREP_PUT_TIMEOUT_DOOR_CLOSED	=	BIT2;
+	public static final int ERR_PREP_PUT_TIMEOUT_DOOR_OPEN		=	BIT3;
+	public static final int ERR_PREP_PUT_ERROR_OCCURED			=   BIT4;
+	public static final int ERR_PREP_PICK_MACHINE_NOT_READY		=	BIT9;
+	public static final int ERR_PREP_PICK_OTHER_CMD_BUSY		= 	BIT10;
+	public static final int ERR_PREP_PICK_TIMEOUT				=	BIT11;
+	public static final int ERR_PREP_PICK_WRONG_ZONE_WA			=	BIT11;
+	public static final int ERR_PREP_PICK_WORNG_FIXTURE			= 	BIT13;
+	public static final int ERR_PREP_PICK_ZONE_NOT_FREE			= 	BIT14;
+	public static final int ERR_PREP_PICK_CYCLE_NOT_FINISHED	=	BIT15;
+	
+	public static final int[] ERROR_REG_2_ARRAY = new int[]{
 		ERR_PREP_PUT_CYCLE_NOT_FINISHED,
 		ERR_PREP_PUT_TIMEOUT_FXTR_OPEN,
 		ERR_PREP_PUT_TIMEOUT_DOOR_CLOSED,
 		ERR_PREP_PUT_TIMEOUT_DOOR_OPEN,
+		ERR_PREP_PUT_ERROR_OCCURED,
 		ERR_PREP_PICK_MACHINE_NOT_READY,
-		ERR_PREP_PICK_OTHER_CMD_BUSY};
+		ERR_PREP_PICK_OTHER_CMD_BUSY,
+		ERR_PREP_PICK_TIMEOUT,
+		ERR_PREP_PICK_WRONG_ZONE_WA,
+		ERR_PREP_PICK_WORNG_FIXTURE,
+		ERR_PREP_PICK_ZONE_NOT_FREE,
+		ERR_PREP_PICK_CYCLE_NOT_FINISHED};
 	
 	public static final int ERROR_REG_3 = 27;
-	public static final int ERR_PREP_PICK_TIMEOUT				=	BIT0;
-	public static final int ERR_PREP_PICK_WRONG_ZONE_WA			=	BIT1;
-	public static final int ERR_PREP_PICK_ZONE_NOT_FREE			= 	BIT2;
-	public static final int ERR_PREP_PICK_CYCLE_NOT_FINISHED	=	BIT3;
-	public static final int ERR_PREP_PICK_TIMEOUT_DOOR_CLOSED	=	BIT4;
-	public static final int ERR_PREP_PICK_TIMEOUT_DOOR_OPEN		=	BIT5;
-	// BITS 6-7 UNUSED
+
+	public static final int ERR_PREP_PICK_TIMEOUT_DOOR_CLOSED	=	BIT0;
+	public static final int ERR_PREP_PICK_TIMEOUT_DOOR_OPEN		=	BIT1;
+	public static final int ERR_PREP_PICK_ERROR_OCCURED			=	BIT2;
+	// BITS 7 UNUSED
 	public static final int ERR_CLAMP_MACHINE_NOT_READY			=	BIT8;
 	public static final int ERR_CLAMP_OTHER_CMD_BUSY			=	BIT9;
 	public static final int ERR_CLAMP_TIMEOUT_FXTR_CLOSED		= 	BIT10;
 	public static final int ERR_CLAMP_WRONG_ZONE_WA				=	BIT11;
 	public static final int ERR_CLAMP_WRONG_FIXTURES_SELECT		=	BIT12;
 	public static final int ERR_CLAMP_CLOSED_NOT_CLAMPED		=	BIT13;
-	// BIT 14-15 UNUSED
+	public static final int ERR_CLAMP_ERROR_OCCURED				= 	BIT14;
+	// BIT 15 UNUSED
 	
 	public static final int[] ERROR_REG_3_ARRAY = new int[]{
-		ERR_PREP_PICK_TIMEOUT,
-		ERR_PREP_PICK_WRONG_ZONE_WA,
-		ERR_PREP_PICK_ZONE_NOT_FREE,
-		ERR_PREP_PICK_CYCLE_NOT_FINISHED,
 		ERR_PREP_PICK_TIMEOUT_DOOR_CLOSED,
 		ERR_PREP_PICK_TIMEOUT_DOOR_OPEN,
+		ERR_PREP_PICK_ERROR_OCCURED,
 		ERR_CLAMP_MACHINE_NOT_READY,
 		ERR_CLAMP_OTHER_CMD_BUSY,
 		ERR_CLAMP_TIMEOUT_FXTR_CLOSED,
 		ERR_CLAMP_WRONG_ZONE_WA,
 		ERR_CLAMP_WRONG_FIXTURES_SELECT,
-		ERR_CLAMP_CLOSED_NOT_CLAMPED};
+		ERR_CLAMP_CLOSED_NOT_CLAMPED,
+		ERR_CLAMP_ERROR_OCCURED};
 	
 	public static final int ERROR_REG_4 = 28;
 	// BITS 0-1 UNUSED
@@ -349,7 +358,8 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int ERR_UNCLAMP_ZONE_NOT_FREE			=	BIT6;
 	public static final int ERR_UNCLAMP_CYCLE_NOT_FINISHED		=	BIT7;
 	public static final int ERR_UNCLAMP_WRONG_FIXTURES_SELECT 	=	BIT8;
-	// BITS 9-11 UNUSED
+	public static final int ERR_UNCLAMP_ERROR_OCCURED			= 	BIT9;
+	// BITS 10-11 UNUSED
 	public static final int ERR_START_CNC_MACHINE_NOT_READY		=	BIT12;
 	public static final int ERR_START_CNC_OTHER_CMD_BUSY		=	BIT13;
 	public static final int ERR_START_CNC_TIMEOUT				= 	BIT14;
@@ -363,22 +373,27 @@ public final class CNCMachineConstantsDevIntv2 {
 		ERR_UNCLAMP_ZONE_NOT_FREE,
 		ERR_UNCLAMP_CYCLE_NOT_FINISHED,
 		ERR_UNCLAMP_WRONG_FIXTURES_SELECT,
+		ERR_UNCLAMP_ERROR_OCCURED,
 		ERR_START_CNC_MACHINE_NOT_READY,
 		ERR_START_CNC_OTHER_CMD_BUSY,
 		ERR_START_CNC_TIMEOUT,
 		ERR_START_CNC_NOT_IN_AUTO_MODE};
 	
 	public static final int ERROR_REG_5 = 29;
-	// BITS 0-5 UNUSED
+	public static final int ERR_START_ERROR_OCCURED				= 	BIT0;
+	// BITS 1-5 UNUSED
 	public static final int ERR_NC_RESET_MACHINE_NOT_READY		=	BIT6;
 	public static final int ERR_NC_RESET_OTHER_CMD_BUSY			=	BIT7;
 	public static final int ERR_NC_RESET_TIMEOUT			 	=	BIT8;
-	// BITS 9-15 UNUSED
+	public static final int ERR_NC_RESET_ERROR_OCCURED		 	=	BIT9;
+	// BITS 10-15 UNUSED
 	
 	public static final int[] ERROR_REG_5_ARRAY = new int[]{
+		ERR_START_ERROR_OCCURED,
 		ERR_NC_RESET_MACHINE_NOT_READY,
 		ERR_NC_RESET_OTHER_CMD_BUSY,
-		ERR_NC_RESET_TIMEOUT};
+		ERR_NC_RESET_TIMEOUT,
+		ERR_NC_RESET_ERROR_OCCURED};
 	
 	public static final int ERROR_REG_6 = 30;
 	public static final int ERR_MC_FINISH_MACHINE_NOT_READY		=	BIT0;
@@ -386,6 +401,7 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int ERR_MC_FINISH_TIMEOUT			 	=	BIT2;
 	public static final int ERR_MC_FINISH_NOT_IN_MODE_MC		=	BIT3;
 	public static final int ERR_MC_FINISH_TIMEOUT_DOOR_CLOSED	=	BIT4;
+	public static final int ERR_MC_FINISH_ERROR_OCCURED			=	BIT5;
 	// BITS 5-15 UNUSED
 	
 	public static final int[] ERROR_REG_6_ARRAY = new int[]{
@@ -393,7 +409,8 @@ public final class CNCMachineConstantsDevIntv2 {
 		ERR_MC_FINISH_OTHER_CMD_BUSY,
 		ERR_MC_FINISH_TIMEOUT,
 		ERR_MC_FINISH_NOT_IN_MODE_MC,
-		ERR_MC_FINISH_TIMEOUT_DOOR_CLOSED};
+		ERR_MC_FINISH_TIMEOUT_DOOR_CLOSED,
+		ERR_MC_FINISH_ERROR_OCCURED};
 	
 	public static final int[][] ERROR_REGS_ARRAY = new int[][]{
 		ERROR_REG_1_ARRAY,

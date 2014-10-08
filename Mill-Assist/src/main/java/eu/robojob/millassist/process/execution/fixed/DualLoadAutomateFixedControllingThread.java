@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
@@ -100,7 +99,7 @@ public class DualLoadAutomateFixedControllingThread extends AutomateFixedControl
 			if (finished) {
 				processFlow.setMode(Mode.FINISHED);
 				for (AbstractDevice device : processFlow.getDevices()) {
-					if (device instanceof CNCMillingMachine) {
+					if (device instanceof AbstractCNCMachine) {
 						checkStatus();
 						((AbstractCNCMachine) device).indicateAllProcessed();
 					}

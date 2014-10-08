@@ -12,5 +12,4 @@ UPDATE IRSCW.ZONE
        )
 ;
 
-//Default = old devInt
 UPDATE IRSCW.CNCMILLINGMACHINE SET NEW_DEV_INT = false;

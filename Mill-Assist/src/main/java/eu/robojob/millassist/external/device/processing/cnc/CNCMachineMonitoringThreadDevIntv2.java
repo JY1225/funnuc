@@ -14,7 +14,7 @@ import eu.robojob.millassist.threading.MonitoringThread;
 
 public class CNCMachineMonitoringThreadDevIntv2 implements Runnable, MonitoringThread {
 
-	private static final int REFRESH_TIME = 250;
+	private static final int REFRESH_TIME = 150;
 	
 	private AbstractCNCMachine cncMachine;
 	private boolean alive;
@@ -49,7 +49,7 @@ public class CNCMachineMonitoringThreadDevIntv2 implements Runnable, MonitoringT
 							if (statusChanged) {
 								cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.STATUS_CHANGED));
 							}
-							this.previousStatus = cncMachine.getStatusMap();
+							this.previousStatus = new HashMap<Integer, Integer>(cncMachine.getStatusMap());
 						} else if ((cncMachine.getWayOfOperating() == WayOfOperating.M_CODES) || (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
 							Set<Integer> activeMCodes = new HashSet<Integer>();
 							activeMCodes = cncMachine.getMCodeAdapter().getActiveMCodes();
@@ -58,7 +58,7 @@ public class CNCMachineMonitoringThreadDevIntv2 implements Runnable, MonitoringT
 								logger.info("STATUS CHANGED! : " + activeMCodes);
 								cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.STATUS_CHANGED));
 							}
-							this.previousStatus = cncMachine.getStatusMap();
+							this.previousStatus = new HashMap<Integer, Integer>(cncMachine.getStatusMap());
 							this.previousActiveMCodes = new HashSet<Integer>(activeMCodes);
 						}
 						Set<CNCMachineAlarm> alarms = cncMachine.getAlarms();
