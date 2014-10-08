@@ -33,6 +33,7 @@ public class StatusPresenter implements ProcessFlowListener {
 	private static final String ENDED_PICK = "Status.endedPick";
 	private static final String ENDED_PUT = "Status.endedPut";
 	private static final String INTERVENTION_READY = "Status.interventionReady";
+	private static final String FINISHED = "Status.finished";
 	
 	private boolean isPaused;
 	
@@ -55,7 +56,11 @@ public class StatusPresenter implements ProcessFlowListener {
 				if (!isPaused) {
 					switch (e.getStatusId()) {
 						case StatusChangedEvent.INACTIVE:
-							view.setInfoMessage(Translator.getTranslation(NONE_ACTIVE));
+							if (e.getSource().getMode().equals(Mode.FINISHED)) {
+								view.setInfoMessage(Translator.getTranslation(FINISHED));								
+							} else {
+								view.setInfoMessage(Translator.getTranslation(NONE_ACTIVE));
+							}
 							break;
 						case StatusChangedEvent.STARTED:
 							if (e.getActiveStep() instanceof PickStep) {
