@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceActionException;
-import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
@@ -79,6 +79,7 @@ public class TeachOptimizedThread extends TeachThread {
 				initializeSteps();
 				Coordinates relTeachedOffsetFinishedWp = null;
 				// before doing this, we fake the gripper holding a workpiece
+				System.out.println(pickFromMachineStep.getRobotSettings());
 				putOnStackingDeviceStep.getRobotSettings().getGripperHead().getGripper().setWorkPiece(pickFromMachineStep.getRobotSettings().getWorkPiece());
 				relTeachedOffsetFinishedWp = getFinishedWorkPieceTeachedOffset(putOnStackingDeviceStep);
 				//TODO review if this offset needs formatting (depending on clamp manner...)
@@ -263,9 +264,9 @@ public class TeachOptimizedThread extends TeachThread {
 				putAndWaitOnPrageStep = (PutAndWaitStep) step;
 			} else if ((step instanceof PickAfterWaitStep) && ((PickAfterWaitStep) step).getDevice() instanceof PrageDevice) {
 				pickAfterWaitOnPrageStep = (PickAfterWaitStep) step;
-			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice() instanceof CNCMillingMachine) {
+			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice() instanceof AbstractCNCMachine) {
 				putInMachineStep = (PutStep) step;
-			} else if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof CNCMillingMachine) {
+			} else if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
 				pickFromMachineStep = (PickStep) step;
 			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice() instanceof AbstractStackingDevice) {
 				putOnStackingDeviceStep = (PutStep) step;

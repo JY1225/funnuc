@@ -24,7 +24,7 @@ import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyc
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarm;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineConstantsDevIntv2;
-import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMonitoringThread;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMonitoringThreadDevIntv2;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -37,8 +37,14 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	
 	private CNCMachineSocketCommunication cncMachineCommunication;
 
+	private static final int PREPARE_PUT_TIMEOUT = 2 * 60 * 1000;
+	private static final int PREPARE_PICK_TIMEOUT = 2 * 60 * 1000;
+	private static final int CLAMP_TIMEOUT = 1 * 60 * 1000;
+	private static final int UNCLAMP_TIMEOUT = 1 * 60 * 1000;
+	private static final int START_CYCLE_TIMEOUT = 3 * 60 * 1000;
 	private static final int SLEEP_TIME_AFTER_RESET = 500;
 	private static final int OPERATOR_RQST_BLUE_LAMP_VAL = 5;
+	private static final int FINISH_BLUE_LAMP_VAL = 10;
 	
 	public static final int M_CODE_LOAD = 0;
 	public static final int M_CODE_UNLOAD = 1;
@@ -48,7 +54,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	public CNCMillingMachineDevIntv2(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final SocketConnection socketConnection, final int clampingWidthR) {
 		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
-		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
+		CNCMachineMonitoringThreadDevIntv2 cncMachineMonitoringThread = new CNCMachineMonitoringThreadDevIntv2(this);
 		// start monitoring thread at creation of this object
 		ThreadManager.submit(cncMachineMonitoringThread);
 	}
@@ -96,7 +102,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void nCReset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void nCReset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, DeviceActionException {
 		int command = 0;
 		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_NC_RESET_OK);
 		int maxResetTime = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_MACHINE_MAX_NC_RESET_TIME, 1).get(0);
@@ -122,9 +128,11 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void indicateAllProcessed() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void indicateAllProcessed() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, DeviceActionException {
 		// Still something todo?
 		nCReset();
+		int[] registers = {FINISH_BLUE_LAMP_VAL};
+		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.PAR_MACHINE_BLUE_LAMP, registers);
 	}
 
 	@Override
@@ -181,26 +189,25 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			int startCommand = 0 | CNCMachineConstantsDevIntv2.IPC_START_CNC_CMD;
 			int[] registers = {command, startCommand};
 			cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers);
-			
-			int startCycleTimeout = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_MACHINE_MAX_START_CNC_TIME, 1).get(0);
 
 			// fix for jametal, comment next lines and uncomment sleep
-			boolean cycleStartReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_START_CNC_OK, startCycleTimeout);
+			boolean cycleStartReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_START_CNC_OK, START_CYCLE_TIMEOUT);
 			if (!cycleStartReady) {
 				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CYCLE_NOT_STARTED_TIMEOUT));
 				waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_START_CNC_OK);
 				setCncMachineTimeout(null);
 			}
-			//Thread.sleep(10000);
-			if(startCylusSettings.getWorkArea().getZone().getZoneNr() == 1) {		
+			if(startCylusSettings.getWorkArea().getZone().getZoneNr() == 1) {	
+				waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, CNCMachineConstantsDevIntv2.R_MACHINE_ZONE1_PROCESSING);
 				waitForStatusGoneDevIntv2(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, CNCMachineConstantsDevIntv2.R_MACHINE_ZONE1_PROCESSING);
 			} else if(startCylusSettings.getWorkArea().getZone().getZoneNr() == 2) {
+				waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, CNCMachineConstantsDevIntv2.R_MACHINE_ZONE2_PROCESSING);
 				waitForStatusGoneDevIntv2(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, CNCMachineConstantsDevIntv2.R_MACHINE_ZONE2_PROCESSING);
 			} else {
 				throw new IllegalArgumentException("Unknown zone number: " + startCylusSettings.getWorkArea().getZone().getZoneNr());
 			}
 			
-			nCReset();
+	//		nCReset();
 		} else if (getWayOfOperating() == WayOfOperating.M_CODES) {
 			// we sign of the m code for put
 			Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
@@ -240,8 +247,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 				int[] registers2 = {fixSelectCommand, actionCommand};
 				cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers2);
 				
-				int clampedTimeout = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_FIX_TIMEOUT_CLAMPED, 1).get(0);
-				boolean clampReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK, clampedTimeout);
+				boolean clampReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK, CLAMP_TIMEOUT);
 				if(!clampReady) {
 					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
 					waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK);
@@ -270,18 +276,17 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			waitForMCode(M_CODE_UNLOAD);
 		}
 		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK);
-		int waSelectCommand = 0;
-		waSelectCommand = waSelectCommand | selectZone(pickSettings);
-		waSelectCommand = waSelectCommand | selectWorkArea(pickSettings);
+		int fixSelectCommand = 0;
+		fixSelectCommand = fixSelectCommand | selectZone(pickSettings);
+		fixSelectCommand = fixSelectCommand | selectWorkArea(pickSettings);
+		fixSelectCommand = fixSelectCommand | selectFixture(pickSettings);
 		int command2 = 0 | CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_CMD;
 		
-		int[] registers = {waSelectCommand, command2};
+		int[] registers = {fixSelectCommand, command2};
 		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers);
 
-		int maxPutPrepareTime = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_MACHINE_MAX_PICK_PREPARE_TIME, 1).get(0);
-		
-		boolean putReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK, maxPutPrepareTime);
-		if(!putReady) {
+		boolean pickReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK, PREPARE_PICK_TIMEOUT);
+		if(!pickReady) {
 			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
 			waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK);
 			setCncMachineTimeout(null);
@@ -301,17 +306,15 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		}	
 		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_OK);
 		// Create prepare for put command
-		int waSelectCommand = 0;
-		waSelectCommand = waSelectCommand | selectZone(putSettings);
-		waSelectCommand = waSelectCommand | selectWorkArea(putSettings);
+		int fixSelectCommand = 0;
+		fixSelectCommand = fixSelectCommand | selectZone(putSettings);
+		fixSelectCommand = fixSelectCommand | selectWorkArea(putSettings);
+		fixSelectCommand = fixSelectCommand | selectFixture(putSettings);
 		int command2 = 0 | CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_CMD;
-		int[] registers = {waSelectCommand, command2};
+		int[] registers = {fixSelectCommand, command2};
 		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers);
 		
-		// TODO - review check put is prepared
-		int maxPutPrepareTime = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_MACHINE_MAX_PUT_PREPARE_TIME, 1).get(0);
-		
-		boolean putReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_OK, maxPutPrepareTime);
+		boolean putReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_OK, PREPARE_PUT_TIMEOUT);
 		if(!putReady) {
 			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PUT_TIMEOUT));
 			waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_OK);
@@ -335,10 +338,8 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		int[] registers = {fixSelectCommand, actionCommand};
 		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers);
 		
-		int clampedTimeout = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_FIX_TIMEOUT_CLAMPED, 1).get(0);
-		
-		boolean clampReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK, clampedTimeout);
-		if(!clampReady) {
+		boolean unclampReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK, UNCLAMP_TIMEOUT);
+		if(!unclampReady) {
 			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
 			waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK);
 			setCncMachineTimeout(null);
@@ -361,9 +362,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		int[] registers = {fixSelectCommand, actionCommand};
 		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers);
 		
-		int clampedTimeout = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_FIX_TIMEOUT_CLAMPED, 1).get(0);
-		
-		boolean clampReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_CLAMP_OK, clampedTimeout);
+		boolean clampReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_CLAMP_OK, CLAMP_TIMEOUT);
 		if(!clampReady) {
 			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CLAMP_TIMEOUT));
 			waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_CLAMP_OK);
@@ -626,9 +625,9 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	private int selectWorkArea(final AbstractDeviceActionSettings<?> deviceActionSettings) throws IllegalArgumentException {
 		int command = 0;
 		if(deviceActionSettings.getWorkArea().getWorkAreaNr() == 1) {
-			command = command | CNCMachineConstantsDevIntv2.ZONE1_SELECT;
+			command = command | CNCMachineConstantsDevIntv2.WA1_SELECT;
 		} else if (deviceActionSettings.getWorkArea().getWorkAreaNr() == 2) {
-			command = command | CNCMachineConstantsDevIntv2.ZONE2_SELECT;
+			command = command | CNCMachineConstantsDevIntv2.WA2_SELECT;
 		} else {
 			throw new IllegalArgumentException("Unknown workarea number: " + deviceActionSettings.getWorkArea().getWorkAreaNr());
 		}
@@ -654,7 +653,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		return command;
 	}
 	
-	private void resetStatusValue(final int registerNr, final int value) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	private void resetStatusValue(final int registerNr, final int value) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, DeviceActionException {
 		// Read current status from register
 		int currentStatus = cncMachineCommunication.readRegisters(registerNr, 1).get(0);
 		// Check whether the value is already low (bitwise AND operation)
@@ -663,6 +662,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			int resultValue = currentStatus ^ value;
 			int[] registerValue = {resultValue};
 			cncMachineCommunication.writeRegisters(registerNr, registerValue);
+			waitForStatusGoneDevIntv2(registerNr, value);
 		}
 	}
 
