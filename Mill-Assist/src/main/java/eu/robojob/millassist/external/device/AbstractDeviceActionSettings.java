@@ -8,6 +8,7 @@ public abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep
 	private AbstractDevice device;
 	private WorkArea workArea;
 	private WorkPiece workPiece;
+	private WorkPiece.Type workPieceType;
 	private T step;
 	private int id;
 	
@@ -47,6 +48,14 @@ public abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep
 	
 	public void setWorkArea(final WorkArea workArea) {
 		this.workArea = workArea;
+	}
+	
+	public WorkPiece.Type getWorkPieceType() {
+		return this.workPieceType;
+	}
+	
+	public void setWorkPieceType(WorkPiece.Type workPieceType) {
+		this.workPieceType = workPieceType;
 	}
 	
 	public WorkPiece getWorkPiece() {

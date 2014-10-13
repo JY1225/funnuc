@@ -24,30 +24,56 @@ import eu.robojob.millassist.threading.ThreadManager;
 
 public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 
+	enum ExecutionThreadStatus {
+		WORKING_WITH_ROBOT,
+		IDLE,
+		WAITING_BEFORE_PICK_FROM_STACKER,
+		WAITING_FOR_WORKPIECES_STACKER,
+		WAITING_FOR_PICK_FROM_STACKER,
+		WAITING_BEFORE_PUT_IN_MACHINE,
+		PROCESSING_IN_MACHINE,
+		WAITING_BEFORE_PICK_FROM_MACHINE,
+		WAITING_AFTER_PICK_FROM_MACHINE,
+		FINISHED,
+		
+		//States in case of presence of reversal unit - all states related to first CNC machine
+		WAITING_FOR_PICK_MACHINE_BEFORE_REVERSAL,
+		PROCESSING_BEFORE_REVERSAL,
+		WAITING_BEFORE_PUT_MACHINE_BEFORE_REVERSAL;
+	}
+	
+	private ExecutionThreadStatus executionStatus;
+	
 	private ProcessFlow processFlow;
-	private int workpieceId;
-	private AutomateFixedControllingThread controllingThread;
+	private int processId;
+	private AbstractFixedControllingThread controllingThread;
 	private Object syncObject;
 	private boolean running;
 	private boolean canContinue;
 	private boolean waitingForIntervention;
+	private int nbInFlow;
 	private Object syncObject2;
+	// Is the reversal still to come?
+	
+	// We weten aan type van controllingThread of we met reversal zitten of niet
 	private boolean needsReversal;
 	
 	private static Logger logger = LogManager.getLogger(ProcessFlowExecutionThread.class.getName());
 	
 	private static final int POLLING_INTERVAL = 500;
 	
-	public ProcessFlowExecutionThread(final AutomateFixedControllingThread controllingThread,
-			final ProcessFlow processFlow, final int workpieceId) {
+	public ProcessFlowExecutionThread(final AbstractFixedControllingThread controllingThread,
+			final ProcessFlow processFlow, final int processId) {
 		this.controllingThread = controllingThread;
 		this.processFlow = processFlow;
-		this.workpieceId = workpieceId;
+		this.processId = processId;
 		this.syncObject = new Object();
 		this.canContinue = false;
 		this.waitingForIntervention = false;
 		this.needsReversal = false;
 		this.syncObject2 = new Object();
+		this.executionStatus = ExecutionThreadStatus.IDLE;
+		this.nbInFlow = 0;
 	}
 	
 	private void checkStatus() throws InterruptedException {
@@ -73,9 +99,9 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					}
 				}
 				
-				AbstractProcessStep currentStep = processFlow.getStep(processFlow.getCurrentIndex(workpieceId));
+				AbstractProcessStep currentStep = processFlow.getStep(processFlow.getCurrentIndex(processId));
 				
-				logger.info("ProcessFlowExecution for WP[" + workpieceId +"], current step = " + currentStep);
+				logger.info("ProcessFlowExecution for PRC[" + processId +"], current step = " + currentStep);
 				
 				checkStatus();
 				
@@ -88,7 +114,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 				if (currentStep instanceof PickStep && (((PickStep) currentStep).getDevice() instanceof ReversalUnit)) {
 					needsReversal = false;
 					checkStatus();
-					currentStep.executeStep(workpieceId, this);
+					currentStep.executeStep(processId, this);
 					checkStatus();
 					((PickStep) currentStep).finalizeStep(this);
 				}
@@ -99,10 +125,11 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					checkStatus();
 					executePickFromMachineStep((PickStep) currentStep);
 				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractStackingDevice)) {
-						// we can always return to home, as home is typically the same location as the stacker's IP
-						// if no pre-processing is needed, we will than be waiting in home before putting in machine
-						((PickStep) currentStep).getRobotSettings().setFreeAfter(false);
-						executePickFromStackerStep((PickStep) currentStep);
+					// we can always return to home, as home is typically the same location as the stacker's IP
+					// if no pre-processing is needed, we will than be waiting in home before putting in machine
+					nbInFlow++;
+					((PickStep) currentStep).getRobotSettings().setFreeAfter(false);
+					executePickFromStackerStep((PickStep) currentStep);
 				} else {
 					if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractStackingDevice)) {
 						// check if after this step no more pick is needed, so we can return to home, only do this if the process is not continuous
@@ -117,7 +144,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 						((PutAndWaitStep) currentStep).getRobotSettings().setFreeAfter(true);
 					}
 					checkStatus();
-					currentStep.executeStep(workpieceId, this);
+					currentStep.executeStep(processId, this);
 					if (currentStep instanceof AbstractTransportStep) {
 						checkStatus();
 						((AbstractTransportStep) currentStep).finalizeStep(this);
@@ -125,13 +152,14 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					checkStatus();
 				}
 				
-				if (processFlow.getCurrentIndex(workpieceId) == processFlow.getProcessSteps().size() - 1) {
-					processFlow.setCurrentIndex(workpieceId, 0);
+				if (processFlow.getCurrentIndex(processId) == processFlow.getProcessSteps().size() - 1) {
+					processFlow.setCurrentIndex(processId, 0);
 					processFlow.incrementFinishedAmount();
 					if (processFlow.hasReversalUnit()) {
 						needsReversal = true;
 					}
 					canContinue = false;
+					nbInFlow = 0;
 					controllingThread.notifyProcessFlowFinished(this);
 					if (waitingForIntervention) {
 						synchronized(syncObject2) {
@@ -141,7 +169,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 						}
 					}
 				} else {
-					processFlow.setCurrentIndex(workpieceId, processFlow.getCurrentIndex(workpieceId) + 1);
+					processFlow.setCurrentIndex(processId, processFlow.getCurrentIndex(processId) + 1);
 				}
 			}
 			logger.info(toString() + " ended...");
@@ -158,7 +186,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	
 	public void executeInterventionStep(final InterventionStep interventionStep) throws AbstractCommunicationException, DeviceActionException, RobotActionException, InterruptedException {
 		if (interventionStep.isInterventionNeeded()) {
-			interventionStep.executeStep(workpieceId, this);
+			interventionStep.executeStep(processId, this);
 			canContinue = false;
 			checkStatus();
 			// notify master of intervention, it will, in turn notify other running executor-threads
@@ -187,7 +215,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		}
 	}
 	
-	public void executePickFromStackerStep(final PickStep pickStep) throws InterruptedException, AbstractCommunicationException, RobotActionException, DeviceActionException {
+	private void executePickFromStackerStep(final PickStep pickStep) throws InterruptedException, AbstractCommunicationException, RobotActionException, DeviceActionException {
 		checkStatus();
 		canContinue = false;
 		controllingThread.notifyWaitingBeforePickFromStacker(this);
@@ -223,15 +251,14 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 			return;
 		}
 		checkStatus();
-		pickStep.executeStep(workpieceId, this);
+		pickStep.executeStep(processId, this);
 		checkStatus();
 		pickStep.finalizeStep(this);
 	}
 	
-	public void executePutInMachineStep(final PutStep putStep) throws InterruptedException, AbstractCommunicationException, RobotActionException, DeviceActionException {
-		checkStatus();
+	private void executePutInMachineStep(final PutStep putStep) throws InterruptedException, AbstractCommunicationException, RobotActionException, DeviceActionException {
 		canContinue = false;
-		controllingThread.notifyWaitingBeforePutInMachine(this);
+		controllingThread.notifyWaitingBeforePutInMachine(this);	
 		checkStatus();
 		if (!canContinue) {
 			synchronized(syncObject) {
@@ -259,8 +286,8 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		checkStatus();
 		putStep.getRobotSettings().setFreeAfter(false);	// we can always go back to home after putting a wp in the machine
 		checkStatus();
-		putStep.executeStep(workpieceId, this);
-		checkStatus();
+		putStep.executeStep(processId, this);
+		checkStatus();		
 		ThreadManager.submit(new Thread() {
 			@Override
 			public void run() {
@@ -276,7 +303,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					controllingThread.notifyException(e);
 					controllingThread.stopRunning();
 				}
-				controllingThread.notifyPutInMachineFinished(ProcessFlowExecutionThread.this, needsReversal);
+				controllingThread.notifyPutInMachineFinished(ProcessFlowExecutionThread.this);
 			}
 		});		
 	}
@@ -298,7 +325,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		}
 		pickStep.getRobotSettings().setFreeAfter(false);
 		checkStatus();
-		pickStep.executeStep(workpieceId, this);
+		pickStep.executeStep(processId, this);
 		checkStatus();
 		pickStep.finalizeStep(this);
 		checkStatus();
@@ -343,7 +370,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		return this.running;
 	}
 	
-	public boolean needsReversal() {
+	boolean needsReversal() {
 		return this.needsReversal;
 	}
 	
@@ -355,8 +382,27 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		}
 	}
 	
+	int getNbInFlow() {
+		return this.nbInFlow;
+	}
+	
+	int getProcessId() {
+		return this.processId;
+	}
+	
+	ExecutionThreadStatus getExecutionStatus() {
+		return this.executionStatus;
+	}
+	
+	void setExecutionStatus(ExecutionThreadStatus executionStatus) {
+		if (!this.executionStatus.equals(executionStatus)) {
+			logger.debug("STATUS PRC[" + processId + "] = " + executionStatus);
+			this.executionStatus = executionStatus;
+		}
+	}
+	
 	@Override
 	public String toString() {
-		return "ProcessFlowExecutionThread - WP[" + workpieceId + "]";
+		return "ProcessFlowExecutionThread - PRC[" + processId + "]";
 	}
 }

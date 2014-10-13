@@ -162,7 +162,7 @@ public class ProcessFlow {
 		return id;
 	}
 	
-	//In case this functions is called by the activeProcessFlow, the activeProcessFlow will be changed to the one in the argument. (Actually this should be managed by the ProcessFlowManager)
+	//In case this function is called by the activeProcessFlow, the activeProcessFlow will be changed to the one in the argument. (Actually this should be managed by the ProcessFlowManager)
 	public void loadFromOtherProcessFlow(final ProcessFlow processFlow) {
 		this.processSteps = processFlow.getProcessSteps();
 		for (AbstractProcessStep step : this.processSteps) {
@@ -547,6 +547,7 @@ public class ProcessFlow {
 		return false;
 	}
 	
+	//TODO - optimize 
 	public boolean hasReversalUnit() {
 		for(AbstractProcessStep processStep: processSteps) {
 			if(processStep instanceof ProcessingStep) {

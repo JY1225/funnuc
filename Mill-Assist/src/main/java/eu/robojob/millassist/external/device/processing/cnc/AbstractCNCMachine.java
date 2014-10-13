@@ -32,7 +32,17 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private MCodeAdapter mCodeAdapter;
 	
 	public enum WayOfOperating {
-		START_STOP, M_CODES, M_CODES_DUAL_LOAD
+		START_STOP(1), M_CODES(1), M_CODES_DUAL_LOAD(2);
+		
+		private int nbProcesses;
+		
+		private WayOfOperating(int nbProcesses) {
+			this.nbProcesses = nbProcesses;
+		}
+		
+		public int getNbProcesses() {
+			return this.nbProcesses;
+		}
 	};
 	
 	private static Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());

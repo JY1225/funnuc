@@ -291,12 +291,11 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	 * Update the workpieces from the first CNC machine in a way that it generates HALF_FINISHED workpieces
 	 */
 	private static void updateCNCWorkPieces(DeviceInformation deviceInfo) {
-		deviceInfo.getPutStep().getDeviceSettings().getWorkPiece().setType(WorkPiece.Type.RAW);
-		WorkPiece clonedPiecetoPick = deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone();
-		clonedPiecetoPick.setType(WorkPiece.Type.HALF_FINISHED);
-		deviceInfo.getPickStep().getDeviceSettings().setWorkPiece(clonedPiecetoPick);
-		deviceInfo.getPickStep().getRobotSettings().setWorkPiece(clonedPiecetoPick);
-		deviceInfo.getProcessingStep().getDeviceSettings().setWorkPiece(clonedPiecetoPick);
+		WorkPiece halfFinishedClone = deviceInfo.getPickStep().getDeviceSettings().getWorkPiece().clone();
+		halfFinishedClone.setType(WorkPiece.Type.HALF_FINISHED);
+		deviceInfo.getPickStep().getDeviceSettings().setWorkPiece(halfFinishedClone);
+		deviceInfo.getPickStep().getRobotSettings().setWorkPiece(halfFinishedClone);
+		deviceInfo.getProcessingStep().getDeviceSettings().setWorkPiece(halfFinishedClone);
 	}
 	
 	// TODO - review (duplicate code)
@@ -324,17 +323,18 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			}
 		}
 		
-		updateCNCWorkPieces(deviceInfo);
-		
 		//Clone nemen van robotPick and PutSettings
-		DevicePickSettings devicePickSettings = cncMachine.getDefaultPickSettings(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
-		devicePickSettings.getWorkPiece().setType(WorkPiece.Type.FINISHED);
+		DevicePickSettings devicePickSettings = cncMachine.getDefaultPickSettings(deviceInfo.getPickStep().getDeviceSettings().getWorkPiece());
 		devicePickSettings.setWorkArea(workArea);
+		devicePickSettings.setWorkPieceType(WorkPiece.Type.FINISHED);
 		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = cncMachine.getDefaultStartCyclusSettings();
-		deviceStartCyclusSettings.setWorkArea(workArea);
 		deviceStartCyclusSettings.setWorkPiece(devicePickSettings.getWorkPiece());
-		DevicePutSettings devicePutSettings = cncMachine.getDefaultPutSettings(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
-		devicePutSettings.getWorkPiece().setType(WorkPiece.Type.HALF_FINISHED);
+		deviceStartCyclusSettings.setWorkArea(workArea);
+		deviceStartCyclusSettings.setWorkPieceType(WorkPiece.Type.FINISHED);
+		//original raw workPiece
+		
+		DevicePutSettings devicePutSettings = cncMachine.getDefaultPutSettings(deviceInfo.getPutStep().getDeviceSettings().getWorkPiece());
+		devicePutSettings.setWorkPieceType(WorkPiece.Type.HALF_FINISHED);
 		devicePutSettings.setWorkArea(workArea);
 		DeviceSettings deviceSettings = cncMachine.getDeviceSettings();
 		deviceSettings.setClamping(workArea, clamping);
@@ -343,9 +343,8 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		
 		FanucRobotPutSettings robotPutSettings = new FanucRobotPutSettings();
 		robotPutSettings.setRobot(deviceInfo.getPutStep().getRobotSettings().getRobot());
-		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
-		robotPutSettings.getGripperHead().getGripper().setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
-		robotPutSettings.getGripperHead().getGripper().getWorkPiece().setType(WorkPiece.Type.HALF_FINISHED);
+		robotPutSettings.setGripperHead(deviceInfo.getPutStep().getRobotSettings().getGripperHead());
+		robotPutSettings.getGripperHead().getGripper().setWorkPiece(devicePutSettings.getWorkPiece());
 		robotPutSettings.setSmoothPoint(null);
 		robotPutSettings.setWorkArea(workArea);
 		robotPutSettings.setDoMachineAirblow(false);
@@ -355,8 +354,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		robotPickSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
 		robotPickSettings.setSmoothPoint(null);
 		robotPickSettings.setWorkArea(workArea);
-		robotPickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
-		robotPickSettings.getWorkPiece().setType(WorkPiece.Type.FINISHED);
+		robotPickSettings.setWorkPiece(devicePickSettings.getWorkPiece());
 		robotPickSettings.getGripperHead().getGripper().setWorkPiece(robotPickSettings.getWorkPiece());
 		
 		DeviceInformation newDeviceInfo = new DeviceInformation((index + 1), processFlowAdapter);
@@ -369,7 +367,9 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		newDeviceInfo.setPutStep(putStep);
 		newDeviceInfo.setProcessingStep(processingStep);
 		
-		processFlowAdapter.addDeviceSteps(index +1 , newDeviceInfo);
+		processFlowAdapter.addDeviceSteps(index, newDeviceInfo);
+		
+		updateCNCWorkPieces(deviceInfo);
 	}
 	
 	public void addDevice(final int index) {
@@ -393,6 +393,10 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			return;
 		}
 		
+		if (device.getType().equals(DeviceType.POST_PROCESSING)) {
+			addCNCMachineCopy();
+		}
+		
 		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
 		WorkArea workArea = null;
 		Clamping clamping = null;
@@ -412,14 +416,13 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		//TODO - dit moet standaard een aparte methode worden
 		DevicePickSettings devicePickSettings = device.getDefaultPickSettings(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		devicePickSettings.setWorkArea(workArea);
-		devicePickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
 		devicePickSettings.getWorkPiece().setType(WorkPiece.Type.RAW);
 		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = device.getDefaultStartCyclusSettings();
 		deviceStartCyclusSettings.setWorkArea(workArea);
-		deviceStartCyclusSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
+		deviceStartCyclusSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		DevicePutSettings devicePutSettings = device.getDefaultPutSettings(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		devicePutSettings.setWorkArea(workArea);
-		devicePutSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone());
+		devicePutSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		devicePutSettings.getWorkPiece().setType(WorkPiece.Type.RAW);
 		DeviceSettings deviceSettings = device.getDeviceSettings();
 		deviceSettings.setClamping(workArea, clamping);
@@ -456,8 +459,8 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		} else if (device instanceof ReversalUnit) {
 			deviceSettings = (ReversalUnitSettings) deviceSettings;
 			
-			robotPutSettings.setRobot(deviceInfo.getPutStep().getRobotSettings().getRobot());
-			//robotPutSettings.setGripperHead(deviceInfo.getPutStep().getRobotSettings().getGripperHead());
+//			robotPutSettings.setRobot(deviceInfo.getPutStep().getRobotSettings().getRobot());
+			robotPickSettings.setGripperHead(deviceInfo.getPutStep().getRobotSettings().getGripperHead());
 			PutStep putStep = new PutStep(devicePutSettings, robotPutSettings);
 			ProcessingStep processingStep = new ProcessingStep(deviceStartCyclusSettings);
 			PickStep pickStep = new PickStep(devicePickSettings, robotPickSettings);			
@@ -479,9 +482,6 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		}
 		
 		processFlowAdapter.addDeviceSteps(index, newDeviceInfo);
-		if (device.getType().equals(DeviceType.POST_PROCESSING)) {
-			addCNCMachineCopy();
-		}
 		
 		deviceMenuFactory.clearBuffer();
 		transportMenuFactory.clearBuffer();

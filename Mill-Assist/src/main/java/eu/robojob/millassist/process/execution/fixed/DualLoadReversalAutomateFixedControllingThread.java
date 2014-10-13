@@ -120,6 +120,7 @@ public class DualLoadReversalAutomateFixedControllingThread extends DualLoadAuto
 		if (executionThreadStatus1.equals(ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER) || executionThreadStatus2.equals(ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER)) {
 			return false;
 		}
+		// Two processes are in reversalCycle
 		if (executionThreadStatus1.equals(ExecutionThreadStatus.WAITING_FOR_REVERSAL) && executionThreadStatus2.equals(ExecutionThreadStatus.WAITING_FOR_REVERSAL)) {
 			return false;
 		}
@@ -132,7 +133,7 @@ public class DualLoadReversalAutomateFixedControllingThread extends DualLoadAuto
 		return true;
 	}
 	
-	//TODO - andere status toevoegen, want het wordt te ingewikkeld
+	//TODO - andere status toevoegen, want het wordt te ingewikkeld - extra checks toevoegen 
 	@Override
 	public synchronized void notifyWaitingBeforePutInMachine(final ProcessFlowExecutionThread processFlowExecutor) {
 		// if one of other executor is waiting for pick: continue this first
@@ -198,8 +199,11 @@ public class DualLoadReversalAutomateFixedControllingThread extends DualLoadAuto
 		} 
 	}
 	
+	//FIXME dit is te ingewikkeld - eigenlijk is dit "zit tussen state en state" - state nummer toevoegen? - probleem want WORKING_WITH_ROBOT komt meermaals voor - tenzij we de stepNummer gebruiken
+	//==> processFlowExectuion van multiThread 
 	private static boolean isFreeSpaceInMachine(final ExecutionThreadStatus executionThreadStatus1, final boolean needsReversalThread1,
 			final ExecutionThreadStatus executionThreadStatus2, final boolean needsReversalThread2) {
+		//Als eerste en tweede proces beiden in reversal cyclus zitten dan is het niet goed
 		if (executionThreadStatus1.equals(ExecutionThreadStatus.WORKING_WITHOUT_ROBOT) 
 				|| executionThreadStatus1.equals(ExecutionThreadStatus.WAITING_FOR_REVERSAL)
 				|| (executionThreadStatus1.equals(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE) && needsReversalThread1)
@@ -229,6 +233,7 @@ public class DualLoadReversalAutomateFixedControllingThread extends DualLoadAuto
 		return false;
 	}
 	
+	//TODO opsplitsen!
 	@Override
 	public synchronized void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor, final boolean needsReversal) {
 		logger.info("Put in machine finished.");
@@ -324,6 +329,7 @@ public class DualLoadReversalAutomateFixedControllingThread extends DualLoadAuto
 		return false;
 	}
 	
+	//FIXME - hier ook check of in reversalCycle
 	private static boolean isNewProcessAllowedToStart(final ExecutionThreadStatus activeExecutionThreadStatus, final ExecutionThreadStatus executionThreadStatus1, 
 			final ExecutionThreadStatus executionThreadStatus2) {
 		if (activeExecutionThreadStatus.equals(ExecutionThreadStatus.WAITING_FOR_REVERSAL)) {

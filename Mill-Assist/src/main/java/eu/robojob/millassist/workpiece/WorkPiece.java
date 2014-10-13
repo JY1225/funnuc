@@ -4,7 +4,7 @@ package eu.robojob.millassist.workpiece;
 public class WorkPiece {
 
 	public enum Type {
-		RAW(1), FINISHED(2), HALF_FINISHED(3);
+		RAW(1), HALF_FINISHED(2), FINISHED(3);
 		
 		private int id;
 		
