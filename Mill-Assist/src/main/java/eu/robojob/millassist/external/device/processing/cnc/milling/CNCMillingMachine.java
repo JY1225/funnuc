@@ -258,7 +258,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			int[] registers = {command};
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 			Thread.sleep(500);
-			if (startCylusSettings.getStep().getDeviceSettings().getWorkPiece().getType().equals(WorkPiece.Type.FINISHED) && startCylusSettings.getStep().getProcessFlow().hasReversalUnit()) {
+			if (startCylusSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED) && startCylusSettings.getStep().getProcessFlow().hasReversalUnit()) {
 				waitForMCodes(M_CODE_UNLOAD_REVERSAL);
 			} else {
 				waitForMCodes(M_CODE_UNLOAD);
@@ -266,7 +266,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		} else if (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
 			// we sign of the m code for put
 			Set<Integer> robotServiceOutputs;
-			if (startCylusSettings.getStep().getProcessFlow().hasReversalUnit() && startCylusSettings.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)) {
+			if (startCylusSettings.getStep().getProcessFlow().hasReversalUnit() && startCylusSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)) {
 				robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD_REVERSAL).getRobotServiceOutputsUsed();
 			} else {
 				robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
@@ -278,14 +278,24 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			int[] registers = {command};
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 			Thread.sleep(5000);	// wait 5 sec before checking again for m-code
-			if (startCylusSettings.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED) && startCylusSettings.getStep().getProcessFlow().hasReversalUnit()) {
+			if (startCylusSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED) && startCylusSettings.getStep().getProcessFlow().hasReversalUnit()) {
 				waitForMCodes(M_CODE_UNLOAD_REVERSAL);
 			} else {
 				waitForMCodes(M_CODE_UNLOAD);
 			}
 			// now wait for next load and unload M-code
-			if (startCylusSettings.getStep().getDeviceSettings().getWorkPiece().getType().equals(WorkPiece.Type.FINISHED) && startCylusSettings.getStep().getProcessFlow().hasReversalUnit()) {
+			if (startCylusSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED) && startCylusSettings.getStep().getProcessFlow().hasReversalUnit()) {
 				waitForMCodes(M_CODE_LOAD_REVERSAL);
+				// We finish m-c load reversal because no load is suppose to come anymore
+				if (startCylusSettings.getStep().getProcessFlow().getFinishedAmount() == startCylusSettings.getStep().getProcessFlow().getTotalAmount() - 1) {
+					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD_REVERSAL).getRobotServiceOutputsUsed();
+					command = 0;
+					if (robotServiceOutputs.contains(0)) {
+						logger.info("Finish load_reversal m-c");
+						command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
+					}
+					cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+				}
 			} else {
 				waitForMCodes(M_CODE_LOAD);
 			}
@@ -307,7 +317,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				Thread.sleep(500);
 			}
 			waitForNoMCode(M_CODE_LOAD, M_CODE_LOAD_REVERSAL);
-			if (startCylusSettings.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED) && startCylusSettings.getStep().getProcessFlow().hasReversalUnit()) {
+			if (startCylusSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED) && startCylusSettings.getStep().getProcessFlow().hasReversalUnit()) {
 				waitForMCodes(M_CODE_UNLOAD_REVERSAL);
 			} else {
 				waitForMCodes(M_CODE_UNLOAD);
@@ -327,7 +337,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 		// if way of operation is m codes, await unloading m code!
 		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
-			if (pickSettings.getStep().getProcessFlow().hasReversalUnit() && pickSettings.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)) {
+			if (pickSettings.getStep().getProcessFlow().hasReversalUnit() && pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)) {
 				waitForMCodes(M_CODE_UNLOAD_REVERSAL);
 			} else {
 				waitForMCodes(M_CODE_UNLOAD);
@@ -580,7 +590,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
 		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
-			if (putSettings.getWorkPiece().getType().equals(WorkPiece.Type.HALF_FINISHED)) {
+			if (putSettings.getWorkPieceType().equals(WorkPiece.Type.HALF_FINISHED)) {
 				return getMCodeAdapter().isMCodeActive(M_CODE_LOAD_REVERSAL);
 			} else {
 				getMCodeAdapter().isMCodeActive(M_CODE_LOAD);
@@ -609,13 +619,13 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, InterruptedException, DeviceActionException {
 		if (getWayOfOperating() == WayOfOperating.M_CODES) {
 			if (((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) &&
-					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS) && (pickSettings.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED))) || 
-					(pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) && (pickSettings.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED))) {
+					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS) && (pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED))) || 
+					(pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) && (pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED))) {
 				// last work piece: send reset in stead of finishing m code
 				nCReset();
 			} else {
 				Set<Integer> robotServiceOutputs;
-				if (pickSettings.getStep().getProcessFlow().hasReversalUnit() && pickSettings.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)) {
+				if (pickSettings.getStep().getProcessFlow().hasReversalUnit() && pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)) {
 					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD_REVERSAL).getRobotServiceOutputsUsed();
 				} else {
 					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD).getRobotServiceOutputsUsed();
@@ -631,9 +641,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		} else if (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
 			if (((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) &&
 					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS) &&
-					(pickSettings.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)))
+					(pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)))
 				||  ((pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) && 
-					(pickSettings.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)))
+					(pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)))
 				) {
 				// last work piece: send reset in stead of finishing m code
 				nCReset();
@@ -653,7 +663,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				}
 			} else {
 				Set<Integer> robotServiceOutputs;
-				if (pickSettings.getStep().getProcessFlow().hasReversalUnit() && pickSettings.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)) {
+				if (pickSettings.getStep().getProcessFlow().hasReversalUnit() && pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)) {
 					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD_REVERSAL).getRobotServiceOutputsUsed();
 				} else {
 					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD).getRobotServiceOutputsUsed();
@@ -668,22 +678,23 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				Thread.sleep(500);
 				if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 2) &&
 						(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) {
-					// last but one work piece: no upcoming put, but we wait for the upcoming LOAD M-code and confirm it
-					waitForMCodes(M_CODE_LOAD, M_CODE_LOAD_REVERSAL);
-					if (pickSettings.getStep().getProcessFlow().hasReversalUnit() && pickSettings.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)) {
-						robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD_REVERSAL).getRobotServiceOutputsUsed();
-					} else {
-						robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
+					if (!pickSettings.getWorkPieceType().equals(WorkPiece.Type.HALF_FINISHED)) {
+						// last but one work piece: no upcoming put, but we wait for the upcoming LOAD M-code and confirm it
+						waitForMCodes(M_CODE_LOAD, M_CODE_LOAD_REVERSAL);
+						if (pickSettings.getStep().getProcessFlow().hasReversalUnit() && pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)) {
+							robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD_REVERSAL).getRobotServiceOutputsUsed();
+						} else {
+							robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
+						}
+						command = 0;
+						if (robotServiceOutputs.contains(0)) {
+							logger.info("Finish M-C load");
+							command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
+						}
+						registers[0] = command;
+						cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+						Thread.sleep(500);
 					}
-					command = 0;
-					if (robotServiceOutputs.contains(0)) {
-						logger.info("Finish M-C load");
-						command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
-					}
-					registers[0] = command;
-					cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
-					Thread.sleep(500);
-
 				}
 			}
 		}
@@ -851,14 +862,5 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public String toString() {
 		return "CNCMillingMachine: " + getName();
 	}
-	
-	@Override
-	public CNCMillingMachine clone() {
-		CNCMillingMachine cncClone = new CNCMillingMachine(getName(), getWayOfOperating(), getMCodeAdapter(), this.getZones(), this.cncMachineCommunication, getClampingWidthR());
-		cncClone.setAlarms(this.getAlarms());
-		cncClone.setCNCMachineListeners(this.getCNCMachineListeners());
-		cncClone.setStatus(this.getStatus());
-		return cncClone;
-	}
-	
+
 }

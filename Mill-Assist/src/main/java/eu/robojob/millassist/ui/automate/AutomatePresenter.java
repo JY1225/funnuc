@@ -99,8 +99,11 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 	}
 	
 	public void startAutomate() {
+		//Change controllingThread @runtime
 		if (processFlowAdapter.getProcessFlow().hasReversalUnit()) {
 			automateThread = new AutomateControllingThreadReversal(processFlowAdapter.getProcessFlow(), automateThread.getNbConcurrentInMachine());
+		} else {
+			automateThread = new AutomateControllingThread(processFlowAdapter.getProcessFlow(), automateThread.getNbConcurrentInMachine());
 		}
 		running = true;
 		automateFuture = ThreadManager.submit(automateThread);

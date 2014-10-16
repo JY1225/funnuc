@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DeviceSettings {
-
+	
 	private int id;
 	private Map<WorkArea, Clamping> clampings;
 	

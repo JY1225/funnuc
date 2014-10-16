@@ -9,11 +9,13 @@ public abstract class RobotPickSettings extends AbstractRobotActionSettings<Pick
 	
 	private WorkPiece workPiece;
 	private boolean doMachineAirblow;
+	private ApproachType approachType;
 
 	public RobotPickSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final WorkPiece workPiece, final boolean doMachineAirblow, final boolean gripInner) {
 		super(robot, workArea, gripperHead, smoothPoint, location, gripInner);
 		this.workPiece = workPiece;
 		this.doMachineAirblow = doMachineAirblow;
+		this.approachType = ApproachType.TOP;
 	}
 
 	public WorkPiece getWorkPiece() {
@@ -32,4 +34,17 @@ public abstract class RobotPickSettings extends AbstractRobotActionSettings<Pick
 		this.doMachineAirblow = doMachineAirblow;
 	}
 	
+	public void updateWorkPieceType() {
+		if (workPiece.getType().equals(WorkPiece.Type.HALF_FINISHED)) {
+			workPiece.setType(WorkPiece.Type.FINISHED);
+		}
+	}
+	
+	public ApproachType getApproachType() {
+		return this.approachType;
+	}
+	
+	public void setApproachType(ApproachType type) {
+		this.approachType = type;
+	}
 }

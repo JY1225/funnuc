@@ -7,15 +7,14 @@ public abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep
 	
 	private AbstractDevice device;
 	private WorkArea workArea;
-	private WorkPiece workPiece;
 	private WorkPiece.Type workPieceType;
 	private T step;
 	private int id;
 	
-	public AbstractDeviceActionSettings(final AbstractDevice device, final WorkArea workArea, final WorkPiece workPiece) {
+	public AbstractDeviceActionSettings(final AbstractDevice device, final WorkArea workArea, final WorkPiece.Type workPieceType) {
 		setDevice(device);
 		setWorkArea(workArea);
-		setWorkPiece(workPiece);
+		setWorkPieceType(workPieceType);
 	}
 	
 	public int getId() {
@@ -58,11 +57,9 @@ public abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep
 		this.workPieceType = workPieceType;
 	}
 	
-	public WorkPiece getWorkPiece() {
-		return workPiece;
-	}
-	
-	public void setWorkPiece(final WorkPiece workPiece) {
-		this.workPiece = workPiece;
+	public void updateWorkPieceType() {
+		if (workPieceType.equals(WorkPiece.Type.HALF_FINISHED)) {
+			setWorkPieceType(WorkPiece.Type.FINISHED);
+		}
 	}
 }

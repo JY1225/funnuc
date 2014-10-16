@@ -5,7 +5,7 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class DeviceInterventionSettings extends AbstractDeviceActionSettings<InterventionStep> {
 	
-	public DeviceInterventionSettings(final AbstractDevice device, final WorkArea workArea, final WorkPiece workPiece) {
-		super(device, workArea, workPiece);
+	public DeviceInterventionSettings(final AbstractDevice device, final WorkArea workArea, final WorkPiece.Type workPieceType) {
+		super(device, workArea, workPieceType);
 	}
 }

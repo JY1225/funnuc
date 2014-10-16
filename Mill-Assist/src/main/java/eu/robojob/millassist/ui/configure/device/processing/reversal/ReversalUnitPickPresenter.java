@@ -1,7 +1,7 @@
 package eu.robojob.millassist.ui.configure.device.processing.reversal;
 
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
-import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings.LoadType;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
@@ -66,17 +66,16 @@ public class ReversalUnitPickPresenter extends AbstractFormPresenter<ReversalUni
 		}
 	}
 	
-	public void changedPickType(final LoadType loadType) {
-		if (!deviceSettings.getPickType().equals(loadType)) {
-			deviceSettings.setPickType(loadType);
+	public void changedPickType(final ApproachType loadType) {
+		if (!pickStep.getRobotSettings().getApproachType().equals(loadType)) {
+			pickStep.getRobotSettings().setApproachType(loadType);
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 		}
 	}
 
 	@Override
 	public boolean isConfigured() {
-		if (pickStep.getRobotSettings().getSmoothPoint() != null && 
-				!deviceSettings.getPickType().equals(deviceSettings.getPutType())) {
+		if (pickStep.getRobotSettings().getSmoothPoint() != null) {
 			return true;
 		}
 		return false;

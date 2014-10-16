@@ -559,6 +559,16 @@ public class ProcessFlow {
 		return false;
 	}
 
+	public boolean hasPrageDevice() {
+		for(AbstractProcessStep processStep: processSteps) {
+			if(processStep instanceof ProcessingStep) {
+				if(((ProcessingStep) processStep).getDevice().getType().equals(DeviceType.PRE_PROCESSING)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	public ClampingManner getClampingType() {
 		return clampingManner;

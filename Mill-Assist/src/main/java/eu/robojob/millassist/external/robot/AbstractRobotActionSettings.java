@@ -17,6 +17,28 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 	private boolean teachingNeeded;
 	private boolean gripInner;
 	
+	public enum ApproachType {
+		TOP(1), BOTTOM(2);
+		
+		private int id;
+		
+		private ApproachType(final int id) {
+			this.id = id;
+		}
+		
+		public int getId() {
+			return this.id;
+		}
+		
+		public static ApproachType getById(int id) {
+		    for(ApproachType type : values()) {
+		        if(type.id == id) 
+		        	return type;
+		    }
+		    return null;
+		 }	
+	}
+	
 	public AbstractRobotActionSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final boolean gripInner) {
 		this.robot = robot;
 		this.workArea = workArea;

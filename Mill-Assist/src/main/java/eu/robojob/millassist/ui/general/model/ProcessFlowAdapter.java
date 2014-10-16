@@ -11,6 +11,7 @@ import eu.robojob.millassist.process.ProcessStepType;
 import eu.robojob.millassist.process.ProcessingStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.workpiece.WorkPiece;
 
 /**
  * This class extends the functionalities of the ProcessFlow class and organizes its information to simplify interaction between UI classes and ProcessFlow
@@ -123,7 +124,7 @@ public class ProcessFlowAdapter {
 	
 	public void addInterventionStepAfterPut(final TransportInformation transportInfo) {
 		AbstractDevice device = transportInfo.getPutStep().getDevice();
-		InterventionStep intervention = new InterventionStep(new DeviceInterventionSettings(device, transportInfo.getPutStep().getDeviceSettings().getWorkArea(), null), 0);
+		InterventionStep intervention = new InterventionStep(new DeviceInterventionSettings(device, transportInfo.getPutStep().getDeviceSettings().getWorkArea(), transportInfo.getPutStep().getDeviceSettings().getWorkPieceType()), 0);
 		processFlow.addStepAfter(transportInfo.getPutStep(), intervention);
 	}
 	
@@ -133,7 +134,7 @@ public class ProcessFlowAdapter {
 	
 	public void addInterventionStepBeforePick(final TransportInformation transportInfo) {
 		AbstractDevice device = transportInfo.getPickStep().getDevice();
-		InterventionStep intervention = new InterventionStep(new DeviceInterventionSettings(device, transportInfo.getPickStep().getDeviceSettings().getWorkArea(), null), 0);
+		InterventionStep intervention = new InterventionStep(new DeviceInterventionSettings(device, transportInfo.getPickStep().getDeviceSettings().getWorkArea(), transportInfo.getPickStep().getDeviceSettings().getWorkPieceType()), 0);
 		processFlow.addStepBefore(transportInfo.getPickStep(), intervention);
 	}
 	
@@ -217,5 +218,13 @@ public class ProcessFlowAdapter {
 			}
 		}
 		return -1;
+	}
+	
+	/**
+	 * Update HALF_FINISHED workPieceType to FINISHED
+	 */
+	public void updateWorkPieceTypes() {
+		getDeviceInformation(getCNCMachineIndex()).getProcessingStep().getDeviceSettings().setWorkPieceType(WorkPiece.Type.FINISHED);
+		getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().setWorkPieceType(WorkPiece.Type.RAW);
 	}
 }

@@ -11,13 +11,18 @@ public class ReversalUnitMenuPresenter extends AbstractDeviceMenuPresenter {
 	private ReversalUnitPickPresenter reversalUnitPickPresenter;
 	private ReversalUnitPutPresenter reversalUnitPutPresenter;
 	
+	static final String SAME_APPROACHTYPES = "ReversalUnitMenuPresenter.sameApproachTypes";
+	
 	public ReversalUnitMenuPresenter(final DeviceMenuView view, final DeviceInformation deviceInfo, 
 			final ReversalUnitConfigurePresenter deviceConfigurePresenter, final ReversalUnitPutPresenter reversalUnitPutPresenter, 
 			final ReversalUnitPickPresenter reversalUnitPickPresenter) {
 		super(view, deviceInfo);
 		this.deviceConfigurePresenter = deviceConfigurePresenter;
+		deviceConfigurePresenter.setMenuPresenter(this);
 		this.reversalUnitPickPresenter = reversalUnitPickPresenter;
+		reversalUnitPickPresenter.setMenuPresenter(this);
 		this.reversalUnitPutPresenter = reversalUnitPutPresenter;
+		reversalUnitPutPresenter.setMenuPresenter(this);
 	}
 
 	@Override
@@ -47,9 +52,16 @@ public class ReversalUnitMenuPresenter extends AbstractDeviceMenuPresenter {
 	@Override
 	public void setBlocked(final boolean blocked) {
 	}
+	
+	boolean isSameApproachType() {
+		return (reversalUnitPickPresenter.getPickStep().getRobotSettings().getApproachType().equals(reversalUnitPutPresenter.getPutStep().getRobotSettings().getApproachType()));
+	}
 
 	@Override
 	public boolean isConfigured() {
+		if (isSameApproachType()) {
+			return false;
+		}
 		return (reversalUnitPickPresenter.isConfigured() && reversalUnitPutPresenter.isConfigured());
 	}
 	
@@ -60,5 +72,6 @@ public class ReversalUnitMenuPresenter extends AbstractDeviceMenuPresenter {
 
 	@Override
 	public void unregisterListeners() { }
+	
 
 }

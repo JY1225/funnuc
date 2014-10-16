@@ -1,7 +1,5 @@
 package eu.robojob.millassist.external.device.processing.prage;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -90,10 +88,6 @@ public class PrageDevice extends AbstractProcessingDevice {
 	
 	@Override
 	public DeviceSettings getDeviceSettings() {
-		Map<WorkArea, Clamping> clampings = new HashMap<WorkArea, Clamping>();
-		for (WorkArea workArea : getWorkAreas()) {
-			clampings.put(workArea, workArea.getActiveClamping());
-		}
 		return new DeviceSettings();
 	}
 	

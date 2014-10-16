@@ -15,6 +15,7 @@ public class WorkArea {
 	private UserFrame userFrame;
 	private Clamping activeClamping;
 	private Set<Clamping> clampings;
+	private boolean inUse;
 	
 	public WorkArea(final String name, final UserFrame userFrame, final Clamping activeClamping, final Set<Clamping> clampings) {
 		this.name = name;
@@ -69,6 +70,14 @@ public class WorkArea {
 
 	public void setActiveClamping(final Clamping activeClamping) {
 		this.activeClamping = activeClamping;
+	}
+	
+	public boolean inUse() {
+		return this.inUse;
+	}
+	
+	public void inUse(boolean inUse) {
+		this.inUse = inUse;
 	}
 	
 	public String toString() {

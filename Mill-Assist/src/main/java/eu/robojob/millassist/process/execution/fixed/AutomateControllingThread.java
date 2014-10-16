@@ -256,6 +256,11 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.FINISHED);
 			//Pick the next one to execute
 			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER)) {
+					processExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER);
+					processExecutor.continueExecution();
+					return;
+				}
 				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE)) { 
 					processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
 					processExecutor.continueExecution();
@@ -298,16 +303,18 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 
 	@Override
 	synchronized protected boolean isFreePlaceInMachine() {
+		return (getNbInMachine() < getNbConcurrentInMachine());
+	}
+	
+	
+	protected synchronized int getNbInMachine() {
 		int nbInMachine = 0;
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 			if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.PROCESSING_IN_MACHINE)) {
 				nbInMachine++;
 			}
 		}
-		if (nbInMachine >= getNbConcurrentInMachine()) {
-			return false;
-		}
-		return true;
+		return nbInMachine;
 	}
 
 	@Override

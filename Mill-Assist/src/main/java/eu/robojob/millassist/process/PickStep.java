@@ -9,6 +9,7 @@ import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -67,7 +68,7 @@ public class PickStep extends AbstractTransportStep {
 						if (getRelativeTeachedOffset() == null) {
 							if (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight() < getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) {
 								float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight());
-								if(devicePickSettings.getDevice() instanceof ReversalUnit) {
+								if(devicePickSettings.getDevice() instanceof ReversalUnit && (getRobotSettings().getApproachType().equals(ApproachType.BOTTOM))) {
 									extraOffset += ((ReversalUnit) devicePickSettings.getDevice()).getStationHeight();
 									setRelativeTeachedOffset(new Coordinates(0, 0, (extraOffset * -1), 0, 0, 0));
 								} else {

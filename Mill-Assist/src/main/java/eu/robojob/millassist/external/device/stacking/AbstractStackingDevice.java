@@ -8,8 +8,10 @@ import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceType;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
 public abstract class AbstractStackingDevice extends AbstractDevice {
@@ -49,4 +51,15 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 	}
 
 	public abstract void clearDeviceSettings();
+	
+	@Override
+	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+		float zSafePlane = super.getZSafePlane(dimensions, workArea, approachType);
+		float wpHeight = dimensions.getHeight(); 
+		if (wpHeight > workArea.getActiveClamping().getHeight()) {
+			zSafePlane -= workArea.getActiveClamping().getHeight(); 
+			zSafePlane += wpHeight;
+		} 
+		return zSafePlane;
+	}
 }

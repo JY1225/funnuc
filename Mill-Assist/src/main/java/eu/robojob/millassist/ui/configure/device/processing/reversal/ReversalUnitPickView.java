@@ -10,10 +10,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings.LoadType;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 
@@ -31,7 +32,6 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 	
 	private static Label lblLoadType;
 	private static Button btnTopLoad;
-	private static Button btnFrontLoad;
 	private static Button btnBottomLoad;
 	
 	private static final int HGAP = 15;
@@ -44,7 +44,6 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 	private static final String SMOOTH_Z = "ReversalUnitPickView.smoothZ";
 	private static final String RESET = "ReversalUnitPickView.resetSmooth";
 	private static final String LOAD_TYPE = "ReversalUnitPickView.loadType";
-	private static final String FRONT_LOAD = "ReversalUnitPickView.frontLoad";
 	private static final String TOP_LOAD = "ReversalUnitPickView.topLoad";
 	private static final String BOTTOM_LOAD = "ReversalUnitPickView.bottomLoad";
 			
@@ -114,31 +113,21 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 		HBox hboxLoadType = new HBox();
 		hboxLoadType.setAlignment(Pos.CENTER_LEFT);
 		
-		btnFrontLoad = createButton(Translator.getTranslation(FRONT_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent event) {
-				getPresenter().changedPickType(LoadType.FRONT);
-				refreshLoadType(LoadType.FRONT);
-				
-			}
-		});
-		btnFrontLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-		hboxLoadType.getChildren().add(btnFrontLoad);
 		btnTopLoad = createButton(Translator.getTranslation(TOP_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
-				getPresenter().changedPickType(LoadType.TOP);
-				refreshLoadType(LoadType.TOP);
+				getPresenter().changedPickType(ApproachType.TOP);
+				refreshLoadType(ApproachType.TOP);
 
 			}
 		});
-		btnTopLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+		btnTopLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
 		hboxLoadType.getChildren().add(btnTopLoad);
 		btnBottomLoad = createButton(Translator.getTranslation(BOTTOM_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
-				getPresenter().changedPickType(LoadType.BOTTOM);
-				refreshLoadType(LoadType.BOTTOM);
+				getPresenter().changedPickType(ApproachType.BOTTOM);
+				refreshLoadType(ApproachType.BOTTOM);
 			}
 		});
 		btnBottomLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
@@ -154,7 +143,7 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 		column = 0;
 		row++;
 		getContents().add(hBoxSmoothPoint, column++, row);
-				
+		
 		column = 0;
 		row++;
 		getContents().add(lblLoadType, column++, row);
@@ -172,14 +161,11 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 		ntxtSmoothZ.setFocusListener(listener);
 	}
 	
-	private void refreshLoadType(LoadType activeLoadType) {
-		btnFrontLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+	private void refreshLoadType(ApproachType activeLoadType) {
+		hideNotification();
 		btnTopLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		btnBottomLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		switch (activeLoadType) {
-		case FRONT:
-			btnFrontLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-			break;
 		case BOTTOM:
 			btnBottomLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 			break;
@@ -188,6 +174,9 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 			break;
 		default:
 			break;
+		}
+		if (getPresenter().getMenuPresenter() != null && getPresenter().getMenuPresenter().isSameApproachType()) {
+			showNotification(Translator.getTranslation(ReversalUnitMenuPresenter.SAME_APPROACHTYPES), Type.WARNING);
 		}
 	}
 
@@ -203,7 +192,7 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 		} else {
 			btnResetSmooth.setDisable(false);
 		} 
-		refreshLoadType(getPresenter().getDeviceSettings().getPickType());
+		refreshLoadType(getPresenter().getPickStep().getRobotSettings().getApproachType());
 	}
 	
 	

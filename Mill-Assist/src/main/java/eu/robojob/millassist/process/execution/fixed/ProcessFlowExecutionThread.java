@@ -38,6 +38,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		
 		//States in case of presence of reversal unit - all states related to first CNC machine
 		WAITING_FOR_PICK_MACHINE_BEFORE_REVERSAL,
+		REVERSING_WITH_ROBOT,
 		PROCESSING_BEFORE_REVERSAL,
 		WAITING_BEFORE_PUT_MACHINE_BEFORE_REVERSAL;
 	}
@@ -54,8 +55,6 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	private int nbInFlow;
 	private Object syncObject2;
 	// Is the reversal still to come?
-	
-	// We weten aan type van controllingThread of we met reversal zitten of niet
 	private boolean needsReversal;
 	
 	private static Logger logger = LogManager.getLogger(ProcessFlowExecutionThread.class.getName());

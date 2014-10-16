@@ -7,8 +7,8 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class ProcessingDeviceStartCyclusSettings extends AbstractDeviceActionSettings<ProcessingStep> {
 
-	public ProcessingDeviceStartCyclusSettings(final AbstractProcessingDevice device, final WorkArea workArea, final WorkPiece workPiece) {
-		super(device, workArea, workPiece);
+	public ProcessingDeviceStartCyclusSettings(final AbstractProcessingDevice device, final WorkArea workArea, final WorkPiece.Type workPieceType) {
+		super(device, workArea, workPieceType);
 	}
 	
 	public AbstractProcessingDevice getDevice() {

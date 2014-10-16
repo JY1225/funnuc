@@ -14,10 +14,24 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 	@Override
 	synchronized void notifyWaitingBeforePickFromStacker(final ProcessFlowExecutionThread processFlowExecutor) {
 		processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER);
+		//Test for dualLoad whether we can continue with pick from stacker
+		boolean processingBeforeRev = false;
+		boolean processingAfterRev = false;
+		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+			if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.PROCESSING_BEFORE_REVERSAL)) {
+				processingBeforeRev = true;
+			} else if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.PROCESSING_IN_MACHINE)) {
+				processingAfterRev = true;
+			}
+		}
+		if (processingBeforeRev && processingAfterRev) {
+			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER);
+			processFlowExecutor.continueExecution();
+			return;
+		}
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 			//Only allow other process to continue if we are at the second CNC processing cycle
-			System.out.println("NB IN FLOW = " + getNbInFlow());
-			if (isInReversalCycle(processExecutor) && (getNbInFlow() < (getNbConcurrentInMachine()+1)))
+			if (isInReversalCycle(processExecutor) && (getNbInFlow() > getNbConcurrentInMachine()))
 				return;
 		}
 		super.notifyWaitingBeforePickFromStacker(processFlowExecutor);
@@ -37,8 +51,8 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 	
 	@Override
 	synchronized void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor) {
+		logger.info("Put in machine finished.");
 		if (processFlowExecutor.needsReversal()) {
-			logger.info("Put in machine finished.");
 			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_BEFORE_REVERSAL);
 			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) { 
@@ -47,12 +61,9 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 					return;
 				}
 			}
-			//CODE for dualLoad
-			System.out.println("NB IN FLOW = " + getNbInFlow());
 			if (getNbInFlow() < getNbConcurrentInMachine()) {
 				startNewProcess();
 			}
-			//END
 			try {
 				processFlow.getRobots().iterator().next().moveToHome();
 			} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
@@ -60,13 +71,12 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 				logger.error(e);
 			}
 		} else {
-			//CODE FOR DUAL LOAD
+			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);
 			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 				if (isInReversalCycle(processExecutor)) {
 					return;
 				}
 			}
-			//END DUAL LOAD
 			super.notifyPutInMachineFinished(processFlowExecutor);
 		}
 	}
@@ -75,16 +85,13 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 	synchronized void notifyWaitingBeforePickFromMachine(ProcessFlowExecutionThread processFlowExecutor) {
 		if (processFlowExecutor.needsReversal()) {
 			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_FOR_PICK_MACHINE_BEFORE_REVERSAL);
-			if (isRobotFree())
+			if (isRobotFree()) {
+				processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.REVERSING_WITH_ROBOT);
 				processFlowExecutor.continueExecution();
+			}
 		} else {
 			super.notifyWaitingBeforePickFromMachine(processFlowExecutor);
 		}
-	}
-	
-	@Override
-	synchronized protected boolean isFreePlaceInMachine() {
-		return (getNbInMachine() < getNbConcurrentInMachine());
 	}
 	
 	@Override
@@ -95,13 +102,15 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 	private static boolean isInReversalCycle(ProcessFlowExecutionThread processExecutor) {
 		if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.PROCESSING_BEFORE_REVERSAL)
 				|| processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_FOR_PICK_MACHINE_BEFORE_REVERSAL)
-				|| processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PUT_IN_MACHINE)) {
+				|| processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PUT_IN_MACHINE)
+				|| processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.REVERSING_WITH_ROBOT)) {
 			return true;
 		}
 		return false;
 	}
 	
-	private synchronized int getNbInMachine() {
+	@Override
+	protected synchronized int getNbInMachine() {
 		int nbInMachine = 0;
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 			if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.PROCESSING_IN_MACHINE) || isInReversalCycle(processExecutor)) {
@@ -112,8 +121,18 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 	}
 	
 	@Override
+	protected boolean isRobotFree() {
+		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+			if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.REVERSING_WITH_ROBOT)
+					|| processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WORKING_WITH_ROBOT)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	@Override
 	public String toString() {
 		return "AutomateControllingThreadReversal - processflow [" + processFlow + "]";
 	}
-
 }

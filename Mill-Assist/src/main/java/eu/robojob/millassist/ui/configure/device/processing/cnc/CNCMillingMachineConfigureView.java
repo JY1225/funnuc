@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
+import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.ui.controls.IconFlowSelector;
@@ -217,7 +218,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 					&& (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 				cbbWorkArea.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getName());
 			}
-			if (deviceInfo.getDevice().getWorkAreaNames().size() > 1) {
+			if (deviceInfo.getDevice().getWorkAreaNames().size() > 1 && notClonedClampings()) {
 				cbbWorkArea.setDisable(false);
 				lblWorkArea.setDisable(false);
 			} else {
@@ -225,6 +226,21 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 				lblWorkArea.setDisable(true);
 			}
 		}
+	}
+	
+	private boolean notClonedClampings() {
+		int userFrameId = -1;
+		int zoneId = -1;
+		for (WorkArea workArea: deviceInfo.getDevice().getWorkAreas()) {
+			if (userFrameId == -1 && zoneId == -1) {
+				userFrameId = workArea.getUserFrame().getId();
+				zoneId = workArea.getZone().getId();
+			}
+			if (zoneId != workArea.getZone().getId() || userFrameId != workArea.getUserFrame().getId()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void refreshClampingButtons() {

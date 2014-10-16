@@ -558,11 +558,11 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	}
 	
 	public DevicePickSettings getDefaultPickSettings() {
-		return new DevicePickSettings(this, rawWorkArea, getFinishedWorkPiece());
+		return new DevicePickSettings(this, rawWorkArea, getFinishedWorkPiece().getType());
 	}
 	
 	public DevicePutSettings getDefaultPutSettings() {
-		return new DevicePutSettings(this, finishedWorkArea, getRawWorkPiece());
+		return new DevicePutSettings(this, finishedWorkArea, getRawWorkPiece().getType());
 	}
 	
 	@Override

@@ -5,8 +5,8 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class DevicePutSettings extends AbstractDeviceActionSettings<PutStep> {
 	
-	public DevicePutSettings(final AbstractDevice device, final WorkArea workArea, final WorkPiece workPiece) {
-		super(device, workArea, workPiece);
+	public DevicePutSettings(final AbstractDevice device, final WorkArea workArea, final WorkPiece.Type workPieceType) {
+		super(device, workArea, workPieceType);
 	}
 	
 }

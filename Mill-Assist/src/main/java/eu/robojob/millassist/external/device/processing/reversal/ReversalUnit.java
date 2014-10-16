@@ -1,7 +1,5 @@
 package eu.robojob.millassist.external.device.processing.reversal;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -18,6 +16,7 @@ import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
@@ -80,10 +79,6 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	
 	@Override
 	public ReversalUnitSettings getDeviceSettings() {
-		Map<WorkArea, Clamping> clampings = new HashMap<WorkArea, Clamping>();
-		for (WorkArea workArea : getWorkAreas()) {
-			clampings.put(workArea, workArea.getActiveClamping());
-		}
 		return new ReversalUnitSettings();
 	}
 	
@@ -135,6 +130,21 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public boolean isConnected() {
 		return true;
+	}
+	
+	@Override
+	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+		if (approachType.equals(ApproachType.BOTTOM)) {
+			float zSafePlane = workArea.getActiveClamping().getRelativePosition().getZ(); 
+			System.out.println(zSafePlane);
+			zSafePlane += ((ReversalUnit) workArea.getZone().getDevice()).getStationHeight();
+			System.out.println(zSafePlane);
+			zSafePlane += dimensions.getHeight();
+			System.out.println(zSafePlane);
+			return (zSafePlane * -1);
+		} else {
+			return super.getZSafePlane(dimensions, workArea, approachType);
+		}
 	}
 	
 	@Override
