@@ -139,8 +139,6 @@ public class ReversalUnit extends AbstractProcessingDevice {
 			System.out.println(zSafePlane);
 			zSafePlane += ((ReversalUnit) workArea.getZone().getDevice()).getStationHeight();
 			System.out.println(zSafePlane);
-			zSafePlane += dimensions.getHeight();
-			System.out.println(zSafePlane);
 			return (zSafePlane * -1);
 		} else {
 			return super.getZSafePlane(dimensions, workArea, approachType);

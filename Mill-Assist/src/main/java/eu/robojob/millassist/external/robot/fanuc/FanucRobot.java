@@ -596,6 +596,7 @@ public class FanucRobot extends AbstractRobot {
 			values.add("0");
 		}
 		values.add(df.format(dimensions.getHeight()));	// WP thickness
+		
 		values.add(df.format(Math.max(dimensions.getLength(), dimensions.getWidth())));	// WP diameter
 		values.add("0");					// WP Z grip
 		values.add("0");					// grip Z face till front
@@ -659,11 +660,23 @@ public class FanucRobot extends AbstractRobot {
 		float zSafePlane = workArea.getZone().getDevice().getZSafePlane(dimensions, workArea, approachType);
 		
 		values.add(df.format(zSafePlane));
-		if (smoothPoint.getZ() > workArea.getUserFrame().getzSafeDistance()) {	// safety add z
-			values.add(df.format(smoothPoint.getZ()));
+		
+		// Safety add Z, if bottom approach, make value negative, compare to smooth and use the smallest
+		// 	for other approaches: use UF value, compare to smooth and use the largest
+		if (approachType.equals(ApproachType.BOTTOM)) {
+			if (smoothPoint.getZ() < (-workArea.getUserFrame().getzSafeDistance())) {	// safety add z
+				values.add(df.format(smoothPoint.getZ()));
+			} else {
+				values.add("" + (-workArea.getUserFrame().getzSafeDistance()));
+			}
 		} else {
-			values.add("" + workArea.getUserFrame().getzSafeDistance());
+			if (smoothPoint.getZ() > workArea.getUserFrame().getzSafeDistance()) {	// safety add z
+				values.add(df.format(smoothPoint.getZ()));
+			} else {
+				values.add("" + workArea.getUserFrame().getzSafeDistance());
+			}
 		}
+		
 		values.add(df.format(smoothPoint.getX()));	// smooth x
 		values.add(df.format(smoothPoint.getY()));	// smooth y
 		values.add(df.format(smoothPoint.getZ()));	// smooth z
