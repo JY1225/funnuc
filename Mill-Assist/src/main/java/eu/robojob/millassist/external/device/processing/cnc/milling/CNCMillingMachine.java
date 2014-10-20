@@ -588,7 +588,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			if (putSettings.getWorkPieceType().equals(WorkPiece.Type.HALF_FINISHED)) {
 				return getMCodeAdapter().isMCodeActive(M_CODE_LOAD_REVERSAL);
 			} else {
-				getMCodeAdapter().isMCodeActive(M_CODE_LOAD);
+				return getMCodeAdapter().isMCodeActive(M_CODE_LOAD);
 			}
 		}
 		return true;
