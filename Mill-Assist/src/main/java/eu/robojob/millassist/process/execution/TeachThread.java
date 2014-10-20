@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
@@ -14,6 +15,7 @@ import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
+import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.util.Translator;
@@ -67,6 +69,8 @@ public class TeachThread implements Runnable, ProcessExecutor {
 						((AbstractTransportStep) step).getRobotSettings().setFreeAfter(true);
 						if (step instanceof PickStep) {
 							((PickStep) step).getRobotSettings().setFreeAfter(false);
+						} else if (step instanceof PutStep && ((PutStep) step).getDevice() instanceof ReversalUnit) {
+							((PutStep) step).getRobotSettings().setFreeAfter(false);
 						}
 						/*if ((nextStep != null) && (nextStep instanceof AbstractTransportStep) && (step instanceof AbstractTransportStep)) {
 							AbstractTransportStep trStep = (AbstractTransportStep) step;

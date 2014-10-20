@@ -109,8 +109,8 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
-		c.setX(c.getX() + workPieceDimensions.getLength()/2);
-		c.setY(c.getY() + workPieceDimensions.getWidth()/2);
+		c.setX(c.getX() + workPieceDimensions.getWidth()/2);
+		c.setY(c.getY() + workPieceDimensions.getLength()/2);
 		return c;
 	}
 	
@@ -122,8 +122,8 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
-		c.setX(c.getX() + workPieceDimensions.getLength()/2);
-		c.setY(c.getY() + workPieceDimensions.getWidth()/2);
+		c.setX(c.getX() + workPieceDimensions.getWidth()/2);
+		c.setY(c.getY() + workPieceDimensions.getLength()/2);
 		return c;
 	}
 	

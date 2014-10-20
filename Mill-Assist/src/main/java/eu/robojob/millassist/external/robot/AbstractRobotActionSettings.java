@@ -78,6 +78,11 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		return freeAfter;
 	}
 	
+	/**
+	 * Set the freeAfter flag. This flag indicates that the robot can go to home after the performed action.
+	 *  
+	 * @param freeAfter
+	 */
 	public void setFreeAfter(final boolean freeAfter) {
 		this.freeAfter = freeAfter;
 	}
