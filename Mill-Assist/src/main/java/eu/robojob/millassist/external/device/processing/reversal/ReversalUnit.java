@@ -6,6 +6,7 @@ import java.util.Set;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner;
+import eu.robojob.millassist.external.device.ClampingManner.Type;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
@@ -109,8 +110,13 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
-		c.setX(c.getX() + workPieceDimensions.getWidth()/2);
-		c.setY(c.getY() + workPieceDimensions.getLength()/2);
+		if (clampType.getType() == Type.LENGTH) {
+			c.setX(c.getX() + workPieceDimensions.getWidth()/2);
+			c.setY(c.getY() + workPieceDimensions.getLength()/2);
+		} else {
+			c.setX(c.getX() + workPieceDimensions.getLength()/2);
+			c.setY(c.getY() + workPieceDimensions.getWidth()/2);
+		}
 		return c;
 	}
 	
@@ -122,8 +128,13 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
-		c.setX(c.getX() + workPieceDimensions.getWidth()/2);
-		c.setY(c.getY() + workPieceDimensions.getLength()/2);
+		if (clampType.getType() == Type.LENGTH) {
+			c.setX(c.getX() + workPieceDimensions.getWidth()/2);
+			c.setY(c.getY() + workPieceDimensions.getLength()/2);
+		} else {
+			c.setX(c.getX() + workPieceDimensions.getLength()/2);
+			c.setY(c.getY() + workPieceDimensions.getWidth()/2);
+		}
 		return c;
 	}
 	
@@ -136,9 +147,7 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		if (approachType.equals(ApproachType.BOTTOM)) {
 			float zSafePlane = workArea.getActiveClamping().getRelativePosition().getZ(); 
-			System.out.println(zSafePlane);
 			zSafePlane += ((ReversalUnit) workArea.getZone().getDevice()).getStationHeight();
-			System.out.println(zSafePlane);
 			return (zSafePlane * -1);
 		} else {
 			return super.getZSafePlane(dimensions, workArea, approachType);
