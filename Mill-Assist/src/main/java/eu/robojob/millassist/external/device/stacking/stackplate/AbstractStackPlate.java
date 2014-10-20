@@ -19,6 +19,7 @@ import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
@@ -391,5 +392,16 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	}
 	
 	public abstract float getR(WorkPieceOrientation orientation);
+	
+	@Override
+	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+		float zSafePlane = super.getZSafePlane(dimensions, workArea, approachType);
+		float wpHeight = layout.getLayers() *  dimensions.getHeight(); 
+		if (wpHeight > workArea.getActiveClamping().getHeight()) {
+			zSafePlane -= workArea.getActiveClamping().getHeight(); 
+			zSafePlane += wpHeight;
+		} 
+		return zSafePlane;
+	}
 
 }

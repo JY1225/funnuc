@@ -7,7 +7,9 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DevicePutSettings;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.external.robot.RobotPutSettings;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -63,6 +65,12 @@ public class PutStep extends AbstractTransportStep {
 							if (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight() < getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) {
 								//float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight());
 								float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - originalPosition.getZ();
+								if(devicePutSettings.getDevice() instanceof ReversalUnit && getRobotSettings().getApproachType().equals(ApproachType.BOTTOM)) {
+									extraOffset += ((ReversalUnit) devicePutSettings.getDevice()).getStationHeight();
+									setRelativeTeachedOffset(new Coordinates(0, 0, (extraOffset * -1), 0, 0, 0));
+								} else {
+									setRelativeTeachedOffset(new Coordinates(0, 0, extraOffset, 0, 0, 0));
+								}
 								setRelativeTeachedOffset(new Coordinates(0, 0, extraOffset, 0, 0, 0));
 							}
 						}

@@ -17,6 +17,7 @@ public class WorkArea {
 	private UserFrame userFrame;
 	private Clamping activeClamping;
 	private Set<Clamping> clampings;
+	private boolean inUse;
 	
 	public WorkArea(final String name, final UserFrame userFrame, final Clamping activeClamping, final Set<Clamping> clampings) {
 		this.name = name;
@@ -78,6 +79,14 @@ public class WorkArea {
 		this.activeClamping = activeClamping;
 	}
 	
+	public boolean inUse() {
+		return this.inUse;
+	}
+	
+	public void inUse(boolean inUse) {
+		this.inUse = inUse;
+	}
+	
 	public String toString() {
 		return "WorkArea " + name;
 	}
@@ -130,4 +139,10 @@ public class WorkArea {
 	public int getWorkAreaNr() {
 		return this.workAreaNr;
 	}
+
+	@Override
+	public WorkArea clone() {
+		return new WorkArea((this.name + "(2)") , this.userFrame, this.activeClamping, this.clampings);
+	}
+
 }

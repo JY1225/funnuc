@@ -213,6 +213,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public void changedWeight(final float weight) {
 		workPiece.setWeight(weight);
 		getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
+		recalculate();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 	}
 

@@ -27,6 +27,8 @@ import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
@@ -34,6 +36,7 @@ import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPl
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.Gripper;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
@@ -81,7 +84,6 @@ public class ProcessFlowMapper {
 	
 	private DeviceManager deviceManager;
 	private RobotManager robotManager;
-	
 	private GeneralMapper generalMapper;
 	
 	public ProcessFlowMapper(final GeneralMapper generalMapper, final DeviceManager deviceManager, final RobotManager robotManager) {
@@ -229,11 +231,12 @@ public class ProcessFlowMapper {
 		PreparedStatement stmtDeleteWorkPieces = ConnectionManager.getConnection().prepareStatement("" 	+
 				"delete from workpiece where workpiece.id in "											+ 
 				"	(" 																					+
-				"		select workpiece from robotpicksettings where robotpicksettings.id in" 			+
+				"		(select distinct workpiece from robotpicksettings where robotpicksettings.id in"+
 				"			(" 																			+
 				"				select id from robotactionsettings where robotactionsettings.step in " 	+
 				"					(select id from step where step.processflow = ?)" 					+
 				"			)" 																			+
+				"		)" 																				+
 				"	) ");
 		stmtDeleteWorkPieces.setInt(1, processFlow.getId());
 		stmtDeleteWorkPieces.executeUpdate();
@@ -337,10 +340,13 @@ public class ProcessFlowMapper {
 	}
 	
 	private void saveDeviceActionSettings(final DeviceStep deviceStep) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICEACTIONSETTINGS (DEVICE, WORKAREA, STEP) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICEACTIONSETTINGS (DEVICE, WORKAREA, STEP, WORKPIECETYPE) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, deviceStep.getDevice().getId());
 		stmt.setInt(2, deviceStep.getDeviceSettings().getWorkArea().getId());
 		stmt.setInt(3, ((AbstractProcessStep) deviceStep).getId());
+		if (deviceStep.getDeviceSettings().getWorkPieceType() != null) {
+			stmt.setInt(4, deviceStep.getDeviceSettings().getWorkPieceType().getTypeId());	
+		} 
 		stmt.executeUpdate();
 		ResultSet keys = stmt.getGeneratedKeys();
 		if ((keys != null) && (keys.next())) {
@@ -370,17 +376,19 @@ public class ProcessFlowMapper {
 		if (robotStep instanceof PickStep) {
 			RobotPickSettings robotPickSettings = ((PickStep) robotStep).getRobotSettings();
 			generalMapper.saveWorkPiece(robotPickSettings.getWorkPiece());
-			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPICKSETTINGS (ID, WORKPIECE, AIRBLOW) VALUES (?, ?, ?)");
+			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPICKSETTINGS (ID, WORKPIECE, AIRBLOW, APPROACHTYPE) VALUES (?, ?, ?, ?)");
 			stmt2.setInt(1, robotStep.getRobotSettings().getId());
 			stmt2.setInt(2, robotPickSettings.getWorkPiece().getId());
 			stmt2.setBoolean(3, robotPickSettings.isDoMachineAirblow());
+			stmt2.setInt(4, robotPickSettings.getApproachType().getId());
 			stmt2.executeUpdate();
 		} else if (robotStep instanceof PutStep) {
 			RobotPutSettings robotPutSettings = ((PutStep) robotStep).getRobotSettings();
-			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPUTSETTINGS (ID, AIRBLOW, RELEASEBEFORE) VALUES (?, ?, ?)");
+			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPUTSETTINGS (ID, AIRBLOW, RELEASEBEFORE, APPROACHTYPE) VALUES (?, ?, ?, ?)");
 			stmt2.setInt(1, robotStep.getRobotSettings().getId());
 			stmt2.setBoolean(2, robotPutSettings.isDoMachineAirblow());
 			stmt2.setBoolean(3, ((PutStep) robotStep).getRobotSettings().isReleaseBeforeMachine());
+			stmt2.setInt(4, robotPutSettings.getApproachType().getId());
 			stmt2.executeUpdate();
 		}
 	}
@@ -460,6 +468,12 @@ public class ProcessFlowMapper {
 			stmt4.setInt(2, cSettings.getAmount());
 			stmt4.setInt(3, cSettings.getRawWorkPiece().getId());
 			stmt4.setInt(4, cSettings.getFinishedWorkPiece().getId());
+			stmt4.executeUpdate();
+		} else if (deviceSettings instanceof ReversalUnitSettings) {
+			ReversalUnitSettings rSettings = (ReversalUnitSettings) deviceSettings;
+			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO REVERSALUNITSETTINGS (ID, CONFIGWIDTH) VALUES (?, ?)");
+			stmt4.setInt(1, rSettings.getId());
+			stmt4.setFloat(2, rSettings.getConfigWidth());
 			stmt4.executeUpdate();
 		}
 	}
@@ -578,6 +592,9 @@ public class ProcessFlowMapper {
 			} else if (device instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
 				eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = getConveyorSettings(processId, id, (eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) device, clampings);
 				settings.put(device, conveyorSettings);
+			} else if (device instanceof ReversalUnit) {
+				ReversalUnitSettings reversalSettings = getReversalUnitSettings(id, clampings);
+				settings.put(device, reversalSettings);
 			} else {
 				DeviceSettings deviceSettings = new DeviceSettings(clampings);
 				settings.put(device, deviceSettings);
@@ -620,6 +637,19 @@ public class ProcessFlowMapper {
 			conveyorSettings.setClampings(clampings);
 		}
 		return conveyorSettings;
+	}
+	
+	private ReversalUnitSettings getReversalUnitSettings(final int deviceSettingsId, final Map<WorkArea, Clamping> clampings) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM REVERSALUNITSETTINGS WHERE ID = ?");
+		stmt.setInt(1, deviceSettingsId);
+		ResultSet results = stmt.executeQuery();
+		ReversalUnitSettings reversalSettings = null;
+		if (results.next()) {
+			float configWidth = results.getInt("CONFIGWIDTH");
+			reversalSettings = new ReversalUnitSettings(configWidth);
+			reversalSettings.setClampings(clampings);
+		}
+		return reversalSettings;
 	}
 	
 	private AbstractStackPlateDeviceSettings getBasicStackPlateSettings(final int processFlowId, final int deviceSettingsId, final BasicStackPlate stackPlate, final Map<WorkArea, Clamping> clampings) throws SQLException {
@@ -794,9 +824,10 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
+			int workPieceTypeId = results.getInt("WORKPIECETYPE");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			WorkArea workArea = device.getWorkAreaById(workAreaId);
-			deviceInterventionSettings = new DeviceInterventionSettings(device, workArea);
+			deviceInterventionSettings = new DeviceInterventionSettings(device, workArea, WorkPiece.Type.getTypeById(workPieceTypeId));
 			deviceInterventionSettings.setId(id);
 		}
 		return deviceInterventionSettings;
@@ -811,9 +842,10 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
+			int workPieceTypeId = results.getInt("WORKPIECETYPE");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			WorkArea workArea = device.getWorkAreaById(workAreaId);
-			processingDeviceStartCyclusSettings = new ProcessingDeviceStartCyclusSettings((AbstractProcessingDevice) device, workArea);
+			processingDeviceStartCyclusSettings = new ProcessingDeviceStartCyclusSettings((AbstractProcessingDevice) device, workArea, WorkPiece.Type.getTypeById(workPieceTypeId));
 			processingDeviceStartCyclusSettings.setId(id);
 		}
 		return processingDeviceStartCyclusSettings;
@@ -828,9 +860,10 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
+			int workPieceTypeId = results.getInt("WORKPIECETYPE");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			WorkArea workArea = device.getWorkAreaById(workAreaId);
-			devicePickSettings = new DevicePickSettings(device, workArea);
+			devicePickSettings = new DevicePickSettings(device, workArea, WorkPiece.Type.getTypeById(workPieceTypeId));
 			devicePickSettings.setId(id);
 		}
 		return devicePickSettings;
@@ -845,9 +878,10 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
+			int workPieceTypeId = results.getInt("WORKPIECETYPE");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			WorkArea workArea = device.getWorkAreaById(workAreaId);
-			devicePutSettings = new DevicePutSettings(device, workArea);
+			devicePutSettings = new DevicePutSettings(device, workArea, WorkPiece.Type.getTypeById(workPieceTypeId));
 			devicePutSettings.setId(id);
 		}
 		return devicePutSettings;
@@ -866,12 +900,14 @@ public class ProcessFlowMapper {
 			int workPieceId = results.getInt("WORKPIECE");
 			boolean airblow = results.getBoolean("AIRBLOW");
 			boolean gripInner = results.getBoolean("GRIPINNER");
+			ApproachType approachType = ApproachType.getById(results.getInt("APPROACHTYPE"));
 			AbstractRobot robot = robotManager.getRobotById(robotId);
 			GripperHead gripperHead = robot.getGripperHeadById(gripperHeadId);
 			Coordinates smoothPoint = generalMapper.getCoordinatesById(processFlowId, smoothPointId);
 			WorkPiece workPiece = generalMapper.getWorkPieceById(processFlowId, workPieceId);
 			if (robot instanceof FanucRobot) {
 				robotPickSettings = new FanucRobotPickSettings(robot, workArea, gripperHead, smoothPoint, null, workPiece, airblow, gripInner);
+				robotPickSettings.setApproachType(approachType);
 				robotPickSettings.setId(id);
 			} else {
 				throw new IllegalStateException("Unknown robot type: " + robot);
@@ -893,11 +929,13 @@ public class ProcessFlowMapper {
 			boolean airblow = results.getBoolean("AIRBLOW");
 			boolean releaseBefore = results.getBoolean("RELEASEBEFORE");
 			boolean gripInner = results.getBoolean("GRIPINNER");
+			ApproachType approachType = ApproachType.getById(results.getInt("APPROACHTYPE"));
 			AbstractRobot robot = robotManager.getRobotById(robotId);
 			GripperHead gripperHead = robot.getGripperHeadById(gripperHeadId);
 			Coordinates smoothPoint = generalMapper.getCoordinatesById(processFlowId, smoothPointId);
 			if (robot instanceof FanucRobot) {
 				robotPutSettings = new FanucRobotPutSettings(robot, workArea, gripperHead, smoothPoint, null, airblow, releaseBefore, gripInner);
+				robotPutSettings.setApproachType(approachType);
 				robotPutSettings.setId(id);
 			} else {
 				throw new IllegalStateException("Unknown robot type: " + robot);

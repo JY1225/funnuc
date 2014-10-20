@@ -17,6 +17,7 @@ import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
@@ -69,8 +70,10 @@ public class DeviceManager {
 				devicesById.put(device.getId(), device);
 				if (device instanceof AbstractCNCMachine) {
 					cncMachinesByName.put(device.getName(), (AbstractCNCMachine) device);
-				} else if (device instanceof PrageDevice) {
-					preProcessingDevicesByName.put(device.getName(), (PrageDevice) device);
+				} else if (device.getType().equals(DeviceType.PRE_PROCESSING)) {
+					preProcessingDevicesByName.put(device.getName(), (AbstractProcessingDevice) device);
+				} else if (device.getType().equals(DeviceType.POST_PROCESSING)) {
+					postProcessingDevicesByName.put(device.getName(), (AbstractProcessingDevice) device);
 				} else if (device instanceof AbstractStackingDevice) {
 					if (!(device instanceof OutputBin)) {
 						stackingFromDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
@@ -106,8 +109,10 @@ public class DeviceManager {
 			devicesByName.put(device.getName(), device);
 			if (device instanceof AbstractCNCMachine) {
 				cncMachinesByName.put(device.getName(), (AbstractCNCMachine) device);
-			} else if (device instanceof PrageDevice) {
-				preProcessingDevicesByName.put(device.getName(), (PrageDevice) device);
+			} else if (device.getType().equals(DeviceType.PRE_PROCESSING)) {
+				preProcessingDevicesByName.put(device.getName(), (AbstractProcessingDevice) device);
+			} else if (device.getType().equals(DeviceType.POST_PROCESSING)) {
+				postProcessingDevicesByName.put(device.getName(), (AbstractProcessingDevice) device);
 			} else if (device instanceof AbstractStackingDevice) {
 				if (!(device instanceof OutputBin)) {
 					stackingFromDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
@@ -333,18 +338,31 @@ public class DeviceManager {
 	}
 	
 	public void updateCNCMachineData(final AbstractCNCMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
-			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final List<String> robotServiceInputNames, 
-					final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
-						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) {
+			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final List<String> robotServiceInputNames,
+			final List<String> robotServiceOutputNames, final List<String> mCodeNames,
+			final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) {
 		try {
-			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port, 
+			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port,
 					clampingWidthR, newDevInt, robotServiceInputNames, robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs,
-						mCodeRobotServiceOutputs);
+					mCodeRobotServiceOutputs);
 			refresh();
 		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();
 		}	
+	}
+	
+	public void updateReversalUnitData(final ReversalUnit reversalUnit, final String name, final String userFrame, final float x, 
+			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY,
+			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, final float stationHeight) {
+		try {
+			deviceMapper.updateReversalUnit(reversalUnit, name, userFrame, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
+					smoothFromX, smoothFromY, smoothFromZ, stationHeight);
+			refresh();
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
 	}
 	
 	public void updateClamping(final Clamping clamping, final String name, final Clamping.Type type, final float height, 

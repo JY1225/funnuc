@@ -16,8 +16,8 @@ import eu.robojob.millassist.external.communication.socket.SocketDisconnectedExc
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.WorkArea;
-import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
-import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
@@ -180,7 +180,7 @@ public class FanucRobot extends AbstractRobot {
 		if (fPutSettings.isTeachingNeeded()) {
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_TEACH;
 		}
-		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), -fPutSettings.getGripperHead().getGripper().getWorkPiece().getWeight());
+		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), -fPutSettings.getGripperHead().getGripper().getWorkPiece().getWeight(), putSettings.getApproachType());
 		if (fPutSettings.getGripperHead().getGripper().getWorkPiece() == null) {
 			throw new IllegalStateException(toString() + " executing put, but the gripper [" + fPutSettings.getGripperHead().getGripper() + "] should contain a workpiece.");
 		}
@@ -188,7 +188,8 @@ public class FanucRobot extends AbstractRobot {
 		if (smooth == null) {
 			smooth = fPutSettings.getWorkArea().getActiveClamping().getSmoothToPoint();
 		}
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 
+				fPutSettings.getWorkArea().getActiveClamping(), putSettings.getApproachType());
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -256,8 +257,8 @@ public class FanucRobot extends AbstractRobot {
 		if (getCurrentActionSettings() == null) {
 			throw new InterruptedException();
 		}
-		boolean waitingForPickFinished = waitForStatus(RobotConstants.STATUS_PUT_FINISHED, MOVE_FINISH_TIMEOUT);
-		if (!waitingForPickFinished) {
+		boolean waitingForPutFinished = waitForStatus(RobotConstants.STATUS_PUT_FINISHED, MOVE_FINISH_TIMEOUT);
+		if (!waitingForPutFinished) {
 			setRobotTimeout(new RobotAlarm(RobotAlarm.FINALIZE_PUT_TIMEOUT));
 			waitForStatus(RobotConstants.STATUS_PUT_FINISHED);
 			setRobotTimeout(null);
@@ -285,9 +286,10 @@ public class FanucRobot extends AbstractRobot {
 		if (smooth == null) {
 			smooth = fPickSettings.getWorkArea().getActiveClamping().getSmoothFromPoint();
 		}
-		writeServiceHandlingSet(pickSettings.isFreeAfter(), ppMode, pickSettings.getWorkPiece().getDimensions(), pickSettings.getWorkPiece().getWeight());
+		ApproachType approachType = pickSettings.getApproachType();
+		writeServiceHandlingSet(pickSettings.isFreeAfter(), ppMode, pickSettings.getWorkPiece().getDimensions(), pickSettings.getWorkPiece().getWeight(), approachType);
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
-		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getStep().getRelativeTeachedOffset(), smooth, fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getWorkArea().getActiveClamping());
+		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getStep().getRelativeTeachedOffset(), smooth, fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getWorkArea().getActiveClamping(), approachType);
 		logger.info("About to write start service!");
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
@@ -387,8 +389,10 @@ public class FanucRobot extends AbstractRobot {
 		if (smooth == null) {
 			smooth = fPutSettings.getWorkArea().getActiveClamping().getSmoothToPoint();
 		}
-		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 0.0f);
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
+		ApproachType approachType = putSettings.getApproachType();
+		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 0.0f, approachType);
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 
+				fPutSettings.getWorkArea().getActiveClamping(), approachType);
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -414,8 +418,10 @@ public class FanucRobot extends AbstractRobot {
 			smooth = fPutSettings.getWorkArea().getActiveClamping().getSmoothToPoint();
 		}
 		ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_NO_WAIT;
-		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 0.0f);
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
+		ApproachType approachType = putSettings.getApproachType();	
+		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 0.0f, approachType);
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 
+				fPutSettings.getWorkArea().getActiveClamping(), approachType);
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -534,8 +540,10 @@ public class FanucRobot extends AbstractRobot {
 		if (smooth == null) {
 			smooth = fPutSettings.getWorkArea().getActiveClamping().getSmoothToPoint();
 		}
-		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 0.0f);
-		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), fPutSettings.getWorkArea().getActiveClamping());
+		ApproachType approachType = putSettings.getApproachType();
+		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 0.0f, approachType);
+		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 
+				fPutSettings.getWorkArea().getActiveClamping(), approachType);
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -578,7 +586,7 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_SERVICE_GRIPPER, RobotConstants.RESPONSE_WRITE_SERVICE_GRIPPER, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	private void writeServiceHandlingSet(final boolean freeAfterService, final int serviceHandlingPPMode, final WorkPieceDimensions dimensions, final float weight2) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	private void writeServiceHandlingSet(final boolean freeAfterService, final int serviceHandlingPPMode, final WorkPieceDimensions dimensions, final float weight2, final ApproachType approachType) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
 		List<String> values = new ArrayList<String>();
 		// free after this service ; WP thickness ;  WP Z grip ; grip Z face till front ; dx correction P1 ; dy correction P1 ; dx correction P2 ; dy correction P2 ; dW correction ;
 		//    dP correction ; robot speed ; payload 1 ; payload 2 ; PP mode ; bar move distance
@@ -588,6 +596,7 @@ public class FanucRobot extends AbstractRobot {
 			values.add("0");
 		}
 		values.add(df.format(dimensions.getHeight()));	// WP thickness
+		
 		values.add(df.format(Math.max(dimensions.getLength(), dimensions.getWidth())));	// WP diameter
 		values.add("0");					// WP Z grip
 		values.add("0");					// grip Z face till front
@@ -623,12 +632,13 @@ public class FanucRobot extends AbstractRobot {
 		values.add(df2.format(Math.ceil(payLoad1)));					// payload 1
 		values.add(df2.format(Math.ceil(payLoad2)));					// payload 2
 		values.add("" + serviceHandlingPPMode);		// PP mode
-		values.add("0");					// bar move distance
+		values.add("" + approachType.getId());		// reversalType (empty/top/bottom)
 		logger.debug("Writing service handling set: " + values);
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_SERVICE_HANDLING, RobotConstants.RESPONSE_WRITE_SERVICE_HANDLING, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	private void writeServicePointSet(final WorkArea workArea, final Coordinates location, final Coordinates relativeTeachedCoordinates, final Coordinates smoothPoint, final WorkPieceDimensions dimensions, final Clamping clamping) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	private void writeServicePointSet(final WorkArea workArea, final Coordinates location, final Coordinates relativeTeachedCoordinates, final Coordinates smoothPoint, final WorkPieceDimensions dimensions, 
+			final Clamping clamping, final ApproachType approachType) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
 		List<String> values = new ArrayList<String>();
 		// user frame location ; x offset ; y offset ; z offset ; z correction; w offset, p offset, r offset ; z-safe plane offset ; safety add z ; smooth x ; smooth y ; smooth z ; tangent to/from ; xyz allowed ;
 		// clamp height ; bar break iterations ; bar break main axis ; bar break angle ; bar move length
@@ -647,35 +657,36 @@ public class FanucRobot extends AbstractRobot {
 		values.add(df.format(location.getP()));		// p offset
 		values.add(df.format(location.getR()));		// r offset			
 		
-		float zSafePlane = clamping.getRelativePosition().getZ(); // position of the clamping
-		
-		float wpHeight = 0;
-		if (workArea.getZone().getDevice() instanceof BasicStackPlate) { // only multiple rows of work pieces possibly present on the stacker
-			wpHeight = ((BasicStackPlate) workArea.getZone().getDevice()).getLayout().getLayers() * dimensions.getHeight();
-		} else if (workArea.getZone().getDevice() instanceof AbstractStackingDevice) { // on other stacking devices one row possible present
-			wpHeight = dimensions.getHeight();
-		}
-
-		if (wpHeight > clamping.getHeight()) { // use clamp height or work piece height (highest)
-			zSafePlane = zSafePlane + wpHeight;
-		} else {
-			zSafePlane = zSafePlane + clamping.getHeight();
-		}
-		
-		zSafePlane = zSafePlane + dimensions.getHeight(); // add height of workpiece held by robot 
+		float zSafePlane = workArea.getZone().getDevice().getZSafePlane(dimensions, workArea, approachType);
 		
 		values.add(df.format(zSafePlane));
-		if (smoothPoint.getZ() > workArea.getUserFrame().getzSafeDistance()) {	// safety add z
-			values.add(df.format(smoothPoint.getZ()));
+		
+		// Safety add Z, if bottom approach, make value negative, compare to smooth and use the smallest
+		// 	for other approaches: use UF value, compare to smooth and use the largest
+		if (approachType.equals(ApproachType.BOTTOM)) {
+			if (smoothPoint.getZ() < (-workArea.getUserFrame().getzSafeDistance())) {	// safety add z
+				values.add(df.format(smoothPoint.getZ()));
+			} else {
+				values.add("" + (-workArea.getUserFrame().getzSafeDistance()));
+			}
 		} else {
-			values.add("" + workArea.getUserFrame().getzSafeDistance());
+			if (smoothPoint.getZ() > workArea.getUserFrame().getzSafeDistance()) {	// safety add z
+				values.add(df.format(smoothPoint.getZ()));
+			} else {
+				values.add("" + workArea.getUserFrame().getzSafeDistance());
+			}
 		}
+		
 		values.add(df.format(smoothPoint.getX()));	// smooth x
 		values.add(df.format(smoothPoint.getY()));	// smooth y
 		values.add(df.format(smoothPoint.getZ()));	// smooth z
 		values.add("1");							// tangent to/from
 		//TODO review if this strategy is always safe
-		values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XYZ);	// xyz allowed
+		if (workArea.getZone().getDevice() instanceof ReversalUnit) {
+			values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XY);	// xy allowed
+		} else {
+			values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XYZ);	// xyz allowed
+		}
 		values.add("" + df.format((clamping.getHeight() + clamping.getRelativePosition().getZ())));	// clamp height (we need to include the relative position, height is measured from z = 0)
 		values.add("0");	// bar break iterations
 		values.add("0");	// bar break main axis

@@ -218,7 +218,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			int[] registers = {command};
 			cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
 			Thread.sleep(500);
-			waitForMCode(M_CODE_UNLOAD);
+			waitForMCodes(M_CODE_UNLOAD);
 		}  else if (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
 			// we sign of the m code for put
 			Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
@@ -229,9 +229,9 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			int[] registers = {command};
 			cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
 			Thread.sleep(5000);	// wait 5 sec before checking again for m-code
-			waitForMCode(M_CODE_UNLOAD);
+			waitForMCodes(M_CODE_UNLOAD);
 			// now wait for next load and unload M-code
-			waitForMCode(M_CODE_LOAD);
+			waitForMCodes(M_CODE_LOAD);
 			// we should finish this M-code if in teach mode
 			if ((startCylusSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) || (startCylusSettings.getStep().getProcessFlow().getTotalAmount() <= 1)) {
 				// first open fixtures 
@@ -258,7 +258,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 				Thread.sleep(500);
 			}
 			waitForNoMCode(M_CODE_LOAD);
-			waitForMCode(M_CODE_UNLOAD);
+			waitForMCodes(M_CODE_UNLOAD);
 		} else {
 			throw new IllegalStateException("Unknown way of operating: " + getWayOfOperating());
 		}
@@ -273,7 +273,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 
 		// if way of operation is m codes, await unloading m code!
 		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
-			waitForMCode(M_CODE_UNLOAD);
+			waitForMCodes(M_CODE_UNLOAD);
 		}
 		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK);
 		int fixSelectCommand = 0;
@@ -302,7 +302,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		}		
 		// if way of operation is m codes, await unloading m code!
 		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
-			waitForMCode(M_CODE_LOAD);
+			waitForMCodes(M_CODE_LOAD);
 		}	
 		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_OK);
 		// Create prepare for put command
@@ -447,7 +447,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 				if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 2) &&
 						(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) {
 					// last but one work piece: no upcoming put, but we wait for the upcoming LOAD M-code and confirm it
-					waitForMCode(M_CODE_LOAD);
+					waitForMCodes(M_CODE_LOAD);
 					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
 					command = 0;
 					if (robotServiceOutputs.contains(0)) {

@@ -57,7 +57,10 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 				throw new IllegalArgumentException("Unknown workarea-id [" + workAreaId + "].");
 			} else {
 				if ((workArea != deviceInfo.getPutStep().getDeviceSettings().getWorkArea()) || (workArea != deviceInfo.getPickStep().getDeviceSettings().getWorkArea())) {
+					deviceInfo.getPutStep().getDeviceSettings().getWorkArea().inUse(false);
+					deviceInfo.getPickStep().getDeviceSettings().getWorkArea().inUse(false);
 					setWorkArea(workArea);
+					workArea.inUse(true);
 					setClamping(workArea.getActiveClamping());
 					getView().refreshClampings();
 				}

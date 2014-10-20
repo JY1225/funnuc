@@ -28,6 +28,8 @@ public class CNCMachineMCodeView extends GridPane {
 	private Label lblRsa;
 	private Label lblGmc1;
 	private Label lblGmc2;	
+	private Label lblGmc3;
+	private Label lblGmc4;
 	
 	private FullTextField fullTxtRs1;
 	private FullTextField fullTxtRs2;
@@ -37,20 +39,13 @@ public class CNCMachineMCodeView extends GridPane {
 	private FullTextField fullTxtRsa;
 	private FullTextField fullTxtGmc1;
 	private FullTextField fullTxtGmc2;
+	private FullTextField fullTxtGmc3;
+	private FullTextField fullTxtGmc4;
 	
-	private CheckBox cbbGmc1Rs1;
-	private CheckBox cbbGmc1Rs2;
-	private CheckBox cbbGmc1Rs3;
-	private CheckBox cbbGmc1Rs4;
-	private CheckBox cbbGmc1Rs5;
-	private CheckBox cbbGmc1Rsa;
-	
-	private CheckBox cbbGmc2Rs1;
-	private CheckBox cbbGmc2Rs2;
-	private CheckBox cbbGmc2Rs3;
-	private CheckBox cbbGmc2Rs4;
-	private CheckBox cbbGmc2Rs5;
-	private CheckBox cbbGmc2Rsa;
+	private CheckBox cbbGmc1Rs1, cbbGmc1Rs2, cbbGmc1Rs3, cbbGmc1Rs4, cbbGmc1Rs5, cbbGmc1Rsa;
+	private CheckBox cbbGmc2Rs1, cbbGmc2Rs2, cbbGmc2Rs3, cbbGmc2Rs4, cbbGmc2Rs5, cbbGmc2Rsa;
+	private CheckBox cbbGmc3Rs1, cbbGmc3Rs2, cbbGmc3Rs3, cbbGmc3Rs4, cbbGmc3Rs5, cbbGmc3Rsa;
+	private CheckBox cbbGmc4Rs1, cbbGmc4Rs2, cbbGmc4Rs3, cbbGmc4Rs4, cbbGmc4Rs5, cbbGmc4Rsa;
 	
 	public CNCMachineMCodeView() {
 		setAlignment(Pos.TOP_CENTER);
@@ -68,6 +63,8 @@ public class CNCMachineMCodeView extends GridPane {
 		lblRsa = new Label("RSA");
 		lblGmc1 = new Label("GMC1");
 		lblGmc2 = new Label("GMC2");
+		lblGmc3 = new Label("GMC3");
+		lblGmc4 = new Label("GMC4");
 		fullTxtRs1 = new FullTextField(5);
 		fullTxtRs1.setPrefSize(UIConstants.TEXT_FIELD_HEIGHT * 2, UIConstants.TEXT_FIELD_HEIGHT);
 		fullTxtRs2 = new FullTextField(5);
@@ -87,11 +84,17 @@ public class CNCMachineMCodeView extends GridPane {
 		fullTxtRs5.setAlignment(Pos.CENTER);
 		fullTxtRsa.setAlignment(Pos.CENTER);
 		fullTxtGmc1 = new FullTextField(5);
-		fullTxtGmc1.setPrefSize(UIConstants.TEXT_FIELD_HEIGHT * 2, UIConstants.TEXT_FIELD_HEIGHT);
+		fullTxtGmc1.setPrefSize(UIConstants.TEXT_FIELD_HEIGHT * 3, UIConstants.TEXT_FIELD_HEIGHT);
 		fullTxtGmc2 = new FullTextField(5);
-		fullTxtGmc2.setPrefSize(UIConstants.TEXT_FIELD_HEIGHT * 2, UIConstants.TEXT_FIELD_HEIGHT);
+		fullTxtGmc2.setPrefSize(UIConstants.TEXT_FIELD_HEIGHT * 3, UIConstants.TEXT_FIELD_HEIGHT);
 		fullTxtGmc1.setAlignment(Pos.CENTER);
 		fullTxtGmc2.setAlignment(Pos.CENTER);
+		fullTxtGmc3 = new FullTextField(5);
+		fullTxtGmc3.setPrefSize(UIConstants.TEXT_FIELD_HEIGHT * 3, UIConstants.TEXT_FIELD_HEIGHT);
+		fullTxtGmc4 = new FullTextField(5);
+		fullTxtGmc4.setPrefSize(UIConstants.TEXT_FIELD_HEIGHT * 3, UIConstants.TEXT_FIELD_HEIGHT);
+		fullTxtGmc3.setAlignment(Pos.CENTER);
+		fullTxtGmc4.setAlignment(Pos.CENTER);
 		cbbGmc1Rs1 = new CheckBox();
 		cbbGmc1Rs2 = new CheckBox();
 		cbbGmc1Rs3 = new CheckBox();
@@ -104,6 +107,18 @@ public class CNCMachineMCodeView extends GridPane {
 		cbbGmc2Rs4 = new CheckBox();
 		cbbGmc2Rs5 = new CheckBox();
 		cbbGmc2Rsa = new CheckBox();
+		cbbGmc3Rs1 = new CheckBox();
+		cbbGmc3Rs2 = new CheckBox();
+		cbbGmc3Rs3 = new CheckBox();
+		cbbGmc3Rs4 = new CheckBox();
+		cbbGmc3Rs5 = new CheckBox();
+		cbbGmc3Rsa = new CheckBox();
+		cbbGmc4Rs1 = new CheckBox();
+		cbbGmc4Rs2 = new CheckBox();
+		cbbGmc4Rs3 = new CheckBox();
+		cbbGmc4Rs4 = new CheckBox();
+		cbbGmc4Rs5 = new CheckBox();
+		cbbGmc4Rsa = new CheckBox();
 		int column = 0;
 		int row = 0;
 		column++;
@@ -161,6 +176,31 @@ public class CNCMachineMCodeView extends GridPane {
 		add(cbbGmc2Rs4, column++, row);
 		add(cbbGmc2Rs5, column++, row);
 		add(cbbGmc2Rsa, column++, row);
+		column = 0; row++;
+		VBox vboxGmc3 = new VBox();
+		vboxGmc3.getChildren().addAll(lblGmc3, fullTxtGmc3);
+		vboxGmc3.setAlignment(Pos.CENTER);
+		vboxGmc3.setSpacing(5);
+		add(vboxGmc3, column++, row);
+		add(cbbGmc3Rs1, column++, row);
+		add(cbbGmc3Rs2, column++, row);
+		add(cbbGmc3Rs3, column++, row);
+		add(cbbGmc3Rs4, column++, row);
+		add(cbbGmc3Rs5, column++, row);
+		add(cbbGmc3Rsa, column++, row);
+		column = 0; row++;
+		VBox vboxGmc4 = new VBox();
+		vboxGmc4.getChildren().addAll(lblGmc4, fullTxtGmc4);
+		vboxGmc4.setAlignment(Pos.CENTER);
+		vboxGmc4.setSpacing(5);
+		add(vboxGmc4, column++, row);
+		add(cbbGmc4Rs1, column++, row);
+		add(cbbGmc4Rs2, column++, row);
+		add(cbbGmc4Rs3, column++, row);
+		add(cbbGmc4Rs4, column++, row);
+		add(cbbGmc4Rs5, column++, row);
+		add(cbbGmc4Rsa, column++, row);
+		column = 0; row++;
 		for (Node node : getChildren()) {
 			GridPane.setHalignment(node, HPos.CENTER);
 			GridPane.setValignment(node, VPos.CENTER);
@@ -170,6 +210,8 @@ public class CNCMachineMCodeView extends GridPane {
 	public void setTextFieldListener(final TextInputControlListener listener) {
 		fullTxtGmc1.setFocusListener(listener);
 		fullTxtGmc2.setFocusListener(listener);
+		fullTxtGmc3.setFocusListener(listener);
+		fullTxtGmc4.setFocusListener(listener);
 		fullTxtRs1.setFocusListener(listener);
 		fullTxtRs2.setFocusListener(listener);
 		fullTxtRs3.setFocusListener(listener);
@@ -182,6 +224,8 @@ public class CNCMachineMCodeView extends GridPane {
 		if (mCodeAdapter != null) {
 			fullTxtGmc1.setText(mCodeAdapter.getGenericMCode(0).getName());
 			fullTxtGmc2.setText(mCodeAdapter.getGenericMCode(1).getName());
+			fullTxtGmc3.setText(mCodeAdapter.getGenericMCode(2).getName());
+			fullTxtGmc4.setText(mCodeAdapter.getGenericMCode(3).getName());
 			fullTxtRs1.setText(mCodeAdapter.getRobotServiceInputNames().get(0));
 			fullTxtRs2.setText(mCodeAdapter.getRobotServiceInputNames().get(1));
 			fullTxtRs3.setText(mCodeAdapter.getRobotServiceInputNames().get(2));
@@ -200,9 +244,23 @@ public class CNCMachineMCodeView extends GridPane {
 			cbbGmc2Rs4.selectedProperty().set(mCodeAdapter.getGenericMCode(1).getRobotServiceInputsRequired().contains(3));
 			cbbGmc2Rs5.selectedProperty().set(mCodeAdapter.getGenericMCode(1).getRobotServiceInputsRequired().contains(4));
 			cbbGmc2Rsa.selectedProperty().set(mCodeAdapter.getGenericMCode(1).getRobotServiceOutputsUsed().contains(0));
+			cbbGmc3Rs1.selectedProperty().set(mCodeAdapter.getGenericMCode(2).getRobotServiceInputsRequired().contains(0));
+			cbbGmc3Rs2.selectedProperty().set(mCodeAdapter.getGenericMCode(2).getRobotServiceInputsRequired().contains(1));
+			cbbGmc3Rs3.selectedProperty().set(mCodeAdapter.getGenericMCode(2).getRobotServiceInputsRequired().contains(2));
+			cbbGmc3Rs4.selectedProperty().set(mCodeAdapter.getGenericMCode(2).getRobotServiceInputsRequired().contains(3));
+			cbbGmc3Rs5.selectedProperty().set(mCodeAdapter.getGenericMCode(2).getRobotServiceInputsRequired().contains(4));
+			cbbGmc3Rsa.selectedProperty().set(mCodeAdapter.getGenericMCode(2).getRobotServiceOutputsUsed().contains(0));
+			cbbGmc4Rs1.selectedProperty().set(mCodeAdapter.getGenericMCode(3).getRobotServiceInputsRequired().contains(0));
+			cbbGmc4Rs2.selectedProperty().set(mCodeAdapter.getGenericMCode(3).getRobotServiceInputsRequired().contains(1));
+			cbbGmc4Rs3.selectedProperty().set(mCodeAdapter.getGenericMCode(3).getRobotServiceInputsRequired().contains(2));
+			cbbGmc4Rs4.selectedProperty().set(mCodeAdapter.getGenericMCode(3).getRobotServiceInputsRequired().contains(3));
+			cbbGmc4Rs5.selectedProperty().set(mCodeAdapter.getGenericMCode(3).getRobotServiceInputsRequired().contains(4));
+			cbbGmc4Rsa.selectedProperty().set(mCodeAdapter.getGenericMCode(3).getRobotServiceOutputsUsed().contains(0));
 		} else {
 			fullTxtGmc1.setText("GMC1");
 			fullTxtGmc2.setText("GMC2");
+			fullTxtGmc3.setText("GMC3");
+			fullTxtGmc4.setText("GMC4");
 			fullTxtRs1.setText("RS1");
 			fullTxtRs2.setText("RS2");
 			fullTxtRs3.setText("RS3");
@@ -221,6 +279,18 @@ public class CNCMachineMCodeView extends GridPane {
 			cbbGmc2Rs4.selectedProperty().set(false);
 			cbbGmc2Rs5.selectedProperty().set(false);
 			cbbGmc2Rsa.selectedProperty().set(true);
+			cbbGmc3Rs1.selectedProperty().set(true);
+			cbbGmc3Rs2.selectedProperty().set(true);
+			cbbGmc3Rs3.selectedProperty().set(true);
+			cbbGmc3Rs4.selectedProperty().set(false);
+			cbbGmc3Rs5.selectedProperty().set(false);
+			cbbGmc3Rsa.selectedProperty().set(true);
+			cbbGmc4Rs1.selectedProperty().set(true);
+			cbbGmc4Rs2.selectedProperty().set(true);
+			cbbGmc4Rs3.selectedProperty().set(true);
+			cbbGmc4Rs4.selectedProperty().set(true);
+			cbbGmc4Rs5.selectedProperty().set(false);
+			cbbGmc4Rsa.selectedProperty().set(true);
 		}
 	}
 	
@@ -228,6 +298,8 @@ public class CNCMachineMCodeView extends GridPane {
 		List<String> mCodeNames = new ArrayList<String>();
 		mCodeNames.add(fullTxtGmc1.getText());
 		mCodeNames.add(fullTxtGmc2.getText());
+		mCodeNames.add(fullTxtGmc3.getText());
+		mCodeNames.add(fullTxtGmc4.getText());
 		return mCodeNames;
 	}
 	
@@ -265,8 +337,42 @@ public class CNCMachineMCodeView extends GridPane {
 		if (cbbGmc2Rs5.selectedProperty().getValue()) {
 			robotServiceInputs2.add(4);
 		}
+		Set<Integer> robotServiceInputs3 = new HashSet<Integer>();
+		if (cbbGmc3Rs1.selectedProperty().getValue()) {
+			robotServiceInputs3.add(0);
+		}
+		if (cbbGmc3Rs2.selectedProperty().getValue()) {
+			robotServiceInputs3.add(1);
+		}
+		if (cbbGmc3Rs3.selectedProperty().getValue()) {
+			robotServiceInputs3.add(2);
+		}
+		if (cbbGmc3Rs4.selectedProperty().getValue()) {
+			robotServiceInputs3.add(3);
+		}
+		if (cbbGmc3Rs5.selectedProperty().getValue()) {
+			robotServiceInputs3.add(4);
+		}
+		Set<Integer> robotServiceInputs4 = new HashSet<Integer>();
+		if (cbbGmc4Rs1.selectedProperty().getValue()) {
+			robotServiceInputs4.add(0);
+		}
+		if (cbbGmc4Rs2.selectedProperty().getValue()) {
+			robotServiceInputs4.add(1);
+		}
+		if (cbbGmc4Rs3.selectedProperty().getValue()) {
+			robotServiceInputs4.add(2);
+		}
+		if (cbbGmc4Rs4.selectedProperty().getValue()) {
+			robotServiceInputs4.add(3);
+		}
+		if (cbbGmc4Rs5.selectedProperty().getValue()) {
+			robotServiceInputs4.add(4);
+		}
 		robotServiceInputs.add(robotServiceInputs1);
 		robotServiceInputs.add(robotServiceInputs2);
+		robotServiceInputs.add(robotServiceInputs3);
+		robotServiceInputs.add(robotServiceInputs4);
 		return robotServiceInputs;
 	}
 	
@@ -280,8 +386,18 @@ public class CNCMachineMCodeView extends GridPane {
 		if (cbbGmc2Rsa.selectedProperty().getValue()) {
 			robotServiceOutput2.add(0);
 		}
+		Set<Integer> robotServiceOutput3 = new HashSet<Integer>();
+		if (cbbGmc3Rsa.selectedProperty().getValue()) {
+			robotServiceOutput3.add(0);
+		}
+		Set<Integer> robotServiceOutput4 = new HashSet<Integer>();
+		if (cbbGmc4Rsa.selectedProperty().getValue()) {
+			robotServiceOutput4.add(0);
+		}
 		robotServiceOutputs.add(robotServiceOutput1);
 		robotServiceOutputs.add(robotServiceOutput2);
+		robotServiceOutputs.add(robotServiceOutput3);
+		robotServiceOutputs.add(robotServiceOutput4);
 		return robotServiceOutputs;
 	}
 	

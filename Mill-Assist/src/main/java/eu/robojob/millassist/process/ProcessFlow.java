@@ -162,7 +162,7 @@ public class ProcessFlow {
 		return id;
 	}
 	
-	//In case this functions is called by the activeProcessFlow, the activeProcessFlow will be changed to the one in the argument. (Actually this should be managed by the ProcessFlowManager)
+	//In case this function is called by the activeProcessFlow, the activeProcessFlow will be changed to the one in the argument. (Actually this should be managed by the ProcessFlowManager)
 	public void loadFromOtherProcessFlow(final ProcessFlow processFlow) {
 		this.processSteps = processFlow.getProcessSteps();
 		for (AbstractProcessStep step : this.processSteps) {
@@ -539,8 +539,30 @@ public class ProcessFlow {
 	public boolean hasBinForFinishedPieces() {
 		for(AbstractProcessStep processStep: processSteps) {
 			if(processStep instanceof PutStep) {
-				processStep = (PutStep) processStep;
 				if(((PutStep) processStep).getDevice().getType().equals(DeviceType.OUTPUT_BIN)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	//TODO - optimize 
+	public boolean hasReversalUnit() {
+		for(AbstractProcessStep processStep: processSteps) {
+			if(processStep instanceof ProcessingStep) {
+				if(((ProcessingStep) processStep).getDevice().getType().equals(DeviceType.POST_PROCESSING)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean hasPrageDevice() {
+		for(AbstractProcessStep processStep: processSteps) {
+			if(processStep instanceof ProcessingStep) {
+				if(((ProcessingStep) processStep).getDevice().getType().equals(DeviceType.PRE_PROCESSING)) {
 					return true;
 				}
 			}
@@ -584,7 +606,7 @@ public class ProcessFlow {
 			} else {
 				isConcurrentExecutionPossible = true;
 			}
-		} else {
+		} else {				
 			isConcurrentExecutionPossible = false;
 		}
 		return isConcurrentExecutionPossible;

@@ -7,12 +7,12 @@ import javafx.scene.Node;
 import javafx.scene.control.TextInputControl;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.ProcessFlowTimer;
-import eu.robojob.millassist.process.execution.fixed.AutomateFixedControllingThread;
-import eu.robojob.millassist.process.execution.fixed.DualLoadAutomateFixedControllingThread;
+import eu.robojob.millassist.process.execution.fixed.AbstractFixedControllingThread;
+import eu.robojob.millassist.process.execution.fixed.AutomateControllingThread;
+import eu.robojob.millassist.process.execution.fixed.AutomateControllingThreadReversal;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.automate.device.DeviceMenuFactory;
 import eu.robojob.millassist.ui.automate.flow.AutomateProcessFlowPresenter;
@@ -39,7 +39,7 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 	private boolean numericKeyboardActive;
 	private boolean running;
 	
-	private AutomateFixedControllingThread automateThread;
+	private AbstractFixedControllingThread automateThread;
 	private Future<?> automateFuture;
 	
 	public AutomatePresenter(final MainContentView view, final AutomateProcessFlowPresenter processFlowPresenter, final DisconnectedDevicesView disconnectedDevicesView,
@@ -57,15 +57,11 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 		statusPresenter.setFinishedAmount(processFlow.getFinishedAmount());
 		this.processFlowAdapter = new ProcessFlowAdapter(processFlow);
 		this.running = false;
-		// other automate thread depending on processflow
+		// other automate thread depending on processflow - created at start
 		for (AbstractDevice device : processFlow.getDevices()) {
 			if (device instanceof AbstractCNCMachine) {
 				AbstractCNCMachine cncMachine = (AbstractCNCMachine) device;
-				if (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
-					automateThread = new DualLoadAutomateFixedControllingThread(processFlow);
-				} else {
-					automateThread = new AutomateFixedControllingThread(processFlow);
-				}
+				automateThread = new AutomateControllingThread(processFlow, cncMachine.getWayOfOperating().getNbProcesses());
 			}
 		}
 		this.deviceMenuFactory = deviceMenuFactory;
@@ -103,6 +99,12 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 	}
 	
 	public void startAutomate() {
+		//Change controllingThread @runtime
+		if (processFlowAdapter.getProcessFlow().hasReversalUnit()) {
+			automateThread = new AutomateControllingThreadReversal(processFlowAdapter.getProcessFlow(), automateThread.getNbConcurrentInMachine());
+		} else {
+			automateThread = new AutomateControllingThread(processFlowAdapter.getProcessFlow(), automateThread.getNbConcurrentInMachine());
+		}
 		running = true;
 		automateFuture = ThreadManager.submit(automateThread);
 		statusPresenter.getView().activateStopButton();

@@ -64,9 +64,9 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			// change device for pick
 			deviceInfo.getPickStep().getProcessFlow().setDeviceSettings(device, device.getDeviceSettings());
 			device.loadDeviceSettings(deviceInfo.getPickStep().getProcessFlow().getDeviceSettings(device));
-			deviceInfo.getPickStep().setDeviceSettings(device.getDefaultPickSettings());
+			deviceInfo.getPickStep().setDeviceSettings(device.getDefaultPickSettings(((AbstractStackingDevice) device).getRawWorkPiece().getType()));
 			deviceInfo.getPickStep().getRobotSettings().setWorkArea(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
-			deviceInfo.getPickStep().getRobotSettings().setSmoothPoint(new Coordinates(device.getDefaultPickSettings().getWorkArea().getActiveClamping().getSmoothFromPoint()));
+			deviceInfo.getPickStep().getRobotSettings().setSmoothPoint(new Coordinates(device.getDefaultPickSettings(((AbstractStackingDevice) device).getRawWorkPiece().getType()).getWorkArea().getActiveClamping().getSmoothFromPoint()));
 			//deviceInfo.getPickStep().setRelativeTeachedOffset(null);
 			deviceInfo.getPickStep().getProcessFlow().initialize();
 			deviceInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new ProcessChangedEvent(deviceInfo.getPickStep().getProcessFlow()));
@@ -74,9 +74,9 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			// change device for put
 			deviceInfo.getPutStep().getProcessFlow().setDeviceSettings(device, device.getDeviceSettings());
 			device.loadDeviceSettings(deviceInfo.getPutStep().getProcessFlow().getDeviceSettings(device));
-			deviceInfo.getPutStep().setDeviceSettings(device.getDefaultPutSettings());
+			deviceInfo.getPutStep().setDeviceSettings(device.getDefaultPutSettings(((AbstractStackingDevice) device).getFinishedWorkPiece().getType()));
 			deviceInfo.getPutStep().getRobotSettings().setWorkArea(deviceInfo.getPutStep().getDeviceSettings().getWorkArea());
-			deviceInfo.getPutStep().getRobotSettings().setSmoothPoint(new Coordinates(device.getDefaultPutSettings().getWorkArea().getActiveClamping().getSmoothToPoint()));
+			deviceInfo.getPutStep().getRobotSettings().setSmoothPoint(new Coordinates(device.getDefaultPutSettings(((AbstractStackingDevice) device).getFinishedWorkPiece().getType()).getWorkArea().getActiveClamping().getSmoothToPoint()));
 			//deviceInfo.getPutStep().setRelativeTeachedOffset(null);
 			deviceInfo.getPutStep().getProcessFlow().initialize();
 			deviceInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new ProcessChangedEvent(deviceInfo.getPutStep().getProcessFlow()));

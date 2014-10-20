@@ -6,6 +6,7 @@ import java.util.Map;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
@@ -26,6 +27,13 @@ import eu.robojob.millassist.ui.configure.device.processing.cnc.CNCMillingMachin
 import eu.robojob.millassist.ui.configure.device.processing.prage.PrageDeviceConfigurePresenter;
 import eu.robojob.millassist.ui.configure.device.processing.prage.PrageDeviceConfigureView;
 import eu.robojob.millassist.ui.configure.device.processing.prage.PrageDeviceMenuPresenter;
+import eu.robojob.millassist.ui.configure.device.processing.reversal.ReversalUnitConfigurePresenter;
+import eu.robojob.millassist.ui.configure.device.processing.reversal.ReversalUnitConfigureView;
+import eu.robojob.millassist.ui.configure.device.processing.reversal.ReversalUnitMenuPresenter;
+import eu.robojob.millassist.ui.configure.device.processing.reversal.ReversalUnitPickPresenter;
+import eu.robojob.millassist.ui.configure.device.processing.reversal.ReversalUnitPickView;
+import eu.robojob.millassist.ui.configure.device.processing.reversal.ReversalUnitPutPresenter;
+import eu.robojob.millassist.ui.configure.device.processing.reversal.ReversalUnitPutView;
 import eu.robojob.millassist.ui.configure.device.stacking.ConfigureSmoothPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.ConfigureSmoothView;
 import eu.robojob.millassist.ui.configure.device.stacking.StackingDeviceConfigurePresenter;
@@ -82,6 +90,9 @@ public class DeviceMenuFactory {
 				case CONVEYOR_EATON:
 					menuPresenter = getConveyorEatonMenuPresenter(deviceInfo);
 					break;
+				case POST_PROCESSING:
+					menuPresenter = getReversalUnitMenuPresenter(deviceInfo);
+					break;
 				default:
 					menuPresenter = null;
 			}
@@ -118,6 +129,31 @@ public class DeviceMenuFactory {
 	private PrageDeviceConfigurePresenter getPrageDeviceConfiguerPresenter(final DeviceInformation deviceInfo) {
 		PrageDeviceConfigureView view = new PrageDeviceConfigureView(deviceInfo);
 		PrageDeviceConfigurePresenter presenter = new PrageDeviceConfigurePresenter(view, deviceInfo, deviceManager);
+		return presenter;
+	}
+	
+	private ReversalUnitMenuPresenter getReversalUnitMenuPresenter(final DeviceInformation deviceInfo) {
+		DeviceMenuView view = new DeviceMenuView(true, true, true);
+		ReversalUnitMenuPresenter reversalUnitMenuPresenter = new ReversalUnitMenuPresenter(view, deviceInfo, getReversalUnitConfigurePresenter(deviceInfo),
+				getReversalUnitPutPresenter(deviceInfo), getReversalUnitPickPresenter(deviceInfo));
+		return reversalUnitMenuPresenter;
+	}
+	
+	private ReversalUnitPickPresenter getReversalUnitPickPresenter(final DeviceInformation deviceInfo) {
+		ReversalUnitPickView view = new ReversalUnitPickView();
+		ReversalUnitPickPresenter presenter = new ReversalUnitPickPresenter(view, deviceInfo.getPickStep(), (ReversalUnitSettings) deviceInfo.getDeviceSettings());
+		return presenter;
+	}
+	
+	private ReversalUnitPutPresenter getReversalUnitPutPresenter(final DeviceInformation deviceInfo) {
+		ReversalUnitPutView view = new ReversalUnitPutView();
+		ReversalUnitPutPresenter presenter = new ReversalUnitPutPresenter(view, deviceInfo.getPutStep(), (ReversalUnitSettings) deviceInfo.getDeviceSettings());
+		return presenter;
+	}
+	
+	private ReversalUnitConfigurePresenter getReversalUnitConfigurePresenter(final DeviceInformation deviceInfo) {
+		ReversalUnitConfigureView view = new ReversalUnitConfigureView(deviceInfo);
+		ReversalUnitConfigurePresenter presenter = new ReversalUnitConfigurePresenter(view, deviceInfo, deviceManager);
 		return presenter;
 	}
 	

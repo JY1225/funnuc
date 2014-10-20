@@ -18,8 +18,6 @@ import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 public class GeneralMapper {
 
 	private static final int WORKPIECE_SHAPE_CUBOID = 1;
-	private static final int WORKPIECE_TYPE_RAW = 1;
-	private static final int WORKPIECE_TYPE_FINISHED = 2;
 	private static final int WORKPIECE_MATERIAL_AL = 1;
 	private static final int WORKPIECE_MATERIAL_CU = 2;
 	private static final int WORKPIECE_MATERIAL_FE = 3;
@@ -188,13 +186,7 @@ public class GeneralMapper {
 				material = Material.FE;
 			}
 			if (shapeId == WORKPIECE_SHAPE_CUBOID) {
-				if (typeId == WORKPIECE_TYPE_RAW) {
-					workPiece = new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(length, width, height), material, weight);
-				} else if (typeId == WORKPIECE_TYPE_FINISHED) {
-					workPiece = new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(length, width, height), material, weight);
-				} else {
-					throw new IllegalStateException("Unknown workpiece type: [" + typeId + "].");
-				}
+				workPiece = new WorkPiece(WorkPiece.Type.getTypeById(typeId), new WorkPieceDimensions(length, width, height), material, weight);
 			} else {
 				throw new IllegalStateException("Unknown workpiece shape: [" + shapeId + "].");
 			}
@@ -208,14 +200,7 @@ public class GeneralMapper {
 	}
 	 
 	public void saveWorkPiece(final WorkPiece workPiece) throws SQLException {
-		int type = 0;
-		if (workPiece.getType().equals(WorkPiece.Type.RAW)) {
-			type = WORKPIECE_TYPE_RAW;
-		} else if (workPiece.getType().equals(WorkPiece.Type.FINISHED)) {
-			type = WORKPIECE_TYPE_FINISHED;
-		} else {
-			throw new IllegalStateException("Unkown workpiece type: [" + workPiece.getType() + "].");
-		}
+		int type = workPiece.getType().getTypeId();
 		//TODO: for now shape is always cuboid!
 		int shape = WORKPIECE_SHAPE_CUBOID;
 		int material = WORKPIECE_MATERIAL_OTHER;
