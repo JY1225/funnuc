@@ -864,3 +864,4 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 }
+

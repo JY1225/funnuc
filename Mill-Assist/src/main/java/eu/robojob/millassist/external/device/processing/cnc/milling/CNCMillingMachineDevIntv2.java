@@ -274,6 +274,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		// if way of operation is m codes, await unloading m code!
 		if ((getWayOfOperating() == WayOfOperating.M_CODES) || (getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
 			waitForMCodes(M_CODE_UNLOAD);
+
 		}
 		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK);
 		int fixSelectCommand = 0;

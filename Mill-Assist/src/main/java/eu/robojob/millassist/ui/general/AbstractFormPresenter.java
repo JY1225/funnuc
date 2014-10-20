@@ -1,4 +1,4 @@
-	package eu.robojob.millassist.ui.general;
+package eu.robojob.millassist.ui.general;
 
 import eu.robojob.millassist.ui.RoboSoftAppFactory;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
