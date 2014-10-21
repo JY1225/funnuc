@@ -217,6 +217,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			robotServiceOutputs.addAll(getMCodeAdapter().getGenericMCode(M_CODE_LOAD_REVERSAL).getRobotServiceOutputsUsed());
 			int command = 0;
 			if (robotServiceOutputs.contains(0)) {
+				logger.info("Finish load m-c");
 				command = command | CNCMachineConstantsDevIntv2.IPC_MC_FINISH_CMD;
 			}
 			int[] registers = {command};
@@ -237,6 +238,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			}
 			int command = 0;
 			if (robotServiceOutputs.contains(0)) {
+				logger.info("Finish load m-c");
 				command = command | CNCMachineConstantsDevIntv2.IPC_MC_FINISH_CMD;
 			}
 			int[] registers = {command};

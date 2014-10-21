@@ -248,6 +248,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			robotServiceOutputs.addAll(getMCodeAdapter().getGenericMCode(M_CODE_LOAD_REVERSAL).getRobotServiceOutputsUsed());
 			int command = 0;
 			if (robotServiceOutputs.contains(0)) {
+				logger.info("Finish load m-c");
 				command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
 			}
 			int[] registers = {command};
@@ -268,6 +269,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			}
 			int command = 0;
 			if (robotServiceOutputs.contains(0)) {
+				logger.info("Finish load m-c");
 				command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
 			}
 			int[] registers = {command};
@@ -627,7 +629,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				}
 				int command = 0;
 				if (robotServiceOutputs.contains(0)) {
-					logger.info("AFMELDEN M-CODE 0");
+					logger.info("AFMELDEN M-CODE UNLOAD");
 					command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
 				}
 				int[] registers = {command};
@@ -665,7 +667,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				}
 				int command = 0;
 				if (robotServiceOutputs.contains(0)) {
-					logger.info("AFMELDEN M-CODE 0");
+					logger.info("AFMELDEN M-CODE UNLOAD");
 					command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
 				}
 				int[] registers = {command};
