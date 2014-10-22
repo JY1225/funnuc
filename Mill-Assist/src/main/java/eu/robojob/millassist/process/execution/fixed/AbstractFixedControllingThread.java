@@ -114,10 +114,6 @@ public abstract class AbstractFixedControllingThread implements Runnable {
 	}
 	
 	public void reset() {
-		for (int processId = 0; processId < nbProcesses; processId++) {
-			processFlow.setCurrentIndex(processId, -1);
-
-		}
 		this.firstPiece = true;
 		this.finished = false;
 		this.finishedSyncObject = new Object();	
