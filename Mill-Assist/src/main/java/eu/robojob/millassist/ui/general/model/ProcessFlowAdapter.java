@@ -2,7 +2,7 @@ package eu.robojob.millassist.ui.general.model;
 
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;
@@ -162,7 +162,7 @@ public class ProcessFlowAdapter {
 	//TODO could be optimized
 	public int getCNCMachineIndex() {
 		for (int i = 0; i < getDeviceStepCount(); i++) {
-			if ((getDeviceInformation(i).getDevice() != null) && (getDeviceInformation(i).getDevice().getType() == DeviceType.CNC_MACHINE)) {
+			if ((getDeviceInformation(i).getDevice() != null) && (getDeviceInformation(i).getDevice().getType() == EDeviceGroup.CNC_MACHINE)) {
 				return i;
 			}
 		}
@@ -179,7 +179,7 @@ public class ProcessFlowAdapter {
 	public boolean canRemoveDevice() {
 		for (int i = 0; i < getDeviceStepCount(); i++) {
 			DeviceInformation info = getDeviceInformation(i);
-			if ((info.getType() == DeviceType.POST_PROCESSING) || (info.getType() == DeviceType.PRE_PROCESSING)) {
+			if ((info.getType() == EDeviceGroup.POST_PROCESSING) || (info.getType() == EDeviceGroup.PRE_PROCESSING)) {
 				return true;
 			}
 		}

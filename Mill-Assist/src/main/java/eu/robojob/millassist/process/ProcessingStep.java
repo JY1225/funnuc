@@ -55,7 +55,7 @@ public class ProcessingStep extends AbstractProcessStep implements DeviceStep {
 				logger.info("Running: " + processing);
 				getDevice().startCyclus(startCyclusSettings);
 				processing--;
-				logger.debug("Finished processing in [" + getDevice() + "].");
+				logger.debug("Finished processing for WP[" + workPieceId + "] in [" + getDevice() + "].");
 				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
 			} catch(Exception e) {
 				throw e;

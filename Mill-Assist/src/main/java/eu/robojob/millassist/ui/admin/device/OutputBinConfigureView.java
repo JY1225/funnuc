@@ -183,14 +183,14 @@ public class OutputBinConfigureView extends AbstractFormView<OutputBinConfigureP
 		if (outputBin != null) {
 			getPresenter().updateUserFrames();
 			fullTxtName.setText(outputBin.getName());
-			Coordinates relPosition = outputBin.getWorkAreas().get(0).getActiveClamping().getRelativePosition();
+			Coordinates relPosition = outputBin.getWorkAreas().get(0).getDefaultClamping().getRelativePosition();
 			numtxtX.setText("" + relPosition.getX());
 			numtxtY.setText("" + relPosition.getY());
 			numtxtZ.setText("" + relPosition.getZ());
 			numtxtW.setText("" + relPosition.getW());
 			numtxtP.setText("" + relPosition.getP());
 			numtxtR.setText("" + relPosition.getR());
-			Coordinates smoothTo = outputBin.getWorkAreas().iterator().next().getActiveClamping().getSmoothToPoint();
+			Coordinates smoothTo = outputBin.getWorkAreas().iterator().next().getDefaultClamping().getSmoothToPoint();
 			numtxtSmoothToX.setText("" + smoothTo.getX());
 			numtxtSmoothToY.setText("" + smoothTo.getY());
 			numtxtSmoothToZ.setText("" + smoothTo.getZ());

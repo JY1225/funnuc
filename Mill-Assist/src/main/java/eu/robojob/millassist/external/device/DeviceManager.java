@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.db.external.device.DeviceMapper;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
+import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
@@ -70,9 +70,9 @@ public class DeviceManager {
 				devicesById.put(device.getId(), device);
 				if (device instanceof AbstractCNCMachine) {
 					cncMachinesByName.put(device.getName(), (AbstractCNCMachine) device);
-				} else if (device.getType().equals(DeviceType.PRE_PROCESSING)) {
+				} else if (device.getType().equals(EDeviceGroup.PRE_PROCESSING)) {
 					preProcessingDevicesByName.put(device.getName(), (AbstractProcessingDevice) device);
-				} else if (device.getType().equals(DeviceType.POST_PROCESSING)) {
+				} else if (device.getType().equals(EDeviceGroup.POST_PROCESSING)) {
 					postProcessingDevicesByName.put(device.getName(), (AbstractProcessingDevice) device);
 				} else if (device instanceof AbstractStackingDevice) {
 					if (!(device instanceof OutputBin)) {
@@ -109,9 +109,9 @@ public class DeviceManager {
 			devicesByName.put(device.getName(), device);
 			if (device instanceof AbstractCNCMachine) {
 				cncMachinesByName.put(device.getName(), (AbstractCNCMachine) device);
-			} else if (device.getType().equals(DeviceType.PRE_PROCESSING)) {
+			} else if (device.getType().equals(EDeviceGroup.PRE_PROCESSING)) {
 				preProcessingDevicesByName.put(device.getName(), (AbstractProcessingDevice) device);
-			} else if (device.getType().equals(DeviceType.POST_PROCESSING)) {
+			} else if (device.getType().equals(EDeviceGroup.POST_PROCESSING)) {
 				postProcessingDevicesByName.put(device.getName(), (AbstractProcessingDevice) device);
 			} else if (device instanceof AbstractStackingDevice) {
 				if (!(device instanceof OutputBin)) {
@@ -337,7 +337,7 @@ public class DeviceManager {
 		}
 	}
 	
-	public void updateCNCMachineData(final AbstractCNCMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
+	public void updateCNCMachineData(final AbstractCNCMachine cncMachine, final String name, final EWayOfOperating wayOfOperating,
 			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final List<String> robotServiceInputNames,
 			final List<String> robotServiceOutputNames, final List<String> mCodeNames,
 			final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) {
@@ -369,7 +369,7 @@ public class DeviceManager {
 			final String imagePath, final float x, final float y, final float z, final float w, final float p, 
 			final float r, final float smoothToX, 
 			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, 
-			final float smoothFromZ, final Clamping.FixtureType fixtureType) {
+			final float smoothFromZ, final EFixtureType fixtureType) {
 		try {
 			deviceMapper.updateClamping(clamping, name, type, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
 				smoothFromX, smoothFromY, smoothFromZ, fixtureType);
@@ -381,7 +381,7 @@ public class DeviceManager {
 	
 	public void saveClamping(final String name, final Clamping.Type type, final float height, final String imagePath, final float x, 
 			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
-			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, final Clamping.FixtureType fixtureType) {
+			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, final EFixtureType fixtureType) {
 		try {
 			Clamping clamping = new Clamping(type, name, height, new Coordinates(x, y, z, w, p, r), 
 					new Coordinates(smoothToX, smoothToY, smoothToZ, 0, 0, 0), 

@@ -40,7 +40,7 @@ public class TeachOptimizedThread extends TeachThread {
 	private PutStep putOnStackingDeviceStep = null;
 
 	private static Logger logger = LogManager.getLogger(TeachOptimizedThread.class.getName());
-	private static final int WORKPIECE_ID = 0;
+	private static final int PROCESS_0_ID = 0;
 	
 	public TeachOptimizedThread(final ProcessFlow processFlow) {
 		super(processFlow);
@@ -68,7 +68,7 @@ public class TeachOptimizedThread extends TeachThread {
 			//resetOffsets();
 			try {
 				// process-initialization
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.PREPARE, WORKPIECE_ID));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), null, StatusChangedEvent.PREPARE, PROCESS_0_ID));
 				for (AbstractRobot robot : getProcessFlow().getRobots()) {
 					robot.recalculateTCPs();
 					robot.moveToHome();
@@ -89,11 +89,11 @@ public class TeachOptimizedThread extends TeachThread {
 				Coordinates relTeachedOffsetRawWp = null;
 				Coordinates relTeachedOffsetMachineClamping = null;
 				boolean knowEnough = false;
-				getProcessFlow().setCurrentIndex(WORKPIECE_ID, 0);
-				while ((getProcessFlow().getCurrentIndex(WORKPIECE_ID) < getProcessFlow().getProcessSteps().size()) && !knowEnough && isRunning()) {
-					AbstractProcessStep step = getProcessFlow().getProcessSteps().get((getProcessFlow().getCurrentIndex(WORKPIECE_ID)));
+				getProcessFlow().setCurrentIndex(PROCESS_0_ID, 0);
+				while ((getProcessFlow().getCurrentIndex(PROCESS_0_ID) < getProcessFlow().getProcessSteps().size()) && !knowEnough && isRunning()) {
+					AbstractProcessStep step = getProcessFlow().getProcessSteps().get((getProcessFlow().getCurrentIndex(PROCESS_0_ID)));
 					if (step.equals(pickFromStackingDeviceStep)) {
-						pickFromStackingDeviceStep.executeStepTeached(WORKPIECE_ID, this);
+						pickFromStackingDeviceStep.executeStepTeached(PROCESS_0_ID, this);
 						pickFromStackingDeviceStep.finalizeStep(this);
 						// update relative offset for upcoming steps
 						relTeachedOffsetRawWp = pickFromStackingDeviceStep.getRelativeTeachedOffset();
@@ -103,7 +103,7 @@ public class TeachOptimizedThread extends TeachThread {
 						//putInMachineStep.setRelativeTeachedOffset(relTeachedOffsetRawWp);
 					} else if (step.equals(putAndWaitOnPrageStep)) {
 						//putAndWaitOnPrageStep.setRelativeTeachedOffset(null);
-						putAndWaitOnPrageStep.executeStepTeached(WORKPIECE_ID, this);
+						putAndWaitOnPrageStep.executeStepTeached(PROCESS_0_ID, this);
 						putAndWaitOnPrageStep.finalizeStep(this);
 						relTeachedOffsetMachineClamping = putAndWaitOnPrageStep.getRelativeTeachedOffset();
 						Coordinates offsetInMachine = new Coordinates(relTeachedOffsetMachineClamping);
@@ -113,19 +113,19 @@ public class TeachOptimizedThread extends TeachThread {
 					} else if (step.equals(putInMachineStep)) {
 						//putInMachineStep.setRelativeTeachedOffset(null);
 						putInMachineStep.getRobotSettings().setFreeAfter(true);
-						putInMachineStep.executeStepTeached(WORKPIECE_ID, this);
+						putInMachineStep.executeStepTeached(PROCESS_0_ID, this);
 						putInMachineStep.finalizeStep(this);
 						relTeachedOffsetMachineClamping = putInMachineStep.getRelativeTeachedOffset();
 						knowEnough = true;
 					} else if (step.equals(pickAfterWaitOnPrageStep)) {
-						pickAfterWaitOnPrageStep.executeStep(WORKPIECE_ID, this);
+						pickAfterWaitOnPrageStep.executeStep(PROCESS_0_ID, this);
 						pickAfterWaitOnPrageStep.finalizeStep(this);
 						knowEnough = true;
 						pickAfterWaitOnPrageStep.getRobot().moveToHome();
 					} else if (!(step instanceof InterventionStep)) {
-						step.executeStep(WORKPIECE_ID, this);
+						step.executeStep(PROCESS_0_ID, this);
 					}
-					getProcessFlow().setCurrentIndex(WORKPIECE_ID, getProcessFlow().getCurrentIndex(WORKPIECE_ID) + 1);
+					getProcessFlow().setCurrentIndex(PROCESS_0_ID, getProcessFlow().getCurrentIndex(PROCESS_0_ID) + 1);
 				}
 				if (isRunning()) {
 					Coordinates pickFromMachineOffset = new Coordinates(relTeachedOffsetMachineClamping);
@@ -179,7 +179,7 @@ public class TeachOptimizedThread extends TeachThread {
 		FanucRobot fRobot = (FanucRobot) putOnStackerStep.getRobot();
 		FanucRobotPutSettings putSettings = (FanucRobotPutSettings) putOnStackerStep.getRobotSettings();
 		// we set the first work piece as a finished
-		putOnStackerStep.getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(putOnStackerStep.getProcessFlow(), putOnStackerStep, StatusChangedEvent.STARTED, WORKPIECE_ID));
+		putOnStackerStep.getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(putOnStackerStep.getProcessFlow(), putOnStackerStep, StatusChangedEvent.STARTED, PROCESS_0_ID));
 		AbstractStackingDevice stackingDeviceBuffer = null;
 		if (stackingDevice instanceof OutputBin) {
 			// pretend to use first device for optimal teaching
@@ -200,8 +200,8 @@ public class TeachOptimizedThread extends TeachThread {
 			logger.debug("Original coordinates: " + position + ".");
 			// update teached offset based on clamp height
 			if (putOnStackerStep.getRelativeTeachedOffset() == null) {
-				if (position.getZ() + putOnStackerStep.getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight() < putOnStackerStep.getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + putOnStackerStep.getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) {
-					float extraOffset = (putOnStackerStep.getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + putOnStackerStep.getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - (position.getZ() + putOnStackerStep.getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight());
+				if (position.getZ() + putOnStackerStep.getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight() < putOnStackerStep.getDeviceSettings().getWorkArea().getDefaultClamping().getRelativePosition().getZ() + putOnStackerStep.getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
+					float extraOffset = (putOnStackerStep.getDeviceSettings().getWorkArea().getDefaultClamping().getRelativePosition().getZ() + putOnStackerStep.getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) - (position.getZ() + putOnStackerStep.getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight());
 					putOnStackerStep.setRelativeTeachedOffset(new Coordinates(0, 0, extraOffset, 0, 0, 0));
 				}
 			}
@@ -224,7 +224,7 @@ public class TeachOptimizedThread extends TeachThread {
 		if (!fRobot.lock(getProcessFlow())) {
 			throw new IllegalStateException("Robot [" + fRobot + "] was already locked by [" + fRobot.getLockingProcess() + "].");
 		} else {
-			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.PREPARE_DEVICE, WORKPIECE_ID));
+			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.PREPARE_DEVICE, PROCESS_0_ID));
 			stackingDevice.prepareForPut(putOnStackerStep.getDeviceSettings());
 			logger.debug("Original coordinates: " + originalCoordinates + ".");
 			logger.debug("Initiating robot: [" + fRobot + "] move action.");
@@ -234,16 +234,16 @@ public class TeachOptimizedThread extends TeachThread {
 				putSettings.setSmoothPoint(pickFromStackingDeviceStep.getRobotSettings().getSmoothPoint());
 			}
 			fRobot.initiateMoveWithoutPieceNoAction(putSettings);
-			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.EXECUTE_TEACHED, WORKPIECE_ID));
+			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.EXECUTE_TEACHED, PROCESS_0_ID));
 			// reset stacking device and smooth point if buffered
 			if (stackingDeviceBuffer != null) {
 				stackingDevice = stackingDeviceBuffer;
 				putSettings.setSmoothPoint(smoothPointBuffer);
 			}
 			fRobot.continueMoveTillAtLocation();
-			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.TEACHING_NEEDED, WORKPIECE_ID));
+			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.TEACHING_NEEDED, PROCESS_0_ID));
 			fRobot.continueMoveTillWait();
-			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.TEACHING_FINISHED, WORKPIECE_ID));
+			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.TEACHING_FINISHED, PROCESS_0_ID));
 			Coordinates coordinates = new Coordinates(fRobot.getPosition());
 			Coordinates relTeachedOffsetFinishedWp = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalCoordinates, coordinates.calculateOffset(originalCoordinates));
 			logger.info("The relative teached offset (finished workpiece): [" + relTeachedOffsetFinishedWp + "].");
@@ -251,7 +251,7 @@ public class TeachOptimizedThread extends TeachThread {
 			logger.info("In IP point");
 			fRobot.finalizeMovePiece();
 			logger.info("finalized move");
-			putOnStackerStep.getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(putOnStackerStep.getProcessFlow(), putOnStackerStep, StatusChangedEvent.ENDED, WORKPIECE_ID));
+			putOnStackerStep.getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(putOnStackerStep.getProcessFlow(), putOnStackerStep, StatusChangedEvent.ENDED, PROCESS_0_ID));
 			return relTeachedOffsetFinishedWp;
 		}
 	}

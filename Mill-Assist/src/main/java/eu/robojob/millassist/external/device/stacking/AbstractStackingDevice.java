@@ -5,7 +5,7 @@ import java.util.Set;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceActionException;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
@@ -30,8 +30,8 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 	public abstract Coordinates getLocation(WorkArea workArea, Type type, ClampingManner clampType) throws DeviceActionException, InterruptedException;
 	
 	@Override
-	public DeviceType getType() {
-		return DeviceType.STACKING;
+	public EDeviceGroup getType() {
+		return EDeviceGroup.STACKING;
 	}
 	
 	public WorkPiece getRawWorkPiece() {
@@ -56,8 +56,8 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		float zSafePlane = super.getZSafePlane(dimensions, workArea, approachType);
 		float wpHeight = dimensions.getHeight(); 
-		if (wpHeight > workArea.getActiveClamping().getHeight()) {
-			zSafePlane -= workArea.getActiveClamping().getHeight(); 
+		if (wpHeight > workArea.getDefaultClamping().getHeight()) {
+			zSafePlane -= workArea.getDefaultClamping().getHeight(); 
 			zSafePlane += wpHeight;
 		} 
 		return zSafePlane;

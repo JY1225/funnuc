@@ -80,7 +80,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == type) && 
 					(stackingPos.getAmount() > 0)) {
 				Coordinates c = new Coordinates(stackingPos.getPickPosition());
-				c.offset(workArea.getActiveClamping().getRelativePosition());
+				c.offset(workArea.getDefaultClamping().getRelativePosition());
 				return c;
 			}
 		}
@@ -91,7 +91,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	public void clearDeviceSettings() {
 		setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f));
 		setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(), Material.OTHER, 0.0f));
-		getWorkAreas().get(0).getActiveClamping().resetHeightToDefault();
+		getWorkAreas().get(0).getDefaultClamping().resetHeightToDefault();
 		this.currentPickLocation = null;
 		this.currentPutLocation = null;
 		try {
@@ -214,13 +214,13 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	@Override
 	public synchronized void loadDeviceSettings(final DeviceSettings deviceSettings) {
 		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
-			entry.getKey().setActiveClamping(entry.getValue());
+			entry.getKey().setDefaultClamping(entry.getValue());
 		}
 		if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
 			AbstractStackPlateDeviceSettings settings = (AbstractStackPlateDeviceSettings) deviceSettings;
 			resetCurrentPickLocation();
 			resetCurrentPutLocation();
-			getWorkAreas().get(0).getActiveClamping().setHeight(settings.getStudHeight());
+			getWorkAreas().get(0).getDefaultClamping().setHeight(settings.getStudHeight());
 			try {
 				if (settings.getRawWorkPiece() != null) {
 					setRawWorkPiece(settings.getRawWorkPiece());
@@ -248,7 +248,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 		if(layout instanceof GridPlateLayout) {
 			gridId = ((GridPlateLayout) layout).getId();
 		}
-		return new AbstractStackPlateDeviceSettings(getRawWorkPiece(), getFinishedWorkPiece(), getLayout().getOrientation(), getLayout().getLayers(), getLayout().getWorkPieceAmount(WorkPiece.Type.RAW), getWorkAreas().get(0).getActiveClamping().getHeight(), gridId);
+		return new AbstractStackPlateDeviceSettings(getRawWorkPiece(), getFinishedWorkPiece(), getLayout().getOrientation(), getLayout().getLayers(), getLayout().getWorkPieceAmount(WorkPiece.Type.RAW), getWorkAreas().get(0).getDefaultClamping().getHeight(), gridId);
 	}
 
 	@Override
@@ -258,7 +258,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 					(stackingPos.getAmount() > 0)) {
 				currentPickLocation = stackingPos;
 				Coordinates c = new Coordinates(stackingPos.getPickPosition());
-				c.offset(workArea.getActiveClamping().getRelativePosition());
+				c.offset(workArea.getDefaultClamping().getRelativePosition());
 				return c;
 			}
 		}
@@ -272,7 +272,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 					(stackingPos.getWorkPiece().getType() == Type.FINISHED) && (stackingPos.getAmount() < getLayout().getLayers()))) {
 				currentPutLocation = stackingPos;
 				Coordinates c = new Coordinates(stackingPos.getPutPosition());
-				c.offset(workArea.getActiveClamping().getRelativePosition());
+				c.offset(workArea.getDefaultClamping().getRelativePosition());
 				return c;
 			}
 		}
@@ -298,7 +298,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	@Override
 	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(getLayout().getStackingPositions().get(0).getPosition());
-		c.offset(workArea.getActiveClamping().getRelativePosition());
+		c.offset(workArea.getDefaultClamping().getRelativePosition());
 		c.setX(0);
 		c.setY(0);
 		c.setZ(0);
@@ -397,8 +397,8 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		float zSafePlane = super.getZSafePlane(dimensions, workArea, approachType);
 		float wpHeight = layout.getLayers() *  dimensions.getHeight(); 
-		if (wpHeight > workArea.getActiveClamping().getHeight()) {
-			zSafePlane -= workArea.getActiveClamping().getHeight(); 
+		if (wpHeight > workArea.getDefaultClamping().getHeight()) {
+			zSafePlane -= workArea.getDefaultClamping().getHeight(); 
 			zSafePlane += wpHeight;
 		} 
 		return zSafePlane;

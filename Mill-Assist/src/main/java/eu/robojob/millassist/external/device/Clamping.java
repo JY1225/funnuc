@@ -8,28 +8,52 @@ import eu.robojob.millassist.positioning.Coordinates;
 public class Clamping {
 	
 	public static enum Type {
-		CENTRUM, FIXED_XP, FIXED_XM, FIXED_YP, FIXED_YM, NONE
+		CENTRUM {
+			@Override
+			public String toString() {
+				return "Centrum";
+			}
+		}, FIXED_XP {
+			@Override
+			public String toString() {
+				return "Fix X +";
+			}
+		}, FIXED_XM {
+			@Override
+			public String toString() {
+				return "Fix X -";
+			}
+		}, FIXED_YP {
+			@Override
+			public String toString() {
+				return "Fix Y +";
+			}
+		}, FIXED_YM {
+			@Override
+			public String toString() {
+				return "Fix Y -";
+			}
+		}, NONE
 	} 
-	
-	public static enum FixtureType {
-		DEFAULT, FIXTURE_1, FIXTURE_2, FIXTURE_1_2
-	}
 	
 	private int id;
 	private String name;
 	private Coordinates relativePosition;
 	private Coordinates smoothToPoint;
 	private Coordinates smoothFromPoint;
-	private FixtureType fixtureType; 
+	private EFixtureType fixtureType; 
 	private float height;
 	private float defaultHeight;
 	private String imageURL;
 	private Type type;
-	
+	// Process ID that is currently located in the clamping - default value = -1
+	private Set<Integer> wpIdUsingClamping;
+	// Related clampings that are currently active for use
 	private Set<Clamping> relatedClampings;
+	private int nbOfPossibleWPToStore = 1;
 	
 	public Clamping(final Type type, final String name, final float defaultHeight, final Coordinates relativePosition, final Coordinates smoothToPoint,
-				final Coordinates smoothFromPoint, final String imageURL, final FixtureType fixtureType) {
+			final Coordinates smoothFromPoint, final String imageURL, final EFixtureType fixtureType) {
 		this.name = name;
 		this.height = defaultHeight;
 		this.defaultHeight = defaultHeight;
@@ -37,12 +61,13 @@ public class Clamping {
 		this.smoothToPoint = smoothToPoint;
 		this.smoothFromPoint = smoothFromPoint;
 		this.imageURL = imageURL;
+		this.wpIdUsingClamping = new HashSet<Integer>();
 		this.relatedClampings = new HashSet<Clamping>();
 		this.type = type;
 		this.fixtureType = fixtureType;
 	}
-	
-	public Clamping(final Type type, final String name, final float defaultHeight, final Coordinates relativePosition, final Coordinates smoothPoint, final String imageURL, final FixtureType fixtureType) {
+
+	public Clamping(final Type type, final String name, final float defaultHeight, final Coordinates relativePosition, final Coordinates smoothPoint, final String imageURL, final EFixtureType fixtureType) {
 		this(type, name, defaultHeight, relativePosition, smoothPoint, smoothPoint, imageURL, fixtureType);
 	}
 	
@@ -74,11 +99,15 @@ public class Clamping {
 		return relatedClampings;
 	}
 	
-	public FixtureType getFixtureType() {
+	public void setRelatedClampings(Set<Clamping> tobeRelatedClampings) {
+		this.relatedClampings = tobeRelatedClampings;
+	}
+	
+	public EFixtureType getFixtureType() {
 		return fixtureType;
 	}
 
-	public void setFixtureType(FixtureType fixtureType) {
+	public void setFixtureType(EFixtureType fixtureType) {
 		this.fixtureType = fixtureType;
 	}
 
@@ -140,5 +169,27 @@ public class Clamping {
 	
 	public void resetHeightToDefault() {
 		this.height = defaultHeight;
+	}
+	
+	public int getNbPossibleWPToStore() {
+		return this.nbOfPossibleWPToStore;
+	}
+	
+	public void setNbPossibleWPToStore(final int nbWPToStore) {
+		this.nbOfPossibleWPToStore = nbWPToStore;
+	}
+	
+	public synchronized Set<Integer> getWorkPieceIdUsingClamping() {
+		return this.wpIdUsingClamping;
+	}
+	
+	public synchronized void addWorkPieceIdUsingClamping(int id) {
+		this.wpIdUsingClamping.add(id);
+	}
+	
+	public synchronized boolean isInUse(int processId) {
+		if(wpIdUsingClamping.contains(processId)) 
+			return true;
+		return (wpIdUsingClamping.size() >= nbOfPossibleWPToStore);
 	}
 }

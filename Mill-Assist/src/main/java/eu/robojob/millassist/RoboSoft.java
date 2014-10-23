@@ -74,6 +74,10 @@ public class RoboSoft extends Application {
 			@Override
 			public void run() {
 				try {
+//					File file = new File ("languages\\");
+//					URL[] urls = {file.toURI().toURL()};
+//					ClassLoader loader = new URLClassLoader(urls);
+//					Translator.setLanguage(properties.getProperty("locale"), loader);
 					Locale.setDefault(new Locale(properties.getProperty("locale")));
 					if (properties.getProperty("locale").equals("en")) {
 						Translator.setLanguageEN();

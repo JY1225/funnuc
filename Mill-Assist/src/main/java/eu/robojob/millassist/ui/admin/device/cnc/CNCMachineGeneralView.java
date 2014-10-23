@@ -18,7 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
+import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -113,7 +113,7 @@ public class CNCMachineGeneralView extends GridPane {
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> arg0, final Boolean oldValue, final Boolean newValue) {
 				if (newValue) {
-					presenter.setWayOfOperating(WayOfOperating.START_STOP);
+					presenter.setWayOfOperating(EWayOfOperating.START_STOP);
 				}
 			}
 		});
@@ -123,7 +123,7 @@ public class CNCMachineGeneralView extends GridPane {
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> arg0, final Boolean oldValue, final Boolean newValue) {
 				if (newValue) {
-					presenter.setWayOfOperating(WayOfOperating.M_CODES);
+					presenter.setWayOfOperating(EWayOfOperating.M_CODES);
 				}
 			}
 		});
@@ -133,7 +133,7 @@ public class CNCMachineGeneralView extends GridPane {
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> arg0, final Boolean oldValue, final Boolean newValue) {
 				if (newValue) {
-					presenter.setWayOfOperating(WayOfOperating.M_CODES_DUAL_LOAD);
+					presenter.setWayOfOperating(EWayOfOperating.M_CODES_DUAL_LOAD);
 				}
 			}
 		});
@@ -235,15 +235,15 @@ public class CNCMachineGeneralView extends GridPane {
 		} else {
 			throw new IllegalStateException("Clamping width delta R machine should be 90 or -90.");
 		}
-		if (cncMachine.getWayOfOperating() == WayOfOperating.START_STOP) {
+		if (cncMachine.getWayOfOperating() == EWayOfOperating.START_STOP) {
 			rbbWayOfOperatingStartStop.selectedProperty().set(true);
-			presenter.setWayOfOperating(WayOfOperating.START_STOP);
-		} else if (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES) {
+			presenter.setWayOfOperating(EWayOfOperating.START_STOP);
+		} else if (cncMachine.getWayOfOperating() == EWayOfOperating.M_CODES) {
 			rbbWayOfOperatingMCodes.selectedProperty().set(true);
-			presenter.setWayOfOperating(WayOfOperating.M_CODES);
-		} else if (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
+			presenter.setWayOfOperating(EWayOfOperating.M_CODES);
+		} else if (cncMachine.getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD) {
 			rbbWayOfOperatingMCodesDualLoad.selectedProperty().set(true);
-			presenter.setWayOfOperating(WayOfOperating.M_CODES_DUAL_LOAD);
+			presenter.setWayOfOperating(EWayOfOperating.M_CODES_DUAL_LOAD);
 		} else {
 			throw new IllegalStateException("Unknown way of operating: " + cncMachine.getWayOfOperating());
 		}
@@ -292,13 +292,13 @@ public class CNCMachineGeneralView extends GridPane {
 		this.devIntVersion = isNewDevInt;
 	}
 	
-	public WayOfOperating getWayOfOperating() {
+	public EWayOfOperating getWayOfOperating() {
 		if (rbbWayOfOperatingMCodes.selectedProperty().getValue()) {
-			return WayOfOperating.M_CODES;
+			return EWayOfOperating.M_CODES;
 		} else if (rbbWayOfOperatingMCodesDualLoad.selectedProperty().getValue()) {
-			return WayOfOperating.M_CODES_DUAL_LOAD;
+			return EWayOfOperating.M_CODES_DUAL_LOAD;
 		} else {
-			return WayOfOperating.START_STOP;
+			return EWayOfOperating.START_STOP;
 		}
 	}
 	

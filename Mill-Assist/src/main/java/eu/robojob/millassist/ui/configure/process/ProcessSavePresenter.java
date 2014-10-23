@@ -62,7 +62,7 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 			if(saveProcessID != 0) {
 				saveAsExisting();
 			} else {
-				saveAsNew();
+				saveAsNewProcess();
 			}
 			getMenuPresenter().refreshParent();
 		} catch (SQLException e) {
@@ -77,14 +77,12 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 			//reset the flag to indicate the latest changes are saved
 			processFlow.setChangesSinceLastSave(false);
 			getView().showNotification(Translator.getTranslation(UPDATE_SUCCESSFULL), Type.OK);
-			getMenuPresenter().refreshParent();
 		} catch (DuplicateProcessFlowNameException e) {
 			//We will come here when a user tries to save an existing process which is not the activeProcess
 			getView().showNotification(Translator.getTranslation(DUPLICATE_NAME), Type.WARNING);
 		}
 	}
-	
-	private void saveAsNew() {
+	private void saveAsNewProcess() {
 		try {
 			processFlowManager.saveProcessFlow(processFlow);
 			//reset the flag to indicate the latest changes are saved
@@ -92,11 +90,10 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 			//Show the new processName in the flow region
 			getMenuPresenter().getParent().getProcessFlowPresenter().getView().refreshProcessFlowName();
 			getView().showNotification(Translator.getTranslation(SAVE_SUCCESSFULL), Type.OK);
-			getMenuPresenter().refreshParent();
 		} catch (DuplicateProcessFlowNameException e) {
 			//this should never happen
 			getView().showNotification(Translator.getTranslation(DUPLICATE_NAME), Type.WARNING);
 		}
 	}
-	
+		
 }

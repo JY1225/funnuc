@@ -15,7 +15,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.configure.ConfigureView;
 import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
@@ -414,7 +414,7 @@ public class ProcessFlowView extends StackPane {
 	public void showRemoveDevice() {
 		unfocusAll();
 		for (DeviceButton deviceButton : deviceButtons) {
-			if ((deviceButton.getDeviceInformation().getType() == DeviceType.POST_PROCESSING) || (deviceButton.getDeviceInformation().getType() == DeviceType.PRE_PROCESSING)) {
+			if ((deviceButton.getDeviceInformation().getType() == EDeviceGroup.POST_PROCESSING) || (deviceButton.getDeviceInformation().getType() == EDeviceGroup.PRE_PROCESSING)) {
 				deviceButton.setFocussed(true);
 				deviceButton.setDisable(false);
 			} else {

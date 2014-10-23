@@ -323,10 +323,10 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 			numTxtTiltedR.setText(basicStackPlate.getBasicLayout().getTiltedR() + "");
 			numTxtMaxOverflow.setText(basicStackPlate.getBasicLayout().getMaxOverflow() + "");
 			numTxtMinOverlap.setText(basicStackPlate.getBasicLayout().getMinOverlap() + "");
-			numTxtStudHeight.setText(basicStackPlate.getWorkAreas().get(0).getActiveClamping().getDefaultHeight() + "");
+			numTxtStudHeight.setText(basicStackPlate.getWorkAreas().get(0).getDefaultClamping().getDefaultHeight() + "");
 			cbbUserFrames.valueProperty().set(basicStackPlate.getWorkAreas().get(0).getUserFrame().getName());
-			Coordinates smoothTo = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
-			Coordinates smoothFrom = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
+			Coordinates smoothTo = basicStackPlate.getWorkAreas().get(0).getDefaultClamping().getSmoothToPoint();
+			Coordinates smoothFrom = basicStackPlate.getWorkAreas().get(0).getDefaultClamping().getSmoothFromPoint();
 			numtxtSmoothToX.setText(smoothTo.getX() + "");
 			numtxtSmoothToY.setText(smoothTo.getY() + "");
 			numtxtSmoothToZ.setText(smoothTo.getZ() + "");

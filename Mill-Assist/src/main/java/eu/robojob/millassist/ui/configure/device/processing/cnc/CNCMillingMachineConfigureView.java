@@ -132,7 +132,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		getContents().add(lblClampingName, column++, row, 4, 1);
 		column = 0;
 		row++;
-		ifsClamping = new IconFlowSelector();
+		ifsClamping = new IconFlowSelector(false);
 		ifsClamping.setPrefWidth(ICONFLOWSELECTOR_WIDTH);
 		getContents().add(ifsClamping, column++, row, 4, 1);
 		column = 0;
@@ -249,8 +249,8 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			if (deviceInfo.getDeviceSettings() != null) {
 				if (deviceInfo.hasProcessingStep()) {
 					if (deviceInfo.getProcessingStep().getDeviceSettings().getWorkArea() != null) {
-						if (deviceInfo.getProcessingStep().getDeviceSettings().getWorkArea().getActiveClamping() != null) {
-							double clampingR = deviceInfo.getProcessingStep().getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getR();
+						if (deviceInfo.getProcessingStep().getDeviceSettings().getWorkArea().getDefaultClamping() != null) {
+							double clampingR = deviceInfo.getProcessingStep().getDeviceSettings().getWorkArea().getDefaultClamping().getRelativePosition().getR();
 							double clampingWidthDeltaR = ((AbstractCNCMachine) deviceInfo.getDevice()).getClampingWidthR();
 							boolean conveyor = false;
 							boolean change = false;
@@ -287,16 +287,23 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		if ((deviceInfo.getPutStep().getDeviceSettings() != null) && (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 			int itemIndex = 0;
 			for (final Clamping clamping : deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getClampings()) {
-				ifsClamping.addItem(itemIndex, clamping.getName(), clamping.getImageUrl(), new EventHandler<MouseEvent>() {
+				ifsClamping.addItem(itemIndex, clamping.getName(), clamping.getImageUrl(), clamping.getFixtureType().toShortString(), new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(final MouseEvent arg0) {
-						getPresenter().changedClamping(clamping);
+						if(getPresenter().canClampingBeModified(clamping,ifsClamping.isSelected(clamping.getName()))) {
+							selectClamping(clamping.getName());
+							getPresenter().changedClamping(clamping, ifsClamping.isSelected(clamping.getName()));
+						}
 					}
 				});
 				itemIndex++;
 			}
-			if (deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping() != null) {
-				ifsClamping.setSelected(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getActiveClamping().getName());
+			Clamping activeClamping = deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getDefaultClamping();
+			if (activeClamping != null) {
+				ifsClamping.setSelected(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getDefaultClamping().getName());
+				for(Clamping clamping: activeClamping.getRelatedClampings()) {
+					ifsClamping.setSelected(clamping.getName());
+				}
 			}
 		}
 	}

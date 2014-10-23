@@ -27,9 +27,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import eu.robojob.millassist.external.device.Clamping;
-import eu.robojob.millassist.external.device.Clamping.FixtureType;
 import eu.robojob.millassist.external.device.Clamping.Type;
 import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.external.device.EFixtureType;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.ui.controls.FullTextField;
@@ -94,12 +94,13 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private FileChooser fileChooser;
 	private String imagePath;
 	
-	private Button btnSave;
-	private Button btnDelete;
+	private Button btnSave, btnCopy, btnDelete;
 	
 	private static final String EDIT = "CNCMachineClampingsView.edit";
+	static final String COPY = "CNCMachineClampingsView.copy";
+	static final String SAVE_AS_DIALOG = "CNCMachineClampingsView.saveAsDialog";
+	static final String NAME = "CNCMachineClampingsView.name";
 	private static final String NEW = "CNCMachineClampingsView.new";
-	private static final String NAME = "CNCMachineClampingsView.name";
 	private static final String HEIGHT = "CNCMachineClampingsView.height";
 	private static final String SAVE = "CNCMacineClampingsView.save";
 	private static final String REMOVE = "CNCMacineClampingsView.remove";
@@ -127,10 +128,6 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private static final String CLAMPING_TYPE_FIXED_XM = "Fix X -";
 	private static final String CLAMPING_TYPE_FIXED_YP = "Fix Y +";
 	private static final String CLAMPING_TYPE_FIXED_YM = "Fix Y -";
-	
-	private static final String FIXTURE_TYPE_1 = "Fixture 1";
-	private static final String FIXTURE_TYPE_2 = "Fixture 2";
-	private static final String FIXTURE_TYPE_1_2 = "Fixture 1 + 2";
 	
 	public CNCMachineClampingsView() {
 		build();
@@ -203,7 +200,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		
 		lblName = new Label(Translator.getTranslation(NAME));
 		fullTxtName = new FullTextField(100);
-		fullTxtName.setPrefWidth(250);
+		fullTxtName.setPrefWidth(258);
+		fullTxtName.setMaxWidth(258);
 		fullTxtName.setOnChange(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> arg0, final String arg1, final String arg2) {
@@ -233,13 +231,16 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		cbbFixtureType = new ComboBox<String>();
 		cbbFixtureType.setPrefSize(125, UIConstants.COMBO_HEIGHT);
 		cbbFixtureType.setMinSize(125, UIConstants.COMBO_HEIGHT);
-		cbbFixtureType.getItems().add(FIXTURE_TYPE_1);
-		cbbFixtureType.getItems().add(FIXTURE_TYPE_2);
-		cbbFixtureType.getItems().add(FIXTURE_TYPE_1_2);
+		for (EFixtureType fixType: EFixtureType.values()) {
+			if(fixType != EFixtureType.DEFAULT)
+				cbbFixtureType.getItems().add(fixType.toString());
+		}
+		cbbFixtureType.setVisibleRowCount(5);
 		
 		lblRelativePosition = new Label(Translator.getTranslation(RELATIVE_POSITION));
 		lblRelativePosition.setPrefWidth(125);
 		lblX = new Label("X");
+		lblX.setMinWidth(LBL_WIDTH);
 		lblX.setPrefWidth(LBL_WIDTH);
 		numtxtX = new NumericTextField(6);
 		numtxtX.setMaxWidth(75);
@@ -250,6 +251,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			}
 		});
 		lblY = new Label("Y");
+		lblY.setMinWidth(LBL_WIDTH);
 		lblY.setPrefWidth(LBL_WIDTH);
 		numtxtY = new NumericTextField(6);
 		numtxtY.setMaxWidth(75);
@@ -260,6 +262,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			}
 		});
 		lblZ = new Label("Z");
+		lblZ.setMinWidth(LBL_WIDTH);
 		lblZ.setPrefWidth(LBL_WIDTH);
 		numtxtZ = new NumericTextField(6);
 		numtxtZ.setMaxWidth(75);
@@ -270,6 +273,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			}
 		});
 		lblW = new Label("W");
+		lblW.setMinWidth(LBL_WIDTH);
 		lblW.setPrefWidth(LBL_WIDTH);
 		numtxtW = new NumericTextField(6);
 		numtxtW.setMaxWidth(75);
@@ -280,6 +284,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			}
 		});
 		lblP = new Label("P");
+		lblP.setMinWidth(LBL_WIDTH);
 		lblP.setPrefWidth(LBL_WIDTH);
 		numtxtP = new NumericTextField(6);
 		numtxtP.setMaxWidth(75);
@@ -290,6 +295,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			}
 		});
 		lblR = new Label("R");
+		lblR.setMinWidth(LBL_WIDTH);
 		lblR.setPrefWidth(LBL_WIDTH);
 		numtxtR = new NumericTextField(6);
 		numtxtR.setMaxWidth(75);
@@ -302,8 +308,10 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		
 		lblSmoothTo = new Label(Translator.getTranslation(SMOOTH_TO));
 		lblSmoothTo.setPrefWidth(125);
+		lblSmoothTo.setMinWidth(125);
 		lblSmoothToX = new Label("X");
 		lblSmoothToX.setPrefWidth(LBL_WIDTH);
+		lblSmoothToX.setMinWidth(LBL_WIDTH);
 		numtxtSmoothToX = new NumericTextField(5);
 		lblSmoothToY = new Label("Y");
 		lblSmoothToY.setPrefWidth(LBL_WIDTH);
@@ -340,16 +348,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 				} else if (selectedType == CLAMPING_TYPE_FIXED_YM) {
 					type = Type.FIXED_YM;
 				}
-				Clamping.FixtureType fixtureType = null;
-				String selectedFixtureType = cbbFixtureType.getValue();
-				if (selectedFixtureType == FIXTURE_TYPE_1) {
-					fixtureType = FixtureType.FIXTURE_1;
-				} else if (selectedFixtureType == FIXTURE_TYPE_2) {
-					fixtureType = FixtureType.FIXTURE_2;
-				} else if (selectedFixtureType == FIXTURE_TYPE_1_2) {
-					fixtureType = FixtureType.FIXTURE_1_2;
-				}
-				getPresenter().saveData(fullTxtName.getText(), Float.parseFloat(numtxtHeight.getText()), imagePath,
+				EFixtureType fixtureType = EFixtureType.getFixtureTypeFromStringValue(cbbFixtureType.getValue());
+				getPresenter().updateClamping(fullTxtName.getText(), Float.parseFloat(numtxtHeight.getText()), imagePath,
 						Float.parseFloat(numtxtX.getText()), Float.parseFloat(numtxtY.getText()), 
 						Float.parseFloat(numtxtZ.getText()), Float.parseFloat(numtxtW.getText()), 
 						Float.parseFloat(numtxtP.getText()), Float.parseFloat(numtxtR.getText()),
@@ -357,6 +357,33 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 						Float.parseFloat(numtxtSmoothToZ.getText()), Float.parseFloat(numtxtSmoothFromX.getText()), 
 						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()),
 						type, fixtureType);
+			}
+		});
+		btnCopy = createButton(ADD_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(COPY), BTN_WIDTH + 40, BTN_HEIGHT, new EventHandler<ActionEvent>() {	
+			@Override
+			public void handle(final ActionEvent arg0) {
+				Clamping.Type type = null;
+				String selectedType = cbbType.getValue();
+				if (selectedType == CLAMPING_TYPE_CENTRUM) {
+					type = Type.CENTRUM;
+				} else if (selectedType == CLAMPING_TYPE_FIXED_XP) {
+					type = Type.FIXED_XP;
+				} else if (selectedType == CLAMPING_TYPE_FIXED_XM) {
+					type = Type.FIXED_XM;
+				} else if (selectedType == CLAMPING_TYPE_FIXED_YP) {
+					type = Type.FIXED_YP;
+				} else if (selectedType == CLAMPING_TYPE_FIXED_YM) {
+					type = Type.FIXED_YM;
+				}
+				EFixtureType fixtureType = EFixtureType.getFixtureTypeFromStringValue(cbbFixtureType.getValue());
+				getPresenter().copyClamping(Float.parseFloat(numtxtHeight.getText()), imagePath,
+						Float.parseFloat(numtxtX.getText()), Float.parseFloat(numtxtY.getText()), 
+						Float.parseFloat(numtxtZ.getText()), Float.parseFloat(numtxtW.getText()), 
+						Float.parseFloat(numtxtP.getText()), Float.parseFloat(numtxtR.getText()),
+						Float.parseFloat(numtxtSmoothToX.getText()), Float.parseFloat(numtxtSmoothToY.getText()),
+						Float.parseFloat(numtxtSmoothToZ.getText()), Float.parseFloat(numtxtSmoothFromX.getText()), 
+						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()),
+						type, fixtureType);	
 			}
 		});
 		btnDelete = createButton(DELETE_ICON_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(REMOVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
@@ -368,9 +395,10 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		btnDelete.getStyleClass().add("delete-btn");
 		
 		StackPane spControls = new StackPane();
-		spControls.getChildren().addAll(btnDelete, btnSave);
+		spControls.getChildren().addAll(btnDelete,btnCopy, btnSave);
 		spControls.setAlignment(Pos.CENTER);
 		StackPane.setAlignment(btnDelete, Pos.CENTER_LEFT);
+		StackPane.setAlignment(btnCopy, Pos.CENTER);
 		StackPane.setAlignment(btnSave, Pos.CENTER_RIGHT);
 
 		spDetails = new ScrollPane();
@@ -479,7 +507,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			for (WorkArea workArea : machine.getWorkAreas()) {
 				for (final Clamping clamping : workArea.getClampings()) {
 					if (!addedClampingIds.contains(clamping.getId())) {
-						ifsClampings.addItem(itemIndex, clamping.getName(), clamping.getImageUrl(), new EventHandler<MouseEvent>(){
+						ifsClampings.addItem(itemIndex, clamping.getName(), clamping.getImageUrl(), clamping.getFixtureType().toShortString(), new EventHandler<MouseEvent>(){
 							@Override
 							public void handle(final MouseEvent arg0) {
 								getPresenter().selectedClamping(clamping);
@@ -575,13 +603,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		} else if (clamping.getType() == Type.FIXED_YM) {
 			cbbType.setValue(CLAMPING_TYPE_FIXED_YM);
 		}
-		if (clamping.getFixtureType() == FixtureType.FIXTURE_1) {
-			cbbFixtureType.setValue(FIXTURE_TYPE_1);
-		} else if (clamping.getFixtureType() == FixtureType.FIXTURE_2) {
-			cbbFixtureType.setValue(FIXTURE_TYPE_2);
-		} else if (clamping.getFixtureType() == FixtureType.FIXTURE_1_2) {
-			cbbFixtureType.setValue(FIXTURE_TYPE_1_2);
-		}
+		cbbFixtureType.setValue(clamping.getFixtureType().toString());
 		if (url != null) {
 			url = url.replace("file:///", "");
 		}

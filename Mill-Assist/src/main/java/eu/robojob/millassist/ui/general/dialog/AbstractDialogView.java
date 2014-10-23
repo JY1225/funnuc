@@ -1,5 +1,6 @@
 package eu.robojob.millassist.ui.general.dialog;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -92,5 +93,17 @@ public abstract class AbstractDialogView<T extends AbstractDialogPresenter<?, ?>
 		vBoxDialog.setMaxWidth(width);
 		vBoxDialog.setMinWidth(width);
 		lblTitle.setMinWidth(width);
+	}
+	
+	public void setPosition(final Pos position) {
+		StackPane.setAlignment(vBoxDialog, position);
+		StackPane.setMargin(vBoxDialog, new Insets(50, 0, 0, 0));
+		setAlignment(position);
+	}
+	
+	public void setPosition(final Pos position, final Insets insets) {
+		StackPane.setAlignment(vBoxDialog, position);
+		StackPane.setMargin(vBoxDialog, insets);
+		setAlignment(position);
 	}
 }

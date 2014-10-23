@@ -16,7 +16,9 @@ public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 		super(view);
 		this.generalAdminPresenter = generalAdminPresenter;
 		this.robotAdminPresenter = robotAdminPresenter;
+		robotAdminPresenter.setParent(this);
 		this.deviceAdminPresenter = deviceAdminPresenter;
+		deviceAdminPresenter.setParent(this);
 	}
 
 	@Override

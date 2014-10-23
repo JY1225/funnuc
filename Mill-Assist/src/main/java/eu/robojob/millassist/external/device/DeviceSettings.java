@@ -20,7 +20,7 @@ public class DeviceSettings {
 	public DeviceSettings(final List<WorkArea> workAreas) {
 		this();
 		for (WorkArea workArea : workAreas) {
-			clampings.put(workArea, workArea.getActiveClamping());
+			clampings.put(workArea, workArea.getDefaultClamping());
 		}
 	}
 	

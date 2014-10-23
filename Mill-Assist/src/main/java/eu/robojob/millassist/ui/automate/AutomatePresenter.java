@@ -61,7 +61,7 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 		for (AbstractDevice device : processFlow.getDevices()) {
 			if (device instanceof AbstractCNCMachine) {
 				AbstractCNCMachine cncMachine = (AbstractCNCMachine) device;
-				automateThread = new AutomateControllingThread(processFlow, cncMachine.getWayOfOperating().getNbProcesses());
+				automateThread = new AutomateControllingThread(processFlow, cncMachine.getWayOfOperating().getNbOfSides());
 			}
 		}
 		this.deviceMenuFactory = deviceMenuFactory;

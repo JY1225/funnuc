@@ -62,9 +62,9 @@ public class PutStep extends AbstractTransportStep {
 						Coordinates position = new Coordinates(originalPosition);
 						logger.debug("Original coordinates: " + position + ".");
 						if (getRelativeTeachedOffset() == null) {
-							if (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight() < getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) {
+							if (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight() < getDeviceSettings().getWorkArea().getActiveClamping(false).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
 								//float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight());
-								float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - originalPosition.getZ();
+								float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping(false).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping(false).getHeight()) - originalPosition.getZ();
 								if(devicePutSettings.getDevice() instanceof ReversalUnit && getRobotSettings().getApproachType().equals(ApproachType.BOTTOM)) {
 									extraOffset += ((ReversalUnit) devicePutSettings.getDevice()).getStationHeight();
 									setRelativeTeachedOffset(new Coordinates(0, 0, (extraOffset * -1), 0, 0, 0));

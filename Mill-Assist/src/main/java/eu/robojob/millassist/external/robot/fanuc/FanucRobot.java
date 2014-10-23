@@ -186,10 +186,10 @@ public class FanucRobot extends AbstractRobot {
 		}
 		Coordinates smooth = fPutSettings.getSmoothPoint();
 		if (smooth == null) {
-			smooth = fPutSettings.getWorkArea().getActiveClamping().getSmoothToPoint();
+			smooth = fPutSettings.getWorkArea().getDefaultClamping().getSmoothToPoint();
 		}
 		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 
-				fPutSettings.getWorkArea().getActiveClamping(), putSettings.getApproachType());
+				fPutSettings.getWorkArea().getDefaultClamping(), putSettings.getApproachType());
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -284,12 +284,12 @@ public class FanucRobot extends AbstractRobot {
 		}
 		Coordinates smooth = fPickSettings.getSmoothPoint();
 		if (smooth == null) {
-			smooth = fPickSettings.getWorkArea().getActiveClamping().getSmoothFromPoint();
+			smooth = fPickSettings.getWorkArea().getDefaultClamping().getSmoothFromPoint();
 		}
 		ApproachType approachType = pickSettings.getApproachType();
 		writeServiceHandlingSet(pickSettings.isFreeAfter(), ppMode, pickSettings.getWorkPiece().getDimensions(), pickSettings.getWorkPiece().getWeight(), approachType);
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
-		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getStep().getRelativeTeachedOffset(), smooth, fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getWorkArea().getActiveClamping(), approachType);
+		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getStep().getRelativeTeachedOffset(), smooth, fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getWorkArea().getDefaultClamping(), approachType);
 		logger.info("About to write start service!");
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
@@ -387,12 +387,12 @@ public class FanucRobot extends AbstractRobot {
 		}
 		Coordinates smooth = fPutSettings.getSmoothPoint();
 		if (smooth == null) {
-			smooth = fPutSettings.getWorkArea().getActiveClamping().getSmoothToPoint();
+			smooth = fPutSettings.getWorkArea().getDefaultClamping().getSmoothToPoint();
 		}
 		ApproachType approachType = putSettings.getApproachType();
 		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 0.0f, approachType);
 		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 
-				fPutSettings.getWorkArea().getActiveClamping(), approachType);
+				fPutSettings.getWorkArea().getDefaultClamping(), approachType);
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -415,13 +415,13 @@ public class FanucRobot extends AbstractRobot {
 		}
 		Coordinates smooth = fPutSettings.getSmoothPoint();
 		if (smooth == null) {
-			smooth = fPutSettings.getWorkArea().getActiveClamping().getSmoothToPoint();
+			smooth = fPutSettings.getWorkArea().getDefaultClamping().getSmoothToPoint();
 		}
 		ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_NO_WAIT;
 		ApproachType approachType = putSettings.getApproachType();	
 		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 0.0f, approachType);
 		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 
-				fPutSettings.getWorkArea().getActiveClamping(), approachType);
+				fPutSettings.getWorkArea().getDefaultClamping(), approachType);
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	
@@ -538,12 +538,12 @@ public class FanucRobot extends AbstractRobot {
 		ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_NO_WAIT;
 		Coordinates smooth = fPutSettings.getSmoothPoint();
 		if (smooth == null) {
-			smooth = fPutSettings.getWorkArea().getActiveClamping().getSmoothToPoint();
+			smooth = fPutSettings.getWorkArea().getDefaultClamping().getSmoothToPoint();
 		}
 		ApproachType approachType = putSettings.getApproachType();
 		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 0.0f, approachType);
 		writeServicePointSet(fPutSettings.getWorkArea(), fPutSettings.getLocation(), fPutSettings.getStep().getRelativeTeachedOffset(), smooth, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), 
-				fPutSettings.getWorkArea().getActiveClamping(), approachType);
+				fPutSettings.getWorkArea().getDefaultClamping(), approachType);
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
 	

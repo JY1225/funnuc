@@ -1,7 +1,7 @@
 package eu.robojob.millassist.ui;
 
 import eu.robojob.millassist.external.device.DeviceManager;
-import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
+import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.external.robot.RobotManager;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
 import eu.robojob.millassist.process.ProcessFlow;
@@ -249,7 +249,7 @@ public final class RoboSoftAppFactory {
 		return robotPopUpPresenter;
 	}
 	
-	private static FullKeyboardPresenter getKeyboardPresenter() {
+	public static FullKeyboardPresenter getKeyboardPresenter() {
 		FullKeyboardView keyboardView = new FullKeyboardView(keyboardType);
 		FullKeyboardPresenter keyboardPresenter = new FullKeyboardPresenter(keyboardView);
 		return keyboardPresenter;
@@ -291,10 +291,11 @@ public final class RoboSoftAppFactory {
 		return teachProcessFlowPresenter;
 	}
 	
+	//FIXME - ULTIMATE FIX
 	private static AutomateProcessFlowPresenter getAutomateProcessFlowPresenter() {
 		if (automateProcessFlowPresenter == null) {
 			AutomateProcessFlowView processFlowView = new AutomateProcessFlowView(2);
-			if (deviceManager.getCNCMachines().iterator().next().getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD) {
+			if (deviceManager.getCNCMachines().iterator().next().getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD) {
 				processFlowView = new AutomateProcessFlowView(3);
 			}
 			automateProcessFlowPresenter = new AutomateProcessFlowPresenter(processFlowView, getAutomateDeviceMenuFactory());

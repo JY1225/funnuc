@@ -13,7 +13,7 @@ import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
@@ -28,7 +28,7 @@ public class OutputBin extends AbstractStackingDevice {
 		super(name);
 		// set first clamping as active one!
 		for (WorkArea wa : getWorkAreas()) {
-			wa.setActiveClamping(wa.getClampings().iterator().next());
+			wa.setDefaultClamping(wa.getClampings().iterator().next());
 		}
 	}
 
@@ -36,13 +36,13 @@ public class OutputBin extends AbstractStackingDevice {
 		super(name, zones);
 		// set first clamping as active one!
 		for (WorkArea wa : getWorkAreas()) {
-			wa.setActiveClamping(wa.getClampings().iterator().next());
+			wa.setDefaultClamping(wa.getClampings().iterator().next());
 		}
 	}
 
 	@Override
 	public Coordinates getLocation(final WorkArea workArea, final Type type, final ClampingManner clampType) throws DeviceActionException, InterruptedException {
-		return workArea.getActiveClamping().getRelativePosition();
+		return workArea.getDefaultClamping().getRelativePosition();
 	}
 	
 	@Override
@@ -122,7 +122,7 @@ public class OutputBin extends AbstractStackingDevice {
 	@Override
 	public void loadDeviceSettings(final DeviceSettings deviceSettings) {		
 		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
-			entry.getKey().setActiveClamping(entry.getValue());
+			entry.getKey().setDefaultClamping(entry.getValue());
 		}
 	}
 
@@ -130,7 +130,7 @@ public class OutputBin extends AbstractStackingDevice {
 	public DeviceSettings getDeviceSettings() {
 		Map<WorkArea, Clamping> clampings = new HashMap<WorkArea, Clamping>();
 		for (WorkArea wa : getWorkAreas()) {
-			clampings.put(wa, wa.getActiveClamping());
+			clampings.put(wa, wa.getDefaultClamping());
 		}
 		return new DeviceSettings(clampings);
 	}
@@ -142,12 +142,12 @@ public class OutputBin extends AbstractStackingDevice {
 
 	@Override
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
-		return workArea.getActiveClamping().getRelativePosition();
+		return workArea.getDefaultClamping().getRelativePosition();
 	}
 
 	@Override
 	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
-		return workArea.getActiveClamping().getRelativePosition();
+		return workArea.getDefaultClamping().getRelativePosition();
 	}
 
 	@Override
@@ -161,8 +161,8 @@ public class OutputBin extends AbstractStackingDevice {
 	}
 	
 	@Override
-	public DeviceType getType() {
-		return DeviceType.OUTPUT_BIN;
+	public EDeviceGroup getType() {
+		return EDeviceGroup.OUTPUT_BIN;
 	}
 
 }

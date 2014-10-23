@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
@@ -539,7 +539,7 @@ public class ProcessFlow {
 	public boolean hasBinForFinishedPieces() {
 		for(AbstractProcessStep processStep: processSteps) {
 			if(processStep instanceof PutStep) {
-				if(((PutStep) processStep).getDevice().getType().equals(DeviceType.OUTPUT_BIN)) {
+				if(((PutStep) processStep).getDevice().getType().equals(EDeviceGroup.OUTPUT_BIN)) {
 					return true;
 				}
 			}
@@ -551,7 +551,7 @@ public class ProcessFlow {
 	public boolean hasReversalUnit() {
 		for(AbstractProcessStep processStep: processSteps) {
 			if(processStep instanceof ProcessingStep) {
-				if(((ProcessingStep) processStep).getDevice().getType().equals(DeviceType.POST_PROCESSING)) {
+				if(((ProcessingStep) processStep).getDevice().getType().equals(EDeviceGroup.POST_PROCESSING)) {
 					return true;
 				}
 			}
@@ -562,7 +562,7 @@ public class ProcessFlow {
 	public boolean hasPrageDevice() {
 		for(AbstractProcessStep processStep: processSteps) {
 			if(processStep instanceof ProcessingStep) {
-				if(((ProcessingStep) processStep).getDevice().getType().equals(DeviceType.PRE_PROCESSING)) {
+				if(((ProcessingStep) processStep).getDevice().getType().equals(EDeviceGroup.PRE_PROCESSING)) {
 					return true;
 				}
 			}

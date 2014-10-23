@@ -7,10 +7,10 @@ import java.util.Set;
 import javafx.application.Platform;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
+import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.positioning.UserFrame;
 import eu.robojob.millassist.ui.admin.device.DeviceMenuPresenter;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -55,8 +55,8 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		getView().setUserFrameNames(userFrameNames);
 	}
 	
-	public void setWayOfOperating(final WayOfOperating wayOfOperating) {
-		if ((wayOfOperating == WayOfOperating.M_CODES) || (wayOfOperating == WayOfOperating.M_CODES_DUAL_LOAD)) {
+	public void setWayOfOperating(final EWayOfOperating wayOfOperating) {
+		if ((wayOfOperating == EWayOfOperating.M_CODES) || (wayOfOperating == EWayOfOperating.M_CODES_DUAL_LOAD)) {
 			getView().setMCodeActive(true);
 		} else {
 			getView().setMCodeActive(false);
@@ -68,7 +68,7 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		String ip = getView().getIp();
 		int port = getView().getPort();
 		int clampingWidthR = getView().getWidthR();
-		WayOfOperating wayOfOperating = getView().getWayOfOperating();
+		EWayOfOperating wayOfOperating = getView().getWayOfOperating();
 		List<String> robotServiceInputNames = getView().getRobotServiceInputNames();
 		List<String> robotServiceOutputNames = getView().getRobotServiceOutputNames();
 		boolean newDevInt = getView().getNewDevInt();

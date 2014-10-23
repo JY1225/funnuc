@@ -21,7 +21,7 @@ import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
@@ -376,7 +376,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	@Override
 	public void loadDeviceSettings(final DeviceSettings deviceSettings) {
 		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
-			entry.getKey().setActiveClamping(entry.getValue());
+			entry.getKey().setDefaultClamping(entry.getValue());
 		}
 		if (deviceSettings instanceof ConveyorSettings) {
 			ConveyorSettings settings = (ConveyorSettings) deviceSettings;
@@ -491,8 +491,8 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	}
 
 	@Override
-	public DeviceType getType() {
-		return DeviceType.CONVEYOR;
+	public EDeviceGroup getType() {
+		return EDeviceGroup.CONVEYOR;
 	}
 	
 	public void notifyFinishedShifted() {

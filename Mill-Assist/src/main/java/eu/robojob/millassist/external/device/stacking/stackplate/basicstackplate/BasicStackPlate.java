@@ -13,7 +13,7 @@ import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate;
@@ -58,8 +58,8 @@ public class BasicStackPlate extends AbstractStackPlate {
 	@Override public void reset() throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
 	
 	@Override
-	public DeviceType getType() {
-		return DeviceType.BASIC_STACK_PLATE;
+	public EDeviceGroup getType() {
+		return EDeviceGroup.BASIC_STACK_PLATE;
 	}
 
 	@Override

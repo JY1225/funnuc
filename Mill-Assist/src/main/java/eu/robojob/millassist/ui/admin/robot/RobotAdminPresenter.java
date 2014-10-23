@@ -1,17 +1,16 @@
 package eu.robojob.millassist.ui.admin.robot;
 
-import eu.robojob.millassist.ui.admin.AdminPresenter;
+import eu.robojob.millassist.ui.admin.MainMenuPresenter;
 import eu.robojob.millassist.ui.admin.SubMenuAdminView;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
-import eu.robojob.millassist.ui.general.MainContentPresenter;
 import eu.robojob.millassist.ui.general.SubContentPresenter;
 
 public class RobotAdminPresenter implements SubContentPresenter {
 
 	private SubMenuAdminView view;
 	private RobotMenuPresenter robotMenuPresenter;
-	private AdminPresenter parent;
+	private MainMenuPresenter parent;
 	
 	public RobotAdminPresenter(final SubMenuAdminView view, final RobotMenuPresenter robotMenuPresenter) {
 		this.view = view;
@@ -29,11 +28,11 @@ public class RobotAdminPresenter implements SubContentPresenter {
 	}
 
 	@Override
-	public void setParent(final MainContentPresenter mainContentPresenter) {
-		this.parent = (AdminPresenter) mainContentPresenter;
+	public void setParent(final MainMenuPresenter mainContentPresenter) {
+		this.parent = (MainMenuPresenter) mainContentPresenter;
 	}
 	
-	public AdminPresenter getParent() {
+	public MainMenuPresenter getParent() {
 		return this.parent;
 	}
 	

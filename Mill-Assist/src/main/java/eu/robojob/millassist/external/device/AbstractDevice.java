@@ -15,6 +15,30 @@ import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractDevice extends AbstractServiceProvider {
 	
+	public enum DeviceType {
+		DEVICE_TYPE_CNCMILLING(1), DEVICE_TYPE_STACKPLATE(2), DEVICE_TYPE_PRAGE(3), DEVICE_TYPE_CONVEYOR(4), DEVICE_TYPE_BIN(5), DEVICE_TYPE_CONVEYOR_EATON(6), DEVICE_TYPE_REVERSAL_UNIT(7);
+	
+		private int id;
+		
+		private DeviceType(int id) {
+			this.id = id;
+		}
+		
+		public int getId() {
+			return this.id;
+		}
+		
+		public static DeviceType getTypeById(int id) {
+			for (DeviceType type: values()) {
+				if (type.getId() == id) {
+					return type;
+				}
+			}
+			throw new IllegalArgumentException("Unknown device type " + id);
+		}
+		
+	}
+	
 	private Set<Zone> zones;
 	
 	public abstract void prepareForProcess(ProcessFlow process) throws AbstractCommunicationException, InterruptedException;
@@ -41,7 +65,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public boolean validatePickSettings(final DevicePickSettings pickSettings) {
 		if ((pickSettings != null) && (pickSettings.getWorkArea() != null) && (getWorkAreaNames().contains(pickSettings.getWorkArea().getName())) 
-				&& (pickSettings.getWorkArea().getActiveClamping() != null)) {
+				&& (pickSettings.getWorkArea().getDefaultClamping() != null)) {
 			return true;
 		}
 		return false;
@@ -49,7 +73,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 
 	public boolean validatePutSettings(final DevicePutSettings putSettings) {
 		if ((putSettings != null) && (putSettings.getWorkArea() != null) && (getWorkAreas().contains(putSettings.getWorkArea())) 
-				&& (putSettings.getWorkArea().getActiveClamping() != null)) {
+				&& (putSettings.getWorkArea().getDefaultClamping() != null)) {
 			return true;
 		} 
 		return false;
@@ -57,7 +81,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 
 	public boolean validateInterventionSettings(final DeviceInterventionSettings interventionSettings) {
 		if ((interventionSettings != null) && (interventionSettings.getWorkArea() != null) && (getWorkAreas().contains(interventionSettings.getWorkArea())) 
-				&& (interventionSettings.getWorkArea().getActiveClamping() != null)) {
+				&& (interventionSettings.getWorkArea().getDefaultClamping() != null)) {
 			return true;
 		}
 		return false;
@@ -151,7 +175,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return "Device: " + getName();
 	}
 	
-	public abstract DeviceType getType();
+	public abstract EDeviceGroup getType();
 	
 	public DevicePickSettings getDefaultPickSettings(final WorkPiece.Type workPieceType) {
 		WorkArea workArea = null;
@@ -173,8 +197,8 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		if (approachType.equals(ApproachType.BOTTOM)) {
 			throw new IllegalArgumentException("Approach from " + ApproachType.BOTTOM + " is not possible for " + workArea.getZone().getDevice().toString());
 		} else {
-			float zSafePlane = workArea.getActiveClamping().getRelativePosition().getZ(); 
-			zSafePlane += workArea.getActiveClamping().getHeight(); // position of the clamping 
+			float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
+			zSafePlane += workArea.getDefaultClamping().getHeight(); // position of the clamping 
 			zSafePlane += dimensions.getHeight(); // add height of workpiece held by robot 
 			return zSafePlane;
 		}

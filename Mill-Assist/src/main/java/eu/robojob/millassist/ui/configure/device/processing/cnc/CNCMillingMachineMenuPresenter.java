@@ -16,9 +16,13 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 			final CNCMillingMachineWorkPiecePresenter cncMillingMachineWorkPiecePresenter) {
 		super(view, deviceInfo);
 		this.cncMillingMachineConfigurePresenter = cncMillingMachineConfigurePresenter;
+		cncMillingMachineConfigurePresenter.setMenuPresenter(this);
 		this.cncMillingMachinePickPresenter = cncMillingMachinePickPresenter;
+		cncMillingMachinePickPresenter.setMenuPresenter(this);
 		this.cncMillingMachinePutPresenter = cncMillingMachinePutPresenter;
+		cncMillingMachinePutPresenter.setMenuPresenter(this);
 		this.cncMillingMachineWorkPiecePresenter = cncMillingMachineWorkPiecePresenter;
+		cncMillingMachineWorkPiecePresenter.setMenuPresenter(this);
 	}
 
 	@Override

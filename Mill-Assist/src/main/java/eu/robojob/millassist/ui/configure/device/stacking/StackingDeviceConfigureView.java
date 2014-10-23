@@ -12,7 +12,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
@@ -74,7 +74,7 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 							btnChange.setDisable(false);
 						}
 						//Disable the selection of gridplates when device is not a basic stack plate
-						if(getPresenter().getDeviceByName(newValue).getType() == DeviceType.BASIC_STACK_PLATE) {
+						if(getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.BASIC_STACK_PLATE) {
 							cbGridPlate.setDisable(false);
 							cbGridPlate.setSelected(false);
 							cbbGridPlates.setDisable(true);

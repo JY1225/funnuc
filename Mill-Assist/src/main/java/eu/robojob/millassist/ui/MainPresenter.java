@@ -18,9 +18,12 @@ import eu.robojob.millassist.ui.admin.AdminPresenter;
 import eu.robojob.millassist.ui.alarms.AlarmsPopUpPresenter;
 import eu.robojob.millassist.ui.automate.AutomatePresenter;
 import eu.robojob.millassist.ui.configure.ConfigurePresenter;
+import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.ui.general.MainContentPresenter;
 import eu.robojob.millassist.ui.general.dialog.ConfirmationDialogPresenter;
 import eu.robojob.millassist.ui.general.dialog.ConfirmationDialogView;
+import eu.robojob.millassist.ui.general.dialog.DialogInputStringPresenter;
+import eu.robojob.millassist.ui.general.dialog.DialogInputStringView;
 import eu.robojob.millassist.ui.general.dialog.NotificationDialogPresenter;
 import eu.robojob.millassist.ui.general.dialog.NotificationDialogView;
 import eu.robojob.millassist.ui.menu.MenuBarPresenter;
@@ -258,5 +261,36 @@ public class MainPresenter implements ProcessFlowListener {
 				getView().hideDialog();
 			}
 		});
+	}
+	
+	public String askInputString(final String title, final String message, final String inputLabel) {
+		final DialogInputStringView view = new DialogInputStringView(title, message, inputLabel);
+		final DialogInputStringPresenter confirmationDialogPresenter = new DialogInputStringPresenter(view, RoboSoftAppFactory.getKeyboardPresenter());
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				getView().showDialog(view);
+			}
+		});
+		String result = "";
+		try {
+			result = confirmationDialogPresenter.getResult();
+		} catch (InterruptedException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public void closeInputString(final AbstractFormView<?> callingView) {
+
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				callingView.refresh();
+				getView().hideDialog();
+			}		
+		});
+
 	}
 }

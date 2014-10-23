@@ -13,7 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
+import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -70,9 +70,9 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	@Override
 	public void refresh() {
 		getPresenter().updateUserFrames();
-		if (cncMachine.getWayOfOperating() == WayOfOperating.START_STOP) {
+		if (cncMachine.getWayOfOperating() == EWayOfOperating.START_STOP) {
 			btnMCodes.setDisable(true);
-		} else if ((cncMachine.getWayOfOperating() == WayOfOperating.M_CODES) || (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
+		} else if ((cncMachine.getWayOfOperating() == EWayOfOperating.M_CODES) || (cncMachine.getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD)) {
 			btnMCodes.setDisable(false);
 		} else {
 			throw new IllegalStateException("Unknown way of operating: " + cncMachine.getWayOfOperating());
@@ -198,7 +198,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		return cncMachineGeneralView.getWidthR();
 	}
 	
-	public WayOfOperating getWayOfOperating() {
+	public EWayOfOperating getWayOfOperating() {
 		return cncMachineGeneralView.getWayOfOperating();
 	}
 	

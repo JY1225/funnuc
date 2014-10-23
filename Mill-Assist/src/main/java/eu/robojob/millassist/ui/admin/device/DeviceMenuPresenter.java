@@ -27,13 +27,21 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 					final DeviceManager deviceManager) {
 		super(view);
 		this.userFramesConfigurePresenter = userFramesConfigurePresenter;
+		userFramesConfigurePresenter.setMenuPresenter(this);
 		this.basicStackPlateConfigurePresenter = basicStackPlateConfigurePresenter;
+		basicStackPlateConfigurePresenter.setMenuPresenter(this);
 		this.cncMachineConfigurePresenter = cncMachineConfigurePresenter;
+		cncMachineConfigurePresenter.setMenuPresenter(this);
 		this.cncMachineClampingsPresenter = cncMachineClamingsPresenter;
+		cncMachineClampingsPresenter.setMenuPresenter(this);
 		this.prageDeviceConfigurePresenter = prageDeviceConfigurePresenter;
+		prageDeviceConfigurePresenter.setMenuPresenter(this);
 		this.outputBinConfigurePresenter = outputBinConfigurePresenter;
+		outputBinConfigurePresenter.setMenuPresenter(this);
 		this.gridPlateConfigurePresenter = gridPlateConfigurePresenter;
+		gridPlateConfigurePresenter.setMenuPresenter(this);
 		this.reversalUnitConfigurePresenter = reversalUnitConfigurePresenter;
+		reversalUnitConfigurePresenter.setMenuPresenter(this);
 		if (deviceManager.getPreProcessingDevices().size() == 0) {
 			//TODO review if other pre process devices are available!
 			getView().disablePrageMenuItem();

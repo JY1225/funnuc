@@ -5,8 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import eu.robojob.millassist.db.ConnectionManager;
@@ -15,13 +17,14 @@ import eu.robojob.millassist.db.external.util.ConnectionMapper;
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.Clamping;
-import eu.robojob.millassist.external.device.Clamping.FixtureType;
+import eu.robojob.millassist.external.device.EFixtureType;
+import eu.robojob.millassist.external.device.AbstractDevice.DeviceType;
 import eu.robojob.millassist.external.device.Clamping.Type;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
-import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
+import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.GenericMCode;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
 import eu.robojob.millassist.external.device.processing.cnc.milling.CNCMillingMachine;
@@ -39,26 +42,14 @@ import eu.robojob.millassist.positioning.UserFrame;
 
 public class DeviceMapper {
 	
-	private static final int DEVICE_TYPE_CNCMILLING = 1;
-	private static final int DEVICE_TYPE_STACKPLATE = 2;
-	private static final int DEVICE_TYPE_PRAGE = 3;
-	private static final int DEVICE_TYPE_CONVEYOR = 4;
-	private static final int DEVICE_TYPE_BIN = 5;
-	private static final int DEVICE_TYPE_CONVEYOR_EATON = 6;
-	private static final int DEVICE_TYPE_REVERSAL_UNIT = 7;
 	private static final int CLAMPING_TYPE_CENTRUM = 1;
 	private static final int CLAMPING_TYPE_FIXED_XP = 2;
 	private static final int CLAMPING_TYPE_NONE = 3;
 	private static final int CLAMPING_TYPE_FIXED_XM = 4;
 	private static final int CLAMPING_TYPE_FIXED_YP = 5;
 	private static final int CLAMPING_TYPE_FIXED_YM = 6;
-	private static final int CLAMPING_FIXTURE_TYPE_DEFAULT = 0;
-	private static final int CLAMPING_FIXTURE_TYPE_1 = 1;
-	private static final int CLAMPING_FIXTURE_TYPE_2 = 2;
-	private static final int CLAMPING_FIXTURE_TYPE_1_2 = 12;
-	private static final int WAYOFOPERATING_STARTSTOP = 1;
-	private static final int WAYOFOPERATING_MCODES = 2;
-	private static final int WAYOFOPERATING_MCODESDUAL = 3;
+	
+	private Map<Integer, Clamping> clampingsByIdMap;
 	
 	private GeneralMapper generalMapper;
 	private ConnectionMapper connectionMapper;
@@ -66,6 +57,7 @@ public class DeviceMapper {
 	public DeviceMapper(final GeneralMapper generalMapper, final ConnectionMapper connectionMapper) {
 		this.generalMapper = generalMapper;
 		this.connectionMapper = connectionMapper;
+		this.clampingsByIdMap = new HashMap<Integer, Clamping>();
 	}
 	
 	public Set<AbstractDevice> getAllDevices() throws SQLException {
@@ -75,7 +67,7 @@ public class DeviceMapper {
 		while (results.next()) {
 			int id = results.getInt("ID");
 			String name = results.getString("NAME");
-			int type = results.getInt("TYPE");
+			DeviceType type = DeviceType.getTypeById(results.getInt("TYPE"));
 			Set<Zone> zones = getAllZonesByDeviceId(id);
 			switch (type) {
 				case DEVICE_TYPE_CNCMILLING:
@@ -266,18 +258,8 @@ public class DeviceMapper {
 		if (results.next()) {
 			int deviceInterfaceId = results.getInt("DEVICEINTERFACE");
 			int clampingWidthR = results.getInt("CLAMPING_WIDTH_R");
-			int wayOfOperatingInt = results.getInt("WAYOFOPERATING");
 			boolean usesNewDevInt = results.getBoolean("NEW_DEV_INT");
-			WayOfOperating wayOfOperating;
-			if (wayOfOperatingInt == WAYOFOPERATING_STARTSTOP) {
-				wayOfOperating = WayOfOperating.START_STOP;
-			} else if (wayOfOperatingInt == WAYOFOPERATING_MCODES) {
-				wayOfOperating = WayOfOperating.M_CODES;
-			} else if (wayOfOperatingInt == WAYOFOPERATING_MCODESDUAL) {
-				wayOfOperating = WayOfOperating.M_CODES_DUAL_LOAD;
-			} else {
-				 throw new IllegalStateException("Unknown way of operating!");
-			}
+			EWayOfOperating wayOfOperating = EWayOfOperating.getWayOfOperatingById(results.getInt("WAYOFOPERATING"));
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICEINTERFACE WHERE ID = ?");
 			stmt2.setInt(1, deviceInterfaceId);
 			ResultSet results2 = stmt2.executeQuery();
@@ -396,7 +378,7 @@ public class DeviceMapper {
 			workAreas.add(workArea);
 			// set active clamping to first
 			if (possibleClampings.size() > 0) {
-				workArea.setActiveClamping(possibleClampings.iterator().next());
+				workArea.setDefaultClamping(possibleClampings.iterator().next());
 			}
 		}
 		return workAreas;
@@ -416,6 +398,9 @@ public class DeviceMapper {
 	}
 	
 	private Clamping getClampingById(final int clampingId) throws SQLException {
+		if (clampingsByIdMap.containsKey(clampingId)) {
+			return clampingsByIdMap.get(clampingId);
+		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CLAMPING WHERE ID = ?");
 		stmt.setInt(1, clampingId);
 		ResultSet results = stmt.executeQuery();
@@ -432,24 +417,7 @@ public class DeviceMapper {
 			String imageUrl = results.getString("IMAGE_URL");
 			String name = results.getString("NAME");
 			int fixtureTypeInt = results.getInt("FIXTURE_TYPE");
-			Clamping.FixtureType fixtureType = FixtureType.FIXTURE_1;
-			//FIXME TEMP: undo changes
-			switch (fixtureTypeInt) {
-				case CLAMPING_FIXTURE_TYPE_DEFAULT:
-					fixtureType = FixtureType.DEFAULT;
-					break;
-				case CLAMPING_FIXTURE_TYPE_1:
-					fixtureType = FixtureType.FIXTURE_1;
-					break;
-				case CLAMPING_FIXTURE_TYPE_2:
-					fixtureType = FixtureType.FIXTURE_2;
-					break;
-				case CLAMPING_FIXTURE_TYPE_1_2:
-					fixtureType = FixtureType.FIXTURE_1_2;
-					break;
-				default:
-					throw new IllegalStateException("Unknown clamping fixture type: [" + fixtureTypeInt + "].");
-			}
+			EFixtureType fixtureType = EFixtureType.getFixtureTypeFromCodeValue(fixtureTypeInt);
 			switch(type) {
 				case CLAMPING_TYPE_CENTRUM:
 					clamping = new Clamping(Clamping.Type.CENTRUM, name, height, relativePosition, smoothTo, smoothFrom, imageUrl, fixtureType);
@@ -473,6 +441,7 @@ public class DeviceMapper {
 					throw new IllegalStateException("Unknown clamping type: [" + type + "].");
 			}
 			clamping.setId(clampingId);
+			clampingsByIdMap.put(clampingId, clamping);
 		}
 		return clamping;
 	}
@@ -664,8 +633,8 @@ public class DeviceMapper {
 		stmt2.setString(1, name);
 		stmt2.setInt(2, basicStackPlate.getId());
 		stmt2.execute();
-		Coordinates smoothTo = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
-		Coordinates smoothFrom = basicStackPlate.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
+		Coordinates smoothTo = basicStackPlate.getWorkAreas().get(0).getDefaultClamping().getSmoothToPoint();
+		Coordinates smoothFrom = basicStackPlate.getWorkAreas().get(0).getDefaultClamping().getSmoothFromPoint();
 		smoothTo.setX(smoothToX);
 		smoothTo.setY(smoothToY);
 		smoothTo.setZ(smoothToZ);
@@ -693,12 +662,12 @@ public class DeviceMapper {
 		basicStackPlate.getBasicLayout().setTiltedR(tiltedR);
 		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CLAMPING SET HEIGHT = ? WHERE ID = ?");
 		stmt3.setFloat(1, studHeight);
-		stmt3.setInt(2, basicStackPlate.getWorkAreas().get(0).getActiveClamping().getId());
+		stmt3.setInt(2, basicStackPlate.getWorkAreas().get(0).getDefaultClamping().getId());
 		stmt3.execute();
-		basicStackPlate.getWorkAreas().get(0).getActiveClamping().setDefaultHeight(studHeight);
+		basicStackPlate.getWorkAreas().get(0).getDefaultClamping().setDefaultHeight(studHeight);
 	}
 	
-	public void updateCNCMachine(final AbstractCNCMachine cncMachine, final String name, final WayOfOperating wayOfOperating,
+	public void updateCNCMachine(final AbstractCNCMachine cncMachine, final String name, final EWayOfOperating wayOfOperating,
 			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final List<String> robotServiceInputNames, 
 					final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
@@ -717,17 +686,7 @@ public class DeviceMapper {
 		stmt2.execute();
 		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CNCMILLINGMACHINE SET CLAMPING_WIDTH_R = ? , WAYOFOPERATING = ?, NEW_DEV_INT = ? WHERE ID = ?");
 		stmt3.setInt(1, clampingWidthR);
-		int wayOfOperatingInt = WAYOFOPERATING_STARTSTOP;
-		if (wayOfOperating == WayOfOperating.M_CODES) {
-			wayOfOperatingInt = WAYOFOPERATING_MCODES;
-		} else if (wayOfOperating == WayOfOperating.START_STOP) {
-			wayOfOperatingInt = WAYOFOPERATING_STARTSTOP;
-		} else if (wayOfOperating == WayOfOperating.M_CODES_DUAL_LOAD) {
-			wayOfOperatingInt = WAYOFOPERATING_MCODESDUAL;
-		} else {
-			throw new IllegalStateException("Unknown way of operating: " + cncMachine.getWayOfOperating());
-		}
-		stmt3.setInt(2, wayOfOperatingInt);
+		stmt3.setInt(2, wayOfOperating.getId());
 		stmt3.setBoolean(3, newDevInt);
 		stmt3.setInt(4, cncMachine.getId());
 		stmt3.execute();
@@ -755,7 +714,7 @@ public class DeviceMapper {
 			final float relPosZ, final float relPosR, final float smoothToX, final float smoothToY, final float smoothToZ,
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ, final int widthOffsetR) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		Clamping clamping = prageDevice.getWorkAreas().get(0).getActiveClamping();
+		Clamping clamping = prageDevice.getWorkAreas().get(0).getDefaultClamping();
 		updateClamping(clamping, clamping.getName(), type, clamping.getHeight(), clamping.getImageUrl(), relPosX, relPosY, relPosZ, clamping.getRelativePosition().getW(),
 				clamping.getRelativePosition().getP(), relPosR, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, clamping.getFixtureType());
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE " +
@@ -783,7 +742,7 @@ public class DeviceMapper {
 			outputBin.getWorkAreas().get(0).setUserFrame(newUserFrame);
 			updateWorkArea(outputBin.getWorkAreas().get(0));
 		}
-		Coordinates c = outputBin.getWorkAreas().get(0).getActiveClamping().getRelativePosition();
+		Coordinates c = outputBin.getWorkAreas().get(0).getDefaultClamping().getRelativePosition();
 		c.setX(x);
 		c.setY(y);
 		c.setZ(z);
@@ -791,7 +750,7 @@ public class DeviceMapper {
 		c.setP(p);
 		c.setR(r);
 		generalMapper.saveCoordinates(c);
-		Coordinates smoothTo = outputBin.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
+		Coordinates smoothTo = outputBin.getWorkAreas().get(0).getDefaultClamping().getSmoothToPoint();
 		smoothTo.setX(smoothToX);
 		smoothTo.setY(smoothToY);
 		smoothTo.setZ(smoothToZ);
@@ -816,7 +775,7 @@ public class DeviceMapper {
 		stmt.setInt(2, reversalUnit.getId());
 		stmt.execute();
 		reversalUnit.setStationHeight(stationHeight);
-		Coordinates c = reversalUnit.getWorkAreas().get(0).getActiveClamping().getRelativePosition();
+		Coordinates c = reversalUnit.getWorkAreas().get(0).getDefaultClamping().getRelativePosition();
 		c.setX(x);
 		c.setY(y);
 		c.setZ(z);
@@ -824,12 +783,12 @@ public class DeviceMapper {
 		c.setP(p);
 		c.setR(r);
 		generalMapper.saveCoordinates(c);
-		Coordinates smoothTo = reversalUnit.getWorkAreas().get(0).getActiveClamping().getSmoothToPoint();
+		Coordinates smoothTo = reversalUnit.getWorkAreas().get(0).getDefaultClamping().getSmoothToPoint();
 		smoothTo.setX(smoothToX);
 		smoothTo.setY(smoothToY);
 		smoothTo.setZ(smoothToZ);
 		generalMapper.saveCoordinates(smoothTo);
-		Coordinates smoothFrom = reversalUnit.getWorkAreas().get(0).getActiveClamping().getSmoothFromPoint();
+		Coordinates smoothFrom = reversalUnit.getWorkAreas().get(0).getDefaultClamping().getSmoothFromPoint();
 		smoothFrom.setX(smoothFromX);
 		smoothFrom.setY(smoothFromY);
 		smoothFrom.setZ(smoothFromZ);
@@ -1025,7 +984,7 @@ public class DeviceMapper {
 			final String imagePath, final float x, final float y, final float z, final float w, final float p, 
 			final float r, final float smoothToX, 
 			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ,
-			final Clamping.FixtureType fixtureType) throws SQLException {
+			final EFixtureType fixtureType) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		Coordinates relPos = clamping.getRelativePosition();
 		relPos.setX(x);
@@ -1067,17 +1026,7 @@ public class DeviceMapper {
 		stmt.setInt(2, typeInt);
 		stmt.setFloat(3, height);
 		stmt.setString(4, imagePath);
-		int fixtureTypeInt = 0;
-		if (fixtureType == FixtureType.DEFAULT) {
-			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_DEFAULT;
-		} else if (fixtureType == FixtureType.FIXTURE_1) {
-			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_1;
-		}  else if (fixtureType == FixtureType.FIXTURE_2) {
-			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_2;
-		} else if (fixtureType == FixtureType.FIXTURE_1_2) {
-			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_1_2;
-		}
-		stmt.setInt(5, fixtureTypeInt);
+		stmt.setInt(5, fixtureType.getCode());
 		stmt.setInt(6, clamping.getId());
 		stmt.executeUpdate();
 		clamping.setName(name);
@@ -1119,17 +1068,7 @@ public class DeviceMapper {
 		stmt.setInt(5, clamping.getSmoothFromPoint().getId());
 		stmt.setString(6, clamping.getImageUrl());
 		stmt.setFloat(7, clamping.getHeight());
-		int fixtureTypeInt = 0;
-		if (clamping.getFixtureType() == FixtureType.DEFAULT) {
-			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_DEFAULT;
-		} else if (clamping.getFixtureType() == FixtureType.FIXTURE_1) {
-			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_1;
-		}  else if (clamping.getFixtureType() == FixtureType.FIXTURE_2) {
-			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_2;
-		} else if (clamping.getFixtureType() == FixtureType.FIXTURE_1_2) {
-			fixtureTypeInt = CLAMPING_FIXTURE_TYPE_1_2;
-		}
-		stmt.setInt(8, fixtureTypeInt);
+		stmt.setInt(8, clamping.getFixtureType().getCode());
 		try {
 			stmt.executeUpdate();
 			ResultSet resultSet = stmt.getGeneratedKeys();

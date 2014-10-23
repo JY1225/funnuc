@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
-import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.threading.MonitoringThread;
 
 public class CNCMachineMonitoringThread implements Runnable, MonitoringThread {
@@ -37,12 +36,12 @@ public class CNCMachineMonitoringThread implements Runnable, MonitoringThread {
 					try {
 						cncMachine.updateStatusAndAlarms();
 						int status = cncMachine.getStatus();
-						if (cncMachine.getWayOfOperating() == WayOfOperating.START_STOP) {
+						if (cncMachine.getWayOfOperating() == EWayOfOperating.START_STOP) {
 							if (status != previousStatus) {
 								cncMachine.processCNCMachineEvent(new CNCMachineEvent(cncMachine, CNCMachineEvent.STATUS_CHANGED));
 							}
 							this.previousStatus = status;
-						} else if ((cncMachine.getWayOfOperating() == WayOfOperating.M_CODES) || (cncMachine.getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD)) {
+						} else if ((cncMachine.getWayOfOperating() == EWayOfOperating.M_CODES) || (cncMachine.getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD)) {
 							Set<Integer> activeMCodes = new HashSet<Integer>();
 							activeMCodes = cncMachine.getMCodeAdapter().getActiveMCodes();
 							if ((status != previousStatus) || (!previousActiveMCodes.containsAll(activeMCodes)) 

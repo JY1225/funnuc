@@ -57,6 +57,9 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	// Is the reversal still to come?
 	private boolean needsReversal;
 	
+	private int pickFromStackerStepIndex;
+	private int pickFromMachineStepIndex;
+	
 	private static Logger logger = LogManager.getLogger(ProcessFlowExecutionThread.class.getName());
 	
 	private static final int POLLING_INTERVAL = 500;

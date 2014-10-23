@@ -17,9 +17,9 @@ public class ConfigureSmoothPresenter<T extends AbstractStackingDeviceMenuPresen
 		smoothPoint = robotActionSettings.getSmoothPoint();
 		if (robotActionSettings.getSmoothPoint() == null) {
 			if (robotActionSettings instanceof RobotPickSettings) {
-				smoothPoint = new Coordinates(robotActionSettings.getWorkArea().getActiveClamping().getSmoothFromPoint());
+				smoothPoint = new Coordinates(robotActionSettings.getWorkArea().getDefaultClamping().getSmoothFromPoint());
 			} else if (robotActionSettings instanceof RobotPutSettings) {
-				smoothPoint = new Coordinates(robotActionSettings.getWorkArea().getActiveClamping().getSmoothToPoint());
+				smoothPoint = new Coordinates(robotActionSettings.getWorkArea().getDefaultClamping().getSmoothToPoint());
 			} else {
 				throw new IllegalStateException("Unknown robot action settings type");
 			}
@@ -56,9 +56,9 @@ public class ConfigureSmoothPresenter<T extends AbstractStackingDeviceMenuPresen
 	
 	public void resetSmooth() {
 		if (robotActionSettings instanceof RobotPickSettings) {		
-			smoothPoint = new Coordinates(robotActionSettings.getWorkArea().getActiveClamping().getSmoothFromPoint());
+			smoothPoint = new Coordinates(robotActionSettings.getWorkArea().getDefaultClamping().getSmoothFromPoint());
 		} else if (robotActionSettings instanceof RobotPutSettings) {
-			smoothPoint = new Coordinates(robotActionSettings.getWorkArea().getActiveClamping().getSmoothToPoint());
+			smoothPoint = new Coordinates(robotActionSettings.getWorkArea().getDefaultClamping().getSmoothToPoint());
 		}
 		getView().setSmoothPoint(smoothPoint);
 		getView().refresh();

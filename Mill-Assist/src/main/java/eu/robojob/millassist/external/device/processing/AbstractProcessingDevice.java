@@ -35,7 +35,7 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 	
 	public boolean validateStartCyclusSettings(final ProcessingDeviceStartCyclusSettings startCyclusSettings) {
 		if ((startCyclusSettings != null) && (startCyclusSettings.getWorkArea() != null) && (getWorkAreaNames().contains(startCyclusSettings.getWorkArea().getName())) 
-				&& (startCyclusSettings.getWorkArea().getActiveClamping() != null)) {
+				&& (startCyclusSettings.getWorkArea().getDefaultClamping() != null)) {
 			return true;
 		}
 		return false;

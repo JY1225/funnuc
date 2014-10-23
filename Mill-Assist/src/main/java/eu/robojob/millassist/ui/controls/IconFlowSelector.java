@@ -14,6 +14,8 @@ public class IconFlowSelector extends ScrollPane {
 	private Map<Integer, IconFlowSelectorItem> items;	
 	private HBox box;
 	
+	private boolean isMutualExclusive;
+	
 	private static final int PREF_HEIGHT = 145;
 	private static final int PREF_HEIGHT_SCROLL = 175;
 	private static final int SPACING = 5;
@@ -21,8 +23,9 @@ public class IconFlowSelector extends ScrollPane {
 	
 	private static final String CSS_CLASS_ICONFLOW_SELECTOR = "iconflow-selector";
 	
-	public IconFlowSelector() {
+	public IconFlowSelector(boolean isMutualExclusive) {
 		super();
+		this.isMutualExclusive = isMutualExclusive;
 		this.setFitToHeight(true);
 		this.setFitToWidth(true);
 		this.getStyleClass().add(CSS_CLASS_ICONFLOW_SELECTOR);
@@ -37,8 +40,12 @@ public class IconFlowSelector extends ScrollPane {
 		clearItems();
 	}
 	
-	public void addItem(final int index, final String name, final String iconUrl, final EventHandler<MouseEvent> handler) {
-		IconFlowSelectorItem item = new IconFlowSelectorItem(index, name, iconUrl);
+	public IconFlowSelector() {
+		this(true);
+	}
+	
+	public void addItem(final int index, final String name, final String iconUrl, final String extraInfo, final EventHandler<MouseEvent> handler) {
+		IconFlowSelectorItem item = new IconFlowSelectorItem(index, name, iconUrl, extraInfo);
 		item.addEventHandler(MouseEvent.MOUSE_CLICKED, handler);
 		items.put(index, item);
 		if (items.size() > 4) {
@@ -49,11 +56,19 @@ public class IconFlowSelector extends ScrollPane {
 		box.getChildren().add(item);
 	}
 	
+	public void addItem(final int index, final String name, final String iconUrl, final EventHandler<MouseEvent> handler) {
+		addItem(index, name, iconUrl, null, handler);
+	}
+	
 	public void setSelected(final int index) {
-		for (IconFlowSelectorItem item : items.values()) {
-			item.setSelected(false);
+		if(isMutualExclusive) {
+			deselectAll();
 		}
-		items.get(index).setSelected(true);
+		if(items.get(index).isSelected()) {
+			items.get(index).setSelected(false);
+		} else {
+			items.get(index).setSelected(true);
+		}
 	}
 	
 	public void deselectAll() {
@@ -63,17 +78,32 @@ public class IconFlowSelector extends ScrollPane {
 	}
 	
 	public void setSelected(final String id) {
+		IconFlowSelectorItem selectedItem = null;
+		int index = 0;
 		for (IconFlowSelectorItem item : items.values()) {
-			item.setSelected(false);
-			if (item.getName().equals(id)) {
-				item.setSelected(true);
+			if(item.getName().equals(id)) {
+				selectedItem = item;
+				break;
 			}
+			index++;
+		}
+		if(selectedItem != null) {
+			setSelected(index);
 		}
 	}
 	
 	public void clearItems() {
 		box.getChildren().clear();
 		items.clear();
+	}
+	
+	public boolean isSelected(final String id) {
+		for (IconFlowSelectorItem item : items.values()) {
+			if(item.getName().equals(id)) {
+				return item.isSelected();
+			}
+		}
+		return false;
 	}
 }
 

@@ -66,8 +66,8 @@ public class PickStep extends AbstractTransportStep {
 						Coordinates position = new Coordinates(originalPosition);
 						logger.debug("Original coordinates: " + position + ".");
 						if (getRelativeTeachedOffset() == null) {
-							if (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight() < getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) {
-								float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight());
+							if (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight() < getDeviceSettings().getWorkArea().getActiveClamping(true).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping(true).getHeight()) {
+								float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping(true).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping(true).getHeight()) - (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight());
 								if(devicePickSettings.getDevice() instanceof ReversalUnit && (getRobotSettings().getApproachType().equals(ApproachType.BOTTOM))) {
 									extraOffset += ((ReversalUnit) devicePickSettings.getDevice()).getStationHeight();
 									setRelativeTeachedOffset(new Coordinates(0, 0, (extraOffset * -1), 0, 0, 0));

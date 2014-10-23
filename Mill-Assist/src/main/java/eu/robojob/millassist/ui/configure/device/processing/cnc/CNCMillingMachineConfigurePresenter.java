@@ -1,5 +1,8 @@
 package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -61,22 +64,134 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 					deviceInfo.getPickStep().getDeviceSettings().getWorkArea().inUse(false);
 					setWorkArea(workArea);
 					workArea.inUse(true);
-					setClamping(workArea.getActiveClamping());
+					setClamping(workArea.getDefaultClamping());
+					addProcessFlowEvent();
 					getView().refreshClampings();
 				}
 			}
 		}
 	}
 	
-	public void changedClamping(final Clamping clamping) {
+	/**
+	 * Add or remove a given clamping from the list of active clampings. Whether the clamping should be removed or added
+	 * is solely dependent of the boolean value isSelected.
+	 * 
+	 * @param clamping to be removed/added
+	 * @param isSelected flag 
+	 * @see #addClamping(Clamping)
+	 * @see #removeClamping(Clamping)
+	 */
+	public void changedClamping(final Clamping clamping, final boolean isSelected) {
 		if (clamping == null) {
 			throw new IllegalArgumentException("Clamping is null.");
+		}
+		if(isSelected) {
+			addClamping(clamping);
 		} else {
+			removeClamping(clamping);
+		}
+		addProcessFlowEvent();
+	}
+	
+	/**
+	 * Adds the given clamping to the list of active clampings for the current workArea. In case a clamping is already provided for this
+	 * workArea, the clamping will be added to the relatedClampings of the activeClamping.
+	 * 
+	 * @param clamping to add as one of the active clampings to be used for put and pick operations in the machine
+	 */
+	private void addClamping(final Clamping clamping) {
+		DeviceSettings settings = deviceInfo.getDeviceSettings();
+		Clamping activeClamping = settings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
+		if(activeClamping != null) {
+			//Add related clamping to activeClamping
 			if ((clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea()))
 					|| (clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea()))) {
-				setClamping(clamping);
+				activeClamping.addRelatedClamping(clamping);
+				logger.debug("Related clamping " + clamping.getName() +" added.");
 			}
+		} else {
+			logger.debug("Active clamping changed to " + clamping.getName());
+			setClamping(clamping);
 		}
+	}
+	
+	/**
+	 * Removes the given clamping from the list of active clampings for the current workArea. In case the clamping to remove is the 
+	 * active clamping, a new active clamping will be taken from the list of related clampings. If this list is empty, the active 
+	 * clamping will not be changed, because we need at least 1 clamping to be able to process workpieces
+	 * 
+	 * @param clamping to be removed from the active clampings to be used for put and pick operations in the machine
+	 */
+	private void removeClamping(final Clamping clamping) {
+		DeviceSettings settings = deviceInfo.getDeviceSettings();
+		Clamping activeClamping = settings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
+		
+		if(activeClamping.equals(clamping)) {
+			//Remove the active clamping and set the active clamping to one of the related clampings if provided - otherwise set to null
+			if(clamping.getRelatedClampings().size() > 0) {
+				//Als de size 1 is moeten we ook niet veel doen - removeRelated & putToActiveClamping
+				Set<Clamping> newRelatedClampingSet = new HashSet<Clamping>();
+				Clamping toBeActiveClamping = null;
+				for(Clamping relClamping: clamping.getRelatedClampings()) {
+					if(toBeActiveClamping == null) {
+						toBeActiveClamping = relClamping;
+					} else {
+						newRelatedClampingSet.add(relClamping);
+					}
+				}
+				toBeActiveClamping.setRelatedClampings(newRelatedClampingSet);
+				//reset the related clampings of the previous active clamping
+				activeClamping.setRelatedClampings(new HashSet<Clamping>());
+				logger.debug("Active clamping " + activeClamping.getName() + " changed to " + toBeActiveClamping.getName());
+				setClamping(toBeActiveClamping);
+			} else {
+				//Should not occur, because the request to remove the activeClamping without there being a replacement, is stopped before calling this function
+				throw new IllegalArgumentException("Tried to remove the active clamping without there being a replacement clamping.");
+			}
+		} else {
+			logger.debug("Related clamping " + clamping.getName() + " removed.");
+			activeClamping.removeRelatedClamping(clamping);
+		}	
+	}
+	
+	/**
+	 * Check that, in case of a clamping that needs to be removed, the active clamping is selected. If so, 
+	 * we will return false in case there are no related clampings that can act as active after the removal 
+	 * 
+	 * @param clamping
+	 * @param isToBeRemoved
+	 * @return
+	 */
+	public boolean canClampingBeModified(Clamping clamping, boolean isToBeRemoved) {
+		//In case we want to add the clamping, there is no issue
+		if(isToBeRemoved) {
+			DeviceSettings settings = deviceInfo.getDeviceSettings();
+			Clamping activeClamping = settings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
+			if(activeClamping.equals(clamping)) {
+				if(clamping.getRelatedClampings().size() == 0) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return true;
+		}
+	}
+	
+	private void setClamping(final Clamping clamping) {
+		DeviceSettings settings = deviceInfo.getDeviceSettings();		
+		settings.setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);		
+		//sets the active clamping
+		deviceInfo.getDevice().loadDeviceSettings(settings);
+		(deviceInfo.getPickStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
+		(deviceInfo.getPutStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), clamping);
+		deviceInfo.getPutStep().setRelativeTeachedOffset(null);
+		deviceInfo.getPickStep().setRelativeTeachedOffset(null);
+	}
+	
+	private void addProcessFlowEvent() {
+		deviceInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPutStep().getProcessFlow(), deviceInfo.getPutStep(), true));
+		deviceInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPickStep().getProcessFlow(), deviceInfo.getPickStep(), true));
 	}
 	
 	public void changedClampingTypeLength() {
@@ -117,17 +232,26 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		}
 	}
 	
-	private void setClamping(final Clamping clamping) {
-		DeviceSettings settings = deviceInfo.getDeviceSettings();
-		settings.setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
-		deviceInfo.getDevice().loadDeviceSettings(settings);
-		(deviceInfo.getPickStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
-		(deviceInfo.getPutStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), clamping);
-		deviceInfo.getPutStep().setRelativeTeachedOffset(null);
-		deviceInfo.getPickStep().setRelativeTeachedOffset(null);
-		deviceInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPutStep().getProcessFlow(), deviceInfo.getPutStep(), true));
-		deviceInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPickStep().getProcessFlow(), deviceInfo.getPickStep(), true));
-		getView().selectClamping(clamping.getName());
+	//TODO - best een informatieve boodschap tonen wat wel en niet mag - WACHT TOT MERGE VAN NEW DEV INT (notificationDialog)
+	private boolean correctNbOfActiveClampingsChoosen() {
+		DevicePickSettings pickSettings = deviceInfo.getPickStep().getDeviceSettings();
+		// All chosen fixture types must be of the same family. It is thus not possible to have an active fixture 1 + 2 together with
+		// a fixture 3.
+		int fixtureTypeAmount = pickSettings.getWorkArea().getDefaultClamping().getFixtureType().nbFixtures();
+		for(Clamping clamping: pickSettings.getWorkArea().getDefaultClamping().getRelatedClampings()) {
+			if(fixtureTypeAmount != clamping.getFixtureType().nbFixtures()) {
+				return false;
+			}
+		}
+		// All chosen fixture types must be different from each other. It is thus not possible to have two active fixtures both of type fixture 1.
+		for(Clamping clamping1: pickSettings.getWorkArea().getAllActiveClampings()) {
+			for(Clamping clamping2: pickSettings.getWorkArea().getAllActiveClampings()) {
+				if(!clamping1.equals(clamping2) && clamping1.getFixtureType().equals(clamping2.getFixtureType())) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -142,16 +266,17 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		if ((pickSettings.getWorkArea() != null)
 				&& (robotPickSettings.getWorkArea() != null)
 				&& (pickSettings.getWorkArea().equals(robotPickSettings.getWorkArea()))
-				&& (pickSettings.getWorkArea().getActiveClamping() != null)
+				&& (pickSettings.getWorkArea().getDefaultClamping() != null)
 				&& (deviceSettings.getClamping(pickSettings.getWorkArea()) != null)
-				&& (deviceSettings.getClamping(pickSettings.getWorkArea()).equals(pickSettings.getWorkArea().getActiveClamping()))
+				&& (deviceSettings.getClamping(pickSettings.getWorkArea()).equals(pickSettings.getWorkArea().getDefaultClamping()))
 				&& (startCyclusSettings.getWorkArea() != null)
-				&& (startCyclusSettings.getWorkArea().getActiveClamping() != null)
+				&& (startCyclusSettings.getWorkArea().getDefaultClamping() != null)
 				&& (putSettings.getWorkArea() != null)
 				&& (robotPutSettings.getWorkArea() != null)
 				&& (putSettings.getWorkArea().equals(robotPutSettings.getWorkArea()))
-				&& (putSettings.getWorkArea().getActiveClamping() != null)
-				&& (deviceSettings.getClamping(putSettings.getWorkArea()).equals(putSettings.getWorkArea().getActiveClamping())) 
+				&& (putSettings.getWorkArea().getDefaultClamping() != null)
+				&& (deviceSettings.getClamping(putSettings.getWorkArea()).equals(putSettings.getWorkArea().getDefaultClamping()))
+				&& (correctNbOfActiveClampingsChoosen())		
 			)  {
 			return true;
 		}

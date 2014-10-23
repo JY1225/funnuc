@@ -12,7 +12,7 @@ import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
@@ -55,7 +55,7 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override public void releasePiece(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
 	@Override public void loadDeviceSettings(final DeviceSettings deviceSettings) {
 		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
-			entry.getKey().setActiveClamping(entry.getValue());
+			entry.getKey().setDefaultClamping(entry.getValue());
 		}
 	}
 	@Override public void interruptCurrentAction() { }
@@ -109,7 +109,7 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	
 	@Override
 	public Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
-		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			c.setX(c.getX() + workPieceDimensions.getWidth()/2);
 			c.setY(c.getY() + workPieceDimensions.getLength()/2);
@@ -122,12 +122,12 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	
 	@Override
 	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {	
-		return new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		return new Coordinates(workArea.getDefaultClamping().getRelativePosition());
 	}
 	
 	@Override
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
-		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			c.setX(c.getX() + workPieceDimensions.getWidth()/2);
 			c.setY(c.getY() + workPieceDimensions.getLength()/2);
@@ -146,7 +146,7 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		if (approachType.equals(ApproachType.BOTTOM)) {
-			float zSafePlane = workArea.getActiveClamping().getRelativePosition().getZ(); 
+			float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
 			zSafePlane += ((ReversalUnit) workArea.getZone().getDevice()).getStationHeight();
 			return (zSafePlane * -1);
 		} else {
@@ -155,8 +155,8 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public DeviceType getType() {
-		return DeviceType.POST_PROCESSING;
+	public EDeviceGroup getType() {
+		return EDeviceGroup.POST_PROCESSING;
 	}
 
 }

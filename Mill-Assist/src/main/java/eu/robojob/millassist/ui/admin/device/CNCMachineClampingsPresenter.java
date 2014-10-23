@@ -2,7 +2,11 @@ package eu.robojob.millassist.ui.admin.device;
 
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.external.device.EFixtureType;
+import eu.robojob.millassist.threading.ThreadManager;
+import eu.robojob.millassist.ui.RoboSoftAppFactory;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.util.Translator;
 
 public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachineClampingsView, DeviceMenuPresenter> {
 
@@ -61,24 +65,45 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 		}
 	}
 	
-	public void saveData(final String name, final float height, final String imagePath, final float x, 
-			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
-			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
-			final Clamping.Type clampingType, final Clamping.FixtureType fixtureType) {
-		if (selectedClamping != null) {
-			deviceManager.updateClamping(selectedClamping, name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-				smoothFromX, smoothFromY, smoothFromZ, fixtureType);
-		} else {
-			deviceManager.saveClamping(name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-				smoothFromX, smoothFromY, smoothFromZ, fixtureType);
-		}
+	public void clickedCopy() {
+		selectedClamping = null;
+	}
+	
+	public void deleteClamping() {
+		deviceManager.deleteClamping(selectedClamping);
 		selectedClamping = null;
 		editMode = false;
 		getView().refresh();
 	}
 	
-	public void deleteClamping() {
-		deviceManager.deleteClamping(selectedClamping);
+	void copyClamping(final float height, final String imagePath, final float x, final float y, final float z, final float w, final float p, final float r, 
+			final float smoothToX, final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
+			final Clamping.Type clampingType, final EFixtureType fixtureType) {
+		ThreadManager.submit(new Runnable() {
+
+			@Override
+			public void run() {
+				String name = RoboSoftAppFactory.getMainPresenter().askInputString(Translator.getTranslation(CNCMachineClampingsView.COPY), 
+						Translator.getTranslation(CNCMachineClampingsView.SAVE_AS_DIALOG), 
+						Translator.getTranslation(CNCMachineClampingsView.NAME));
+				if(!name.equals("")) {
+					deviceManager.saveClamping(name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
+							smoothFromX, smoothFromY, smoothFromZ, fixtureType);
+				}
+				selectedClamping = null;
+				editMode = false;
+				RoboSoftAppFactory.getMainPresenter().closeInputString(getView());
+			}
+
+		});
+	}
+	
+	void updateClamping(final String name, final float height, final String imagePath, final float x, 
+			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
+			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
+			final Clamping.Type clampingType, final EFixtureType fixtureType) {
+		deviceManager.updateClamping(selectedClamping, name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
+				smoothFromX, smoothFromY, smoothFromZ, fixtureType);
 		selectedClamping = null;
 		editMode = false;
 		getView().refresh();

@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.millassist.positioning.UserFrame;
 
 public class WorkArea {
@@ -15,20 +18,27 @@ public class WorkArea {
 	private String name;
 	private Zone zone;
 	private UserFrame userFrame;
-	private Clamping activeClamping;
+	private Clamping defaultClamping;
 	private Set<Clamping> clampings;
+	// This list contains the clampings that are currently being used by the process
+	private List<Clamping> clampingsInUse;
+	private int clampingsInUseCount;
 	private boolean inUse;
 	
-	public WorkArea(final String name, final UserFrame userFrame, final Clamping activeClamping, final Set<Clamping> clampings) {
+	private static Logger logger = LogManager.getLogger(WorkArea.class.getName());
+	
+	public WorkArea(final String name, final UserFrame userFrame, final Clamping defaultClamping, final Set<Clamping> clampings) {
 		this.name = name;
 		this.userFrame = userFrame;
-		this.activeClamping = activeClamping;
+		this.defaultClamping = defaultClamping;
 		this.clampings = clampings;
+		this.clampingsInUse = new ArrayList<Clamping>();
 		if(userFrame.getNumber() == 3) {
 			this.workAreaNr = 1;
 		} else if (userFrame.getNumber() == 4) {
 			this.workAreaNr = 2;
 		}
+		this.clampingsInUseCount = 1;
 	}
 	
 	public WorkArea(final String name, final UserFrame userFrame, final Set<Clamping> clampings) {
@@ -66,29 +76,14 @@ public class WorkArea {
 	public UserFrame getUserFrame() {
 		return userFrame;
 	}
-
+	
 	public void setUserFrame(final UserFrame userFrame) {
 		this.userFrame = userFrame;
 	}
-
-	public Clamping getActiveClamping() {
-		return activeClamping;
-	}
-
-	public void setActiveClamping(final Clamping activeClamping) {
-		this.activeClamping = activeClamping;
-	}
 	
-	public boolean inUse() {
-		return this.inUse;
-	}
 	
-	public void inUse(boolean inUse) {
-		this.inUse = inUse;
-	}
-	
-	public String toString() {
-		return "WorkArea " + name;
+	public void setNbUsedClampings(final int nbUsedClampings) {
+		this.clampingsInUseCount = nbUsedClampings;
 	}
 
 	public Set<Clamping> getClampings() {
@@ -136,13 +131,139 @@ public class WorkArea {
 		return null;
 	}
 	
+	public synchronized int getNbClampingsPerProcessThread(final int processId) {
+		int result = 0;
+		if (defaultClamping.getWorkPieceIdUsingClamping().contains(processId)) {
+			result++;
+		}
+		for (Clamping relClamping: defaultClamping.getRelatedClampings()) {
+			if(relClamping.getWorkPieceIdUsingClamping().contains(processId)) {
+				result++;
+			}
+		}
+		return result;
+	}
+	
+	public Clamping getDefaultClamping() {
+		return defaultClamping;
+	}
+	
+	public Set<Clamping> getAllActiveClampings() {
+		Set<Clamping> resultSet = new HashSet<Clamping>();
+		resultSet.add(getDefaultClamping());
+		resultSet.addAll(getDefaultClamping().getRelatedClampings());
+		return resultSet;
+	}
+	
+	public void setDefaultClamping(final Clamping defaultClamping) {
+		this.defaultClamping = defaultClamping;
+	}
+	
+	public boolean inUse() {
+		return this.inUse;
+	}
+	
+	public void inUse(boolean inUse) {
+		this.inUse = inUse;
+	}
+	
+	/**
+	 * Search for a clamping that is still available for use. In case a candidate is found, the processId
+	 * is added to the clamping. On top of that, the clamping will be added to the inUseFIFO list. 
+	 * 
+	 * @param processId
+	 * @throws NoFreeClampingInWorkareaException
+	 */
+	public synchronized void getFreeActiveClamping(int processId) throws NoFreeClampingInWorkareaException{
+		Clamping freeClamping = reserveFreeActiveClampingForProcess(processId);
+		if (clampingsInUse.size() >= clampingsInUseCount || freeClamping == null) {
+			throw new NoFreeClampingInWorkareaException();
+		}
+		clampingsInUse.add(freeClamping);
+	}
+	
+	private Clamping reserveFreeActiveClampingForProcess(int processId) {
+		if(!defaultClamping.isInUse(processId)) {
+			reserveActiveClamping(defaultClamping, processId);
+			return defaultClamping; 
+		}
+		for(Clamping clamping: getDefaultClamping().getRelatedClampings()) {
+			if(!clamping.isInUse(processId)) {
+				reserveActiveClamping(clamping, processId);
+				return clamping;
+			}
+		}
+		return null;
+	}
+	
+	private synchronized void reserveActiveClamping(Clamping clamping, int processId) {
+		logger.debug("Clamping "+ clamping.getName() + " blocked for process " + processId);
+		clamping.addWorkPieceIdUsingClamping(processId);
+	}
+	
+	/**
+	 * This method will make the first clamping that was reserved back available for use
+	 */
+	public synchronized void freeClamping(int processId) {
+		Clamping clamping = clampingsInUse.get(0);
+		logger.debug("Clamping " + clamping.getName() + " used by process " + processId + " freed up.");
+		clamping.getWorkPieceIdUsingClamping().remove(processId);
+		clampingsInUse.remove(0);
+	}
+	
+	/**
+	 * Returns the number of clampings chosen in the CNC machine configure screen. The result takes
+	 * only 1 side into account. This means that if e.g. 2 clampings are chosen, this method will 
+	 * return 2 disregarding the number of load sides (e.g. dual load).
+	 * 
+	 * @param number of sides
+	 * @return number of clampings chosen at configure time
+	 */
+	public int getNbActiveClampingsEachSide() {
+		if(getDefaultClamping() != null) {
+			return ((getDefaultClamping().getRelatedClampings().size() + 1));
+		}
+		return 0;
+	}
+	
+	/**
+	 * Get the clamping first or last reserved depending on the boolean value given. In case of put,
+	 * the parameter has to be false. Otherwise - in case of pick action - the parameter has to be
+	 * true. When we do not find a result in the clampingsInUse list, the defaultClamping will be
+	 * returned
+	 * 
+	 * @param fifo - boolean indicating FIFO or LIFO operation
+	 * @return clampingsInUse.get(first) || clampingsInUse.get(last) depending on the boolean value
+	 */
+	public Clamping getActiveClamping(boolean fifo) {
+		if (clampingsInUse.size() == 0) {
+			return getDefaultClamping();
+		} else {
+			if (fifo) {
+				return clampingsInUse.get(0);
+			} else  {
+				return clampingsInUse.get(clampingsInUse.size() - 1);
+			}
+		}
+	}
+	
+	// TODO - review - moet niet gebeuren na teaching
+	public void resetNbPossibleWPPerClamping(int nbSides) {
+		clampingsInUse.clear();
+		defaultClamping.setNbPossibleWPToStore(nbSides);
+		defaultClamping.getWorkPieceIdUsingClamping().clear();
+		for (Clamping relClamping: defaultClamping.getRelatedClampings()) {
+			relClamping.setNbPossibleWPToStore(nbSides);
+			relClamping.getWorkPieceIdUsingClamping().clear();
+		}
+	}
+	
+	public String toString() {
+		return "WorkArea " + name;
+	}
+	
 	public int getWorkAreaNr() {
 		return this.workAreaNr;
-	}
-
-	@Override
-	public WorkArea clone() {
-		return new WorkArea((this.name + "(2)") , this.userFrame, this.activeClamping, this.clampings);
 	}
 
 }

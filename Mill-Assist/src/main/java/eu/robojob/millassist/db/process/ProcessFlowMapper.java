@@ -410,10 +410,19 @@ public class ProcessFlowMapper {
 			int id = 0;
 			if (results.next()) {
 				id = results.getInt("ID");
-				PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICESETTINGS_WORKAREA_CLAMPING (DEVICESETTINGS, WORKAREA_CLAMPING) VALUES (?, ?)");
+				PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICESETTINGS_WORKAREA_CLAMPING (DEVICESETTINGS, WORKAREA_CLAMPING, ACTIVE_FL) VALUES (?, ?, ?)");
 				stmt3.setInt(1, deviceSettings.getId());
 				stmt3.setInt(2, id);
-				stmt3.executeUpdate();
+				stmt3.setBoolean(3, true);
+				for(Clamping relClamping : entry.getValue().getRelatedClampings()) {
+					stmt2.setInt(2, relClamping.getId());
+					ResultSet results2 = stmt2.executeQuery();
+					if(results2.next()) {
+						stmt3.setInt(2, results2.getInt("ID"));
+						stmt3.setBoolean(3, false);
+						stmt3.executeUpdate();
+					}
+				}
 			} else {
 				throw new IllegalStateException("Couldn't find entry for workarea: [" + entry.getKey() + "] and clamping: [" + entry.getValue() + "].");
 			}
@@ -571,17 +580,31 @@ public class ProcessFlowMapper {
 		while (results.next()) {
 			int deviceId = results.getInt("DEVICE");
 			int id = results.getInt("ID");
-			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICESETTINGS_WORKAREA_CLAMPING JOIN WORKAREA_CLAMPING ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ?");
+			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICESETTINGS_WORKAREA_CLAMPING JOIN WORKAREA_CLAMPING ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? AND DEVICESETTINGS_WORKAREA_CLAMPING.ACTIVE_FL = ?");
+			PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICESETTINGS_WORKAREA_CLAMPING JOIN WORKAREA_CLAMPING ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? AND DEVICESETTINGS_WORKAREA_CLAMPING.ACTIVE_FL = ?");
 			stmt2.setInt(1, id);
+			stmt2.setBoolean(2, true);
 			ResultSet results2 = stmt2.executeQuery();
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			Map<WorkArea, Clamping> clampings = new HashMap<WorkArea, Clamping>();
+			//Get the active clamping for this workarea
 			while (results2.next()) {
 				int workareaId = results2.getInt("WORKAREA");
 				int clampingId = results2.getInt("CLAMPING");
 				WorkArea workArea = device.getWorkAreaById(workareaId);
 				Clamping clamping = workArea.getClampingById(clampingId);
 				clampings.put(workArea, clamping);
+				//Get the related clampings for this workare
+				stmt3.setInt(1, id);
+				stmt3.setBoolean(2, false);
+				ResultSet results3 = stmt3.executeQuery();
+				while (results3.next()) {
+					workareaId = results3.getInt("WORKAREA");
+					clampingId = results3.getInt("CLAMPING");
+					workArea = device.getWorkAreaById(workareaId);
+					Clamping relClamping = workArea.getClampingById(clampingId);
+					clamping.addRelatedClamping(relClamping);
+				}
 			}
 			if (device instanceof BasicStackPlate) {
 				AbstractStackPlateDeviceSettings stackPlateSettings = getBasicStackPlateSettings(processId, id, (BasicStackPlate) device, clampings);

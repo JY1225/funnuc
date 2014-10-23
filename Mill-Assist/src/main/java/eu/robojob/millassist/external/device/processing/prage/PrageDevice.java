@@ -12,7 +12,7 @@ import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
@@ -57,7 +57,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	@Override public void releasePiece(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
 	@Override public void loadDeviceSettings(final DeviceSettings deviceSettings) {
 		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
-			entry.getKey().setActiveClamping(entry.getValue());
+			entry.getKey().setDefaultClamping(entry.getValue());
 		}
 	}
 	@Override public void interruptCurrentAction() { }
@@ -130,7 +130,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	
 	@Override
 	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
-		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			if (clampType.isChanged()) {
 				c.setR(c.getR() + clampingWidthDeltaR);
@@ -149,14 +149,14 @@ public class PrageDevice extends AbstractProcessingDevice {
 	
 	@Override
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
-		Coordinates c = new Coordinates(workArea.getActiveClamping().getRelativePosition());
+		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			if (clampType.isChanged()) {
 				c.setR(c.getR() + clampingWidthDeltaR);
 			} else {
 				c.setR(c.getR());
 			}
-			switch (workArea.getActiveClamping().getType()) {
+			switch (workArea.getDefaultClamping().getType()) {
 				case CENTRUM:
 					// no action needed
 					break;
@@ -175,7 +175,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 				case NONE:
 					throw new IllegalArgumentException("Machine clamping type can't be NONE.");
 				default:
-					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
+					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getDefaultClamping().getType());
 			}
 		} else {
 			if (clampType.isChanged()) {
@@ -183,7 +183,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 			} else {
 				c.setR(c.getR() + clampingWidthDeltaR);
 			}
-			switch (workArea.getActiveClamping().getType()) {
+			switch (workArea.getDefaultClamping().getType()) {
 			case CENTRUM:
 				// no action needed
 				break;
@@ -202,7 +202,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 			case NONE:
 				throw new IllegalArgumentException("Machine clamping type can't be NONE.");
 			default:
-				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping().getType());
+				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getDefaultClamping().getType());
 			}
 		}
 		return c;
@@ -214,8 +214,8 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public DeviceType getType() {
-		return DeviceType.PRE_PROCESSING;
+	public EDeviceGroup getType() {
+		return EDeviceGroup.PRE_PROCESSING;
 	}
 
 }

@@ -222,18 +222,18 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 		if (reversalUnit != null) {
 			getPresenter().updateUserFrames();
 			fullTxtName.setText(reversalUnit.getName());
-			Coordinates relPosition = reversalUnit.getWorkAreas().get(0).getActiveClamping().getRelativePosition();
+			Coordinates relPosition = reversalUnit.getWorkAreas().get(0).getDefaultClamping().getRelativePosition();
 			numtxtX.setText("" + relPosition.getX());
 			numtxtY.setText("" + relPosition.getY());
 			numtxtZ.setText("" + relPosition.getZ());
 			numtxtW.setText("" + relPosition.getW());
 			numtxtP.setText("" + relPosition.getP());
 			numtxtR.setText("" + relPosition.getR());
-			Coordinates smoothTo = reversalUnit.getWorkAreas().iterator().next().getActiveClamping().getSmoothToPoint();
+			Coordinates smoothTo = reversalUnit.getWorkAreas().iterator().next().getDefaultClamping().getSmoothToPoint();
 			numtxtSmoothToX.setText("" + smoothTo.getX());
 			numtxtSmoothToY.setText("" + smoothTo.getY());
 			numtxtSmoothToZ.setText("" + smoothTo.getZ());
-			Coordinates smoothFrom = reversalUnit.getWorkAreas().iterator().next().getActiveClamping().getSmoothFromPoint();
+			Coordinates smoothFrom = reversalUnit.getWorkAreas().iterator().next().getDefaultClamping().getSmoothFromPoint();
 			numtxtSmoothFromX.setText("" + smoothFrom.getX());
 			numtxtSmoothFromY.setText("" + smoothFrom.getY());
 			numtxtSmoothFromZ.setText("" + smoothFrom.getZ());

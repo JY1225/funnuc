@@ -14,7 +14,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
@@ -30,30 +30,16 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private boolean stopAction;
 	private CNCMachineAlarm cncMachineTimeout;
 	private int clampingWidthR;
-	private WayOfOperating wayOfOperating;
+	private EWayOfOperating wayOfOperating;
 	private MCodeAdapter mCodeAdapter;
 	private Map<Integer, Integer> statusMap;
-	
-	public enum WayOfOperating {
-		START_STOP(1), M_CODES(1), M_CODES_DUAL_LOAD(2);
-		
-		private int nbProcesses;
-		
-		private WayOfOperating(int nbProcesses) {
-			this.nbProcesses = nbProcesses;
-		}
-		
-		public int getNbProcesses() {
-			return this.nbProcesses;
-		}
-	};
 	
 	private static Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());
 	
 	private static final String EXCEPTION_DISCONNECTED_WHILE_WAITING = "AbstractCNCMachine.disconnectedWhileWaiting";
 	private static final String EXCEPTION_WHILE_WAITING = "AbstractCNCMachine.exceptionWhileWaiting";
 	
-	public AbstractCNCMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final int clampingWidthR) {
+	public AbstractCNCMachine(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final int clampingWidthR) {
 		super(name, zones, true);
 		this.mCodeAdapter = mCodeAdapter;
 		this.wayOfOperating = wayOfOperating;
@@ -67,15 +53,15 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.statusMap = new HashMap<Integer, Integer>();
 	}
 	
-	public AbstractCNCMachine(final String name, final WayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final int clampingWidthR) {
+	public AbstractCNCMachine(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final int clampingWidthR) {
 		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), clampingWidthR);
 	}
 	
-	public WayOfOperating getWayOfOperating() {
+	public EWayOfOperating getWayOfOperating() {
 		return wayOfOperating;
 	}
 
-	public void setWayOfOperating(final WayOfOperating wayOfOperating) {
+	public void setWayOfOperating(final EWayOfOperating wayOfOperating) {
 		this.wayOfOperating = wayOfOperating;
 	}
 	
@@ -349,8 +335,8 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public DeviceType getType() {
-		return DeviceType.CNC_MACHINE;
+	public EDeviceGroup getType() {
+		return EDeviceGroup.CNC_MACHINE;
 	}
 
 	@Override
@@ -361,7 +347,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	@Override
 	public void loadDeviceSettings(final DeviceSettings deviceSettings) {
 		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
-			getWorkAreaByName(entry.getKey().getName()).setActiveClamping(entry.getValue());
+			getWorkAreaByName(entry.getKey().getName()).setDefaultClamping(entry.getValue());
 		}
 	}
 
@@ -376,6 +362,10 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 
 	public void setClampingWidthR(final int clampingWidthR) {
 		this.clampingWidthR = clampingWidthR;
+	}
+	
+	public int getMaxNbOfProcesses() {
+		return wayOfOperating.getNbOfSides() + 1;
 	}
 	
 	public abstract boolean isUsingNewDevInt();

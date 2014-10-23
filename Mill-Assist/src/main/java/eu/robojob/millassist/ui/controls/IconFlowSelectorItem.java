@@ -7,7 +7,12 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import eu.robojob.millassist.util.UIConstants;
 
 public class IconFlowSelectorItem extends VBox {
@@ -26,13 +31,18 @@ public class IconFlowSelectorItem extends VBox {
 		
 	private String iconUrl;
 	private String name;
+	private String extraInfo;
 	private ImageView imgvwIconVw;
 	private Image imgIcon;
 	private Label lblName;
 	
-	public IconFlowSelectorItem(final int index, final String name, final String iconUrl) {
+	private boolean isSelected;
+	
+	public IconFlowSelectorItem(final int index, final String name, final String iconUrl, final String extraInfo) {
 		this.iconUrl = iconUrl;
 		this.name = name;
+		this.extraInfo = extraInfo;
+		this.isSelected = false;
 		build();
 		setSelected(false);
 		setPrefSize(WIDTH, HEIGHT);
@@ -41,7 +51,12 @@ public class IconFlowSelectorItem extends VBox {
 		setAlignment(Pos.CENTER);
 	}
 	
+	public IconFlowSelectorItem(final int index, final String name, final String iconUrl) {
+		this(index, name, iconUrl, null);
+	}
+	
 	private void build() {
+		StackPane stPane = new StackPane();		
 		this.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM);
 		String url = iconUrl;
 		if (url != null) {
@@ -54,23 +69,37 @@ public class IconFlowSelectorItem extends VBox {
 		}
 		imgvwIconVw = new ImageView(imgIcon);
 		imgvwIconVw.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM_ICON);
-		this.getChildren().add(imgvwIconVw);
+		stPane.getChildren().add(imgvwIconVw);
+		if(extraInfo != null) {
+			Text extraText = new Text(extraInfo);
+			extraText.setFont(Font.font("Open Sans Semibold", FontWeight.SEMI_BOLD, 12));
+			extraText.setFill(Color.WHITE);
+			stPane.getChildren().add(extraText);
+			StackPane.setAlignment(extraText, Pos.TOP_LEFT);
+		}
+		this.getChildren().add(stPane);
 		if (name != null) {
 			lblName = new Label(name);
 			lblName.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM_LABEL);
 			this.getChildren().add(lblName);
 		}
+		
 		this.getStyleClass().remove(CSS_CLASS_ICONFLOW_ITEM_SELECTED);
 		this.setPadding(new Insets(3, 3, 3, 3));
 	}
 
 	public void setSelected(final boolean selected) {
+		this.isSelected = selected;
 		this.getStyleClass().remove(CSS_CLASS_ICONFLOW_ITEM_SELECTED);
 		imgvwIconVw.getStyleClass().remove(CSS_CLASS_ICONFLOW_ITEM_ICON_SELECTED);
 		if (selected) {
 			this.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM_SELECTED);
 			imgvwIconVw.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM_ICON_SELECTED);
 		}
+	}
+	
+	public void setExtraInfo(final String extraInfo) {
+		this.extraInfo = extraInfo;
 	}
 
 	public String getIconUrl() {
@@ -87,6 +116,10 @@ public class IconFlowSelectorItem extends VBox {
 
 	public void setName(final String name) {
 		this.name = name;
+	}
+	
+	public boolean isSelected() {
+		return this.isSelected;
 	}
 
 }

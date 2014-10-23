@@ -6,7 +6,7 @@ import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
@@ -388,7 +388,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			return;
 		}
 		
-		if (device.getType().equals(DeviceType.POST_PROCESSING)) {
+		if (device.getType().equals(EDeviceGroup.POST_PROCESSING)) {
 			addCNCMachineCopy();
 		}
 		

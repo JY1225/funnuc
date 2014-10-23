@@ -15,12 +15,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-import eu.robojob.millassist.external.device.DeviceType;
+import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine.WayOfOperating;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarmsOccuredEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
+import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 import eu.robojob.millassist.util.Translator;
 
@@ -86,7 +86,7 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 			deviceName.getStyleClass().add(CSS_CLASS_UNKNOWN_DEVICE);
 		}
 		setImage();
-		if ((deviceInfo != null) && (deviceInfo.getDevice() != null) && (deviceInfo.getDevice().getType() == DeviceType.CNC_MACHINE)) {
+		if ((deviceInfo != null) && (deviceInfo.getDevice() != null) && (deviceInfo.getDevice().getType() == EDeviceGroup.CNC_MACHINE)) {
 			rotateTransition = new RotateTransition(Duration.millis(5000), imagePath);
 			rotateTransition.setFromAngle(0);
 			rotateTransition.setToAngle(360);
@@ -259,7 +259,7 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 		Platform.runLater(new Thread() {
 			@Override
 			public void run() {
-				if ((machine.isConnected()) && ((machine.getWayOfOperating() == WayOfOperating.M_CODES) || (machine.getWayOfOperating() == WayOfOperating.M_CODES_DUAL_LOAD))) {
+				if ((machine.isConnected()) && ((machine.getWayOfOperating() == EWayOfOperating.M_CODES) || (machine.getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD))) {
 					if (machine.getMCodeAdapter().getActiveMCodes().size() > 0) {
 						String mCodes = "GMC";
 						for (int i : machine.getMCodeAdapter().getActiveMCodes()) {
