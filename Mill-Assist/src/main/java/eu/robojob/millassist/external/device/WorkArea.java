@@ -132,11 +132,11 @@ public class WorkArea {
 	
 	public synchronized int getNbClampingsPerProcessThread(final int processId) {
 		int result = 0;
-		if (defaultClamping.getWorkPieceIdUsingClamping().contains(processId)) {
+		if (defaultClamping.getProcessIdUsingClamping().contains(processId)) {
 			result++;
 		}
 		for (Clamping relClamping: defaultClamping.getRelatedClampings()) {
-			if(relClamping.getWorkPieceIdUsingClamping().contains(processId)) {
+			if(relClamping.getProcessIdUsingClamping().contains(processId)) {
 				result++;
 			}
 		}
@@ -182,12 +182,12 @@ public class WorkArea {
 	}
 	
 	private Clamping reserveFreeActiveClampingForProcess(int processId) throws NoFreeClampingInWorkareaException {
-		if(!defaultClamping.isInUse(processId)) {
+		if (!zone.clampingInUse(defaultClamping, processId)) {
 			reserveActiveClamping(defaultClamping, processId);
 			return defaultClamping; 
 		}
 		for(Clamping clamping: getDefaultClamping().getRelatedClampings()) {
-			if(!clamping.isInUse(processId)) {
+			if (!zone.clampingInUse(clamping, processId)) {
 				reserveActiveClamping(clamping, processId);
 				return clamping;
 			}
@@ -196,8 +196,8 @@ public class WorkArea {
 	}
 	
 	private synchronized void reserveActiveClamping(Clamping clamping, int processId) {
-		logger.debug("Clamping "+ clamping.getName() + " blocked for PRC[" + processId + "]");
-		clamping.addWorkPieceIdUsingClamping(processId);
+		logger.debug("Clamping "+ clamping.getName() + " in " + this.toString() +  " blocked for PRC[" + processId + "]");
+		clamping.addProcessIdUsingClamping(processId);
 	}
 	
 	/**
@@ -205,8 +205,8 @@ public class WorkArea {
 	 */
 	public synchronized void freeClamping(int processId) {
 		Clamping clamping = clampingsInUse.get(0);
-		logger.debug("Clamping " + clamping.getName() + " used by PRC[" + processId + "] freed up.");
-		clamping.getWorkPieceIdUsingClamping().remove(processId);
+		logger.debug("Clamping " + clamping.getName() + " in " + this.toString() +  " used by PRC[" + processId + "] freed up.");
+		clamping.getProcessIdUsingClamping().remove(processId);
 		clampingsInUse.remove(0);
 	}
 	
@@ -249,10 +249,10 @@ public class WorkArea {
 	public void resetNbPossibleWPPerClamping(int nbSides) {
 		clampingsInUse.clear();
 		defaultClamping.setNbPossibleWPToStore(nbSides);
-		defaultClamping.getWorkPieceIdUsingClamping().clear();
+		defaultClamping.getProcessIdUsingClamping().clear();
 		for (Clamping relClamping: defaultClamping.getRelatedClampings()) {
 			relClamping.setNbPossibleWPToStore(nbSides);
-			relClamping.getWorkPieceIdUsingClamping().clear();
+			relClamping.getProcessIdUsingClamping().clear();
 		}
 	}
 	

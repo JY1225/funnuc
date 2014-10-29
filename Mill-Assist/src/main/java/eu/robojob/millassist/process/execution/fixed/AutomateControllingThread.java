@@ -49,11 +49,23 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 			boolean startSecond = false;
 			if (processFlow.getCurrentIndex(PROCESS_0_ID) > 0) {
 				// process has already passed some steps, check if current step is processing in machine
-				// than second process can start!
+				// then second process can start!
 				AbstractProcessStep step = processFlow.getStep(processFlow.getCurrentIndex(PROCESS_0_ID) - 1);
 				if (step instanceof PutStep) {
 					if (((PutStep) step).getDevice() instanceof AbstractCNCMachine) {
-						processFlowExecutors[PROCESS_0_ID].setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);
+						int nbActiveClamping = ((PutStep) step).getDeviceSettings().getWorkArea().getNbActiveClampingsEachSide();
+						processFlow.setCurrentIndex(PROCESS_0_ID, processFlow.getCurrentIndex(PROCESS_0_ID) - 1);
+						//Show correct status after teaching
+						processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, (PutStep) step, StatusChangedEvent.ENDED, PROCESS_0_ID));
+						if(nbActiveClamping > 1 && processFlow.getTotalAmount() > 1) {
+							processFlowExecutors[PROCESS_0_ID].setExecutionStatus(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER);
+							processFlow.setCurrentIndex(PROCESS_0_ID, 0);
+						} else {
+							processFlow.setCurrentIndex(PROCESS_0_ID, processFlow.getCurrentIndex(PROCESS_0_ID) + 1);
+							processFlowExecutors[PROCESS_0_ID].setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);	
+						}
+						processFlowExecutors[PROCESS_0_ID].incrementNbInMachine();
+						processFlowExecutors[PROCESS_0_ID].incrementNbInFlow();
 						if (processFlow.getCurrentIndex(PROCESS_1_ID) == 0) {
 							if (isConcurrentExecutionPossible()) {
 								startSecond = true;
@@ -275,6 +287,7 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 			if (processExecutor.getExecutionStatus().equals(getFirstPutState())) { 
 				processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
+				//TODO - turnInMachine here
 				processExecutor.continueExecution();
 				return;
 			}
@@ -289,23 +302,28 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 		//All pieces are currently in the flow, so finish this processExecutor
 		if (processFlow.getType().equals(Type.FIXED_AMOUNT) && !stillPieceToDo()) {
 			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.FINISHED);
+			boolean isFinished = true;
 			//Pick the next one to execute
 			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER)) {
+					isFinished = false;
 					processExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER);
 					processExecutor.continueExecution();
-					return;
+					break;
 				}
 				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE)) { 
+					isFinished = false;
 					processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
 					processExecutor.continueExecution();
-					return;
+					break;
 				}
 			}	
-			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
-				if (processExecutor.getNbWPInMachine() > 0) {
-					processExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);
-					processExecutor.continueExecution();
+			if (isFinished) {
+				for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+					if (processExecutor.getNbWPInMachine() > 0) {
+						processExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);
+						processExecutor.continueExecution();
+					}
 				}
 			}
 			processFlowExecutor.stopRunning();

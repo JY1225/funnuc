@@ -50,7 +50,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	private ComboBox<String> cbbMachine;
 	private Label lblWorkArea;
 	private ComboBox<String> cbbWorkArea;
-	private Label lblClampingName;
+//	private Label lblClampingName;
 	private IconFlowSelector ifsClamping;
 	private Label lblClampingType;
 	private Button btnLength;
@@ -70,7 +70,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	
 	private static final String DEVICE = "CNCMillingMachineConfigureView.machine";
 	private static final String WORKAREA = "CNCMillingMachineConfigureView.workArea";
-	private static final String CLAMPING = "CNCMillingMachineConfigureView.clampingName";
+//	private static final String CLAMPING = "CNCMillingMachineConfigureView.clampingName";
 	private static final String CLAMPING_TYPE = "CNCMillingMachineConfigureView.clampingType";
 	private static final String LENGTH = "CNCMillingMachineConfigureView.length";
 	private static final String WIDTH = "CNCMillingMachineConfigureView.width";
@@ -126,10 +126,10 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			}
 		});
 		getContents().add(cbbWorkArea, column++, row);
-		column = 0;
-		row++;
-		lblClampingName = new Label(Translator.getTranslation(CLAMPING));
-		getContents().add(lblClampingName, column++, row, 4, 1);
+//		column = 0;
+//		row++;
+//		lblClampingName = new Label(Translator.getTranslation(CLAMPING));
+//		getContents().add(lblClampingName, column++, row, 4, 1);
 		column = 0;
 		row++;
 		ifsClamping = new IconFlowSelector(false);
@@ -181,11 +181,11 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			logger.error(e);
 			e.printStackTrace();
 		}
-		
 	}
 	
 	@Override
 	public void refresh() {
+		hideNotification();
 		refreshMachines();
 		refreshClampingButtons();
 		refreshWorkAreas();
@@ -217,6 +217,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)
 					&& (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 				cbbWorkArea.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getName());
+				deviceInfo.getPutStep().getDeviceSettings().getWorkArea().inUse(true);
 			}
 			if (deviceInfo.getDevice().getWorkAreaNames().size() > 1 && notClonedClampings()) {
 				cbbWorkArea.setDisable(false);
@@ -286,7 +287,8 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		ifsClamping.clearItems();
 		if ((deviceInfo.getPutStep().getDeviceSettings() != null) && (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 			int itemIndex = 0;
-			for (final Clamping clamping : deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getClampings()) {
+			final WorkArea workArea = deviceInfo.getPutStep().getDeviceSettings().getWorkArea();
+			for (final Clamping clamping : workArea.getClampings()) {
 				ifsClamping.addItem(itemIndex, clamping.getName(), clamping.getImageUrl(), clamping.getFixtureType().toShortString(), new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(final MouseEvent arg0) {
@@ -300,9 +302,11 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			}
 			Clamping activeClamping = deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getDefaultClamping();
 			if (activeClamping != null) {
-				ifsClamping.setSelected(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getDefaultClamping().getName());
+				ifsClamping.setSelected(activeClamping.getName());
+				ifsClamping.setDefault(activeClamping.getName(), true);
 				for(Clamping clamping: activeClamping.getRelatedClampings()) {
 					ifsClamping.setSelected(clamping.getName());
+					ifsClamping.setDefault(clamping.getName(), false);
 				}
 			}
 		}
@@ -311,6 +315,10 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	public void selectClamping(final String clampingName) {
 		ifsClamping.setSelected(clampingName);
 		refreshClampingButtons();
+	}
+	
+	public void setDefaultClamping(final String clampingName, final boolean isDefault) {
+		ifsClamping.setDefault(clampingName, isDefault);
 	}
 	
 	public void refreshClampType() {

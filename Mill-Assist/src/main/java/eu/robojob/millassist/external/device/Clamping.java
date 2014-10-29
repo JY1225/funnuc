@@ -13,27 +13,32 @@ public class Clamping {
 			public String toString() {
 				return "Centrum";
 			}
-		}, FIXED_XP {
+		}, 
+		FIXED_XP {
 			@Override
 			public String toString() {
 				return "Fix X +";
 			}
-		}, FIXED_XM {
+		}, 
+		FIXED_XM {
 			@Override
 			public String toString() {
 				return "Fix X -";
 			}
-		}, FIXED_YP {
+		}, 
+		FIXED_YP {
 			@Override
 			public String toString() {
 				return "Fix Y +";
 			}
-		}, FIXED_YM {
+		}, 
+		FIXED_YM {
 			@Override
 			public String toString() {
 				return "Fix Y -";
 			}
-		}, NONE
+		}, 
+		NONE
 	} 
 	
 	private int id;
@@ -48,7 +53,7 @@ public class Clamping {
 	private Type type;
 	// Process ID that is currently located in the clamping - default value = -1
 	// In case of dualLoad, we can have 'two' workpieces in 'one' clamping
-	private Set<Integer> wpIdUsingClamping;
+	private Set<Integer> prcIdUsingClamping;
 	// Related clampings that are currently active for use
 	private Set<Clamping> relatedClampings;
 	// Default
@@ -63,7 +68,7 @@ public class Clamping {
 		this.smoothToPoint = smoothToPoint;
 		this.smoothFromPoint = smoothFromPoint;
 		this.imageURL = imageURL;
-		this.wpIdUsingClamping = new HashSet<Integer>();
+		this.prcIdUsingClamping = new HashSet<Integer>();
 		this.relatedClampings = new HashSet<Clamping>();
 		this.type = type;
 		this.fixtureType = fixtureType;
@@ -181,17 +186,17 @@ public class Clamping {
 		this.nbOfPossibleWPToStore = nbWPToStore;
 	}
 	
-	public synchronized Set<Integer> getWorkPieceIdUsingClamping() {
-		return this.wpIdUsingClamping;
+	public synchronized Set<Integer> getProcessIdUsingClamping() {
+		return this.prcIdUsingClamping;
 	}
 	
-	public synchronized void addWorkPieceIdUsingClamping(int id) {
-		this.wpIdUsingClamping.add(id);
+	public synchronized void addProcessIdUsingClamping(int id) {
+		this.prcIdUsingClamping.add(id);
 	}
 	
 	public synchronized boolean isInUse(int processId) {
-		if(wpIdUsingClamping.contains(processId)) 
+		if(prcIdUsingClamping.contains(processId)) 
 			return true;
-		return (wpIdUsingClamping.size() >= nbOfPossibleWPToStore);
+		return (prcIdUsingClamping.size() >= nbOfPossibleWPToStore);
 	}
 }

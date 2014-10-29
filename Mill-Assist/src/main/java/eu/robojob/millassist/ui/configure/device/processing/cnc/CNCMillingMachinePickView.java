@@ -45,6 +45,9 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	private Label lblAirblow;
 	private CheckBox cbAirblow;
 	
+	private Label lblTIM;
+	private CheckBox cbTIM;
+	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
 	private static final int MAX_INTEGER_LENGTH = 6;
@@ -55,6 +58,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	private static final String SMOOTH_Z = "CNCMillingMachinePickView.smoothZ";
 	private static final String RESET = "CNCMillingMachinePickView.reset";
 	private static final String AIRBLOW = "CNCMillingMachinePickView.airblow";
+	private static final String TIM = "CNCMillingMachinePickView.tim";
 	
 	private static Logger logger = LogManager.getLogger(CNCMillingMachinePickView.class.getName());
 		
@@ -131,6 +135,18 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		hboxAirblow.getChildren().addAll(lblAirblow, cbAirblow);
 		hboxAirblow.setSpacing(10);
 		
+		HBox hboxTIM = new HBox();
+		lblTIM = new Label(Translator.getTranslation(TIM));
+		cbTIM = new CheckBox();
+		cbTIM.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				getPresenter().changedTIM(newValue);
+			}
+		});
+		hboxTIM.getChildren().addAll(lblTIM, cbTIM);
+		hboxTIM.setSpacing(10);
+		
 		int column = 0;
 		int row = 0;
 		
@@ -145,6 +161,10 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		column = 0;
 		row++;
 		getContents().add(hboxAirblow, column++, row);
+		
+		column = 0;
+		row++;
+		getContents().add(hboxTIM, column++, row);
 				
 		refresh();
 		
@@ -154,6 +174,13 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 			if ((properties.get("robot-airblow") != null) && (properties.get("robot-airblow").equals("false"))) {
 				hboxAirblow.setVisible(false);
 				hboxAirblow.setManaged(false);
+			}
+			if ((properties.get("robot-tim") != null) && (properties.get("robot-tim").equals("true"))) {
+				hboxTIM.setVisible(true);
+				hboxTIM.setManaged(true);
+			} else {
+				hboxTIM.setVisible(false);
+				hboxTIM.setManaged(false);
 			}
 		} catch (IOException e) {
 			logger.error(e);
@@ -192,6 +219,11 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 			cbAirblow.setSelected(true);
 		} else {
 			cbAirblow.setSelected(false);
+		}
+		if (pickStep.getRobotSettings().isDoTIM()) {
+			cbTIM.setSelected(true);
+		} else {
+			cbTIM.setSelected(false);
 		}
 	}
 	

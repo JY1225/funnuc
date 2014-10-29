@@ -16,6 +16,7 @@ import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
+import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
@@ -181,6 +182,11 @@ public class ProcessFlow {
 			if (device instanceof BasicStackPlate) {
 				((BasicStackPlate) device).setLayout(((BasicStackPlate) device).getBasicLayout());
 				((BasicStackPlate) device).placeFinishedWorkPieces(processFlow.getFinishedAmount());
+			}
+			if (device instanceof AbstractCNCMachine) {
+				for (WorkArea workArea: device.getWorkAreas()) {
+					workArea.inUse(false);
+				}
 			}
 		}
 		this.processProcessFlowEvent(new ProcessChangedEvent(this));

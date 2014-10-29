@@ -10,7 +10,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
@@ -41,8 +40,6 @@ public class CNCMachineGeneralView extends GridPane {
 	private Label lblStatusVal;
 	private Label lblWayOfOperating;
 	private Label lblDevInterface;
-	private Label lblTIM;
-	private CheckBox cbTIM;
 	private RadioButton rbbWayOfOperatingStartStop;
 	private RadioButton rbbWayOfOperatingMCodes;
 	private RadioButton rbbWayOfOperatingMCodesDualLoad;
@@ -73,7 +70,6 @@ public class CNCMachineGeneralView extends GridPane {
 	private static final String NEW_DEV_INT = "CNCMachineGeneralView.newDevInterface";
 	private static final String OLD_DEV_INT = "CNCMachineGeneralView.oldDevInterface";
 	private static final String MAX_FIX = "CNCMachineGeneralView.maxFix";
-	private static final String TIM_ALLOWED = "CNCMachineGeneralView.TIMAllowed";
 	
 	private static final String CSS_CLASS_BUTTON = "form-button";
 	private static final String CSS_CLASS_BUTTON_LABEL = "btn-start-label";
@@ -108,8 +104,6 @@ public class CNCMachineGeneralView extends GridPane {
 		lblStatus = new Label(Translator.getTranslation(STATUS));
 		lblStatusVal = new Label();
 		lblNbFixtures = new Label(Translator.getTranslation(MAX_FIX));
-		lblTIM = new Label(Translator.getTranslation(TIM_ALLOWED));
-		cbTIM = new CheckBox();
 		itxtNbFix = new IntegerTextField(1);
 		spacer = new Region();
 		spacer.setPrefWidth(10);
@@ -229,9 +223,6 @@ public class CNCMachineGeneralView extends GridPane {
 		column = 0; row++;
 		add(lblDevInterface, column++, row);
 		add(vboxRadioButtonsDevIntVersion, column, row, 4, 1);
-		column = 0; row++;
-		add(lblTIM, column++, row);
-		add(cbTIM, column, row);
 	}
 	
 	public void refresh(final Set<String> userFrameNames, final AbstractCNCMachine cncMachine) {
@@ -270,7 +261,6 @@ public class CNCMachineGeneralView extends GridPane {
 		} else {
 			rbbOldDevInt.selectedProperty().set(true);
 		}
-		cbTIM.setSelected(cncMachine.getTIMAllowed());
 	}
 	
 	public void refreshStatus(final AbstractCNCMachine cncMachine) {
@@ -337,9 +327,5 @@ public class CNCMachineGeneralView extends GridPane {
 
 	public int getNbFixtures() {
 		return Integer.parseInt(itxtNbFix.getText());
-	}
-
-	public boolean getTIMAllowed() {
-		return cbTIM.isSelected();
 	}
 }

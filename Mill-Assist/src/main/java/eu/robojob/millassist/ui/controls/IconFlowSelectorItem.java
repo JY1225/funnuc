@@ -16,7 +16,10 @@ import javafx.scene.text.Text;
 import eu.robojob.millassist.util.UIConstants;
 
 public class IconFlowSelectorItem extends VBox {
-		
+	
+	private StackPane stPane;
+	private Text defText;
+	
 	private static final double IMG_WIDTH = 100;
 	private static final double IMG_HEIGHT = 90;
 	private static final double WIDTH = 120;
@@ -37,6 +40,7 @@ public class IconFlowSelectorItem extends VBox {
 	private Label lblName;
 	
 	private boolean isSelected;
+	private boolean isDefault = false;
 	
 	public IconFlowSelectorItem(final int index, final String name, final String iconUrl, final String extraInfo) {
 		this.iconUrl = iconUrl;
@@ -56,7 +60,7 @@ public class IconFlowSelectorItem extends VBox {
 	}
 	
 	private void build() {
-		StackPane stPane = new StackPane();		
+		stPane = new StackPane();		
 		this.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM);
 		String url = iconUrl;
 		if (url != null) {
@@ -75,15 +79,20 @@ public class IconFlowSelectorItem extends VBox {
 			extraText.setFont(Font.font("Open Sans Semibold", FontWeight.SEMI_BOLD, 12));
 			extraText.setFill(Color.WHITE);
 			stPane.getChildren().add(extraText);
-			StackPane.setAlignment(extraText, Pos.TOP_LEFT);
+			StackPane.setAlignment(extraText, Pos.TOP_RIGHT);
 		}
+		defText = new Text("D");
+		defText.setFont(Font.font("Open Sans Semibold", FontWeight.SEMI_BOLD, 12));
+		defText.setFill(Color.WHITE);
+		stPane.getChildren().add(defText);
+		StackPane.setAlignment(defText, Pos.TOP_LEFT);
 		this.getChildren().add(stPane);
+		setDefault(isDefault);
 		if (name != null) {
 			lblName = new Label(name);
 			lblName.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM_LABEL);
 			this.getChildren().add(lblName);
 		}
-		
 		this.getStyleClass().remove(CSS_CLASS_ICONFLOW_ITEM_SELECTED);
 		this.setPadding(new Insets(3, 3, 3, 3));
 	}
@@ -96,6 +105,11 @@ public class IconFlowSelectorItem extends VBox {
 			this.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM_SELECTED);
 			imgvwIconVw.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM_ICON_SELECTED);
 		}
+	}
+	
+	public void setDefault(final boolean isDefault) {
+		this.isDefault = isDefault;
+		defText.setVisible(isDefault);
 	}
 	
 	public void setExtraInfo(final String extraInfo) {

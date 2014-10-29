@@ -46,6 +46,7 @@ public class IconFlowSelector extends ScrollPane {
 	
 	public void addItem(final int index, final String name, final String iconUrl, final String extraInfo, final EventHandler<MouseEvent> handler) {
 		IconFlowSelectorItem item = new IconFlowSelectorItem(index, name, iconUrl, extraInfo);
+		item.setDefault(false);
 		item.addEventHandler(MouseEvent.MOUSE_CLICKED, handler);
 		items.put(index, item);
 		if (items.size() > 4) {
@@ -104,6 +105,25 @@ public class IconFlowSelector extends ScrollPane {
 			}
 		}
 		return false;
+	}
+	
+	public void setDefault(final int index, final boolean isDefault) {
+		items.get(index).setDefault(isDefault);
+	}
+	
+	public void setDefault(final String id, final boolean isDefault) {
+		IconFlowSelectorItem selectedItem = null;
+		int index = 0;
+		for (IconFlowSelectorItem item : items.values()) {
+			if(item.getName().equals(id)) {
+				selectedItem = item;
+				break;
+			}
+			index++;
+		}
+		if(selectedItem != null) {
+			setDefault(index, isDefault);
+		}
 	}
 }
 

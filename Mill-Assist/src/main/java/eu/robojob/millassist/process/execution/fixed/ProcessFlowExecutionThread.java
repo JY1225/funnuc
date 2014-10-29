@@ -446,6 +446,10 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		this.nbWPInMachine++;
 	}
 	
+	void incrementNbInFlow() {
+		this.nbWPInFlow++;
+	}
+	
 	private synchronized boolean morePutsToPerform(PutStep step) {
 		int nbActiveClamping = step.getDeviceSettings().getWorkArea().getNbActiveClampingsEachSide();
 		if (processFlow.hasReversalUnit() && nbWPReversed < nbWPInFlow && nbWPReversed > 0) {

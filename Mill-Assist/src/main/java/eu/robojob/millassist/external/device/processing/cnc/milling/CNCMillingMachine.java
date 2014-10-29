@@ -57,8 +57,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static Logger logger = LogManager.getLogger(CNCMillingMachine.class.getName());
 	
 	public CNCMillingMachine(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final SocketConnection socketConnection, final int clampingWidthR,
-			final int nbFixtures, final boolean timAllowed) {
-		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR, nbFixtures, timAllowed);
+			final int nbFixtures) {
+		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR, nbFixtures);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
 		// start monitoring thread at creation of this object

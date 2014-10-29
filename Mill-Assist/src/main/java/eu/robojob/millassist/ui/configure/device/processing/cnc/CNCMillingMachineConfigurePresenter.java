@@ -21,12 +21,16 @@ import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.util.Translator;
 
 public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<CNCMillingMachineConfigureView, CNCMillingMachineMenuPresenter> {
 
 	private DeviceInformation deviceInfo;
 	private DeviceManager deviceManager;
 	
+	private static final String SAME_TYPE = "CNCMillingMachineConfigurePresenter.sameTypeClamp";
+	private static final String DIFFERENT_FAMILY = "CNCMillingMachineConfigurePresenter.differentFamilyClamp";
+
 	private static Logger logger = LogManager.getLogger(CNCMillingMachineConfigurePresenter.class.getName());
 	
 	public CNCMillingMachineConfigurePresenter(final CNCMillingMachineConfigureView view, final DeviceInformation deviceInfo, final DeviceManager deviceManager) {
@@ -85,10 +89,12 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		if (clamping == null) {
 			throw new IllegalArgumentException("Clamping is null.");
 		}
+		getView().hideNotification();
 		if(isSelected) {
 			addClamping(clamping);
 		} else {
 			removeClamping(clamping);
+			getView().setDefaultClamping(clamping.getName(), false);
 		}
 		addProcessFlowEvent();
 	}
@@ -107,11 +113,13 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			if ((clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea()))
 					|| (clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea()))) {
 				activeClamping.addRelatedClamping(clamping);
+				getView().setDefaultClamping(clamping.getName(), false);
 				logger.debug("Related clamping " + clamping.getName() +" added.");
 			}
 		} else {
 			logger.debug("Active clamping changed to " + clamping.getName());
 			setClamping(clamping);
+			getView().setDefaultClamping(clamping.getName(), true);
 		}
 	}
 	
@@ -144,6 +152,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 				activeClamping.setRelatedClampings(new HashSet<Clamping>());
 				logger.debug("Active clamping " + activeClamping.getName() + " changed to " + toBeActiveClamping.getName());
 				setClamping(toBeActiveClamping);
+				getView().setDefaultClamping(toBeActiveClamping.getName(), true);
 			} else {
 				//Should not occur, because the request to remove the activeClamping without there being a replacement, is stopped before calling this function
 				throw new IllegalArgumentException("Tried to remove the active clamping without there being a replacement clamping.");
@@ -232,7 +241,6 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		}
 	}
 	
-	//TODO - best een informatieve boodschap tonen wat wel en niet mag - WACHT TOT MERGE VAN NEW DEV INT (notificationDialog)
 	private boolean correctNbOfActiveClampingsChoosen() {
 		DevicePickSettings pickSettings = deviceInfo.getPickStep().getDeviceSettings();
 		// All chosen fixture types must be of the same family. It is thus not possible to have an active fixture 1 + 2 together with
@@ -240,6 +248,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		int fixtureTypeAmount = pickSettings.getWorkArea().getDefaultClamping().getFixtureType().nbFixtures();
 		for(Clamping clamping: pickSettings.getWorkArea().getDefaultClamping().getRelatedClampings()) {
 			if(fixtureTypeAmount != clamping.getFixtureType().nbFixtures()) {
+				getView().showNotification(Translator.getTranslation(DIFFERENT_FAMILY), eu.robojob.millassist.ui.general.NotificationBox.Type.WARNING);
 				return false;
 			}
 		}
@@ -247,6 +256,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		for(Clamping clamping1: pickSettings.getWorkArea().getAllActiveClampings()) {
 			for(Clamping clamping2: pickSettings.getWorkArea().getAllActiveClampings()) {
 				if(!clamping1.equals(clamping2) && clamping1.getFixtureType().equals(clamping2.getFixtureType())) {
+					getView().showNotification(Translator.getTranslation(SAME_TYPE), eu.robojob.millassist.ui.general.NotificationBox.Type.WARNING);
 					return false;
 				}
 			}

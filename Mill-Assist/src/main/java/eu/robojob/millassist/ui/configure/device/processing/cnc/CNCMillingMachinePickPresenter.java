@@ -62,6 +62,10 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 	public void changedAirblow(final boolean airblow) {
 		pickStep.getRobotSettings().setDoMachineAirblow(airblow);
 	}
+	
+	public void changedTIM(final boolean turnInMachine) {
+		pickStep.getRobotSettings().setDoTIM(turnInMachine);
+	}
 
 	@Override
 	public boolean isConfigured() {

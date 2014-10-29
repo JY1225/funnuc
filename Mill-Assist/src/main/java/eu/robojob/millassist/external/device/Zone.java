@@ -91,4 +91,44 @@ public class Zone {
 	public int getZoneNr() {
 		return this.zoneNr;
 	}
+	
+	/**
+	 * Check whether all workarea's in the zone have the same number of clampings selected
+	 * 
+	 * @return true in case all workarea's have the same amount of clampings selected. False otherwise
+	 */
+	public boolean clampingSelectionCorrect() {
+		int nbClampingsChosen = -1;
+		for (WorkArea workArea: workAreas) {
+			if (workArea.inUse()) {
+				if (nbClampingsChosen == -1) {
+					nbClampingsChosen = workArea.getNbActiveClampingsEachSide();
+				} else if (workArea.getNbActiveClampingsEachSide() != nbClampingsChosen) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Check whether the clamping that we want to use is not reserved by another workArea. This can be 
+	 * the case if we work with a reversalUnit. Because 2 CNC machines are created which are physically
+	 * the same machine, the clampings of the two machines needs to be considered as one.
+	 * 
+	 * @param currentWorkArea
+	 * @param clamping
+	 * @param processId
+	 * @return
+	 */
+	public boolean clampingInUse(Clamping clamping, int processId) {
+		for (WorkArea workArea: workAreas) {
+			for (Clamping tmpClamp: workArea.getAllActiveClampings()) {
+				if (tmpClamp.getId() == clamping.getId() && tmpClamp.isInUse(processId)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

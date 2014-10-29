@@ -53,7 +53,6 @@ public class RobotMonitoringThread implements Runnable, MonitoringThread {
 								for (RobotAlarm alarm : prevAlarmsBuffer) {
 									if (alarm.getId() == RobotAlarm.FAULT_LED) {
 										logger.debug("No more alarms (previously: " + prevAlarmsBuffer + "), so sending continue command!");
-										robot.continueProgram();
 										break;
 									}
 								}

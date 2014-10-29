@@ -79,7 +79,6 @@ public class TeachOptimizedThread extends TeachThread {
 				initializeSteps();
 				Coordinates relTeachedOffsetFinishedWp = null;
 				// before doing this, we fake the gripper holding a workpiece
-				System.out.println(pickFromMachineStep.getRobotSettings());
 				putOnStackingDeviceStep.getRobotSettings().getGripperHead().getGripper().setWorkPiece(pickFromMachineStep.getRobotSettings().getWorkPiece());
 				relTeachedOffsetFinishedWp = getFinishedWorkPieceTeachedOffset(putOnStackingDeviceStep);
 				//TODO review if this offset needs formatting (depending on clamp manner...)
@@ -112,6 +111,7 @@ public class TeachOptimizedThread extends TeachThread {
 						//FIXME test and take into account clamping type!!
 					} else if (step.equals(putInMachineStep)) {
 						//putInMachineStep.setRelativeTeachedOffset(null);
+						putInMachineStep.getDevice().getWorkAreas().get(0).getFreeActiveClamping(PROCESS_0_ID);
 						putInMachineStep.getRobotSettings().setFreeAfter(true);
 						putInMachineStep.executeStepTeached(PROCESS_0_ID, this);
 						putInMachineStep.finalizeStep(this);

@@ -240,5 +240,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 			btnAfterClamp.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		}
 	}
+	
+	
 
 }

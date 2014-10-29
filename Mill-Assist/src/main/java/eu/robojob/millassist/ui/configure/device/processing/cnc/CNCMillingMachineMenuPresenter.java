@@ -1,8 +1,11 @@
 package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
+import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.ui.configure.device.AbstractDeviceMenuPresenter;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.util.Translator;
 
 public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter {
 
@@ -10,6 +13,8 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 	private CNCMillingMachinePickPresenter cncMillingMachinePickPresenter;
 	private CNCMillingMachinePutPresenter cncMillingMachinePutPresenter;
 	private CNCMillingMachineWorkPiecePresenter cncMillingMachineWorkPiecePresenter;
+	
+	private static final String DIFFERENT_AMOUNT = "CNCMillingMachineMenuPresenter.differentAmount";
 		
 	public CNCMillingMachineMenuPresenter(final CNCMillingMachineMenuView view, final DeviceInformation deviceInfo, final CNCMillingMachineConfigurePresenter cncMillingMachineConfigurePresenter, 
 			final CNCMillingMachinePickPresenter cncMillingMachinePickPresenter, final CNCMillingMachinePutPresenter cncMillingMachinePutPresenter,
@@ -61,7 +66,18 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 
 	@Override
 	public boolean isConfigured() {
-		return cncMillingMachineConfigurePresenter.isConfigured() && cncMillingMachinePickPresenter.isConfigured() && cncMillingMachinePutPresenter.isConfigured() && cncMillingMachineWorkPiecePresenter.isConfigured();
+		boolean isConfigured = true;
+		for (Zone zone: getDeviceInformation().getDevice().getZones()) {
+			if (!zone.clampingSelectionCorrect()) {
+				cncMillingMachineConfigurePresenter.getView().showNotification(Translator.getTranslation(DIFFERENT_AMOUNT), Type.WARNING);
+				return false;
+			}
+		}
+		return cncMillingMachineConfigurePresenter.isConfigured() 
+			&& cncMillingMachinePickPresenter.isConfigured() 
+			&& cncMillingMachinePutPresenter.isConfigured() 
+			&& cncMillingMachineWorkPiecePresenter.isConfigured() 
+			&& isConfigured;
 	}
 
 	@Override

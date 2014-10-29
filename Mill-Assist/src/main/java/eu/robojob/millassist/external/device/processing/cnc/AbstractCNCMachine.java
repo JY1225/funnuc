@@ -31,7 +31,6 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private CNCMachineAlarm cncMachineTimeout;
 	private int clampingWidthR;
 	private int nbFixtures;
-	private boolean timAllowed;
 	private EWayOfOperating wayOfOperating;
 	private MCodeAdapter mCodeAdapter;
 	private Map<Integer, Integer> statusMap;
@@ -42,7 +41,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private static final String EXCEPTION_WHILE_WAITING = "AbstractCNCMachine.exceptionWhileWaiting";
 	
 	public AbstractCNCMachine(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final int clampingWidthR,
-			final int nbFixtures, final boolean timAllowed) {
+			final int nbFixtures) {
 		super(name, zones, true);
 		this.mCodeAdapter = mCodeAdapter;
 		this.wayOfOperating = wayOfOperating;
@@ -54,12 +53,11 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.stopAction = false;
 		this.clampingWidthR = clampingWidthR;
 		this.nbFixtures = nbFixtures;
-		this.timAllowed = timAllowed;
 		this.statusMap = new HashMap<Integer, Integer>();
 	}
 	
 	public AbstractCNCMachine(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final int clampingWidthR) {
-		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), clampingWidthR, 1, false);
+		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), clampingWidthR, 1);
 	}
 	
 	public EWayOfOperating getWayOfOperating() {
@@ -383,15 +381,6 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	public void setNbFixtures(final int nbFixtures) {
 		this.nbFixtures = nbFixtures;
-	}
-	
-	//Turn in machine
-	public boolean getTIMAllowed() {
-		return this.timAllowed;
-	}
-	
-	public void setTIMAllowed(final boolean timAllowed) {
-		this.timAllowed = timAllowed;
 	}
 	
 }
