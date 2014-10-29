@@ -81,7 +81,6 @@ public class WorkArea {
 		this.userFrame = userFrame;
 	}
 	
-	
 	public void setNbUsedClampings(final int nbUsedClampings) {
 		this.clampingsInUseCount = nbUsedClampings;
 	}
@@ -176,13 +175,13 @@ public class WorkArea {
 	 */
 	public synchronized void getFreeActiveClamping(int processId) throws NoFreeClampingInWorkareaException{
 		Clamping freeClamping = reserveFreeActiveClampingForProcess(processId);
-		if (clampingsInUse.size() >= clampingsInUseCount || freeClamping == null) {
+		if (clampingsInUse.size() >= clampingsInUseCount) {
 			throw new NoFreeClampingInWorkareaException();
 		}
 		clampingsInUse.add(freeClamping);
 	}
 	
-	private Clamping reserveFreeActiveClampingForProcess(int processId) {
+	private Clamping reserveFreeActiveClampingForProcess(int processId) throws NoFreeClampingInWorkareaException {
 		if(!defaultClamping.isInUse(processId)) {
 			reserveActiveClamping(defaultClamping, processId);
 			return defaultClamping; 
@@ -193,11 +192,11 @@ public class WorkArea {
 				return clamping;
 			}
 		}
-		return null;
+		throw new NoFreeClampingInWorkareaException();
 	}
 	
 	private synchronized void reserveActiveClamping(Clamping clamping, int processId) {
-		logger.debug("Clamping "+ clamping.getName() + " blocked for process " + processId);
+		logger.debug("Clamping "+ clamping.getName() + " blocked for PRC[" + processId + "]");
 		clamping.addWorkPieceIdUsingClamping(processId);
 	}
 	
@@ -206,7 +205,7 @@ public class WorkArea {
 	 */
 	public synchronized void freeClamping(int processId) {
 		Clamping clamping = clampingsInUse.get(0);
-		logger.debug("Clamping " + clamping.getName() + " used by process " + processId + " freed up.");
+		logger.debug("Clamping " + clamping.getName() + " used by PRC[" + processId + "] freed up.");
 		clamping.getWorkPieceIdUsingClamping().remove(processId);
 		clampingsInUse.remove(0);
 	}
@@ -216,7 +215,6 @@ public class WorkArea {
 	 * only 1 side into account. This means that if e.g. 2 clampings are chosen, this method will 
 	 * return 2 disregarding the number of load sides (e.g. dual load).
 	 * 
-	 * @param number of sides
 	 * @return number of clampings chosen at configure time
 	 */
 	public int getNbActiveClampingsEachSide() {

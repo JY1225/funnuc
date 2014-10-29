@@ -187,12 +187,12 @@ public class ProcessFlow {
 		this.setChangesSinceLastSave(false);
 	}
 	
-	public int getCurrentIndex(final int workpieceId) {
-		return currentIndices.get(workpieceId);
+	public int getCurrentIndex(final int processId) {
+		return currentIndices.get(processId);
 	}
 	
-	public void setCurrentIndex(final int workpieceId, final int index) {
-		currentIndices.put(workpieceId, index);
+	public void setCurrentIndex(final int processId, final int index) {
+		currentIndices.put(processId, index);
 	}
 	
 	public Map<AbstractDevice, DeviceSettings> getDeviceSettings() {
@@ -568,6 +568,15 @@ public class ProcessFlow {
 			}
 		}
 		return false;
+	}
+	
+	public int getNbClampingsChosen() {
+		for (AbstractDevice device: getDevices()) {
+			if (device instanceof AbstractCNCMachine) {
+				return device.getWorkAreas().get(0).getNbActiveClampingsEachSide();
+			}
+		}
+		return 1;
 	}
 
 	public ClampingManner getClampingType() {

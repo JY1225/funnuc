@@ -47,9 +47,11 @@ public class Clamping {
 	private String imageURL;
 	private Type type;
 	// Process ID that is currently located in the clamping - default value = -1
+	// In case of dualLoad, we can have 'two' workpieces in 'one' clamping
 	private Set<Integer> wpIdUsingClamping;
 	// Related clampings that are currently active for use
 	private Set<Clamping> relatedClampings;
+	// Default
 	private int nbOfPossibleWPToStore = 1;
 	
 	public Clamping(final Type type, final String name, final float defaultHeight, final Coordinates relativePosition, final Coordinates smoothToPoint,

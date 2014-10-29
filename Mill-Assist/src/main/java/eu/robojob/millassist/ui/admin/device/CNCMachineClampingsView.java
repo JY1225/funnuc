@@ -130,6 +130,11 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private static final String CLAMPING_TYPE_FIXED_YM = "Fix Y -";
 	
 	public CNCMachineClampingsView() {
+		this(null);
+	}
+	
+	public CNCMachineClampingsView(final DeviceManager deviceManager) {
+		this.deviceManager = deviceManager;
 		build();
 	}
 	
@@ -232,7 +237,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		cbbFixtureType.setPrefSize(125, UIConstants.COMBO_HEIGHT);
 		cbbFixtureType.setMinSize(125, UIConstants.COMBO_HEIGHT);
 		for (EFixtureType fixType: EFixtureType.values()) {
-			if(fixType != EFixtureType.DEFAULT)
+			if(fixType != EFixtureType.DEFAULT && fixType.getHighestNbOfFixtureUsed() <= deviceManager.getCNCMachines().iterator().next().getNbFixtures())
 				cbbFixtureType.getItems().add(fixType.toString());
 		}
 		cbbFixtureType.setVisibleRowCount(5);

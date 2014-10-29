@@ -1,6 +1,5 @@
 package eu.robojob.millassist.external.device.processing.cnc.milling;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -55,16 +54,13 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	
 	private static Logger logger = LogManager.getLogger(CNCMillingMachineDevIntv2.class.getName());
 	
-	public CNCMillingMachineDevIntv2(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final SocketConnection socketConnection, final int clampingWidthR) {
-		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR);
+	public CNCMillingMachineDevIntv2(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final SocketConnection socketConnection, final int clampingWidthR,
+			final int nbFixtures, final boolean timAllowed) {
+		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR, nbFixtures, timAllowed);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 		CNCMachineMonitoringThreadDevIntv2 cncMachineMonitoringThread = new CNCMachineMonitoringThreadDevIntv2(this);
 		// start monitoring thread at creation of this object
 		ThreadManager.submit(cncMachineMonitoringThread);
-	}
-	
-	public CNCMillingMachineDevIntv2(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final SocketConnection socketConnection, final int clampingWidthR) {
-		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), socketConnection, clampingWidthR);
 	}
 	
 	@Override
@@ -157,6 +153,11 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	
 	@Override
 	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+		// check work area
+		for(WorkArea wa: getWorkAreas()) {
+			wa.resetNbPossibleWPPerClamping(getWayOfOperating().getNbOfSides());
+			wa.setNbUsedClampings(getWayOfOperating().getNbOfSides() * wa.getNbActiveClampingsEachSide());
+		}
 		//FIXME review! potential problems with reset in double processflow execution
 		clearIndications();		
 		if ((getWayOfOperating() == EWayOfOperating.M_CODES) || (getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD)) {
@@ -505,7 +506,8 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 				int[] registers = {command};
 				cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
 				Thread.sleep(500);
-				if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 2) &&
+				int nbActiveClampings = pickSettings.getDevice().getWorkAreas().get(0).getNbActiveClampingsEachSide();
+				if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - (nbActiveClampings + 1)) &&
 						(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) {
 					if (!pickSettings.getWorkPieceType().equals(WorkPiece.Type.HALF_FINISHED)) {
 						// last but one work piece: no upcoming put, but we wait for the upcoming LOAD M-code and confirm it

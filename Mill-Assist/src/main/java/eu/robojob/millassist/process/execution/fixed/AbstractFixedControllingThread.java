@@ -83,14 +83,29 @@ public abstract class AbstractFixedControllingThread implements Runnable {
 		return isConcurrentExecutionPossible;
 	}
 	
-	public final int getNbConcurrentInMachine() {
+	/**
+	 * Calculate the number of processes in the machine that can process at the same time. In case of 
+	 * dual load we will thus have 2. In other cases, the default is 1. 
+	 * 
+	 * @return 
+	 * 		Number of concurrent processes in machine. The default is 1. In case of dual load, the 
+	 * default is 2.
+	 */
+	public final int getNbConcurrentProcessesInMachine() {
 		if (isConcurrentExecutionPossible) {
 			return (nbProcesses - 1);
 		} 
 		return nbProcesses;
 	}
 	
-	protected final int getNbInFlow() {
+	final int getMaxNbInFlow() {
+		if (isConcurrentExecutionPossible) {
+			return (getNbConcurrentProcessesInMachine()*processFlow.getNbClampingsChosen() + 1);
+		} 
+		return getNbConcurrentProcessesInMachine()*processFlow.getNbClampingsChosen();
+	}
+	
+	protected final int getTotalNbWPInFlow() {
 		int result = 0;
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 			result += processExecutor.getNbInFlow();
@@ -98,8 +113,8 @@ public abstract class AbstractFixedControllingThread implements Runnable {
 		return result;
 	}
 	
-	protected final boolean stillPieceToDo() {
-		return (processFlow.getTotalAmount() - processFlow.getFinishedAmount() - getNbInFlow() > 0);
+	final boolean stillPieceToDo() {
+		return (processFlow.getTotalAmount() - processFlow.getFinishedAmount() - getTotalNbWPInFlow() > 0);
 	}
 	
 	protected abstract boolean isFreePlaceInMachine();
@@ -145,7 +160,8 @@ public abstract class AbstractFixedControllingThread implements Runnable {
 	 */
 	abstract void notifyWaitingBeforePutInMachine(final ProcessFlowExecutionThread processFlowExecutor);
 	
-	abstract void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor);
+	abstract void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor, final boolean moreToPut,
+			final int nbActiveClampings, final int nbFilled);
 	
 	abstract void notifyNoWorkPiecesPresent(final ProcessFlowExecutionThread processFlowExecutor);
 	

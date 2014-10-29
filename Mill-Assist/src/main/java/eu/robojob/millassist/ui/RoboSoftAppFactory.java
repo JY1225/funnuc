@@ -1,7 +1,6 @@
 package eu.robojob.millassist.ui;
 
 import eu.robojob.millassist.external.device.DeviceManager;
-import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.external.robot.RobotManager;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
 import eu.robojob.millassist.process.ProcessFlow;
@@ -291,13 +290,9 @@ public final class RoboSoftAppFactory {
 		return teachProcessFlowPresenter;
 	}
 	
-	//FIXME - ULTIMATE FIX
 	private static AutomateProcessFlowPresenter getAutomateProcessFlowPresenter() {
 		if (automateProcessFlowPresenter == null) {
-			AutomateProcessFlowView processFlowView = new AutomateProcessFlowView(2);
-			if (deviceManager.getCNCMachines().iterator().next().getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD) {
-				processFlowView = new AutomateProcessFlowView(3);
-			}
+			AutomateProcessFlowView processFlowView = new AutomateProcessFlowView(deviceManager.getCNCMachines().iterator().next().getWayOfOperating().getNbOfSides() + 1);
 			automateProcessFlowPresenter = new AutomateProcessFlowPresenter(processFlowView, getAutomateDeviceMenuFactory());
 		}
 		return automateProcessFlowPresenter;
@@ -429,7 +424,7 @@ public final class RoboSoftAppFactory {
 	
 	private static CNCMachineClampingsPresenter getCNCMachineClampingsPresenter() {
 		if (cncMachineClampingsPresenter == null) {
-			CNCMachineClampingsView view = new CNCMachineClampingsView();
+			CNCMachineClampingsView view = new CNCMachineClampingsView(deviceManager);
 			cncMachineClampingsPresenter = new CNCMachineClampingsPresenter(view, deviceManager);
 		}
 		return cncMachineClampingsPresenter;

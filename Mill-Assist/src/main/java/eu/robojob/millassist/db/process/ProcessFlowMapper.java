@@ -414,6 +414,7 @@ public class ProcessFlowMapper {
 				stmt3.setInt(1, deviceSettings.getId());
 				stmt3.setInt(2, id);
 				stmt3.setBoolean(3, true);
+				stmt3.executeUpdate();
 				for(Clamping relClamping : entry.getValue().getRelatedClampings()) {
 					stmt2.setInt(2, relClamping.getId());
 					ResultSet results2 = stmt2.executeQuery();
@@ -580,8 +581,10 @@ public class ProcessFlowMapper {
 		while (results.next()) {
 			int deviceId = results.getInt("DEVICE");
 			int id = results.getInt("ID");
-			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICESETTINGS_WORKAREA_CLAMPING JOIN WORKAREA_CLAMPING ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? AND DEVICESETTINGS_WORKAREA_CLAMPING.ACTIVE_FL = ?");
-			PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICESETTINGS_WORKAREA_CLAMPING JOIN WORKAREA_CLAMPING ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? AND DEVICESETTINGS_WORKAREA_CLAMPING.ACTIVE_FL = ?");
+			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICESETTINGS_WORKAREA_CLAMPING JOIN WORKAREA_CLAMPING ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID "
+					+ "WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? AND DEVICESETTINGS_WORKAREA_CLAMPING.ACTIVE_FL = ?");
+			PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICESETTINGS_WORKAREA_CLAMPING JOIN WORKAREA_CLAMPING ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID "
+					+ "WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? AND DEVICESETTINGS_WORKAREA_CLAMPING.ACTIVE_FL = ? AND WORKAREA_CLAMPING.WORKAREA = ?");
 			stmt2.setInt(1, id);
 			stmt2.setBoolean(2, true);
 			ResultSet results2 = stmt2.executeQuery();
@@ -597,11 +600,10 @@ public class ProcessFlowMapper {
 				//Get the related clampings for this workare
 				stmt3.setInt(1, id);
 				stmt3.setBoolean(2, false);
+				stmt3.setInt(3, workareaId);
 				ResultSet results3 = stmt3.executeQuery();
 				while (results3.next()) {
-					workareaId = results3.getInt("WORKAREA");
 					clampingId = results3.getInt("CLAMPING");
-					workArea = device.getWorkAreaById(workareaId);
 					Clamping relClamping = workArea.getClampingById(clampingId);
 					clamping.addRelatedClamping(relClamping);
 				}

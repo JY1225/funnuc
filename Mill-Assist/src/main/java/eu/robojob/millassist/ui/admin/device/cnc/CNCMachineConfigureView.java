@@ -229,4 +229,12 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	public List<String> getRobotServiceOutputNames() {
 		return cncMachineMCodeView.getRobotServiceOutputNames();
 	}
+
+	public int getNbFixtures() {
+		return cncMachineGeneralView.getNbFixtures();
+	}
+
+	public boolean getTIMAllowed() {
+		return cncMachineGeneralView.getTIMAllowed();
+	}
 }

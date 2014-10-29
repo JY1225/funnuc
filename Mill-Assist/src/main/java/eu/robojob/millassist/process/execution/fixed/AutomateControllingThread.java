@@ -110,6 +110,13 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 				return;
 			}
 		}
+		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+			if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) {
+				processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
+				processExecutor.continueExecution();
+				return;
+			}
+		}
 		processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER);
 		processFlowExecutor.continueExecution();
 	}
@@ -150,33 +157,54 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 	}
 
 	@Override
-	synchronized void notifyPutInMachineFinished(ProcessFlowExecutionThread processFlowExecutor) {
-		logger.info("Put in machine finished.");
-		processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);
-		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
-			if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) { 
-				processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
-				processExecutor.continueExecution();
+	synchronized void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor, final boolean moreToPut,
+			final int nbActiveClampings, final int nbFilled) {
+		// This processFlow has no more pieces to put in the machine - processing can start once the other processflow has cleared the clampings
+		if(!moreToPut) {
+			logger.info("Put in machine finished.");
+			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);
+			// Test whether all are filled by this process before we can start processing. If this is false, it could be that this side is still
+			// occupied by (finished) workpieces from another executor
+			boolean isContinuing = false;
+			if(nbActiveClampings == nbFilled) {
+				//No need to return, because processing will start
+				processFlowExecutor.continueExecution();
+				isContinuing = true;
+			}
+			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) { 
+					processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
+					processExecutor.continueExecution();
+					return;
+				}
+			}
+			//start a new process - we do not have to check for concurrentProcessing because we have only created the max nb of processes possible at init (taking into account concurrentExecution)
+			if (startNewProcess()) {
 				return;
 			}
-		}
-		//start a new process - we do not have to check for concurrentProcessing since we have done this at init
-		if (startNewProcess()) {
-			return;
-		}
-		//If all processes are already running, check which one can execute next
-		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
-			if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER)) { 
-				processExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER);
-				processExecutor.continueExecution();
-				return;
+			//If all processes are already running, check which one can execute next
+			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER)) { 
+					processExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_FOR_WORKPIECES_STACKER);
+					processExecutor.continueExecution();
+					return;
+				}
 			}
-		}
-		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
-			if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_FOR_PICK_FROM_STACKER)) { 
-				processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
-				processExecutor.continueExecution();
-				return;
+			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_FOR_PICK_FROM_STACKER)) { 
+					processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
+					processExecutor.continueExecution();
+					return;
+				}
+			}
+			if (!isContinuing) {
+				processFlowExecutor.continueExecution();
+			}
+			try {
+				processFlow.getRobots().iterator().next().moveToHome();
+			} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+				e.printStackTrace();
+				logger.error(e);
 			}
 		}
 	}
@@ -223,6 +251,13 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 	synchronized void notifyWaitingBeforePickFromMachine(ProcessFlowExecutionThread processFlowExecutor) {
 		processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE);
 		if (isRobotFree()) {
+			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER)) { 
+					processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
+					processExecutor.continueExecution();
+					return;
+				}
+			}
 			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
 			processFlowExecutor.continueExecution();
 		}
@@ -251,7 +286,7 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 	@Override
 	synchronized void notifyProcessFlowFinished(ProcessFlowExecutionThread processFlowExecutor) {
 		mainProcessFlowId = (processFlowExecutor.getProcessId() + 1) % (nbProcesses);
-		//All piece are currently in the flow, so finish this processExecutor
+		//All pieces are currently in the flow, so finish this processExecutor
 		if (processFlow.getType().equals(Type.FIXED_AMOUNT) && !stillPieceToDo()) {
 			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.FINISHED);
 			//Pick the next one to execute
@@ -266,7 +301,13 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 					processExecutor.continueExecution();
 					return;
 				}
-			}			
+			}	
+			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+				if (processExecutor.getNbWPInMachine() > 0) {
+					processExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);
+					processExecutor.continueExecution();
+				}
+			}
 			processFlowExecutor.stopRunning();
 			//All workpieces are done, so also stop this thread
 			if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
@@ -302,12 +343,11 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 	}
 
 	@Override
-	synchronized protected boolean isFreePlaceInMachine() {
-		return (getNbInMachine() < getNbConcurrentInMachine());
+	protected boolean isFreePlaceInMachine() {
+		return (getNbProcessesInMachine() < getNbConcurrentProcessesInMachine());
 	}
 	
-	
-	protected synchronized int getNbInMachine() {
+	protected synchronized int getNbProcessesInMachine() {
 		int nbInMachine = 0;
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 			if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.PROCESSING_IN_MACHINE)) {

@@ -14,7 +14,7 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 	@Override
 	synchronized void notifyWaitingBeforePickFromStacker(final ProcessFlowExecutionThread processFlowExecutor) {
 		processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER);
-		//Test for dualLoad whether we can continue with pick from stacker
+		//Test for dualLoad whether we can continue with pick from stacker - if first processExecutor already went through the whole cycle	
 		boolean processingBeforeRev = false;
 		boolean processingAfterRev = false;
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
@@ -29,10 +29,17 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 			processFlowExecutor.continueExecution();
 			return;
 		}
+		if (getTotalNbWPInFlow() > getMaxNbInFlow()) {
+			return;
+		}
+		int reversalCount = 0;
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 			//Only allow other process to continue if we are at the second CNC processing cycle
-			if (isInReversalCycle(processExecutor) && (getNbInFlow() > getNbConcurrentInMachine()))
-				return;
+			if (isInReversalCycle(processExecutor))
+				reversalCount++;
+		}
+		if (reversalCount >= getNbConcurrentProcessesInMachine()) {
+			return;
 		}
 		super.notifyWaitingBeforePickFromStacker(processFlowExecutor);
 	}
@@ -50,34 +57,47 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 	}
 	
 	@Override
-	synchronized void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor) {
-		logger.info("Put in machine finished.");
-		if (processFlowExecutor.needsReversal()) {
-			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_BEFORE_REVERSAL);
-			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
-				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) { 
-					processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
-					processExecutor.continueExecution();
-					return;
+	synchronized void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor, final boolean moreToPut,
+			final int nbActiveClampings, final int nbFilled) {
+		if (!moreToPut) {
+			logger.info("Put in machine finished.");
+			if (processFlowExecutor.needsReversal()) {
+				processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_BEFORE_REVERSAL);
+				// Test whether all are filled by this process before we can start processing. If this is false, it could be that this side is still
+				// occupied by (finished) workpieces from another executor
+				boolean isContinuing = false;
+				if(nbActiveClampings == nbFilled) {
+					processFlowExecutor.continueExecution();
+					isContinuing = true;
 				}
-			}
-			if (getNbInFlow() < getNbConcurrentInMachine()) {
-				startNewProcess();
-			}
-			try {
-				processFlow.getRobots().iterator().next().moveToHome();
-			} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
-				e.printStackTrace();
-				logger.error(e);
-			}
-		} else {
-			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);
-			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
-				if (isInReversalCycle(processExecutor)) {
-					return;
+				for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+					if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_AFTER_PICK_FROM_MACHINE)) { 
+						processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
+						processExecutor.continueExecution();
+						return;
+					}
 				}
+				if (getTotalNbWPInFlow() < (getNbConcurrentProcessesInMachine()*processFlow.getNbClampingsChosen())) {
+					startNewProcess();
+				}
+				if (!isContinuing) {
+					processFlowExecutor.continueExecution();
+				}
+				try {
+					processFlow.getRobots().iterator().next().moveToHome();
+				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
+			} else {
+				processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);
+				processFlowExecutor.continueExecution();
+				for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+					if (isInReversalCycle(processExecutor))
+						return;
+				}
+				super.notifyPutInMachineFinished(processFlowExecutor, moreToPut, nbActiveClampings, nbFilled);
 			}
-			super.notifyPutInMachineFinished(processFlowExecutor);
 		}
 	}
 	
@@ -110,7 +130,7 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 	}
 	
 	@Override
-	protected synchronized int getNbInMachine() {
+	protected synchronized int getNbProcessesInMachine() {
 		int nbInMachine = 0;
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 			if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.PROCESSING_IN_MACHINE) || isInReversalCycle(processExecutor)) {

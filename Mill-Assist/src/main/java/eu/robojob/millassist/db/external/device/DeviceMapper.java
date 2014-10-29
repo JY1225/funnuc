@@ -5,10 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import eu.robojob.millassist.db.ConnectionManager;
@@ -49,15 +47,12 @@ public class DeviceMapper {
 	private static final int CLAMPING_TYPE_FIXED_YP = 5;
 	private static final int CLAMPING_TYPE_FIXED_YM = 6;
 	
-	private Map<Integer, Clamping> clampingsByIdMap;
-	
 	private GeneralMapper generalMapper;
 	private ConnectionMapper connectionMapper;
 	
 	public DeviceMapper(final GeneralMapper generalMapper, final ConnectionMapper connectionMapper) {
 		this.generalMapper = generalMapper;
 		this.connectionMapper = connectionMapper;
-		this.clampingsByIdMap = new HashMap<Integer, Clamping>();
 	}
 	
 	public Set<AbstractDevice> getAllDevices() throws SQLException {
@@ -259,6 +254,8 @@ public class DeviceMapper {
 			int deviceInterfaceId = results.getInt("DEVICEINTERFACE");
 			int clampingWidthR = results.getInt("CLAMPING_WIDTH_R");
 			boolean usesNewDevInt = results.getBoolean("NEW_DEV_INT");
+			int nbFixtures = results.getInt("NB_FIXTURES");
+			boolean timAllowed = results.getBoolean("TIM_ALLOWED");
 			EWayOfOperating wayOfOperating = EWayOfOperating.getWayOfOperatingById(results.getInt("WAYOFOPERATING"));
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICEINTERFACE WHERE ID = ?");
 			stmt2.setInt(1, deviceInterfaceId);
@@ -267,9 +264,9 @@ public class DeviceMapper {
 				int socketConnectionId = results2.getInt("SOCKETCONNECTION");
 				SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
 				if(usesNewDevInt) {
-					cncMillingMachine = new CNCMillingMachineDevIntv2(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR);
+					cncMillingMachine = new CNCMillingMachineDevIntv2(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR, nbFixtures, timAllowed);
 				} else {
-					cncMillingMachine = new CNCMillingMachine(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR);
+					cncMillingMachine = new CNCMillingMachine(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR, nbFixtures, timAllowed);
 				}
 				cncMillingMachine.setId(id);
 				
@@ -398,9 +395,6 @@ public class DeviceMapper {
 	}
 	
 	private Clamping getClampingById(final int clampingId) throws SQLException {
-		if (clampingsByIdMap.containsKey(clampingId)) {
-			return clampingsByIdMap.get(clampingId);
-		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CLAMPING WHERE ID = ?");
 		stmt.setInt(1, clampingId);
 		ResultSet results = stmt.executeQuery();
@@ -441,7 +435,6 @@ public class DeviceMapper {
 					throw new IllegalStateException("Unknown clamping type: [" + type + "].");
 			}
 			clamping.setId(clampingId);
-			clampingsByIdMap.put(clampingId, clamping);
 		}
 		return clamping;
 	}
@@ -668,8 +661,8 @@ public class DeviceMapper {
 	}
 	
 	public void updateCNCMachine(final AbstractCNCMachine cncMachine, final String name, final EWayOfOperating wayOfOperating,
-			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final List<String> robotServiceInputNames, 
-					final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
+			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final boolean timAllowed, 
+			final List<String> robotServiceInputNames, final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE SOCKETCONNECTION " +
@@ -684,11 +677,13 @@ public class DeviceMapper {
 		stmt2.setString(1, name);
 		stmt2.setInt(2, cncMachine.getId());
 		stmt2.execute();
-		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CNCMILLINGMACHINE SET CLAMPING_WIDTH_R = ? , WAYOFOPERATING = ?, NEW_DEV_INT = ? WHERE ID = ?");
+		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CNCMILLINGMACHINE SET CLAMPING_WIDTH_R = ? , WAYOFOPERATING = ?, NEW_DEV_INT = ?, NB_FIXTURES = ?, TIM_ALLOWED = ? WHERE ID = ?");
 		stmt3.setInt(1, clampingWidthR);
 		stmt3.setInt(2, wayOfOperating.getId());
 		stmt3.setBoolean(3, newDevInt);
-		stmt3.setInt(4, cncMachine.getId());
+		stmt3.setInt(4, nbFixtures);
+		stmt3.setBoolean(5, timAllowed);
+		stmt3.setInt(6, cncMachine.getId());
 		stmt3.execute();
 		if (cncMachine.getMCodeAdapter() != null) {
 			updateMCodeAdapter(cncMachine.getId(), cncMachine.getMCodeAdapter(), robotServiceInputNames, 
@@ -702,6 +697,8 @@ public class DeviceMapper {
 		cncMachine.setName(name);
 		cncMachine.setWayOfOperating(wayOfOperating);
 		cncMachine.setClampingWidthR(clampingWidthR);
+		cncMachine.setNbFixtures(nbFixtures);
+		cncMachine.setTIMAllowed(timAllowed);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setIpAddress(ipAddress);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setPortNumber(port);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setName(name);
@@ -1021,7 +1018,7 @@ public class DeviceMapper {
 		} else if (type == Type.FIXED_YM) {
 			typeInt = CLAMPING_TYPE_FIXED_YM;
 		} else {
-			throw new IllegalStateException("Unkwon clamping type: " + type);
+			throw new IllegalStateException("Unknown clamping type: " + type);
 		}
 		stmt.setInt(2, typeInt);
 		stmt.setFloat(3, height);

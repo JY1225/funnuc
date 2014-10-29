@@ -338,12 +338,12 @@ public class DeviceManager {
 	}
 	
 	public void updateCNCMachineData(final AbstractCNCMachine cncMachine, final String name, final EWayOfOperating wayOfOperating,
-			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final List<String> robotServiceInputNames,
-			final List<String> robotServiceOutputNames, final List<String> mCodeNames,
+			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final boolean timAllowed,
+			final List<String> robotServiceInputNames, final List<String> robotServiceOutputNames, final List<String> mCodeNames,
 			final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) {
 		try {
 			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port,
-					clampingWidthR, newDevInt, robotServiceInputNames, robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs,
+					clampingWidthR, newDevInt, nbFixtures, timAllowed, robotServiceInputNames, robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs,
 					mCodeRobotServiceOutputs);
 			refresh();
 		} catch (SQLException e) {
@@ -371,8 +371,16 @@ public class DeviceManager {
 			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, 
 			final float smoothFromZ, final EFixtureType fixtureType) {
 		try {
-			deviceMapper.updateClamping(clamping, name, type, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-				smoothFromX, smoothFromY, smoothFromZ, fixtureType);
+			for (AbstractCNCMachine cncMachine : getCNCMachines()) {
+				for (WorkArea workArea : cncMachine.getWorkAreas()) {
+					for (Clamping cl : workArea.getClampings()) {
+						if (cl.getId() == clamping.getId()) {
+							deviceMapper.updateClamping(cl, name, type, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
+								smoothFromX, smoothFromY, smoothFromZ, fixtureType);
+						}
+					}
+				}
+			}
 		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();
@@ -405,14 +413,20 @@ public class DeviceManager {
 	public void deleteClamping(final Clamping clamping) {
 		for (DeviceSettings deviceSettings : processFlowManager.getActiveProcessFlow().getDeviceSettings().values()) {
 			for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
-				if (entry.getValue().equals(clamping)) {
+				if (entry.getValue().getId() == clamping.getId()) {
 					entry.setValue(null);
 				}
 			}
 		}
 		for (AbstractDevice device : devicesById.values()) {
 			for (WorkArea workArea : device.getWorkAreas()) {
-				workArea.getClampings().remove(clamping);
+				Set<Clamping> tmpClampings = new HashSet<Clamping>(workArea.getClampings());
+				for (Clamping cl: workArea.getClampings()) {
+					if (cl.getId() == clamping.getId()) {
+						tmpClampings.remove(cl);
+					}
+				}
+				workArea.setClampings(tmpClampings);
 			}
 		}
 		try {
