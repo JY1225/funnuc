@@ -84,5 +84,10 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 	public void unregisterListeners() {
 		cncMillingMachineWorkPiecePresenter.unregister();
 	}
+	
+	public void changedTIM(final boolean turnInMachine) {
+		cncMillingMachinePickPresenter.changedTIM(turnInMachine);
+		cncMillingMachinePutPresenter.changedTIM(turnInMachine);
+	}
 
 }

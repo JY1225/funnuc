@@ -76,4 +76,8 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 		}
 		return false;
 	}
+	
+	public void changedTIM(final boolean newValue) {
+		putStep.getRobotSettings().setTurnInMachine(newValue);
+	}
 }

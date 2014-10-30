@@ -58,13 +58,8 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 		}
 	}
 	
-	
 	public void changedAirblow(final boolean airblow) {
 		pickStep.getRobotSettings().setDoMachineAirblow(airblow);
-	}
-	
-	public void changedTIM(final boolean turnInMachine) {
-		pickStep.getRobotSettings().setDoTIM(turnInMachine);
 	}
 
 	@Override
@@ -73,6 +68,10 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 			return true;
 		}
 		return false;
+	}
+
+	public void changedTIM(final boolean newValue) {
+		pickStep.getRobotSettings().setTurnInMachine(newValue);
 	}
 
 }

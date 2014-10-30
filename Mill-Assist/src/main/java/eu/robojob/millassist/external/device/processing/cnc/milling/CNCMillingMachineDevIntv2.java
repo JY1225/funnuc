@@ -55,8 +55,8 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	private static Logger logger = LogManager.getLogger(CNCMillingMachineDevIntv2.class.getName());
 	
 	public CNCMillingMachineDevIntv2(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, 
-			final SocketConnection socketConnection, final int clampingWidthR, final int nbFixtures) {
-		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR, nbFixtures);
+			final SocketConnection socketConnection, final int clampingWidthR, final int nbFixtures, final boolean timAllowed) {
+		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR, nbFixtures, timAllowed);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 		CNCMachineMonitoringThreadDevIntv2 cncMachineMonitoringThread = new CNCMachineMonitoringThreadDevIntv2(this);
 		// start monitoring thread at creation of this object

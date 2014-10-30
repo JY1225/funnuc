@@ -132,6 +132,8 @@ public final class RobotConstants {
 	public static final int SERVICE_HANDLING_PP_MODE_NO_WAIT		=	BIT7;
 	public static final int SERVICE_HANDLING_PP_MODE_PIECE			=	BIT8;
 	
+	public static final int SERVICE_HANDLING_PP_MODE_TIM			= 	BIT12;
+	
 	// SERVICE POINT
 	public static final int SERVICE_POINT_XYZ_ALLOWED_XYZ			=	1;
 	public static final int SERVICE_POINT_XYZ_ALLOWED_XY			=	2;

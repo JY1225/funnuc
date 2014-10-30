@@ -376,19 +376,21 @@ public class ProcessFlowMapper {
 		if (robotStep instanceof PickStep) {
 			RobotPickSettings robotPickSettings = ((PickStep) robotStep).getRobotSettings();
 			generalMapper.saveWorkPiece(robotPickSettings.getWorkPiece());
-			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPICKSETTINGS (ID, WORKPIECE, AIRBLOW, APPROACHTYPE) VALUES (?, ?, ?, ?)");
+			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPICKSETTINGS (ID, WORKPIECE, AIRBLOW, APPROACHTYPE, TURN_IN_MACHINE) VALUES (?, ?, ?, ?, ?)");
 			stmt2.setInt(1, robotStep.getRobotSettings().getId());
 			stmt2.setInt(2, robotPickSettings.getWorkPiece().getId());
 			stmt2.setBoolean(3, robotPickSettings.isDoMachineAirblow());
 			stmt2.setInt(4, robotPickSettings.getApproachType().getId());
+			stmt2.setBoolean(5, robotPickSettings.getTurnInMachine());
 			stmt2.executeUpdate();
 		} else if (robotStep instanceof PutStep) {
 			RobotPutSettings robotPutSettings = ((PutStep) robotStep).getRobotSettings();
-			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPUTSETTINGS (ID, AIRBLOW, RELEASEBEFORE, APPROACHTYPE) VALUES (?, ?, ?, ?)");
+			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPUTSETTINGS (ID, AIRBLOW, RELEASEBEFORE, APPROACHTYPE, TURN_IN_MACHINE) VALUES (?, ?, ?, ?, ?)");
 			stmt2.setInt(1, robotStep.getRobotSettings().getId());
 			stmt2.setBoolean(2, robotPutSettings.isDoMachineAirblow());
 			stmt2.setBoolean(3, ((PutStep) robotStep).getRobotSettings().isReleaseBeforeMachine());
 			stmt2.setInt(4, robotPutSettings.getApproachType().getId());
+			stmt2.setBoolean(5, robotPutSettings.getTurnInMachine());
 			stmt2.executeUpdate();
 		}
 	}
@@ -926,6 +928,7 @@ public class ProcessFlowMapper {
 			boolean airblow = results.getBoolean("AIRBLOW");
 			boolean gripInner = results.getBoolean("GRIPINNER");
 			ApproachType approachType = ApproachType.getById(results.getInt("APPROACHTYPE"));
+			boolean turnInMachine = results.getBoolean("TURN_IN_MACHINE");
 			AbstractRobot robot = robotManager.getRobotById(robotId);
 			GripperHead gripperHead = robot.getGripperHeadById(gripperHeadId);
 			Coordinates smoothPoint = generalMapper.getCoordinatesById(processFlowId, smoothPointId);
@@ -933,6 +936,7 @@ public class ProcessFlowMapper {
 			if (robot instanceof FanucRobot) {
 				robotPickSettings = new FanucRobotPickSettings(robot, workArea, gripperHead, smoothPoint, null, workPiece, airblow, gripInner);
 				robotPickSettings.setApproachType(approachType);
+				robotPickSettings.setTurnInMachine(turnInMachine);
 				robotPickSettings.setId(id);
 			} else {
 				throw new IllegalStateException("Unknown robot type: " + robot);
@@ -955,12 +959,14 @@ public class ProcessFlowMapper {
 			boolean releaseBefore = results.getBoolean("RELEASEBEFORE");
 			boolean gripInner = results.getBoolean("GRIPINNER");
 			ApproachType approachType = ApproachType.getById(results.getInt("APPROACHTYPE"));
+			boolean turnInMachine = results.getBoolean("TURN_IN_MACHINE");
 			AbstractRobot robot = robotManager.getRobotById(robotId);
 			GripperHead gripperHead = robot.getGripperHeadById(gripperHeadId);
 			Coordinates smoothPoint = generalMapper.getCoordinatesById(processFlowId, smoothPointId);
 			if (robot instanceof FanucRobot) {
 				robotPutSettings = new FanucRobotPutSettings(robot, workArea, gripperHead, smoothPoint, null, airblow, releaseBefore, gripInner);
 				robotPutSettings.setApproachType(approachType);
+				robotPutSettings.setTurnInMachine(turnInMachine);
 				robotPutSettings.setId(id);
 			} else {
 				throw new IllegalStateException("Unknown robot type: " + robot);

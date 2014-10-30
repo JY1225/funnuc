@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -55,8 +56,8 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	private static final int VGAP = 15;
 	private static final int MAX_INTEGER_LENGTH = 6;
 	
-	private Label lblAirblow;
 	private CheckBox cbAirblow;
+	private CheckBox cbTIM;
 	
 	private static final String SMOOTH_PUT_INFO = "CNCMillingMachinePutView.smoothPickInfo";
 	private static final String SMOOTH_X = "CNCMillingMachinePutView.smoothX";
@@ -67,6 +68,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	private static final String ROBOT_RELEASES = "CNCMillingMachinePutView.robotReleases";
 	private static final String AFTER_CLAMP = "CNCMillingMachinePutView.afterClamp";
 	private static final String BEFORE_CLAMP = "CNCMillingMachinePutView.beforeClamp";
+	private static final String TIM = "CNCMillingMachinePickView.tim";
 	
 	private static final String CSS_CLASS_CENTER_TEXT = "center-text";
 	
@@ -141,17 +143,13 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		hBoxSmoothPoint.setFillHeight(false);
 		hBoxSmoothPoint.setAlignment(Pos.CENTER_LEFT);
 		
-		HBox hboxAirblow = new HBox();
-		lblAirblow = new Label(Translator.getTranslation(AIRBLOW));
-		cbAirblow = new CheckBox();
+		cbAirblow = new CheckBox(Translator.getTranslation(AIRBLOW));
 		cbAirblow.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
 				getPresenter().changedAirblow(newValue);
 			}
 		});
-		hboxAirblow.getChildren().addAll(lblAirblow, cbAirblow);
-		hboxAirblow.setSpacing(10);
 		
 		lblReleasePieceBeforeClamp = new Label(Translator.getTranslation(ROBOT_RELEASES));
 		
@@ -177,6 +175,15 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		btnAfterClamp.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
 		hboxReleaseButtons.getChildren().add(btnAfterClamp);
 		
+		cbTIM = new CheckBox(Translator.getTranslation(TIM));
+		cbTIM.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				if (getPresenter().getMenuPresenter() != null) 
+					getPresenter().getMenuPresenter().changedTIM(newValue);
+			}
+		});
+		
 		int column = 0;
 		int row = 0;
 		getContents().add(lblSmoothInfo, column++, row);
@@ -191,7 +198,11 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 			
 		column = 0;
 		row++;
-		getContents().add(hboxAirblow, column++, row);
+		getContents().add(cbAirblow, column++, row);
+		
+		column = 0;
+		row++;
+		getContents().add(cbTIM, column++, row);
 		
 		refresh();
 		
@@ -199,13 +210,18 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		try {
 			properties.load(new FileInputStream(new File("settings.properties")));
 			if ((properties.get("robot-airblow") != null) && (properties.get("robot-airblow").equals("false"))) {
-				hboxAirblow.setVisible(false);
-				hboxAirblow.setManaged(false);
+				cbAirblow.setVisible(false);
+				cbAirblow.setManaged(false);
 			}
 		} catch (IOException e) {
 			logger.error(e);
 			e.printStackTrace();
 		}
+	}
+	
+	public void showTurnInMachine() {
+		cbTIM.setVisible(((AbstractCNCMachine)putStep.getDevice()).getTIMAllowed());
+		cbTIM.setSelected(putStep.getRobotSettings().getTurnInMachine());
 	}
 
 	@Override
@@ -239,6 +255,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		} else {
 			btnAfterClamp.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		}
+		showTurnInMachine();
 	}
 	
 	

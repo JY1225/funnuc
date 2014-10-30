@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -42,10 +43,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	private NumericTextField ntxtSmoothY;
 	private NumericTextField ntxtSmoothZ;
 	
-	private Label lblAirblow;
 	private CheckBox cbAirblow;
-	
-	private Label lblTIM;
 	private CheckBox cbTIM;
 	
 	private static final int HGAP = 15;
@@ -123,29 +121,21 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		hBoxSmoothPoint.setFillHeight(false);
 		hBoxSmoothPoint.setAlignment(Pos.CENTER_LEFT);
 		
-		HBox hboxAirblow = new HBox();
-		lblAirblow = new Label(Translator.getTranslation(AIRBLOW));
-		cbAirblow = new CheckBox();
+		cbAirblow = new CheckBox(Translator.getTranslation(AIRBLOW));
 		cbAirblow.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
 				getPresenter().changedAirblow(newValue);
 			}
-		});
-		hboxAirblow.getChildren().addAll(lblAirblow, cbAirblow);
-		hboxAirblow.setSpacing(10);
-		
-		HBox hboxTIM = new HBox();
-		lblTIM = new Label(Translator.getTranslation(TIM));
-		cbTIM = new CheckBox();
+		});		
+		cbTIM = new CheckBox(Translator.getTranslation(TIM));
 		cbTIM.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
-				getPresenter().changedTIM(newValue);
+				if (getPresenter().getMenuPresenter() != null) 
+					getPresenter().getMenuPresenter().changedTIM(newValue);
 			}
 		});
-		hboxTIM.getChildren().addAll(lblTIM, cbTIM);
-		hboxTIM.setSpacing(10);
 		
 		int column = 0;
 		int row = 0;
@@ -160,11 +150,11 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		
 		column = 0;
 		row++;
-		getContents().add(hboxAirblow, column++, row);
+		getContents().add(cbAirblow, column++, row);
 		
 		column = 0;
 		row++;
-		getContents().add(hboxTIM, column++, row);
+		getContents().add(cbTIM, column++, row);
 				
 		refresh();
 		
@@ -172,15 +162,8 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		try {
 			properties.load(new FileInputStream(new File("settings.properties")));
 			if ((properties.get("robot-airblow") != null) && (properties.get("robot-airblow").equals("false"))) {
-				hboxAirblow.setVisible(false);
-				hboxAirblow.setManaged(false);
-			}
-			if ((properties.get("robot-tim") != null) && (properties.get("robot-tim").equals("true"))) {
-				hboxTIM.setVisible(true);
-				hboxTIM.setManaged(true);
-			} else {
-				hboxTIM.setVisible(false);
-				hboxTIM.setManaged(false);
+				cbAirblow.setVisible(false);
+				cbAirblow.setManaged(false);
 			}
 		} catch (IOException e) {
 			logger.error(e);
@@ -202,6 +185,11 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	public void setDeviceSettings(final DeviceSettings deviceSettings) {
 		this.deviceSettings = deviceSettings;
 	}
+	
+	public void showTurnInMachine() {
+		cbTIM.setVisible(((AbstractCNCMachine)pickStep.getDevice()).getTIMAllowed());
+		cbTIM.setSelected(pickStep.getRobotSettings().getTurnInMachine());
+	}
 
 	@Override
 	public void refresh() {
@@ -220,11 +208,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		} else {
 			cbAirblow.setSelected(false);
 		}
-		if (pickStep.getRobotSettings().isDoTIM()) {
-			cbTIM.setSelected(true);
-		} else {
-			cbTIM.setSelected(false);
-		}
+		showTurnInMachine();
 	}
 	
 	

@@ -34,6 +34,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private EWayOfOperating wayOfOperating;
 	private MCodeAdapter mCodeAdapter;
 	private Map<Integer, Integer> statusMap;
+	private boolean timAllowed;
 	
 	private static Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());
 	
@@ -41,7 +42,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private static final String EXCEPTION_WHILE_WAITING = "AbstractCNCMachine.exceptionWhileWaiting";
 	
 	public AbstractCNCMachine(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final int clampingWidthR,
-			final int nbFixtures) {
+			final int nbFixtures, final boolean timAllowed) {
 		super(name, zones, true);
 		this.mCodeAdapter = mCodeAdapter;
 		this.wayOfOperating = wayOfOperating;
@@ -53,11 +54,8 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.stopAction = false;
 		this.clampingWidthR = clampingWidthR;
 		this.nbFixtures = nbFixtures;
+		this.timAllowed = timAllowed;
 		this.statusMap = new HashMap<Integer, Integer>();
-	}
-	
-	public AbstractCNCMachine(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final int clampingWidthR) {
-		this(name, wayOfOperating, mCodeAdapter, new HashSet<Zone>(), clampingWidthR, 1);
 	}
 	
 	public EWayOfOperating getWayOfOperating() {
@@ -381,6 +379,14 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	public void setNbFixtures(final int nbFixtures) {
 		this.nbFixtures = nbFixtures;
+	}
+	
+	public boolean getTIMAllowed() {
+		return this.timAllowed;
+	}
+	
+	public void setTIMAllowed(boolean timAllowed) {
+		this.timAllowed = timAllowed;
 	}
 	
 }

@@ -338,13 +338,13 @@ public class DeviceManager {
 	}
 	
 	public void updateCNCMachineData(final AbstractCNCMachine cncMachine, final String name, final EWayOfOperating wayOfOperating,
-			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures,
+			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final boolean timAllowed, 
 			final List<String> robotServiceInputNames, final List<String> robotServiceOutputNames, final List<String> mCodeNames,
 			final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) {
 		try {
 			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port,
-					clampingWidthR, newDevInt, nbFixtures, robotServiceInputNames, robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs,
-					mCodeRobotServiceOutputs);
+					clampingWidthR, newDevInt, nbFixtures, timAllowed, robotServiceInputNames, 
+					robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs, mCodeRobotServiceOutputs);
 			refresh();
 		} catch (SQLException e) {
 			logger.error(e);
