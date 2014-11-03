@@ -160,7 +160,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public synchronized void pickFinished(final DevicePickSettings pickSettings) {
+	public synchronized void pickFinished(final DevicePickSettings pickSettings, final int processId) {
 		currentPickLocation.setAmount(currentPickLocation.getAmount() - 1);
 		if (currentPickLocation.getAmount() == 0) {
 			currentPickLocation.setWorkPiece(null);

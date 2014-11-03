@@ -614,7 +614,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override 
-	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, InterruptedException, DeviceActionException {
+	public void pickFinished(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, InterruptedException, DeviceActionException {
 		if (getWayOfOperating() == EWayOfOperating.M_CODES) {
 			if (((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) &&
 					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS) && (pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED))) || 
@@ -640,8 +640,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			if (((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) &&
 					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS) &&
 					(pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)))
-				||  ((pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) && 
-					(pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)))
+				||  ((pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) && (pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)))
 				) {
 				// last work piece: send reset in stead of finishing m code
 				nCReset();
@@ -674,8 +673,10 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				int[] registers = {command};
 				cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 				Thread.sleep(500);
-				int nbActiveClampings = pickSettings.getDevice().getWorkAreas().get(0).getNbActiveClampingsEachSide();
-				if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - (nbActiveClampings + 1)) &&
+				int nbActiveClampings = pickSettings.getWorkArea().getMaxNbClampingOtherProcessThread(processId);
+				// We are going to put the piece that we have just picked back to the stacker ( +1), so in fact we have finished getFinishedAmount + 1.
+				// There are maximum nbActiveClampings workPieces still in the flow. 
+				if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() + 1  + nbActiveClampings == pickSettings.getStep().getProcessFlow().getTotalAmount()) &&
 						(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) {
 					if (!pickSettings.getWorkPieceType().equals(WorkPiece.Type.HALF_FINISHED)) {
 						// last but one work piece: no upcoming put, but we wait for the upcoming LOAD M-code and confirm it

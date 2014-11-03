@@ -35,16 +35,16 @@ public class PickStep extends AbstractTransportStep {
 	}
 	
 	@Override
-	public void executeStep(final int workPieceId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
-		executeStep(false, workPieceId, executor);
+	public void executeStep(final int processId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+		executeStep(false, processId, executor);
 	}
 	
 	@Override
-	public void executeStepTeached(final int workPieceId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
-		executeStep(true, workPieceId, executor);
+	public void executeStepTeached(final int processId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+		executeStep(true, processId, executor);
 	}
 
-	private void executeStep(final boolean teached, final int workPieceId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	private void executeStep(final boolean teached, final int processId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the devices to be used
 		if (!getDevice().lock(getProcessFlow())) {
 			throw new IllegalStateException("Device [" + getDevice() + "] was already locked by [" + getDevice().getLockingProcess() + "].");
@@ -60,7 +60,7 @@ public class PickStep extends AbstractTransportStep {
 					}
 					logger.info("Can pick - " + devicePickSettings.getWorkArea());
 					checkProcessExecutorStatus(executor);
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, workPieceId));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, processId));
 					Coordinates originalPosition = new Coordinates(getDevice().getPickLocation(devicePickSettings.getWorkArea(), getRobotSettings().getWorkPiece().getDimensions(), getProcessFlow().getClampingType()));
 					if (needsTeaching()) {
 						Coordinates position = new Coordinates(originalPosition);
@@ -94,7 +94,7 @@ public class PickStep extends AbstractTransportStep {
 						robotPickSettings.setLocation(position);
 					}
 					checkProcessExecutorStatus(executor);
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, processId));
 					logger.debug("Initiating robot: [" + getRobot() + "] pick action.");
 					getRobotSettings().setTeachingNeeded(teached);
 					checkProcessExecutorStatus(executor);
@@ -105,21 +105,21 @@ public class PickStep extends AbstractTransportStep {
 					logger.debug("Device [" + getDevice() + "] prepared for pick.");
 					checkProcessExecutorStatus(executor);
 					if (teached && needsTeaching()) {
-						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_TEACHED, workPieceId));
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_TEACHED, processId));
 						checkProcessExecutorStatus(executor);
 						getRobot().continuePickTillAtLocation();
 						checkProcessExecutorStatus(executor);
-						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_NEEDED, workPieceId));
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_NEEDED, processId));
 						checkProcessExecutorStatus(executor);
 						getRobot().continuePickTillUnclampAck();
 						checkProcessExecutorStatus(executor);
-						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_FINISHED, workPieceId));
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_FINISHED, processId));
 						Coordinates robotPosition = getRobot().getPosition();
 						Coordinates relTeachedOffset = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, robotPosition.calculateOffset(originalPosition));
 						logger.info("The relative teached offset: [" + relTeachedOffset + "].");
 						setRelativeTeachedOffset(relTeachedOffset);
 					} else {
-						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, workPieceId));
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, processId));
 						checkProcessExecutorStatus(executor);
 						getRobot().continuePickTillAtLocation();
 						checkProcessExecutorStatus(executor);
@@ -133,8 +133,8 @@ public class PickStep extends AbstractTransportStep {
 					checkProcessExecutorStatus(executor);
 					getRobot().continuePickTillIPPoint();
 					checkProcessExecutorStatus(executor);
-					getDevice().pickFinished(devicePickSettings);
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
+					getDevice().pickFinished(devicePickSettings, processId);
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, processId));
 					logger.debug("Pick ready (but not finalized).");
 				} catch (AbstractCommunicationException | RobotActionException | DeviceActionException | InterruptedException e) {
 					throw e;

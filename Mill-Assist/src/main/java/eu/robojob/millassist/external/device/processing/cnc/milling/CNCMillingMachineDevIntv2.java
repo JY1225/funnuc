@@ -449,7 +449,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	}
 	
 	@Override 
-	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, InterruptedException, DeviceActionException {
+	public void pickFinished(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, InterruptedException, DeviceActionException {
 		if (getWayOfOperating() == EWayOfOperating.M_CODES) {
 			if (((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) &&
 					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) || (pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH)) {
@@ -506,8 +506,8 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 				int[] registers = {command};
 				cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
 				Thread.sleep(500);
-				int nbActiveClampings = pickSettings.getDevice().getWorkAreas().get(0).getNbActiveClampingsEachSide();
-				if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - (nbActiveClampings + 1)) &&
+				int nbActiveClampings = pickSettings.getWorkArea().getMaxNbClampingOtherProcessThread(processId);
+				if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() + 1 + nbActiveClampings == pickSettings.getStep().getProcessFlow().getTotalAmount()) &&
 						(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) {
 					if (!pickSettings.getWorkPieceType().equals(WorkPiece.Type.HALF_FINISHED)) {
 						// last but one work piece: no upcoming put, but we wait for the upcoming LOAD M-code and confirm it

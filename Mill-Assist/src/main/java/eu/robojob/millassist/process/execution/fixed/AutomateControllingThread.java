@@ -330,6 +330,12 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 			//All workpieces are done, so also stop this thread
 			if (processFlow.getFinishedAmount() == processFlow.getTotalAmount()) {
 				finished = true;
+				try {
+					processFlow.getRobots().iterator().next().moveToHome();
+				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
 				synchronized(finishedSyncObject) {
 					finishedSyncObject.notify();
 				}

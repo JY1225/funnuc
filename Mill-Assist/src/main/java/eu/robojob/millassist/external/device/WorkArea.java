@@ -143,6 +143,27 @@ public class WorkArea {
 		return result;
 	}
 	
+	/**
+	 * Calculate the maximum number of clampings in use taken into account all the processExecutors
+	 * that are currently waiting for actions.
+	 * 
+	 * @param processId - processId to exclude
+	 * @return
+	 */
+	public int getMaxNbClampingOtherProcessThread(final int processId) {
+		//is only being used for dualLoad ending check
+		int maxClampings = 0;
+		for (int i = 0; i <= 2; i++) {
+			if (i != processId) {
+				int tmp = getNbClampingsPerProcessThread(i);
+				if (tmp > maxClampings) {
+					maxClampings = tmp;
+				}
+			}
+		}
+		return maxClampings;
+	}
+	
 	public Clamping getDefaultClamping() {
 		return defaultClamping;
 	}

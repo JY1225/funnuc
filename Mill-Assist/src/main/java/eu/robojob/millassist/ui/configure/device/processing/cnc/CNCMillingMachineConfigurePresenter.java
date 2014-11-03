@@ -92,11 +92,12 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		getView().hideNotification();
 		if(isSelected) {
 			addClamping(clamping);
+			addProcessFlowEvent();
 		} else {
 			removeClamping(clamping);
+			addProcessFlowEvent();
 			getView().setDefaultClamping(clamping.getName(), false);
 		}
-		addProcessFlowEvent();
 	}
 	
 	/**

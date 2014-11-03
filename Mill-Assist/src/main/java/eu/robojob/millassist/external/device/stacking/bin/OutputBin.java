@@ -90,7 +90,7 @@ public class OutputBin extends AbstractStackingDevice {
 	}
 
 	@Override
-	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void pickFinished(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// no action needed
 	}
 

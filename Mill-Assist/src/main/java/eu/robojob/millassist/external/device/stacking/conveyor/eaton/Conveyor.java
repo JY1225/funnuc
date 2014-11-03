@@ -344,7 +344,7 @@ public class Conveyor extends AbstractConveyor {
 	}
 
 	@Override
-	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void pickFinished(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// release interlock and update lastTrackPickedA variable
 		if (pickSettings.getWorkArea().equals(workAreaA)) {
 			int command = 0;

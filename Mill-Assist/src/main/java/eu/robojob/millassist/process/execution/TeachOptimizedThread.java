@@ -111,7 +111,7 @@ public class TeachOptimizedThread extends TeachThread {
 						//FIXME test and take into account clamping type!!
 					} else if (step.equals(putInMachineStep)) {
 						//putInMachineStep.setRelativeTeachedOffset(null);
-						putInMachineStep.getDevice().getWorkAreas().get(0).getFreeActiveClamping(PROCESS_0_ID);
+						putInMachineStep.getDeviceSettings().getWorkArea().getFreeActiveClamping(PROCESS_0_ID);
 						putInMachineStep.getRobotSettings().setFreeAfter(true);
 						putInMachineStep.executeStepTeached(PROCESS_0_ID, this);
 						putInMachineStep.finalizeStep(this);

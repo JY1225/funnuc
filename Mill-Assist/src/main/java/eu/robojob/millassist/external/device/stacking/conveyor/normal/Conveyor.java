@@ -311,7 +311,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	}
 
 	@Override
-	public void pickFinished(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException,
+	public void pickFinished(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, DeviceActionException,
 			InterruptedException {
 		// release interlock
 		int command = 0;

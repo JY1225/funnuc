@@ -32,7 +32,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		
 		public static ApproachType getById(int id) {
 		    for(ApproachType type : values()) {
-		        if(type.id == id) 
+		        if(type.getId() == id) 
 		        	return type;
 		    }
 		    return null;
