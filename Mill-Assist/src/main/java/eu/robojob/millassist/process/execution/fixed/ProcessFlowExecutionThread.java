@@ -61,6 +61,8 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	// Is the reversal still to come?
 	private boolean needsReversal;
 	
+	private boolean isTIMPossible = false;
+	
 	private int pickFromStackerStepIndex;
 	private int pickFromMachineStepIndex;
 	private int pickFromMachineBeforeReversalStepIndex = -1;
@@ -320,6 +322,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		// processExecutor is finished
 		putStep.getDeviceSettings().getWorkArea().getFreeActiveClamping(processId);
 		putStep.executeStep(processId, this);
+		setTIMPossible(false);
 		nbWPInMachine++;
 		checkStatus();		
 		ThreadManager.submit(new Thread() {
@@ -362,6 +365,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		pickStep.getRobotSettings().setFreeAfter(false);
 		checkStatus();
 		pickStep.executeStep(processId, this);
+		setTIMPossible(false);
 		checkStatus();
 		pickStep.finalizeStep(this);
 		// Free the clamping that was used by the process so that it can be re-used by the next one
@@ -483,5 +487,13 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	@Override
 	public String toString() {
 		return "ProcessFlowExecutionThread - PRC[" + processId + "]";
+	}
+
+	public boolean isTIMPossible() {
+		return isTIMPossible;
+	}
+
+	public void setTIMPossible(boolean isTIMPossible) {
+		this.isTIMPossible = isTIMPossible;
 	}
 }

@@ -151,6 +151,8 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 			if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE)) { 
 				processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
+				//Turn In Machine
+				processExecutor.setTIMPossible(true);
 				processExecutor.continueExecution();
 				return;
 			}
@@ -287,7 +289,8 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 			if (processExecutor.getExecutionStatus().equals(getFirstPutState())) { 
 				processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
-				//TODO - turnInMachine here
+				//TurnInMachine
+				processExecutor.setTIMPossible(true);
 				processExecutor.continueExecution();
 				return;
 			}

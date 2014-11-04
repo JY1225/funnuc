@@ -16,6 +16,7 @@ import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.TeachedCoordinatesCalculator;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.process.execution.ProcessExecutor;
+import eu.robojob.millassist.process.execution.fixed.ProcessFlowExecutionThread;
 
 public class PickStep extends AbstractTransportStep {
 
@@ -98,6 +99,11 @@ public class PickStep extends AbstractTransportStep {
 					logger.debug("Initiating robot: [" + getRobot() + "] pick action.");
 					getRobotSettings().setTeachingNeeded(teached);
 					checkProcessExecutorStatus(executor);
+					if (executor instanceof ProcessFlowExecutionThread) {
+						robotPickSettings.setTurnInMachine(((ProcessFlowExecutionThread) executor).isTIMPossible());
+					} else {
+						robotPickSettings.setTurnInMachine(false);
+					}
 					getRobot().initiatePick(robotPickSettings);		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
 					logger.debug("Preparing [" + getDevice() + "] for pick using [" + getRobot() + "].");
 					checkProcessExecutorStatus(executor);
