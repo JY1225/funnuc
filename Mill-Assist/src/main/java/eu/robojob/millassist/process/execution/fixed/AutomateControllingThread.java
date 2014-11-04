@@ -265,13 +265,19 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 	synchronized void notifyWaitingBeforePickFromMachine(ProcessFlowExecutionThread processFlowExecutor) {
 		processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_MACHINE);
 		if (isRobotFree()) {
+			boolean canTIM = false;
 			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER)) { 
 					processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
 					processExecutor.continueExecution();
 					return;
 				}
+				// if other process is waiting for put in machine, tim is possible for this executor
+				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PUT_IN_MACHINE)) {
+					canTIM = true;
+				}
 			}
+			processFlowExecutor.setTIMPossible(canTIM);
 			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
 			processFlowExecutor.continueExecution();
 		}
