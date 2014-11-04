@@ -208,7 +208,7 @@ public enum EFixtureType {
 	}
 	
 	/**
-	 * Get the highest number of fixture that is used in the configuration. E.g. FIXTURE_1_2 has 2 as highest fixture while FIX_4 has 4.
+	 * Get the highest number of fixtures that is used in the configuration. E.g. FIXTURE_1_2 has 2 as highest fixture while FIX_4 has 4.
 	 *
 	 * @return The highest fixture number used in the given configuration
 	 */

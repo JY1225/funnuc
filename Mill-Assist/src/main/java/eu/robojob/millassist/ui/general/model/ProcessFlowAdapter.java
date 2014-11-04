@@ -3,6 +3,7 @@ package eu.robojob.millassist.ui.general.model;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;
@@ -156,6 +157,9 @@ public class ProcessFlowAdapter {
 	
 	public void removeDeviceSteps(final int deviceIndex) {
 		DeviceInformation deviceInfo = getDeviceInformation(deviceIndex);
+		if (deviceInfo.getDevice() instanceof AbstractCNCMachine) {
+			deviceInfo.getPickStep().getRobotSettings().getWorkArea().inUse(false);
+		}
 		processFlow.removeSteps(deviceInfo.getSteps());
 	}
 	
