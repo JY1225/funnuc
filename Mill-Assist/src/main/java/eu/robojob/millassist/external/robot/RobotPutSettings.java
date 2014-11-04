@@ -11,6 +11,7 @@ public abstract class RobotPutSettings extends AbstractRobotActionSettings<PutSt
 	private boolean releaseBeforeMachine;
 	private ApproachType approachType;
 	private boolean turnInMachine = false;
+	private boolean isTIMPut = false;
 
 	public RobotPutSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final boolean doMachineAirblow, final boolean releaseBeforeMachine, final boolean gripInner) {
 		super(robot, workArea, gripperHead, smoothPoint, location, gripInner);
@@ -52,12 +53,20 @@ public abstract class RobotPutSettings extends AbstractRobotActionSettings<PutSt
 	 */
 	public boolean getTurnInMachine() {
 		if (getStep().getDevice() instanceof AbstractCNCMachine) {
-			return (((AbstractCNCMachine) getStep().getDevice()).getTIMAllowed() && this.turnInMachine);
+			return (((AbstractCNCMachine) getStep().getDevice()).getTIMAllowed() && this.turnInMachine && this.isTIMPut);
 		}
 		return false;
 	}
 	
 	public void setTurnInMachine(final boolean turnInMachine) {
 		this.turnInMachine = turnInMachine;
+	}
+	
+	/**
+	 * Can change at-runtime depending on the current step of the process.
+	 * @param timPickAction
+	 */
+	public void setIsTIMPut(final boolean timPutAction) {
+		this.isTIMPut = timPutAction;
 	}
 }

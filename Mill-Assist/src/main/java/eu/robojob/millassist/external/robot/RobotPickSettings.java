@@ -12,6 +12,7 @@ public abstract class RobotPickSettings extends AbstractRobotActionSettings<Pick
 	private boolean doMachineAirblow;
 	private ApproachType approachType;
 	private boolean turnInMachine = false;
+	private boolean isTIMPick = false;
 
 	public RobotPickSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, 
 			final WorkPiece workPiece, final boolean doMachineAirblow, final boolean gripInner) {
@@ -60,12 +61,24 @@ public abstract class RobotPickSettings extends AbstractRobotActionSettings<Pick
 	 */
 	public boolean getTurnInMachine() {
 		if (getStep().getDevice() instanceof AbstractCNCMachine) {
-			return (((AbstractCNCMachine) getStep().getDevice()).getTIMAllowed() && this.turnInMachine);
+			return (((AbstractCNCMachine) getStep().getDevice()).getTIMAllowed() && this.turnInMachine && this.isTIMPick);
 		}
 		return false;
 	}
 	
+	/**
+	 * Value that is set at-configure time in the CNC machine settings.
+	 * @param turnInMachine
+	 */
 	public void setTurnInMachine(final boolean turnInMachine) {
 		this.turnInMachine = turnInMachine;
+	}
+	
+	/**
+	 * Can change at-runtime depending on the current step of the process.
+	 * @param timPickAction
+	 */
+	public void setIsTIMPick(final boolean timPickAction) {
+		this.isTIMPick = timPickAction;
 	}
 }
