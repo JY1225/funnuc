@@ -180,7 +180,7 @@ public class FanucRobot extends AbstractRobot {
 		if (fPutSettings.isTeachingNeeded()) {
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_TEACH;
 		}
-		if (fPutSettings.getTurnInMachine()) {
+		if (fPutSettings.getTurnInMachineBeforePut()) {
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_TIM;
 		}
 		writeServiceHandlingSet(putSettings.isFreeAfter(), ppMode, fPutSettings.getGripperHead().getGripper().getWorkPiece().getDimensions(), -fPutSettings.getGripperHead().getGripper().getWorkPiece().getWeight(), putSettings.getApproachType());
@@ -285,7 +285,7 @@ public class FanucRobot extends AbstractRobot {
 		if (fPickSettings.isTeachingNeeded()) {
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_TEACH;
 		}
-		if (fPickSettings.getTurnInMachine()) {
+		if (fPickSettings.getTurnInMachineBeforePick()) {
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_TIM;
 		}
 		Coordinates smooth = fPickSettings.getSmoothPoint();

@@ -51,9 +51,13 @@ public abstract class RobotPutSettings extends AbstractRobotActionSettings<PutSt
 	 * of turnInMachine allowed from the machine together with the option chosen at the CNC config. 
 	 * Otherwise the result is always false.
 	 */
+	public boolean getTurnInMachineBeforePut() {
+		return (getTurnInMachine() && this.isTIMPut);
+	}
+	
 	public boolean getTurnInMachine() {
 		if (getStep().getDevice() instanceof AbstractCNCMachine) {
-			return (((AbstractCNCMachine) getStep().getDevice()).getTIMAllowed() && this.turnInMachine && this.isTIMPut);
+			return (((AbstractCNCMachine) getStep().getDevice()).getTIMAllowed() && this.turnInMachine);
 		}
 		return false;
 	}

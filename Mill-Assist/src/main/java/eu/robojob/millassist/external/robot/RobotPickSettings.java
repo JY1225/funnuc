@@ -59,11 +59,8 @@ public abstract class RobotPickSettings extends AbstractRobotActionSettings<Pick
 	 * of turnInMachine allowed from the machine together with the option chosen at the CNC config. 
 	 * Otherwise the result is always false.
 	 */
-	public boolean getTurnInMachine() {
-		if (getStep().getDevice() instanceof AbstractCNCMachine) {
-			return (((AbstractCNCMachine) getStep().getDevice()).getTIMAllowed() && this.turnInMachine && this.isTIMPick);
-		}
-		return false;
+	public boolean getTurnInMachineBeforePick() {
+		return (getTurnInMachine() && this.isTIMPick);
 	}
 	
 	/**
@@ -72,6 +69,13 @@ public abstract class RobotPickSettings extends AbstractRobotActionSettings<Pick
 	 */
 	public void setTurnInMachine(final boolean turnInMachine) {
 		this.turnInMachine = turnInMachine;
+	}
+	
+	public boolean getTurnInMachine() {
+		if (getStep().getDevice() instanceof AbstractCNCMachine) {
+			return (((AbstractCNCMachine) getStep().getDevice()).getTIMAllowed() && this.turnInMachine);
+		}
+		return false;
 	}
 	
 	/**
