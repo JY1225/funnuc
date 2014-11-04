@@ -100,7 +100,7 @@ public class PickStep extends AbstractTransportStep {
 					getRobotSettings().setTeachingNeeded(teached);
 					checkProcessExecutorStatus(executor);
 					if (executor instanceof ProcessFlowExecutionThread) {
-						robotPickSettings.setTurnInMachine(((ProcessFlowExecutionThread) executor).isTIMPossible());
+						robotPickSettings.setTurnInMachine(robotPickSettings.getTurnInMachine() && ((ProcessFlowExecutionThread) executor).isTIMPossible());
 					} else {
 						robotPickSettings.setTurnInMachine(false);
 					}

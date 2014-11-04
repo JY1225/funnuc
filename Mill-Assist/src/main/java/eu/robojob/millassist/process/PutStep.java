@@ -98,7 +98,7 @@ public class PutStep extends AbstractTransportStep {
 					getRobotSettings().setTeachingNeeded(teached);
 					checkProcessExecutorStatus(executor);
 					if (executor instanceof ProcessFlowExecutionThread) {
-						robotPutSettings.setTurnInMachine(((ProcessFlowExecutionThread) executor).isTIMPossible());
+						robotPutSettings.setTurnInMachine(robotPutSettings.getTurnInMachine() && ((ProcessFlowExecutionThread) executor).isTIMPossible());
 					} else {
 						robotPutSettings.setTurnInMachine(false);
 					}
