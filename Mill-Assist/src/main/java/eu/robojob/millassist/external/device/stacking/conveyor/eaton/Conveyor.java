@@ -12,6 +12,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceActionException;
@@ -199,7 +200,7 @@ public class Conveyor extends AbstractConveyor {
 		writeFinishedWorkPieceLength();
 	}
 	
-	public void writeFinishedWorkPieceLength() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void writeFinishedWorkPieceLength() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int workPieceLength = (int) Math.round(getFinishedWorkPiece().getDimensions().getLength());
 		workPieceLength +=  workPieceShift;
 		int[] length = {workPieceLength};

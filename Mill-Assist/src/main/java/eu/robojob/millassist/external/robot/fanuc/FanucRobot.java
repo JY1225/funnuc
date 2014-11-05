@@ -14,6 +14,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
@@ -89,18 +90,18 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void sendSpeed(final int speedPercentage) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public void sendSpeed(final int speedPercentage) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_SET_SPEED, RobotConstants.RESPONSE_SET_SPEED, WRITE_VALUES_TIMEOUT, speedPercentage + "");
 	}
 	
 	@Override
-	public Coordinates getPosition() throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException {
+	public Coordinates getPosition() throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException, SocketWrongResponseException {
 		Coordinates position = fanucRobotCommunication.getPosition(ASK_POSITION_TIMEOUT);
 		return position;
 	}
 	
 	@Override
-	public void continueProgram() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public void continueProgram() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_CONTINUE, RobotConstants.RESPONSE_CONTINUE, WRITE_VALUES_TIMEOUT);
 	}
 	
@@ -117,44 +118,44 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void restartProgram() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public void restartProgram() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		setCurrentActionSettings(null);
 		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_RESTART_PROGRAM, RobotConstants.RESPONSE_RESTART_PROGRAM, WRITE_VALUES_TIMEOUT);
 		setCurrentActionSettings(null);
 	}
 
 	@Override
-	public void reset() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public void reset() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_RESET, RobotConstants.RESPONSE_RESET, WRITE_VALUES_TIMEOUT);
 	}
 	
 	@Override
-	public void writeRegister(final int registerNr, final String value) throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException {
+	public void writeRegister(final int registerNr, final String value) throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException, SocketWrongResponseException {
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_WRITE_REGISTER, RobotConstants.RESPONSE_WRITE_REGISTER, WRITE_REGISTER_TIMEOUT, "" + registerNr);
 	}
 	
-	public void openGripperA() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public void openGripperA() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		List<String> values = new ArrayList<String>();
 		values.add(2 + "");
 		values.add(0 + "");
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_GRIPPER_ACTION, RobotConstants.RESPONSE_GRIPPER_ACTION, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	public void closeGripperA() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public void closeGripperA() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		List<String> values = new ArrayList<String>();
 		values.add(2 + "");
 		values.add(1 + "");
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_GRIPPER_ACTION, RobotConstants.RESPONSE_GRIPPER_ACTION, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	public void openGripperB() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public void openGripperB() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		List<String> values = new ArrayList<String>();
 		values.add(3 + "");
 		values.add(0 + "");
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_GRIPPER_ACTION, RobotConstants.RESPONSE_GRIPPER_ACTION, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	public void closeGripperB() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public void closeGripperB() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		List<String> values = new ArrayList<String>();
 		values.add(3 + "");
 		values.add(1 + "");
@@ -555,7 +556,7 @@ public class FanucRobot extends AbstractRobot {
 	
 
 	private void writeServiceGripperSet(final boolean jawChange, final String headId, final GripperHead gHeadA, final GripperHead gHeadB, final int serviceType, 
-			final boolean gripInner) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+			final boolean gripInner) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		List<String> values = new ArrayList<String>();
 		boolean a = false;
 		if (headId.equals(HEAD_A_ID)) {
@@ -592,7 +593,7 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_SERVICE_GRIPPER, RobotConstants.RESPONSE_WRITE_SERVICE_GRIPPER, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	private void writeServiceHandlingSet(final boolean freeAfterService, final int serviceHandlingPPMode, final WorkPieceDimensions dimensions, final float weight2, final ApproachType approachType) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	private void writeServiceHandlingSet(final boolean freeAfterService, final int serviceHandlingPPMode, final WorkPieceDimensions dimensions, final float weight2, final ApproachType approachType) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		List<String> values = new ArrayList<String>();
 		// free after this service ; WP thickness ;  WP Z grip ; grip Z face till front ; dx correction P1 ; dy correction P1 ; dx correction P2 ; dy correction P2 ; dW correction ;
 		//    dP correction ; robot speed ; payload 1 ; payload 2 ; PP mode ; bar move distance
@@ -644,7 +645,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	private void writeServicePointSet(final WorkArea workArea, final Coordinates location, final Coordinates relativeTeachedCoordinates, final Coordinates smoothPoint, final WorkPieceDimensions dimensions, 
-			final Clamping clamping, final ApproachType approachType) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+			final Clamping clamping, final ApproachType approachType) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		List<String> values = new ArrayList<String>();
 		// user frame location ; x offset ; y offset ; z offset ; z correction; w offset, p offset, r offset ; z-safe plane offset ; safety add z ; smooth x ; smooth y ; smooth z ; tangent to/from ; xyz allowed ;
 		// clamp height ; bar break iterations ; bar break main axis ; bar break angle ; bar move length
@@ -702,14 +703,14 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_SERVICE_POINT, RobotConstants.RESPONSE_WRITE_SERVICE_POINT, WRITE_VALUES_TIMEOUT, values);
 	}
 
-	private void writeCommand(final int permission) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	private void writeCommand(final int permission) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		List<String> values = new ArrayList<String>();
 		values.add("" + permission);
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_SET_PERMISSIONS, RobotConstants.RESPONSE_SET_PERMISSIONS, WRITE_VALUES_TIMEOUT, values);
 	}
 	
 	@Override
-	public void moveToHome() throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException {
+	public void moveToHome() throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException, SocketWrongResponseException {
 		if ((getSpeed() < 5) || (getSpeed() > 100)) {
 			throw new IllegalStateException("The current speed value: [" + getSpeed() + "] is illegal.");
 		}
@@ -718,7 +719,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void moveToChangePoint() throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException {
+	public void moveToChangePoint() throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException, SocketWrongResponseException {
 		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_JAW_CH, RobotConstants.RESPONSE_JAW_CH, WRITE_VALUES_TIMEOUT);
 	}
 
@@ -728,7 +729,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void recalculateTCPs() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public void recalculateTCPs() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		logger.debug("About to recalculate TCPs.");
 		writeServiceGripperSet(false, this.getGripperBody().getGripperHeadByName(HEAD_A_ID).getName(), this.getGripperBody().getGripperHeadByName(HEAD_A_ID), this.getGripperBody().getGripperHeadByName(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_JAW_CHANGE, false);
 		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_RECALC_TCPS, RobotConstants.RESPONSE_RECALC_TCPS, WRITE_VALUES_TIMEOUT);

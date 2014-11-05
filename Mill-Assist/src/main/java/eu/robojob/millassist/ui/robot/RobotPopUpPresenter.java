@@ -146,7 +146,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	public void openGripperA() {
 		try {
 			robot.openGripperA();
-		} catch (SocketDisconnectedException | SocketResponseTimedOutException | InterruptedException e) {
+		} catch (AbstractCommunicationException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -154,7 +154,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	public void closeGripperA() {
 		try {
 			robot.closeGripperA();
-		} catch (SocketDisconnectedException | SocketResponseTimedOutException | InterruptedException e) {
+		} catch (AbstractCommunicationException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -162,7 +162,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	public void openGripperB() {
 		try {
 			robot.openGripperB();
-		} catch (SocketDisconnectedException | SocketResponseTimedOutException | InterruptedException e) {
+		} catch (AbstractCommunicationException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -170,7 +170,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	public void closeGripperB() {
 		try {
 			robot.closeGripperB();
-		} catch (SocketDisconnectedException | SocketResponseTimedOutException | InterruptedException e) {
+		} catch (AbstractCommunicationException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

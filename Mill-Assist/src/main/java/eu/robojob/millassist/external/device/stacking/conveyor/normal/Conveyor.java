@@ -14,6 +14,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceActionException;
@@ -97,8 +98,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	public void configureSupports() {
 		try {
 			configureSupports(layout.getRequestedSupportStatus());
-		} catch (SocketResponseTimedOutException | SocketDisconnectedException
-				| InterruptedException e) {
+		} catch (AbstractCommunicationException	| InterruptedException e) {
 			e.printStackTrace();
 			logger.error(e);
 		}
@@ -118,14 +118,13 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		Arrays.fill(allDown, false);
 		try {
 			configureSupports(allDown);
-		} catch (SocketResponseTimedOutException | SocketDisconnectedException
-				| InterruptedException e) {
+		} catch (AbstractCommunicationException	| InterruptedException e) {
 			e.printStackTrace();
 			logger.error(e);
 		}
 	}
 	
-	private void configureSupports(final Boolean[] requestedSupportState) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	private void configureSupports(final Boolean[] requestedSupportState) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int command = 0;
 		command = command | ConveyorConstants.UPDATE_SUPPORTS;
 		if (requestedSupportState[0]) {
@@ -203,14 +202,14 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		writeFinishedWorkPieceLength();
 	}
 	
-	public void writeRawWorkPieceLength() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void writeRawWorkPieceLength() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int workPieceLength = (int) Math.round(getRawWorkPiece().getDimensions().getLength());
 		workPieceLength +=  workPieceShift;
 		int[] length = {workPieceLength};
 		getSocketCommunication().writeRegisters(ConveyorConstants.LENGTH_WP_RAW, length);
 	}
 	
-	public void writeFinishedWorkPieceLength() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void writeFinishedWorkPieceLength() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int workPieceLength = (int) Math.round(getFinishedWorkPiece().getDimensions().getLength());
 		workPieceLength +=  workPieceShift;
 		int[] length = {workPieceLength};

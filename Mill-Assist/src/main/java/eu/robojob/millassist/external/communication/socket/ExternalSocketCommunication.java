@@ -57,7 +57,7 @@ public abstract class ExternalSocketCommunication {
 		return defaultWaitTimeout;
 	}
 	
-	protected String awaitResponse(final String command, final int timeout) throws SocketResponseTimedOutException, InterruptedException, SocketDisconnectedException {
+	protected synchronized String awaitResponse(final String command, final int timeout) throws SocketResponseTimedOutException, InterruptedException, SocketDisconnectedException, SocketWrongResponseException {
 		int waitedTime = 0;
 		while (waitedTime <= timeout) {
 			if (!getExternalCommunicationThread().isConnected()) {
@@ -71,7 +71,7 @@ public abstract class ExternalSocketCommunication {
 					return response;
 				} else {
 					logger.error("Got wrong response: " + response + ", command was: " + command);
-					throw new IllegalStateException("Got wrong response: " + response + ", command was: " + command);
+					throw new SocketWrongResponseException(getExternalCommunicationThread().getSocketConnection(), command, response);
 				}
 			}
 			int timeToWait = READ_RETRY_INTERVAL;

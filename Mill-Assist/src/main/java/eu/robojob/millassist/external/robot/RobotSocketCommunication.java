@@ -12,6 +12,7 @@ import eu.robojob.millassist.external.communication.socket.ExternalSocketCommuni
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
 import eu.robojob.millassist.positioning.Coordinates;
 
 public class RobotSocketCommunication extends ExternalSocketCommunication {
@@ -26,7 +27,7 @@ public class RobotSocketCommunication extends ExternalSocketCommunication {
 		this.command = new StringBuffer();
 	}
 
-	public synchronized void writeValues(final int commandId, final int ackId, final int timeout, final List<String> values) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public synchronized void writeValues(final int commandId, final int ackId, final int timeout, final List<String> values) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		command = new StringBuffer();
 		command.append(commandId);
 		command.append(";");
@@ -39,17 +40,17 @@ public class RobotSocketCommunication extends ExternalSocketCommunication {
 		awaitResponse(ackId + ";", timeout);
 	}
 	
-	public synchronized void writeCommand(final int commandId, final int ackId, final int timeout) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public synchronized void writeCommand(final int commandId, final int ackId, final int timeout) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		writeValues(commandId, ackId, timeout, new ArrayList<String>());
 	}
 	
-	public synchronized void writeValue(final int commandId, final int ackId, final int timeout, final String value) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public synchronized void writeValue(final int commandId, final int ackId, final int timeout, final String value) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		List<String> values = new ArrayList<String>();
 		values.add(value);
 		writeValues(commandId, ackId, timeout, values);
 	}
 	
-	public synchronized List<String> readValues(final int commandId, final int ackId, final int timeout) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException {
+	public synchronized List<String> readValues(final int commandId, final int ackId, final int timeout) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		getExternalCommunicationThread().writeString(commandId + ";");
 		String responseString = awaitResponse(ackId + ";", timeout);
 		return parseResult(responseString.substring((ackId + ";").length()));
@@ -60,7 +61,7 @@ public class RobotSocketCommunication extends ExternalSocketCommunication {
 		return new ArrayList<String>(Arrays.asList(values));
 	}
 	
-	public synchronized Coordinates getPosition(final int waitTimeout) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public synchronized Coordinates getPosition(final int waitTimeout) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		long currentTime = System.currentTimeMillis();
 		boolean timeout = false;
 		while (!timeout) {
