@@ -27,7 +27,7 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 					listener.closeKeyboard();
 				} else {
 					if (event.getCode().equals(KeyCode.ESCAPE)) {
-						if (originalText.equals(null)) {
+						if (originalText == null ) {
 							throw new IllegalStateException("No original text value was set.");
 						} 
 						setText(originalText);

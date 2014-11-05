@@ -106,7 +106,7 @@ public class Clamping {
 		return relatedClampings;
 	}
 	
-	public void setRelatedClampings(Set<Clamping> tobeRelatedClampings) {
+	public void setRelatedClampings(final Set<Clamping> tobeRelatedClampings) {
 		this.relatedClampings = tobeRelatedClampings;
 	}
 	
@@ -195,8 +195,9 @@ public class Clamping {
 	}
 	
 	public synchronized boolean isInUse(int processId) {
-		if(prcIdUsingClamping.contains(processId)) 
+		if(prcIdUsingClamping.contains(processId)) {
 			return true;
+		}
 		return (prcIdUsingClamping.size() >= nbOfPossibleWPToStore);
 	}
 }

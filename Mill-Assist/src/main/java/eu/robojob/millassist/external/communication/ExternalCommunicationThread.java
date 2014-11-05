@@ -16,7 +16,7 @@ import eu.robojob.millassist.external.communication.socket.SocketDisconnectedExc
  */
 public class ExternalCommunicationThread implements Runnable {
 
-	private static Logger logger = LogManager.getLogger(ExternalCommunicationThread.class.getName());
+	private static final Logger logger = LogManager.getLogger(ExternalCommunicationThread.class.getName());
 	
 	private static final int CONNECTION_RETRY_INTERVAL = 1000;
 	

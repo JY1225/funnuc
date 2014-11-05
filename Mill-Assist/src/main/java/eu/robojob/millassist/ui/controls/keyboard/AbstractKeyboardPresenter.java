@@ -58,7 +58,7 @@ public abstract class AbstractKeyboardPresenter {
 	}
 	
 	private void clickedEscape() {
-		if (originalText.equals(null)) {
+		if (originalText == null) {
 			throw new IllegalStateException("No original text value was set.");
 		}
 		target.setText(originalText);

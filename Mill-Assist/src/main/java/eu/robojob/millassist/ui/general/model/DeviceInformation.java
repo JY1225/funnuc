@@ -6,9 +6,6 @@ import java.util.List;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
-import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
-import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
-import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;
@@ -49,26 +46,12 @@ public class DeviceInformation {
 		if (device != null) {
 			return device.getType();
 		} else {
-			if ((index == 0) || (index == (flowAdapter.getDeviceStepCount() - 1))) {	// first or last device
-				if (device instanceof BasicStackPlate) {
-					return EDeviceGroup.STACKING;
-				} else if (device instanceof Conveyor) {
-					return EDeviceGroup.CONVEYOR;
-				} else if (device instanceof OutputBin) {
-					return EDeviceGroup.OUTPUT_BIN;
-				} else if (device instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
-					return EDeviceGroup.CONVEYOR_EATON;
-				} else {
-					throw new IllegalStateException("Unkown device type: " + device);
-				}
+			if (index < flowAdapter.getCNCMachineIndex()) {
+				return EDeviceGroup.PRE_PROCESSING;
+			} else if (index == flowAdapter.getCNCMachineIndex()) {
+				return EDeviceGroup.CNC_MACHINE;
 			} else {
-				if (index < flowAdapter.getCNCMachineIndex()) {
-					return EDeviceGroup.PRE_PROCESSING;
-				} else if (index == flowAdapter.getCNCMachineIndex()) {
-					return EDeviceGroup.CNC_MACHINE;
-				} else {
-					return EDeviceGroup.POST_PROCESSING;
-				}
+				return EDeviceGroup.POST_PROCESSING;
 			}
 		}
 	}
