@@ -1,8 +1,6 @@
 package eu.robojob.millassist.ui.robot;
 
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
-import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
-import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.external.robot.RobotAlarmsOccuredEvent;
 import eu.robojob.millassist.external.robot.RobotEvent;
