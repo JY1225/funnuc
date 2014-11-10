@@ -597,17 +597,21 @@ public class ProcessFlowMapper {
 				int workareaId = results2.getInt("WORKAREA");
 				int clampingId = results2.getInt("CLAMPING");
 				WorkArea workArea = device.getWorkAreaById(workareaId);
-				Clamping clamping = workArea.getClampingById(clampingId);
-				clampings.put(workArea, clamping);
-				//Get the related clampings for this workare
-				stmt3.setInt(1, id);
-				stmt3.setBoolean(2, false);
-				stmt3.setInt(3, workareaId);
-				ResultSet results3 = stmt3.executeQuery();
-				while (results3.next()) {
-					clampingId = results3.getInt("CLAMPING");
-					Clamping relClamping = workArea.getClampingById(clampingId);
-					clamping.addRelatedClamping(relClamping);
+				try {
+					Clamping clamping = workArea.getClampingById(clampingId).clone();
+					clampings.put(workArea, clamping);
+					//Get the related clampings for this workare
+					stmt3.setInt(1, id);
+					stmt3.setBoolean(2, false);
+					stmt3.setInt(3, workareaId);
+					ResultSet results3 = stmt3.executeQuery();
+					while (results3.next()) {
+						clampingId = results3.getInt("CLAMPING");
+						Clamping relClamping = workArea.getClampingById(clampingId).clone();
+						clamping.addRelatedClamping(relClamping);
+					}
+				} catch (CloneNotSupportedException e) {
+					logger.error(e);
 				}
 			}
 			if (device instanceof BasicStackPlate) {

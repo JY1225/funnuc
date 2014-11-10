@@ -137,11 +137,11 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		
 		if(activeClamping.equals(clamping)) {
 			//Remove the active clamping and set the active clamping to one of the related clampings if provided - otherwise set to null
-			if(clamping.getRelatedClampings().size() > 0) {
+			if(activeClamping.getRelatedClampings().size() > 0) {
 				//Als de size 1 is moeten we ook niet veel doen - removeRelated & putToActiveClamping
 				Set<Clamping> newRelatedClampingSet = new HashSet<Clamping>();
 				Clamping toBeActiveClamping = null;
-				for(Clamping relClamping: clamping.getRelatedClampings()) {
+				for(Clamping relClamping: activeClamping.getRelatedClampings()) {
 					if(toBeActiveClamping == null) {
 						toBeActiveClamping = relClamping;
 					} else {
@@ -178,7 +178,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			DeviceSettings settings = deviceInfo.getDeviceSettings();
 			Clamping activeClamping = settings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
 			if(activeClamping.equals(clamping)) {
-				if(clamping.getRelatedClampings().size() == 0) {
+				if(activeClamping.getRelatedClampings().size() == 0) {
 					return false;
 				}
 			}
