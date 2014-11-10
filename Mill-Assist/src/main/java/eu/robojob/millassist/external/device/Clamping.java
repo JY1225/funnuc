@@ -5,7 +5,7 @@ import java.util.Set;
 
 import eu.robojob.millassist.positioning.Coordinates;
 
-public class Clamping {
+public class Clamping implements Cloneable {
 	
 	public static enum Type {
 		CENTRUM {
@@ -54,7 +54,7 @@ public class Clamping {
 	// Process ID that is currently located in the clamping - default value = -1
 	// In case of dualLoad, we can have 'two' workpieces in 'one' clamping
 	private Set<Integer> prcIdUsingClamping;
-	// Related clampings that are currently active for use
+	// Related clampings that are currently active for use - unique per processFlow
 	private Set<Clamping> relatedClampings;
 	// Default
 	private int nbOfPossibleWPToStore = 1;
@@ -99,7 +99,16 @@ public class Clamping {
 	}
 	
 	public void removeRelatedClamping(final Clamping clamping) {
-		relatedClampings.remove(clamping);
+		Clamping clToRemove = null;
+		for (Clamping relClamping: relatedClampings) {
+			if (clamping.getName().equals(relClamping.getName()) && clamping.getId() == relClamping.getId()) {
+				clToRemove = relClamping;
+				break;
+			}
+		}
+		if (clToRemove != null) {
+			relatedClampings.remove(clToRemove);
+		}
 	}
 	
 	public Set<Clamping> getRelatedClampings() {
@@ -200,4 +209,30 @@ public class Clamping {
 		}
 		return (prcIdUsingClamping.size() >= nbOfPossibleWPToStore);
 	}
+	
+	@Override
+	public Clamping clone() throws CloneNotSupportedException {
+		Clamping clonedClamping = new Clamping(this.type, this.name, this.defaultHeight, this.relativePosition, this.smoothToPoint, this.smoothFromPoint, this.imageURL, this.fixtureType);
+		clonedClamping.prcIdUsingClamping = this.prcIdUsingClamping;
+		clonedClamping.setId(this.id);
+		return clonedClamping;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Clamping)) {
+			throw new IllegalArgumentException("Cannot compare " + obj.getClass() + " with " + this.getClass());
+		}
+		Clamping clamping = (Clamping) obj;
+		if (clamping.getId() == this.getId() && clamping.getName().equals(this.getName())) {
+			return true;
+		}
+ 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.getId() * this.getName().hashCode() * getRelatedClampings().hashCode();
+	}
+
 }

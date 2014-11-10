@@ -48,7 +48,6 @@ import eu.robojob.millassist.ui.automate.TimingView;
 import eu.robojob.millassist.ui.automate.flow.AutomateProcessFlowPresenter;
 import eu.robojob.millassist.ui.automate.flow.AutomateProcessFlowView;
 import eu.robojob.millassist.ui.configure.ConfigurePresenter;
-import eu.robojob.millassist.ui.configure.ConfigureView;
 import eu.robojob.millassist.ui.configure.device.DeviceMenuFactory;
 import eu.robojob.millassist.ui.configure.flow.ConfigureProcessFlowPresenter;
 import eu.robojob.millassist.ui.configure.process.ProcessConfigurePresenter;
@@ -173,7 +172,7 @@ public final class RoboSoftAppFactory {
 	
 	private static ConfigurePresenter getConfigurePresenter() {
 		if (configurePresenter == null) {
-			ConfigureView processConfigureView = new ConfigureView();
+			MainContentView processConfigureView = new MainContentView();
 			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNegativeNumericKeyboardPresenter(), getConfigureProcessFlowPresenter(), 
 					getProcessConfigurationMenuPresenter(), getDeviceMenuFactory(), getTransportMenuFactory(), deviceManager);
 		}

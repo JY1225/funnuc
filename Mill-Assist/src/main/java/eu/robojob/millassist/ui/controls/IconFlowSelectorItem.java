@@ -76,8 +76,8 @@ public class IconFlowSelectorItem extends VBox {
 		stPane.getChildren().add(imgvwIconVw);
 		if(extraInfo != null) {
 			Text extraText = new Text(extraInfo);
-			extraText.setFont(Font.font("Open Sans Semibold", FontWeight.SEMI_BOLD, 12));
 			extraText.setFill(Color.WHITE);
+			extraText.getStyleClass().add(CSS_CLASS_ICONFLOW_ITEM_LABEL);
 			stPane.getChildren().add(extraText);
 			StackPane.setAlignment(extraText, Pos.TOP_RIGHT);
 		}

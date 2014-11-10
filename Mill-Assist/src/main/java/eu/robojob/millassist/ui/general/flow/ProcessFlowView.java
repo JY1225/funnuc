@@ -17,7 +17,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.process.ProcessFlow;
-import eu.robojob.millassist.ui.configure.ConfigureView;
+import eu.robojob.millassist.ui.general.MainContentView;
 import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
 
 public class ProcessFlowView extends StackPane {
@@ -99,10 +99,10 @@ public class ProcessFlowView extends StackPane {
 		StackPane.setAlignment(lblProcessName, Pos.BOTTOM_RIGHT);
 		StackPane.setMargin(lblProcessName, new Insets(LBL_MARGIN, LBL_MARGIN, LBL_MARGIN, LBL_MARGIN));
 		StackPane.setAlignment(gpFlow, Pos.CENTER);
-		this.setPrefWidth(800);
-		this.setPrefHeight(225);
-		gpFlow.setPrefWidth(800);
-		gpFlow.setPrefHeight(225);
+//		this.setPrefWidth(800);
+//		this.setPrefHeight(225);
+//		gpFlow.setPrefWidth(800);
+//		gpFlow.setPrefHeight(225);
 		gpFlow.getChildren().clear();
 		gpFlow.setVgap(GAP);
 		gpFlow.setPadding(new Insets(GAP, 0, GAP, 0));
@@ -118,8 +118,8 @@ public class ProcessFlowView extends StackPane {
 			column++;
 		}
 		gpFlow.setAlignment(Pos.CENTER);
-		gpFlow.setPrefHeight(ConfigureView.HEIGHT_TOP);
-		gpFlow.setPrefWidth(ConfigureView.WIDTH);
+		gpFlow.setPrefHeight(MainContentView.HEIGHT_TOP);
+		gpFlow.setPrefWidth(MainContentView.WIDTH);
 		gpFlow.getStyleClass().add(CSS_CLASS_PROCESSFLOW_VIEW);
 		gpFlow.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 			@Override

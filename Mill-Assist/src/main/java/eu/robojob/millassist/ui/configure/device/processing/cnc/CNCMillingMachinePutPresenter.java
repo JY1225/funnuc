@@ -1,6 +1,11 @@
 package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.robot.RobotAirblowSettings;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -67,17 +72,56 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 	
 	public void changedAirblow(final boolean airblow) {
 		putStep.getRobotSettings().setDoMachineAirblow(airblow);
+		if (!airblow) {
+			putStep.getRobotSettings().clearAirblowSettings();
+		}
+	}
+	
+	void changedClamping(String clampingName) {
+		if (clampingName != null) {
+			int clampingId = putStep.getRobotSettings().getWorkArea().getClampingByName(clampingName).getId();
+			RobotAirblowSettings airblowSettings;
+			if (putStep.getRobotSettings().getRobotAirblowSettings(clampingId) == null) {
+				airblowSettings = new RobotAirblowSettings();
+				putStep.getRobotSettings().addRobotAirblowSettings(clampingId, airblowSettings);
+			} else {
+				airblowSettings = putStep.getRobotSettings().getRobotAirblowSettings(clampingId);
+			}
+			getView().setTopCoord(airblowSettings.getTopCoord());
+			getView().setBottomCoord(airblowSettings.getBottomCoord());
+			getView().refreshCoordboxes();
+		}
 	}
 	
 	@Override
 	public boolean isConfigured() {
+		if (!isAirblowConfigured() && putStep.getRobotSettings().isDoMachineAirblow()) {
+			return false;
+		}
 		if (putStep.getRobotSettings().getSmoothPoint() != null) {
 			return true;
-		}
+		} 
 		return false;
+	}
+	
+	private boolean isAirblowConfigured() {
+		for (RobotAirblowSettings airblowSettings: putStep.getRobotSettings().getRobotAirblowSettings().values()) {
+			if (!(airblowSettings.getBottomCoord().getX() < airblowSettings.getTopCoord().getX() &&
+				airblowSettings.getBottomCoord().getY() < airblowSettings.getTopCoord().getY()))
+				return false;
+		}
+		return true;
 	}
 	
 	public void changedTIM(final boolean newValue) {
 		putStep.getRobotSettings().setTurnInMachine(newValue);
+	}
+	
+	Set<String> getSelectedClampings() {
+		Set<String> clNames = new HashSet<String>();
+		for (Clamping clamping: putStep.getRobotSettings().getWorkArea().getAllActiveClampings()) {
+			clNames.add(clamping.getName());
+		}
+		return clNames;
 	}
 }

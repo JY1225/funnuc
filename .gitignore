@@ -1,1 +1,3 @@
-/Mill-Assist
+Mill-Assist/logs/xml/logFile.xml
+*.log
+Mill-Assist/.pmd

@@ -68,8 +68,7 @@ public abstract class AbstractFormView<T extends AbstractFormPresenter<?, ?>> ex
 	 * This methods makes the notification box visible.
 	 * 
 	 * @param notification    - String that holds the text to be displayed in the notification
-	 * @param isWarning       - Flag to indicate that the notification should be a warning or a confirmation
-	 * @param askConfirmation - Flag that allows the user to choose whether to continue the action or to abort (e.g. to save changes or not)
+	 * @param type		      - Type of the notification (warning, ok)
 	 */
 	public void showNotification(final String notification, NotificationBox.Type type) {
 		notificationBox.showNotification(notification, type);

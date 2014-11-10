@@ -38,6 +38,7 @@ import eu.robojob.millassist.ui.controls.keyboard.FullKeyboardPresenter;
 import eu.robojob.millassist.ui.controls.keyboard.NumericKeyboardPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.ui.general.MainContentPresenter;
+import eu.robojob.millassist.ui.general.MainContentView;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
 import eu.robojob.millassist.workpiece.WorkPiece;
@@ -48,7 +49,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		NORMAL, ADD_DEVICE, REMOVE_DEVICE
 	}
 		
-	private ConfigureView view;
+	private MainContentView view;
 	private FullKeyboardPresenter keyboardPresenter;
 	private NumericKeyboardPresenter numericKeyboardPresenter;
 	private ConfigureProcessFlowPresenter processFlowPresenter;
@@ -63,11 +64,10 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	private DeviceManager deviceManager;
 	private Mode mode;
 	
-	public ConfigurePresenter(final ConfigureView view, final FullKeyboardPresenter keyboardPresenter, final NumericKeyboardPresenter numericKeyboardPresenter,
+	public ConfigurePresenter(final MainContentView view, final FullKeyboardPresenter keyboardPresenter, final NumericKeyboardPresenter numericKeyboardPresenter,
 			final ConfigureProcessFlowPresenter processFlowPresenter, final ProcessMenuPresenter processMenuPresenter, final DeviceMenuFactory deviceMenuFactory, 
 			final TransportMenuFactory transportMenuFactory, final DeviceManager deviceManager) {
 		this.view = view;
-		view.setPresenter(this);
 		this.keyboardPresenter = keyboardPresenter;
 		keyboardPresenter.setParent(this);
 		this.numericKeyboardPresenter = numericKeyboardPresenter;
@@ -153,7 +153,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	}
 	
 	@Override
-	public ConfigureView getView() {
+	public MainContentView getView() {
 		return view;
 	}
 	

@@ -40,6 +40,7 @@ import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.Approach
 import eu.robojob.millassist.external.robot.Gripper;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
+import eu.robojob.millassist.external.robot.RobotAirblowSettings;
 import eu.robojob.millassist.external.robot.RobotManager;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.external.robot.RobotProcessingWhileWaitingSettings;
@@ -221,7 +222,7 @@ public class ProcessFlowMapper {
                 " 		union "																						+
                 "		(select smoothpoint from robotactionsettings where robotactionsettings.step in "			+
                 "			(select id from step where step.processflow = ?) "										+
-                "		) "																							+
+                "		)"                                                                                          +
 				"	) "	
 				);	
 		stmtDeleteCoordinates.setInt(1, processFlow.getId());
@@ -383,6 +384,7 @@ public class ProcessFlowMapper {
 			stmt2.setInt(4, robotPickSettings.getApproachType().getId());
 			stmt2.setBoolean(5, robotPickSettings.getTurnInMachine());
 			stmt2.executeUpdate();
+			saveRobotAirblowSettings(robotPickSettings);
 		} else if (robotStep instanceof PutStep) {
 			RobotPutSettings robotPutSettings = ((PutStep) robotStep).getRobotSettings();
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPUTSETTINGS (ID, AIRBLOW, RELEASEBEFORE, APPROACHTYPE, TURN_IN_MACHINE) VALUES (?, ?, ?, ?, ?)");
@@ -392,6 +394,21 @@ public class ProcessFlowMapper {
 			stmt2.setInt(4, robotPutSettings.getApproachType().getId());
 			stmt2.setBoolean(5, robotPutSettings.getTurnInMachine());
 			stmt2.executeUpdate();
+			saveRobotAirblowSettings(robotPutSettings);
+		}
+	}
+	
+	private void saveRobotAirblowSettings(final AbstractRobotActionSettings<?> robotActionSettings) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTAIRBLOWSETTINGS (ID, CLAMPING, BOTTOMCOORD, TOPCOORD) VALUES (?, ?, ?, ?)");
+		for (Integer clampingId: robotActionSettings.getRobotAirblowSettings().keySet()) {
+			RobotAirblowSettings tmpAirblowSettings = robotActionSettings.getRobotAirblowSettings().get(clampingId);
+			generalMapper.saveCoordinates(tmpAirblowSettings.getBottomCoord());
+			generalMapper.saveCoordinates(tmpAirblowSettings.getTopCoord());
+			stmt.setInt(1, robotActionSettings.getId());
+			stmt.setInt(2, clampingId);
+			stmt.setInt(3, tmpAirblowSettings.getBottomCoord().getId());
+			stmt.setInt(4, tmpAirblowSettings.getTopCoord().getId());
+			stmt.executeUpdate();
 		}
 	}
 	
@@ -583,10 +600,21 @@ public class ProcessFlowMapper {
 		while (results.next()) {
 			int deviceId = results.getInt("DEVICE");
 			int id = results.getInt("ID");
-			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICESETTINGS_WORKAREA_CLAMPING JOIN WORKAREA_CLAMPING ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID "
-					+ "WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? AND DEVICESETTINGS_WORKAREA_CLAMPING.ACTIVE_FL = ?");
-			PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICESETTINGS_WORKAREA_CLAMPING JOIN WORKAREA_CLAMPING ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID "
-					+ "WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? AND DEVICESETTINGS_WORKAREA_CLAMPING.ACTIVE_FL = ? AND WORKAREA_CLAMPING.WORKAREA = ?");
+			PreparedStatement stmt2 = ConnectionManager.getConnection()
+					.prepareStatement("SELECT * "                                                                         +
+									    "FROM DEVICESETTINGS_WORKAREA_CLAMPING "                                          +
+									    "JOIN WORKAREA_CLAMPING "                                                         +
+									      "ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID " +
+									   "WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? "                       +
+									     "AND DEVICESETTINGS_WORKAREA_CLAMPING.ACTIVE_FL = ?");
+			PreparedStatement stmt3 = ConnectionManager.getConnection()
+					.prepareStatement("SELECT * "                                                                         +
+							            "FROM DEVICESETTINGS_WORKAREA_CLAMPING "                                          +
+							            "JOIN WORKAREA_CLAMPING "                                                         +
+							              "ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID " +
+							           "WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? "                       +
+							             "AND DEVICESETTINGS_WORKAREA_CLAMPING.ACTIVE_FL = ? "                            +
+										 "AND WORKAREA_CLAMPING.WORKAREA = ?");       
 			stmt2.setInt(1, id);
 			stmt2.setBoolean(2, true);
 			ResultSet results2 = stmt2.executeQuery();
@@ -597,17 +625,21 @@ public class ProcessFlowMapper {
 				int workareaId = results2.getInt("WORKAREA");
 				int clampingId = results2.getInt("CLAMPING");
 				WorkArea workArea = device.getWorkAreaById(workareaId);
-				Clamping clamping = workArea.getClampingById(clampingId);
-				clampings.put(workArea, clamping);
-				//Get the related clampings for this workare
-				stmt3.setInt(1, id);
-				stmt3.setBoolean(2, false);
-				stmt3.setInt(3, workareaId);
-				ResultSet results3 = stmt3.executeQuery();
-				while (results3.next()) {
-					clampingId = results3.getInt("CLAMPING");
-					Clamping relClamping = workArea.getClampingById(clampingId);
-					clamping.addRelatedClamping(relClamping);
+				try {
+					Clamping clamping = workArea.getClampingById(clampingId).clone();
+					clampings.put(workArea, clamping);
+					//Get the related clampings for this workare
+					stmt3.setInt(1, id);
+					stmt3.setBoolean(2, false);
+					stmt3.setInt(3, workareaId);
+					ResultSet results3 = stmt3.executeQuery();
+					while (results3.next()) {
+						clampingId = results3.getInt("CLAMPING");
+						Clamping relClamping = workArea.getClampingById(clampingId).clone();
+						clamping.addRelatedClamping(relClamping);
+					}
+				} catch (CloneNotSupportedException e) {
+					logger.error(e);
 				}
 			}
 			if (device instanceof BasicStackPlate) {
@@ -938,6 +970,7 @@ public class ProcessFlowMapper {
 				robotPickSettings.setApproachType(approachType);
 				robotPickSettings.setTurnInMachine(turnInMachine);
 				robotPickSettings.setId(id);
+				getRobotAirblowSettings(processFlowId, robotPickSettings);
 			} else {
 				throw new IllegalStateException("Unknown robot type: " + robot);
 			}
@@ -968,11 +1001,27 @@ public class ProcessFlowMapper {
 				robotPutSettings.setApproachType(approachType);
 				robotPutSettings.setTurnInMachine(turnInMachine);
 				robotPutSettings.setId(id);
+				getRobotAirblowSettings(processFlowId, robotPutSettings);
 			} else {
 				throw new IllegalStateException("Unknown robot type: " + robot);
 			}
 		}
 		return robotPutSettings;
+	}
+	
+	private void getRobotAirblowSettings(final int processFlowId, final AbstractRobotActionSettings<?> robotActionSettings) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ROBOTAIRBLOWSETTINGS WHERE ID = ?");
+		stmt.setInt(1, robotActionSettings.getId());
+		ResultSet results = stmt.executeQuery();
+		while (results.next()) {
+			int clampingId = results.getInt("CLAMPING");
+			int bottomCoordId = results.getInt("BOTTOMCOORD");
+			Coordinates bottomCoord = generalMapper.getCoordinatesById(processFlowId, bottomCoordId);
+			int topCoordId = results.getInt("TOPCOORD");
+			Coordinates topCoord = generalMapper.getCoordinatesById(processFlowId, topCoordId);
+			RobotAirblowSettings airblowSettings = new RobotAirblowSettings(bottomCoord, topCoord);
+			robotActionSettings.addRobotAirblowSettings(clampingId, airblowSettings);
+		}
 	}
 	
 	public static int getProcessFlowIdForName(final String name) throws SQLException {

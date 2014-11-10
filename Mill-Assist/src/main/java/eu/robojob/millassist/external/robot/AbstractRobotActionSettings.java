@@ -1,5 +1,8 @@
 package eu.robojob.millassist.external.robot;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.AbstractProcessStep;
@@ -16,6 +19,8 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 	private boolean freeAfter;
 	private boolean teachingNeeded;
 	private boolean gripInner;
+	//Map<ClampingId, AirblowSettings>
+	private Map<Integer, RobotAirblowSettings> airblowSettings; 
 	
 	public enum ApproachType {
 		TOP(1), BOTTOM(2);
@@ -48,6 +53,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		this.freeAfter = false;
 		this.teachingNeeded = false;
 		this.gripInner = gripInner;
+		this.airblowSettings = new HashMap<Integer, RobotAirblowSettings>();
 	}
 	
 	public int getId() {
@@ -133,5 +139,25 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 	
 	public void setTeachingNeeded(final boolean teachingNeeded) {
 		this.teachingNeeded = teachingNeeded;
+	}
+	
+	public RobotAirblowSettings getRobotAirblowSettings(int clampingId) {
+		return airblowSettings.get(clampingId);
+	}
+	
+	public void addRobotAirblowSettings(int clampingId, RobotAirblowSettings airblowSettings) {
+		this.airblowSettings.put(clampingId, airblowSettings);
+	}
+	
+	public Map<Integer, RobotAirblowSettings> getRobotAirblowSettings() {
+		return this.airblowSettings;
+	}
+	
+	public void clearAirblowSettings() {
+		airblowSettings.clear();
+	}
+	
+	public void deleteAirblowSettings(int clampingId) {
+		airblowSettings.remove(clampingId);
 	}
 }
