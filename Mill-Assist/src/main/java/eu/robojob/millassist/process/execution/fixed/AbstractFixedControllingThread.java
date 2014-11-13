@@ -114,7 +114,8 @@ public abstract class AbstractFixedControllingThread implements Runnable {
 	}
 	
 	final boolean stillPieceToDo() {
-		return (processFlow.getTotalAmount() - processFlow.getFinishedAmount() - getTotalNbWPInFlow() > 0);
+		return ((processFlow.getTotalAmount() == -1) || 
+					(processFlow.getTotalAmount() - processFlow.getFinishedAmount() - getTotalNbWPInFlow() > 0));
 	}
 	
 	protected abstract boolean isFreePlaceInMachine();
