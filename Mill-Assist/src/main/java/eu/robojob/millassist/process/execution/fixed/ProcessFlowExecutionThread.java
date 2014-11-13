@@ -9,15 +9,14 @@ import eu.robojob.millassist.external.device.NoFreeClampingInWorkareaException;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
-import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.ProcessFlow;
-import eu.robojob.millassist.process.ProcessingStep;
 import eu.robojob.millassist.process.ProcessFlow.Type;
+import eu.robojob.millassist.process.ProcessingStep;
 import eu.robojob.millassist.process.PutAndWaitStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.RobotStep;
@@ -300,15 +299,6 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		}
 		if (!running) {
 			return;
-		}
-		if (!putStep.getDevice().canPut(putStep.getDeviceSettings())) {
-			// send robot to home
-			for (AbstractRobot robot : processFlow.getRobots()) {
-				checkStatus();
-				robot.moveToHome();
-			}
-			checkStatus();
-			Thread.sleep(POLLING_INTERVAL);
 		}
 		while (!putStep.getDevice().canPut(putStep.getDeviceSettings())) {
 			Thread.sleep(POLLING_INTERVAL);
