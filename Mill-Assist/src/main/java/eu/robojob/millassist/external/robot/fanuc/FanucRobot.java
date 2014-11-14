@@ -22,6 +22,7 @@ import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
 import eu.robojob.millassist.external.robot.RobotActionException;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.external.robot.RobotAlarm;
 import eu.robojob.millassist.external.robot.RobotConstants;
 import eu.robojob.millassist.external.robot.RobotMonitoringThread;
@@ -162,7 +163,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void initiatePut(final RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+	public void initiatePut(final RobotPutSettings putSettings, Clamping clamping) throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		if (isExecutionInProgress()) {
 			throw new IllegalStateException("Already performing action, with setting: " + getCurrentActionSettings());
 		} else {
@@ -175,6 +176,9 @@ public class FanucRobot extends AbstractRobot {
 			ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_21;
 		}
 		if (fPutSettings.isDoMachineAirblow()) {
+			//TODO send to robot - niet vergeten relatieve positie op te tellen!!
+			clamping.getRelativePosition();
+			AirblowSquare airblowSettings = putSettings.getAirblowSquare(clamping.getId()); 
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 		}
 		if (fPutSettings.isTeachingNeeded()) {
@@ -270,7 +274,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void initiatePick(final RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+	public void initiatePick(final RobotPickSettings pickSettings, Clamping clamping) throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		if (isExecutionInProgress()) {
 			throw new IllegalStateException("Already performing action, with setting: " + getCurrentActionSettings());
 		} else {
@@ -280,6 +284,9 @@ public class FanucRobot extends AbstractRobot {
 		writeServiceGripperSet(false, pickSettings.getGripperHead().getName(), this.getGripperBody().getGripperHeadByName(HEAD_A_ID), this.getGripperBody().getGripperHeadByName(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK, pickSettings.isGripInner());
 		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
 		if (fPickSettings.isDoMachineAirblow()) {
+			//TODO send to robot - niet vergeten relatieve positie op te tellen!! - moet de hoogte van de klem er ook bij?
+			clamping.getRelativePosition();
+			AirblowSquare airblowSettings = pickSettings.getAirblowSquare(clamping.getId());
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 		}
 		if (fPickSettings.isTeachingNeeded()) {

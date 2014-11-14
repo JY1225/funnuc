@@ -3,7 +3,6 @@ package eu.robojob.millassist.ui.controls;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.util.UIConstants;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
@@ -54,18 +53,11 @@ public class CoordinateBox extends GridPane {
 			numTfList[i] = tmpField;
 			numLabels[i] = new Label(lblTexts[i]);
 		}
-		addChangeListeners();
 	}
 	
-	private void addChangeListeners() {
+	public void addChangeListeners(final ChangeListener<Float> changeListener) {
 		for (NumericTextField tf: numTfList) {
-			tf.setOnChange(new ChangeListener<Float>() {
-				
-				@Override
-				public void changed(final ObservableValue<? extends Float> observable, final Float oldValue, final Float newValue) {
-					updateCoordinate();
-				}
-			});
+			tf.setOnChange(changeListener);
 		}
 	}
 	
@@ -75,7 +67,7 @@ public class CoordinateBox extends GridPane {
 		}
 	}
 	
-	private void updateCoordinate() {
+	public void updateCoordinate() {
 		for (int i = 0; i < numTfList.length; i++) {
 			coordValues[i] = numTfList[i].getValue();
 		}

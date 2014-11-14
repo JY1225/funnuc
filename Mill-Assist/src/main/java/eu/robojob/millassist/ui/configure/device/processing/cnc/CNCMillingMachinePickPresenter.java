@@ -5,15 +5,23 @@ import java.util.Set;
 
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.robot.RobotAirblowSettings;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.NotificationBox.Type;
+import eu.robojob.millassist.util.Translator;
 
 public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMillingMachinePickView, CNCMillingMachineMenuPresenter> {
 
 	private PickStep pickStep;
 	private DeviceSettings deviceSettings;
+	
+	private static final String AIRBLOW_NOT_CORRECT = "CNCMillingMachinePickPresenter.airblowNotCorrect";
+	private static final String AIRBLOW_OUTSIDE_BOUND = "CNCMillingMachinePickPresenter.airblowOutOfBound";
+
 	
 	public CNCMillingMachinePickPresenter(final CNCMillingMachinePickView view, final PickStep pickStep, final DeviceSettings deviceSettings) {
 		super(view);
@@ -68,17 +76,18 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 		if (!airblow) {
 			pickStep.getRobotSettings().clearAirblowSettings();
 		}
+		changedCoordinate();
 	}
 	
 	void changedClamping(final String clampingName) {
 		if (clampingName != null) {
 			int clampingId = pickStep.getRobotSettings().getWorkArea().getClampingByName(clampingName).getId();
-			RobotAirblowSettings airblowSettings;
-			if (pickStep.getRobotSettings().getRobotAirblowSettings(clampingId) == null) {
-				airblowSettings = new RobotAirblowSettings();
+			AirblowSquare airblowSettings;
+			if (pickStep.getRobotSettings().getAirblowSquare(clampingId) == null) {
+				airblowSettings = new AirblowSquare();
 				pickStep.getRobotSettings().addRobotAirblowSettings(clampingId, airblowSettings);
 			} else {
-				airblowSettings = pickStep.getRobotSettings().getRobotAirblowSettings(clampingId);
+				airblowSettings = pickStep.getRobotSettings().getAirblowSquare(clampingId);
 			}
 			getView().setTopCoord(airblowSettings.getTopCoord());
 			getView().setBottomCoord(airblowSettings.getBottomCoord());
@@ -88,7 +97,16 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 
 	@Override
 	public boolean isConfigured() {
+		if (pickStep.getRobotSettings().isDoMachineAirblow() && pickStep.getRobotSettings().getRobotAirblowSettings().isEmpty()) {
+			getView().showNotification(Translator.getTranslation(AIRBLOW_NOT_CORRECT), Type.WARNING);
+			return false;
+		}
 		if (!isAirblowConfigured() && pickStep.getRobotSettings().isDoMachineAirblow()) {
+			getView().showNotification(Translator.getTranslation(AIRBLOW_NOT_CORRECT), Type.WARNING);
+			return false;
+		}
+		if (pickStep.getRobotSettings().isDoMachineAirblow() && !isInsideMachineBoundaries()) {
+			getView().showNotification(Translator.getTranslation(AIRBLOW_OUTSIDE_BOUND), Type.WARNING);
 			return false;
 		}
 		if (pickStep.getRobotSettings().getSmoothPoint() != null) {
@@ -98,7 +116,7 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 	}
 	
 	private boolean isAirblowConfigured() {
-		for (RobotAirblowSettings airblowSettings: pickStep.getRobotSettings().getRobotAirblowSettings().values()) {
+		for (AirblowSquare airblowSettings: pickStep.getRobotSettings().getRobotAirblowSettings().values()) {
 			if (!(airblowSettings.getBottomCoord().getX() < airblowSettings.getTopCoord().getX() &&
 				airblowSettings.getBottomCoord().getY() < airblowSettings.getTopCoord().getY()))
 				return false;
@@ -116,5 +134,29 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 			clNames.add(clamping.getName());
 		}
 		return clNames;
+	}
+	
+	public void changedCoordinate() {
+		getView().hideNotification();
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+		isConfigured();
+	}
+	
+	private boolean isInsideMachineBoundaries() {
+		WorkArea workArea = pickStep.getRobotSettings().getWorkArea();
+		if (workArea.getBoundaries() != null) {
+			AirblowSquare square = workArea.getBoundaries();
+			for (int clampingId: pickStep.getRobotSettings().getRobotAirblowSettings().keySet()) {
+				Clamping clamping = workArea.getClampingById(clampingId);
+				AirblowSquare clampingAir = pickStep.getRobotSettings().getAirblowSquare(clampingId);
+				Coordinates lowerLeftCorner = Coordinates.add(clampingAir.getBottomCoord(), clamping.getRelativePosition());
+				Coordinates upperRightCorner = Coordinates.add(clampingAir.getTopCoord(), clamping.getRelativePosition());
+				if (!lowerLeftCorner.isInsideSquare(square) || !upperRightCorner.isInsideSquare(square)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 }

@@ -20,7 +20,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 	private boolean teachingNeeded;
 	private boolean gripInner;
 	//Map<ClampingId, AirblowSettings>
-	private Map<Integer, RobotAirblowSettings> airblowSettings; 
+	private Map<Integer, AirblowSquare> airblowSettings; 
 	
 	public enum ApproachType {
 		TOP(1), BOTTOM(2);
@@ -53,7 +53,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		this.freeAfter = false;
 		this.teachingNeeded = false;
 		this.gripInner = gripInner;
-		this.airblowSettings = new HashMap<Integer, RobotAirblowSettings>();
+		this.airblowSettings = new HashMap<Integer, AirblowSquare>();
 	}
 	
 	public int getId() {
@@ -141,15 +141,15 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		this.teachingNeeded = teachingNeeded;
 	}
 	
-	public RobotAirblowSettings getRobotAirblowSettings(int clampingId) {
+	public AirblowSquare getAirblowSquare(int clampingId) {
 		return airblowSettings.get(clampingId);
 	}
 	
-	public void addRobotAirblowSettings(int clampingId, RobotAirblowSettings airblowSettings) {
+	public void addRobotAirblowSettings(int clampingId, AirblowSquare airblowSettings) {
 		this.airblowSettings.put(clampingId, airblowSettings);
 	}
 	
-	public Map<Integer, RobotAirblowSettings> getRobotAirblowSettings() {
+	public Map<Integer, AirblowSquare> getRobotAirblowSettings() {
 		return this.airblowSettings;
 	}
 	

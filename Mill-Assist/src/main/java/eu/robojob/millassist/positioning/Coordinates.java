@@ -1,5 +1,7 @@
 package eu.robojob.millassist.positioning;
 
+import eu.robojob.millassist.external.robot.AirblowSquare;
+
 
 public class Coordinates {
 	
@@ -153,5 +155,28 @@ public class Coordinates {
 	
 	public float[] getCoordValues() {
 		return new float[]{getX(), getY(), getZ(), getW(), getP(), getR()};
+	}
+	
+	public static Coordinates add(Coordinates coord1, Coordinates coord2) {
+		Coordinates coordResult = new Coordinates();
+		coordResult.plus(coord1);
+		coordResult.plus(coord2);
+		return coordResult;
+	}
+	
+	public boolean isInsideSquare(AirblowSquare square) {
+		if (getX() < square.getBottomCoord().getX())
+			return false;
+		if (getY() < square.getBottomCoord().getY())
+			return false;
+		if (getX() > square.getTopCoord().getX())
+			return false;
+		if (getY() > square.getTopCoord().getY())
+			return false;
+		if (getZ() < square.getBottomCoord().getZ())
+			return false;
+		if (getZ() < square.getTopCoord().getZ())
+			return false;
+		return true;
 	}
 }

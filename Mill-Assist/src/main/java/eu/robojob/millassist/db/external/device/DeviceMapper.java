@@ -35,6 +35,7 @@ import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLa
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlateLayout;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
 
@@ -360,7 +361,9 @@ public class DeviceMapper {
 	}
 	
 	private Set<WorkArea> getAllWorkAreasByZoneId(final int zoneId) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM WORKAREA WHERE ZONE = ?");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
+				+ "SELECT * FROM WORKAREA "
+				+ "WHERE ZONE = ?");
 		stmt.setInt(1, zoneId);
 		ResultSet results = stmt.executeQuery();
 		Set<WorkArea> workAreas = new HashSet<WorkArea>();
@@ -374,12 +377,32 @@ public class DeviceMapper {
 			workArea.setId(id);
 			workArea.inUse(false);
 			workAreas.add(workArea);
+			AirblowSquare boundaries = getWorkAreaBoundaries(zoneId, userFrameId);
+			if (boundaries != null) {
+				workArea.setBoundary(boundaries);
+			}
 			// set active clamping to first
 			if (possibleClampings.size() > 0) {
 				workArea.setDefaultClamping(possibleClampings.iterator().next());
 			}
 		}
 		return workAreas;
+	}
+	
+	private AirblowSquare getWorkAreaBoundaries(final int zoneId, final int userFrameId) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
+				+ "SELECT * FROM WORKAREA_BOUNDARIES "
+				+ "WHERE ZONE = ?"
+				+ "AND USERFRAME = ?");
+		stmt.setInt(1, zoneId);
+		stmt.setInt(2, userFrameId);
+		ResultSet results = stmt.executeQuery();
+		if (results.next()) {
+			Coordinates bottomCoord = generalMapper.getCoordinatesById(0, results.getInt("BOTTOMCOORD"));
+			Coordinates topCoord = generalMapper.getCoordinatesById(0, results.getInt("TOPCOORD"));
+			return new AirblowSquare(bottomCoord, topCoord);
+		}
+		return null;
 	}
 	
 	private Set<Clamping> getClampingsByWorkAreaId(final int workAreaId) throws SQLException {

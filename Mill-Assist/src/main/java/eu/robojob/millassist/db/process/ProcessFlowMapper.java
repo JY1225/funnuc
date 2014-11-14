@@ -40,7 +40,7 @@ import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.Approach
 import eu.robojob.millassist.external.robot.Gripper;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
-import eu.robojob.millassist.external.robot.RobotAirblowSettings;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.external.robot.RobotManager;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.external.robot.RobotProcessingWhileWaitingSettings;
@@ -401,7 +401,7 @@ public class ProcessFlowMapper {
 	private void saveRobotAirblowSettings(final AbstractRobotActionSettings<?> robotActionSettings) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTAIRBLOWSETTINGS (ID, CLAMPING, BOTTOMCOORD, TOPCOORD) VALUES (?, ?, ?, ?)");
 		for (Integer clampingId: robotActionSettings.getRobotAirblowSettings().keySet()) {
-			RobotAirblowSettings tmpAirblowSettings = robotActionSettings.getRobotAirblowSettings().get(clampingId);
+			AirblowSquare tmpAirblowSettings = robotActionSettings.getRobotAirblowSettings().get(clampingId);
 			generalMapper.saveCoordinates(tmpAirblowSettings.getBottomCoord());
 			generalMapper.saveCoordinates(tmpAirblowSettings.getTopCoord());
 			stmt.setInt(1, robotActionSettings.getId());
@@ -1019,7 +1019,7 @@ public class ProcessFlowMapper {
 			Coordinates bottomCoord = generalMapper.getCoordinatesById(processFlowId, bottomCoordId);
 			int topCoordId = results.getInt("TOPCOORD");
 			Coordinates topCoord = generalMapper.getCoordinatesById(processFlowId, topCoordId);
-			RobotAirblowSettings airblowSettings = new RobotAirblowSettings(bottomCoord, topCoord);
+			AirblowSquare airblowSettings = new AirblowSquare(bottomCoord, topCoord);
 			robotActionSettings.addRobotAirblowSettings(clampingId, airblowSettings);
 		}
 	}

@@ -18,8 +18,8 @@ public class MainContentView extends VBox {
 	private StackPane bottomLeft;
 	private Pane bottomRight;
 	
-	public static final int HEIGHT_TOP = 200;
-	public static final int HEIGHT_BOTTOM = 355;
+	public static final int HEIGHT_TOP = 180;
+	public static final int HEIGHT_BOTTOM = 375;
 	public static final int WIDTH = 800;
 
 	public static final int WIDTH_BOTTOM_LEFT = 210;

@@ -150,7 +150,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		
 		getContents().add(contentPane, 0, 1, 2, 1);
 		contentPane.getStyleClass().add(CSS_CLASS_CNC_CONTENTPANE);
-		GridPane.setMargin(contentPane, new Insets(50, 0, 0, 0));
+		GridPane.setMargin(contentPane, new Insets(25, 0, 0, 0));
 		GridPane.setVgrow(contentPane, Priority.ALWAYS);
 		contentPane.setAlignment(Pos.CENTER);
 		

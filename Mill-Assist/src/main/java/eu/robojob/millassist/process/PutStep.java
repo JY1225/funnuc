@@ -102,8 +102,7 @@ public class PutStep extends AbstractTransportStep {
 					} else {
 						robotPutSettings.setIsTIMPut(false);
 					}
-					
-					getRobot().initiatePut(getRobotSettings());		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
+					getRobot().initiatePut(getRobotSettings(), getDeviceSettings().getWorkArea().getActiveClamping(false));		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
 					logger.debug("Preparing [" + getDevice() + "] for put using [" + getRobot() + "].");
 					checkProcessExecutorStatus(executor);
 					getDevice().prepareForPut(getDeviceSettings());

@@ -55,8 +55,8 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	private NumericTextField ntxtSmoothY;
 	private NumericTextField ntxtSmoothZ;
 	
-	private CoordinateBox coordBAirblow1;
-	private CoordinateBox coordBAirblow2;
+	private CoordinateBox coordBAirblowBottom;
+	private CoordinateBox coordBAirblowTop;
 	private ComboBox<String> cbbClamping;
 	private static final int COMBO_WIDTH = 150;
 	private static final int COMBO_HEIGHT = 40;
@@ -208,10 +208,24 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 			}
 			
 		});
-		coordBAirblow1 = new CoordinateBox(MAX_INTEGER_LENGTH, "X", "Y", "Z");
-		coordBAirblow1.setTranslateX(30);
-		coordBAirblow2 = new CoordinateBox(MAX_INTEGER_LENGTH, "X", "Y", "Z");
-		coordBAirblow2.setTranslateX(30);
+		coordBAirblowBottom = new CoordinateBox(MAX_INTEGER_LENGTH, "X", "Y", "Z");
+		coordBAirblowBottom.addChangeListeners(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> observableValue, final Float oldValue, final Float newValue) {
+				coordBAirblowBottom.updateCoordinate();
+				getPresenter().changedCoordinate();
+			}
+		});
+		coordBAirblowBottom.setTranslateX(30);
+		coordBAirblowTop = new CoordinateBox(MAX_INTEGER_LENGTH, "X", "Y", "Z");
+		coordBAirblowTop.addChangeListeners(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> observableValue, final Float oldValue, final Float newValue) {
+				coordBAirblowTop.updateCoordinate();
+				getPresenter().changedCoordinate();
+			}
+		});
+		coordBAirblowTop.setTranslateX(30);
 		
 		int column = 0;
 		int row = 0;
@@ -237,8 +251,8 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		cbbClamping.setTranslateY(-8);
 		airblowHBox.getChildren().add(cbbClamping);
 		getContents().add(airblowHBox, column++, row++);
-		getContents().add(coordBAirblow1, 0, row++);
-		getContents().add(coordBAirblow2, 0, row++);
+		getContents().add(coordBAirblowBottom, 0, row++);
+		getContents().add(coordBAirblowTop, 0, row++);
 		
 		Properties properties = new Properties();
 		try {
@@ -246,6 +260,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 			if ((properties.get("robot-airblow") != null) && (properties.get("robot-airblow").equals("false"))) {
 				cbAirblow.setVisible(false);
 				cbAirblow.setManaged(false);
+				putStep.getRobotSettings().setDoMachineAirblow(false);
 			}
 		} catch (IOException e) {
 			logger.error(e);
@@ -255,16 +270,20 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	
 	public void showTurnInMachine() {
 		cbTIM.setVisible(((AbstractCNCMachine)putStep.getDevice()).getTIMAllowed());
+		cbTIM.setManaged(((AbstractCNCMachine)putStep.getDevice()).getTIMAllowed());
 		cbTIM.setSelected(putStep.getRobotSettings().getTurnInMachine());
 	}
 	
 	private void showAirblow() {
-		coordBAirblow1.setVisible(cbAirblow.isSelected() && cbAirblow.isVisible());
-		coordBAirblow1.setManaged(coordBAirblow1.isVisible());
-		coordBAirblow2.setVisible(cbAirblow.isSelected() && cbAirblow.isVisible());
-		coordBAirblow2.setManaged(coordBAirblow2.isVisible());
-		cbbClamping.setVisible(coordBAirblow1.isVisible());
-		cbbClamping.setManaged(coordBAirblow1.isVisible());
+		coordBAirblowBottom.setVisible(cbAirblow.isSelected() && cbAirblow.isVisible());
+		coordBAirblowBottom.setManaged(coordBAirblowBottom.isVisible());
+		coordBAirblowTop.setVisible(cbAirblow.isSelected() && cbAirblow.isVisible());
+		coordBAirblowTop.setManaged(coordBAirblowTop.isVisible());
+		cbbClamping.setVisible(coordBAirblowBottom.isVisible());
+		cbbClamping.setManaged(coordBAirblowBottom.isVisible());
+		if (cbAirblow.isSelected() && cbAirblow.isVisible()) {
+			getPresenter().changedClamping(cbbClamping.getItems().get(0));
+		}
 	}
 
 	@Override
@@ -272,12 +291,14 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		ntxtSmoothX.setFocusListener(listener);
 		ntxtSmoothY.setFocusListener(listener);
 		ntxtSmoothZ.setFocusListener(listener);
-		coordBAirblow1.setTextFieldListener(listener);
-		coordBAirblow2.setTextFieldListener(listener);
+		coordBAirblowBottom.setTextFieldListener(listener);
+		coordBAirblowTop.setTextFieldListener(listener);
 	}
 
 	@Override
 	public void refresh() {
+		hideNotification();
+		refreshClampingBox();
 		if (putStep.getRobotSettings().getSmoothPoint() != null) {
 			ntxtSmoothX.setText("" + putStep.getRobotSettings().getSmoothPoint().getX());
 			ntxtSmoothY.setText("" + putStep.getRobotSettings().getSmoothPoint().getY());
@@ -303,12 +324,12 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		refreshCoordboxes();
 		showTurnInMachine();
 		showAirblow();
-		refreshClampingBox();
+		getPresenter().isConfigured();
 	}
 	
 	public void refreshCoordboxes() {
-		coordBAirblow1.reset();
-		coordBAirblow2.reset();
+		coordBAirblowBottom.reset();
+		coordBAirblowTop.reset();
 	}
 	
 	private void refreshClampingBox() {
@@ -322,10 +343,10 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	}
 	
 	void setBottomCoord(Coordinates coord) {
-		coordBAirblow1.setCoordinate(coord);
+		coordBAirblowBottom.setCoordinate(coord);
 	}
 	
 	void setTopCoord(Coordinates coord) {
-		coordBAirblow2.setCoordinate(coord);
+		coordBAirblowTop.setCoordinate(coord);
 	}
 }

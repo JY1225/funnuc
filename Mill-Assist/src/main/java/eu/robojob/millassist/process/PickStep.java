@@ -104,7 +104,7 @@ public class PickStep extends AbstractTransportStep {
 					} else {
 						robotPickSettings.setIsTIMPick(false);
 					}
-					getRobot().initiatePick(robotPickSettings);		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
+					getRobot().initiatePick(robotPickSettings, getDeviceSettings().getWorkArea().getActiveClamping(true));		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
 					logger.debug("Preparing [" + getDevice() + "] for pick using [" + getRobot() + "].");
 					checkProcessExecutorStatus(executor);
 					getDevice().prepareForPick(devicePickSettings);
