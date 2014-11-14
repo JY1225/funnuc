@@ -293,4 +293,13 @@ public class MainPresenter implements ProcessFlowListener {
 		});
 
 	}
+	
+	public boolean isTeachingActiveAfterTeaching() {
+		if (activeContentPresenter != null) {
+			if ((activeContentPresenter == teachPresenter || activeContentPresenter == automatePresenter) && process.getMode().equals(Mode.READY)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

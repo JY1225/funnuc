@@ -356,7 +356,7 @@ public class ProcessFlow {
 				}
 				break;
 			default:
-				throw new IllegalArgumentException("Unkown event type.");
+				throw new IllegalArgumentException("Unknown event type.");
 		}
 	}
 	

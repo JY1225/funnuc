@@ -453,7 +453,8 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	public void pickFinished(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, InterruptedException, DeviceActionException {
 		if (getWayOfOperating() == EWayOfOperating.M_CODES) {
 			if (((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) &&
-					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) || (pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH)) {
+					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS) && (pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED))) || 
+					(pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) && (pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED))) {
 				// last work piece: send reset in stead of finishing m code
 				nCReset();
 			} else {
@@ -462,7 +463,8 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD_REVERSAL).getRobotServiceOutputsUsed();
 				} else {
 					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD).getRobotServiceOutputsUsed();
-				}				int command = 0;
+				}				
+				int command = 0;
 				if (robotServiceOutputs.contains(0)) {
 					logger.info("AFMELDEN M-CODE 0");
 					command = command | CNCMachineConstantsDevIntv2.IPC_MC_FINISH_CMD;
