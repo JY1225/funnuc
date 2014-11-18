@@ -392,7 +392,7 @@ public class DeviceMapper {
 	private AirblowSquare getZoneBoundaries(final int zoneId) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
 				+ "SELECT * FROM ZONE_BOUNDARIES "
-				+ "WHERE ZONE = ?");
+				+ "WHERE ZONE_ID = ?");
 		stmt.setInt(1, zoneId);
 		ResultSet results = stmt.executeQuery();
 		if (results.next()) {
@@ -737,13 +737,13 @@ public class DeviceMapper {
 			generalMapper.saveCoordinates(airblowBound.getTopCoord());
 		} else {
 			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
-					+ "INSERT INTO ZONE_BOUNDARIES "
-					+ "VALUES (ZONE = ?, BOTTOMCOORD = ?, TOPCOORD = ?)");
+					+ "INSERT INTO ZONE_BOUNDARIES (ZONE_ID, BOTTOMCOORD, TOPCOORD) VALUES (?, ?, ?)");
 			stmt.setInt(1, zone.getId());
 			generalMapper.saveCoordinates(airblowBound.getBottomCoord());
 			generalMapper.saveCoordinates(airblowBound.getTopCoord());
 			stmt.setInt(2, airblowBound.getBottomCoord().getId());
 			stmt.setInt(3, airblowBound.getTopCoord().getId());
+			stmt.executeUpdate();
 		}
 	}
 	

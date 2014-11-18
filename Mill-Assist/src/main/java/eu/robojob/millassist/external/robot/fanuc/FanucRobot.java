@@ -176,9 +176,9 @@ public class FanucRobot extends AbstractRobot {
 			ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_21;
 		}
 		if (fPutSettings.isDoMachineAirblow()) {
-			//TODO send to robot - niet vergeten relatieve positie op te tellen!!
-			clamping.getRelativePosition();
 			AirblowSquare airblowSettings = putSettings.getAirblowSquare(clamping.getId()); 
+			Coordinates bottom = Coordinates.add(airblowSettings.getBottomCoord(), clamping.getRelativePosition());
+			Coordinates top = Coordinates.add(airblowSettings.getTopCoord(), clamping.getRelativePosition());
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 		}
 		if (fPutSettings.isTeachingNeeded()) {
@@ -285,8 +285,9 @@ public class FanucRobot extends AbstractRobot {
 		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
 		if (fPickSettings.isDoMachineAirblow()) {
 			//TODO send to robot - niet vergeten relatieve positie op te tellen!! - moet de hoogte van de klem er ook bij?
-			clamping.getRelativePosition();
 			AirblowSquare airblowSettings = pickSettings.getAirblowSquare(clamping.getId());
+			Coordinates bottom = Coordinates.add(airblowSettings.getBottomCoord(), clamping.getRelativePosition());
+			Coordinates top = Coordinates.add(airblowSettings.getTopCoord(), clamping.getRelativePosition());
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 		}
 		if (fPickSettings.isTeachingNeeded()) {

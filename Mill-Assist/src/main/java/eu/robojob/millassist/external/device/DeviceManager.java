@@ -365,19 +365,19 @@ public class DeviceManager {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void updateClamping(final Clamping clamping, final String name, final Clamping.Type type, final float height, 
 			final String imagePath, final float x, final float y, final float z, final float w, final float p, 
 			final float r, final float smoothToX, 
 			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, 
 			final float smoothFromZ, final EFixtureType fixtureType) {
-		try {
+		try { 
 			for (AbstractCNCMachine cncMachine : getCNCMachines()) {
 				for (WorkArea workArea : cncMachine.getWorkAreas()) {
 					for (Clamping cl : workArea.getClampings()) {
 						if (cl.getId() == clamping.getId()) {
 							deviceMapper.updateClamping(cl, name, type, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-								smoothFromX, smoothFromY, smoothFromZ, fixtureType);
+									smoothFromX, smoothFromY, smoothFromZ, fixtureType);
 						}
 					}
 				}
