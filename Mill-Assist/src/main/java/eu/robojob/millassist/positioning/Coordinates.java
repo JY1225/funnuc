@@ -175,7 +175,7 @@ public class Coordinates {
 			return false;
 		if (getZ() < square.getBottomCoord().getZ())
 			return false;
-		if (getZ() < square.getTopCoord().getZ())
+		if (getZ() > square.getTopCoord().getZ())
 			return false;
 		return true;
 	}

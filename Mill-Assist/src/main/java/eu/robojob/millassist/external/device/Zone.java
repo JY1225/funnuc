@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import eu.robojob.millassist.external.robot.AirblowSquare;
+
 public class Zone {
 	
 	private int id;
@@ -12,6 +14,8 @@ public class Zone {
 	private String name;
 	private Set<WorkArea> workAreas;
 	private AbstractDevice device;
+	// Boundary of the zone - square (lower left corner/upper right corner)
+	private AirblowSquare boundaries;
 
 	public Zone(final String name, final Set<WorkArea> workAreas, final int zoneNr) {
 		this.name = name;
@@ -130,5 +134,13 @@ public class Zone {
 			}
 		}
 		return false;
+	}
+	
+	public AirblowSquare getBoundaries() {
+		return this.boundaries;
+	}
+
+	public void setBoundary(AirblowSquare boundaries) {
+		this.boundaries = boundaries;
 	}
 }

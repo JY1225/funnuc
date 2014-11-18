@@ -8,9 +8,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
@@ -35,8 +35,7 @@ public class CNCMachineGeneralView extends GridPane {
 	private FullTextField fulltxtIp;
 	private Label lblPort;
 	private IntegerTextField itxtPort;
-	private Label lblNbFixtures;
-	private IntegerTextField itxtNbFix;
+
 	private Label lblStatus;
 	private Label lblStatusVal;
 	private Label lblWayOfOperating;
@@ -52,8 +51,6 @@ public class CNCMachineGeneralView extends GridPane {
 	private Region spacer;
 	private int clampingWidthDeltaR; 
 	private boolean devIntVersion;
-	private Label lblTIMAllowed;
-	private CheckBox cbTIMAllowed;
 		
 	private ObservableList<String> userFrameNames;
 	
@@ -72,8 +69,6 @@ public class CNCMachineGeneralView extends GridPane {
 	private static final String LBL_DEV_INT = "CNCMachineGeneralView.deviceInterface";
 	private static final String NEW_DEV_INT = "CNCMachineGeneralView.newDevInterface";
 	private static final String OLD_DEV_INT = "CNCMachineGeneralView.oldDevInterface";
-	private static final String MAX_FIX = "CNCMachineGeneralView.maxFix";
-	private static final String TIM_ALLOWED = "CNCMachineGeneralView.TIMAllowed";
 	
 	private static final String CSS_CLASS_BUTTON = "form-button";
 	private static final String CSS_CLASS_BUTTON_LABEL = "btn-start-label";
@@ -93,8 +88,9 @@ public class CNCMachineGeneralView extends GridPane {
 	}
 	
 	public void build() {
-		setVgap(10);
+		setVgap(15);
 		setHgap(20);
+		setPadding(new Insets(30,0,0,0));
 		setAlignment(Pos.TOP_CENTER);
 		lblName = new Label(Translator.getTranslation(NAME));
 		fulltxtName = new FullTextField(100);
@@ -107,8 +103,7 @@ public class CNCMachineGeneralView extends GridPane {
 		itxtPort.setPrefSize(50, UIConstants.TEXT_FIELD_HEIGHT);
 		lblStatus = new Label(Translator.getTranslation(STATUS));
 		lblStatusVal = new Label();
-		lblNbFixtures = new Label(Translator.getTranslation(MAX_FIX));
-		itxtNbFix = new IntegerTextField(1);
+
 		spacer = new Region();
 		spacer.setPrefWidth(10);
 		spacer.setMinWidth(10);
@@ -193,14 +188,6 @@ public class CNCMachineGeneralView extends GridPane {
 		VBox vboxRadioButtonsDevIntVersion = new VBox();
 		vboxRadioButtonsDevIntVersion.setSpacing(10);
 		vboxRadioButtonsDevIntVersion.getChildren().addAll(rbbOldDevInt, rbbNewDevInt);
-		lblTIMAllowed = new Label(Translator.getTranslation(TIM_ALLOWED));
-		cbTIMAllowed = new CheckBox();
-		cbTIMAllowed.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
-				cbTIMAllowed.setSelected(newValue);
-			}
-		});
 		
 		this.clampingWidthDeltaR = 0;
 		
@@ -218,9 +205,6 @@ public class CNCMachineGeneralView extends GridPane {
 		add(lblStatus, column++, row);
 		add(lblStatusVal, column++, row);
 		column = 0; row++;
-		add(lblNbFixtures, column++,row);
-		add(itxtNbFix, column, row);
-		column = 0; row++;
 		add(lblWayOfOperating, column++, row);
 		add(vboxRadioButtonsWayOfOperating, column++, row, 4, 1);
 		column = 0; row++;
@@ -235,9 +219,6 @@ public class CNCMachineGeneralView extends GridPane {
 		column = 0; row++;
 		add(lblDevInterface, column++, row);
 		add(vboxRadioButtonsDevIntVersion, column, row, 4, 1);
-		column = 0; row++;
-		add(lblTIMAllowed, column++, row);
-		add(cbTIMAllowed, column, row);
 	}
 	
 	public void refresh(final Set<String> userFrameNames, final AbstractCNCMachine cncMachine) {
@@ -246,7 +227,6 @@ public class CNCMachineGeneralView extends GridPane {
 		fulltxtName.setText(cncMachine.getName());
 		fulltxtIp.setText(cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().getIpAddress());
 		itxtPort.setText(cncMachine.getCNCMachineSocketCommunication().getExternalCommunicationThread().getSocketConnection().getPortNumber() + "");
-		itxtNbFix.setText("" + cncMachine.getNbFixtures());
 		refreshStatus(cncMachine);
 		btnClampingWidthDeltaRp90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		btnClampingWidthDeltaRm90.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
@@ -276,7 +256,6 @@ public class CNCMachineGeneralView extends GridPane {
 		} else {
 			rbbOldDevInt.selectedProperty().set(true);
 		}
-		cbTIMAllowed.setSelected(cncMachine.getTIMAllowed());
 	}
 	
 	public void refreshStatus(final AbstractCNCMachine cncMachine) {
@@ -291,7 +270,6 @@ public class CNCMachineGeneralView extends GridPane {
 		fulltxtName.setFocusListener(listener);
 		fulltxtIp.setFocusListener(listener);
 		itxtPort.setFocusListener(listener);
-		itxtNbFix.setFocusListener(listener);
 	}
 	
 	public String getName() {
@@ -339,13 +317,5 @@ public class CNCMachineGeneralView extends GridPane {
 		button.setPrefSize(width, UIConstants.BUTTON_HEIGHT);
 		button.getStyleClass().addAll(CSS_CLASS_BUTTON, cssClass);
 		return button;
-	}
-
-	public int getNbFixtures() {
-		return Integer.parseInt(itxtNbFix.getText());
-	}
-
-	public boolean getTIMAllowed() {
-		return cbTIMAllowed.isSelected();
 	}
 }

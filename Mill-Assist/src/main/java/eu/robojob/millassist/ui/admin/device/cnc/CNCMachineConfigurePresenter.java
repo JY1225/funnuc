@@ -11,6 +11,7 @@ import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarmsOccu
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineEvent;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineListener;
 import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.UserFrame;
 import eu.robojob.millassist.ui.admin.device.DeviceMenuPresenter;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -73,9 +74,10 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		EWayOfOperating wayOfOperating = getView().getWayOfOperating();
 		List<String> robotServiceInputNames = getView().getRobotServiceInputNames();
 		List<String> robotServiceOutputNames = getView().getRobotServiceOutputNames();
+		AirblowSquare boundaries = getView().getAirblowBound();
 		boolean newDevInt = getView().getNewDevInt();
 		deviceManager.updateCNCMachineData(cncMachine, name, wayOfOperating, ip, port, 
-				clampingWidthR, newDevInt, nbFixtures, timAllowed, 
+				clampingWidthR, newDevInt, nbFixtures, timAllowed, boundaries,
 				robotServiceInputNames, robotServiceOutputNames, 
 					getView().getMCodeNames(), getView().getMCodeRobotServiceInputs(), 
 						getView().getMCodeRobotServiceOutputs());

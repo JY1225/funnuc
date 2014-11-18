@@ -8,7 +8,6 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.UserFrame;
 
 public class WorkArea {
@@ -25,8 +24,6 @@ public class WorkArea {
 	private List<Clamping> clampingsInUse;
 	private int clampingsInUseCount;
 	private boolean inUse;
-	// Boundary of the workarea - square (lower left corner/upper right corner)
-	private AirblowSquare boundaries;
 	
 	private static Logger logger = LogManager.getLogger(WorkArea.class.getName());
 	
@@ -286,13 +283,5 @@ public class WorkArea {
 	
 	public int getWorkAreaNr() {
 		return this.workAreaNr;
-	}
-	
-	public AirblowSquare getBoundaries() {
-		return this.boundaries;
-	}
-
-	public void setBoundary(AirblowSquare boundaries) {
-		this.boundaries = boundaries;
 	}
 }

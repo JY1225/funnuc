@@ -356,6 +356,10 @@ public class DeviceMapper {
 			zone = new Zone(name, workAreas, zoneNr);
 			zone.setId(id);
 			zones.add(zone);
+			AirblowSquare boundaries = getZoneBoundaries(zone.getId());
+			if (boundaries != null) {
+				zone.setBoundary(boundaries);
+			}
 		}
 		return zones;
 	}
@@ -377,10 +381,6 @@ public class DeviceMapper {
 			workArea.setId(id);
 			workArea.inUse(false);
 			workAreas.add(workArea);
-			AirblowSquare boundaries = getWorkAreaBoundaries(zoneId, userFrameId);
-			if (boundaries != null) {
-				workArea.setBoundary(boundaries);
-			}
 			// set active clamping to first
 			if (possibleClampings.size() > 0) {
 				workArea.setDefaultClamping(possibleClampings.iterator().next());
@@ -389,13 +389,11 @@ public class DeviceMapper {
 		return workAreas;
 	}
 	
-	private AirblowSquare getWorkAreaBoundaries(final int zoneId, final int userFrameId) throws SQLException {
+	private AirblowSquare getZoneBoundaries(final int zoneId) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
-				+ "SELECT * FROM WORKAREA_BOUNDARIES "
-				+ "WHERE ZONE = ?"
-				+ "AND USERFRAME = ?");
+				+ "SELECT * FROM ZONE_BOUNDARIES "
+				+ "WHERE ZONE = ?");
 		stmt.setInt(1, zoneId);
-		stmt.setInt(2, userFrameId);
 		ResultSet results = stmt.executeQuery();
 		if (results.next()) {
 			Coordinates bottomCoord = generalMapper.getCoordinatesById(0, results.getInt("BOTTOMCOORD"));
@@ -686,7 +684,7 @@ public class DeviceMapper {
 	
 	public void updateCNCMachine(final AbstractCNCMachine cncMachine, final String name, final EWayOfOperating wayOfOperating,
 			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final boolean timAllowed, 
-			final List<String> robotServiceInputNames, final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
+			final AirblowSquare airblowBound, final List<String> robotServiceInputNames, final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE SOCKETCONNECTION " +
@@ -723,12 +721,30 @@ public class DeviceMapper {
 		cncMachine.setClampingWidthR(clampingWidthR);
 		cncMachine.setNbFixtures(nbFixtures);
 		cncMachine.setTIMAllowed(timAllowed);
+		saveAirblowBound(cncMachine, airblowBound);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setIpAddress(ipAddress);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setPortNumber(port);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setName(name);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().disconnect();
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	private void saveAirblowBound(final AbstractCNCMachine cncMachine, final AirblowSquare airblowBound) throws SQLException {
+		Zone zone = cncMachine.getZones().iterator().next();
+		if (zone.getBoundaries() != null) {
+			generalMapper.saveCoordinates(airblowBound.getBottomCoord());
+			generalMapper.saveCoordinates(airblowBound.getTopCoord());
+		} else {
+			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
+					+ "INSERT INTO ZONE_BOUNDARIES "
+					+ "VALUES (ZONE = ?, BOTTOMCOORD = ?, TOPCOORD = ?)");
+			stmt.setInt(1, zone.getId());
+			generalMapper.saveCoordinates(airblowBound.getBottomCoord());
+			generalMapper.saveCoordinates(airblowBound.getTopCoord());
+			stmt.setInt(2, airblowBound.getBottomCoord().getId());
+			stmt.setInt(3, airblowBound.getTopCoord().getId());
+		}
 	}
 	
 	public void updatePrageDevice(final PrageDevice prageDevice, final String name, final Clamping.Type type, final float relPosX, final float relPosY, 
