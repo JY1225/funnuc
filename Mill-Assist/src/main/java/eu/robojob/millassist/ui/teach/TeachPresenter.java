@@ -151,7 +151,9 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 	
 	public void saveProcess() {
 		try {
+			getProcessFlow().setChangesSinceLastSave(false);
 			processFlowManager.updateProcessFlow(getProcessFlow());
+			processFlowPresenter.refresh();
 			statusPresenter.getStatusPresenter().getView().setInfoMessage(Translator.getTranslation(SAVE_OK));
 		} catch (DuplicateProcessFlowNameException e) {
 			e.printStackTrace();
@@ -219,6 +221,7 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 	public void modeChanged(final ModeChangedEvent e) {
 		if (e.getMode() == Mode.READY) {
 			statusPresenter.showSaveButton(true);
+			getProcessFlow().setChangesSinceLastSave(true);
 		} else {
 			statusPresenter.showSaveButton(false);
 		}
