@@ -402,6 +402,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 		} else {
 			zSafePlane += workArea.getDefaultClamping().getHeight();
 		}
+		zSafePlane += dimensions.getHeight();
 		return zSafePlane;
 	}
 
