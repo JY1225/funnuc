@@ -155,9 +155,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		column = 0;
 		row++;
 		getContents().add(cbTIM, column++, row);
-				
-		refresh();
-		
+						
 		Properties properties = new Properties();
 		try {
 			properties.load(new FileInputStream(new File("settings.properties")));
