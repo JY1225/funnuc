@@ -627,12 +627,12 @@ public class FanucRobot extends AbstractRobot {
 		float payLoad1 = 0.0f;
 		float payLoad2 = 0.0f;
 		if (wp1 != null) {
-			payLoad1 = wp1.getWeight();
-			payLoad2 = wp1.getWeight();
+			payLoad1 = wp1.getWeight() * 10;
+			payLoad2 = wp1.getWeight() * 10;
 		}
 		if (wp2 != null) {
-			payLoad1 += wp2.getWeight();
-			payLoad2 += wp2.getWeight();
+			payLoad1 += wp2.getWeight() * 10;
+			payLoad2 += wp2.getWeight() * 10;
 		}
 		payLoad2 = payLoad2 + weight2;
 		values.add(getSpeed() + "");		// robot speed
