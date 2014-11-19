@@ -354,7 +354,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 			}
 			//In case a corner is needed, we need at least 2 stud positions for the attachment of the cornerpieces (1 in the corner of the cornerpiece and one next to it)
 			//If we do not have corners, we need at least 3 stud positions for stability (2 to support the workpiece and 1 left of the workpiece)
-			if (((corner) && (remainingStudsRight <= 1)) || ((!corner) && (remainingStudsRight <= 2))) {
+			if (((corner) && (remainingStudsRight <= 1)) || ((!corner) && (remainingStudsRight < 2))) {
 				return false;
 			}
 		case TILTED:

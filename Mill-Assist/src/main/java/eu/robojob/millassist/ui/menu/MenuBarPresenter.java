@@ -1,5 +1,7 @@
 package eu.robojob.millassist.ui.menu;
 
+import javafx.application.Platform;
+import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.MainPresenter;
 import eu.robojob.millassist.util.Translator;
@@ -15,6 +17,8 @@ public class MenuBarPresenter {
 	
 	private static final String UNSAVED_CHANGES_TITLE = "MenuBarPresenter.unsavedChangesTitle";
 	private static final String UNSAVED_CHANGES = "MenuBarPresenter.unsavedChanges";
+	private static final String BACK_TO_CFG_TITLE = "MenuBarPresenter.backToConfigureTitle";
+	private static final String BACK_TO_CONFIGURE = "MenuBarPresenter.backToConfigure";
 	
 	public MenuBarPresenter(final MenuBarView processMenuBarView) {
 		this.view = processMenuBarView;
@@ -33,8 +37,29 @@ public class MenuBarPresenter {
 	}
 	
 	public void clickedConfigure() {
-		parent.closePopUps();
-		parent.showConfigure();
+		if (parent.isTeachingActiveAfterTeaching()) {
+			ThreadManager.submit(new Thread() {
+				@Override
+				public void run() {
+					if(parent.askConfirmation(Translator.getTranslation(BACK_TO_CFG_TITLE), Translator.getTranslation(BACK_TO_CONFIGURE))) {
+						Platform.runLater(new Thread() {
+							@Override
+							public void run() {
+								parent.getProcessFlow().setMode(Mode.CONFIG);
+								parent.getProcessFlow().initialize();
+								parent.closePopUps();
+								parent.showConfigure();
+							}
+						});
+					}
+				}
+			});
+		} else {
+			parent.getProcessFlow().setMode(Mode.CONFIG);
+			parent.getProcessFlow().initialize();
+			parent.closePopUps();
+			parent.showConfigure();
+		}
 	}
 	
 	public void showConfigureView() {

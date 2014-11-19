@@ -628,7 +628,7 @@ public class ProcessFlowMapper {
 				try {
 					Clamping clamping = workArea.getClampingById(clampingId).clone();
 					clampings.put(workArea, clamping);
-					//Get the related clampings for this workare
+					//Get the related clampings for this workarea
 					stmt3.setInt(1, id);
 					stmt3.setBoolean(2, false);
 					stmt3.setInt(3, workareaId);

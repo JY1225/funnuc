@@ -231,7 +231,7 @@ public class Clamping implements Cloneable {
 		}
  		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return this.getId() * this.getName().hashCode() * getRelatedClampings().hashCode();

@@ -252,7 +252,6 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		getContents().add(airblowHBox, column++, row++);
 		getContents().add(coordBAirblowBottom, 0, row++);
 		getContents().add(coordBAirblowTop, 0, row++);
-		
 		Properties properties = new Properties();
 		try {
 			properties.load(new FileInputStream(new File("settings.properties")));

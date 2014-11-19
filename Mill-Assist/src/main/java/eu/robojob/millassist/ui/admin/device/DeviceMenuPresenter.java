@@ -64,6 +64,7 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		}
 		if (!stackPlatePresent) {
 			getView().disableBasicStackPlateMenuItem();
+			getView().disableGridPlateMenuItem();
 		}
 		if (!binPresent) {
 			getView().disableBinMenuItem();

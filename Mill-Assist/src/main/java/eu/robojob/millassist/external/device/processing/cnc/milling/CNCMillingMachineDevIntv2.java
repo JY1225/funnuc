@@ -10,6 +10,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
 import eu.robojob.millassist.external.device.AbstractDeviceActionSettings;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
@@ -69,7 +70,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void updateStatusAndAlarms() throws InterruptedException, SocketResponseTimedOutException, SocketDisconnectedException {
+	public void updateStatusAndAlarms() throws InterruptedException, SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException {
 		List<Integer> statusInts = (cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, 2));
 		setStatus(statusInts.get(0), CNCMachineConstantsDevIntv2.STATUS_SLOT_1);
 		setStatus(statusInts.get(1), CNCMachineConstantsDevIntv2.STATUS_SLOT_2);
@@ -93,7 +94,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void reset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void reset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int command = 0;
 		command = command | CNCMachineConstantsDevIntv2.IPC_RESET_CMD;
 		int[] registers = {command};
@@ -102,7 +103,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void nCReset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, DeviceActionException {
+	public void nCReset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, DeviceActionException, SocketWrongResponseException {
 		int command = 0;
 		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_NC_RESET_OK);
 		int maxResetTime = cncMachineCommunication.readRegisters(CNCMachineConstantsDevIntv2.PAR_MACHINE_MAX_NC_RESET_TIME, 1).get(0);
@@ -118,7 +119,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void powerOff() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void powerOff() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int command = 0;
 		// Direct power off command
 		command = command | CNCMachineConstantsDevIntv2.OUT_MACHINE_POWER_OFF;
@@ -128,7 +129,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void indicateAllProcessed() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, DeviceActionException {
+	public void indicateAllProcessed() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, DeviceActionException, SocketWrongResponseException {
 		// Still something todo?
 		nCReset();
 		int[] registers = {FINISH_BLUE_LAMP_VAL};
@@ -136,7 +137,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void indicateOperatorRequested(final boolean requested) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void indicateOperatorRequested(final boolean requested) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int command = 0;
 		if (requested) {
 			command = OPERATOR_RQST_BLUE_LAMP_VAL;
@@ -146,13 +147,13 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void clearIndications() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void clearIndications() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		// reset blue lamp
 		indicateOperatorRequested(false);
 	}
 	
 	@Override
-	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		// check work area
 		for(WorkArea wa: getWorkAreas()) {
 			wa.resetNbPossibleWPPerClamping(getWayOfOperating().getNbOfSides());
@@ -182,7 +183,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws SocketResponseTimedOutException, SocketDisconnectedException, DeviceActionException, InterruptedException {
+	public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws SocketResponseTimedOutException, SocketDisconnectedException, DeviceActionException, InterruptedException, SocketWrongResponseException {
 		if (getWayOfOperating() == EWayOfOperating.START_STOP) {
 			// check a valid workarea is selected 
 			if (!getWorkAreaNames().contains(startCylusSettings.getWorkArea().getName())) {
@@ -452,7 +453,8 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	public void pickFinished(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, InterruptedException, DeviceActionException {
 		if (getWayOfOperating() == EWayOfOperating.M_CODES) {
 			if (((pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) &&
-					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) || (pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH)) {
+					(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS) && (pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED))) || 
+					(pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) && (pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED))) {
 				// last work piece: send reset in stead of finishing m code
 				nCReset();
 			} else {
@@ -461,7 +463,8 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD_REVERSAL).getRobotServiceOutputsUsed();
 				} else {
 					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_UNLOAD).getRobotServiceOutputsUsed();
-				}				int command = 0;
+				}				
+				int command = 0;
 				if (robotServiceOutputs.contains(0)) {
 					logger.info("AFMELDEN M-CODE 0");
 					command = command | CNCMachineConstantsDevIntv2.IPC_MC_FINISH_CMD;
@@ -759,7 +762,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		return command;
 	}
 	
-	private void resetStatusValue(final int registerNr, final int value) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, DeviceActionException {
+	private void resetStatusValue(final int registerNr, final int value) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, DeviceActionException, SocketWrongResponseException {
 		// Read current status from register
 		int currentStatus = cncMachineCommunication.readRegisters(registerNr, 1).get(0);
 		// Check whether the value is already low (bitwise AND operation)

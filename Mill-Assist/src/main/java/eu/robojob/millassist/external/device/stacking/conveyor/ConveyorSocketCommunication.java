@@ -11,6 +11,7 @@ import eu.robojob.millassist.external.communication.socket.ExternalSocketCommuni
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
 
 public class ConveyorSocketCommunication extends ExternalSocketCommunication {
 
@@ -28,7 +29,7 @@ public class ConveyorSocketCommunication extends ExternalSocketCommunication {
 		this.command = new StringBuffer();
 	}
 	
-	public synchronized void writeRegisters(final int startingRegisterNr, final int timeout, final int[] values) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public synchronized void writeRegisters(final int startingRegisterNr, final int timeout, final int[] values) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		command = new StringBuffer();
 		command.append("WW");
 		if (startingRegisterNr >= MAX_REGISTER_NR) {
@@ -56,11 +57,11 @@ public class ConveyorSocketCommunication extends ExternalSocketCommunication {
 		awaitResponse("WW", timeout);
 	}
 	
-	public synchronized void writeRegisters(final int startingRegisterNr, final int[] values) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public synchronized void writeRegisters(final int startingRegisterNr, final int[] values) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		writeRegisters(startingRegisterNr, getDefaultWaitTimeout(), values);
 	}
 	
-	public synchronized List<Integer> readRegisters(final int startingRegisterNr, final int amount, final int timeout) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public synchronized List<Integer> readRegisters(final int startingRegisterNr, final int amount, final int timeout) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		command = new StringBuffer();
 		command.append("WR");
 		if (startingRegisterNr >= MAX_REGISTER_NR) {
@@ -96,11 +97,11 @@ public class ConveyorSocketCommunication extends ExternalSocketCommunication {
 		return results;
 	}
 
-	public synchronized List<Integer> readRegisters(final int startingRegisterNr, final int amount) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public synchronized List<Integer> readRegisters(final int startingRegisterNr, final int amount) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		return readRegisters(startingRegisterNr, amount, getDefaultWaitTimeout());
 	}
 
-	public synchronized boolean checkRegisterValue(final int registerNumber, final int value, final int waitTimeout) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public synchronized boolean checkRegisterValue(final int registerNumber, final int value, final int waitTimeout) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		long currentTime = System.currentTimeMillis();
 		List<Integer> readRegisters;
 		boolean timeout = false;
@@ -119,7 +120,7 @@ public class ConveyorSocketCommunication extends ExternalSocketCommunication {
 		return false;
 	}
 	
-	public synchronized boolean checkRegisterValueBitPattern(final int registerNumber, final int bitPattern, final int waitTimeout) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public synchronized boolean checkRegisterValueBitPattern(final int registerNumber, final int bitPattern, final int waitTimeout) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		long currentTime = System.currentTimeMillis();
 		List<Integer> readRegisters;
 		boolean timeout = false;

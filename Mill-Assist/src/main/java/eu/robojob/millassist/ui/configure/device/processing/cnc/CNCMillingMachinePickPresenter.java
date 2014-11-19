@@ -43,6 +43,7 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 		}  else {
 			pickStep.getRobotSettings().setSmoothPoint(new Coordinates(smoothX, 0, 0, 0, 0, 0));
 		}
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		getView().refresh();
 	}
 	
@@ -52,6 +53,7 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 		} else {
 			pickStep.getRobotSettings().setSmoothPoint(new Coordinates(0, smoothY, 0, 0, 0, 0));
 		}
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		getView().refresh();
 	}
 	
@@ -61,17 +63,20 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 		} else {
 			pickStep.getRobotSettings().setSmoothPoint(new Coordinates(0, 0, smoothZ, 0, 0, 0));
 		}
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		getView().refresh();
 	}
 	
 	public void resetSmooth() {
 		if (deviceSettings.getClamping(pickStep.getDeviceSettings().getWorkArea()) != null) {
 			pickStep.getRobotSettings().setSmoothPoint(deviceSettings.getClamping(pickStep.getDeviceSettings().getWorkArea()).getSmoothFromPoint());
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 			getView().refresh();
 		}
 	}
 	
 	public void changedAirblow(final boolean airblow) {
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		pickStep.getRobotSettings().setDoMachineAirblow(airblow);
 		if (!airblow) {
 			pickStep.getRobotSettings().clearAirblowSettings();
@@ -125,6 +130,7 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 	}
 
 	public void changedTIM(final boolean newValue) {
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		pickStep.getRobotSettings().setTurnInMachine(newValue);
 	}
 

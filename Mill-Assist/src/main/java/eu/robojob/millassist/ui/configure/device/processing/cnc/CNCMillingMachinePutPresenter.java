@@ -42,6 +42,7 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 		}  else {
 			putStep.getRobotSettings().setSmoothPoint(new Coordinates(smoothX, 0, 0, 0, 0, 0));
 		}
+		putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 		getView().refresh();
 	}
 	
@@ -51,6 +52,7 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 		} else {
 			putStep.getRobotSettings().setSmoothPoint(new Coordinates(0, smoothY, 0, 0, 0, 0));
 		}
+		putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 		getView().refresh();
 	}
 	
@@ -60,6 +62,7 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 		} else {
 			putStep.getRobotSettings().setSmoothPoint(new Coordinates(0, 0, smoothZ, 0, 0, 0));
 		}
+		putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 		getView().refresh();
 	}
 	
@@ -73,11 +76,13 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 	public void changedReleaseBefore(final boolean releaseBefore) {
 		if (putStep.getRobotSettings().isReleaseBeforeMachine() != releaseBefore) {
 			putStep.getRobotSettings().setReleaseBeforeMachine(releaseBefore);
+			putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 			getView().refresh();
 		}
 	}
 	
 	public void changedAirblow(final boolean airblow) {
+		putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 		putStep.getRobotSettings().setDoMachineAirblow(airblow);
 		if (!airblow) {
 			putStep.getRobotSettings().clearAirblowSettings();
@@ -131,6 +136,7 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 	}
 	
 	public void changedTIM(final boolean newValue) {
+		putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 		putStep.getRobotSettings().setTurnInMachine(newValue);
 	}
 	

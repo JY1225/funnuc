@@ -197,6 +197,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		
 		column = 0;
 		row++;
+
 		HBox airblowHBox = new HBox();
 		airblowHBox.getChildren().add(cbAirblow);
 		cbbClamping.setTranslateX(8);
@@ -205,8 +206,6 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		getContents().add(airblowHBox, column++, row++);
 		getContents().add(coordBAirblowBottom, 0, row++);
 		getContents().add(coordBAirblowTop, 0, row++);
-
-				
 		Properties properties = new Properties();
 		try {
 			properties.load(new FileInputStream(new File("settings.properties")));

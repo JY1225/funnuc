@@ -1,8 +1,6 @@
 package eu.robojob.millassist.ui.robot;
 
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
-import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
-import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.external.robot.RobotAlarmsOccuredEvent;
 import eu.robojob.millassist.external.robot.RobotEvent;
@@ -146,7 +144,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	public void openGripperA() {
 		try {
 			robot.openGripperA();
-		} catch (SocketDisconnectedException | SocketResponseTimedOutException | InterruptedException e) {
+		} catch (AbstractCommunicationException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -154,7 +152,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	public void closeGripperA() {
 		try {
 			robot.closeGripperA();
-		} catch (SocketDisconnectedException | SocketResponseTimedOutException | InterruptedException e) {
+		} catch (AbstractCommunicationException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -162,7 +160,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	public void openGripperB() {
 		try {
 			robot.openGripperB();
-		} catch (SocketDisconnectedException | SocketResponseTimedOutException | InterruptedException e) {
+		} catch (AbstractCommunicationException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -170,7 +168,7 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 	public void closeGripperB() {
 		try {
 			robot.closeGripperB();
-		} catch (SocketDisconnectedException | SocketResponseTimedOutException | InterruptedException e) {
+		} catch (AbstractCommunicationException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

@@ -148,8 +148,8 @@ public class TeachOptimizedThread extends TeachThread {
 					
 					pickFromMachineStep.setRelativeTeachedOffset(pickFromMachineOffset);
 					putOnStackingDeviceStep.setRelativeTeachedOffset(relTeachedOffsetFinishedWp);		
-					setRunning(false);
 					getProcessFlow().setMode(Mode.READY);
+					setRunning(false);
 				} else {
 					getProcessFlow().setMode(Mode.STOPPED);
 				}

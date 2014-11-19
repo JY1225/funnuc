@@ -10,6 +10,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
 import eu.robojob.millassist.external.device.DeviceActionException;
@@ -71,7 +72,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void updateStatusAndAlarms() throws InterruptedException, SocketResponseTimedOutException, SocketDisconnectedException {
+	public void updateStatusAndAlarms() throws InterruptedException, SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException {
 		int statusInt = (cncMachineCommunication.readRegisters(CNCMachineConstants.STATUS, 1)).get(0);
 		setStatus(statusInt);
 		List<Integer> alarmInts = cncMachineCommunication.readRegisters(CNCMachineConstants.ALARMS_REG1, 2);
@@ -86,7 +87,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void reset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void reset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int command = 0;
 		command = command | CNCMachineConstants.IPC_RESET_REQUEST;
 		int[] registers = {command};
@@ -95,7 +96,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void nCReset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void nCReset() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int command = 0;
 		command = command | CNCMachineConstants.IPC_NC_RESET;
 		int[] registers = {command};
@@ -105,7 +106,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void powerOff() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void powerOff() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int command = 0;
 		command = command | CNCMachineConstants.IPC_POWER_OFF;
 		int[] registers = {command};
@@ -114,7 +115,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void indicateAllProcessed() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void indicateAllProcessed() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int command = 0;
 		command = command | CNCMachineConstants.IPC_ALL_WP_PROCESSED;
 		int[] registers = {command};
@@ -122,7 +123,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void indicateOperatorRequested(final boolean requested) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void indicateOperatorRequested(final boolean requested) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int command = 0;
 		if (requested) {
 			command = command | CNCMachineConstants.IPC_OPERATOR_REQUESTED;
@@ -132,14 +133,14 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public void clearIndications() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void clearIndications() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		int command = 0;
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 	}
 	
 	@Override
-	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException {
+	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		//FIXME review! potential problems with reset in double processflow execution
 		clearIndications();
 		// check work area
@@ -183,7 +184,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws SocketResponseTimedOutException, SocketDisconnectedException, DeviceActionException, InterruptedException {
+	public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws SocketResponseTimedOutException, SocketDisconnectedException, DeviceActionException, InterruptedException, SocketWrongResponseException {
 		int ufNr = startCylusSettings.getWorkArea().getUserFrame().getNumber();
 		if (getWayOfOperating() == EWayOfOperating.START_STOP) {
 			// check a valid workarea is selected 

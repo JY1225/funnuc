@@ -395,12 +395,14 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	
 	@Override
 	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
-		float zSafePlane = super.getZSafePlane(dimensions, workArea, approachType);
+		float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
 		float wpHeight = layout.getLayers() *  dimensions.getHeight(); 
 		if (wpHeight > workArea.getDefaultClamping().getHeight()) {
-			zSafePlane -= workArea.getDefaultClamping().getHeight(); 
 			zSafePlane += wpHeight;
-		} 
+		} else {
+			zSafePlane += workArea.getDefaultClamping().getHeight();
+		}
+		zSafePlane += dimensions.getHeight();
 		return zSafePlane;
 	}
 
