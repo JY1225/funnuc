@@ -12,6 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.ui.controls.CoordinateBox;
@@ -51,17 +52,21 @@ public class CNCMachineOptionView extends GridPane {
 		addActionListeners();
 		
 		int column = 0; int row = 0;
-		add(cbTIMAllowed, column++, row);
-		add(lblTIM, column, row);
+		HBox TIMBox = new HBox();
+		TIMBox.getChildren().addAll(cbTIMAllowed, lblTIM);
+		HBox.setMargin(cbTIMAllowed, new Insets(0,15,0,0));
+		add(TIMBox, column, row);
 		
 		column = 0; row++;
-		add(lblAirblow, column, row++,3,1);
-		add(bottomCoord, column, row++,6,1);
-		add(topCoord, column, row,6,1);
+		add(lblAirblow, column, row++,2,1);
+		add(bottomCoord, column, row++,4,1);
+		add(topCoord, column, row,4,1);
 		
 		column = 0; row++;
-		add(lblNbFixtures, column++,row,1,1);
-		add(itxtNbFix, column, row);
+		HBox nbFixBox = new HBox();
+		nbFixBox.getChildren().addAll(lblNbFixtures, itxtNbFix);
+		HBox.setMargin(lblNbFixtures, new Insets(5,15,0,0));
+		add(nbFixBox, column, row);
 		
 		airblowActive();
 	}

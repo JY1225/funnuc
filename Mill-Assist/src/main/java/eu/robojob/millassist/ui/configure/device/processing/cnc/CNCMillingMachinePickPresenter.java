@@ -138,6 +138,7 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 	
 	public void changedCoordinate() {
 		getView().hideNotification();
+		//FIXME - niet altijd sturen!!
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		isConfigured();
 	}

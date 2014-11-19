@@ -735,8 +735,8 @@ public class ProcessFlowMapper {
 			} else {
 				throw new IllegalStateException("Unknown workpiece orientation: [" + orientation + "].");
 			}
+			basicStackPlateSettings.setClampings(clampings);
 		}
-		basicStackPlateSettings.setClampings(clampings);
 		return basicStackPlateSettings;
 	}
 	

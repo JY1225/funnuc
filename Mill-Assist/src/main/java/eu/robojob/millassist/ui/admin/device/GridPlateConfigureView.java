@@ -473,7 +473,6 @@ public class GridPlateConfigureView extends AbstractFormView<GridPlateConfigureP
 		StackPane spControls = new StackPane();
 		spControls.getChildren().addAll(btnDelete, btnSave);
 		spControls.setAlignment(Pos.CENTER);
-		spControls.setPadding(new Insets(0,12,0,0));
 		StackPane.setAlignment(btnDelete, Pos.CENTER_LEFT);
 		StackPane.setAlignment(btnSave, Pos.CENTER_RIGHT);
 		

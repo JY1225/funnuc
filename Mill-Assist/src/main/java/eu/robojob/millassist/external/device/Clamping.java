@@ -3,6 +3,7 @@ package eu.robojob.millassist.external.device;
 import java.util.HashSet;
 import java.util.Set;
 
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
 
 public class Clamping implements Cloneable {
@@ -58,6 +59,7 @@ public class Clamping implements Cloneable {
 	private Set<Clamping> relatedClampings;
 	// Default
 	private int nbOfPossibleWPToStore = 1;
+	private AirblowSquare defaultAirblowPoints;
 	
 	public Clamping(final Type type, final String name, final float defaultHeight, final Coordinates relativePosition, final Coordinates smoothToPoint,
 			final Coordinates smoothFromPoint, final String imageURL, final EFixtureType fixtureType) {
@@ -233,6 +235,14 @@ public class Clamping implements Cloneable {
 	@Override
 	public int hashCode() {
 		return this.getId() * this.getName().hashCode() * getRelatedClampings().hashCode();
+	}
+
+	public AirblowSquare getDefaultAirblowPoints() {
+		return defaultAirblowPoints;
+	}
+
+	public void setDefaultAirblowPoints(AirblowSquare defaultAirblowPoints) {
+		this.defaultAirblowPoints = defaultAirblowPoints;
 	}
 
 }

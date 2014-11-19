@@ -140,9 +140,10 @@ public final class RoboSoftAppFactory {
 	public static MainPresenter getMainPresenter() {
 		if (mainPresenter == null) {
 			MainView mainView = new MainView();
-			mainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter(), getAutomatePresenter(), 
+			MainPresenter tmpMainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter(), getAutomatePresenter(), 
 					getAlarmsPopUpPresenter(), getRobotPopUpPresenter(), getAdminPresenter());
-			mainPresenter.loadProcessFlow(getProcessFlow());
+			tmpMainPresenter.loadProcessFlow(getProcessFlow());
+			mainPresenter = tmpMainPresenter;
 		}
 		return mainPresenter;
 	}

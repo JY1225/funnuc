@@ -1,7 +1,6 @@
 package eu.robojob.millassist.ui.controls;
 
 import eu.robojob.millassist.positioning.Coordinates;
-import eu.robojob.millassist.util.UIConstants;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -32,7 +31,7 @@ public class CoordinateBox extends GridPane {
 	private void build() {
 		initComponents();
 		
-		setHgap(15);
+		setHgap(10);
 		setVgap(15);
 		
 		int col = 0; int row = 0;
@@ -49,9 +48,9 @@ public class CoordinateBox extends GridPane {
 	private void initComponents() {
 		for (int i = 0; i < numTfList.length; i++) {
 			NumericTextField tmpField = new NumericTextField(maxLengthTf);
-			tmpField.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 			numTfList[i] = tmpField;
 			numLabels[i] = new Label(lblTexts[i]);
+			numLabels[i].setMinWidth(25);
 		}
 	}
 	
@@ -88,4 +87,22 @@ public class CoordinateBox extends GridPane {
 			numTfList[i].setText("" + tmpCoordVal[i]);
 		}
 	}
+	
+	public void setPrefHeightDimension(double height) {
+		for (NumericTextField tf: numTfList) {
+			tf.setPrefHeight(height);
+			tf.setMinHeight(height);
+			tf.setMaxHeight(height);	
+		}
+	}
+	
+	public boolean isConfigured() {
+		for (NumericTextField tf: numTfList) {
+			if (tf.getText().equals("")) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 }

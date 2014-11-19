@@ -3,6 +3,7 @@ package eu.robojob.millassist.ui.admin.device;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.EFixtureType;
+import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.RoboSoftAppFactory;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -78,7 +79,7 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 	
 	void copyClamping(final float height, final String imagePath, final float x, final float y, final float z, final float w, final float p, final float r, 
 			final float smoothToX, final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
-			final Clamping.Type clampingType, final EFixtureType fixtureType) {
+			final Clamping.Type clampingType, final EFixtureType fixtureType, final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord) {
 		ThreadManager.submit(new Runnable() {
 
 			@Override
@@ -88,7 +89,7 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 						Translator.getTranslation(CNCMachineClampingsView.NAME));
 				if(!name.equals("")) {
 					deviceManager.saveClamping(name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-							smoothFromX, smoothFromY, smoothFromZ, fixtureType);
+							smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord);
 				}
 				selectedClamping = null;
 				editMode = false;
@@ -101,13 +102,13 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 	void updateClamping(final String name, final float height, final String imagePath, final float x, 
 			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
 			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
-			final Clamping.Type clampingType, final EFixtureType fixtureType) {
+			final Clamping.Type clampingType, final EFixtureType fixtureType, final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord) {
 		if (selectedClamping == null) {
 			deviceManager.saveClamping(name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-					smoothFromX, smoothFromY, smoothFromZ, fixtureType);
+					smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord);
 		} else {
 			deviceManager.updateClamping(selectedClamping, name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-				smoothFromX, smoothFromY, smoothFromZ, fixtureType);
+				smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord);
 		}
 		selectedClamping = null;
 		editMode = false;

@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -455,6 +456,11 @@ public class DeviceMapper {
 					break;
 				default:
 					throw new IllegalStateException("Unknown clamping type: [" + type + "].");
+			}
+			Integer bottomCoordAirblow = new Integer(results.getInt("AIRBLOW_BOTTOM"));
+			Integer topCoordAirblow = new Integer(results.getInt("AIRBLOW_TOP"));
+			if (bottomCoordAirblow != null && topCoordAirblow != null) {
+				clamping.setDefaultAirblowPoints(new AirblowSquare(generalMapper.getCoordinatesById(0, bottomCoordAirblow), generalMapper.getCoordinatesById(0, topCoordAirblow)));
 			}
 			clamping.setId(clampingId);
 		}
@@ -1017,11 +1023,18 @@ public class DeviceMapper {
 		return mCodeAdapter;
 	}
 	
+	private void updateClamping(final Clamping clamping, final String name, final Clamping.Type type, final float height, 
+			final String imagePath, final float x, final float y, final float z, final float w, final float p, 
+			final float r, final float smoothToX, final float smoothToY, final float smoothToZ, final float smoothFromX, 
+			final float smoothFromY, final float smoothFromZ, final EFixtureType fixtureType) throws SQLException {
+		updateClamping(clamping, name, type, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, fixtureType, null, null);
+	}
+	
 	public void updateClamping(final Clamping clamping, final String name, final Clamping.Type type, final float height, 
 			final String imagePath, final float x, final float y, final float z, final float w, final float p, 
-			final float r, final float smoothToX, 
-			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ,
-			final EFixtureType fixtureType) throws SQLException {
+			final float r, final float smoothToX, final float smoothToY, final float smoothToZ, final float smoothFromX, 
+			final float smoothFromY, final float smoothFromZ, final EFixtureType fixtureType,
+			final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		Coordinates relPos = clamping.getRelativePosition();
 		relPos.setX(x);
@@ -1041,8 +1054,12 @@ public class DeviceMapper {
 		smoothFrom.setY(smoothFromY);
 		smoothFrom.setZ(smoothFromZ);
 		generalMapper.saveCoordinates(smoothFrom);
+		if (bottomAirblowCoord != null && topAirblowCoord != null) {
+			generalMapper.saveCoordinates(bottomAirblowCoord);		
+			generalMapper.saveCoordinates(topAirblowCoord);
+		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE CLAMPING " +
-				"SET NAME = ?, TYPE = ?, HEIGHT = ?, IMAGE_URL = ?, FIXTURE_TYPE = ? WHERE ID = ?");
+				"SET NAME = ?, TYPE = ?, HEIGHT = ?, IMAGE_URL = ?, FIXTURE_TYPE = ?, AIRBLOW_BOTTOM = ?, AIRBLOW_TOP = ? WHERE ID = ?");
 		stmt.setString(1, name);
 		int typeInt = 0;
 		if (type == Type.CENTRUM) {
@@ -1064,13 +1081,27 @@ public class DeviceMapper {
 		stmt.setFloat(3, height);
 		stmt.setString(4, imagePath);
 		stmt.setInt(5, fixtureType.getCode());
-		stmt.setInt(6, clamping.getId());
+		if (bottomAirblowCoord != null) {
+			stmt.setInt(6, bottomAirblowCoord.getId());
+		} else {
+			stmt.setNull(6, Types.INTEGER);
+		}
+		if (topAirblowCoord != null) {
+			stmt.setInt(7, topAirblowCoord.getId());
+		} else {
+			stmt.setNull(7, Types.INTEGER);
+		}
+		stmt.setInt(8, clamping.getId());
 		stmt.executeUpdate();
 		clamping.setName(name);
 		clamping.setType(type);
 		clamping.setHeight(height);
 		clamping.setImageUrl(imagePath);
 		clamping.setFixtureType(fixtureType);
+		if (bottomAirblowCoord != null && topAirblowCoord != null) {
+			clamping.setDefaultAirblowPoints(new AirblowSquare(bottomAirblowCoord, topAirblowCoord));
+		}
+
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
@@ -1080,6 +1111,8 @@ public class DeviceMapper {
 		generalMapper.saveCoordinates(clamping.getRelativePosition());
 		generalMapper.saveCoordinates(clamping.getSmoothToPoint());
 		generalMapper.saveCoordinates(clamping.getSmoothFromPoint());
+		generalMapper.saveCoordinates(clamping.getDefaultAirblowPoints().getBottomCoord());
+		generalMapper.saveCoordinates(clamping.getDefaultAirblowPoints().getTopCoord());
 		int typeInt = 0;
 		if (clamping.getType() == Type.CENTRUM) {
 			typeInt = CLAMPING_TYPE_CENTRUM;
@@ -1097,7 +1130,8 @@ public class DeviceMapper {
 			throw new IllegalStateException("Unknown clamping type: " + clamping.getType());
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO CLAMPING (NAME, TYPE, RELATIVE_POSITION, " +
-				"SMOOTH_TO, SMOOTH_FROM, IMAGE_URL, HEIGHT, FIXTURE_TYPE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+				"SMOOTH_TO, SMOOTH_FROM, IMAGE_URL, HEIGHT, FIXTURE_TYPE, AIRBLOW_BOTTOM, AIRBLOW_TOP) " +
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setString(1, clamping.getName());
 		stmt.setInt(2, typeInt);
 		stmt.setInt(3, clamping.getRelativePosition().getId());
@@ -1106,6 +1140,8 @@ public class DeviceMapper {
 		stmt.setString(6, clamping.getImageUrl());
 		stmt.setFloat(7, clamping.getHeight());
 		stmt.setInt(8, clamping.getFixtureType().getCode());
+		stmt.setInt(9, clamping.getDefaultAirblowPoints().getBottomCoord().getId());
+		stmt.setInt(10, clamping.getDefaultAirblowPoints().getTopCoord().getId());
 		try {
 			stmt.executeUpdate();
 			ResultSet resultSet = stmt.getGeneratedKeys();

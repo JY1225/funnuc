@@ -246,10 +246,9 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		column = 0;
 		row++;
 		HBox airblowHBox = new HBox();
-		airblowHBox.getChildren().add(cbAirblow);
+		airblowHBox.getChildren().addAll(cbAirblow, cbbClamping);
 		cbbClamping.setTranslateX(8);
 		cbbClamping.setTranslateY(-8);
-		airblowHBox.getChildren().add(cbbClamping);
 		getContents().add(airblowHBox, column++, row++);
 		getContents().add(coordBAirblowBottom, 0, row++);
 		getContents().add(coordBAirblowTop, 0, row++);
@@ -321,6 +320,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		} else {
 			btnAfterClamp.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		}
+		//TODO - test of er iets veranderd is!! (ook voor pick)
 		refreshCoordboxes();
 		showTurnInMachine();
 		showAirblow();
