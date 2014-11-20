@@ -628,6 +628,7 @@ public class ProcessFlowMapper {
 				settings.put(device, reversalSettings);
 			} else {
 				DeviceSettings deviceSettings = new DeviceSettings(clampings);
+				deviceSettings.setId(id);
 				settings.put(device, deviceSettings);
 			}
 		}

@@ -374,7 +374,7 @@ public class DeviceMapper {
 			workArea.setId(id);
 			workArea.inUse(false);
 			workAreas.add(workArea);
-			// set active clamping to first
+			// set default clamping to first
 			if (possibleClampings.size() > 0) {
 				workArea.setDefaultClamping(possibleClampings.iterator().next());
 			}
