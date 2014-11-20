@@ -214,9 +214,9 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		lblName = new Label(Translator.getTranslation(NAME));
 		lblName.setMinWidth(75);
 		fullTxtName = new FullTextField(80);
-		fullTxtName.setMinSize(235, UIConstants.TEXT_FIELD_HEIGHT);
-		fullTxtName.setPrefSize(235, UIConstants.TEXT_FIELD_HEIGHT);
-		fullTxtName.setMaxSize(235, UIConstants.TEXT_FIELD_HEIGHT);
+		fullTxtName.setMinSize(230, UIConstants.TEXT_FIELD_HEIGHT);
+		fullTxtName.setPrefSize(230, UIConstants.TEXT_FIELD_HEIGHT);
+		fullTxtName.setMaxSize(230, UIConstants.TEXT_FIELD_HEIGHT);
 		fullTxtName.setOnChange(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> arg0, final String arg1, final String arg2) {
@@ -248,8 +248,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		cbbType.getItems().add(CLAMPING_TYPE_FIXED_YP);
 		
 		cbbFixtureType = new ComboBox<String>();
-		cbbFixtureType.setPrefSize(125, UIConstants.COMBO_HEIGHT);
-		cbbFixtureType.setMinSize(125, UIConstants.COMBO_HEIGHT);
+		cbbFixtureType.setPrefSize(120, UIConstants.COMBO_HEIGHT);
+		cbbFixtureType.setMinSize(120, UIConstants.COMBO_HEIGHT);
 		for (EFixtureType fixType: EFixtureType.values()) {
 			if(fixType != EFixtureType.DEFAULT && fixType.getHighestNbOfFixtureUsed() <= deviceManager.getCNCMachines().iterator().next().getNbFixtures())
 				cbbFixtureType.getItems().add(fixType.toString());
@@ -512,7 +512,6 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		gpDetails = new GridPane();
 		gpDetails.setAlignment(Pos.CENTER);
 		gpDetails.setVgap(10);
-		gpDetails.setHgap(20);
 		spDetails.setContent(gpDetails);
 		int column = 0;
 		int row = 0;
@@ -527,7 +526,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		gpNameHeight.add(lblType, 0, 2);
 		gpNameHeight.add(cbbType, 1, 2, 1, 1);
 		gpNameHeight.add(cbbFixtureType, 2, 2, 1, 1);
-		gpDetails.add(gpNameHeight, column++, row, 2, 1);
+		gpNameHeight.setAlignment(Pos.CENTER_LEFT);
+		gpDetails.add(gpNameHeight, 1, row, 2, 1);
 		column = 0; row++;
 		GridPane gpRelativePosition = new GridPane();
 		gpRelativePosition.setVgap(10);
@@ -561,11 +561,11 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		gpDetails.add(hboxSmoothFrom, column++, row, 6, 1);
 		column = 0; row++;
 		gpDetails.add(airblowBottomLabel, column++, row);
-		bottomAirblow.setPadding(new Insets(0,15,0,15));
+		bottomAirblow.setPadding(new Insets(0,10,0,10));
 		gpDetails.add(bottomAirblow, column, row, 6,1);
 		column = 0; row++;
 		gpDetails.add(airblowTopLabel, column++, row);
-		topAirblow.setPadding(new Insets(0,15,0,15));
+		topAirblow.setPadding(new Insets(0,10,0,10));
 		gpDetails.add(topAirblow, column, row, 6,1);
 		
 		//Buttons

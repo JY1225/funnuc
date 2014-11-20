@@ -215,6 +215,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 
 		HBox airblowHBox = new HBox();
 		airblowHBox.getChildren().add(cbAirblow);
+		btnResetAirblow.setTranslateX(-40);
 		cbbClamping.setTranslateX(8);
 		cbbClamping.setTranslateY(-8);
 		airblowHBox.getChildren().add(cbbClamping);

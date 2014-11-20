@@ -89,6 +89,8 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 			getView().setTopCoord(putStep.getRobotSettings().getAirblowSquare(clamping.getId()).getTopCoord());
 			putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 			getView().refreshCoordboxes();
+			getView().hideNotification();
+			isConfigured();
 		}
 	}
 

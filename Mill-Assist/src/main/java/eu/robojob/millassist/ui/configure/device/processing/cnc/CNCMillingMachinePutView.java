@@ -262,6 +262,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		row++;
 		HBox airblowHBox = new HBox();
 		airblowHBox.getChildren().addAll(cbAirblow, cbbClamping);
+		btnResetAirblow.setTranslateX(-40);
 		cbbClamping.setTranslateX(8);
 		cbbClamping.setTranslateY(-8);
 		getContents().add(airblowHBox, column++, row++);

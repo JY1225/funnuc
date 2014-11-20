@@ -91,6 +91,8 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 			getView().setTopCoord(pickStep.getRobotSettings().getAirblowSquare(clamping.getId()).getTopCoord());
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 			getView().refreshCoordboxes();
+			getView().hideNotification();
+			isConfigured();
 		}
 
 	}
