@@ -50,6 +50,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	private CheckBox cbTIM;
 	private CoordinateBox coordBAirblowBottom;
 	private CoordinateBox coordBAirblowTop;
+	private Button btnResetAirblow;
 	private ComboBox<String> cbbClamping;
 		
 	private static final int COMBO_WIDTH = 150;
@@ -180,6 +181,20 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		});
 		coordBAirblowTop.setTranslateX(30);
 		
+		btnResetAirblow = new Button();
+		Text txtBtnResetAirblow = new Text(Translator.getTranslation(RESET));
+		txtBtnResetSmooth.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT);
+		btnResetAirblow.setGraphic(txtBtnResetAirblow);
+		btnResetAirblow.setAlignment(Pos.CENTER);
+		btnResetAirblow.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().resetAirblow(cbbClamping.getSelectionModel().getSelectedItem());
+			}
+		});
+		btnResetAirblow.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
+		btnResetAirblow.setPrefSize(UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT);
+		
 		int column = 0;
 		int row = 0;
 		
@@ -204,7 +219,8 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		cbbClamping.setTranslateY(-8);
 		airblowHBox.getChildren().add(cbbClamping);
 		getContents().add(airblowHBox, column++, row++);
-		getContents().add(coordBAirblowBottom, 0, row++);
+		getContents().add(coordBAirblowBottom, 0, row);
+		getContents().add(btnResetAirblow, ++column, row++);
 		getContents().add(coordBAirblowTop, 0, row++);
 		Properties properties = new Properties();
 		try {
@@ -250,6 +266,8 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		coordBAirblowTop.setManaged(coordBAirblowTop.isVisible());
 		cbbClamping.setVisible(coordBAirblowBottom.isVisible());
 		cbbClamping.setManaged(coordBAirblowBottom.isVisible());
+		btnResetAirblow.setVisible(coordBAirblowTop.isVisible());
+		btnResetAirblow.setManaged(coordBAirblowBottom.isVisible());
 		if (cbAirblow.isSelected() && cbAirblow.isVisible()) {
 			getPresenter().changedClamping(cbbClamping.getItems().get(0));
 		}

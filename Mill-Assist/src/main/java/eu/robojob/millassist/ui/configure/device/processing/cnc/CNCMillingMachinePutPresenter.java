@@ -72,6 +72,25 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 			getView().refresh();
 		}
 	}
+	
+	public void resetAirblow(String clampingName) {
+		Clamping clamping = putStep.getRobotSettings().getWorkArea().getClampingByName(clampingName);
+		if (clamping != null) {
+			AirblowSquare defaultAirblow = clamping.getDefaultAirblowPoints();
+			if (putStep.getRobotSettings().getAirblowSquare(clamping.getId()) != null) {
+				AirblowSquare clampAirblow = putStep.getRobotSettings().getAirblowSquare(clamping.getId());
+				clampAirblow.getBottomCoord().setCoordinateValues(defaultAirblow.getBottomCoord().getCoordValues());
+				clampAirblow.getTopCoord().setCoordinateValues(defaultAirblow.getTopCoord().getCoordValues());
+			} else {
+				AirblowSquare newClampAirblow = new AirblowSquare(new Coordinates(defaultAirblow.getBottomCoord()), new Coordinates(defaultAirblow.getTopCoord()));
+				putStep.getRobotSettings().addRobotAirblowSettings(clamping.getId(), newClampAirblow);
+			}
+			getView().setBottomCoord(putStep.getRobotSettings().getAirblowSquare(clamping.getId()).getBottomCoord());
+			getView().setTopCoord(putStep.getRobotSettings().getAirblowSquare(clamping.getId()).getTopCoord());
+			putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
+			getView().refreshCoordboxes();
+		}
+	}
 
 	public void changedReleaseBefore(final boolean releaseBefore) {
 		if (putStep.getRobotSettings().isReleaseBeforeMachine() != releaseBefore) {

@@ -74,6 +74,26 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 			getView().refresh();
 		}
 	}
+
+	public void resetAirblow(String clampingName) {
+		Clamping clamping = pickStep.getRobotSettings().getWorkArea().getClampingByName(clampingName);
+		if (clamping != null) {
+			AirblowSquare defaultAirblow = clamping.getDefaultAirblowPoints();
+			if (pickStep.getRobotSettings().getAirblowSquare(clamping.getId()) != null) {
+				AirblowSquare clampAirblow = pickStep.getRobotSettings().getAirblowSquare(clamping.getId());
+				clampAirblow.getBottomCoord().setCoordinateValues(defaultAirblow.getBottomCoord().getCoordValues());
+				clampAirblow.getTopCoord().setCoordinateValues(defaultAirblow.getTopCoord().getCoordValues());
+			} else {
+				AirblowSquare newClampAirblow = new AirblowSquare(new Coordinates(defaultAirblow.getBottomCoord()), new Coordinates(defaultAirblow.getTopCoord()));
+				pickStep.getRobotSettings().addRobotAirblowSettings(clamping.getId(), newClampAirblow);
+			}
+			getView().setBottomCoord(pickStep.getRobotSettings().getAirblowSquare(clamping.getId()).getBottomCoord());
+			getView().setTopCoord(pickStep.getRobotSettings().getAirblowSquare(clamping.getId()).getTopCoord());
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+			getView().refreshCoordboxes();
+		}
+
+	}
 	
 	public void changedAirblow(final boolean airblow) {
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));

@@ -257,7 +257,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		cbbFixtureType.setVisibleRowCount(5);
 		
 		lblRelativePosition = new Label(Translator.getTranslation(RELATIVE_POSITION));
-		lblRelativePosition.setPrefWidth(125);
+		lblRelativePosition.setPrefWidth(150);
+		lblRelativePosition.setMinWidth(150);
 		lblX = new Label("X");
 		lblX.setMinWidth(LBL_WIDTH);
 		lblX.setPrefWidth(LBL_WIDTH);
@@ -338,8 +339,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		});
 		
 		lblSmoothTo = new Label(Translator.getTranslation(SMOOTH_TO));
-		lblSmoothTo.setPrefWidth(125);
-		lblSmoothTo.setMinWidth(125);
+		lblSmoothTo.setPrefWidth(150);
+		lblSmoothTo.setMinWidth(150);
 		lblSmoothToX = new Label("X");
 		lblSmoothToX.setPrefWidth(LBL_WIDTH);
 		lblSmoothToX.setMinWidth(LBL_WIDTH);
@@ -379,7 +380,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		});
 		
 		lblSmoothFrom = new Label(Translator.getTranslation(SMOOTH_FROM));
-		lblSmoothFrom.setPrefWidth(125);
+		lblSmoothFrom.setPrefWidth(150);
+		lblSmoothFrom.setMinWidth(150);
 		lblSmoothFromX = new Label("X");
 		lblSmoothFromX.setPrefWidth(LBL_WIDTH);
 		numtxtSmoothFromX = new NumericTextField(5);
@@ -418,9 +420,13 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		});
 		
 		Label airblowTopLabel = new Label(Translator.getTranslation(AIRBLOW_TOP));
-		airblowTopLabel.setPrefWidth(125);
+		airblowTopLabel.setPrefWidth(150);
+		airblowTopLabel.setMinWidth(150);
+		airblowTopLabel.setMaxWidth(150);
 		Label airblowBottomLabel = new Label(Translator.getTranslation(AIRBLOW_BOTTOM));
-		airblowBottomLabel.setPrefWidth(125);
+		airblowBottomLabel.setPrefWidth(150);
+		airblowBottomLabel.setMinWidth(150);
+		airblowBottomLabel.setMaxWidth(150);
 		bottomAirblow = new CoordinateBox(5, "X","Y","Z");
 		bottomAirblow.setPrefHeightDimension(UIConstants.TEXT_FIELD_HEIGHT);
 		topAirblow = new CoordinateBox(5, "X","Y","Z");

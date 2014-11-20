@@ -215,6 +215,7 @@ public class Clamping implements Cloneable {
 	@Override
 	public Clamping clone() throws CloneNotSupportedException {
 		Clamping clonedClamping = new Clamping(this.type, this.name, this.defaultHeight, this.relativePosition, this.smoothToPoint, this.smoothFromPoint, this.imageURL, this.fixtureType);
+		clonedClamping.setDefaultAirblowPoints(this.getDefaultAirblowPoints());
 		clonedClamping.prcIdUsingClamping = this.prcIdUsingClamping;
 		clonedClamping.setId(this.id);
 		return clonedClamping;
