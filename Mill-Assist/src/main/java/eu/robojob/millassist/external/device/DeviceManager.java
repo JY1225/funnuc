@@ -25,6 +25,7 @@ import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
+import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlowManager;
 
 public class DeviceManager {
@@ -410,11 +411,16 @@ public class DeviceManager {
 		}
 	}
 	
-	public void deleteClamping(final Clamping clamping) {
-		for (DeviceSettings deviceSettings : processFlowManager.getActiveProcessFlow().getDeviceSettings().values()) {
-			for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
-				if (entry.getValue().getId() == clamping.getId()) {
-					entry.setValue(null);
+	public void deleteClamping(final Clamping clamping) throws ClampingInUseException {
+		//Check that the clamping is the active one in processflows
+		for (ProcessFlow flow: processFlowManager.getProcessFlows()) {
+			for (DeviceSettings deviceSettings : flow.getDeviceSettings().values()) {
+				for (Entry<WorkArea, Clamping> workAreaClamping: deviceSettings.getClampings().entrySet()) {
+					if (workAreaClamping.getValue().getId() == clamping.getId()) {
+						throw new ClampingInUseException(clamping.getName(), flow.getName());
+					} else if (workAreaClamping.getValue().getRelatedClampings().contains(clamping)) {
+						throw new ClampingInUseException(clamping.getName(), flow.getName());
+					}
 				}
 			}
 		}
