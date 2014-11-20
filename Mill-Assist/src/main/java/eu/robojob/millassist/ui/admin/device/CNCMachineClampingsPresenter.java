@@ -1,6 +1,7 @@
 package eu.robojob.millassist.ui.admin.device;
 
 import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.ClampingInUseException;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.EFixtureType;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -71,10 +72,29 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 	}
 	
 	public void deleteClamping() {
-		deviceManager.deleteClamping(selectedClamping);
-		selectedClamping = null;
-		editMode = false;
-		getView().refresh();
+		try {
+			deviceManager.deleteClamping(selectedClamping);
+			selectedClamping = null;
+			editMode = false;
+			getView().refresh();
+		} catch (final ClampingInUseException e) {
+			ThreadManager.submit(new Thread() {
+				@Override
+				public void run() {
+					showNotificationDialog("Clamping in use", e.getMessage());
+				}
+			});
+		}
+
+	}
+	
+	private void showNotificationDialog(final String title, final String message) {
+		ThreadManager.submit(new Thread() {
+			@Override
+			public void run() {
+				RoboSoftAppFactory.getMainPresenter().showNotificationOverlay(title, message);
+			}
+		});
 	}
 	
 	void copyClamping(final float height, final String imagePath, final float x, final float y, final float z, final float w, final float p, final float r, 
