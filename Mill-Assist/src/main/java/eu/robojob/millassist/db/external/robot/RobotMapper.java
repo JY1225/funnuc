@@ -186,6 +186,7 @@ public class RobotMapper {
 			stmt.setInt(3, robot.getId());
 			stmt.executeUpdate();
 			robot.setName(name);
+			robot.setPayload(payload);
 		}
 		if ((!robot.getRobotSocketCommunication().getExternalCommunicationThread().getSocketConnection().getIpAddress().equals(ip)) 
 				|| (robot.getRobotSocketCommunication().getExternalCommunicationThread().getSocketConnection().getPortNumber() != port)
