@@ -148,6 +148,11 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 	}
 	
 	private boolean isAirblowConfigured() {
+		for (Clamping clamping : putStep.getRobotSettings().getWorkArea().getAllActiveClampings()) {
+			if (!putStep.getRobotSettings().getRobotAirblowSettings().containsKey(clamping.getId())) {
+				return false;
+			}
+		}
 		for (AirblowSquare airblowSettings: putStep.getRobotSettings().getRobotAirblowSettings().values()) {
 			if (!(airblowSettings.getBottomCoord().getX() < airblowSettings.getTopCoord().getX() &&
 				airblowSettings.getBottomCoord().getY() < airblowSettings.getTopCoord().getY()))
