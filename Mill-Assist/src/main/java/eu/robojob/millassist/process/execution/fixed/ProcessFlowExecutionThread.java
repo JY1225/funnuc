@@ -315,11 +315,11 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		setTIMPossible(false);
 		nbWPInMachine++;
 		checkStatus();		
+		putStep.finalizeStep(ProcessFlowExecutionThread.this);
 		ThreadManager.submit(new Thread() {
 			@Override
 			public void run() {
 				try {
-					putStep.finalizeStep(ProcessFlowExecutionThread.this);
 					checkStatus();
 				} catch (InterruptedException e) {
 					if (controllingThread.isRunning()) {

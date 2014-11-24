@@ -98,7 +98,6 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 	}
 	
 	public void changedAirblow(final boolean airblow) {
-		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		pickStep.getRobotSettings().setDoMachineAirblow(airblow);
 		if (!airblow) {
 			pickStep.getRobotSettings().clearAirblowSettings();
