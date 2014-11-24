@@ -63,7 +63,7 @@ public class PutStep extends AbstractTransportStep {
 						Coordinates position = new Coordinates(originalPosition);
 						logger.debug("Original coordinates: " + position + ".");
 						if (getRelativeTeachedOffset() == null) {
-							if (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight() < getDeviceSettings().getWorkArea().getActiveClamping(false).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
+							if (originalPosition.getZ() < getDeviceSettings().getWorkArea().getActiveClamping(false).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
 								//float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight());
 								float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping(false).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping(false).getHeight()) - originalPosition.getZ();
 								if(devicePutSettings.getDevice() instanceof ReversalUnit && getRobotSettings().getApproachType().equals(ApproachType.BOTTOM)) {
@@ -102,8 +102,7 @@ public class PutStep extends AbstractTransportStep {
 					} else {
 						robotPutSettings.setIsTIMPut(false);
 					}
-					
-					getRobot().initiatePut(getRobotSettings());		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
+					getRobot().initiatePut(getRobotSettings(), getDeviceSettings().getWorkArea().getActiveClamping(false));		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
 					logger.debug("Preparing [" + getDevice() + "] for put using [" + getRobot() + "].");
 					checkProcessExecutorStatus(executor);
 					getDevice().prepareForPut(getDeviceSettings());

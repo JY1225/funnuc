@@ -14,6 +14,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -27,11 +28,13 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	private Button btnGeneral;
 	private Button btnMCodes;
 	private Button btnSave;
+	private Button btnOption;
 	private Button activeButton;
 	private StackPane contentPane;
 	
 	private static final String GENERAL = "CNCMachineConfigureView.general";
 	private static final String M_CODES = "CNCMachineConfigureView.mCodes";
+	private static final String OPTIONS = "CNCMachineConfigureView.options";
 	private static final String SAVE_DIALOG = "CNCMachineConfigureView.saveDialog";
 	private static final String ACTIVE_CHANGES = "CNCMachineConfigureView.activeChanges";
 	private static final String CSS_CLASS_PADDING_BTN = "padding-button";
@@ -52,10 +55,12 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	
 	private CNCMachineGeneralView cncMachineGeneralView;
 	private CNCMachineMCodeView cncMachineMCodeView;
+	private CNCMachineOptionView cncMachineOptionView;
 	
 	public CNCMachineConfigureView() {
 		this.cncMachineGeneralView = new CNCMachineGeneralView();
 		this.cncMachineMCodeView = new CNCMachineMCodeView();
+		this.cncMachineOptionView = new CNCMachineOptionView();
 	}
 	
 	public void setCNCMachine(final AbstractCNCMachine cncMachine) {
@@ -79,6 +84,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		}
 		cncMachineGeneralView.refresh(userFrames, cncMachine);
 		cncMachineMCodeView.refresh(cncMachine.getMCodeAdapter());
+		cncMachineOptionView.refresh(cncMachine);
 	}
 	
 	public void refreshStatus() {
@@ -113,6 +119,15 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 			}
 		});
 		btnGeneral.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_BAR_LEFT, CSS_CLASS_PADDING_BTN);
+		btnOption = createButton(Translator.getTranslation(OPTIONS), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent arg0) {
+				contentPane.getChildren().clear();
+				contentPane.getChildren().add(cncMachineOptionView);
+				setActiveButton(btnOption);
+			}
+		});
+		btnOption.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_BAR_CENTER, CSS_CLASS_PADDING_BTN);
 		btnMCodes = createButton(Translator.getTranslation(M_CODES), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
@@ -122,10 +137,10 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 			}
 		});
 		btnMCodes.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_BAR_RIGHT, CSS_CLASS_PADDING_BTN);
-		hboxNavButtons.getChildren().addAll(btnGeneral, btnMCodes);
-		hboxNavButtons.setPrefWidth(3 * UIConstants.BUTTON_HEIGHT * 2);
-		hboxNavButtons.setMinWidth(3 * UIConstants.BUTTON_HEIGHT * 2);
-		hboxNavButtons.setMaxWidth(3 * UIConstants.BUTTON_HEIGHT * 2);
+		hboxNavButtons.getChildren().addAll(btnGeneral, btnOption, btnMCodes);
+		hboxNavButtons.setPrefWidth(3 * UIConstants.BUTTON_HEIGHT * 4);
+		hboxNavButtons.setMinWidth(3 * UIConstants.BUTTON_HEIGHT * 4);
+		hboxNavButtons.setMaxWidth(3 * UIConstants.BUTTON_HEIGHT * 4);
 		spNav.getChildren().add(hboxNavButtons);
 		getContents().add(spNav, 0, 0);
 		getContents().setAlignment(Pos.CENTER);
@@ -150,7 +165,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		
 		getContents().add(contentPane, 0, 1, 2, 1);
 		contentPane.getStyleClass().add(CSS_CLASS_CNC_CONTENTPANE);
-		GridPane.setMargin(contentPane, new Insets(50, 0, 0, 0));
+		GridPane.setMargin(contentPane, new Insets(25, 0, 0, 0));
 		GridPane.setVgrow(contentPane, Priority.ALWAYS);
 		contentPane.setAlignment(Pos.CENTER);
 		
@@ -180,6 +195,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	public void setTextFieldListener(final TextInputControlListener listener) {
 		cncMachineGeneralView.setTextFieldListener(listener);
 		cncMachineMCodeView.setTextFieldListener(listener);
+		cncMachineOptionView.setTextFieldListener(listener);
 	}
 	
 	public String getName() {
@@ -231,10 +247,14 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	}
 
 	public int getNbFixtures() {
-		return cncMachineGeneralView.getNbFixtures();
+		return cncMachineOptionView.getNbFixtures();
 	}
 
 	public boolean getTIMAllowed() {
-		return cncMachineGeneralView.getTIMAllowed();
+		return cncMachineOptionView.getTIMAllowed();
+	}
+	
+	public AirblowSquare getAirblowBound() {
+		return cncMachineOptionView.getAirblowBound();
 	}
 }

@@ -32,6 +32,8 @@ import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.EFixtureType;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.ui.controls.CoordinateBox;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.IconFlowSelector;
 import eu.robojob.millassist.ui.controls.NumericTextField;
@@ -83,11 +85,14 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private NumericTextField numtxtSmoothFromY;
 	private Label lblSmoothFromZ;
 	private NumericTextField numtxtSmoothFromZ;	
+	// default airblow
+	private CoordinateBox bottomAirblow, topAirblow;	
 	// image
 	private StackPane spImage;
 	private ImageView imageVw;
 	
 	private ScrollPane spDetails;
+	private StackPane spControls;
 	
 	private DeviceManager deviceManager;
 	
@@ -106,6 +111,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private static final String REMOVE = "CNCMacineClampingsView.remove";
 	private static final String TYPE = "CNCMachineClampingsView.type";
 	
+	private static final String AIRBLOW_BOTTOM = "CNCMachineClampingsView.airblowBottom";
+	private static final String AIRBLOW_TOP = "CNCMachineClampingsView.airblowTop";
 	private static final String RELATIVE_POSITION = "CNCMachineClampingsView.relativePosition";
 	private static final String SMOOTH_TO = "CNCMachineClampingsView.smoothTo";
 	private static final String SMOOTH_FROM = "CNCMachineClampingsView.smoothFrom";
@@ -128,6 +135,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private static final String CLAMPING_TYPE_FIXED_XM = "Fix X -";
 	private static final String CLAMPING_TYPE_FIXED_YP = "Fix Y +";
 	private static final String CLAMPING_TYPE_FIXED_YM = "Fix Y -";
+
 	
 	public CNCMachineClampingsView() {
 		this(null);
@@ -204,9 +212,11 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		spImage.getChildren().add(imageVw);
 		
 		lblName = new Label(Translator.getTranslation(NAME));
-		fullTxtName = new FullTextField(100);
-		fullTxtName.setPrefWidth(258);
-		fullTxtName.setMaxWidth(258);
+		lblName.setMinWidth(75);
+		fullTxtName = new FullTextField(80);
+		fullTxtName.setMinSize(230, UIConstants.TEXT_FIELD_HEIGHT);
+		fullTxtName.setPrefSize(230, UIConstants.TEXT_FIELD_HEIGHT);
+		fullTxtName.setMaxSize(230, UIConstants.TEXT_FIELD_HEIGHT);
 		fullTxtName.setOnChange(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> arg0, final String arg1, final String arg2) {
@@ -214,8 +224,11 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			}
 		});
 		lblHeight = new Label(Translator.getTranslation(HEIGHT));
+		lblHeight.setMinWidth(75);
 		numtxtHeight = new NumericTextField(6);
-		numtxtHeight.setMaxWidth(75);
+		numtxtHeight.setPrefHeight( UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtHeight.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtHeight.setMaxHeight(UIConstants.TEXT_FIELD_HEIGHT);
 		numtxtHeight.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -224,6 +237,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		});
 		
 		lblType = new Label(Translator.getTranslation(TYPE));
+		lblType.setMinWidth(75);
 		cbbType = new ComboBox<String>();
 		cbbType.setPrefSize(100, UIConstants.COMBO_HEIGHT);
 		cbbType.setMinSize(100, UIConstants.COMBO_HEIGHT);
@@ -234,8 +248,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		cbbType.getItems().add(CLAMPING_TYPE_FIXED_YP);
 		
 		cbbFixtureType = new ComboBox<String>();
-		cbbFixtureType.setPrefSize(125, UIConstants.COMBO_HEIGHT);
-		cbbFixtureType.setMinSize(125, UIConstants.COMBO_HEIGHT);
+		cbbFixtureType.setPrefSize(120, UIConstants.COMBO_HEIGHT);
+		cbbFixtureType.setMinSize(120, UIConstants.COMBO_HEIGHT);
 		for (EFixtureType fixType: EFixtureType.values()) {
 			if(fixType != EFixtureType.DEFAULT && fixType.getHighestNbOfFixtureUsed() <= deviceManager.getCNCMachines().iterator().next().getNbFixtures())
 				cbbFixtureType.getItems().add(fixType.toString());
@@ -243,12 +257,15 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		cbbFixtureType.setVisibleRowCount(5);
 		
 		lblRelativePosition = new Label(Translator.getTranslation(RELATIVE_POSITION));
-		lblRelativePosition.setPrefWidth(125);
+		lblRelativePosition.setPrefWidth(150);
+		lblRelativePosition.setMinWidth(150);
 		lblX = new Label("X");
 		lblX.setMinWidth(LBL_WIDTH);
 		lblX.setPrefWidth(LBL_WIDTH);
 		numtxtX = new NumericTextField(6);
-		numtxtX.setMaxWidth(75);
+		numtxtX.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtX.setMaxHeight( UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtX.setMinHeight( UIConstants.TEXT_FIELD_HEIGHT);
 		numtxtX.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -259,7 +276,9 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		lblY.setMinWidth(LBL_WIDTH);
 		lblY.setPrefWidth(LBL_WIDTH);
 		numtxtY = new NumericTextField(6);
-		numtxtY.setMaxWidth(75);
+		numtxtY.setPrefHeight( UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtY.setMaxHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtY.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
 		numtxtY.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -270,7 +289,9 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		lblZ.setMinWidth(LBL_WIDTH);
 		lblZ.setPrefWidth(LBL_WIDTH);
 		numtxtZ = new NumericTextField(6);
-		numtxtZ.setMaxWidth(75);
+		numtxtZ.setPrefHeight( UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtZ.setMaxHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtZ.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
 		numtxtZ.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -281,7 +302,9 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		lblW.setMinWidth(LBL_WIDTH);
 		lblW.setPrefWidth(LBL_WIDTH);
 		numtxtW = new NumericTextField(6);
-		numtxtW.setMaxWidth(75);
+		numtxtW.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtW.setMaxHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtW.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
 		numtxtW.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -292,7 +315,9 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		lblP.setMinWidth(LBL_WIDTH);
 		lblP.setPrefWidth(LBL_WIDTH);
 		numtxtP = new NumericTextField(6);
-		numtxtP.setMaxWidth(75);
+		numtxtP.setPrefHeight( UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtP.setMaxHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtP.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
 		numtxtP.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -303,7 +328,9 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		lblR.setMinWidth(LBL_WIDTH);
 		lblR.setPrefWidth(LBL_WIDTH);
 		numtxtR = new NumericTextField(6);
-		numtxtR.setMaxWidth(75);
+		numtxtR.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtR.setMaxHeight( UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtR.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
 		numtxtR.setOnChange(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
@@ -312,30 +339,99 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		});
 		
 		lblSmoothTo = new Label(Translator.getTranslation(SMOOTH_TO));
-		lblSmoothTo.setPrefWidth(125);
-		lblSmoothTo.setMinWidth(125);
+		lblSmoothTo.setPrefWidth(150);
+		lblSmoothTo.setMinWidth(150);
 		lblSmoothToX = new Label("X");
 		lblSmoothToX.setPrefWidth(LBL_WIDTH);
 		lblSmoothToX.setMinWidth(LBL_WIDTH);
 		numtxtSmoothToX = new NumericTextField(5);
+		numtxtSmoothToX.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothToX.setMaxHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothToX.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothToX.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
+				validate();
+			}
+		});
 		lblSmoothToY = new Label("Y");
 		lblSmoothToY.setPrefWidth(LBL_WIDTH);
 		numtxtSmoothToY = new NumericTextField(5);
+		numtxtSmoothToY.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothToY.setMaxHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothToY.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothToY.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
+				validate();
+			}
+		});
 		lblSmoothToZ = new Label("Z");
 		lblSmoothToZ.setPrefWidth(LBL_WIDTH);
 		numtxtSmoothToZ = new NumericTextField(5);
+		numtxtSmoothToZ.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothToZ.setMaxHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothToZ.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothToZ.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
+				validate();
+			}
+		});
 		
 		lblSmoothFrom = new Label(Translator.getTranslation(SMOOTH_FROM));
-		lblSmoothFrom.setPrefWidth(125);
+		lblSmoothFrom.setPrefWidth(150);
+		lblSmoothFrom.setMinWidth(150);
 		lblSmoothFromX = new Label("X");
 		lblSmoothFromX.setPrefWidth(LBL_WIDTH);
 		numtxtSmoothFromX = new NumericTextField(5);
+		numtxtSmoothFromX.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothFromX.setMaxHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothFromX.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothFromX.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
+				validate();
+			}
+		});
 		lblSmoothFromY = new Label("Y");
 		lblSmoothFromY.setPrefWidth(LBL_WIDTH);
 		numtxtSmoothFromY = new NumericTextField(5);
+		numtxtSmoothFromY.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothFromY.setMaxHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothFromY.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothFromY.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
+				validate();
+			}
+		});
 		lblSmoothFromZ = new Label("Z");
 		lblSmoothFromZ.setPrefWidth(LBL_WIDTH);
 		numtxtSmoothFromZ = new NumericTextField(5);
+		numtxtSmoothFromZ.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothFromZ.setMaxHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothFromZ.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		numtxtSmoothFromZ.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
+				validate();
+			}
+		});
+		
+		Label airblowTopLabel = new Label(Translator.getTranslation(AIRBLOW_TOP));
+		airblowTopLabel.setPrefWidth(150);
+		airblowTopLabel.setMinWidth(150);
+		airblowTopLabel.setMaxWidth(150);
+		Label airblowBottomLabel = new Label(Translator.getTranslation(AIRBLOW_BOTTOM));
+		airblowBottomLabel.setPrefWidth(150);
+		airblowBottomLabel.setMinWidth(150);
+		airblowBottomLabel.setMaxWidth(150);
+		bottomAirblow = new CoordinateBox(5, "X","Y","Z");
+		bottomAirblow.setPrefHeightDimension(UIConstants.TEXT_FIELD_HEIGHT);
+		topAirblow = new CoordinateBox(5, "X","Y","Z");
+		topAirblow.setPrefHeightDimension(UIConstants.TEXT_FIELD_HEIGHT);
+		addChangeListeners();
 		
 		btnSave = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
@@ -361,7 +457,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 						Float.parseFloat(numtxtSmoothToX.getText()), Float.parseFloat(numtxtSmoothToY.getText()),
 						Float.parseFloat(numtxtSmoothToZ.getText()), Float.parseFloat(numtxtSmoothFromX.getText()), 
 						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()),
-						type, fixtureType);
+						type, fixtureType, bottomAirblow.getCoordinate(), topAirblow.getCoordinate());
 			}
 		});
 		btnCopy = createButton(ADD_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(COPY), BTN_WIDTH + 40, BTN_HEIGHT, new EventHandler<ActionEvent>() {	
@@ -388,7 +484,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 						Float.parseFloat(numtxtSmoothToX.getText()), Float.parseFloat(numtxtSmoothToY.getText()),
 						Float.parseFloat(numtxtSmoothToZ.getText()), Float.parseFloat(numtxtSmoothFromX.getText()), 
 						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()),
-						type, fixtureType);	
+						type, fixtureType, new Coordinates(bottomAirblow.getCoordinate()), new Coordinates(topAirblow.getCoordinate()));	
 			}
 		});
 		btnDelete = createButton(DELETE_ICON_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(REMOVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
@@ -399,7 +495,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		});
 		btnDelete.getStyleClass().add("delete-btn");
 		
-		StackPane spControls = new StackPane();
+		spControls = new StackPane();
 		spControls.getChildren().addAll(btnDelete,btnCopy, btnSave);
 		spControls.setAlignment(Pos.CENTER);
 		StackPane.setAlignment(btnDelete, Pos.CENTER_LEFT);
@@ -409,14 +505,13 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		spDetails = new ScrollPane();
 		spDetails.setHbarPolicy(ScrollBarPolicy.NEVER);
 		spDetails.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-		spDetails.setPannable(true);
+		spDetails.setPannable(false);
 		spDetails.setFitToHeight(true);
 		spDetails.setFitToWidth(true);
-		
+			
 		gpDetails = new GridPane();
 		gpDetails.setAlignment(Pos.CENTER);
 		gpDetails.setVgap(10);
-		gpDetails.setHgap(20);
 		spDetails.setContent(gpDetails);
 		int column = 0;
 		int row = 0;
@@ -431,9 +526,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		gpNameHeight.add(lblType, 0, 2);
 		gpNameHeight.add(cbbType, 1, 2, 1, 1);
 		gpNameHeight.add(cbbFixtureType, 2, 2, 1, 1);
-		//gpNameHeight.add(lblUseSecond, 3, 1);
-		//gpNameHeight.add(cbUseSecond, 4, 1);
-		gpDetails.add(gpNameHeight, column++, row, 2, 1);
+		gpNameHeight.setAlignment(Pos.CENTER_LEFT);
+		gpDetails.add(gpNameHeight, 1, row, 2, 1);
 		column = 0; row++;
 		GridPane gpRelativePosition = new GridPane();
 		gpRelativePosition.setVgap(10);
@@ -452,30 +546,42 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		gpRelativePosition.add(lblR, 5, 1);
 		gpRelativePosition.add(numtxtR, 6, 1);
 		gpRelativePosition.setAlignment(Pos.CENTER_LEFT);
-		gpDetails.add(gpRelativePosition, column++, row, 2, 1);
+		gpDetails.add(gpRelativePosition, column++, row, 7, 1);
 		column = 0; row++;
 		HBox hboxSmoothTo = new HBox();
 		hboxSmoothTo.setAlignment(Pos.CENTER_LEFT);
 		hboxSmoothTo.setSpacing(10);
 		hboxSmoothTo.getChildren().addAll(lblSmoothTo, lblSmoothToX, numtxtSmoothToX, lblSmoothToY, numtxtSmoothToY, lblSmoothToZ, numtxtSmoothToZ);
-		gpDetails.add(hboxSmoothTo, column++, row, 2, 1);
+		gpDetails.add(hboxSmoothTo, column++, row, 7, 1);
 		column = 0; row++;
 		HBox hboxSmoothFrom = new HBox();
 		hboxSmoothFrom.setAlignment(Pos.CENTER_LEFT);
 		hboxSmoothFrom.setSpacing(10);
 		hboxSmoothFrom.getChildren().addAll(lblSmoothFrom, lblSmoothFromX, numtxtSmoothFromX, lblSmoothFromY, numtxtSmoothFromY, lblSmoothFromZ, numtxtSmoothFromZ);
-		gpDetails.add(hboxSmoothFrom, column++, row, 2, 1);
+		gpDetails.add(hboxSmoothFrom, column++, row, 6, 1);
 		column = 0; row++;
-		gpDetails.add(spControls, column++, row, 2, 1);
+		gpDetails.add(airblowBottomLabel, column++, row);
+		bottomAirblow.setPadding(new Insets(0,10,0,10));
+		gpDetails.add(bottomAirblow, column, row, 6,1);
+		column = 0; row++;
+		gpDetails.add(airblowTopLabel, column++, row);
+		topAirblow.setPadding(new Insets(0,10,0,10));
+		gpDetails.add(topAirblow, column, row, 6,1);
+		
+		//Buttons
+		column = 0; row++;
 		spDetails.setVisible(false);
+		spControls.setVisible(false);
 		GridPane.setHalignment(spControls, HPos.CENTER);
 		gpDetails.setAlignment(Pos.CENTER);
 		GridPane.setVgrow(spDetails, Priority.ALWAYS);
 		GridPane.setHalignment(gpDetails, HPos.CENTER);
 		getContents().add(vboxSelectClamping, 0, 0);
 		getContents().add(spDetails, 0, 1);
+		getContents().add(spControls, 0,2);
 		GridPane.setMargin(spDetails, new Insets(0, 0, 10, 0));
 		gpDetails.setPadding(new Insets(10, 0, 10, 0));
+		spControls.setPadding(new Insets(0, 0, 10, 0));
 		getContents().setAlignment(Pos.CENTER);
 		GridPane.setHalignment(spDetails, HPos.CENTER);
 		GridPane.setValignment(spImage, VPos.TOP);
@@ -497,10 +603,29 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		numtxtSmoothFromX.setFocusListener(listener);
 		numtxtSmoothFromY.setFocusListener(listener);
 		numtxtSmoothFromZ.setFocusListener(listener);
+		bottomAirblow.setTextFieldListener(listener);
+		topAirblow.setTextFieldListener(listener);
 	}
 
 	public void setDeviceManager(final DeviceManager deviceManager) {
 		this.deviceManager = deviceManager;
+	}
+	
+	private void addChangeListeners() {
+		topAirblow.addChangeListeners(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
+				topAirblow.updateCoordinate();
+				validate();
+			}
+		});
+		bottomAirblow.addChangeListeners(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
+				bottomAirblow.updateCoordinate();
+				validate();
+			}
+		});
 	}
 	
 	@Override
@@ -530,6 +655,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	
 	public void showFormEdit() {
 		spDetails.setVisible(true);
+		spControls.setVisible(true);
 		btnNew.setDisable(true);
 		btnDelete.setVisible(true);
 		btnEdit.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
@@ -538,6 +664,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	
 	public void showFormNew() {
 		spDetails.setVisible(true);
+		spControls.setVisible(true);
 		btnEdit.setDisable(true);
 		btnDelete.setVisible(false);
 		btnNew.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
@@ -577,6 +704,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		imageVw.setImage(null);
 		validate();
 		spDetails.setVisible(false);
+		spControls.setVisible(false);
 	}
 	
 	public void clampingSelected(final Clamping clamping) {
@@ -618,6 +746,12 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			imageVw.setImage(new Image(UIConstants.IMG_NOT_FOUND_URL, IMG_WIDTH, IMG_HEIGHT, true, true));
 		}
 		imagePath = clamping.getImageUrl();
+		if (clamping.getDefaultAirblowPoints().getTopCoord() != null && clamping.getDefaultAirblowPoints().getBottomCoord() != null) {
+			topAirblow.setCoordinate(clamping.getDefaultAirblowPoints().getTopCoord());
+			topAirblow.reset();
+			bottomAirblow.setCoordinate(clamping.getDefaultAirblowPoints().getBottomCoord());
+			bottomAirblow.reset();
+		}
 	}
 
 	public void validate() {
@@ -635,7 +769,10 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 				&& !numtxtSmoothFromX.getText().equals("")
 				&& !numtxtSmoothFromY.getText().equals("")
 				&& !numtxtSmoothFromZ.getText().equals("")
-				&& (imagePath != null) && !imagePath.equals("")) {
+				&& (imagePath != null) && !imagePath.equals("")
+				&& topAirblow.isConfigured()
+				&& bottomAirblow.isConfigured()
+				) {
 			btnSave.setDisable(false);
 		} else {
 			btnSave.setDisable(true);

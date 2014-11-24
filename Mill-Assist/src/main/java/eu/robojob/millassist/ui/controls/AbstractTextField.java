@@ -120,4 +120,9 @@ public abstract class AbstractTextField<T> extends javafx.scene.control.TextFiel
 	
 	public abstract T convertString(String text);
 	
+	
+	public T getValue() {
+		return (convertString(getText()));
+	}
+	
 }

@@ -29,6 +29,7 @@ import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridP
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.ui.general.MainContentView;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
 /*
@@ -51,6 +52,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	private static final float TXT_WIDTH = 40;
 	private static final float TXT_HEIGHT = 15;
+	private static final int HEIGHT_PLATE = MainContentView.HEIGHT_BOTTOM;
 		
 	private float width;
 	
@@ -115,9 +117,9 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 				root = null;
 				getContents().getChildren().clear();
 				
-				getContents().setPrefSize(590, 300);
-				getContents().setMinSize(590, 300);
-				getContents().setMaxSize(590, 300);
+				getContents().setPrefSize(590, HEIGHT_PLATE);
+				getContents().setMinSize(590, HEIGHT_PLATE);
+				getContents().setMaxSize(590, HEIGHT_PLATE);
 				
 				group = new Group();
 				group.setCache(true);
@@ -138,11 +140,11 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					}
 					configureWorkPieces();
 				}
-				Scale s = new Scale(590 / group.getBoundsInParent().getWidth(), 300 / group.getBoundsInParent().getHeight());
+				Scale s = new Scale(590 / group.getBoundsInParent().getWidth(), HEIGHT_PLATE / group.getBoundsInParent().getHeight());
 				group.getTransforms().add(s);
 				
 				root = new Pane();
-				root.setPrefSize(590, 300);
+				root.setPrefSize(590, HEIGHT_PLATE);
 				root.getChildren().clear();
 				root.getChildren().add(group);		
 				

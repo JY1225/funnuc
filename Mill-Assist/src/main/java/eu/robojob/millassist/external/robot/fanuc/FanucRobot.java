@@ -23,6 +23,7 @@ import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
 import eu.robojob.millassist.external.robot.RobotActionException;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.external.robot.RobotAlarm;
 import eu.robojob.millassist.external.robot.RobotConstants;
 import eu.robojob.millassist.external.robot.RobotMonitoringThread;
@@ -163,7 +164,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void initiatePut(final RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+	public void initiatePut(final RobotPutSettings putSettings, Clamping clamping) throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		if (isExecutionInProgress()) {
 			throw new IllegalStateException("Already performing action, with setting: " + getCurrentActionSettings());
 		} else {
@@ -176,6 +177,7 @@ public class FanucRobot extends AbstractRobot {
 			ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_21;
 		}
 		if (fPutSettings.isDoMachineAirblow()) {
+			writeAirblowPointSet(clamping, putSettings.getAirblowSquare(clamping.getId()));
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 		}
 		if (fPutSettings.isTeachingNeeded()) {
@@ -271,7 +273,7 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	@Override
-	public void initiatePick(final RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+	public void initiatePick(final RobotPickSettings pickSettings, Clamping clamping) throws AbstractCommunicationException, RobotActionException, InterruptedException {
 		if (isExecutionInProgress()) {
 			throw new IllegalStateException("Already performing action, with setting: " + getCurrentActionSettings());
 		} else {
@@ -281,6 +283,7 @@ public class FanucRobot extends AbstractRobot {
 		writeServiceGripperSet(false, pickSettings.getGripperHead().getName(), this.getGripperBody().getGripperHeadByName(HEAD_A_ID), this.getGripperBody().getGripperHeadByName(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK, pickSettings.isGripInner());
 		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
 		if (fPickSettings.isDoMachineAirblow()) {
+			writeAirblowPointSet(clamping, pickSettings.getAirblowSquare(clamping.getId()));
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 		}
 		if (fPickSettings.isTeachingNeeded()) {
@@ -701,6 +704,30 @@ public class FanucRobot extends AbstractRobot {
 		values.add("0");	// bar move length
 		logger.debug("Writing service point: " + values);
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_SERVICE_POINT, RobotConstants.RESPONSE_WRITE_SERVICE_POINT, WRITE_VALUES_TIMEOUT, values);
+	}
+	
+	private void writeAirblowPointSet(final Clamping clamping, final AirblowSquare airblowSettings) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
+		Coordinates bottom = Coordinates.add(airblowSettings.getBottomCoord(), clamping.getRelativePosition());
+		Coordinates top = Coordinates.add(airblowSettings.getTopCoord(), clamping.getRelativePosition());
+		List<String> values = new ArrayList<String>();
+		//XYZ
+		values.add(df.format(bottom.getX()));
+		values.add(df.format(bottom.getY()));
+		values.add(df.format(bottom.getZ()));
+		//WPR
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		//XYZ
+		values.add(df.format(top.getX()));
+		values.add(df.format(top.getY()));
+		values.add(df.format(top.getZ()));
+		//WPR
+		values.add("0");
+		values.add("0");
+		values.add("0");
+		logger.debug("Writing airblow points: " + values);
+		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_AIRBLOW, RobotConstants.RESPONSE_WRITE_AIRBLOW, WRITE_VALUES_TIMEOUT, values);
 	}
 
 	private void writeCommand(final int permission) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {

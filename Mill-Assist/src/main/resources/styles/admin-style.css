@@ -10,7 +10,7 @@
 .check-box, .radio-button {
 	-fx-text-fill: white;
 	-fx-font-size: 14px;
-	-fx-font-family: 'HelveticaNeueCyr-Medium';
+	-fx-font-family: "Open Sans";
 	-fx-font-smoothing-type: lcd;
 }
 

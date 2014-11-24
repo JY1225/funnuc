@@ -22,6 +22,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
+import eu.robojob.millassist.ui.general.MainContentView;
 import eu.robojob.millassist.ui.general.status.StatusView;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
@@ -29,7 +30,6 @@ import eu.robojob.millassist.util.UIConstants;
 public class AutomateStatusView extends HBox {
 	
 	public static final int WIDTH = 800;
-	public static final int HEIGHT_BOTTOM = 300;
 	public static final int WIDTH_BOTTOM_RIGHT = 230;
 	public static final int HEIGHT_BOTTOM_RIGHT_TOP = 230;
 	public static final int HEIGHT_BOTTOM_LEFT_TOP = 230;
@@ -108,18 +108,18 @@ public class AutomateStatusView extends HBox {
 	}
 	
 	public void build() {
-		setPrefSize(WIDTH, HEIGHT_BOTTOM);
+		setPrefSize(WIDTH, MainContentView.HEIGHT_BOTTOM);
 		getStyleClass().add(CSS_CLASS_AUTOMATE_BOTTOM);
 		setAlignment(Pos.CENTER_LEFT);
 		bottomRight = new StackPane();
-		bottomRight.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM);
+		bottomRight.setPrefSize(WIDTH_BOTTOM_RIGHT, MainContentView.HEIGHT_BOTTOM);
 		bottomLeft = new StackPane();
-		bottomLeft.setPrefSize(WIDTH - WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM);
+		bottomLeft.setPrefSize(WIDTH - WIDTH_BOTTOM_RIGHT, MainContentView.HEIGHT_BOTTOM);
 		getChildren().add(bottomLeft);
 		getChildren().add(bottomRight);
 		
 		vboxBottomLeft = new VBox();
-		vboxBottomLeft.setPrefSize(WIDTH - WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM);
+		vboxBottomLeft.setPrefSize(WIDTH - WIDTH_BOTTOM_RIGHT, MainContentView.HEIGHT_BOTTOM);
 		vboxBottomLeft.getChildren().add(statusView);
 		vboxBottomLeft.getChildren().add(timingView);
 		vboxBottomLeft.setAlignment(Pos.TOP_CENTER);
@@ -130,8 +130,8 @@ public class AutomateStatusView extends HBox {
 		bottomLeft.getChildren().add(vboxBottomLeft);
 		bottomLeft.setAlignment(Pos.CENTER);
 		timingView.setWidth(TIMING_STATUS_WIDTH);
-		timingView.setPrefHeight(HEIGHT_BOTTOM - HEIGHT_BOTTOM_LEFT_TOP);
-		timingView.setMinHeight(HEIGHT_BOTTOM - HEIGHT_BOTTOM_LEFT_TOP);
+		timingView.setPrefHeight(MainContentView.HEIGHT_BOTTOM - HEIGHT_BOTTOM_LEFT_TOP);
+		timingView.setMinHeight(MainContentView.HEIGHT_BOTTOM - HEIGHT_BOTTOM_LEFT_TOP);
 		
 		StackPane spAmount = new StackPane();
 		spAmountContents = new StackPane();
@@ -187,7 +187,7 @@ public class AutomateStatusView extends HBox {
 		StackPane.setMargin(lblTotalAmount, new Insets(95, 0, 0, 30));
 		
 		vboxButtons = new VBox();
-		vboxButtons.setPrefSize(WIDTH_BOTTOM_RIGHT, HEIGHT_BOTTOM - HEIGHT_BOTTOM_RIGHT_TOP * 0.80);
+		vboxButtons.setPrefSize(WIDTH_BOTTOM_RIGHT, MainContentView.HEIGHT_BOTTOM - HEIGHT_BOTTOM_RIGHT_TOP * 0.80);
 		btnCancel = createButton(STOP_ICON, Translator.getTranslation(STOP), CSS_CLASS_BUTTON_STOP, BTN_WIDTH, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {

@@ -18,8 +18,8 @@ public class MainContentView extends VBox {
 	private StackPane bottomLeft;
 	private Pane bottomRight;
 	
-	public static final int HEIGHT_TOP = 255;
-	public static final int HEIGHT_BOTTOM = 300;
+	public static final int HEIGHT_TOP = 180;
+	public static final int HEIGHT_BOTTOM = 375;
 	public static final int WIDTH = 800;
 
 	public static final int WIDTH_BOTTOM_LEFT = 210;
@@ -127,5 +127,9 @@ public class MainContentView extends VBox {
 		showBottomHBox();
 		this.bottomRight.getChildren().clear();
 		this.bottomRight.getChildren().add(node);
+	}
+	
+	public void setBottomLeftEnabled(final boolean enabled) {
+		this.bottomLeft.setDisable(!enabled);
 	}
 }

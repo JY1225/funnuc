@@ -1,5 +1,7 @@
 package eu.robojob.millassist.positioning;
 
+import eu.robojob.millassist.external.robot.AirblowSquare;
+
 
 public class Coordinates {
 	
@@ -123,5 +125,58 @@ public class Coordinates {
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ", " + w + ", " + p + ", " + r + ")";
+	}
+	
+	/**
+	 * Set the values of the coordinate given a list of values. The order of the values should
+	 * match the order X,Y,Z,W,P,R. Only the given values will be updated. This means that in case
+	 * the list of values contains only 2 values, only X and Y will be updated.
+	 * 
+	 * @param coordValues
+	 * @post this.getX() == coordValues[0]
+	 * 		 this.getY() == coordValues[1]
+	 * 		 this.getZ() == coordValues[2]
+	 * 		 this.getW() == coordValues[3]
+	 * 		 this.getP() == coordValues[4]
+	 * 		 this.getR() == coordValues[5]	
+	 */
+	public void setCoordinateValues(final float[] coordValues) {
+		try {
+			setX(coordValues[0]);
+			setY(coordValues[1]);
+			setZ(coordValues[2]);
+			setW(coordValues[3]);
+			setP(coordValues[4]);
+			setR(coordValues[5]);
+		} catch (IndexOutOfBoundsException e) {
+			return;
+		}
+	}
+	
+	public float[] getCoordValues() {
+		return new float[]{getX(), getY(), getZ(), getW(), getP(), getR()};
+	}
+	
+	public static Coordinates add(Coordinates coord1, Coordinates coord2) {
+		Coordinates coordResult = new Coordinates();
+		coordResult.plus(coord1);
+		coordResult.plus(coord2);
+		return coordResult;
+	}
+	
+	public boolean isInsideSquare(AirblowSquare square) {
+		if (getX() < square.getBottomCoord().getX())
+			return false;
+		if (getY() < square.getBottomCoord().getY())
+			return false;
+		if (getX() > square.getTopCoord().getX())
+			return false;
+		if (getY() > square.getTopCoord().getY())
+			return false;
+		if (getZ() < square.getBottomCoord().getZ())
+			return false;
+		if (getZ() > square.getTopCoord().getZ())
+			return false;
+		return true;
 	}
 }

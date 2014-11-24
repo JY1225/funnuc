@@ -76,6 +76,7 @@ public final class RobotConstants {
 	public static final int COMMAND_WRITE_USERFRAME				=	45;
 	public static final int COMMAND_SET_PERMISSIONS				=	50;
 	public static final int COMMAND_START_SERVICE				=	51;
+	public static final int COMMAND_WRITE_AIRBLOW				= 	54;
 	public static final int COMMAND_RESTART_PROGRAM				=	60;
 	public static final int COMMAND_RESET						=	61;
 	public static final int COMMAND_ABORT						=	62;
@@ -99,6 +100,7 @@ public final class RobotConstants {
 	public static final int RESPONSE_WRITE_USERFRAME			=	145;
 	public static final int RESPONSE_SET_PERMISSIONS			=	150;
 	public static final int RESPONSE_START_SERVICE				=	151;
+	public static final int RESPONSE_WRITE_AIRBLOW				= 	154;
 	public static final int RESPONSE_RESTART_PROGRAM			=	160;
 	public static final int RESPONSE_RESET						=	161;
 	public static final int RESPONSE_ABORT						=	162;

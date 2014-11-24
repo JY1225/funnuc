@@ -284,5 +284,4 @@ public class WorkArea {
 	public int getWorkAreaNr() {
 		return this.workAreaNr;
 	}
-
 }

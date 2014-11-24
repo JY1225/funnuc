@@ -134,7 +134,6 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	private void removeClamping(final Clamping clamping) {
 		DeviceSettings settings = deviceInfo.getDeviceSettings();
 		Clamping activeClamping = settings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
-		
 		if(activeClamping.equals(clamping)) {
 			//Remove the active clamping and set the active clamping to one of the related clampings if provided - otherwise set to null
 			if(activeClamping.getRelatedClampings().size() > 0) {
@@ -178,14 +177,14 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			DeviceSettings settings = deviceInfo.getDeviceSettings();
 			Clamping activeClamping = settings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
 			if(activeClamping.equals(clamping)) {
+				//There is no other clamp that can take the role of defaultClamping
 				if(activeClamping.getRelatedClampings().size() == 0) {
 					return false;
 				}
 			}
 			return true;
-		} else {
-			return true;
-		}
+		} 
+		return true;
 	}
 	
 	private void setClamping(final Clamping clamping) {

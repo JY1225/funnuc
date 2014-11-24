@@ -78,6 +78,10 @@ public class IconFlowSelector extends ScrollPane {
 		}
 	}
 	
+	public String first() {
+		return items.get(0).getName();
+	}
+	
 	public void setSelected(final String id) {
 		IconFlowSelectorItem selectedItem = null;
 		int index = 0;

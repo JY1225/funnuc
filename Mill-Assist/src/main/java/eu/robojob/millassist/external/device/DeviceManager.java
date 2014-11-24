@@ -23,6 +23,7 @@ import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
 import eu.robojob.millassist.process.ProcessFlow;
@@ -340,11 +341,11 @@ public class DeviceManager {
 	
 	public void updateCNCMachineData(final AbstractCNCMachine cncMachine, final String name, final EWayOfOperating wayOfOperating,
 			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final boolean timAllowed, 
-			final List<String> robotServiceInputNames, final List<String> robotServiceOutputNames, final List<String> mCodeNames,
+			final AirblowSquare airblowBound, final List<String> robotServiceInputNames, final List<String> robotServiceOutputNames, final List<String> mCodeNames,
 			final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) {
 		try {
 			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port,
-					clampingWidthR, newDevInt, nbFixtures, timAllowed, robotServiceInputNames, 
+					clampingWidthR, newDevInt, nbFixtures, timAllowed, airblowBound, robotServiceInputNames, 
 					robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs, mCodeRobotServiceOutputs);
 			refresh();
 		} catch (SQLException e) {
@@ -365,19 +366,18 @@ public class DeviceManager {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void updateClamping(final Clamping clamping, final String name, final Clamping.Type type, final float height, 
 			final String imagePath, final float x, final float y, final float z, final float w, final float p, 
-			final float r, final float smoothToX, 
-			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, 
-			final float smoothFromZ, final EFixtureType fixtureType) {
-		try {
+			final float r, final float smoothToX, final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, 
+			final float smoothFromZ, final EFixtureType fixtureType, final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord) {
+		try { 
 			for (AbstractCNCMachine cncMachine : getCNCMachines()) {
 				for (WorkArea workArea : cncMachine.getWorkAreas()) {
 					for (Clamping cl : workArea.getClampings()) {
 						if (cl.getId() == clamping.getId()) {
 							deviceMapper.updateClamping(cl, name, type, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-								smoothFromX, smoothFromY, smoothFromZ, fixtureType);
+									smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord);
 						}
 					}
 				}
@@ -390,11 +390,13 @@ public class DeviceManager {
 	
 	public void saveClamping(final String name, final Clamping.Type type, final float height, final String imagePath, final float x, 
 			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
-			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, final EFixtureType fixtureType) {
+			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, final EFixtureType fixtureType,
+			final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord) {
 		try {
 			Clamping clamping = new Clamping(type, name, height, new Coordinates(x, y, z, w, p, r), 
 					new Coordinates(smoothToX, smoothToY, smoothToZ, 0, 0, 0), 
 					new Coordinates(smoothFromX, smoothFromY, smoothFromZ, 0, 0, 0), imagePath, fixtureType);
+			clamping.setDefaultAirblowPoints(new AirblowSquare(bottomAirblowCoord, topAirblowCoord));
 			Set<WorkArea> workAreas = new HashSet<WorkArea>();
 			for (AbstractCNCMachine cncMachine : getCNCMachines()) {
 				for (WorkArea workArea : cncMachine.getWorkAreas()) {

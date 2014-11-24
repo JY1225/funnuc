@@ -295,6 +295,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 						if(getPresenter().canClampingBeModified(clamping,ifsClamping.isSelected(clamping.getName()))) {
 							selectClamping(clamping.getName());
 							getPresenter().changedClamping(clamping, ifsClamping.isSelected(clamping.getName()));
+							getPresenter().getMenuPresenter().isConfigured();
 						}
 					}
 				});

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.AbstractServiceProvider;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.positioning.Coordinates;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {
@@ -301,13 +302,13 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void moveToChangePoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void moveToCustomPosition() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void initiatePut(RobotPutSettings putSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void initiatePut(RobotPutSettings putSettings, Clamping clamping) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continuePutTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continuePutTillClampAck() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continuePutTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void finalizePut() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
-	public abstract void initiatePick(RobotPickSettings pickSettings) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void initiatePick(RobotPickSettings pickSettings, Clamping clamping) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continuePickTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continuePickTillUnclampAck() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continuePickTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;

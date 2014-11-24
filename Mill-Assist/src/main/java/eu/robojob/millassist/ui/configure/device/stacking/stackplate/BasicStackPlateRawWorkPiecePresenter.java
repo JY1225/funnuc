@@ -7,6 +7,7 @@ import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataExce
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlateLayout;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout.HoleOrientation;
 import eu.robojob.millassist.process.AbstractProcessStep;
@@ -183,8 +184,12 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			pickStep.getProcessFlow().setFinishedAmount(0);
 			getStackPlate().getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
 			getStackPlate().getLayout().initRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
-			pickStep.getProcessFlow().getClampingType().setChanged((deviceSettings.getOrientation() == WorkPieceOrientation.DEG90));
-			// FIXME: in principe ook hier, als de hoek voor 45° kleiner is dan de hoek voor 90°!!
+			if ((deviceSettings.getOrientation() == WorkPieceOrientation.DEG90) || 
+					((deviceSettings.getOrientation() == WorkPieceOrientation.TILTED) && (((BasicStackPlateLayout) getStackPlate().getLayout()).getTiltedR() < ((BasicStackPlateLayout) getStackPlate().getLayout()).getHorizontalR()))) {
+				pickStep.getProcessFlow().getClampingType().setChanged(true);
+			} else {
+				pickStep.getProcessFlow().getClampingType().setChanged(false);
+			}			// FIXME: in principe ook hier, als de hoek voor 45° kleiner is dan de hoek voor 90°!!
 			getView().hideNotification();
 			if (!isWeightOk()) {
 				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO), Type.WARNING);

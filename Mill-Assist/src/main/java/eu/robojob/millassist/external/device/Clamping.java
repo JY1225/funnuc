@@ -3,6 +3,7 @@ package eu.robojob.millassist.external.device;
 import java.util.HashSet;
 import java.util.Set;
 
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
 
 public class Clamping implements Cloneable {
@@ -54,10 +55,11 @@ public class Clamping implements Cloneable {
 	// Process ID that is currently located in the clamping - default value = -1
 	// In case of dualLoad, we can have 'two' workpieces in 'one' clamping
 	private Set<Integer> prcIdUsingClamping;
-	// Related clampings that are currently active for use
+	// Related clampings that are currently active for use - unique per processFlow
 	private Set<Clamping> relatedClampings;
 	// Default
 	private int nbOfPossibleWPToStore = 1;
+	private AirblowSquare defaultAirblowPoints;
 	
 	public Clamping(final Type type, final String name, final float defaultHeight, final Coordinates relativePosition, final Coordinates smoothToPoint,
 			final Coordinates smoothFromPoint, final String imageURL, final EFixtureType fixtureType) {
@@ -213,6 +215,7 @@ public class Clamping implements Cloneable {
 	@Override
 	public Clamping clone() throws CloneNotSupportedException {
 		Clamping clonedClamping = new Clamping(this.type, this.name, this.defaultHeight, this.relativePosition, this.smoothToPoint, this.smoothFromPoint, this.imageURL, this.fixtureType);
+		clonedClamping.setDefaultAirblowPoints(this.getDefaultAirblowPoints());
 		clonedClamping.prcIdUsingClamping = this.prcIdUsingClamping;
 		clonedClamping.setId(this.id);
 		return clonedClamping;
@@ -227,12 +230,20 @@ public class Clamping implements Cloneable {
 		if (clamping.getId() == this.getId() && clamping.getName().equals(this.getName())) {
 			return true;
 		}
-		return false;
+ 		return false;
 	}
 
 	@Override
 	public int hashCode() {
 		return this.getId() * this.getName().hashCode() * getRelatedClampings().hashCode();
 	}
-	
+
+	public AirblowSquare getDefaultAirblowPoints() {
+		return defaultAirblowPoints;
+	}
+
+	public void setDefaultAirblowPoints(AirblowSquare defaultAirblowPoints) {
+		this.defaultAirblowPoints = defaultAirblowPoints;
+	}
+
 }

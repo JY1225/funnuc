@@ -13,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
@@ -22,7 +23,9 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.ui.controls.CoordinateBox;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -45,9 +48,15 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	
 	private CheckBox cbAirblow;
 	private CheckBox cbTIM;
-	
+	private CoordinateBox coordBAirblowBottom;
+	private CoordinateBox coordBAirblowTop;
+	private Button btnResetAirblow;
+	private ComboBox<String> cbbClamping;
+		
+	private static final int COMBO_WIDTH = 150;
+	private static final int COMBO_HEIGHT = 40;
 	private static final int HGAP = 15;
-	private static final int VGAP = 15;
+	private static final int VGAP = 10;
 	private static final int MAX_INTEGER_LENGTH = 6;
 	
 	private static final String SMOOTH_PICK_INFO = "CNCMillingMachinePickView.smoothPickInfo";
@@ -126,6 +135,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
 				getPresenter().changedAirblow(newValue);
+				showAirblow();
 			}
 		});		
 		cbTIM = new CheckBox(Translator.getTranslation(TIM));
@@ -136,6 +146,54 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 					getPresenter().getMenuPresenter().changedTIM(newValue);
 			}
 		});
+		
+		cbbClamping = new ComboBox<String>();
+		cbbClamping.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
+		cbbClamping.valueProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(final ObservableValue<? extends String> arg0, final String oldValue, final String newValue) {
+				if (newValue != null) {
+					if ((oldValue == null) || (!oldValue.equals(newValue))) {
+						getPresenter().changedClamping(newValue);
+					}
+				}
+			}
+			
+		});
+		
+		coordBAirblowBottom = new CoordinateBox(MAX_INTEGER_LENGTH, "X", "Y", "Z");
+		coordBAirblowBottom.addChangeListeners(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> observableValue, final Float oldValue, final Float newValue) {
+				coordBAirblowBottom.updateCoordinate();
+				getPresenter().changedCoordinate();
+			}
+		});
+		coordBAirblowBottom.setTranslateX(30);
+		coordBAirblowTop = new CoordinateBox(MAX_INTEGER_LENGTH, "X", "Y", "Z");
+		coordBAirblowTop.addChangeListeners(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> observableValue, final Float oldValue, final Float newValue) {
+				coordBAirblowTop.updateCoordinate();
+				getPresenter().changedCoordinate();
+			}
+		});
+		coordBAirblowTop.setTranslateX(30);
+		
+		btnResetAirblow = new Button();
+		Text txtBtnResetAirblow = new Text(Translator.getTranslation(RESET));
+		txtBtnResetSmooth.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT);
+		btnResetAirblow.setGraphic(txtBtnResetAirblow);
+		btnResetAirblow.setAlignment(Pos.CENTER);
+		btnResetAirblow.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().resetAirblow(cbbClamping.getSelectionModel().getSelectedItem());
+			}
+		});
+		btnResetAirblow.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
+		btnResetAirblow.setPrefSize(UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT);
 		
 		int column = 0;
 		int row = 0;
@@ -150,18 +208,28 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		
 		column = 0;
 		row++;
-		getContents().add(cbAirblow, column++, row);
+		getContents().add(cbTIM, column++, row);
 		
 		column = 0;
 		row++;
-		getContents().add(cbTIM, column++, row);
-						
+
+		HBox airblowHBox = new HBox();
+		airblowHBox.getChildren().add(cbAirblow);
+		btnResetAirblow.setTranslateX(-40);
+		cbbClamping.setTranslateX(8);
+		cbbClamping.setTranslateY(-8);
+		airblowHBox.getChildren().add(cbbClamping);
+		getContents().add(airblowHBox, column++, row++);
+		getContents().add(coordBAirblowBottom, 0, row);
+		getContents().add(btnResetAirblow, ++column, row++);
+		getContents().add(coordBAirblowTop, 0, row++);
 		Properties properties = new Properties();
 		try {
 			properties.load(new FileInputStream(new File("settings.properties")));
 			if ((properties.get("robot-airblow") != null) && (properties.get("robot-airblow").equals("false"))) {
 				cbAirblow.setVisible(false);
 				cbAirblow.setManaged(false);
+				pickStep.getRobotSettings().setDoMachineAirblow(false);
 			}
 		} catch (IOException e) {
 			logger.error(e);
@@ -174,6 +242,8 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		ntxtSmoothX.setFocusListener(listener);
 		ntxtSmoothY.setFocusListener(listener);
 		ntxtSmoothZ.setFocusListener(listener);
+		coordBAirblowBottom.setTextFieldListener(listener);
+		coordBAirblowTop.setTextFieldListener(listener);
 	}
 	
 	public void setPickStep(final PickStep pickStep) {
@@ -186,11 +256,28 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	
 	public void showTurnInMachine() {
 		cbTIM.setVisible(((AbstractCNCMachine)pickStep.getDevice()).getTIMAllowed());
+		cbTIM.setManaged(((AbstractCNCMachine)pickStep.getDevice()).getTIMAllowed());
 		cbTIM.setSelected(pickStep.getRobotSettings().getTurnInMachine());
+	}
+	
+	private void showAirblow() {
+		coordBAirblowBottom.setVisible(cbAirblow.isSelected() && cbAirblow.isVisible());
+		coordBAirblowBottom.setManaged(coordBAirblowBottom.isVisible());
+		coordBAirblowTop.setVisible(cbAirblow.isSelected() && cbAirblow.isVisible());
+		coordBAirblowTop.setManaged(coordBAirblowTop.isVisible());
+		cbbClamping.setVisible(coordBAirblowBottom.isVisible());
+		cbbClamping.setManaged(coordBAirblowBottom.isVisible());
+		btnResetAirblow.setVisible(coordBAirblowTop.isVisible());
+		btnResetAirblow.setManaged(coordBAirblowBottom.isVisible());
+		if (cbAirblow.isSelected() && cbAirblow.isVisible()) {
+			getPresenter().changedClamping(cbbClamping.getItems().get(0));
+		}
 	}
 
 	@Override
 	public void refresh() {
+		hideNotification();
+		refreshClampingBox();
 		if (pickStep.getRobotSettings().getSmoothPoint() != null) {
 			ntxtSmoothX.setText("" + pickStep.getRobotSettings().getSmoothPoint().getX());
 			ntxtSmoothY.setText("" + pickStep.getRobotSettings().getSmoothPoint().getY());
@@ -207,7 +294,31 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 			cbAirblow.setSelected(false);
 		}
 		showTurnInMachine();
+		showAirblow();
+		getPresenter().isConfigured();
+	}
+	
+	public void refreshCoordboxes() {
+		coordBAirblowBottom.reset();
+		coordBAirblowTop.reset();
+	}
+	
+	private void refreshClampingBox() {
+		cbbClamping.getItems().clear();
+		cbbClamping.getItems().addAll(getPresenter().getSelectedClampings());
+		cbbClamping.setValue(null);
+		cbbClamping.setDisable(false);
+		if (cbbClamping.getItems().get(0) != null) {
+			cbbClamping.setValue(cbbClamping.getItems().get(0));
+		}
 	}
 	
 	
+	void setBottomCoord(Coordinates coord) {
+		coordBAirblowBottom.setCoordinate(coord);
+	}
+	
+	void setTopCoord(Coordinates coord) {
+		coordBAirblowTop.setCoordinate(coord);
+	}
 }

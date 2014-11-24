@@ -238,6 +238,44 @@
 	-fx-background-radius: 0;
 }
 
+.scroll-pane .scroll-bar {
+	
+}
+
+.scroll-pane .scroll-bar .decrement-button, .scroll-pane .scroll-bar .increment-button {
+	-fx-padding: 6px 8px 6px 8px;
+	-fx-background-color: #2c2e32, #8e8f94, linear-gradient(#75767d 0%, #5f6167 50%, #5b5e64 50%, #5f6167 100%);
+	-fx-padding: 10px;
+}
+
+.scroll-pane .scroll-bar .decrement-button {
+	-fx-background-insets: 0, 1, 2 1 1 1;
+}
+
+.scroll-pane .scroll-bar .increment-button {
+	-fx-background-insets: 0, 1, 2 1 1 1;
+}
+
+.scroll-pane .scroll-bar .decrement-arrow, .scroll-pane .scroll-bar .increment-arrow {
+	-fx-background-color: white;
+	-fx-effect: null;
+	-fx-border-width: 0px;
+	-fx-padding: 6px 4px 6px 4px;
+}
+
+.scroll-pane .scroll-bar .track {
+	-fx-background-color: #2c2e32, #3a3d42, #3f4146;
+	-fx-background-insets: 0, 1 0 1 1, 2 0 1 1;
+	-fx-background-radius: 0px;
+}
+
+.scroll-pane .scroll-bar .thumb {
+	-fx-background-color: #2c2e32, #8e8f94, linear-gradient(#75767d 0%, #5f6167 50%, #5b5e64 50%, #5f6167 100%);
+	-fx-background-insets: 0, 1 1 1 1, 2 1 1 1;
+	-fx-background-radius: 0px;
+	-fx-border-width: 0px;
+}
+
 .iconflow-selector {
 	-fx-background-color: #837e7e, #2d2f33, #3f4046, #484a50; 
 	-fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 1 2 1;
