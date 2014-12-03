@@ -569,6 +569,7 @@ public class GridPlateConfigureView extends AbstractFormView<GridPlateConfigureP
 		btnDelete.setVisible(false);
 		cbbGridPlates.setValue(null);
 		cbbGridPlates.setDisable(false);
+		getPresenter().disableEditMode();
 	}
 
 	public void validate() {
