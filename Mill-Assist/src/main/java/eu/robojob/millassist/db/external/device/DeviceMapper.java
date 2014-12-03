@@ -836,6 +836,11 @@ public class DeviceMapper {
 		smoothFrom.setY(smoothFromY);
 		smoothFrom.setZ(smoothFromZ);
 		generalMapper.saveCoordinates(smoothFrom);
+		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
+		stmt2.setString(1, name);
+		stmt2.setInt(2, reversalUnit.getId());
+		stmt2.execute();
+		reversalUnit.setName(name);
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
