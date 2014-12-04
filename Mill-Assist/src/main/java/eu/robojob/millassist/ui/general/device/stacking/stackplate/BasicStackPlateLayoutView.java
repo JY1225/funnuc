@@ -29,7 +29,6 @@ import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridP
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormView;
-import eu.robojob.millassist.ui.general.MainContentView;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
 /*
@@ -52,7 +51,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	
 	private static final float TXT_WIDTH = 40;
 	private static final float TXT_HEIGHT = 15;
-	private static final int HEIGHT_PLATE = MainContentView.HEIGHT_BOTTOM;
+	private static final int HEIGHT_PLATE = 590 / (1000/486) ;
 		
 	private float width;
 	
