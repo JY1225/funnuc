@@ -184,6 +184,8 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 		if (!isRunning()) {
 			if (activeMenu == null && !getProcessFlow().getMode().equals(Mode.READY)) {
 				showInfoMessage();
+			} else {
+				view.setBottom(statusPresenter.getView());
 			}
 		} else {
 			view.setBottom(statusPresenter.getView());
