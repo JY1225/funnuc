@@ -11,6 +11,7 @@ import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
 import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
+import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
 import eu.robojob.millassist.external.device.DeviceActionException;
@@ -287,6 +288,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				waitForMCodes(M_CODE_LOAD_REVERSAL);
 				// We finish m-c load reversal because no load is suppose to come anymore
 				if (startCylusSettings.getStep().getProcessFlow().getFinishedAmount() == startCylusSettings.getStep().getProcessFlow().getTotalAmount() - 1) {
+					unclampAfterFinish(startCylusSettings, ufNr);
 					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD_REVERSAL).getRobotServiceOutputsUsed();
 					command = 0;
 					if (robotServiceOutputs.contains(0)) {
@@ -300,17 +302,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			}
 			// we should finish this M-code if in teach mode
 			if ((startCylusSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) || (startCylusSettings.getStep().getProcessFlow().getTotalAmount() <= 1)) {
-				// first open fixtures 
-				//FIXME review 
-				int command2 = CNCMachineConstants.IPC_UNCLAMP_WA1_RQST;
-				int[] registers2 = {command2};
-				cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers2);
-				boolean clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY, UNCLAMP_TIMEOUT);
-				if (!clampReady) {
-					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
-					waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY);
-					setCncMachineTimeout(null);
-				}
+				unclampAfterFinish(startCylusSettings, ufNr);
 				// then finish m-code
 				cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 				Thread.sleep(500);
@@ -868,6 +860,47 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override
 	public boolean isUsingNewDevInt() {
 		return false;
+	}
+	
+	private void unclampAfterFinish(final ProcessingDeviceStartCyclusSettings startCylusSettings, final int ufNr) throws SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException, InterruptedException, DeviceActionException {
+		int command2 = 0;
+		boolean multi = false;
+		Set<Clamping> clampingsPresent = startCylusSettings.getWorkArea().getClampings();
+		if (ufNr == 3) {
+			command2 = command2 | CNCMachineConstants.IPC_UNCLAMP_WA1_RQST;
+			for (Clamping activeClamp: clampingsPresent) {
+				if (activeClamp.getFixtureType() == EFixtureType.FIXTURE_2) {
+					multi = true;
+					command2 = command2 | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
+				} else if (activeClamp.getFixtureType().equals(EFixtureType.FIXTURE_1_2)) {
+					multi = true;
+					command2 = command2 | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
+				}
+			}
+		} else if (ufNr == 4) {
+			command2 = command2 | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
+		}		
+		
+		//FIXME review 
+		int[] registers2 = {command2};
+		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers2);
+		
+		boolean clampReady;
+		if (multi) {
+			clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY | CNCMachineConstants.R_UNCLAMP_WA2_READY, UNCLAMP_TIMEOUT);
+			if (!clampReady) {
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
+				waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY | CNCMachineConstants.R_UNCLAMP_WA2_READY);
+				setCncMachineTimeout(null);
+			}
+		} else {
+			clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY, UNCLAMP_TIMEOUT);
+			if (!clampReady) {
+				setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
+				waitForStatus(CNCMachineConstants.R_UNCLAMP_WA1_READY);
+				setCncMachineTimeout(null);
+			}
+		}
 	}
 
 }
