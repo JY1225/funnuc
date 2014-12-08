@@ -12,12 +12,14 @@ import eu.robojob.millassist.external.communication.socket.SocketDisconnectedExc
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
 import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
 import eu.robojob.millassist.external.device.AbstractDeviceActionSettings;
+import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
+import eu.robojob.millassist.external.device.EFixtureType;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
@@ -269,29 +271,10 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 				waitForMCodes(M_CODE_LOAD);
 			}
 			
-			
-			
 			// we should finish this M-code if in teach mode
 			if ((startCylusSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) || (startCylusSettings.getStep().getProcessFlow().getTotalAmount() <= 1)) {
 				// first open fixtures 
-				//FIXME review 
-
-				resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK);
-				int fixSelectCommand = 0;
-				fixSelectCommand = fixSelectCommand | selectZone(startCylusSettings);
-				fixSelectCommand = fixSelectCommand | selectWorkArea(startCylusSettings);
-				fixSelectCommand = fixSelectCommand | selectFixture(startCylusSettings, false);
-				int actionCommand = 0 | CNCMachineConstantsDevIntv2.IPC_UNCLAMP_CMD;
-				
-				int[] registers2 = {fixSelectCommand, actionCommand};
-				cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers2);
-				
-				boolean clampReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK, CLAMP_TIMEOUT);
-				if(!clampReady) {
-					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
-					waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK);
-					setCncMachineTimeout(null);
-				}
+				unclampAfterFinish(startCylusSettings.getWorkArea());
 				// then finish m-code
 				cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registers);
 				Thread.sleep(500);
@@ -326,7 +309,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		int fixSelectCommand = 0;
 		fixSelectCommand = fixSelectCommand | selectZone(pickSettings);
 		fixSelectCommand = fixSelectCommand | selectWorkArea(pickSettings);
-		fixSelectCommand = fixSelectCommand | selectFixture(pickSettings, true);
+		fixSelectCommand = fixSelectCommand | selectFixture(pickSettings.getWorkArea().getActiveClamping(true).getFixtureType());
 		int command2 = 0 | CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_CMD;
 		
 		int[] registers = {fixSelectCommand, command2};
@@ -356,7 +339,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		int fixSelectCommand = 0;
 		fixSelectCommand = fixSelectCommand | selectZone(putSettings);
 		fixSelectCommand = fixSelectCommand | selectWorkArea(putSettings);
-		fixSelectCommand = fixSelectCommand | selectFixture(putSettings, false);
+		fixSelectCommand = fixSelectCommand | selectFixture(putSettings.getWorkArea().getActiveClamping(false).getFixtureType());
 		int command2 = 0 | CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_CMD;
 		int[] registers = {fixSelectCommand, command2};
 		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers);
@@ -379,7 +362,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		int fixSelectCommand = 0;
 		fixSelectCommand = fixSelectCommand | selectZone(pickSettings);
 		fixSelectCommand = fixSelectCommand | selectWorkArea(pickSettings);
-		fixSelectCommand = fixSelectCommand | selectFixture(pickSettings, true);
+		fixSelectCommand = fixSelectCommand | selectFixture(pickSettings.getWorkArea().getActiveClamping(true).getFixtureType());
 		int actionCommand = 0 | CNCMachineConstantsDevIntv2.IPC_UNCLAMP_CMD;
 		
 		int[] registers = {fixSelectCommand, actionCommand};
@@ -403,7 +386,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		int fixSelectCommand = 0;
 		fixSelectCommand = fixSelectCommand | selectZone(putSettings);
 		fixSelectCommand = fixSelectCommand | selectWorkArea(putSettings);
-		fixSelectCommand = fixSelectCommand | selectFixture(putSettings, false);
+		fixSelectCommand = fixSelectCommand | selectFixture(putSettings.getWorkArea().getActiveClamping(false).getFixtureType());
 		int actionCommand = 0 | CNCMachineConstantsDevIntv2.IPC_CLAMP_CMD;
 		
 		int[] registers = {fixSelectCommand, actionCommand};
@@ -480,6 +463,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 						(pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)))
 					) {
 				// last work piece: send reset in stead of finishing m code
+				unclampAfterFinish(pickSettings.getWorkArea());
 				nCReset();
 				// also finish m code if still active after nc reset
 				Thread.sleep(500);
@@ -683,32 +667,41 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	}
 	
 	private int selectZone(final AbstractDeviceActionSettings<?> deviceActionSettings) throws IllegalArgumentException {
+		return selectZoneByWorkArea(deviceActionSettings.getWorkArea());
+	}
+	
+	private int selectZoneByWorkArea(final WorkArea workArea) {
 		int command = 0;
-		if(deviceActionSettings.getWorkArea().getZone().getZoneNr() == 1) {
+		if(workArea.getZone().getZoneNr() == 1) {
 			command = command | CNCMachineConstantsDevIntv2.ZONE1_SELECT;
-		} else if (deviceActionSettings.getWorkArea().getZone().getZoneNr() == 2) {
+		} else if (workArea.getZone().getZoneNr() == 2) {
 			command = command | CNCMachineConstantsDevIntv2.ZONE2_SELECT;
 		} else {
-			throw new IllegalArgumentException("Unknown zone number: " + deviceActionSettings.getWorkArea().getZone().getZoneNr());
+			throw new IllegalArgumentException("Unknown zone number: " + workArea.getZone().getZoneNr());
 		}
 		return command;
 	}
 	
 	private int selectWorkArea(final AbstractDeviceActionSettings<?> deviceActionSettings) throws IllegalArgumentException {
+		return selectWorkAreaByWorkArea(deviceActionSettings.getWorkArea());
+	}
+	
+	private int selectWorkAreaByWorkArea(final WorkArea workArea) {
 		int command = 0;
-		if(deviceActionSettings.getWorkArea().getWorkAreaNr() == 1) {
+		if(workArea.getWorkAreaNr() == 1) {
 			command = command | CNCMachineConstantsDevIntv2.WA1_SELECT;
-		} else if (deviceActionSettings.getWorkArea().getWorkAreaNr() == 2) {
+		} else if (workArea.getWorkAreaNr() == 2) {
 			command = command | CNCMachineConstantsDevIntv2.WA2_SELECT;
 		} else {
-			throw new IllegalArgumentException("Unknown workarea number: " + deviceActionSettings.getWorkArea().getWorkAreaNr());
+			throw new IllegalArgumentException("Unknown workarea number: " + workArea.getWorkAreaNr());
 		}
 		return command;
 	}
 	
-	private int selectFixture(final AbstractDeviceActionSettings<?> deviceActionSettings, final boolean pickAction) throws IllegalArgumentException {
+	private int selectFixture(final EFixtureType fixtureType) throws IllegalArgumentException {
 		int command = 0;
-		switch (deviceActionSettings.getWorkArea().getActiveClamping(pickAction).getFixtureType()) {
+		//switch (deviceActionSettings.getWorkArea().getActiveClamping(pickAction).getFixtureType()) {
+		switch(fixtureType) {
 		case FIXTURE_1:
 			command = command | CNCMachineConstantsDevIntv2.FIX_SELECT_1;
 			break;
@@ -762,6 +755,14 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		return command;
 	}
 	
+	private int selectAllFixtures(final WorkArea workArea) {
+		int command = 0;
+		for (Clamping clamping: workArea.getClampings()) {
+			command = command | selectFixture(clamping.getFixtureType());
+		}
+		return command;
+	}
+	
 	private void resetStatusValue(final int registerNr, final int value) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, DeviceActionException, SocketWrongResponseException {
 		// Read current status from register
 		int currentStatus = cncMachineCommunication.readRegisters(registerNr, 1).get(0);
@@ -793,6 +794,27 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	@Override
 	public boolean isUsingNewDevInt() {
 		return true;
+	}
+	
+	private void unclampAfterFinish(final WorkArea workArea) 
+			throws SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException, InterruptedException, DeviceActionException {
+		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK);
+		
+		int fixSelectCommand = 0;
+		fixSelectCommand = fixSelectCommand | selectZoneByWorkArea(workArea);
+		fixSelectCommand = fixSelectCommand | selectWorkAreaByWorkArea(workArea);
+		fixSelectCommand = fixSelectCommand | selectAllFixtures(workArea);
+		int actionCommand = 0 | CNCMachineConstantsDevIntv2.IPC_UNCLAMP_CMD;
+		
+		int[] registers2 = {fixSelectCommand, actionCommand};
+		cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.ZONE_WA_FIX_SELECT, registers2);
+		
+		boolean clampReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK, UNCLAMP_TIMEOUT);
+		if(!clampReady) {
+			setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
+			waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_UNCLAMP_OK);
+			setCncMachineTimeout(null);
+		}
 	}
 
 }

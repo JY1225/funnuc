@@ -59,6 +59,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	private Object syncObject2;
 	// Is the reversal still to come?
 	private boolean needsReversal;
+	private boolean canStartProcessing = false;
 	
 	private boolean isTIMPossible = false;
 	
@@ -316,6 +317,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		nbWPInMachine++;
 		checkStatus();		
 		putStep.finalizeStep(ProcessFlowExecutionThread.this);
+		canStartProcessing = false;
 		ThreadManager.submit(new Thread() {
 			@Override
 			public void run() {
@@ -382,11 +384,26 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	public void executeProcessingStep(final ProcessingStep processingStep) throws InterruptedException, AbstractCommunicationException, DeviceActionException {
 		checkStatus();
 		int nbOfClampingsInUse = processingStep.getDeviceSettings().getWorkArea().getNbActiveClampingsEachSide();
+		
+		//In case we have more than one clamping in use, it could be that we have to block the execution thread. Consider the following
+		//scenario with 2 clampings: we still have 1 piece to do and 2 pieces are done, so ready to be taken out the clampings. 
+		//The executor waiting for the pick from the machine has the priority (otherwise no clamping would be free). The piece gets
+		//taken and thus a clamp is free for put. This executor does the putInMachine step and continues. At this point, there is one raw
+		//and one finished workpiece in the machine. The next step of this executor is processing in machine (because we only have one piece
+		//to do in the entire process), but first we have to get the finished piece from the flow - so this executor has to be blocked.
+		//Side note - it is possible to remove nbOfClampingsInUse test, but it is a little bit more efficient since this is the most frequent case.
+		
 		if(nbOfClampingsInUse > 1) {
-			synchronized(syncObject) {
-				logger.info("Waiting before processing can start.");
-				syncObject.wait();
-				logger.info("Can continue.");
+			
+			//Due to timing of threads it could be that we are notified before the wait was started (see call of notifyPutInMachineFinished
+			//in method executePutInMachineStep). Therefore, we check the canStartProcessing flag that is only activated in case the
+			//startProcessing method is called by one of the ControllingThread classes.
+			if(!canStartProcessing) {
+				synchronized(syncObject) {
+					logger.info("Waiting before processing can start.");
+					syncObject.wait();
+					logger.info("Can continue.");
+				}
 			}
 		}
 		processingStep.executeStep(processId, this);
@@ -420,9 +437,27 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		return this.needsReversal;
 	}
 	
+	/**
+	 * Continue the execution of this executor. 
+	 */
 	public void continueExecution() {
 		logger.info("Continue!");
 		this.canContinue = true;
+		synchronized(syncObject) {
+			syncObject.notify();
+		}
+	}
+	
+	/**
+	 * Special method similar to continueExecution. This method is called before we continue 
+	 * with processing in the machine.
+	 * 
+	 * @see #continueExecution()
+	 */
+	public void startProcessing() {
+		logger.info("Start processing");
+		this.canContinue = true;
+		this.canStartProcessing = true;
 		synchronized(syncObject) {
 			syncObject.notify();
 		}

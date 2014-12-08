@@ -113,6 +113,11 @@ public abstract class AbstractFixedControllingThread implements Runnable {
 		return result;
 	}
 	
+	/**
+	 * Check whether their are still pieces raw workpieces that need to be picked up.
+	 * 
+	 * @return 
+	 */
 	final boolean stillPieceToDo() {
 		return ((processFlow.getTotalAmount() == -1) || 
 					(processFlow.getTotalAmount() - processFlow.getFinishedAmount() - getTotalNbWPInFlow() > 0));

@@ -274,10 +274,10 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			if (robotServiceOutputs.contains(0)) {
 				logger.info("Finish load m-c");
 				command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
+				int[] registers = {command};
+				cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+				waitForNoMCode(M_CODE_LOAD, M_CODE_LOAD_REVERSAL);
 			}
-			int[] registers = {command};
-			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
-			Thread.sleep(5000);	// wait 5 sec before checking again for m-code
 			if (startCylusSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED) && startCylusSettings.getStep().getProcessFlow().hasReversalUnit()) {
 				waitForMCodes(M_CODE_UNLOAD_REVERSAL);
 			} else {
@@ -288,24 +288,36 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				waitForMCodes(M_CODE_LOAD_REVERSAL);
 				// We finish m-c load reversal because no load is suppose to come anymore
 				if (startCylusSettings.getStep().getProcessFlow().getFinishedAmount() == startCylusSettings.getStep().getProcessFlow().getTotalAmount() - 1) {
-					unclampAfterFinish(startCylusSettings, ufNr);
 					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD_REVERSAL).getRobotServiceOutputsUsed();
 					command = 0;
 					if (robotServiceOutputs.contains(0)) {
 						logger.info("Finish load_reversal m-c");
 						command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
+						int[] registers = {command};
+						cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+						waitForNoMCode(M_CODE_LOAD, M_CODE_LOAD_REVERSAL);
 					}
-					cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
 				}
 			} else {
 				waitForMCodes(M_CODE_LOAD);
 			}
 			// we should finish this M-code if in teach mode
 			if ((startCylusSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) || (startCylusSettings.getStep().getProcessFlow().getTotalAmount() <= 1)) {
-				unclampAfterFinish(startCylusSettings, ufNr);
+				unclampAfterFinish(startCylusSettings.getWorkArea());
 				// then finish m-code
-				cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
-				Thread.sleep(500);
+				if (startCylusSettings.getStep().getProcessFlow().hasReversalUnit() && startCylusSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)) {
+					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD_REVERSAL).getRobotServiceOutputsUsed();
+				} else {
+					robotServiceOutputs = getMCodeAdapter().getGenericMCode(M_CODE_LOAD).getRobotServiceOutputsUsed();
+				}
+				command = 0;
+				if (robotServiceOutputs.contains(0)) {
+					logger.info("Finish load m-c");
+					command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
+					int[] registers = {command};
+					cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
+					waitForNoMCode(M_CODE_LOAD, M_CODE_LOAD_REVERSAL);
+				}
 			}
 			waitForNoMCode(M_CODE_LOAD, M_CODE_LOAD_REVERSAL);
 			if (startCylusSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED) && startCylusSettings.getStep().getProcessFlow().hasReversalUnit()) {
@@ -636,6 +648,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				||  ((pickSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) && (pickSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED)))
 				) {
 				// last work piece: send reset in stead of finishing m code
+				unclampAfterFinish(pickSettings.getWorkArea());
 				nCReset();
 				// also finish m code if still active after nc reset
 				Thread.sleep(500);
@@ -862,11 +875,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		return false;
 	}
 	
-	private void unclampAfterFinish(final ProcessingDeviceStartCyclusSettings startCylusSettings, final int ufNr) throws SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException, InterruptedException, DeviceActionException {
+	private void unclampAfterFinish(final WorkArea workarea) throws SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException, InterruptedException, DeviceActionException {
 		int command2 = 0;
 		boolean multi = false;
-		Set<Clamping> clampingsPresent = startCylusSettings.getWorkArea().getClampings();
-		if (ufNr == 3) {
+		Set<Clamping> clampingsPresent = workarea.getClampings();
+		if (workarea.getUserFrame().getNumber() == 3) {
 			command2 = command2 | CNCMachineConstants.IPC_UNCLAMP_WA1_RQST;
 			for (Clamping activeClamp: clampingsPresent) {
 				if (activeClamp.getFixtureType() == EFixtureType.FIXTURE_2) {
@@ -877,7 +890,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 					command2 = command2 | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
 				}
 			}
-		} else if (ufNr == 4) {
+		} else if (workarea.getUserFrame().getNumber() == 4) {
 			command2 = command2 | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
 		}		
 		

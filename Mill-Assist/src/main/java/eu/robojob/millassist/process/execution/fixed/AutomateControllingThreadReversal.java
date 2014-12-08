@@ -67,7 +67,7 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 				// occupied by (finished) workpieces from another executor
 				boolean isContinuing = false;
 				if(nbActiveClampings == nbFilled) {
-					processFlowExecutor.continueExecution();
+					processFlowExecutor.startProcessing();
 					isContinuing = true;
 				}
 				for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {

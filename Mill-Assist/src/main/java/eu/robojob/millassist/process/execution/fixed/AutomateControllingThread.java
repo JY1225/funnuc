@@ -182,7 +182,7 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 			boolean isContinuing = false;
 			if(nbActiveClampings == nbFilled) {
 				//No need to return, because processing will start
-				processFlowExecutor.continueExecution();
+				processFlowExecutor.startProcessing();
 				isContinuing = true;
 			}
 			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
@@ -194,6 +194,7 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 			}
 			//start a new process - we do not have to check for concurrentProcessing because we have only created the max nb of processes possible at init (taking into account concurrentExecution)
 			if (startNewProcess()) {
+				//New process has been started
 				return;
 			}
 			//If all processes are already running, check which one can execute next
@@ -212,7 +213,7 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 				}
 			}
 			if (!isContinuing) {
-				processFlowExecutor.continueExecution();
+				processFlowExecutor.startProcessing();
 			}
 			try {
 				processFlow.getRobots().iterator().next().moveToHome();
@@ -223,20 +224,33 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 		}
 	}
 	
+	/**
+	 * This method checks whether a new processflow executor can be started. In case one of the executors is not yet running
+	 * and their are still pieces to do (not all pieces are finished or currently in the flow), a new process can be started.
+	 * If all the workpieces are currently in the flow (or already finished), their is no need to start a new process. The
+	 * robot will then be send to home. If all the processflow executors are running and pieces are still be treated, this method
+	 * will simply return false without further action.
+	 *  
+	 * @return		isNewProcessStarted - true in case a new processflow executor has been started; otherwise, false.
+	 */
 	protected synchronized boolean startNewProcess() {
+		//All pieces are currently in the flow or already finished - robot go home
+		if (!stillPieceToDo()) {
+			try {
+				processFlow.getRobots().iterator().next().moveToHome();
+				return false;
+			} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+				e.printStackTrace();
+				logger.error(e);
+			}
+		}
+		//Check whether one of the executors is not yet running and start it if so
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
-			if (!processExecutor.isRunning() && stillPieceToDo()) { 
+			if (!processExecutor.isRunning()) { 
 				logger.info("Process " + processExecutor.getProcessId() + " not yet started");
 				processFlowExecutorFutures[processExecutor.getProcessId() - 1] = ThreadManager.submit(processExecutor);
 				return true;
-			} else if (!stillPieceToDo()) {
-				try {
-					processFlow.getRobots().iterator().next().moveToHome();
-				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
-					e.printStackTrace();
-					logger.error(e);
-				}
-			}
+			} 
 		}
 		return false;
 	}
@@ -331,7 +345,7 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 				for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 					if (processExecutor.getNbWPInMachine() > 0) {
 						processExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);
-						processExecutor.continueExecution();
+						processExecutor.startProcessing();
 					}
 				}
 			}
