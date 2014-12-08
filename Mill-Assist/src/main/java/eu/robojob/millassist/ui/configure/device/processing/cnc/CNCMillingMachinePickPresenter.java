@@ -192,4 +192,9 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 		}
 		return false;
 	}
+	
+	public void changedMachineAirblow(final boolean newValue) {
+		pickStep.getDeviceSettings().setIsMachineAirblow(newValue);
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+	}
 }

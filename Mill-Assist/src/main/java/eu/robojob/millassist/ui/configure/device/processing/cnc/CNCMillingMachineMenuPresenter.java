@@ -89,5 +89,4 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 		cncMillingMachinePickPresenter.changedTIM(turnInMachine);
 		cncMillingMachinePutPresenter.changedTIM(turnInMachine);
 	}
-
 }

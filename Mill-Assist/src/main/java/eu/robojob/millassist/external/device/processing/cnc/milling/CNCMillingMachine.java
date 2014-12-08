@@ -59,8 +59,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	private static Logger logger = LogManager.getLogger(CNCMillingMachine.class.getName());
 	
 	public CNCMillingMachine(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, 
-			final SocketConnection socketConnection, final int clampingWidthR, final int nbFixtures, final boolean timAllowed) {
-		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR, nbFixtures, timAllowed);
+			final SocketConnection socketConnection, final int clampingWidthR, final int nbFixtures) {
+		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR, nbFixtures);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 		CNCMachineMonitoringThread cncMachineMonitoringThread = new CNCMachineMonitoringThread(this);
 		// start monitoring thread at creation of this object
@@ -347,6 +347,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			}
 		}
 		
+		if (pickSettings.getMachineAirblow()) {
+			logger.debug("Do machine airblow before prepare for pick");
+			//TODO - machine airblow
+		}	
+		
 		int command = 0;
 		if (ufNr == 3) {
 			command = command | CNCMachineConstants.IPC_PICK_WA1_RQST;
@@ -412,6 +417,12 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if ((getWayOfOperating() == EWayOfOperating.M_CODES) || (getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD)) {
 			waitForMCodes(M_CODE_LOAD, M_CODE_LOAD_REVERSAL);
 		}
+		
+		//TODO - remove this - only possible for devIntv2
+		if (putSettings.getMachineAirblow()) {
+			logger.debug("Do machine airblow before prepare for put");
+			//TODO - machine airblow
+		}	
 			
 		int command = 0;
 		if (ufNr == 3) {

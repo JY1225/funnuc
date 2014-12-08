@@ -58,8 +58,8 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	private static Logger logger = LogManager.getLogger(CNCMillingMachineDevIntv2.class.getName());
 	
 	public CNCMillingMachineDevIntv2(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, 
-			final SocketConnection socketConnection, final int clampingWidthR, final int nbFixtures, final boolean timAllowed) {
-		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR, nbFixtures, timAllowed);
+			final SocketConnection socketConnection, final int clampingWidthR, final int nbFixtures) {
+		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR, nbFixtures);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 		CNCMachineMonitoringThreadDevIntv2 cncMachineMonitoringThread = new CNCMachineMonitoringThreadDevIntv2(this);
 		// start monitoring thread at creation of this object
@@ -305,6 +305,21 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 				waitForMCodes(M_CODE_UNLOAD);
 			}
 		}
+		
+		if (pickSettings.getMachineAirblow()) {
+			logger.debug("Set machine airblow for pick");
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_4, CNCMachineConstantsDevIntv2.CFG_FIX_1_AIRBLOW_PICK);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_5, CNCMachineConstantsDevIntv2.CFG_FIX_2_AIRBLOW_PICK);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_6, CNCMachineConstantsDevIntv2.CFG_FIX_3_AIRBLOW_PICK);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_7, CNCMachineConstantsDevIntv2.CFG_FIX_4_AIRBLOW_PICK);
+		} else {
+			logger.debug("Reset machine airblow for pick");
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_4, CNCMachineConstantsDevIntv2.CFG_FIX_1_AIRBLOW_PICK);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_5, CNCMachineConstantsDevIntv2.CFG_FIX_2_AIRBLOW_PICK);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_6, CNCMachineConstantsDevIntv2.CFG_FIX_3_AIRBLOW_PICK);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_7, CNCMachineConstantsDevIntv2.CFG_FIX_4_AIRBLOW_PICK);
+		}
+		
 		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK);
 		int fixSelectCommand = 0;
 		fixSelectCommand = fixSelectCommand | selectZone(pickSettings);
@@ -334,6 +349,21 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		if ((getWayOfOperating() == EWayOfOperating.M_CODES) || (getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD)) {
 			waitForMCodes(M_CODE_LOAD, M_CODE_LOAD_REVERSAL);
 		}
+		
+		if (putSettings.getMachineAirblow()) {
+			logger.debug("Set machine airblow for put");
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_4, CNCMachineConstantsDevIntv2.CFG_FIX_1_AIRBLOW_PUT);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_5, CNCMachineConstantsDevIntv2.CFG_FIX_2_AIRBLOW_PUT);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_6, CNCMachineConstantsDevIntv2.CFG_FIX_3_AIRBLOW_PUT);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_7, CNCMachineConstantsDevIntv2.CFG_FIX_4_AIRBLOW_PUT);
+		} else {
+			logger.debug("Reset machine airblow for put");
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_4, CNCMachineConstantsDevIntv2.CFG_FIX_1_AIRBLOW_PUT);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_5, CNCMachineConstantsDevIntv2.CFG_FIX_2_AIRBLOW_PUT);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_6, CNCMachineConstantsDevIntv2.CFG_FIX_3_AIRBLOW_PUT);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_7, CNCMachineConstantsDevIntv2.CFG_FIX_4_AIRBLOW_PUT);
+		}
+		
 		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_OK);
 		// Create prepare for put command
 		int fixSelectCommand = 0;
@@ -700,7 +730,6 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	
 	private int selectFixture(final EFixtureType fixtureType) throws IllegalArgumentException {
 		int command = 0;
-		//switch (deviceActionSettings.getWorkArea().getActiveClamping(pickAction).getFixtureType()) {
 		switch(fixtureType) {
 		case FIXTURE_1:
 			command = command | CNCMachineConstantsDevIntv2.FIX_SELECT_1;
@@ -766,13 +795,35 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	private void resetStatusValue(final int registerNr, final int value) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, DeviceActionException, SocketWrongResponseException {
 		// Read current status from register
 		int currentStatus = cncMachineCommunication.readRegisters(registerNr, 1).get(0);
-		// Check whether the value is already low (bitwise AND operation)
+		// Check whether the value is still high (bitwise AND operation)
 		if((currentStatus & value) > 0) {
 			// Exclusive OR operation 
 			int resultValue = currentStatus ^ value;
 			int[] registerValue = {resultValue};
 			cncMachineCommunication.writeRegisters(registerNr, registerValue);
 			waitForStatusGoneDevIntv2(registerNr, value);
+		}
+	}
+	
+	private void resetValue(final int registerNr, final int value) throws SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException, InterruptedException {
+		int currentStatus = cncMachineCommunication.readRegisters(registerNr, 1).get(0);
+		// Check whether the value is still high (bitwise AND operation)
+		if((currentStatus & value) > 0) {
+			// Exclusive OR operation 
+			int resultValue = currentStatus ^ value;
+			int[] registerValue = {resultValue};
+			cncMachineCommunication.writeRegisters(registerNr, registerValue);
+		}
+	}
+	
+	private void setValue(final int registerNr, final int value) throws SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException, InterruptedException {
+		int currentStatus = cncMachineCommunication.readRegisters(registerNr, 1).get(0);
+		// Check whether the value is still high (bitwise AND operation)
+		if((currentStatus & value) == 0) {
+			// bitwise OR operation 
+			int resultValue = currentStatus | value;
+			int[] registerValue = {resultValue};
+			cncMachineCommunication.writeRegisters(registerNr, registerValue);
 		}
 	}
 
@@ -816,5 +867,4 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			setCncMachineTimeout(null);
 		}
 	}
-
 }

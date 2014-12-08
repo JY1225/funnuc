@@ -48,6 +48,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	
 	private CheckBox cbAirblow;
 	private CheckBox cbTIM;
+	private CheckBox cbMachineAirblow;
 	private CoordinateBox coordBAirblowBottom;
 	private CoordinateBox coordBAirblowTop;
 	private Button btnResetAirblow;
@@ -66,6 +67,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	private static final String RESET = "CNCMillingMachinePickView.reset";
 	private static final String AIRBLOW = "CNCMillingMachinePickView.airblow";
 	private static final String TIM = "CNCMillingMachinePickView.tim";
+	private static final String MACHINE_AIRBLOW = "CNCMillingMachinePickView.machineAirblow";
 	
 	private static Logger logger = LogManager.getLogger(CNCMillingMachinePickView.class.getName());
 		
@@ -147,6 +149,15 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 			}
 		});
 		
+		cbMachineAirblow = new CheckBox(Translator.getTranslation(MACHINE_AIRBLOW));
+		cbMachineAirblow.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				if ((oldValue == null) || (!oldValue.equals(newValue)))  
+					getPresenter().changedMachineAirblow(newValue);
+			}
+		});
+		
 		cbbClamping = new ComboBox<String>();
 		cbbClamping.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		cbbClamping.valueProperty().addListener(new ChangeListener<String>() {
@@ -208,6 +219,10 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		
 		column = 0;
 		row++;
+		getContents().add(cbMachineAirblow, column++, row);
+		
+		column = 0;
+		row++;
 		getContents().add(cbTIM, column++, row);
 		
 		column = 0;
@@ -260,6 +275,12 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		cbTIM.setSelected(pickStep.getRobotSettings().getTurnInMachine());
 	}
 	
+	public void showMachineAirblow() {
+		cbMachineAirblow.setVisible(((AbstractCNCMachine)pickStep.getDevice()).getMachineAirblow());
+		cbMachineAirblow.setManaged(((AbstractCNCMachine)pickStep.getDevice()).getMachineAirblow());
+		cbMachineAirblow.setSelected(pickStep.getDeviceSettings().getMachineAirblow());
+	}
+	
 	private void showAirblow() {
 		coordBAirblowBottom.setVisible(cbAirblow.isSelected() && cbAirblow.isVisible());
 		coordBAirblowBottom.setManaged(coordBAirblowBottom.isVisible());
@@ -294,6 +315,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 			cbAirblow.setSelected(false);
 		}
 		showTurnInMachine();
+		showMachineAirblow();
 		showAirblow();
 		getPresenter().isConfigured();
 	}

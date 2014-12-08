@@ -71,13 +71,14 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		int clampingWidthR = getView().getWidthR();
 		int nbFixtures = getView().getNbFixtures();
 		boolean timAllowed = getView().getTIMAllowed();
+		boolean machineAirblow = getView().getMachineAirblow();
 		EWayOfOperating wayOfOperating = getView().getWayOfOperating();
 		List<String> robotServiceInputNames = getView().getRobotServiceInputNames();
 		List<String> robotServiceOutputNames = getView().getRobotServiceOutputNames();
 		AirblowSquare boundaries = getView().getAirblowBound();
 		boolean newDevInt = getView().getNewDevInt();
 		deviceManager.updateCNCMachineData(cncMachine, name, wayOfOperating, ip, port, 
-				clampingWidthR, newDevInt, nbFixtures, timAllowed, boundaries,
+				clampingWidthR, newDevInt, nbFixtures, timAllowed, machineAirblow, boundaries,
 				robotServiceInputNames, robotServiceOutputNames, 
 					getView().getMCodeNames(), getView().getMCodeRobotServiceInputs(), 
 						getView().getMCodeRobotServiceOutputs());

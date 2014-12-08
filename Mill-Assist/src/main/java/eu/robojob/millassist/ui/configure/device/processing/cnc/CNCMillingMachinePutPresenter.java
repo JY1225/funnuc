@@ -196,4 +196,9 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 		}
 		return false;
 	}
+
+	public void changedMachineAirblow(final boolean newValue) {
+		putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
+		putStep.getDeviceSettings().setIsMachineAirblow(newValue);
+	}
 }

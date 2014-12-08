@@ -22,14 +22,15 @@ import eu.robojob.millassist.util.Translator;
 
 public class CNCMachineOptionView extends GridPane {
 	
-	private Label lblAirblow, lblTIM;
-	private CheckBox cbTIMAllowed;
+	private Label lblAirblow, lblTIM, lblMachineAirblow;
+	private CheckBox cbTIMAllowed, cbMachineAirblow;
 	private CoordinateBox bottomCoord, topCoord;
 	
 	private Label lblNbFixtures;
 	private IntegerTextField itxtNbFix;
 		
 	private static final String TIM_ALLOWED = "CNCMachineGeneralView.TIMAllowed";
+	private static final String MACHINE_AIRBLOW = "CNCMachineOptionView.machineAirblow";
 	private static final String AIRBLOW_BOUND = "CNCMachineOptionView.airblowBound";
 	private static final String MAX_FIX = "CNCMachineGeneralView.maxFix";
 
@@ -66,7 +67,11 @@ public class CNCMachineOptionView extends GridPane {
 		HBox nbFixBox = new HBox();
 		nbFixBox.getChildren().addAll(lblNbFixtures, itxtNbFix);
 		HBox.setMargin(lblNbFixtures, new Insets(5,15,0,0));
-		add(nbFixBox, column, row);
+		add(nbFixBox, column, row++);
+		HBox machineAirblowBox = new HBox();
+		machineAirblowBox.getChildren().addAll(cbMachineAirblow, lblMachineAirblow);
+		HBox.setMargin(cbMachineAirblow, new Insets(0,15,0,0));
+		add(machineAirblowBox, column, row);
 		
 		airblowActive();
 	}
@@ -75,6 +80,8 @@ public class CNCMachineOptionView extends GridPane {
 		cbTIMAllowed = new CheckBox();
 		lblTIM = new Label(Translator.getTranslation(TIM_ALLOWED));
 		lblAirblow = new Label(Translator.getTranslation(AIRBLOW_BOUND));
+		cbMachineAirblow = new CheckBox();
+		lblMachineAirblow = new Label(Translator.getTranslation(MACHINE_AIRBLOW));
 		bottomCoord = new CoordinateBox(6, "X", "Y", "Z");
 		topCoord = new CoordinateBox(6, "X", "Y", "Z");
 		lblNbFixtures = new Label(Translator.getTranslation(MAX_FIX));
@@ -100,10 +107,17 @@ public class CNCMachineOptionView extends GridPane {
 				cbTIMAllowed.setSelected(newValue);
 			}
 		});
+		cbMachineAirblow.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				cbMachineAirblow.setSelected(newValue);
+			}
+		});
 	}
 	
 	public void refresh(final AbstractCNCMachine cncMachine) {
 		cbTIMAllowed.setSelected(cncMachine.getTIMAllowed());
+		cbMachineAirblow.setSelected(cncMachine.getMachineAirblow());
 		itxtNbFix.setText("" + cncMachine.getNbFixtures());
 		AirblowSquare airblowBound = cncMachine.getZones().iterator().next().getBoundaries();
 		if (airblowBound != null) {
@@ -122,6 +136,10 @@ public class CNCMachineOptionView extends GridPane {
 
 	public boolean getTIMAllowed() {
 		return cbTIMAllowed.isSelected();
+	}
+	
+	public boolean getMachineAirblow() {
+		return cbMachineAirblow.isSelected();
 	}
 	
 	public int getNbFixtures() {

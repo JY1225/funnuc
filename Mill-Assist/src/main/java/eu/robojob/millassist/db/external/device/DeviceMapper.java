@@ -6,8 +6,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import eu.robojob.millassist.db.ConnectionManager;
@@ -23,6 +25,7 @@ import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
+import eu.robojob.millassist.external.device.processing.cnc.ECNCOption;
 import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.GenericMCode;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
@@ -257,7 +260,6 @@ public class DeviceMapper {
 			int clampingWidthR = results.getInt("CLAMPING_WIDTH_R");
 			boolean usesNewDevInt = results.getBoolean("NEW_DEV_INT");
 			int nbFixtures = results.getInt("NB_FIXTURES");
-			boolean timAllowed = results.getBoolean("TIM_ALLOWED");
 			EWayOfOperating wayOfOperating = EWayOfOperating.getWayOfOperatingById(results.getInt("WAYOFOPERATING"));
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICEINTERFACE WHERE ID = ?");
 			stmt2.setInt(1, deviceInterfaceId);
@@ -266,15 +268,34 @@ public class DeviceMapper {
 				int socketConnectionId = results2.getInt("SOCKETCONNECTION");
 				SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
 				if(usesNewDevInt) {
-					cncMillingMachine = new CNCMillingMachineDevIntv2(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR, nbFixtures, timAllowed);
+					cncMillingMachine = new CNCMillingMachineDevIntv2(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR, nbFixtures);
 				} else {
-					cncMillingMachine = new CNCMillingMachine(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR, nbFixtures, timAllowed);
+					cncMillingMachine = new CNCMillingMachine(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR, nbFixtures);
+				}
+				Map<ECNCOption, Boolean> cncOptions = getCNCOptions(id);
+				if (cncOptions.get(ECNCOption.TIM_ALLOWED) != null) {
+					cncMillingMachine.setTIMAllowed(cncOptions.get(ECNCOption.TIM_ALLOWED));
+				}
+				if (cncOptions.get(ECNCOption.MACHINE_AIRBLOW) != null) {
+					cncMillingMachine.setMachineAirblow(cncOptions.get(ECNCOption.MACHINE_AIRBLOW));
 				}
 				cncMillingMachine.setId(id);
-				
 			}
 		}
 		return cncMillingMachine;
+	}
+	
+	private Map<ECNCOption, Boolean> getCNCOptions(final int id) throws SQLException {
+		Map<ECNCOption, Boolean> resultMap = new HashMap<ECNCOption, Boolean>();
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CNC_OPTION WHERE CNC_ID = ?");
+		stmt.setInt(1, id);
+		ResultSet results = stmt.executeQuery();
+		while (results.next()) {
+			ECNCOption option = ECNCOption.getCNCOptionById(results.getInt("OPTION_ID"));
+			boolean value = results.getBoolean("OPTION_VALUE");
+			resultMap.put(option, value);
+		}
+		return resultMap;
 	}
 	
 	public MCodeAdapter getMCodeAdapter(final int cncMachineId) throws SQLException {
@@ -689,9 +710,10 @@ public class DeviceMapper {
 	}
 	
 	public void updateCNCMachine(final AbstractCNCMachine cncMachine, final String name, final EWayOfOperating wayOfOperating,
-			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final boolean timAllowed, 
-			final AirblowSquare airblowBound, final List<String> robotServiceInputNames, final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
-						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
+			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final boolean timAllowed,
+			final boolean machineAirblow, final AirblowSquare airblowBound, final List<String> robotServiceInputNames, 
+			final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
+			final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE SOCKETCONNECTION " +
 				"SET IPADDRESS = ?, PORTNR = ?, NAME = ? WHERE ID = ?");
@@ -705,14 +727,15 @@ public class DeviceMapper {
 		stmt2.setString(1, name);
 		stmt2.setInt(2, cncMachine.getId());
 		stmt2.execute();
-		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CNCMILLINGMACHINE SET CLAMPING_WIDTH_R = ? , WAYOFOPERATING = ?, NEW_DEV_INT = ?, NB_FIXTURES = ?, TIM_ALLOWED = ? WHERE ID = ?");
+		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CNCMILLINGMACHINE SET CLAMPING_WIDTH_R = ? , WAYOFOPERATING = ?, NEW_DEV_INT = ?, NB_FIXTURES = ? WHERE ID = ?");
 		stmt3.setInt(1, clampingWidthR);
 		stmt3.setInt(2, wayOfOperating.getId());
 		stmt3.setBoolean(3, newDevInt);
 		stmt3.setInt(4, nbFixtures);
-		stmt3.setBoolean(5, timAllowed);
-		stmt3.setInt(6, cncMachine.getId());
+		stmt3.setInt(5, cncMachine.getId());
 		stmt3.execute();
+		updateCNCOption(ECNCOption.TIM_ALLOWED, timAllowed, cncMachine.getId());
+		updateCNCOption(ECNCOption.MACHINE_AIRBLOW, machineAirblow, cncMachine.getId());
 		if (cncMachine.getMCodeAdapter() != null) {
 			updateMCodeAdapter(cncMachine.getId(), cncMachine.getMCodeAdapter(), robotServiceInputNames, 
 					robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs, mCodeRobotServiceOutputs);
@@ -727,6 +750,7 @@ public class DeviceMapper {
 		cncMachine.setClampingWidthR(clampingWidthR);
 		cncMachine.setNbFixtures(nbFixtures);
 		cncMachine.setTIMAllowed(timAllowed);
+		cncMachine.setMachineAirblow(machineAirblow);
 		saveAirblowBound(cncMachine, airblowBound);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setIpAddress(ipAddress);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setPortNumber(port);
@@ -734,6 +758,15 @@ public class DeviceMapper {
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().disconnect();
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	private void updateCNCOption(ECNCOption cncOption, final boolean value, final int cnc_id) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(
+				"UPDATE CNC_OPTION SET OPTION_VALUE = ? WHERE CNC_ID = ? AND OPTION_ID = ?");
+		stmt.setBoolean(1, value);
+		stmt.setInt(2, cnc_id);
+		stmt.setInt(3, cncOption.getId());
+		stmt.execute();
 	}
 	
 	private void saveAirblowBound(final AbstractCNCMachine cncMachine, final AirblowSquare airblowBound) throws SQLException {

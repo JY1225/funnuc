@@ -254,6 +254,10 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		return cncMachineOptionView.getTIMAllowed();
 	}
 	
+	public boolean getMachineAirblow() {
+		return cncMachineOptionView.getMachineAirblow();
+	}
+	
 	public AirblowSquare getAirblowBound() {
 		return cncMachineOptionView.getAirblowBound();
 	}

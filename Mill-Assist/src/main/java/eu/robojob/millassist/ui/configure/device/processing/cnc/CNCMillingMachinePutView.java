@@ -68,6 +68,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	
 	private CheckBox cbAirblow;
 	private CheckBox cbTIM;
+	private CheckBox cbMachineAirblow;
 	
 	private static final String SMOOTH_PUT_INFO = "CNCMillingMachinePutView.smoothPickInfo";
 	private static final String SMOOTH_X = "CNCMillingMachinePutView.smoothX";
@@ -79,6 +80,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	private static final String AFTER_CLAMP = "CNCMillingMachinePutView.afterClamp";
 	private static final String BEFORE_CLAMP = "CNCMillingMachinePutView.beforeClamp";
 	private static final String TIM = "CNCMillingMachinePickView.tim";
+	private static final String MACHINE_AIRBLOW = "CNCMillingMachinePickView.machineAirblow";
 	
 	private static final String CSS_CLASS_CENTER_TEXT = "center-text";
 	
@@ -195,6 +197,15 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 			}
 		});
 		
+		cbMachineAirblow = new CheckBox(Translator.getTranslation(MACHINE_AIRBLOW));
+		cbMachineAirblow.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				if ((oldValue == null) || (!oldValue.equals(newValue)))  
+					getPresenter().changedMachineAirblow(newValue);
+			}
+		});
+		
 		cbbClamping = new ComboBox<String>();
 		cbbClamping.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		cbbClamping.valueProperty().addListener(new ChangeListener<String>() {
@@ -256,6 +267,10 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 			
 		column = 0;
 		row++;
+		getContents().add(cbMachineAirblow, column++, row);
+		
+		column = 0;
+		row++;
 		getContents().add(cbTIM, column++, row);
 		
 		column = 0;
@@ -287,6 +302,12 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		cbTIM.setVisible(((AbstractCNCMachine)putStep.getDevice()).getTIMAllowed());
 		cbTIM.setManaged(((AbstractCNCMachine)putStep.getDevice()).getTIMAllowed());
 		cbTIM.setSelected(putStep.getRobotSettings().getTurnInMachine());
+	}
+	
+	public void showMachineAirblow() {
+		cbMachineAirblow.setVisible(((AbstractCNCMachine)putStep.getDevice()).getMachineAirblow());
+		cbMachineAirblow.setManaged(((AbstractCNCMachine)putStep.getDevice()).getMachineAirblow());
+		cbMachineAirblow.setSelected(putStep.getDeviceSettings().getMachineAirblow());
 	}
 	
 	private void showAirblow() {
@@ -341,6 +362,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		//TODO - test of er iets veranderd is!! (ook voor pick)
 		refreshCoordboxes();
 		showTurnInMachine();
+		showMachineAirblow();
 		showAirblow();
 		getPresenter().isConfigured();
 	}

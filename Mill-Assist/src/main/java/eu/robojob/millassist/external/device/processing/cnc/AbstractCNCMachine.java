@@ -21,7 +21,7 @@ import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
 
 public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
-
+	
 	private Set<CNCMachineListener> listeners;
 	private Set<CNCMachineAlarm> alarms;
 	private int currentStatus;
@@ -35,6 +35,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private MCodeAdapter mCodeAdapter;
 	private Map<Integer, Integer> statusMap;
 	private boolean timAllowed;
+	private boolean machineAirblow;
 	
 	private static Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());
 	
@@ -42,7 +43,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private static final String EXCEPTION_WHILE_WAITING = "AbstractCNCMachine.exceptionWhileWaiting";
 	
 	public AbstractCNCMachine(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final int clampingWidthR,
-			final int nbFixtures, final boolean timAllowed) {
+			final int nbFixtures) {
 		super(name, zones, true);
 		this.mCodeAdapter = mCodeAdapter;
 		this.wayOfOperating = wayOfOperating;
@@ -54,7 +55,9 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.stopAction = false;
 		this.clampingWidthR = clampingWidthR;
 		this.nbFixtures = nbFixtures;
-		this.timAllowed = timAllowed;
+		//default values
+		this.timAllowed = false;
+		this.machineAirblow = false;
 		this.statusMap = new HashMap<Integer, Integer>();
 	}
 	
@@ -389,4 +392,11 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.timAllowed = timAllowed;
 	}
 	
+	public boolean getMachineAirblow() {
+		return this.machineAirblow;
+	}
+	
+	public void setMachineAirblow(boolean machineAirblow) {
+		this.machineAirblow = machineAirblow;
+	}
 }
