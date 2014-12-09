@@ -24,6 +24,8 @@ public class WorkArea {
 	private List<Clamping> clampingsInUse;
 	private int clampingsInUseCount;
 	private boolean inUse;
+	// Boundary of the zone - square (lower left corner/upper right corner)
+	private WorkAreaBoundary boundaries;
 	
 	private static Logger logger = LogManager.getLogger(WorkArea.class.getName());
 	
@@ -283,5 +285,13 @@ public class WorkArea {
 	
 	public int getWorkAreaNr() {
 		return this.workAreaNr;
+	}
+	
+	public WorkAreaBoundary getBoundaries() {
+		return this.boundaries;
+	}
+
+	public void setWorkAreaBoundary(WorkAreaBoundary boundaries) {
+		this.boundaries = boundaries;
 	}
 }

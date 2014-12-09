@@ -10,9 +10,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.WorkAreaBoundary;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.ui.controls.CoordinateBox;
@@ -25,6 +28,12 @@ public class CNCMachineOptionView extends GridPane {
 	private Label lblAirblow, lblTIM, lblMachineAirblow;
 	private CheckBox cbTIMAllowed, cbMachineAirblow;
 	private CoordinateBox bottomCoord, topCoord;
+	private ComboBox<WorkAreaBoundary> cbbWaBound;
+	
+	private static final int COMBO_WIDTH = 150;
+	private static final int COMBO_HEIGHT = 40;
+	
+	private CNCMachineConfigureView cncMachineConfigureView;
 	
 	private Label lblNbFixtures;
 	private IntegerTextField itxtNbFix;
@@ -48,31 +57,37 @@ public class CNCMachineOptionView extends GridPane {
 		setVgap(15);
 		setHgap(20);
 		setAlignment(Pos.TOP_CENTER);
-		setPadding(new Insets(60,0,0,60));
+		setPadding(new Insets(40,0,0,60));
 		
 		addActionListeners();
 		
-		int column = 0; int row = 0;
+		int column = 0; int row = 0;		
+		column = 0; row++;
+		add(lblAirblow, column++, row,1,1);
+		add(cbbWaBound, column, row, 1, 1);
+		column = 0; row++;
+		add(bottomCoord, column, row++,2,1);
+		add(topCoord, column, row,2,1);
+		
+		lblAirblow.setAlignment(Pos.CENTER);
+		GridPane.setMargin(cbbWaBound, new Insets(0,0,0,-10));
+		GridPane.setMargin(bottomCoord, new Insets(0,0,0,48));
+		GridPane.setMargin(topCoord, new Insets(0,0,0,48));
+		column = 0; row++;
+		HBox machineAirblowBox = new HBox();
+		machineAirblowBox.getChildren().addAll(cbMachineAirblow, lblMachineAirblow);
+		HBox.setMargin(cbMachineAirblow, new Insets(0,15,0,0));
+		add(machineAirblowBox, column, row);
+		column = 0; row++;
 		HBox TIMBox = new HBox();
 		TIMBox.getChildren().addAll(cbTIMAllowed, lblTIM);
 		HBox.setMargin(cbTIMAllowed, new Insets(0,15,0,0));
 		add(TIMBox, column, row);
-		
-		column = 0; row++;
-		add(lblAirblow, column, row++,2,1);
-		add(bottomCoord, column, row++,4,1);
-		add(topCoord, column, row,4,1);
-		
 		column = 0; row++;
 		HBox nbFixBox = new HBox();
 		nbFixBox.getChildren().addAll(lblNbFixtures, itxtNbFix);
 		HBox.setMargin(lblNbFixtures, new Insets(5,15,0,0));
 		add(nbFixBox, column, row++);
-		HBox machineAirblowBox = new HBox();
-		machineAirblowBox.getChildren().addAll(cbMachineAirblow, lblMachineAirblow);
-		HBox.setMargin(cbMachineAirblow, new Insets(0,15,0,0));
-		add(machineAirblowBox, column, row);
-		
 		airblowActive();
 	}
 	
@@ -86,6 +101,8 @@ public class CNCMachineOptionView extends GridPane {
 		topCoord = new CoordinateBox(6, "X", "Y", "Z");
 		lblNbFixtures = new Label(Translator.getTranslation(MAX_FIX));
 		itxtNbFix = new IntegerTextField(1);
+		cbbWaBound = new ComboBox<WorkAreaBoundary>();
+		cbbWaBound.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 	}
 	
 	private void addActionListeners() {
@@ -113,19 +130,44 @@ public class CNCMachineOptionView extends GridPane {
 				cbMachineAirblow.setSelected(newValue);
 			}
 		});
+		cbbWaBound.valueProperty().addListener(new ChangeListener<WorkAreaBoundary>() {
+			@Override
+			public void changed(ObservableValue<? extends WorkAreaBoundary> observable,	WorkAreaBoundary oldValue, WorkAreaBoundary newValue) {
+				if ((oldValue != null || newValue != null) && oldValue != newValue) {
+					setBoundary();
+				}
+			}	
+		});
 	}
 	
 	public void refresh(final AbstractCNCMachine cncMachine) {
 		cbTIMAllowed.setSelected(cncMachine.getTIMAllowed());
 		cbMachineAirblow.setSelected(cncMachine.getMachineAirblow());
 		itxtNbFix.setText("" + cncMachine.getNbFixtures());
-		AirblowSquare airblowBound = cncMachine.getZones().iterator().next().getBoundaries();
-		if (airblowBound != null) {
-			topCoord.setCoordinate(airblowBound.getTopCoord());
-			topCoord.reset();
-			bottomCoord.setCoordinate(airblowBound.getBottomCoord());
-			bottomCoord.reset();
-		} 
+		fillBoundBox();
+		setBoundary();
+	}
+	
+	private void fillBoundBox() {
+		cbbWaBound.getItems().clear();
+		for (WorkArea wa: cncMachineConfigureView.getCNCMachine().getWorkAreas()) {
+			cbbWaBound.getItems().add(wa.getBoundaries());
+		}
+		cbbWaBound.getSelectionModel().selectFirst();
+	}
+	
+	private void setBoundary() {
+		try {
+			AirblowSquare airblowBound = cbbWaBound.getSelectionModel().getSelectedItem().getBoundary();
+			if (airblowBound != null) {
+				topCoord.setCoordinate(airblowBound.getTopCoord());
+				topCoord.reset();
+				bottomCoord.setCoordinate(airblowBound.getBottomCoord());
+				bottomCoord.reset();
+			} 
+		} catch (NullPointerException e) {
+			//null if not yet initialized
+		}
 	}
 	
 	public void setTextFieldListener(final TextInputControlListener listener) {
@@ -161,5 +203,9 @@ public class CNCMachineOptionView extends GridPane {
 		} catch (IOException e) {
 
 		}
+	}
+
+	public void setConfigureView(CNCMachineConfigureView cncMachineConfigureView) {
+		this.cncMachineConfigureView = cncMachineConfigureView;
 	}
 }

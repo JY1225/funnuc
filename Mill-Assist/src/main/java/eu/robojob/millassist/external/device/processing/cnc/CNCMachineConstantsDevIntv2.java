@@ -100,8 +100,9 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int OUT_DOOR2_OPEN 				=	BIT6;
 	public static final int OUT_DOOR2_CLOSED			= 	BIT7;
 	public static final int OUT_DOOR2_LED				=	BIT8;
-	// BIT 9 UNUSED
+	public static final int OUT_MACHINE_GREEN_LAMP		= 	BIT9;
 	public static final int OUT_MACHINE_BLUE_LAMP		= 	BIT10;
+	public static final int OUT_MACHINE_ORANGE_LAMP		= 	BIT11;
 	// BIT 11 UNUSED 
 	public static final int MODULE_5_OK					= 	BIT12;
 	// BITS 13-15 UNUSED
@@ -434,7 +435,8 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int CFG_MACHINE_USE_ZONE_FREE			= 	BIT7;
 	public static final int CFG_MACHINE_USE_CYCLE_FINISHED		= 	BIT8;	
 	public static final int CFG_MACHINE_NEGATIVE_MACHINE_ALARM	= 	BIT9;
-	// BITS 10-11 UNUSED
+	public static final int CFG_MACHINE_SIMULATED				= 	BIT10;
+	// BITS 11 UNUSED
 	public static final int CFG_DOORS_1_USE_TIMERS				= 	BIT12;	
 	public static final int CFG_DOORS_1_USE_UNLOCK				= 	BIT13;	
 	public static final int CFG_DOORS_2_USE_TIMERS				= 	BIT14;	
@@ -478,39 +480,43 @@ public final class CNCMachineConstantsDevIntv2 {
 	
 	public static final int CONFIG_4 = 38;
 	public static final int CFG_FIX_1_USE_TIMERS				= 	BIT0;
-	public static final int CFG_FIX_1_USE_CLAMPED_SENSOR		= 	BIT1;
-	public static final int CFG_FIX_1_AIRBLOW_PUT				= 	BIT2;
-	public static final int CFG_FIX_1_AIRBLOW_PUT_DOOR_CLOSED	= 	BIT3;
-	public static final int CFG_FIX_1_AIRBLOW_PICK				= 	BIT4;
-	public static final int CFG_FIX_1_AIRBLOW_PICK_DOOR_CLOSED	= 	BIT5;
-	// BITS 6-15 UNUSED
+	public static final int CFG_FIX_1_USE_TIMERS_MEMORY			= 	BIT1;
+	public static final int CFG_FIX_1_USE_CLAMPED_SENSOR		= 	BIT2;
+	public static final int CFG_FIX_1_AIRBLOW_PUT				= 	BIT3;
+	public static final int CFG_FIX_1_AIRBLOW_PUT_DOOR_CLOSED	= 	BIT4;
+	public static final int CFG_FIX_1_AIRBLOW_PICK				= 	BIT5;
+	public static final int CFG_FIX_1_AIRBLOW_PICK_DOOR_CLOSED	= 	BIT6;
+	// BITS 7-15 UNUSED
 	
 	public static final int CONFIG_5 = 39;
 	public static final int CFG_FIX_2_USE_TIMERS				= 	BIT0;
-	public static final int CFG_FIX_2_USE_CLAMPED_SENSOR		= 	BIT1;
-	public static final int CFG_FIX_2_AIRBLOW_PUT				= 	BIT2;
-	public static final int CFG_FIX_2_AIRBLOW_PUT_DOOR_CLOSED	= 	BIT3;
-	public static final int CFG_FIX_2_AIRBLOW_PICK				= 	BIT4;
-	public static final int CFG_FIX_2_AIRBLOW_PICK_DOOR_CLOSED	= 	BIT5;
-	// BITS 6-15 UNUSED
+	public static final int CFG_FIX_2_USE_TIMERS_MEMORY			= 	BIT1;
+	public static final int CFG_FIX_2_USE_CLAMPED_SENSOR		= 	BIT2;
+	public static final int CFG_FIX_2_AIRBLOW_PUT				= 	BIT3;
+	public static final int CFG_FIX_2_AIRBLOW_PUT_DOOR_CLOSED	= 	BIT4;
+	public static final int CFG_FIX_2_AIRBLOW_PICK				= 	BIT5;
+	public static final int CFG_FIX_2_AIRBLOW_PICK_DOOR_CLOSED	= 	BIT6;
+	// BITS 7-15 UNUSED
 	
 	public static final int CONFIG_6 = 40;
 	public static final int CFG_FIX_3_USE_TIMERS				= 	BIT0;
-	public static final int CFG_FIX_3_USE_CLAMPED_SENSOR		= 	BIT1;
-	public static final int CFG_FIX_3_AIRBLOW_PUT				= 	BIT2;
-	public static final int CFG_FIX_3_AIRBLOW_PUT_DOOR_CLOSED	= 	BIT3;
-	public static final int CFG_FIX_3_AIRBLOW_PICK				= 	BIT4;
-	public static final int CFG_FIX_3_AIRBLOW_PICK_DOOR_CLOSED	= 	BIT5;
-	// BITS 6-15 UNUSED
+	public static final int CFG_FIX_3_USE_TIMERS_MEMORY			= 	BIT1;
+	public static final int CFG_FIX_3_USE_CLAMPED_SENSOR		= 	BIT2;
+	public static final int CFG_FIX_3_AIRBLOW_PUT				= 	BIT3;
+	public static final int CFG_FIX_3_AIRBLOW_PUT_DOOR_CLOSED	= 	BIT4;
+	public static final int CFG_FIX_3_AIRBLOW_PICK				= 	BIT5;
+	public static final int CFG_FIX_3_AIRBLOW_PICK_DOOR_CLOSED	= 	BIT6;
+	// BITS 7-15 UNUSED
 	
 	public static final int CONFIG_7 = 41;
 	public static final int CFG_FIX_4_USE_TIMERS				= 	BIT0;
-	public static final int CFG_FIX_4_USE_CLAMPED_SENSOR		= 	BIT1;
-	public static final int CFG_FIX_4_AIRBLOW_PUT				= 	BIT2;
-	public static final int CFG_FIX_4_AIRBLOW_PUT_DOOR_CLOSED	= 	BIT3;
-	public static final int CFG_FIX_4_AIRBLOW_PICK				= 	BIT4;
-	public static final int CFG_FIX_4_AIRBLOW_PICK_DOOR_CLOSED	= 	BIT5;
-	// BITS 6-15 UNUSED
+	public static final int CFG_FIX_4_USE_TIMERS_MEMORY			= 	BIT1;
+	public static final int CFG_FIX_4_USE_CLAMPED_SENSOR		= 	BIT2;
+	public static final int CFG_FIX_4_AIRBLOW_PUT				= 	BIT3;
+	public static final int CFG_FIX_4_AIRBLOW_PUT_DOOR_CLOSED	= 	BIT4;
+	public static final int CFG_FIX_4_AIRBLOW_PICK				= 	BIT5;
+	public static final int CFG_FIX_4_AIRBLOW_PICK_DOOR_CLOSED	= 	BIT6;
+	// BITS 7-15 UNUSED
 	
 
 	// CONFIGURATION - MACHINE PARAMETERS
@@ -524,7 +530,7 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int PAR_MACHINE_START_CNC_TIME			= 56;
 	public static final int PAR_MACHINE_NC_RESET_TIMER			= 57;
 	public static final int PAR_MACHINE_BLUE_LAMP 				= 58;
-
+	public static final int PAR_MACHINE_SIMUALTED_CYCLE_TIME	= 59;
 
 	// CONFIGURATION - DOOR PARAMETERS
 	

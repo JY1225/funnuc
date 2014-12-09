@@ -22,6 +22,7 @@ import eu.robojob.millassist.external.device.EFixtureType;
 import eu.robojob.millassist.external.device.AbstractDevice.DeviceType;
 import eu.robojob.millassist.external.device.Clamping.Type;
 import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.WorkAreaBoundary;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
@@ -378,10 +379,6 @@ public class DeviceMapper {
 			zone = new Zone(name, workAreas, zoneNr);
 			zone.setId(id);
 			zones.add(zone);
-			AirblowSquare boundaries = getZoneBoundaries(zone.getId());
-			if (boundaries != null) {
-				zone.setBoundary(boundaries);
-			}
 		}
 		return zones;
 	}
@@ -407,15 +404,19 @@ public class DeviceMapper {
 			if (possibleClampings.size() > 0) {
 				workArea.setDefaultClamping(possibleClampings.iterator().next());
 			}
+			AirblowSquare boundaries = getWorkAreaBoundaries(id);
+			if (boundaries != null) {
+				workArea.setWorkAreaBoundary(new WorkAreaBoundary(workArea, boundaries));
+			}
 		}
 		return workAreas;
 	}
 	
-	private AirblowSquare getZoneBoundaries(final int zoneId) throws SQLException {
+	private AirblowSquare getWorkAreaBoundaries(final int workAreaId) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
-				+ "SELECT * FROM ZONE_BOUNDARIES "
-				+ "WHERE ZONE_ID = ?");
-		stmt.setInt(1, zoneId);
+				+ "SELECT * FROM WORKAREA_BOUNDARIES "
+				+ "WHERE WORKAREA_ID = ?");
+		stmt.setInt(1, workAreaId);
 		ResultSet results = stmt.executeQuery();
 		if (results.next()) {
 			Coordinates bottomCoord = generalMapper.getCoordinatesById(0, results.getInt("BOTTOMCOORD"));
@@ -770,19 +771,20 @@ public class DeviceMapper {
 	}
 	
 	private void saveAirblowBound(final AbstractCNCMachine cncMachine, final AirblowSquare airblowBound) throws SQLException {
-		Zone zone = cncMachine.getZones().iterator().next();
-		if (zone.getBoundaries() != null) {
-			generalMapper.saveCoordinates(airblowBound.getBottomCoord());
-			generalMapper.saveCoordinates(airblowBound.getTopCoord());
-		} else {
-			PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
-					+ "INSERT INTO ZONE_BOUNDARIES (ZONE_ID, BOTTOMCOORD, TOPCOORD) VALUES (?, ?, ?)");
-			stmt.setInt(1, zone.getId());
-			generalMapper.saveCoordinates(airblowBound.getBottomCoord());
-			generalMapper.saveCoordinates(airblowBound.getTopCoord());
-			stmt.setInt(2, airblowBound.getBottomCoord().getId());
-			stmt.setInt(3, airblowBound.getTopCoord().getId());
-			stmt.executeUpdate();
+		for(WorkArea workarea: cncMachine.getWorkAreas()) {
+			if (workarea.getBoundaries() != null) {
+				generalMapper.saveCoordinates(airblowBound.getBottomCoord());
+				generalMapper.saveCoordinates(airblowBound.getTopCoord());
+			} else {
+				PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
+						+ "INSERT INTO WORKAREA_BOUNDARIES (WORKAREA_ID, BOTTOMCOORD, TOPCOORD) VALUES (?, ?, ?)");
+				stmt.setInt(1, workarea.getId());
+				generalMapper.saveCoordinates(airblowBound.getBottomCoord());
+				generalMapper.saveCoordinates(airblowBound.getTopCoord());
+				stmt.setInt(2, airblowBound.getBottomCoord().getId());
+				stmt.setInt(3, airblowBound.getTopCoord().getId());
+				stmt.executeUpdate();
+			}
 		}
 	}
 	

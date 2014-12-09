@@ -5,7 +5,7 @@ import java.util.Set;
 
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.Zone;
+import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.PickStep;
@@ -176,9 +176,9 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 	}
 	
 	private boolean isInsideMachineBoundaries() {
-		Zone zone = pickStep.getRobotSettings().getWorkArea().getZone();
-		if (zone.getBoundaries() != null) {
-			AirblowSquare square = zone.getBoundaries();
+		WorkArea workarea = pickStep.getRobotSettings().getWorkArea();
+		if (workarea.getBoundaries() != null) {
+			AirblowSquare square = workarea.getBoundaries().getBoundary();
 			for (int clampingId: pickStep.getRobotSettings().getRobotAirblowSettings().keySet()) {
 				Clamping clamping = pickStep.getRobotSettings().getWorkArea().getClampingById(clampingId);
 				AirblowSquare clampingAir = pickStep.getRobotSettings().getAirblowSquare(clampingId);

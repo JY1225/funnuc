@@ -61,11 +61,16 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		this.cncMachineGeneralView = new CNCMachineGeneralView();
 		this.cncMachineMCodeView = new CNCMachineMCodeView();
 		this.cncMachineOptionView = new CNCMachineOptionView();
+		cncMachineOptionView.setConfigureView(this);
 	}
 	
 	public void setCNCMachine(final AbstractCNCMachine cncMachine) {
 		this.cncMachine = cncMachine;
 		refresh();
+	}
+	
+	public AbstractCNCMachine getCNCMachine() {
+		return this.cncMachine;
 	}
 	
 	public void setUserFrameNames(final Set<String> userFrames) {

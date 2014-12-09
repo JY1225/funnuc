@@ -232,6 +232,8 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		deviceInfo.getPickStep().getRobotSettings().setWorkArea(workArea);
 		deviceInfo.getPutStep().getDeviceSettings().setWorkArea(workArea);
 		deviceInfo.getPutStep().getRobotSettings().setWorkArea(workArea);
+		deviceInfo.getPickStep().getRobotSettings().clearAirblowSettings();
+		deviceInfo.getPutStep().getRobotSettings().clearAirblowSettings();
 		deviceInfo.getProcessingStep().getDeviceSettings().setWorkArea(workArea);
 		if (deviceInfo.hasInterventionStepAfterPut()) {
 			deviceInfo.getInterventionStepAfterPut().getDeviceSettings().setWorkArea(workArea);
