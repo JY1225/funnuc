@@ -26,6 +26,7 @@ public class WorkArea {
 	private boolean inUse;
 	// Boundary of the zone - square (lower left corner/upper right corner)
 	private WorkAreaBoundary boundaries;
+	private boolean isClone;
 	
 	private static Logger logger = LogManager.getLogger(WorkArea.class.getName());
 	
@@ -293,5 +294,13 @@ public class WorkArea {
 
 	public void setWorkAreaBoundary(WorkAreaBoundary boundaries) {
 		this.boundaries = boundaries;
+	}
+
+	public boolean isClone() {
+		return isClone;
+	}
+
+	public void setClone(boolean isClone) {
+		this.isClone = isClone;
 	}
 }

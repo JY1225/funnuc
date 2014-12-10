@@ -166,7 +166,8 @@ public class ProcessFlowAdapter {
 	//TODO could be optimized
 	public int getCNCMachineIndex() {
 		for (int i = 0; i < getDeviceStepCount(); i++) {
-			if ((getDeviceInformation(i).getDevice() != null) && (getDeviceInformation(i).getDevice().getType() == EDeviceGroup.CNC_MACHINE)) {
+			AbstractDevice device = getDeviceInformation(i).getDevice();
+			if ((device != null) && (device.getType() == EDeviceGroup.CNC_MACHINE)) {
 				return i;
 			}
 		}

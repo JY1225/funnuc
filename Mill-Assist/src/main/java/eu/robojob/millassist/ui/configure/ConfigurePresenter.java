@@ -310,7 +310,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		Clamping clamping = null;
 		if (cncMachine.getWorkAreas().size() >= 1) {
 			for (WorkArea workA: cncMachine.getWorkAreas()) {
-				if (!workA.inUse()) {
+				if (!workA.inUse() && workA.isClone()) {
 					workArea = workA;
 				}
 			}
@@ -489,9 +489,10 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	
 	public void removeDevice(final int index) {
 		processFlowAdapter.removeDeviceSteps(index);
+		//FIXME - potential problem if other post-device than reversal + cnc are possible
 		if (index > processFlowAdapter.getCNCMachineIndex()) {
-			// eerste CNC machine verwijderen
-			processFlowAdapter.removeDeviceSteps(index-1);
+			// tweede CNC machine verwijderen
+			processFlowAdapter.removeDeviceSteps(index);
 			processFlowAdapter.updateWorkPieceTypes();
 		}		
 		deviceMenuFactory.clearBuffer();

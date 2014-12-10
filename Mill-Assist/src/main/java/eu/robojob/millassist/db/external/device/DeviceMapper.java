@@ -386,10 +386,12 @@ public class DeviceMapper {
 	private Set<WorkArea> getAllWorkAreasByZoneId(final int zoneId) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
 				+ "SELECT * FROM WORKAREA "
-				+ "WHERE ZONE = ?");
+				+ "WHERE ZONE = ?"
+				+ "ORDER BY USERFRAME, ID");
 		stmt.setInt(1, zoneId);
 		ResultSet results = stmt.executeQuery();
 		Set<WorkArea> workAreas = new HashSet<WorkArea>();
+		int prvUserFrameId = 0;
 		while (results.next()) {
 			int id = results.getInt("ID");
 			String name = results.getString("NAME");
@@ -399,6 +401,10 @@ public class DeviceMapper {
 			WorkArea workArea = new WorkArea(name, userFrame, possibleClampings);
 			workArea.setId(id);
 			workArea.inUse(false);
+			//zone & userframe are the same, so this WA is a copy of the previous one
+			if (prvUserFrameId == userFrameId) {
+				workArea.setClone(true);
+			}
 			workAreas.add(workArea);
 			// set default clamping to first
 			if (possibleClampings.size() > 0) {
@@ -408,6 +414,7 @@ public class DeviceMapper {
 			if (boundaries != null) {
 				workArea.setWorkAreaBoundary(new WorkAreaBoundary(workArea, boundaries));
 			}
+			prvUserFrameId = userFrameId;
 		}
 		return workAreas;
 	}
@@ -427,7 +434,7 @@ public class DeviceMapper {
 	}
 	
 	private Set<Clamping> getClampingsByWorkAreaId(final int workAreaId) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM WORKAREA_CLAMPING WHERE WORKAREA = ?");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM WORKAREA_CLAMPING WHERE WORKAREA = ? ORDER BY ID");
 		stmt.setInt(1, workAreaId);
 		ResultSet results = stmt.executeQuery();
 		Set<Clamping> clampings = new HashSet<Clamping>();
@@ -1141,7 +1148,6 @@ public class DeviceMapper {
 		if (bottomAirblowCoord != null && topAirblowCoord != null) {
 			clamping.setDefaultAirblowPoints(new AirblowSquare(bottomAirblowCoord, topAirblowCoord));
 		}
-
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}

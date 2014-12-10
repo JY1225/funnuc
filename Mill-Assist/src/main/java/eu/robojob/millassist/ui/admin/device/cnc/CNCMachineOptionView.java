@@ -151,7 +151,9 @@ public class CNCMachineOptionView extends GridPane {
 	private void fillBoundBox() {
 		cbbWaBound.getItems().clear();
 		for (WorkArea wa: cncMachineConfigureView.getCNCMachine().getWorkAreas()) {
-			cbbWaBound.getItems().add(wa.getBoundaries());
+			if (!wa.isClone()) {
+				cbbWaBound.getItems().add(wa.getBoundaries());
+			}
 		}
 		cbbWaBound.getSelectionModel().selectFirst();
 	}

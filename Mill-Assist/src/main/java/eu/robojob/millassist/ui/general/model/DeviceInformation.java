@@ -55,6 +55,10 @@ public class DeviceInformation {
 			}
 		}
 	}
+	
+	public int getIndexOfFirstCNCMachine() {
+		return flowAdapter.getCNCMachineIndex();
+	}
 
 	public int getIndex() {
 		return index;

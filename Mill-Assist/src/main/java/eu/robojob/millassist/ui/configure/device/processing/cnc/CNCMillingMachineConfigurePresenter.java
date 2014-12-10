@@ -1,6 +1,8 @@
 package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -255,6 +257,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			}
 		}
 		// All chosen fixture types must be different from each other. It is thus not possible to have two active fixtures both of type fixture 1.
+		//TODO - in case of same type: deselect one and select other
 		for(Clamping clamping1: pickSettings.getWorkArea().getAllActiveClampings()) {
 			for(Clamping clamping2: pickSettings.getWorkArea().getAllActiveClampings()) {
 				if(!clamping1.equals(clamping2) && clamping1.getFixtureType().equals(clamping2.getFixtureType())) {
@@ -293,5 +296,24 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			return true;
 		}
 		return false;
+	}
+	
+	List<String> getListOfWorkAreas() {
+		int indexOfFirstCNC = deviceInfo.getIndexOfFirstCNCMachine();
+		List<String> waList = new ArrayList<String>();
+		if (deviceInfo.getIndex() == indexOfFirstCNC) {
+			for (WorkArea workArea: deviceInfo.getDevice().getWorkAreas()) {
+				if (!workArea.isClone()) {
+					waList.add(workArea.getName());
+				}
+			}
+		} else {
+			for (WorkArea workArea: deviceInfo.getDevice().getWorkAreas()) {
+				if (workArea.isClone()) {
+					waList.add(workArea.getName());
+				}
+			}
+		}
+		return waList;
 	}
 }

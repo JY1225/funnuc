@@ -143,6 +143,11 @@ public class ProcessFlowManager {
 				if (deviceStep.getDevice().getWorkAreas().size() > 0) {
 					
 					WorkArea workArea = deviceStep.getDevice().getWorkAreas().get(0);
+					for (WorkArea wk: deviceStep.getDevice().getWorkAreas()) {
+						if (!wk.isClone()) {
+							workArea = wk;
+						}
+					}
 
 					if ((deviceStep instanceof PickStep) && (deviceStep.getDevice() instanceof Conveyor)) {
 						workArea = ((Conveyor) deviceStep.getDevice()).getRawWorkArea();

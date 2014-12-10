@@ -213,13 +213,14 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		if ((deviceInfo.getDevice() != null) && (deviceInfo.getDevice().getWorkAreas() != null)) {
 			cbbWorkArea.setValue(null);
 			cbbWorkArea.getItems().clear();
-			cbbWorkArea.getItems().addAll(deviceInfo.getDevice().getWorkAreaNames());
+		//	cbbWorkArea.getItems().addAll(deviceInfo.getDevice().getWorkAreaNames());
+			cbbWorkArea.getItems().addAll(getPresenter().getListOfWorkAreas());
 			if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)
 					&& (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 				cbbWorkArea.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getName());
 				deviceInfo.getPutStep().getDeviceSettings().getWorkArea().inUse(true);
 			}
-			if (deviceInfo.getDevice().getWorkAreaNames().size() > 1 && notClonedClampings()) {
+			if (getPresenter().getListOfWorkAreas().size() > 1) {
 				cbbWorkArea.setDisable(false);
 				lblWorkArea.setDisable(false);
 			} else {
@@ -227,21 +228,6 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 				lblWorkArea.setDisable(true);
 			}
 		}
-	}
-	
-	private boolean notClonedClampings() {
-		int userFrameId = -1;
-		int zoneId = -1;
-		for (WorkArea workArea: deviceInfo.getDevice().getWorkAreas()) {
-			if (userFrameId == -1 && zoneId == -1) {
-				userFrameId = workArea.getUserFrame().getId();
-				zoneId = workArea.getZone().getId();
-			}
-			if (zoneId != workArea.getZone().getId() || userFrameId != workArea.getUserFrame().getId()) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public void refreshClampingButtons() {
