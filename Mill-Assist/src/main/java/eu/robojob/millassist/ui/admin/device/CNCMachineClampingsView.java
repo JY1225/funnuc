@@ -13,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -99,6 +100,9 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private FileChooser fileChooser;
 	private String imagePath;
 	
+	 //WA1/WA2 checkbox
+	 private CheckBox cbWa1, cbWa2;	
+	
 	private Button btnSave, btnCopy, btnDelete;
 	
 	private static final String EDIT = "CNCMachineClampingsView.edit";
@@ -117,6 +121,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private static final String SMOOTH_TO = "CNCMachineClampingsView.smoothTo";
 	private static final String SMOOTH_FROM = "CNCMachineClampingsView.smoothFrom";
 	private static final String CSS_CLASS_GRIPPER_IMAGE_EDIT = "gripper-image-edit";
+	private static final String WA1 = "CNCMachineGeneralView.wa1";
+	private static final String WA2 = "CNCMachineGeneralView.wa2";
 
 	private static final String EDIT_PATH = "M 15.71875,0 3.28125,12.53125 0,20 7.46875,16.71875 20,4.28125 C 20,4.28105 19.7362,2.486 18.625,1.375 17.5134,0.2634 15.71875,0 15.71875,0 z M 3.53125,12.78125 c 0,0 0.3421,-0.0195 1.0625,0.3125 C 4.85495,13.21295 5.1112,13.41 5.375,13.625 l 0.96875,0.96875 c 0.2258,0.2728 0.4471,0.5395 0.5625,0.8125 C 7.01625,15.66565 7.25,16.5 7.25,16.5 L 3,18.34375 C 2.5602,17.44355 2.55565,17.44 1.65625,17 l 1.875,-4.21875 z";
 	private static final String ADD_PATH = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 8.75 5 L 11.25 5 L 11.25 8.75 L 15 8.75 L 15 11.25 L 11.25 11.25 L 11.25 15 L 8.75 15 L 8.75 11.25 L 5 11.25 L 5 8.75 L 8.75 8.75 L 8.75 5 z";
@@ -212,11 +218,11 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		spImage.getChildren().add(imageVw);
 		
 		lblName = new Label(Translator.getTranslation(NAME));
-		lblName.setMinWidth(75);
-		fullTxtName = new FullTextField(80);
-		fullTxtName.setMinSize(230, UIConstants.TEXT_FIELD_HEIGHT);
-		fullTxtName.setPrefSize(230, UIConstants.TEXT_FIELD_HEIGHT);
-		fullTxtName.setMaxSize(230, UIConstants.TEXT_FIELD_HEIGHT);
+		lblName.setMinWidth(65);
+		fullTxtName = new FullTextField(90);
+		fullTxtName.setMinSize(240, UIConstants.TEXT_FIELD_HEIGHT);
+		fullTxtName.setPrefSize(240, UIConstants.TEXT_FIELD_HEIGHT);
+		fullTxtName.setMaxSize(240, UIConstants.TEXT_FIELD_HEIGHT);
 		fullTxtName.setOnChange(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> arg0, final String arg1, final String arg2) {
@@ -224,7 +230,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			}
 		});
 		lblHeight = new Label(Translator.getTranslation(HEIGHT));
-		lblHeight.setMinWidth(75);
+		lblHeight.setMinWidth(65);
 		numtxtHeight = new NumericTextField(6);
 		numtxtHeight.setPrefHeight( UIConstants.TEXT_FIELD_HEIGHT);
 		numtxtHeight.setMinHeight(UIConstants.TEXT_FIELD_HEIGHT);
@@ -236,8 +242,35 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			}
 		});
 		
+		cbWa1 = new CheckBox(Translator.getTranslation(WA1));
+		cbWa1.setMinWidth(65);
+		cbWa1.setPrefWidth(65);
+		cbWa1.setMaxWidth(65);
+		cbWa1.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				//Do the opposite for cbWa2
+				if (!cbWa2.isDisabled()) {
+					cbWa2.setSelected(oldValue);
+				} 
+			}
+		});
+		cbWa2 = new CheckBox(Translator.getTranslation(WA2));
+		cbWa2.setMinWidth(65);
+		cbWa2.setPrefWidth(65);
+		cbWa2.setMaxWidth(65);
+		cbWa2.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				//Do the opposite for cbWa1
+				if (!cbWa1.isDisabled()) {
+					cbWa1.setSelected(oldValue);
+				} 
+			}
+		});
+		
 		lblType = new Label(Translator.getTranslation(TYPE));
-		lblType.setMinWidth(75);
+		lblType.setMinWidth(65);
 		cbbType = new ComboBox<String>();
 		cbbType.setPrefSize(100, UIConstants.COMBO_HEIGHT);
 		cbbType.setMinSize(100, UIConstants.COMBO_HEIGHT);
@@ -248,8 +281,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		cbbType.getItems().add(CLAMPING_TYPE_FIXED_YP);
 		
 		cbbFixtureType = new ComboBox<String>();
-		cbbFixtureType.setPrefSize(120, UIConstants.COMBO_HEIGHT);
-		cbbFixtureType.setMinSize(120, UIConstants.COMBO_HEIGHT);
+		cbbFixtureType.setPrefSize(130, UIConstants.COMBO_HEIGHT);
+		cbbFixtureType.setMinSize(130, UIConstants.COMBO_HEIGHT);
 		for (EFixtureType fixType: EFixtureType.values()) {
 			if(fixType != EFixtureType.DEFAULT && fixType.getHighestNbOfFixtureUsed() <= deviceManager.getCNCMachines().iterator().next().getNbFixtures())
 				cbbFixtureType.getItems().add(fixType.toString());
@@ -449,6 +482,12 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 				} else if (selectedType == CLAMPING_TYPE_FIXED_YM) {
 					type = Type.FIXED_YM;
 				}
+				int waNr = 1;
+				if (cbWa1.isSelected()) {
+					waNr = 1;
+				} else if (cbWa2.isSelected()) {
+					waNr = 2;
+				}
 				EFixtureType fixtureType = EFixtureType.getFixtureTypeFromStringValue(cbbFixtureType.getValue());
 				getPresenter().updateClamping(fullTxtName.getText(), Float.parseFloat(numtxtHeight.getText()), imagePath,
 						Float.parseFloat(numtxtX.getText()), Float.parseFloat(numtxtY.getText()), 
@@ -457,7 +496,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 						Float.parseFloat(numtxtSmoothToX.getText()), Float.parseFloat(numtxtSmoothToY.getText()),
 						Float.parseFloat(numtxtSmoothToZ.getText()), Float.parseFloat(numtxtSmoothFromX.getText()), 
 						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()),
-						type, fixtureType, bottomAirblow.getCoordinate(), topAirblow.getCoordinate());
+						type, fixtureType, bottomAirblow.getCoordinate(), topAirblow.getCoordinate(), waNr);
 			}
 		});
 		btnCopy = createButton(ADD_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(COPY), BTN_WIDTH + 40, BTN_HEIGHT, new EventHandler<ActionEvent>() {	
@@ -476,6 +515,12 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 				} else if (selectedType == CLAMPING_TYPE_FIXED_YM) {
 					type = Type.FIXED_YM;
 				}
+				int waNr = 1;
+				if (cbWa1.isSelected()) {
+					waNr = 1;
+				} else if (cbWa2.isSelected()) {
+					waNr = 2;
+				}
 				EFixtureType fixtureType = EFixtureType.getFixtureTypeFromStringValue(cbbFixtureType.getValue());
 				getPresenter().copyClamping(Float.parseFloat(numtxtHeight.getText()), imagePath,
 						Float.parseFloat(numtxtX.getText()), Float.parseFloat(numtxtY.getText()), 
@@ -484,7 +529,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 						Float.parseFloat(numtxtSmoothToX.getText()), Float.parseFloat(numtxtSmoothToY.getText()),
 						Float.parseFloat(numtxtSmoothToZ.getText()), Float.parseFloat(numtxtSmoothFromX.getText()), 
 						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()),
-						type, fixtureType, new Coordinates(bottomAirblow.getCoordinate()), new Coordinates(topAirblow.getCoordinate()));	
+						type, fixtureType, new Coordinates(bottomAirblow.getCoordinate()), new Coordinates(topAirblow.getCoordinate()),
+						waNr);	
 			}
 		});
 		btnDelete = createButton(DELETE_ICON_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(REMOVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
@@ -520,12 +566,14 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		gpNameHeight.setVgap(10);
 		gpNameHeight.setHgap(10);
 		gpNameHeight.add(lblName, 0, 0);
-		gpNameHeight.add(fullTxtName, 1, 0, 4, 1);
+		gpNameHeight.add(fullTxtName, 1, 0, 3, 1);
 		gpNameHeight.add(lblHeight, 0, 1);
 		gpNameHeight.add(numtxtHeight, 1, 1);
+		gpNameHeight.add(cbWa1, 2, 1);
+		gpNameHeight.add(cbWa2, 3, 1); 
 		gpNameHeight.add(lblType, 0, 2);
 		gpNameHeight.add(cbbType, 1, 2, 1, 1);
-		gpNameHeight.add(cbbFixtureType, 2, 2, 1, 1);
+		gpNameHeight.add(cbbFixtureType, 2, 2, 2, 1);
 		gpNameHeight.setAlignment(Pos.CENTER_LEFT);
 		gpDetails.add(gpNameHeight, 1, row, 2, 1);
 		column = 0; row++;
@@ -631,16 +679,23 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	@Override
 	public void refresh() {
 		ifsClampings.clearItems();
+		boolean wa1Present = false;
+		boolean wa2Present = false;
 		int itemIndex = 0;
 		Set<Integer> addedClampingIds = new HashSet<Integer>();
 		for (AbstractCNCMachine machine : deviceManager.getCNCMachines()) {
-			for (WorkArea workArea : machine.getWorkAreas()) {
+			for (final WorkArea workArea : machine.getWorkAreas()) {
+				if (workArea.getWorkAreaNr() == 1) {
+					wa1Present = true;
+				} else if (workArea.getWorkAreaNr() == 2) {
+					wa2Present = true;
+				}
 				for (final Clamping clamping : workArea.getClampings()) {
 					if (!addedClampingIds.contains(clamping.getId())) {
 						ifsClampings.addItem(itemIndex, clamping.getName(), clamping.getImageUrl(), clamping.getFixtureType().toShortString(), new EventHandler<MouseEvent>(){
 							@Override
 							public void handle(final MouseEvent arg0) {
-								getPresenter().selectedClamping(clamping);
+								getPresenter().selectedClamping(clamping, workArea.getWorkAreaNr());
 							}
 						});
 						itemIndex++;
@@ -648,6 +703,13 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 					}
 				}
 			}
+		}
+		if (wa1Present && wa2Present) {
+			cbWa1.setDisable(false);
+			cbWa2.setDisable(false);
+		} else {
+			cbWa1.setDisable(true);
+			cbWa2.setDisable(true);
 		}
 		getPresenter().disableEditMode();
 		reset();
@@ -700,6 +762,8 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		numtxtSmoothFromX.setText("");
 		numtxtSmoothFromY.setText("");
 		numtxtSmoothFromZ.setText("");
+		cbWa1.setSelected(true);
+		cbWa2.setSelected(false);
 		imagePath = null;
 		imageVw.setImage(null);
 		validate();
@@ -707,7 +771,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		spControls.setVisible(false);
 	}
 	
-	public void clampingSelected(final Clamping clamping) {
+	public void clampingSelected(final Clamping clamping, final int workAreaNr) {
 		ifsClampings.setSelected(clamping.getName());
 		btnEdit.setDisable(false);
 		fullTxtName.setText(clamping.getName());
@@ -752,6 +816,13 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			bottomAirblow.setCoordinate(clamping.getDefaultAirblowPoints().getBottomCoord());
 			bottomAirblow.reset();
 		}
+		if (workAreaNr == 1) {
+			cbWa1.setSelected(true);
+			cbWa2.setSelected(false);
+		} else if (workAreaNr == 2) {
+			cbWa2.setSelected(true);
+			cbWa1.setSelected(false);
+		}
 	}
 
 	public void validate() {
@@ -772,6 +843,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 				&& (imagePath != null) && !imagePath.equals("")
 				&& topAirblow.isConfigured()
 				&& bottomAirblow.isConfigured()
+				&& (cbWa1.isSelected() || cbWa2.isSelected())
 				) {
 			btnSave.setDisable(false);
 		} else {

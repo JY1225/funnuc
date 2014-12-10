@@ -371,17 +371,28 @@ public class DeviceManager {
 	public void updateClamping(final Clamping clamping, final String name, final Clamping.Type type, final float height, 
 			final String imagePath, final float x, final float y, final float z, final float w, final float p, 
 			final float r, final float smoothToX, final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, 
-			final float smoothFromZ, final EFixtureType fixtureType, final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord) {
+			final float smoothFromZ, final EFixtureType fixtureType, final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord,
+			final int waNr) throws ClampingInUseException {
 		try { 
+			boolean workAreaChanged = false;
 			for (AbstractCNCMachine cncMachine : getCNCMachines()) {
-				for (WorkArea workArea : cncMachine.getWorkAreas()) {
+				for (WorkArea workArea : cncMachine.getWorkAreas()) {					
 					for (Clamping cl : workArea.getClampings()) {
 						if (cl.getId() == clamping.getId()) {
-							deviceMapper.updateClamping(cl, name, type, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-									smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord);
+							if (workArea.getWorkAreaNr() == waNr) {
+								deviceMapper.updateClamping(cl, name, type, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
+										smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord);
+							} else {
+								workAreaChanged = true;
+							}
 						}
 					}
 				}
+			}
+			if (workAreaChanged) {
+				deleteClamping(clamping);
+				saveClamping(name, type, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
+							smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord, waNr);
 			}
 		} catch (SQLException e) {
 			logger.error(e);
@@ -392,7 +403,7 @@ public class DeviceManager {
 	public void saveClamping(final String name, final Clamping.Type type, final float height, final String imagePath, final float x, 
 			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
 			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, final EFixtureType fixtureType,
-			final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord) {
+			final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord, final int waNr) {
 		try {
 			Clamping clamping = new Clamping(type, name, height, new Coordinates(x, y, z, w, p, r), 
 					new Coordinates(smoothToX, smoothToY, smoothToZ, 0, 0, 0), 
@@ -401,7 +412,9 @@ public class DeviceManager {
 			Set<WorkArea> workAreas = new HashSet<WorkArea>();
 			for (AbstractCNCMachine cncMachine : getCNCMachines()) {
 				for (WorkArea workArea : cncMachine.getWorkAreas()) {
-					workAreas.add(workArea);
+					if (workArea.getWorkAreaNr() == waNr) {
+						workAreas.add(workArea);
+					}
 				}
 			}
 			deviceMapper.saveClamping(clamping, workAreas);

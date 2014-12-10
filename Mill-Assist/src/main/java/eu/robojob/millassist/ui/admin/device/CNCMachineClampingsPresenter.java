@@ -39,10 +39,10 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 		return false;
 	}
 	
-	public void selectedClamping(final Clamping clamping) {
+	public void selectedClamping(final Clamping clamping, final int workAreaNr) {
 		if (!editMode) {
 			selectedClamping = clamping;
-			getView().clampingSelected(clamping);
+			getView().clampingSelected(clamping, workAreaNr);
 		}
 	}
 
@@ -99,7 +99,8 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 	
 	void copyClamping(final float height, final String imagePath, final float x, final float y, final float z, final float w, final float p, final float r, 
 			final float smoothToX, final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
-			final Clamping.Type clampingType, final EFixtureType fixtureType, final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord) {
+			final Clamping.Type clampingType, final EFixtureType fixtureType, final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord,
+			final int waNr) {
 		ThreadManager.submit(new Runnable() {
 
 			@Override
@@ -109,7 +110,7 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 						Translator.getTranslation(CNCMachineClampingsView.NAME));
 				if(!name.equals("")) {
 					deviceManager.saveClamping(name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-							smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord);
+							smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord, waNr);
 				}
 				selectedClamping = null;
 				editMode = false;
@@ -122,13 +123,23 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 	void updateClamping(final String name, final float height, final String imagePath, final float x, 
 			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
 			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
-			final Clamping.Type clampingType, final EFixtureType fixtureType, final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord) {
+			final Clamping.Type clampingType, final EFixtureType fixtureType, final Coordinates bottomAirblowCoord, final Coordinates topAirblowCoord,
+			final int waNr) {
 		if (selectedClamping == null) {
 			deviceManager.saveClamping(name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-					smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord);
+					smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord, waNr);
 		} else {
-			deviceManager.updateClamping(selectedClamping, name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-				smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord);
+			try {
+				deviceManager.updateClamping(selectedClamping, name, clampingType, height, imagePath, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
+						smoothFromX, smoothFromY, smoothFromZ, fixtureType, bottomAirblowCoord, topAirblowCoord, waNr);
+			} catch (final ClampingInUseException inUseException) {
+				ThreadManager.submit(new Thread() {
+					@Override
+					public void run() {
+						showNotificationDialog("Clamping in use", inUseException.getMessage());
+					}
+				});
+			}
 		}
 		selectedClamping = null;
 		editMode = false;
