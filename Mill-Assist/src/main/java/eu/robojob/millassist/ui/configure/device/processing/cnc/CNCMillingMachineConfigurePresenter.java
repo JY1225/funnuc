@@ -98,7 +98,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		} else {
 			removeClamping(clamping);
 			addProcessFlowEvent();
-			getView().setDefaultClamping(clamping.getName(), false);
+			getView().setDefaultClampingText(clamping.getName(), false);
 		}
 	}
 	
@@ -116,13 +116,13 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 			if ((clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea()))
 					|| (clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea()))) {
 				activeClamping.addRelatedClamping(clamping);
-				getView().setDefaultClamping(clamping.getName(), false);
+				getView().setDefaultClampingText(clamping.getName(), false);
 				logger.debug("Related clamping " + clamping.getName() +" added.");
 			}
 		} else {
 			logger.debug("Active clamping changed to " + clamping.getName());
 			setClamping(clamping);
-			getView().setDefaultClamping(clamping.getName(), true);
+			getView().setDefaultClampingText(clamping.getName(), true);
 		}
 	}
 	
@@ -154,7 +154,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 				activeClamping.setRelatedClampings(new HashSet<Clamping>());
 				logger.debug("Active clamping " + activeClamping.getName() + " changed to " + toBeActiveClamping.getName());
 				setClamping(toBeActiveClamping);
-				getView().setDefaultClamping(toBeActiveClamping.getName(), true);
+				getView().setDefaultClampingText(toBeActiveClamping.getName(), true);
 			} else {
 				//Should not occur, because the request to remove the activeClamping without there being a replacement, is stopped before calling this function
 				throw new IllegalArgumentException("Tried to remove the active clamping without there being a replacement clamping.");

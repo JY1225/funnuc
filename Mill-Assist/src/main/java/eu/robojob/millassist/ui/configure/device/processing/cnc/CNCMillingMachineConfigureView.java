@@ -304,7 +304,12 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		refreshClampingButtons();
 	}
 	
-	public void setDefaultClamping(final String clampingName, final boolean isDefault) {
+	/**
+	 * Sets or removes the default text ("D") to the icon of the clamping. 
+	 * @param clampingName
+	 * @param isDefault		- boolean: if true, add default text. otherwise, remove default text.
+	 */
+	public void setDefaultClampingText(final String clampingName, final boolean isDefault) {
 		ifsClamping.setDefault(clampingName, isDefault);
 	}
 	
