@@ -204,6 +204,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 			}
 			logger.info(toString() + " ended...");
 		} catch (InterruptedException e) {
+			logger.debug("Exception received, we will stop running thread for PRC["+ processId + "]");
 			interrupted();
 		} catch (Exception e) {
 			controllingThread.notifyException(e);

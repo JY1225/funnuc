@@ -201,7 +201,8 @@ public abstract class AbstractFixedControllingThread implements Runnable {
 		}
 		for (Future<?> processFlowExecutorFuture: processFlowExecutorFutures) {
 			if (processFlowExecutorFuture != null) {
-				processFlowExecutorFuture.cancel(true);
+				boolean result = processFlowExecutorFuture.cancel(true);
+				logger.debug("Future cancelled: " + result);
 			}
 		}
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {

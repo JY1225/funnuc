@@ -129,7 +129,9 @@ public final class RoboSoftAppFactory {
 	
 	private static KeyboardType keyboardType;
 		
-	public RoboSoftAppFactory(final DeviceManager deviceManager, final RobotManager robotManager, 
+	private RoboSoftAppFactory() {	}
+	
+	public static void intialize(final DeviceManager deviceManager, final RobotManager robotManager, 
 			final ProcessFlowManager processFlowManager, final KeyboardType keyboardType) {
 		RoboSoftAppFactory.deviceManager = deviceManager;
 		RoboSoftAppFactory.robotManager = robotManager;

@@ -78,6 +78,8 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 		Label label = new Label(text);
 		label.getStyleClass().add(CSS_CLASS_LEFT_MENU_ITEM_LABEL);
 		label.setPrefSize(BUTTON_WIDTH - 2 * ICON_WIDTH - 4 * ICON_MARGIN, BUTTON_HEIGHT);
+		//Added for test purposes
+		label.setLabelFor(button);
 		hbox.getChildren().add(label);
 		HBox.setHgrow(label, Priority.ALWAYS);
 		StackPane arrowPane = new StackPane();

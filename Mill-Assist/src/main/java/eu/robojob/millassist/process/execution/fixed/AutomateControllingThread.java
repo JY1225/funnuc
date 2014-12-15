@@ -248,7 +248,7 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 		for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 			if (!processExecutor.isRunning()) { 
 				logger.info("Process " + processExecutor.getProcessId() + " not yet started");
-				processFlowExecutorFutures[processExecutor.getProcessId() - 1] = ThreadManager.submit(processExecutor);
+				processFlowExecutorFutures[processExecutor.getProcessId()] = ThreadManager.submit(processExecutor);
 				return true;
 			} 
 		}

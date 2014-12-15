@@ -36,6 +36,7 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
 	
 	public ConfirmationDialogView(String title, String message) {
 		super(title);
+		setId("confirmationDialog");
 		this.message = message;
 		lblMessage.setText(message);
 	}
@@ -60,6 +61,7 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
 		spMessage.setPrefHeight(HEIGHT - UIConstants.BUTTON_HEIGHT - TITLE_HEIGHT);
 		hboxButtons = new HBox();
 		btnCancel = new Button();
+		btnCancel.setId("btnCancel");
 		btnCancel.setGraphic(new Text(Translator.getTranslation(CANCEL)));
 		btnCancel.getStyleClass().addAll(CSS_BUTTON, CSS_BUTTON_LEFT);
 		btnCancel.setPrefHeight(UIConstants.BUTTON_HEIGHT);
@@ -71,6 +73,7 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
 			}
 		});
 		btnOk = new Button();
+		btnOk.setId("btnOk");
 		btnOk.setGraphic(new Text(Translator.getTranslation(OK)));
 		btnOk.getStyleClass().addAll(CSS_BUTTON, CSS_BUTTON_RIGHT);
 		btnOk.setPrefHeight(UIConstants.BUTTON_HEIGHT);

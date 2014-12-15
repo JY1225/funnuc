@@ -791,6 +791,7 @@ public class DeviceMapper {
 				stmt.setInt(2, airblowBound.getBottomCoord().getId());
 				stmt.setInt(3, airblowBound.getTopCoord().getId());
 				stmt.executeUpdate();
+				workarea.setWorkAreaBoundary(new WorkAreaBoundary(workarea, airblowBound));
 			}
 		}
 	}
