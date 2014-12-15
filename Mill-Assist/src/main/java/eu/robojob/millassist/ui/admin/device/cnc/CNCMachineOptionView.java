@@ -152,7 +152,12 @@ public class CNCMachineOptionView extends GridPane {
 		cbbWaBound.getItems().clear();
 		for (WorkArea wa: cncMachineConfigureView.getCNCMachine().getWorkAreas()) {
 			if (!wa.isClone()) {
-				cbbWaBound.getItems().add(wa.getBoundaries());
+				if (wa.getBoundaries() != null) {
+					cbbWaBound.getItems().add(wa.getBoundaries());
+				} else {
+					WorkAreaBoundary bound = new WorkAreaBoundary(wa, new AirblowSquare());
+					cbbWaBound.getItems().add(bound);
+				}
 			}
 		}
 		cbbWaBound.getSelectionModel().selectFirst();
