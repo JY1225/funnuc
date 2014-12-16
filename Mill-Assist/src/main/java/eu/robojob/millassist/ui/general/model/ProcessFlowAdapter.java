@@ -3,7 +3,7 @@ package eu.robojob.millassist.ui.general.model;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
-import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;
@@ -157,9 +157,6 @@ public class ProcessFlowAdapter {
 	
 	public void removeDeviceSteps(final int deviceIndex) {
 		DeviceInformation deviceInfo = getDeviceInformation(deviceIndex);
-		if (deviceInfo.getDevice() instanceof AbstractCNCMachine) {
-			deviceInfo.getPickStep().getRobotSettings().getWorkArea().inUse(false);
-		}
 		processFlow.removeSteps(deviceInfo.getSteps());
 	}
 	
@@ -231,5 +228,17 @@ public class ProcessFlowAdapter {
 	public void updateWorkPieceTypes() {
 		getDeviceInformation(getCNCMachineIndex()).getProcessingStep().getDeviceSettings().setWorkPieceType(WorkPiece.Type.FINISHED);
 		getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().setWorkPieceType(WorkPiece.Type.RAW);
+	}
+
+	public void updateCNCMachineWorkArea() {
+		//Workarea of first CNC machine
+		WorkArea workArea = getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().getWorkArea();
+		//We houden de tweede CNC machine - dus we moeten de workarea van de eerste bij de tweede zetten
+		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getDeviceSettings().getWorkArea().inUse(false);
+		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getDeviceSettings().setWorkArea(workArea); 
+		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getRobotSettings().setWorkArea(workArea);
+		getDeviceInformation(getCNCMachineIndex() + 1).getPickStep().getDeviceSettings().setWorkArea(workArea); 
+		getDeviceInformation(getCNCMachineIndex() + 1).getPickStep().getRobotSettings().setWorkArea(workArea);
+		getDeviceInformation(getCNCMachineIndex() + 1).getProcessingStep().getDeviceSettings().setWorkArea(workArea); 
 	}
 }

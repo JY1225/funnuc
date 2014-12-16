@@ -1,6 +1,10 @@
 package eu.robojob.millassist.external.device.processing.reversal;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
@@ -25,15 +29,18 @@ import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 public class ReversalUnit extends AbstractProcessingDevice {
 	
 	private float stationHeight;
+	private boolean isWidthReversal = false;
 	
 	public ReversalUnit(final String name, final float stationHeight) {
 		super(name, false);
 		this.stationHeight = stationHeight;
+		setWidthReversal();
 	}
 	
 	public ReversalUnit(final String name, final Set<Zone> zones, final float stationHeight) {
 		super(name, zones, false);
 		this.stationHeight = stationHeight;
+		setWidthReversal();
 	}
 
 	public float getStationHeight() {
@@ -110,7 +117,7 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
-		if (clampType.getType() == Type.LENGTH) {
+		if (clampType.getType() == Type.LENGTH && !isWidthReversal) {
 			c.setX(c.getX() + workPieceDimensions.getWidth()/2);
 			c.setY(c.getY() + workPieceDimensions.getLength()/2);
 		} else {
@@ -128,7 +135,7 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
-		if (clampType.getType() == Type.LENGTH) {
+		if (clampType.getType() == Type.LENGTH && !isWidthReversal) {
 			c.setX(c.getX() + workPieceDimensions.getWidth()/2);
 			c.setY(c.getY() + workPieceDimensions.getLength()/2);
 		} else {
@@ -141,6 +148,20 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public boolean isConnected() {
 		return true;
+	}
+	
+	private void setWidthReversal() {
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream(new File("settings.properties")));
+			if ((properties.get("reversal-width") != null) && (properties.get("reversal-width").equals("true"))) {
+				this.isWidthReversal = true;
+			} else {
+				this.isWidthReversal = false;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

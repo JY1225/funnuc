@@ -491,13 +491,18 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		processFlowAdapter.removeDeviceSteps(index);
 		//FIXME - potential problem if other post-device than reversal + cnc are possible
 		if (index > processFlowAdapter.getCNCMachineIndex()) {
-			// tweede CNC machine verwijderen
-			processFlowAdapter.removeDeviceSteps(index);
+			// eerste CNC machine verwijderen
+			updateCNCMachineWorkArea();
+			processFlowAdapter.removeDeviceSteps(index-1);
 			processFlowAdapter.updateWorkPieceTypes();
 		}		
 		deviceMenuFactory.clearBuffer();
 		transportMenuFactory.clearBuffer();
 		refresh();
+	}
+	
+	private void updateCNCMachineWorkArea() {
+		processFlowAdapter.updateCNCMachineWorkArea();
 	}
 	
 	public void refresh() {
