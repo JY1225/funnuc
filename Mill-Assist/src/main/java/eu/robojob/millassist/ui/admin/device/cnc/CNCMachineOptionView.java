@@ -3,6 +3,7 @@ package eu.robojob.millassist.ui.admin.device.cnc;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import javafx.beans.value.ChangeListener;
@@ -63,16 +64,18 @@ public class CNCMachineOptionView extends GridPane {
 		
 		int column = 0; int row = 0;		
 		column = 0; row++;
-		add(lblAirblow, column++, row,1,1);
-		add(cbbWaBound, column, row, 1, 1);
-		column = 0; row++;
-		add(bottomCoord, column, row++,2,1);
-		add(topCoord, column, row,2,1);
-		
-		lblAirblow.setAlignment(Pos.CENTER);
-		GridPane.setMargin(cbbWaBound, new Insets(0,0,0,-10));
+		GridPane boundGrid = new GridPane();
+		boundGrid.add(lblAirblow, 0, 0, 2, 1);
+		boundGrid.add(cbbWaBound, 2, 0);
+		boundGrid.add(bottomCoord, 0, 1,3,1);
+		boundGrid.add(topCoord, 0, 2,3,1);
+		boundGrid.setHgap(20);
+		boundGrid.setVgap(15);
 		GridPane.setMargin(bottomCoord, new Insets(0,0,0,48));
 		GridPane.setMargin(topCoord, new Insets(0,0,0,48));
+		add(boundGrid, column, row, 2, 3);
+		
+		row = 3;
 		column = 0; row++;
 		HBox machineAirblowBox = new HBox();
 		machineAirblowBox.getChildren().addAll(cbMachineAirblow, lblMachineAirblow);
@@ -195,8 +198,8 @@ public class CNCMachineOptionView extends GridPane {
 		return Integer.parseInt(itxtNbFix.getText());
 	}
 	
-	public AirblowSquare getAirblowBound() {
-		return new AirblowSquare(bottomCoord.getCoordinate(), topCoord.getCoordinate());
+	public List<WorkAreaBoundary> getAirblowBounds() {
+		return cbbWaBound.getItems();
 	}
 	
 	private void airblowActive() {

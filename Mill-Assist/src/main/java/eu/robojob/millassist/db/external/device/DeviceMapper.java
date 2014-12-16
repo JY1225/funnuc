@@ -719,7 +719,7 @@ public class DeviceMapper {
 	
 	public void updateCNCMachine(final AbstractCNCMachine cncMachine, final String name, final EWayOfOperating wayOfOperating,
 			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final boolean timAllowed,
-			final boolean machineAirblow, final AirblowSquare airblowBound, final List<String> robotServiceInputNames, 
+			final boolean machineAirblow, final List<WorkAreaBoundary> airblowBounds, final List<String> robotServiceInputNames, 
 			final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 			final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
@@ -759,7 +759,7 @@ public class DeviceMapper {
 		cncMachine.setNbFixtures(nbFixtures);
 		cncMachine.setTIMAllowed(timAllowed);
 		cncMachine.setMachineAirblow(machineAirblow);
-		saveAirblowBound(cncMachine, airblowBound);
+		saveAirblowBound(cncMachine, airblowBounds);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setIpAddress(ipAddress);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setPortNumber(port);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setName(name);
@@ -777,21 +777,21 @@ public class DeviceMapper {
 		stmt.execute();
 	}
 	
-	private void saveAirblowBound(final AbstractCNCMachine cncMachine, final AirblowSquare airblowBound) throws SQLException {
-		for(WorkArea workarea: cncMachine.getWorkAreas()) {
-			if (workarea.getBoundaries() != null) {
-				generalMapper.saveCoordinates(airblowBound.getBottomCoord());
-				generalMapper.saveCoordinates(airblowBound.getTopCoord());
+	private void saveAirblowBound(final AbstractCNCMachine cncMachine, final List<WorkAreaBoundary> airblowBounds) throws SQLException {
+		for(WorkAreaBoundary workareaBound: airblowBounds) {
+			if (cncMachine.getWorkAreaByName(workareaBound.getWorkArea().getName()).getBoundaries() != null) {
+				generalMapper.saveCoordinates(workareaBound.getBoundary().getBottomCoord());
+				generalMapper.saveCoordinates(workareaBound.getBoundary().getTopCoord());
 			} else {
 				PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
 						+ "INSERT INTO WORKAREA_BOUNDARIES (WORKAREA_ID, BOTTOMCOORD, TOPCOORD) VALUES (?, ?, ?)");
-				stmt.setInt(1, workarea.getId());
-				generalMapper.saveCoordinates(airblowBound.getBottomCoord());
-				generalMapper.saveCoordinates(airblowBound.getTopCoord());
-				stmt.setInt(2, airblowBound.getBottomCoord().getId());
-				stmt.setInt(3, airblowBound.getTopCoord().getId());
+				stmt.setInt(1, workareaBound.getWorkArea().getId());
+				generalMapper.saveCoordinates(workareaBound.getBoundary().getBottomCoord());
+				generalMapper.saveCoordinates(workareaBound.getBoundary().getTopCoord());
+				stmt.setInt(2, workareaBound.getBoundary().getBottomCoord().getId());
+				stmt.setInt(3, workareaBound.getBoundary().getTopCoord().getId());
 				stmt.executeUpdate();
-				workarea.setWorkAreaBoundary(new WorkAreaBoundary(workarea, airblowBound));
+				cncMachine.getWorkAreaByName(workareaBound.getWorkArea().getName()).setWorkAreaBoundary(workareaBound);
 			}
 		}
 	}

@@ -12,9 +12,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import eu.robojob.millassist.external.device.WorkAreaBoundary;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
-import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -263,7 +263,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		return cncMachineOptionView.getMachineAirblow();
 	}
 	
-	public AirblowSquare getAirblowBound() {
-		return cncMachineOptionView.getAirblowBound();
+	public List<WorkAreaBoundary> getAirblowBounds() {
+		return cncMachineOptionView.getAirblowBounds();
 	}
 }
