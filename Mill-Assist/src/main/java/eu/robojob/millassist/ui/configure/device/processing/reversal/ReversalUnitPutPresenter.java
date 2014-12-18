@@ -38,6 +38,7 @@ public class ReversalUnitPutPresenter extends AbstractFormPresenter<ReversalUnit
 		}  else {
 			putStep.getRobotSettings().setSmoothPoint(new Coordinates(smoothX, 0, 0, 0, 0, 0));
 		}
+		putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 		getView().refresh();
 	}
 	
@@ -47,6 +48,7 @@ public class ReversalUnitPutPresenter extends AbstractFormPresenter<ReversalUnit
 		} else {
 			putStep.getRobotSettings().setSmoothPoint(new Coordinates(0, smoothY, 0, 0, 0, 0));
 		}
+		putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 		getView().refresh();
 	}
 	
@@ -56,18 +58,24 @@ public class ReversalUnitPutPresenter extends AbstractFormPresenter<ReversalUnit
 		} else {
 			putStep.getRobotSettings().setSmoothPoint(new Coordinates(0, 0, smoothZ, 0, 0, 0));
 		}
+		putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 		getView().refresh();
 	}
 	
 	public void resetSmooth() {
 		if (deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()) != null) {
 			putStep.getRobotSettings().setSmoothPoint(deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()).getSmoothToPoint());
+			putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 			getView().refresh();
 		}
 	}
 	
 	public void changedConfigWidth(final float configWidth) {
-		deviceSettings.setConfigWidth(configWidth);
+		if (deviceSettings.getConfigWidth() != configWidth) {
+			deviceSettings.setConfigWidth(configWidth);		
+			putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
+
+		}
 	}
 	
 	public void changedPutType(final ApproachType loadType) {
