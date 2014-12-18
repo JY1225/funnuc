@@ -82,8 +82,11 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		lblSmoothInfo = new Label(Translator.getTranslation(SMOOTH_PICK_INFO));
 		
 		lblSmoothX = new Label(Translator.getTranslation(SMOOTH_X));
+		lblSmoothX.setMinWidth(25);
 		lblSmoothY = new Label(Translator.getTranslation(SMOOTH_Y));
+		lblSmoothY.setMinWidth(25);
 		lblSmoothZ = new Label(Translator.getTranslation(SMOOTH_Z));
+		lblSmoothZ.setMinWidth(25);
 		
 		ntxtSmoothX = new NumericTextField(MAX_INTEGER_LENGTH);
 		ntxtSmoothX.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
@@ -123,14 +126,16 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		});
 		btnResetSmooth.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
 		btnResetSmooth.setPrefSize(UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT);
+		btnResetSmooth.setTranslateX(15);
 		
 		hBoxSmoothPoint = new HBox();
-		hBoxSmoothPoint.getChildren().addAll(lblSmoothX, ntxtSmoothX, lblSmoothY, ntxtSmoothY, lblSmoothZ, ntxtSmoothZ, btnResetSmooth);
-		HBox.setMargin(ntxtSmoothX, new Insets(0, 20, 0, 10));
-		HBox.setMargin(ntxtSmoothY, new Insets(0, 20, 0, 10));
-		HBox.setMargin(ntxtSmoothZ, new Insets(0, 20, 0, 10));
+		hBoxSmoothPoint.getChildren().addAll(lblSmoothX, ntxtSmoothX, lblSmoothY, ntxtSmoothY, lblSmoothZ, ntxtSmoothZ);
+		HBox.setMargin(ntxtSmoothX, new Insets(0, 10, 0, 10));
+		HBox.setMargin(ntxtSmoothY, new Insets(0, 10, 0, 10));
+		HBox.setMargin(ntxtSmoothZ, new Insets(0, 10, 0, 10));
 		hBoxSmoothPoint.setFillHeight(false);
 		hBoxSmoothPoint.setAlignment(Pos.CENTER_LEFT);
+		hBoxSmoothPoint.setTranslateX(30);
 		
 		cbAirblow = new CheckBox(Translator.getTranslation(AIRBLOW));
 		cbAirblow.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -182,7 +187,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 			}
 		});
 		coordBAirblowBottom.setTranslateX(30);
-		coordBAirblowTop = new CoordinateBox(MAX_INTEGER_LENGTH, "X", "Y", "Z");
+		coordBAirblowTop = new CoordinateBox(MAX_INTEGER_LENGTH, "X", "Y");
 		coordBAirblowTop.addChangeListeners(new ChangeListener<Float>() {
 			@Override
 			public void changed(final ObservableValue<? extends Float> observableValue, final Float oldValue, final Float newValue) {
@@ -205,6 +210,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		});
 		btnResetAirblow.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
 		btnResetAirblow.setPrefSize(UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT);
+		btnResetAirblow.setTranslateX(15);
 		
 		int column = 0;
 		int row = 0;
@@ -216,6 +222,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		column = 0;
 		row++;
 		getContents().add(hBoxSmoothPoint, column++, row);
+		getContents().add(btnResetSmooth, column, row);
 		
 		column = 0;
 		row++;
@@ -230,13 +237,13 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 
 		HBox airblowHBox = new HBox();
 		airblowHBox.getChildren().add(cbAirblow);
-		btnResetAirblow.setTranslateX(-40);
-		cbbClamping.setTranslateX(8);
+		cbbClamping.setTranslateX(10);
 		cbbClamping.setTranslateY(-8);
+		btnResetAirblow.setTranslateY(-5);
 		airblowHBox.getChildren().add(cbbClamping);
 		getContents().add(airblowHBox, column++, row++);
 		getContents().add(coordBAirblowBottom, 0, row);
-		getContents().add(btnResetAirblow, ++column, row++);
+		getContents().add(btnResetAirblow, column, row++);
 		getContents().add(coordBAirblowTop, 0, row++);
 		Properties properties = new Properties();
 		try {

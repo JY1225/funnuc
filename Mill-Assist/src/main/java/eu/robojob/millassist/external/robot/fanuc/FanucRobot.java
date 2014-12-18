@@ -721,7 +721,7 @@ public class FanucRobot extends AbstractRobot {
 		//XYZ
 		values.add(df.format(top.getX()));
 		values.add(df.format(top.getY()));
-		values.add(df.format(top.getZ()));
+		values.add(df.format(bottom.getZ()));
 		//WPR
 		values.add("0");
 		values.add("0");

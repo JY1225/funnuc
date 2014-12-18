@@ -464,7 +464,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		airblowBottomLabel.setMaxWidth(150);
 		bottomAirblow = new CoordinateBox(5, "X","Y","Z");
 		bottomAirblow.setPrefHeightDimension(UIConstants.TEXT_FIELD_HEIGHT);
-		topAirblow = new CoordinateBox(5, "X","Y","Z");
+		topAirblow = new CoordinateBox(5, "X","Y");
 		topAirblow.setPrefHeightDimension(UIConstants.TEXT_FIELD_HEIGHT);
 		addChangeListeners();
 		
