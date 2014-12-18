@@ -184,6 +184,7 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 				AirblowSquare clampingAir = pickStep.getRobotSettings().getAirblowSquare(clampingId);
 				Coordinates lowerLeftCorner = Coordinates.add(clampingAir.getBottomCoord(), clamping.getRelativePosition());
 				Coordinates upperRightCorner = Coordinates.add(clampingAir.getTopCoord(), clamping.getRelativePosition());
+				upperRightCorner.setZ(lowerLeftCorner.getZ());
 				if (!lowerLeftCorner.isInsideSquare(square) || !upperRightCorner.isInsideSquare(square)) {
 					return false;
 				}

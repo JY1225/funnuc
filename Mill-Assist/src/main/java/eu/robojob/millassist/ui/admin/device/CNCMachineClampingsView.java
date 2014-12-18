@@ -871,6 +871,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			Coordinates relPos = new Coordinates(numtxtX.getValue(), numtxtY.getValue(), numtxtZ.getValue(), numtxtW.getValue(), numtxtP.getValue(), numtxtR.getValue());
 			Coordinates lowerLeftCorner = Coordinates.add(bottomAirblow.getCoordinate(), relPos);
 			Coordinates upperRightCorner = Coordinates.add(topAirblow.getCoordinate(), relPos);
+			upperRightCorner.setZ(lowerLeftCorner.getZ());
 			if (!lowerLeftCorner.isInsideSquare(square) || !upperRightCorner.isInsideSquare(square)) {
 				showNotification(Translator.getTranslation(AIRBLOW_ERROR), eu.robojob.millassist.ui.general.NotificationBox.Type.WARNING);
 				return false;
