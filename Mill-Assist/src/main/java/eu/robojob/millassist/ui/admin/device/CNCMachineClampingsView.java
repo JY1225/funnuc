@@ -33,6 +33,7 @@ import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.EFixtureType;
 import eu.robojob.millassist.external.device.WorkArea;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.ui.controls.CoordinateBox;
 import eu.robojob.millassist.ui.controls.FullTextField;
@@ -115,6 +116,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private static final String REMOVE = "CNCMacineClampingsView.remove";
 	private static final String TYPE = "CNCMachineClampingsView.type";
 	
+	private static final String AIRBLOW_ERROR = "CNCMillingMachinePickPresenter.airblowOutOfBound";
 	private static final String AIRBLOW_BOTTOM = "CNCMachineClampingsView.airblowBottom";
 	private static final String AIRBLOW_TOP = "CNCMachineClampingsView.airblowTop";
 	private static final String RELATIVE_POSITION = "CNCMachineClampingsView.relativePosition";
@@ -826,14 +828,10 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	}
 
 	public void validate() {
+		hideNotification();
 		if (!fullTxtName.getText().equals("") 
 				&& !numtxtHeight.getText().equals("") 
-				&& !numtxtX.getText().equals("")
-				&& !numtxtY.getText().equals("")
-				&& !numtxtZ.getText().equals("")
-				&& !numtxtW.getText().equals("")
-				&& !numtxtP.getText().equals("")
-				&& !numtxtR.getText().equals("")
+				&& isRelPosFilled()
 				&& !numtxtSmoothToX.getText().equals("")
 				&& !numtxtSmoothToY.getText().equals("")
 				&& !numtxtSmoothToZ.getText().equals("")
@@ -844,11 +842,42 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 				&& topAirblow.isConfigured()
 				&& bottomAirblow.isConfigured()
 				&& (cbWa1.isSelected() || cbWa2.isSelected())
+				&& isInsideMachineBoundaries()
 				) {
 			btnSave.setDisable(false);
 		} else {
 			btnSave.setDisable(true);
 		}
+	}
+	
+	private boolean isRelPosFilled() {
+		return (!numtxtX.getText().equals("")
+				&& !numtxtY.getText().equals("")
+				&& !numtxtZ.getText().equals("")
+				&& !numtxtW.getText().equals("")
+				&& !numtxtP.getText().equals("")
+				&& !numtxtR.getText().equals(""));
+	}
+	
+	private boolean isInsideMachineBoundaries() {
+		WorkArea workarea;
+		if (cbWa1.isSelected()) {
+			workarea = getPresenter().getWorkArea(1);
+		} else {
+			workarea = getPresenter().getWorkArea(2);
+		}	
+		if (workarea != null && workarea.getBoundaries() != null && isRelPosFilled()) {
+			AirblowSquare square = workarea.getBoundaries().getBoundary();
+			Coordinates relPos = new Coordinates(numtxtX.getValue(), numtxtY.getValue(), numtxtZ.getValue(), numtxtW.getValue(), numtxtP.getValue(), numtxtR.getValue());
+			Coordinates lowerLeftCorner = Coordinates.add(bottomAirblow.getCoordinate(), relPos);
+			Coordinates upperRightCorner = Coordinates.add(topAirblow.getCoordinate(), relPos);
+			if (!lowerLeftCorner.isInsideSquare(square) || !upperRightCorner.isInsideSquare(square)) {
+				showNotification(Translator.getTranslation(AIRBLOW_ERROR), eu.robojob.millassist.ui.general.NotificationBox.Type.WARNING);
+				return false;
+			}
+			return true;
+		}
+		return false;
 	}
 	
 }

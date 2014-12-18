@@ -33,6 +33,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	private static final String WEIGHT_ZERO = "BasicStackPlateRawWorkPiecePresenter.weightZero";
 	private static final String STUD_HEIGHT_NOT_OK = "BasicStackPlateRawWorkPiecePresenter.studHeightNotOK";
 	private static final String GRIDPLATE_NOT_OK = "BasicStackPlateRawWorkPiecePresenter.gridplateNotOK";
+	private static final String AMOUNT_NOT_OK = "BasicStackPlateRawWorkPiecePresenter.amountNotOK";
 	
 	public BasicStackPlateRawWorkPiecePresenter(final BasicStackPlateRawWorkPieceView view, final PickStep pickStep, final AbstractStackPlateDeviceSettings deviceSettings) {
 		super(view);
@@ -95,6 +96,10 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		} else {
 			return true;
 		}
+	}
+	
+	private boolean isAmountOk() {
+		return (deviceSettings.getAmount() > 0);
 	}
 	
 	public void changedMaterial(final Material material) {
@@ -196,6 +201,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 				getView().showNotification(Translator.getTranslation(STUD_HEIGHT_NOT_OK), Type.WARNING);
 			} else if (!isGridPlateOK()) {
 				getView().showNotification(Translator.getTranslation(GRIDPLATE_NOT_OK),  Type.WARNING);
+			} else if (!isAmountOk()) {
+				getView().showNotification(Translator.getTranslation(AMOUNT_NOT_OK), Type.WARNING);
 			}
 		} catch (IncorrectWorkPieceDataException e) {
 			getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
@@ -226,7 +233,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		BasicStackPlate plate = getStackPlate();
 		if ((dimensions != null) && (orientation != null) && (plate.getLayout().getStackingPositions() != null)
 				&& (plate.getLayout().getStackingPositions().size() > 0) && (workPiece.getWeight() > 0) 
-				&& (deviceSettings.getStudHeight() >= 0)) {
+				&& (deviceSettings.getStudHeight() >= 0)
+				&& (isAmountOk())) {
 			return true;
 		}
 		return false;

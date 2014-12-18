@@ -4,6 +4,8 @@ import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingInUseException;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.EFixtureType;
+import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.RoboSoftAppFactory;
@@ -144,5 +146,15 @@ public class CNCMachineClampingsPresenter extends AbstractFormPresenter<CNCMachi
 		selectedClamping = null;
 		editMode = false;
 		getView().refresh();
+	}
+	
+	WorkArea getWorkArea(int waNr) throws IllegalArgumentException {
+		AbstractCNCMachine cncMachine = deviceManager.getCNCMachines().iterator().next();
+		for (WorkArea workarea: cncMachine.getWorkAreas()) {
+			if (workarea.getWorkAreaNr() == waNr) {
+				return workarea;
+			}
+		}
+		return null;
 	}
 }
