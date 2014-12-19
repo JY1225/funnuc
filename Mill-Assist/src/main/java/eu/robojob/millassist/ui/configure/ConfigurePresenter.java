@@ -137,6 +137,12 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 					configured = false;
 				}
 			}
+			if (processFlowAdapter.getProcessFlow().getName() == null || processFlowAdapter.getProcessFlow().getName().equals("")) {
+				configured = false;
+			}
+			if (processFlowAdapter.getProcessFlow().hasChangesSinceLastSave()) {
+				configured = false;
+			}
 		} else {
 			configured = false;
 		}

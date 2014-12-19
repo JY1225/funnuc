@@ -196,7 +196,7 @@ public class ProcessFlowManager {
 		return processFlow;
 	}
 
-	public void updateProcessFlow(final ProcessFlow processFlow) throws DuplicateProcessFlowNameException {
+	public void updateProcessFlow(final ProcessFlow processFlow) throws DuplicateProcessFlowNameException, IllegalArgumentException {
 		try {
 			int idForName = ProcessFlowMapper.getProcessFlowIdForName(processFlow.getName());
 			if ((idForName == 0) || (idForName == processFlow.getId())) {
