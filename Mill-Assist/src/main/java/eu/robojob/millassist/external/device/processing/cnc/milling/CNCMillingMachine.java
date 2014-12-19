@@ -413,7 +413,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
 		int ufNr = putSettings.getWorkArea().getUserFrame().getNumber();
-		// if way of operation is m codes, await unloading m code!
+		// if way of operation is m codes, await loading m code!
 		if ((getWayOfOperating() == EWayOfOperating.M_CODES) || (getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD)) {
 			waitForMCodes(M_CODE_LOAD, M_CODE_LOAD_REVERSAL);
 		}

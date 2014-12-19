@@ -19,8 +19,15 @@ public class IntegerTextField extends AbstractTextField<Integer> {
 		this.getStyleClass().add(CSS_CLASS_INTEGER_TEXTFIELD);
 	}
 
+	/**
+	 * Only allow positive numbers including 0
+	 */
 	@Override
 	public String getMatchingExpression() {
+		// ^ :begin of line
+		// [0-9] : numbers between 0 and 9
+		// * :zero or more occurences
+		// $ : end of line
 		return "^[0-9]*$";
 	}
 

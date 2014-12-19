@@ -173,6 +173,7 @@ public final class RobotConstants {
 	public static final int E_UNDOCKING_SUBBGRIP_GIVES_ERROR				=	31;
 	public static final int E_WORKPIECE_NOT_GRIPPED							=	40;
 	public static final int E_ROBOT_NOT_IN_START_POSITION					=	45;
+	public static final int E_ROBOT_NOT_IN_IP								= 	46;
 	
 	// CONTROLLER VALUES
 	public static final int CV_FAULT_LED									=	BIT0;
