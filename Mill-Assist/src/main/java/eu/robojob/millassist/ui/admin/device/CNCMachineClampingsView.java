@@ -795,7 +795,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 			cbbType.setValue(CLAMPING_TYPE_CENTRUM);
 		} else if (clamping.getType() == Type.FIXED_XP) {
 			cbbType.setValue(CLAMPING_TYPE_FIXED_XP);
-		}  else if (clamping.getType() == Type.FIXED_XP) {
+		}  else if (clamping.getType() == Type.FIXED_XM) {
 			cbbType.setValue(CLAMPING_TYPE_FIXED_XM);
 		} else if (clamping.getType() == Type.FIXED_YP) {
 			cbbType.setValue(CLAMPING_TYPE_FIXED_YP);
