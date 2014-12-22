@@ -375,6 +375,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		
 		AbstractProcessingDevice device = null;
 		
+		//TODO - get device (this only works if we have 1 pre-processing and 1 post-processing device)
 		if (index < processFlowAdapter.getCNCMachineIndex()) {
 			// pre-processing device
 			if (deviceManager.getPreProcessingDevices().size() > 0) {
@@ -396,7 +397,9 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			addCNCMachineCopy();
 		}
 		
+		//Get the information about the usage of the device currently at the given index.
 		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
+		//Look for the workarea + clamping to be used by the new device
 		WorkArea workArea = null;
 		Clamping clamping = null;
 		if (device.getWorkAreas().size() >= 1) {
@@ -413,6 +416,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		}
 		
 		//TODO - dit moet standaard een aparte methode worden
+		// Create new devicePick/Put/StartCyclussettings and indicate that the workarea we just chose is the workarea to be used
 		DevicePickSettings devicePickSettings = device.getDefaultPickSettings(WorkPiece.Type.RAW);
 		devicePickSettings.setWorkArea(workArea);
 		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = device.getDefaultStartCyclusSettings(WorkPiece.Type.RAW);
@@ -420,11 +424,14 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		DevicePutSettings devicePutSettings = device.getDefaultPutSettings(WorkPiece.Type.RAW);
 		devicePutSettings.setWorkArea(workArea);
 		
+		// Create a new DeviceSettings object - unique for the new step
 		DeviceSettings deviceSettings = device.getDeviceSettings();
 		deviceSettings.setClamping(workArea, clamping);
 		processFlowAdapter.getProcessFlow().setDeviceSettings(device, deviceSettings);
+		//TODO - Wat doet dit exact?
 		device.loadDeviceSettings(deviceSettings);
 		
+		//Set the current Pick settings as put settings 
 		FanucRobotPutSettings robotPutSettings = new FanucRobotPutSettings();
 		robotPutSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
 		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
@@ -439,6 +446,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		robotPickSettings.setWorkArea(workArea);
 		robotPickSettings.setWorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		
+		//New deviceInformation for the new step
 		DeviceInformation newDeviceInfo = new DeviceInformation((index + 1), processFlowAdapter);
 
 		if (device instanceof PrageDevice) {
