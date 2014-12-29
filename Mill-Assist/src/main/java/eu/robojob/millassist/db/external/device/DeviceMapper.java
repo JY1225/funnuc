@@ -387,24 +387,20 @@ public class DeviceMapper {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
 				+ "SELECT * FROM WORKAREA "
 				+ "WHERE ZONE = ?"
-				+ "ORDER BY USERFRAME, ID");
+				+ "ORDER BY USERFRAME, PRIO_IF_CLONED");
 		stmt.setInt(1, zoneId);
 		ResultSet results = stmt.executeQuery();
 		Set<WorkArea> workAreas = new HashSet<WorkArea>();
-		int prvUserFrameId = 0;
 		while (results.next()) {
 			int id = results.getInt("ID");
 			String name = results.getString("NAME");
 			int userFrameId = results.getInt("USERFRAME");
+			int prioIfCloned = results.getInt("PRIO_IF_CLONED");
 			UserFrame userFrame = generalMapper.getUserFrameById(userFrameId);
 			Set<Clamping> possibleClampings = getClampingsByWorkAreaId(id);
-			WorkArea workArea = new WorkArea(name, userFrame, possibleClampings);
+			WorkArea workArea = new WorkArea(name, userFrame, possibleClampings, prioIfCloned);
 			workArea.setId(id);
 			workArea.inUse(false);
-			//zone & userframe are the same, so this WA is a copy of the previous one
-			if (prvUserFrameId == userFrameId) {
-				workArea.setClone(true);
-			}
 			workAreas.add(workArea);
 			// set default clamping to first
 			if (possibleClampings.size() > 0) {
@@ -414,7 +410,6 @@ public class DeviceMapper {
 			if (boundaries != null) {
 				workArea.setWorkAreaBoundary(new WorkAreaBoundary(workArea, boundaries));
 			}
-			prvUserFrameId = userFrameId;
 		}
 		return workAreas;
 	}
@@ -744,13 +739,15 @@ public class DeviceMapper {
 		stmt3.execute();
 		updateCNCOption(ECNCOption.TIM_ALLOWED, timAllowed, cncMachine.getId());
 		updateCNCOption(ECNCOption.MACHINE_AIRBLOW, machineAirblow, cncMachine.getId());
-		if (cncMachine.getMCodeAdapter() != null) {
-			updateMCodeAdapter(cncMachine.getId(), cncMachine.getMCodeAdapter(), robotServiceInputNames, 
-					robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs, mCodeRobotServiceOutputs);
-		} else {
+//		if (cncMachine.getMCodeAdapter() != null) {
+//			deleteMCodeAdapter(cncMachine.getMCodeAdapter().getI);
+//			updateMCodeAdapter(cncMachine.getId(), cncMachine.getMCodeAdapter(), robotServiceInputNames, 
+//					robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs, mCodeRobotServiceOutputs);
+//		} else {
+		deleteMCodeAdapter(cncMachine.getId());
 			cncMachine.setMCodeAdapter(saveMCodeAdapter(cncMachine.getId(), robotServiceInputNames, 
 					robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs, mCodeRobotServiceOutputs));
-		}
+//		}
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 		cncMachine.setName(name);
@@ -996,42 +993,7 @@ public class DeviceMapper {
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
-	public void updateMCodeAdapter(final int id, final MCodeAdapter mCodeAdapter, final List<String> robotServiceInputNames, 
-					final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
-						final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE MCODEADAPTER " +
-				"SET ROBOTSERVICEINPUT1 = ?, ROBOTSERVICEINPUT2 = ?, ROBOTSERVICEINPUT3 = ?, " +
-				"ROBOTSERVICEINPUT4 = ?, ROBOTSERVICEINPUT5 = ?, ROBOTSERVICEOUTPUT1 = ? WHERE ID = ?");
-		stmt.setString(1, robotServiceInputNames.get(0));
-		stmt.setString(2, robotServiceInputNames.get(1));
-		stmt.setString(3, robotServiceInputNames.get(2));
-		stmt.setString(4, robotServiceInputNames.get(3));
-		stmt.setString(5, robotServiceInputNames.get(4));
-		stmt.setString(6, robotServiceOutputNames.get(0));
-		stmt.setInt(7, id);
-		stmt.executeUpdate();
-		for (GenericMCode mCode : mCodeAdapter.getGenericMCodes()) {
-			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE MCODE " +
-					"SET NAME = ?, ROBOTSERVICEINPUT1 = ?, ROBOTSERVICEINPUT2 = ?, ROBOTSERVICEINPUT3 = ?, " +
-					"ROBOTSERVICEINPUT4 = ?, ROBOTSERVICEINPUT5 = ?, ROBOTSERVICEOUTPUT1 = ? WHERE ID = ?");
-			stmt2.setString(1, mCodeNames.get(mCode.getIndex()));
-			stmt2.setBoolean(2, mCodeRobotServiceInputs.get(mCode.getIndex()).contains(0));
-			stmt2.setBoolean(3, mCodeRobotServiceInputs.get(mCode.getIndex()).contains(1));
-			stmt2.setBoolean(4, mCodeRobotServiceInputs.get(mCode.getIndex()).contains(2));
-			stmt2.setBoolean(5, mCodeRobotServiceInputs.get(mCode.getIndex()).contains(3));
-			stmt2.setBoolean(6, mCodeRobotServiceInputs.get(mCode.getIndex()).contains(4));
-			stmt2.setBoolean(7, mCodeRobotServiceOutputs.get(mCode.getIndex()).contains(0));
-			stmt2.setInt(8, mCode.getId());
-			stmt2.executeUpdate();
-			mCode.setName(mCodeNames.get(mCode.getIndex()));
-			mCode.setRobotServiceInputsRequired(mCodeRobotServiceInputs.get(mCode.getIndex()));
-			mCode.setRobotServiceOutputsUsed(mCodeRobotServiceOutputs.get(mCode.getIndex()));
-		}
-		mCodeAdapter.setRobotServiceInputNames(robotServiceInputNames);
-		mCodeAdapter.setRobotServiceOutputNames(robotServiceOutputNames);
-	}
-	
-	public MCodeAdapter saveMCodeAdapter(final int id, final List<String> robotServiceInputNames, 
+	private MCodeAdapter saveMCodeAdapter(final int id, final List<String> robotServiceInputNames, 
 			final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 			final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO MCODEADAPTER " +
@@ -1069,6 +1031,13 @@ public class DeviceMapper {
 		}
 		mCodeAdapter.setGenericMCodes(mCodes);
 		return mCodeAdapter;
+	}
+	
+	private void deleteMCodeAdapter(final int id) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
+				+ "DELETE FROM MCODEADAPTER WHERE ID = ?");
+		stmt.setInt(1, id);
+		stmt.executeUpdate();
 	}
 	
 	private void updateClamping(final Clamping clamping, final String name, final Clamping.Type type, final float height, 

@@ -13,7 +13,7 @@ import eu.robojob.millassist.process.ProcessingStep;
 import eu.robojob.millassist.process.PutStep;
 
 /**
- * This class represents the usage of a device object in the processflow. It allows us to use multiple the same device more than once in the same flow. 
+ * This class represents the usage of a device object in the processflow. It allows us to use a device multiple times in the same flow. 
  * This can easily be seen, because the DeviceInformation object holds an unique index (step index of the flow) with all the deviceSettings, 
  * deviceActionSettings (pick/put/processing), etc attached. These settings are, like the index, unique for every step. So if an extra step is needed,
  * a new DeviceInformation object needs to be created with the necessary information.
@@ -62,8 +62,13 @@ public class DeviceInformation {
 		}
 	}
 	
+	//TODO - deze methode staat hier niet goed, want DeviceInformation is onafhankelijk
 	public int getIndexOfFirstCNCMachine() {
 		return flowAdapter.getCNCMachineIndex();
+	}
+	
+	public int getCNCNbInFlow() {
+		return flowAdapter.getCNCNbInFlow(index);
 	}
 
 	public int getIndex() {

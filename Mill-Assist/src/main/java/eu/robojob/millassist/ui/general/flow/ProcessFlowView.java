@@ -405,7 +405,7 @@ public class ProcessFlowView extends StackPane {
 			case NONE:
 				break;
 			default:
-				throw new IllegalArgumentException("Unkown ProgressBarPieceMode: " + mode);
+				throw new IllegalArgumentException("Unknown ProgressBarPieceMode: " + mode);
 		}
 		transportProgressRegionsRight.get(transportIndex).get(progressBarIndex).getStyleClass().removeAll(CSS_CLASS_PROGRESS_BAR_PIECE_GREEN, CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW);
 		transportProgressRegionsRight.get(transportIndex).get(progressBarIndex).getStyleClass().add(cssClassName);
@@ -430,16 +430,22 @@ public class ProcessFlowView extends StackPane {
 	
 	public void showAddDevice(final boolean addPreProcessPossible, final boolean addPostProcessPossible) {
 		unfocusAll();
+		TransportButton btnTransport;
 		for (int i = 0; i < processFlowAdapter.getTransportStepCount(); i++) {
+			btnTransport = transportButtons.get(i);
 			if (i < processFlowAdapter.getCNCMachineIndex()) {
 				if (addPreProcessPossible) {
-					transportButtons.get(i).setFocussed(true);
-					transportButtons.get(i).setDisable(false);
+					btnTransport.setFocussed(true);
+					btnTransport.setDisable(false);
+				} else {
+					btnTransport.setDisable(true);
 				}
 			} else {
-				if (addPostProcessPossible) {
-					transportButtons.get(i).setFocussed(true);
-					transportButtons.get(i).setDisable(false);
+				if (addPostProcessPossible && i >= processFlowAdapter.getLastCNCMachineIndex()) {
+					btnTransport.setFocussed(true);
+					btnTransport.setDisable(false);
+				} else {
+					btnTransport.setDisable(true);
 				}
 			}
 		}

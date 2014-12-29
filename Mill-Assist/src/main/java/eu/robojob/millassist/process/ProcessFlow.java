@@ -380,6 +380,7 @@ public class ProcessFlow {
 	}
 	
 	public void addStep(final int index, final AbstractProcessStep newStep) {
+		//Adds the newStep and shift all the other steps that follow to the right (@see List.add(index, Object))
 		processSteps.add(index, newStep);
 		newStep.setProcessFlow(this);
 	}
@@ -625,6 +626,5 @@ public class ProcessFlow {
 			isConcurrentExecutionPossible = false;
 		}
 		return isConcurrentExecutionPossible;
-	}
-	
+	}	
 }

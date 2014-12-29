@@ -1,5 +1,8 @@
 	package eu.robojob.millassist.ui.configure;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javafx.scene.control.TextInputControl;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.DeviceManager;
@@ -64,6 +67,8 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	private ProcessMenuPresenter processMenuPresenter;
 	private DeviceManager deviceManager;
 	private Mode mode;
+	
+	private static Logger logger = LogManager.getLogger(ConfigurePresenter.class.getName());
 	
 	public ConfigurePresenter(final MainContentView view, final FullKeyboardPresenter keyboardPresenter, final NumericKeyboardPresenter numericKeyboardPresenter,
 			final ConfigureProcessFlowPresenter processFlowPresenter, final ProcessMenuPresenter processMenuPresenter, final DeviceMenuFactory deviceMenuFactory, 
@@ -270,7 +275,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			addPreProcessPossible = true;
 		}
 		boolean addPostProcessPossible = false;
-		if (deviceManager.getPostProcessingDevices().size() > 0 && !processFlowAdapter.getProcessFlow().hasReversalUnit()) {
+		if (deviceManager.getPostProcessingDevices().size() > 0) {
 			addPostProcessPossible = true;
 		}
 		processFlowPresenter.setAddDeviceMode(addPreProcessPossible, addPostProcessPossible);
@@ -304,20 +309,22 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	}
 	
 	// TODO - review (duplicate code)
-	private void addCNCMachineCopy() {
+	private void addCNCMachineCopy() throws IllegalArgumentException {
 		AbstractCNCMachine cncMachine = deviceManager.getCNCMachines().iterator().next();
-		int index = processFlowAdapter.getCNCMachineIndex();
+		int index = processFlowAdapter.getLastCNCMachineIndex();
 		
 		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
 		WorkArea workArea = null;
 		Clamping clamping = null;
+		int nbCNCMachine = processFlowAdapter.getNbCNCMachinesInFlow() + 1;
 		if (cncMachine.getWorkAreas().size() >= 1) {
 			for (WorkArea workA: cncMachine.getWorkAreas()) {
-				if (!workA.inUse() && workA.isClone()) {
+				if (!workA.inUse() && workA.getPrioIfCloned() == nbCNCMachine) {
 					workArea = workA;
 				}
 			}
 			if (workArea == null) {
+				//Not enough workareas for steps in process
 				throw new IllegalArgumentException("Device [" + cncMachine + "] does not contain workarea");
 			}
 			if (workArea.getClampings().size() >= 1) {
@@ -331,12 +338,14 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		//Clone nemen van robotPick and PutSettings
 		DevicePickSettings devicePickSettings = cncMachine.getDefaultPickSettings(WorkPiece.Type.FINISHED);
 		devicePickSettings.setWorkArea(workArea);
+		
 		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = cncMachine.getDefaultStartCyclusSettings(WorkPiece.Type.FINISHED);
 		deviceStartCyclusSettings.setWorkArea(workArea);
+
 		//original raw workPiece
-		
 		DevicePutSettings devicePutSettings = cncMachine.getDefaultPutSettings(WorkPiece.Type.HALF_FINISHED);
 		devicePutSettings.setWorkArea(workArea);
+		
 		DeviceSettings deviceSettings = cncMachine.getDeviceSettings();
 		deviceSettings.setClamping(workArea, clamping);
 		processFlowAdapter.getProcessFlow().setDeviceSettings(cncMachine, deviceSettings);
@@ -371,6 +380,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		updateCNCWorkPieces(deviceInfo);
 	}
 	
+	//TODO - dit moet simpeler kunnen (spreiden over meerdere klassen?)
 	public void addDevice(final int index) {
 		
 		AbstractProcessingDevice device = null;
@@ -393,8 +403,14 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			return;
 		}
 		
+		//TODO - dit mag ook niet standaard - parameter meegeven aan type device
 		if (device.getType().equals(EDeviceGroup.POST_PROCESSING)) {
-			addCNCMachineCopy();
+			try {
+				addCNCMachineCopy();
+			} catch (IllegalArgumentException e) {
+				logger.error(e.getLocalizedMessage());
+				return;
+			}
 		}
 		
 		//Get the information about the usage of the device currently at the given index.
@@ -416,11 +432,12 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		}
 		
 		//TODO - dit moet standaard een aparte methode worden
-		// Create new devicePick/Put/StartCyclussettings and indicate that the workarea we just chose is the workarea to be used
+		// Create new devicePick/Put/StartCyclussettings and indicate that the workarea we just choose is the workarea to be used
 		DevicePickSettings devicePickSettings = device.getDefaultPickSettings(WorkPiece.Type.RAW);
 		devicePickSettings.setWorkArea(workArea);
 		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = device.getDefaultStartCyclusSettings(WorkPiece.Type.RAW);
 		deviceStartCyclusSettings.setWorkArea(workArea);
+		//TODO - can we give the priority of the workarea?
 		DevicePutSettings devicePutSettings = device.getDefaultPutSettings(WorkPiece.Type.RAW);
 		devicePutSettings.setWorkArea(workArea);
 		
@@ -502,9 +519,12 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		processFlowAdapter.removeDeviceSteps(index);
 		//FIXME - potential problem if other post-device than reversal + cnc are possible
 		if (index > processFlowAdapter.getCNCMachineIndex()) {
-			// eerste CNC machine verwijderen
+			// eerste CNC machine verwijderen - als we de laatste zouden verwijderen moeten we het werkstuk van de StackPlate ook aanpassen
+			// nu zitten we wel met de tweede bewerkingsstap (stuk na ontladen bij de eerste CNC machine)
+			//TODO - try to remove the last CNC machine
 			updateCNCMachineWorkArea();
 			processFlowAdapter.removeDeviceSteps(index-1);
+			//TODO - do we still need the workPieceTypes now that we can check the priority of the workArea?
 			processFlowAdapter.updateWorkPieceTypes();
 		}		
 		deviceMenuFactory.clearBuffer();

@@ -156,7 +156,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 				setClamping(toBeActiveClamping);
 				getView().setDefaultClampingText(toBeActiveClamping.getName(), true);
 			} else {
-				//Should not occur, because the request to remove the activeClamping without there being a replacement, is stopped before calling this function
+				//Should not occur, because the request to remove the activeClamping without there being a replacement is stopped before calling this function
 				throw new IllegalArgumentException("Tried to remove the active clamping without there being a replacement clamping.");
 			}
 		} else {
@@ -299,19 +299,11 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	}
 	
 	List<String> getListOfWorkAreas() {
-		int indexOfFirstCNC = deviceInfo.getIndexOfFirstCNCMachine();
 		List<String> waList = new ArrayList<String>();
-		if (deviceInfo.getIndex() == indexOfFirstCNC) {
-			for (WorkArea workArea: deviceInfo.getDevice().getWorkAreas()) {
-				if (!workArea.isClone()) {
-					waList.add(workArea.getName());
-				}
-			}
-		} else {
-			for (WorkArea workArea: deviceInfo.getDevice().getWorkAreas()) {
-				if (workArea.isClone()) {
-					waList.add(workArea.getName());
-				}
+		for (WorkArea workArea: deviceInfo.getDevice().getWorkAreas()) {
+			//FIXME - dit klopt niet - getNbOfCNCMachines moet worden getNbOfThisCNCMachine
+			if (workArea.getPrioIfCloned() == deviceInfo.getCNCNbInFlow()) {
+				waList.add(workArea.getName());
 			}
 		}
 		return waList;

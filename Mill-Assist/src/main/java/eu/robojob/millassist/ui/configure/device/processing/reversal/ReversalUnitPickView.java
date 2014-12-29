@@ -20,19 +20,19 @@ import eu.robojob.millassist.util.UIConstants;
 
 public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPresenter> {
 
-	private static Label lblSmoothInfo;
-	private static HBox hBoxSmoothPoint;
-	private static Label lblSmoothX;
-	private static Label lblSmoothY;
-	private static Label lblSmoothZ;
-	private static Button btnResetSmooth;
-	private static NumericTextField ntxtSmoothX;
-	private static NumericTextField ntxtSmoothY;
-	private static NumericTextField ntxtSmoothZ;
+	private Label lblSmoothInfo;
+	private HBox hBoxSmoothPoint;
+	private Label lblSmoothX;
+	private Label lblSmoothY;
+	private Label lblSmoothZ;
+	private Button btnResetSmooth;
+	private NumericTextField ntxtSmoothX;
+	private NumericTextField ntxtSmoothY;
+	private NumericTextField ntxtSmoothZ;
 	
-	private static Label lblLoadType;
-	private static Button btnTopLoad;
-	private static Button btnBottomLoad;
+	private Label lblLoadType;
+	private Button btnTopLoad;
+	private Button btnBottomLoad;
 	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;

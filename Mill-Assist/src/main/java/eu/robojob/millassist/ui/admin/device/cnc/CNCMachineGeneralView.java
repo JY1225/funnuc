@@ -306,7 +306,7 @@ public class CNCMachineGeneralView extends GridPane {
 		}
 	}
 	
-	private static Button createButton(final String text, final String cssClass, final double width, final EventHandler<ActionEvent> action) {
+	static Button createButton(final String text, final String cssClass, final double width, final EventHandler<ActionEvent> action) {
 		Button button = new Button();
 		Label label = new Label(text);
 		label.getStyleClass().add(CSS_CLASS_BUTTON_LABEL);

@@ -131,4 +131,16 @@ public class Zone {
 		}
 		return false;
 	}
+	
+	public WorkArea getWorkAreaWithPrio(final int priority) throws IllegalArgumentException {
+		if (priority <= 0) {
+			throw new IllegalArgumentException("Priority has to be between 1 and the number of workareas");
+		}
+		for (WorkArea workArea: getWorkAreas()) {
+			if (workArea.getPrioIfCloned() == priority) {
+				return workArea;
+			}
+		}
+		throw new IllegalArgumentException("No workarea with " + priority + " found in the zone.");
+	}
 }

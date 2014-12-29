@@ -26,13 +26,14 @@ public class WorkArea {
 	private boolean inUse;
 	// Boundary of the zone - square (lower left corner/upper right corner)
 	private WorkAreaBoundary boundaries;
-	private boolean isClone;
+	private int prioIfCloned;
 	
 	private static Logger logger = LogManager.getLogger(WorkArea.class.getName());
 	
-	public WorkArea(final String name, final UserFrame userFrame, final Clamping defaultClamping, final Set<Clamping> clampings) {
+	public WorkArea(final String name, final UserFrame userFrame, final Clamping defaultClamping, final Set<Clamping> clampings, int prioIfCloned) {
 		this.name = name;
 		this.userFrame = userFrame;
+		//FIXME - check null value for defaultClamping
 		this.defaultClamping = defaultClamping;
 		this.clampings = clampings;
 		this.clampingsInUse = new ArrayList<Clamping>();
@@ -42,14 +43,15 @@ public class WorkArea {
 			this.workAreaNr = 2;
 		}
 		this.clampingsInUseCount = 1;
+		this.prioIfCloned = prioIfCloned;
 	}
 	
-	public WorkArea(final String name, final UserFrame userFrame, final Set<Clamping> clampings) {
-		this(name, userFrame, null, clampings);
+	public WorkArea(final String name, final UserFrame userFrame, final Set<Clamping> clampings, int prioIfCloned) {
+		this(name, userFrame, null, clampings, prioIfCloned);
 	}
 	
-	public WorkArea(final String name, final UserFrame userFrame) {
-		this(name, userFrame, null, new HashSet<Clamping>());
+	public WorkArea(final String name, final UserFrame userFrame, int prioIfCloned) {
+		this(name, userFrame, null, new HashSet<Clamping>(), prioIfCloned);
 	}
 
 	public int getId() {
@@ -295,12 +297,25 @@ public class WorkArea {
 	public void setWorkAreaBoundary(WorkAreaBoundary boundaries) {
 		this.boundaries = boundaries;
 	}
-
-	public boolean isClone() {
-		return isClone;
+	
+	/**
+	 * Gives the priority of the workarea. In case the workarea is the only one for a specific device, 
+	 * this method will always return 1. In other cases, e.g. where we have multiple CNC actions, cloned
+	 * workarea's for the CNC machine exist. The priority then gives the number of CNC action in the flow. 
+	 * This means that in case an action is required for the first CNC action, the priority of the matching
+	 * workarea will be 1. In case an action is required for the 2nd CNC action, the priority is 2; and so on.
+	 * 
+	 * @return priority number starting from 1 with 1 the highest priority.
+	 */
+	public int getPrioIfCloned() {
+		return this.prioIfCloned;
 	}
-
-	public void setClone(boolean isClone) {
-		this.isClone = isClone;
+	
+	public void setPrioIfCloned(int prioIfCloned) {
+		this.prioIfCloned = prioIfCloned;
+	}
+	
+	public boolean isClone() {
+		return (prioIfCloned != 1);
 	}
 }

@@ -69,11 +69,11 @@ public class ConfigureProcessFlowPresenter extends AbstractProcessFlowPresenter 
 	
 	public void setAddDeviceMode(final boolean addPreProcessPossible, final boolean addPostProcessPossible) {
 		getView().showAddDevice(addPreProcessPossible, addPostProcessPossible);
-		}
+	}
 	
 	public void setRemoveDeviceMode() {
 		getView().showRemoveDevice();
-		}
+	}
 	
 	public void setNormalMode() {
 		getView().showNormal();

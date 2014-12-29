@@ -20,8 +20,9 @@ import eu.robojob.millassist.workpiece.WorkPiece;
  */
 public class ProcessFlowAdapter {
 
-	//TODO review the max amount
-	private static final int MAX_DEVICE_AMOUNT = 6;
+	//TODO review the max amount - this can disappear
+	//private static final int MAX_DEVICE_AMOUNT = 6;
+	private static final int MAX_DEVICE_AMOUNT = 100;
 	
 	private ProcessFlow processFlow;
 	
@@ -160,7 +161,7 @@ public class ProcessFlowAdapter {
 		processFlow.removeSteps(deviceInfo.getSteps());
 	}
 	
-	//TODO could be optimized
+	//TODO could be optimized - review if both first and lastCNC methods are needed
 	public int getCNCMachineIndex() {
 		for (int i = 0; i < getDeviceStepCount(); i++) {
 			AbstractDevice device = getDeviceInformation(i).getDevice();
@@ -169,6 +170,43 @@ public class ProcessFlowAdapter {
 			}
 		}
 		return -1;
+	}
+	
+	//TODO could be optimized
+	public int getLastCNCMachineIndex() {
+		int indexLastCNC = -1;
+		for (int i = 0; i < getDeviceStepCount(); i++) {
+			AbstractDevice device = getDeviceInformation(i).getDevice();
+			if ((device != null) && (device.getType() == EDeviceGroup.CNC_MACHINE)) {
+				indexLastCNC = i;
+			}
+		}
+		return indexLastCNC;
+	}
+	
+	public int getNbCNCMachinesInFlow() {
+		int count = 0;
+		for (int i = 0; i < getDeviceStepCount(); i++) {
+			AbstractDevice device = getDeviceInformation(i).getDevice();
+			if ((device != null) && (device.getType() == EDeviceGroup.CNC_MACHINE)) {
+				count++;
+			}
+		}
+		return count;
+	}
+	
+	public int getCNCNbInFlow(int indexCNCMachine) {
+		int count = 0;
+		for (int i = 0; i < getDeviceStepCount(); i++) {
+			AbstractDevice device = getDeviceInformation(i).getDevice();
+			if ((device != null) && (device.getType() == EDeviceGroup.CNC_MACHINE)) {
+				count++;
+			}
+			if (i == indexCNCMachine) {
+				return count;
+			}
+		}
+		return count;
 	}
 	
 	public boolean canAddDevice() {
@@ -225,20 +263,37 @@ public class ProcessFlowAdapter {
 	/**
 	 * Update HALF_FINISHED workPieceType to FINISHED
 	 */
+	//FIXME - voor meerdere CNC machines klopt deze update niet!
 	public void updateWorkPieceTypes() {
+		//This is always the first CNC machine - getCNCMachineIndex()
 		getDeviceInformation(getCNCMachineIndex()).getProcessingStep().getDeviceSettings().setWorkPieceType(WorkPiece.Type.FINISHED);
 		getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().setWorkPieceType(WorkPiece.Type.RAW);
 	}
 
+//	//Only use is when CNC machine is removed from the flow
+//	public void updateCNCMachineWorkArea() {
+//		//Workarea of first CNC machine - we have to get the workArea with priority - 1 
+//		WorkArea workArea = getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().getWorkArea().getZone().getWorkAreaWithPrio(getNbCNCMachinesInFlow()-1);
+//		//We houden de tweede CNC machine - dus we moeten de workarea van de eerste bij de tweede zetten
+//		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getDeviceSettings().getWorkArea().inUse(false);
+//		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getDeviceSettings().setWorkArea(workArea); 
+//		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getRobotSettings().setWorkArea(workArea);
+//		getDeviceInformation(getCNCMachineIndex() + 1).getPickStep().getDeviceSettings().setWorkArea(workArea); 
+//		getDeviceInformation(getCNCMachineIndex() + 1).getPickStep().getRobotSettings().setWorkArea(workArea);
+//		getDeviceInformation(getCNCMachineIndex() + 1).getProcessingStep().getDeviceSettings().setWorkArea(workArea); 
+//	}
+	
+	//Only use is when CNC machine is removed from the flow
 	public void updateCNCMachineWorkArea() {
-		//Workarea of first CNC machine
-		WorkArea workArea = getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().getWorkArea();
-		//We houden de tweede CNC machine - dus we moeten de workarea van de eerste bij de tweede zetten
-		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getDeviceSettings().getWorkArea().inUse(false);
-		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getDeviceSettings().setWorkArea(workArea); 
-		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getRobotSettings().setWorkArea(workArea);
-		getDeviceInformation(getCNCMachineIndex() + 1).getPickStep().getDeviceSettings().setWorkArea(workArea); 
-		getDeviceInformation(getCNCMachineIndex() + 1).getPickStep().getRobotSettings().setWorkArea(workArea);
-		getDeviceInformation(getCNCMachineIndex() + 1).getProcessingStep().getDeviceSettings().setWorkArea(workArea); 
+		//Workarea of first CNC machine - we have to get the workArea with priority - 1 
+		WorkArea workArea = getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().getWorkArea().getZone().getWorkAreaWithPrio(getNbCNCMachinesInFlow());
+		workArea.inUse(false);
+//		//We houden de eerste CNC machine - dus we moeten de workarea van de eerste bij de tweede zetten
+//		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getDeviceSettings().getWorkArea().inUse(false);
+//		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getDeviceSettings().setWorkArea(workArea); 
+//		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getRobotSettings().setWorkArea(workArea);
+//		getDeviceInformation(getCNCMachineIndex() + 1).getPickStep().getDeviceSettings().setWorkArea(workArea); 
+//		getDeviceInformation(getCNCMachineIndex() + 1).getPickStep().getRobotSettings().setWorkArea(workArea);
+//		getDeviceInformation(getCNCMachineIndex() + 1).getProcessingStep().getDeviceSettings().setWorkArea(workArea); 
 	}
 }

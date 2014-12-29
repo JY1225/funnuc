@@ -867,4 +867,21 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			setCncMachineTimeout(null);
 		}
 	}
+	
+	/**
+	 * Get the index of the mcode to check based on the workarea and the type of action.
+	 * 
+	 * @param 	workarea to use for the action (get the priority)
+	 * @param 	isPut represents a flag telling whether a put action or a pick action is needed
+	 * @return	index of Mcode
+	 * @see		WorkArea.#getPrioIfCloned()
+	 */
+	private int getMCodeIndex(final WorkArea workarea, final boolean isPut) {
+		int workAreaPrio = workarea.getPrioIfCloned() - 1;
+		int mCodeIndex = workAreaPrio * 2;
+		if (isPut) {
+			return mCodeIndex;
+		} 
+		return mCodeIndex++;
+	}
 }

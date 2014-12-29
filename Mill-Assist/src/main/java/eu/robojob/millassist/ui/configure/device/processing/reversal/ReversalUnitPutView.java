@@ -22,23 +22,23 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 	
 	private static Label lblSmoothInfo;
 	
-	private static HBox hBoxSmoothPoint;
+	private HBox hBoxSmoothPoint;
 	
-	private static Label lblSmoothX;
-	private static Label lblSmoothY;
-	private static Label lblSmoothZ;
-	private static Label lblConfigWidth;
+	private Label lblSmoothX;
+	private Label lblSmoothY;
+	private Label lblSmoothZ;
+	private Label lblConfigWidth;
 	
-	private static Button btnResetSmooth;
+	private Button btnResetSmooth;
 	
-	private static Label lblLoadType;
-	private static Button btnTopLoad;
-	private static Button btnBottomLoad;
+	private Label lblLoadType;
+	private Button btnTopLoad;
+	private Button btnBottomLoad;
 	
-	private static NumericTextField ntxtSmoothX;
-	private static NumericTextField ntxtSmoothY;
-	private static NumericTextField ntxtSmoothZ;
-	private static NumericTextField ntxtConfigWidth;
+	private NumericTextField ntxtSmoothX;
+	private NumericTextField ntxtSmoothY;
+	private NumericTextField ntxtSmoothZ;
+	private NumericTextField ntxtConfigWidth;
 	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;

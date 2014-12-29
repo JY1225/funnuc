@@ -66,6 +66,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	
 	public void setCNCMachine(final AbstractCNCMachine cncMachine) {
 		this.cncMachine = cncMachine;
+		CNCMachineMCodeView.buildMCodeNodes(cncMachine.getMCodeAdapter());
 		refresh();
 	}
 	
@@ -232,23 +233,23 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	}
 
 	public List<String> getMCodeNames() {
-		return cncMachineMCodeView.getMCodeNames();
+		return CNCMachineMCodeView.getMCodeNames();
 	}
 	
 	public List<Set<Integer>> getMCodeRobotServiceInputs() {
-		return cncMachineMCodeView.getMCodeRobotServiceInputs();
+		return CNCMachineMCodeView.getMCodeRobotServiceInputs();
 	}
 	
 	public List<Set<Integer>> getMCodeRobotServiceOutputs() {
-		return cncMachineMCodeView.getMCodeRobotServiceOutputs();
+		return CNCMachineMCodeView.getMCodeRobotServiceOutputs();
 	}
 	
 	public List<String> getRobotServiceInputNames() {
-		return cncMachineMCodeView.getRobotServiceInputNames();
+		return CNCMachineMCodeView.getRobotServiceInputNames();
 	}
 	
 	public List<String> getRobotServiceOutputNames() {
-		return cncMachineMCodeView.getRobotServiceOutputNames();
+		return CNCMachineMCodeView.getRobotServiceOutputNames();
 	}
 
 	public int getNbFixtures() {
