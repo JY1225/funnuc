@@ -120,7 +120,12 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					executeInterventionStep((InterventionStep) currentStep);
 				} 
 				if (currentStep instanceof PickStep && (((PickStep) currentStep).getDevice() instanceof ReversalUnit)) {
-					needsReversal = false;
+					//TODO - update to other thing because if more fixture nb is not correct
+					if (processFlow.getNbCNCInFlow() - 1 == nbWPReversed + 1) {
+						needsReversal = false;
+					} else {
+						needsReversal = true;
+					}
 					checkStatus();
 					currentStep.executeStep(processId, this);
 					nbWPReversed++;
@@ -130,7 +135,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 				else if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
 					checkStatus();
 					executePutInMachineStep((PutStep) currentStep);
-					//More workpieces to put (multiple fixture present)
+					//More workpieces to put (multiple fixtures present - jump back a few steps)
 					if (morePutsToPerform((PutStep) currentStep) && processFlow.hasReversalUnit() && nbWPReversed < nbWPInMachine && nbWPReversed > 0) {
 						needsReversal = true;
 						processFlow.setCurrentIndex(processId, pickFromMachineBeforeReversalStepIndex-1);
@@ -435,6 +440,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	}
 	
 	boolean needsReversal() {
+		logger.debug("NEEDS REVERSAL = " + this.needsReversal);
 		return this.needsReversal;
 	}
 	

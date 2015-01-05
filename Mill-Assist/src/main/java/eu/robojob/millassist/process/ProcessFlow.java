@@ -577,6 +577,18 @@ public class ProcessFlow {
 		return false;
 	}
 	
+	public int getNbCNCInFlow() {
+		int result = 0;
+		for (AbstractProcessStep processStep: processSteps) {
+			if (processStep instanceof ProcessingStep) {
+				if (((ProcessingStep) processStep).getDevice().getType().equals(EDeviceGroup.CNC_MACHINE)) {
+					result++;
+				}
+			}
+		}
+		return result;
+	}
+	
 	public int getNbClampingsChosen() {
 		for (AbstractDevice device: getDevices()) {
 			if (device instanceof AbstractCNCMachine) {

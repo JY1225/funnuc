@@ -6,7 +6,6 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.Zone;
-import eu.robojob.millassist.workpiece.WorkPiece;
 
 public abstract class AbstractProcessingDevice extends AbstractDevice {
 	
@@ -41,8 +40,8 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 		return false;
 	}
 	
-	public ProcessingDeviceStartCyclusSettings getDefaultStartCyclusSettings(final WorkPiece.Type workPieceType) {
-		return new ProcessingDeviceStartCyclusSettings(this, null, workPieceType);
+	public ProcessingDeviceStartCyclusSettings getDefaultStartCyclusSettings() {
+		return new ProcessingDeviceStartCyclusSettings(this, null);
 	}
 	
 }

@@ -528,13 +528,13 @@ public class Conveyor extends AbstractConveyor {
 	}
 	
 	@Override
-	public DevicePickSettings getDefaultPickSettings(WorkPiece.Type workPieceType) {
-		return new DevicePickSettings(this, workAreaA, workPieceType);
+	public DevicePickSettings getDefaultPickSettings() {
+		return new DevicePickSettings(this, workAreaA);
 	}
 	
 	@Override
-	public DevicePutSettings getDefaultPutSettings(WorkPiece.Type workPieceType) {
-		return new DevicePutSettings(this, workAreaB, workPieceType);
+	public DevicePutSettings getDefaultPutSettings() {
+		return new DevicePutSettings(this, workAreaB);
 	}
 	
 }

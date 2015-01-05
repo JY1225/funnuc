@@ -10,7 +10,6 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
-import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractDevice extends AbstractServiceProvider {
@@ -177,20 +176,20 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public abstract EDeviceGroup getType();
 	
-	public DevicePickSettings getDefaultPickSettings(final WorkPiece.Type workPieceType) {
+	public DevicePickSettings getDefaultPickSettings() {
 		WorkArea workArea = null;
 		if (getWorkAreas().size() == 1) {
 			workArea = getWorkAreas().iterator().next();
 		}
-		return new DevicePickSettings(this, workArea, workPieceType);
+		return new DevicePickSettings(this, workArea);
 	}
 	
-	public DevicePutSettings getDefaultPutSettings(final WorkPiece.Type workPieceType) {
+	public DevicePutSettings getDefaultPutSettings() {
 		WorkArea workArea = null;
 		if (getWorkAreas().size() == 1) {
 			workArea = getWorkAreas().iterator().next();
 		}
-		return new DevicePutSettings(this, workArea, workPieceType);
+		return new DevicePutSettings(this, workArea);
 	}
 	
 	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {

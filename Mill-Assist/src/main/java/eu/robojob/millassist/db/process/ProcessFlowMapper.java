@@ -341,19 +341,19 @@ public class ProcessFlowMapper {
 	}
 	
 	private void saveDeviceActionSettings(final DeviceStep deviceStep) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICEACTIONSETTINGS (DEVICE, WORKAREA, STEP, WORKPIECETYPE, MACHINE_AIRBLOW) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICEACTIONSETTINGS (DEVICE, WORKAREA, STEP, MACHINE_AIRBLOW) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, deviceStep.getDevice().getId());
 		stmt.setInt(2, deviceStep.getDeviceSettings().getWorkArea().getId());
 		stmt.setInt(3, ((AbstractProcessStep) deviceStep).getId());
-		if (deviceStep.getDeviceSettings().getWorkPieceType() != null) {
-			stmt.setInt(4, deviceStep.getDeviceSettings().getWorkPieceType().getTypeId());	
-		} 
+//		if (deviceStep.getDeviceSettings().getWorkPieceType() != null) {
+//			stmt.setInt(4, deviceStep.getDeviceSettings().getWorkPieceType().getTypeId());	
+//		} 
 		if (deviceStep.getDeviceSettings() instanceof DevicePutSettings) {
-			stmt.setBoolean(5, ((DevicePutSettings) deviceStep.getDeviceSettings()).getMachineAirblow()); 
+			stmt.setBoolean(4, ((DevicePutSettings) deviceStep.getDeviceSettings()).getMachineAirblow()); 
 		} else if (deviceStep.getDeviceSettings() instanceof DevicePickSettings) {
-			stmt.setBoolean(5, ((DevicePickSettings) deviceStep.getDeviceSettings()).getMachineAirblow()); 
+			stmt.setBoolean(4, ((DevicePickSettings) deviceStep.getDeviceSettings()).getMachineAirblow()); 
 		} else {
-			stmt.setBoolean(5, false);
+			stmt.setBoolean(4, false);
 		}
 		stmt.executeUpdate();
 		ResultSet keys = stmt.getGeneratedKeys();
@@ -891,10 +891,9 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
-			int workPieceTypeId = results.getInt("WORKPIECETYPE");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			WorkArea workArea = device.getWorkAreaById(workAreaId);
-			deviceInterventionSettings = new DeviceInterventionSettings(device, workArea, WorkPiece.Type.getTypeById(workPieceTypeId));
+			deviceInterventionSettings = new DeviceInterventionSettings(device, workArea);
 			deviceInterventionSettings.setId(id);
 		}
 		return deviceInterventionSettings;
@@ -909,10 +908,9 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
-			int workPieceTypeId = results.getInt("WORKPIECETYPE");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			WorkArea workArea = device.getWorkAreaById(workAreaId);
-			processingDeviceStartCyclusSettings = new ProcessingDeviceStartCyclusSettings((AbstractProcessingDevice) device, workArea, WorkPiece.Type.getTypeById(workPieceTypeId));
+			processingDeviceStartCyclusSettings = new ProcessingDeviceStartCyclusSettings((AbstractProcessingDevice) device, workArea);
 			processingDeviceStartCyclusSettings.setId(id);
 		}
 		return processingDeviceStartCyclusSettings;
@@ -927,11 +925,10 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
-			int workPieceTypeId = results.getInt("WORKPIECETYPE");
 			boolean machineAirblow = results.getBoolean("MACHINE_AIRBLOW");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			WorkArea workArea = device.getWorkAreaById(workAreaId);
-			devicePickSettings = new DevicePickSettings(device, workArea, WorkPiece.Type.getTypeById(workPieceTypeId));
+			devicePickSettings = new DevicePickSettings(device, workArea);
 			devicePickSettings.setId(id);
 			devicePickSettings.setIsMachineAirblow(machineAirblow);
 		}
@@ -947,11 +944,10 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
-			int workPieceTypeId = results.getInt("WORKPIECETYPE");
 			boolean machineAirblow = results.getBoolean("MACHINE_AIRBLOW");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			WorkArea workArea = device.getWorkAreaById(workAreaId);
-			devicePutSettings = new DevicePutSettings(device, workArea, WorkPiece.Type.getTypeById(workPieceTypeId));
+			devicePutSettings = new DevicePutSettings(device, workArea);
 			devicePutSettings.setId(id);
 			devicePutSettings.setIsMachineAirblow(machineAirblow);
 		}

@@ -2,8 +2,10 @@ package eu.robojob.millassist.ui.general.model;
 
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
+import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;
@@ -13,6 +15,7 @@ import eu.robojob.millassist.process.ProcessingStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
 /**
  * This class extends the functionalities of the ProcessFlow class and organizes its information to simplify interaction between UI classes and ProcessFlow
@@ -59,6 +62,7 @@ public class ProcessFlowAdapter {
 		int curDevIndex = 0;
 		for (int i = 0; i < processFlow.getProcessSteps().size(); i++) {
 			AbstractProcessStep step = processFlow.getStep(i);
+			//First device does not have a PUT_STEP
 			if (step.getType() == ProcessStepType.PUT_STEP) {
 				curDevIndex++;
 			}
@@ -126,7 +130,7 @@ public class ProcessFlowAdapter {
 	
 	public void addInterventionStepAfterPut(final TransportInformation transportInfo) {
 		AbstractDevice device = transportInfo.getPutStep().getDevice();
-		InterventionStep intervention = new InterventionStep(new DeviceInterventionSettings(device, transportInfo.getPutStep().getDeviceSettings().getWorkArea(), transportInfo.getPutStep().getDeviceSettings().getWorkPieceType()), 0);
+		InterventionStep intervention = new InterventionStep(new DeviceInterventionSettings(device, transportInfo.getPutStep().getDeviceSettings().getWorkArea()), 0);
 		processFlow.addStepAfter(transportInfo.getPutStep(), intervention);
 	}
 	
@@ -136,7 +140,7 @@ public class ProcessFlowAdapter {
 	
 	public void addInterventionStepBeforePick(final TransportInformation transportInfo) {
 		AbstractDevice device = transportInfo.getPickStep().getDevice();
-		InterventionStep intervention = new InterventionStep(new DeviceInterventionSettings(device, transportInfo.getPickStep().getDeviceSettings().getWorkArea(), transportInfo.getPickStep().getDeviceSettings().getWorkPieceType()), 0);
+		InterventionStep intervention = new InterventionStep(new DeviceInterventionSettings(device, transportInfo.getPickStep().getDeviceSettings().getWorkArea()), 0);
 		processFlow.addStepBefore(transportInfo.getPickStep(), intervention);
 	}
 	
@@ -172,7 +176,7 @@ public class ProcessFlowAdapter {
 		return -1;
 	}
 	
-	//TODO could be optimized
+	//TODO could be optimized - opslaan als variabele en aanpassen bij toevoegen/verwijderen machine? - efficienter
 	public int getLastCNCMachineIndex() {
 		int indexLastCNC = -1;
 		for (int i = 0; i < getDeviceStepCount(); i++) {
@@ -260,40 +264,22 @@ public class ProcessFlowAdapter {
 		return -1;
 	}
 	
-	/**
-	 * Update HALF_FINISHED workPieceType to FINISHED
-	 */
-	//FIXME - voor meerdere CNC machines klopt deze update niet!
-	public void updateWorkPieceTypes() {
-		//This is always the first CNC machine - getCNCMachineIndex()
-		getDeviceInformation(getCNCMachineIndex()).getProcessingStep().getDeviceSettings().setWorkPieceType(WorkPiece.Type.FINISHED);
-		getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().setWorkPieceType(WorkPiece.Type.RAW);
-	}
-
-//	//Only use is when CNC machine is removed from the flow
-//	public void updateCNCMachineWorkArea() {
-//		//Workarea of first CNC machine - we have to get the workArea with priority - 1 
-//		WorkArea workArea = getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().getWorkArea().getZone().getWorkAreaWithPrio(getNbCNCMachinesInFlow()-1);
-//		//We houden de tweede CNC machine - dus we moeten de workarea van de eerste bij de tweede zetten
-//		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getDeviceSettings().getWorkArea().inUse(false);
-//		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getDeviceSettings().setWorkArea(workArea); 
-//		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getRobotSettings().setWorkArea(workArea);
-//		getDeviceInformation(getCNCMachineIndex() + 1).getPickStep().getDeviceSettings().setWorkArea(workArea); 
-//		getDeviceInformation(getCNCMachineIndex() + 1).getPickStep().getRobotSettings().setWorkArea(workArea);
-//		getDeviceInformation(getCNCMachineIndex() + 1).getProcessingStep().getDeviceSettings().setWorkArea(workArea); 
-//	}
-	
 	//Only use is when CNC machine is removed from the flow
 	public void updateCNCMachineWorkArea() {
-		//Workarea of first CNC machine - we have to get the workArea with priority - 1 
 		WorkArea workArea = getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().getWorkArea().getZone().getWorkAreaWithPrio(getNbCNCMachinesInFlow());
 		workArea.inUse(false);
-//		//We houden de eerste CNC machine - dus we moeten de workarea van de eerste bij de tweede zetten
-//		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getDeviceSettings().getWorkArea().inUse(false);
-//		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getDeviceSettings().setWorkArea(workArea); 
-//		getDeviceInformation(getCNCMachineIndex() + 1).getPutStep().getRobotSettings().setWorkArea(workArea);
-//		getDeviceInformation(getCNCMachineIndex() + 1).getPickStep().getDeviceSettings().setWorkArea(workArea); 
-//		getDeviceInformation(getCNCMachineIndex() + 1).getPickStep().getRobotSettings().setWorkArea(workArea);
-//		getDeviceInformation(getCNCMachineIndex() + 1).getProcessingStep().getDeviceSettings().setWorkArea(workArea); 
+	}
+	
+	public void updateFinalWorkPieceFlow() {
+		DeviceSettings deviceSettingsLastWP = getDeviceInformation(getDeviceStepCount() - 1).getDeviceSettings();
+		WorkPiece finishedWorkPiece = getDeviceInformation(getLastCNCMachineIndex()).getPickStep().getRobotSettings().getWorkPiece();
+		finishedWorkPiece.setType(Type.FINISHED);
+		if (deviceSettingsLastWP instanceof AbstractStackPlateDeviceSettings) {
+			((AbstractStackPlateDeviceSettings) deviceSettingsLastWP).setFinishedWorkPiece(finishedWorkPiece);
+		} else if (deviceSettingsLastWP instanceof eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings) {
+			((eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings) deviceSettingsLastWP).setFinishedWorkPiece(finishedWorkPiece);
+		} else if (deviceSettingsLastWP instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) {
+			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettingsLastWP).setFinishedWorkPiece(finishedWorkPiece);
+		}
 	}
 }

@@ -56,8 +56,9 @@ public class BasicStackPlateReplacePresenter extends AbstractFormPresenter<Basic
 	public void modeChanged(final ModeChangedEvent e) {
 		if (!e.getMode().equals(Mode.AUTO)) {
 			getView().setButtonEnabled(true);
-		} else
+		} else {
 			getView().setButtonEnabled(false);
+		}
 	}
 	
 	@Override public void statusChanged(final StatusChangedEvent e) { }

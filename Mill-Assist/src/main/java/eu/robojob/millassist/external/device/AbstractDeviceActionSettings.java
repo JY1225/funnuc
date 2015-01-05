@@ -1,20 +1,19 @@
 package eu.robojob.millassist.external.device;
 
 import eu.robojob.millassist.process.AbstractProcessStep;
-import eu.robojob.millassist.workpiece.WorkPiece;
 
 public abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep> {
 	
 	private AbstractDevice device;
 	private WorkArea workArea;
-	private WorkPiece.Type workPieceType;
+//	private WorkPiece.Type workPieceType;
 	private T step;
 	private int id;
 	
-	public AbstractDeviceActionSettings(final AbstractDevice device, final WorkArea workArea, final WorkPiece.Type workPieceType) {
+	public AbstractDeviceActionSettings(final AbstractDevice device, final WorkArea workArea) {
 		setDevice(device);
 		setWorkArea(workArea);
-		setWorkPieceType(workPieceType);
+//		setWorkPieceType(workPieceType);
 	}
 	
 	public int getId() {
@@ -49,17 +48,18 @@ public abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep
 		this.workArea = workArea;
 	}
 	
-	public WorkPiece.Type getWorkPieceType() {
-		return this.workPieceType;
-	}
-	
-	public void setWorkPieceType(WorkPiece.Type workPieceType) {
-		this.workPieceType = workPieceType;
-	}
-	
-	public void updateWorkPieceType() {
-		if (workPieceType.equals(WorkPiece.Type.HALF_FINISHED)) {
-			setWorkPieceType(WorkPiece.Type.FINISHED);
-		}
-	}
+//	//TODO - is this still needed? Was added before to distinguish between action before reversing and after reversing
+//	public WorkPiece.Type getWorkPieceType() {
+//		return this.workPieceType;
+//	}
+//	
+//	public void setWorkPieceType(WorkPiece.Type workPieceType) {
+//		this.workPieceType = workPieceType;
+//	}
+//	
+//	public void updateWorkPieceType() {
+//		if (workPieceType.equals(WorkPiece.Type.HALF_FINISHED)) {
+//			setWorkPieceType(WorkPiece.Type.FINISHED);
+//		}
+//	}
 }

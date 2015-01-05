@@ -303,9 +303,6 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		WorkPiece halfFinishedClone = deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone();
 		halfFinishedClone.setType(WorkPiece.Type.HALF_FINISHED);
 		deviceInfo.getPickStep().getRobotSettings().setWorkPiece(halfFinishedClone);
-		deviceInfo.getPickStep().getDeviceSettings().setWorkPieceType(WorkPiece.Type.HALF_FINISHED);
-		deviceInfo.getProcessingStep().getDeviceSettings().setWorkPieceType(WorkPiece.Type.HALF_FINISHED);
-		deviceInfo.getPutStep().getDeviceSettings().setWorkPieceType(WorkPiece.Type.RAW);
 	}
 	
 	// TODO - review (duplicate code)
@@ -336,14 +333,14 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		}
 		
 		//Clone nemen van robotPick and PutSettings
-		DevicePickSettings devicePickSettings = cncMachine.getDefaultPickSettings(WorkPiece.Type.FINISHED);
+		DevicePickSettings devicePickSettings = cncMachine.getDefaultPickSettings();
 		devicePickSettings.setWorkArea(workArea);
 		
-		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = cncMachine.getDefaultStartCyclusSettings(WorkPiece.Type.FINISHED);
+		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = cncMachine.getDefaultStartCyclusSettings();
 		deviceStartCyclusSettings.setWorkArea(workArea);
 
 		//original raw workPiece
-		DevicePutSettings devicePutSettings = cncMachine.getDefaultPutSettings(WorkPiece.Type.HALF_FINISHED);
+		DevicePutSettings devicePutSettings = cncMachine.getDefaultPutSettings();
 		devicePutSettings.setWorkArea(workArea);
 		
 		DeviceSettings deviceSettings = cncMachine.getDeviceSettings();
@@ -403,7 +400,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			return;
 		}
 		
-		//TODO - dit mag ook niet standaard - parameter meegeven aan type device
+		//TODO - dit mag ook niet standaard - parameter meegeven aan type device - needsCNCStep for example (type device checken en niet de groep)
 		if (device.getType().equals(EDeviceGroup.POST_PROCESSING)) {
 			try {
 				addCNCMachineCopy();
@@ -433,12 +430,12 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		
 		//TODO - dit moet standaard een aparte methode worden
 		// Create new devicePick/Put/StartCyclussettings and indicate that the workarea we just choose is the workarea to be used
-		DevicePickSettings devicePickSettings = device.getDefaultPickSettings(WorkPiece.Type.RAW);
+		DevicePickSettings devicePickSettings = device.getDefaultPickSettings();
 		devicePickSettings.setWorkArea(workArea);
-		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = device.getDefaultStartCyclusSettings(WorkPiece.Type.RAW);
+		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = device.getDefaultStartCyclusSettings();
 		deviceStartCyclusSettings.setWorkArea(workArea);
 		//TODO - can we give the priority of the workarea?
-		DevicePutSettings devicePutSettings = device.getDefaultPutSettings(WorkPiece.Type.RAW);
+		DevicePutSettings devicePutSettings = device.getDefaultPutSettings();
 		devicePutSettings.setWorkArea(workArea);
 		
 		// Create a new DeviceSettings object - unique for the new step
@@ -467,9 +464,6 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		DeviceInformation newDeviceInfo = new DeviceInformation((index + 1), processFlowAdapter);
 
 		if (device instanceof PrageDevice) {
-			devicePutSettings.setWorkPieceType(WorkPiece.Type.RAW);
-			deviceStartCyclusSettings.setWorkPieceType(WorkPiece.Type.RAW);
-			devicePickSettings.setWorkPieceType(WorkPiece.Type.RAW);
 			
 			RobotProcessingWhileWaitingSettings procSettings = new RobotProcessingWhileWaitingSettings(deviceInfo.getPickStep().getRobotSettings().getRobot(), workArea, deviceInfo.getPickStep().getRobotSettings().getGripperHead());		
 			PutAndWaitStep putAndWait1 = new PutAndWaitStep(devicePutSettings, robotPutSettings);
@@ -490,10 +484,6 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			PickStep pickStep = new PickStep(devicePickSettings, robotPickSettings);	
 			
 			pickStep.getRobotSettings().setApproachType(ApproachType.BOTTOM);
-
-			devicePutSettings.setWorkPieceType(WorkPiece.Type.HALF_FINISHED);
-			deviceStartCyclusSettings.setWorkPieceType(WorkPiece.Type.HALF_FINISHED);
-			devicePickSettings.setWorkPieceType(WorkPiece.Type.HALF_FINISHED);
 
 			newDeviceInfo.setPutStep(putStep);
 			newDeviceInfo.setPickStep(pickStep);
@@ -520,20 +510,16 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		//FIXME - potential problem if other post-device than reversal + cnc are possible
 		if (index > processFlowAdapter.getCNCMachineIndex()) {
 			// eerste CNC machine verwijderen - als we de laatste zouden verwijderen moeten we het werkstuk van de StackPlate ook aanpassen
-			// nu zitten we wel met de tweede bewerkingsstap (stuk na ontladen bij de eerste CNC machine)
-			//TODO - try to remove the last CNC machine
-			updateCNCMachineWorkArea();
-			processFlowAdapter.removeDeviceSteps(index-1);
-			//TODO - do we still need the workPieceTypes now that we can check the priority of the workArea?
-			processFlowAdapter.updateWorkPieceTypes();
+			// nu zitten we wel met de tweede bewerkingsstap (stuk na ontladen bij de eerste CNC machine) - get & set?
+			//TODO - try to remove the last CNC machine (zie vorige opmerking)
+			// stackPlateSettings / ConveyorSettings... --> alle zaken waarbij een afgelegd stuk terug komt (bin doet er niet toe)
+			processFlowAdapter.updateCNCMachineWorkArea();
+			processFlowAdapter.removeDeviceSteps(index);
+			processFlowAdapter.updateFinalWorkPieceFlow();
 		}		
 		deviceMenuFactory.clearBuffer();
 		transportMenuFactory.clearBuffer();
 		refresh();
-	}
-	
-	private void updateCNCMachineWorkArea() {
-		processFlowAdapter.updateCNCMachineWorkArea();
 	}
 	
 	public void refresh() {

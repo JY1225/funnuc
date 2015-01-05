@@ -84,11 +84,11 @@ public class ProcessFlowManager {
 		AbstractDevice stackingToDevice = deviceManager.getStackingToDevices().iterator().next();
 		AbstractCNCMachine cncMachine = deviceManager.getCNCMachines().iterator().next();
 		AbstractRobot robot = robotManager.getRobots().iterator().next();
-		PickStep pickStep = new PickStep(stackingFromDevice.getDefaultPickSettings(WorkPiece.Type.RAW), robot.getDefaultPickSettings());
-		PutStep putStep = new PutStep(cncMachine.getDefaultPutSettings(WorkPiece.Type.RAW), robot.getDefaultPutSettings());
-		ProcessingStep processingStep = new ProcessingStep(cncMachine.getDefaultStartCyclusSettings(WorkPiece.Type.FINISHED));
-		PickStep pickStep2 = new PickStep(cncMachine.getDefaultPickSettings(WorkPiece.Type.FINISHED), robot.getDefaultPickSettings());
-		PutStep putStep2 = new PutStep(stackingToDevice.getDefaultPutSettings(WorkPiece.Type.FINISHED), robot.getDefaultPutSettings());
+		PickStep pickStep = new PickStep(stackingFromDevice.getDefaultPickSettings(), robot.getDefaultPickSettings());
+		PutStep putStep = new PutStep(cncMachine.getDefaultPutSettings(), robot.getDefaultPutSettings());
+		ProcessingStep processingStep = new ProcessingStep(cncMachine.getDefaultStartCyclusSettings());
+		PickStep pickStep2 = new PickStep(cncMachine.getDefaultPickSettings(), robot.getDefaultPickSettings());
+		PutStep putStep2 = new PutStep(stackingToDevice.getDefaultPutSettings(), robot.getDefaultPutSettings());
 		List<AbstractProcessStep> processSteps = new ArrayList<AbstractProcessStep>();
 		WorkPiece rawWorkPiece = new WorkPiece(Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f);
 		WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, new WorkPieceDimensions(), Material.OTHER, 0.0f);
