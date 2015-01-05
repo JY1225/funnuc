@@ -75,6 +75,11 @@ public class BasicStackPlateReplaceView extends AbstractFormView<BasicStackPlate
 	@Override
 	public void refresh() {
 		itfFinishedAmount.setText("0");
+		if (getPresenter().isAutoMode()) {
+			setButtonEnabled(false);
+		} else {
+			setButtonEnabled(true);
+		}
 		hideNotification();
 	}
 	
