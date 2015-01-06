@@ -31,7 +31,7 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 	private static final int VGAP = 15;
 	private static final int NAME_TEXTFIELD_WIDTH = 300;
 	private static final int BUTTON_WIDTH = 150;
-	private static final int MAX_NAME_LENGTH = 50;
+	private static final int MAX_NAME_LENGTH = 25;
 	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
 
 	private static final String CSS_CLASS_FORM_LABEL_NAME = "form-label-name";
