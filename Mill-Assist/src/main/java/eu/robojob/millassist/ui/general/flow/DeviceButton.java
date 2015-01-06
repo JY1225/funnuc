@@ -37,7 +37,7 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 	private String conveyorToPath = "m 348.21969,312.85683 0,5 -7.96875,0 0,-5 7.96875,0 z m -10.65625,0 0,5 -7.21875,0 0,-5 7.21875,0 z m -9.90625,0 0,5 c -2.15979,0.075 -4.34175,-0.19128 -6.46875,0.25 -0.0888,0.0609 -0.1735,0.1061 -0.25,0.125 -0.53533,0.13229 -0.79555,-0.67217 -1.1875,-1 -0.83369,-0.97852 -1.65236,-1.97098 -2.5,-2.9375 1.70287,-0.93156 3.58479,-1.3404 5.5,-1.4375 0.63839,-0.0324 1.30029,-0.0287 1.9375,0 l 2.96875,0 z m -12.5625,2.96875 c 1.03143,1.2979 2.11009,2.55767 3.15625,3.84375 -1.66629,1.65665 -2.1765,4.07869 -2.3125,6.34375 l -5.03125,0 c 0.18788,-3.72285 1.42029,-7.57288 4.1875,-10.1875 z m 11.46875,6.09375 c 3.43961,0.25079 5.83285,4.19647 4.5625,7.375 -0.7072,2.16945 -2.89264,3.514 -5.09375,3.5625 -1.0005,0.022 -2.00896,-0.22274 -2.875,-0.78125 -2.90671,-1.6143 -3.51734,-5.96305 -1.21875,-8.34375 1.00031,-1.13927 2.46976,-1.7577 3.96875,-1.8125 0.21413,-0.008 0.44222,-0.0156 0.65625,0 z m -10.65625,6.78125 c 0.19916,2.2244 0.80216,4.60713 2.59375,6.09375 -1.06244,1.27088 -2.1201,2.54579 -3.1875,3.8125 -2.76158,-2.52416 -4.16594,-6.22631 -4.40625,-9.90625 l 5,0 z m 4.90625,7.5625 c 1.34733,0.5369 2.77886,0.7062 4.21875,0.625 l 2.625,0 0,5 c -0.69677,-0.008 -1.39031,0.0252 -2.09375,0.0312 -2.11032,0.0179 -4.23636,-0.0437 -6.21875,-0.875 -0.48129,-0.37811 -2.48177,-0.55222 -1.4375,-1.34375 0.9701,-1.14466 1.92851,-2.2994 2.90625,-3.4375 z m 23.25,0.625 0,5 -3.5625,0 0,-5 3.5625,0 z m -6.25,0 0,5 -7.46875,0 0,-5 7.46875,0 z";
 	
 	private static final int BUTTON_WIDTH = 60;
-	private static final int BUTTON_HEIGHT = 60;
+	private static final int BUTTON_HEIGHT =60;
 	private static final int LABEL_WIDTH = 120;
 		
 	private static final String UNKNOWN_DEVICE = "DeviceButton.unknownDevice";
@@ -58,12 +58,14 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 	private static final String CSS_CLASS_UNCLICKABLE_NAME = "label-unclickable";
 	private static final String CSS_CLASS_UNCLICKABLE_INFO = "label-info-unclickable";
 	
+	//Label for extra info, like GMC active
 	private Label lblExtraInfo;
 	private Button mainButton;
 	private SVGPath imagePath;
 	private Label deviceName;
 	
 	private AbstractCNCMachine machine;
+	private Integer[] mcodesForDeviceStep = new Integer[2];
 	
 	private RotateTransition rotateTransition;
 	
@@ -94,6 +96,8 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 			rotateTransition.setCycleCount(Timeline.INDEFINITE);
 			machine = ((AbstractCNCMachine) deviceInfo.getDevice());
 			machine.addListener(this);
+			mcodesForDeviceStep[0] = machine.getMCodeIndex(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), true);
+			mcodesForDeviceStep[1] = machine.getMCodeIndex(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), false);
 			updateMCodes();
 		}
 	}
@@ -124,7 +128,6 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 
 		deviceName = new Label();
 		deviceName.setPrefWidth(LABEL_WIDTH);
-		deviceName.setWrapText(true);
 		deviceName.setAlignment(Pos.TOP_CENTER);
 		deviceName.setTextAlignment(TextAlignment.CENTER);
 		deviceName.getStyleClass().add(CSS_CLASS_DEVICE_LABEL);
@@ -134,8 +137,10 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 		lblExtraInfo.setVisible(false);
 		this.getChildren().add(mainButton);
 		this.getChildren().add(deviceName);
-		this.setPadding(new Insets(-8, -(LABEL_WIDTH - BUTTON_WIDTH) / 2 + 1, 0, -(LABEL_WIDTH - BUTTON_WIDTH) / 2));
+		this.setPadding(new Insets(-8, -(LABEL_WIDTH - BUTTON_WIDTH) / 2, 0, -(LABEL_WIDTH - BUTTON_WIDTH) / 2));
 		this.setPrefWidth(BUTTON_WIDTH);
+		this.setMinWidth(BUTTON_WIDTH);
+		this.setMaxWidth(BUTTON_WIDTH);
 		this.setAlignment(Pos.CENTER);
 		
 		this.getStyleClass().add(CSS_CLASS_DEVICE_BUTTON_WRAPPER);
@@ -263,7 +268,9 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 					if (machine.getMCodeAdapter().getActiveMCodes().size() > 0) {
 						String mCodes = "GMC";
 						for (int i : machine.getMCodeAdapter().getActiveMCodes()) {
-							mCodes = mCodes + "-" + (i + 1);
+							if (mcodesForDeviceStep[0] == i || mcodesForDeviceStep[1] == i) {
+								mCodes = mCodes + "-" + (i + 1);
+							}
 						}
 						lblExtraInfo.setText(mCodes);
 						lblExtraInfo.setVisible(true);

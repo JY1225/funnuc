@@ -1,13 +1,17 @@
 package eu.robojob.millassist.ui.general.flow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -39,12 +43,12 @@ public class ProcessFlowView extends StackPane {
 	private List<List<Region>> transportProgressRegionsRight;
 		
 	private Label lblProcessName;
-	
-	private static final int GAP = 10; 
+		
+	private static final int GAP = 12; 
 	private static final int PROGRESS_BAR_HEIGHT = 6;
 	private static final int PROGRESS_BAR_MARGIN_BOTTOM = 7;
 	private static final int PROGRESS_BAR_REGION_HEIGHT = 30;
-	private static final int LBL_MARGIN= 10;
+	private static final int LBL_MARGIN = 8;
 	private static final String CSS_CLASS_PROCESSFLOW_VIEW = "process-flow-view";
 	private static final String CSS_CLASS_PROGRESS_BAR_PIECE = "progressbar-piece";
 	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_FIRST = "progressbar-piece-first";
@@ -94,18 +98,11 @@ public class ProcessFlowView extends StackPane {
 			lblProcessName.setText(processFlowAdapter.getProcessFlow().getName());
 		}
 		lblProcessName.getStyleClass().add(CSS_CLASS_PROCESS_NAME);
-		this.getChildren().add(gpFlow);
-		this.getChildren().add(lblProcessName);
-		StackPane.setAlignment(lblProcessName, Pos.BOTTOM_RIGHT);
+		StackPane.setAlignment(lblProcessName, Pos.TOP_RIGHT);
 		StackPane.setMargin(lblProcessName, new Insets(LBL_MARGIN, LBL_MARGIN, LBL_MARGIN, LBL_MARGIN));
-		StackPane.setAlignment(gpFlow, Pos.CENTER);
-//		this.setPrefWidth(800);
-//		this.setPrefHeight(225);
-//		gpFlow.setPrefWidth(800);
-//		gpFlow.setPrefHeight(225);
 		gpFlow.getChildren().clear();
 		gpFlow.setVgap(GAP);
-		gpFlow.setPadding(new Insets(GAP, 0, GAP, 0));
+		gpFlow.setPadding(new Insets(GAP, 50, GAP, 50));
 		int column = 0;
 		int row = 0;
 		for (int i = 0; i < processFlowAdapter.getDeviceStepCount(); i++) {		
@@ -117,7 +114,7 @@ public class ProcessFlowView extends StackPane {
 			}
 			column++;
 		}
-		gpFlow.setAlignment(Pos.CENTER);
+		gpFlow.setAlignment(Pos.TOP_CENTER);
 		gpFlow.setPrefHeight(MainContentView.HEIGHT_TOP);
 		gpFlow.setPrefWidth(MainContentView.WIDTH);
 		gpFlow.getStyleClass().add(CSS_CLASS_PROCESSFLOW_VIEW);
@@ -129,6 +126,15 @@ public class ProcessFlowView extends StackPane {
 				event.consume();
 			}
 		});
+		ScrollPane scrollPane = new ScrollPane();
+		scrollPane.setContent(gpFlow);
+		this.getChildren().add(scrollPane);
+		this.getChildren().add(lblProcessName);
+		scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
+		scrollPane.setHbarPolicy(ScrollBarPolicy.ALWAYS);
+		scrollPane.setFitToHeight(false);
+		scrollPane.setFitToWidth(false);
+		scrollPane.setPannable(false);
 	}
 	
 	public List<DeviceButton> getDeviceButtons() {
@@ -413,12 +419,23 @@ public class ProcessFlowView extends StackPane {
 	
 	public void showRemoveDevice() {
 		unfocusAll();
+		Map<EDeviceGroup, DeviceButton> uniqueGroupDevices = new HashMap<EDeviceGroup, DeviceButton>();
 		for (DeviceButton deviceButton : deviceButtons) {
-			//FIXME - problem if multiple post-processing devices (check op nb CNC machines) - only allow last one to be deleted 
+			//TODO - this allows only the last device of the POST_PROCESSING devices to be deleted - no choice
 			if (deviceButton.getDeviceInformation().getType().equals(EDeviceGroup.POST_PROCESSING)) {
+				if (uniqueGroupDevices.containsKey(EDeviceGroup.POST_PROCESSING)) {
+					uniqueGroupDevices.get(EDeviceGroup.POST_PROCESSING).setFocussed(false);
+					uniqueGroupDevices.get(EDeviceGroup.POST_PROCESSING).setDisable(true);
+				} 
 				deviceButton.setFocussed(true);
 				deviceButton.setDisable(false);
+				uniqueGroupDevices.put(EDeviceGroup.POST_PROCESSING, deviceButton);
 			} else if (deviceButton.getDeviceInformation().getType().equals(EDeviceGroup.PRE_PROCESSING)) {
+				if (uniqueGroupDevices.containsKey(EDeviceGroup.PRE_PROCESSING)) {
+					uniqueGroupDevices.get(EDeviceGroup.PRE_PROCESSING).setFocussed(false);
+					uniqueGroupDevices.get(EDeviceGroup.PRE_PROCESSING).setDisable(true);
+				} 
+				uniqueGroupDevices.put(EDeviceGroup.PRE_PROCESSING, deviceButton);
 				deviceButton.setFocussed(true);
 				deviceButton.setDisable(false);
 			} else {
@@ -445,6 +462,7 @@ public class ProcessFlowView extends StackPane {
 					btnTransport.setDisable(true);
 				}
 			} else {
+				//TODO - this only works for reversalUnits or postProcessing device that needs to be place after the last step
 				if (addPostProcessPossible && i >= processFlowAdapter.getLastCNCMachineIndex()) {
 					btnTransport.setFocussed(true);
 					btnTransport.setDisable(false);

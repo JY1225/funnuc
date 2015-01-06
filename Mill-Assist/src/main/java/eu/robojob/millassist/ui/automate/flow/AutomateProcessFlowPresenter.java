@@ -63,6 +63,7 @@ public class AutomateProcessFlowPresenter extends FixedProcessFlowPresenter {
 				deviceButton.setClickable(false);
 			}
 		}
+		//TODO - make info from teaching available 
 		for (TransportButton transportButton : getView().getTransportButtons()) {
 			transportButton.setClickable(false);
 		}
