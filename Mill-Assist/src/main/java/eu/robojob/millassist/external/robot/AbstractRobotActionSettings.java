@@ -23,7 +23,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 	private Map<Integer, AirblowSquare> airblowSettings; 
 	
 	public enum ApproachType {
-		TOP(1), BOTTOM(2);
+		TOP(1), BOTTOM(2), LEFT(3), FRONT(5);
 		
 		private int id;
 		

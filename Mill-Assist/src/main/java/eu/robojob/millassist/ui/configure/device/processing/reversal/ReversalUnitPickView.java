@@ -31,8 +31,7 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 	private NumericTextField ntxtSmoothZ;
 	
 	private Label lblLoadType;
-	private Button btnTopLoad;
-	private Button btnBottomLoad;
+	private Button btnTopLoad, btnBottomLoad, btnFrontLoad, btnLeftLoad;
 	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
@@ -45,6 +44,8 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 	private static final String RESET = "ReversalUnitPickView.resetSmooth";
 	private static final String LOAD_TYPE = "ReversalUnitPickView.loadType";
 	private static final String TOP_LOAD = "ReversalUnitPickView.topLoad";
+	private static final String FRONT_LOAD = "ReversalUnitPutView.frontLoad";
+	private static final String LEFT_LOAD = "ReversalUnitPutView.leftLoad";
 	private static final String BOTTOM_LOAD = "ReversalUnitPickView.bottomLoad";
 			
 	public ReversalUnitPickView() {
@@ -122,7 +123,6 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 			}
 		});
 		btnTopLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-		hboxLoadType.getChildren().add(btnTopLoad);
 		btnBottomLoad = createButton(Translator.getTranslation(BOTTOM_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
@@ -131,7 +131,23 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 			}
 		});
 		btnBottomLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-		hboxLoadType.getChildren().add(btnBottomLoad);
+		btnFrontLoad = createButton(Translator.getTranslation(FRONT_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedPickType(ApproachType.FRONT);
+				refreshLoadType(ApproachType.FRONT);
+			}
+		});
+		btnFrontLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+		btnLeftLoad = createButton(Translator.getTranslation(LEFT_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				getPresenter().changedPickType(ApproachType.LEFT);
+				refreshLoadType(ApproachType.LEFT);
+			}
+		});
+		btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+		hboxLoadType.getChildren().addAll(btnTopLoad, btnFrontLoad, btnLeftLoad, btnBottomLoad);
 		
 		int column = 0;
 		int row = 0;
@@ -165,12 +181,20 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 		hideNotification();
 		btnTopLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		btnBottomLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnLeftLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnFrontLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		switch (activeLoadType) {
 		case BOTTOM:
 			btnBottomLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 			break;
 		case TOP:
 			btnTopLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			break;
+		case LEFT:
+			btnLeftLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			break;
+		case FRONT:
+			btnFrontLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 			break;
 		default:
 			break;

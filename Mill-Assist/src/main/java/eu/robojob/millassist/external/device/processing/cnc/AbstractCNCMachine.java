@@ -20,6 +20,7 @@ import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
 
+//FIXME - aparte methodes devIntV2 moeten in overervingstructuur komen!!!
 public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	private Set<CNCMachineListener> listeners;

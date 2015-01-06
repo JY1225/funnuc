@@ -59,6 +59,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	private Object syncObject2;
 	// Is the reversal still to come?
 	private boolean needsReversal;
+	private int nbCNCPassed = 0;
 	private boolean canStartProcessing = false;
 	
 	private boolean isTIMPossible = false;
@@ -120,8 +121,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					executeInterventionStep((InterventionStep) currentStep);
 				} 
 				if (currentStep instanceof PickStep && (((PickStep) currentStep).getDevice() instanceof ReversalUnit)) {
-					//TODO - update to other thing because if more fixture nb is not correct
-					if (processFlow.getNbCNCInFlow() - 1 == nbWPReversed + 1) {
+					if (processFlow.getNbCNCInFlow() - 1 == nbCNCPassed) {
 						needsReversal = false;
 					} else {
 						needsReversal = true;
@@ -136,6 +136,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					checkStatus();
 					executePutInMachineStep((PutStep) currentStep);
 					//More workpieces to put (multiple fixtures present - jump back a few steps)
+					//TODO - review (nbCNCPassed to use?)
 					if (morePutsToPerform((PutStep) currentStep) && processFlow.hasReversalUnit() && nbWPReversed < nbWPInMachine && nbWPReversed > 0) {
 						needsReversal = true;
 						processFlow.setCurrentIndex(processId, pickFromMachineBeforeReversalStepIndex-1);
@@ -160,9 +161,13 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 				} else if (currentStep instanceof ProcessingStep) {
 					checkStatus();
 					executeProcessingStep((ProcessingStep) currentStep);
+					if (((ProcessingStep) currentStep).getDevice() instanceof AbstractCNCMachine) {
+						nbCNCPassed++;
+					}
 				} else {
 					if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractStackingDevice)) {
 						// check if after this step no more pick is needed, so we can return to home, only do this if the process is not continuous
+						//TODO - review for multiple fixtures
 						if ((processFlow.getType() == Type.FIXED_AMOUNT) && ((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) || 
 								((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 2)) && controllingThread.isConcurrentExecutionPossible())) {
 							((PutStep) currentStep).getRobotSettings().setFreeAfter(true);
@@ -190,6 +195,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 						processFlow.setCurrentIndex(processId, pickFromMachineStepIndex);
 					} else {
 						processFlow.setCurrentIndex(processId, 0);
+						nbCNCPassed = 0;
 						canContinue = false;
 						if (processFlow.hasReversalUnit()) {
 							needsReversal = true;
@@ -197,7 +203,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 						controllingThread.notifyProcessFlowFinished(this);
 						if (waitingForIntervention) {
 							synchronized(syncObject2) {
-								logger.info("Waiter after processflow finished.");
+								logger.info("Waiting after processflow finished.");
 								syncObject2.wait();
 								logger.info("Can continue new processflow.");
 							}

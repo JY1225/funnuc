@@ -29,6 +29,7 @@ import eu.robojob.millassist.process.ProcessingStep;
 import eu.robojob.millassist.process.ProcessingWhileWaitingStep;
 import eu.robojob.millassist.process.PutAndWaitStep;
 import eu.robojob.millassist.process.PutStep;
+import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.MainPresenter;
 import eu.robojob.millassist.ui.configure.device.DeviceMenuFactory;
 import eu.robojob.millassist.ui.configure.flow.ConfigureProcessFlowPresenter;
@@ -499,7 +500,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		}
 		
 		processFlowAdapter.addDeviceSteps(index, newDeviceInfo);
-
+		processFlowAdapter.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(processFlowAdapter.getProcessFlow(), null, true));
 		deviceMenuFactory.clearBuffer();
 		transportMenuFactory.clearBuffer();
 		refresh();
@@ -509,14 +510,12 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		processFlowAdapter.removeDeviceSteps(index);
 		//FIXME - potential problem if other post-device than reversal + cnc are possible
 		if (index > processFlowAdapter.getCNCMachineIndex()) {
-			// eerste CNC machine verwijderen - als we de laatste zouden verwijderen moeten we het werkstuk van de StackPlate ook aanpassen
-			// nu zitten we wel met de tweede bewerkingsstap (stuk na ontladen bij de eerste CNC machine) - get & set?
-			//TODO - try to remove the last CNC machine (zie vorige opmerking)
-			// stackPlateSettings / ConveyorSettings... --> alle zaken waarbij een afgelegd stuk terug komt (bin doet er niet toe)
+			// laatste CNC machine verwijderen - eveneens het werkstuk van de StackPlate/Conveyor aanpassen
 			processFlowAdapter.updateCNCMachineWorkArea();
 			processFlowAdapter.removeDeviceSteps(index);
 			processFlowAdapter.updateFinalWorkPieceFlow();
-		}		
+		}
+		processFlowAdapter.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(processFlowAdapter.getProcessFlow(), null, false));
 		deviceMenuFactory.clearBuffer();
 		transportMenuFactory.clearBuffer();
 		refresh();

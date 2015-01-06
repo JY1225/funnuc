@@ -414,7 +414,11 @@ public class ProcessFlowView extends StackPane {
 	public void showRemoveDevice() {
 		unfocusAll();
 		for (DeviceButton deviceButton : deviceButtons) {
-			if ((deviceButton.getDeviceInformation().getType() == EDeviceGroup.POST_PROCESSING) || (deviceButton.getDeviceInformation().getType() == EDeviceGroup.PRE_PROCESSING)) {
+			//FIXME - problem if multiple post-processing devices (check op nb CNC machines) - only allow last one to be deleted 
+			if (deviceButton.getDeviceInformation().getType().equals(EDeviceGroup.POST_PROCESSING)) {
+				deviceButton.setFocussed(true);
+				deviceButton.setDisable(false);
+			} else if (deviceButton.getDeviceInformation().getType().equals(EDeviceGroup.PRE_PROCESSING)) {
 				deviceButton.setFocussed(true);
 				deviceButton.setDisable(false);
 			} else {

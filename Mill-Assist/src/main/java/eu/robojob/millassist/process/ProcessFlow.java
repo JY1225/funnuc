@@ -589,6 +589,7 @@ public class ProcessFlow {
 		return result;
 	}
 	
+	//FIXME - review (multiple workareas (ufNr 3 - 4) with different number of fixtures)
 	public int getNbClampingsChosen() {
 		for (AbstractDevice device: getDevices()) {
 			if (device instanceof AbstractCNCMachine) {
