@@ -218,6 +218,4 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 		} 
 		refreshLoadType(getPresenter().getPickStep().getRobotSettings().getApproachType());
 	}
-	
-	
 }

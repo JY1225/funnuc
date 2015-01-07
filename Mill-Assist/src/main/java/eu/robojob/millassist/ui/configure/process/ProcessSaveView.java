@@ -25,7 +25,6 @@ public class ProcessSaveView extends AbstractFormView<ProcessSavePresenter> {
 	private Label lblName;
 	private FullTextField fulltxtName;
 	private Button btnOverwrite;
-//	private Button btnDelete;
 
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;

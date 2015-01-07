@@ -269,7 +269,7 @@ public class ProcessFlow {
 		return 0;
 	}
 	
-	//ADDED BY ME - TODO
+	//TODO - Added by me
 	public synchronized void setTotalAmount(int amount) {
 		// get stacking device
 		AbstractStackingDevice stackingDevice;
@@ -589,11 +589,17 @@ public class ProcessFlow {
 		return result;
 	}
 	
-	//FIXME - review (multiple workareas (ufNr 3 - 4) with different number of fixtures)
 	public int getNbClampingsChosen() {
 		for (AbstractDevice device: getDevices()) {
 			if (device instanceof AbstractCNCMachine) {
-				return device.getWorkAreas().get(0).getNbActiveClampingsEachSide();
+				for (WorkArea workArea: device.getWorkAreas()) {
+					//We only check workArea in use. There is no issue in case we have multiple CNC steps, because
+					//we have ensured that the same amount of clampings is selected in each CNC step
+					if (workArea.inUse()) {
+						return workArea.getNbActiveClampingsEachSide();
+					}
+				}
+				return 1;
 			}
 		}
 		return 1;

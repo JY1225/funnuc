@@ -301,7 +301,6 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	List<String> getListOfWorkAreas() {
 		List<String> waList = new ArrayList<String>();
 		for (WorkArea workArea: deviceInfo.getDevice().getWorkAreas()) {
-			//FIXME - dit klopt niet - getNbOfCNCMachines moet worden getNbOfThisCNCMachine
 			if (workArea.getPrioIfCloned() == deviceInfo.getCNCNbInFlow()) {
 				waList.add(workArea.getName());
 			}

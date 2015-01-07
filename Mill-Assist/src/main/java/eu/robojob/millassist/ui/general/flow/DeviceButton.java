@@ -64,6 +64,7 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 	private SVGPath imagePath;
 	private Label deviceName;
 	
+	//TODO - review perhaps use a seperate class for the CNCmachineButton
 	private AbstractCNCMachine machine;
 	private Integer[] mcodesForDeviceStep = new Integer[2];
 	
@@ -96,9 +97,11 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 			rotateTransition.setCycleCount(Timeline.INDEFINITE);
 			machine = ((AbstractCNCMachine) deviceInfo.getDevice());
 			machine.addListener(this);
-			mcodesForDeviceStep[0] = machine.getMCodeIndex(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), true);
-			mcodesForDeviceStep[1] = machine.getMCodeIndex(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), false);
-			updateMCodes();
+			if (machine.getWayOfOperating().equals(EWayOfOperating.M_CODES) || machine.getWayOfOperating().equals(EWayOfOperating.M_CODES_DUAL_LOAD)) {
+				mcodesForDeviceStep[0] = machine.getMCodeIndex(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), true);
+				mcodesForDeviceStep[1] = machine.getMCodeIndex(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), false);
+				updateMCodes();
+			}
 		}
 	}
 	
@@ -266,14 +269,23 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 			public void run() {
 				if ((machine.isConnected()) && ((machine.getWayOfOperating() == EWayOfOperating.M_CODES) || (machine.getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD))) {
 					if (machine.getMCodeAdapter().getActiveMCodes().size() > 0) {
-						String mCodes = "GMC";
-						for (int i : machine.getMCodeAdapter().getActiveMCodes()) {
-							if (mcodesForDeviceStep[0] == i || mcodesForDeviceStep[1] == i) {
-								mCodes = mCodes + "-" + (i + 1);
+						String mCodes = "";
+						if (machine.getMCodeAdapter().getActiveMCodes().contains(mcodesForDeviceStep[0])) {
+							mCodes = "GMC " + (mcodesForDeviceStep[0] + 1);
+						}
+						if (machine.getMCodeAdapter().getActiveMCodes().contains(mcodesForDeviceStep[1])) {
+							if (mCodes.startsWith("GMC")) {
+								mCodes += "-" + (mcodesForDeviceStep[1] + 1);
+							} else {
+								mCodes = "GMC " + (mcodesForDeviceStep[1] + 1);
 							}
 						}
 						lblExtraInfo.setText(mCodes);
-						lblExtraInfo.setVisible(true);
+						if (mCodes.equals("")) {
+							lblExtraInfo.setVisible(false);
+						} else {
+							lblExtraInfo.setVisible(true);
+						}
 					} else {
 						lblExtraInfo.setText("");
 						lblExtraInfo.setVisible(false);

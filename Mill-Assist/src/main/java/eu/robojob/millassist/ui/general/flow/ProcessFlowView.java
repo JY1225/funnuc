@@ -44,7 +44,7 @@ public class ProcessFlowView extends StackPane {
 		
 	private Label lblProcessName;
 		
-	private static final int GAP = 12; 
+	private static final int GAP = 14; 
 	private static final int PROGRESS_BAR_HEIGHT = 6;
 	private static final int PROGRESS_BAR_MARGIN_BOTTOM = 7;
 	private static final int PROGRESS_BAR_REGION_HEIGHT = 30;

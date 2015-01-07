@@ -1,6 +1,7 @@
 package eu.robojob.millassist.process.event;
 
 import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.ProcessFlow;
 
 public class DataChangedEvent extends ProcessFlowEvent {
@@ -12,6 +13,9 @@ public class DataChangedEvent extends ProcessFlowEvent {
 		super(source, ProcessFlowEvent.DATA_CHANGED);
 		this.step = step;
 		this.reTeachingNeeded = reTeachingNeeded;
+		if (reTeachingNeeded && step instanceof AbstractTransportStep) {
+			((AbstractTransportStep) step).setRelativeTeachedOffset(null);
+		}
 		//indicates that the processFlow has changes since it was last saved. A reset of this flag will be done when saving the flow.
 		source.setChangesSinceLastSave(true);
 	}
