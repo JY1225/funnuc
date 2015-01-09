@@ -58,7 +58,7 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 	private boolean numericKeyboardActive;
 	
 	private static final String SAVE_OK = "TeachPresenter.saveOK";
-	private static final String SAVE_NOK = "TeachPresenter.saveNOK";
+	private static final String SAVE_NOK = "ProcessSavePresenter.duplicateName";
 	private static final String SAVE_NOT_OK_INVALID_NAME = "TeachPresenter.saveNOKInvalidName";
 	
 	private static final Logger logger = LogManager.getLogger(TeachPresenter.class.getName());
