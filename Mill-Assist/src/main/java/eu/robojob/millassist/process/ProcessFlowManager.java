@@ -199,7 +199,9 @@ public class ProcessFlowManager {
 	public void updateProcessFlow(final ProcessFlow processFlow) throws DuplicateProcessFlowNameException, IllegalArgumentException {
 		try {
 			int idForName = ProcessFlowMapper.getProcessFlowIdForName(processFlow.getName());
-			if ((idForName == 0) || (idForName == processFlow.getId())) {
+			if (idForName == -1) {
+				saveProcessFlow(processFlow);
+			} else if (idForName == processFlow.getId()) {
 				if (processFlow.getId() > 0) {
 					// update
 					logger.info("Updating processflow with id: [" + processFlow.getId() + "] and name: [" + processFlow.getName() + "].");
@@ -228,7 +230,7 @@ public class ProcessFlowManager {
 	public void saveProcessFlow(final ProcessFlow processFlow) throws DuplicateProcessFlowNameException {
 		try {
 			int idForName = ProcessFlowMapper.getProcessFlowIdForName(processFlow.getName());
-			if (idForName == 0) {
+			if (idForName == -1) {
 				logger.info("Saving processflow with name: [" + processFlow.getName() + "].");
 				processFlowMapper.saveProcessFlow(processFlow);
 			} else {

@@ -59,7 +59,7 @@ public class ProcessSavePresenter extends AbstractFormPresenter<ProcessSaveView,
 			//in this case a new name is given, so we need to check whether we can create a copy or not
 			//when a process already exists with this name, we will create a warning and will not save
 			int saveProcessID = (ProcessFlowMapper.getProcessFlowIdForName(saveProcessName));
-			if(saveProcessID != 0) {
+			if(saveProcessID != -1) {
 				saveAsExisting();
 			} else {
 				saveAsNewProcess();
