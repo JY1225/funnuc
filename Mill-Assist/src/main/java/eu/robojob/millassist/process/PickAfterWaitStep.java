@@ -40,7 +40,7 @@ public class PickAfterWaitStep extends PickStep {
 					checkProcessExecutorStatus(executor);
 					logger.debug("Preparing device [" + getDevice() + "] for pick-after-wait, using [" + getRobot() + "].");
 					checkProcessExecutorStatus(executor);
-					getDevice().prepareForPick(getDeviceSettings());
+					getDevice().prepareForPick(getDeviceSettings(), processId);
 					logger.debug("Device [" + getDevice() + "] prepared for pick-after-wait.");
 					checkProcessExecutorStatus(executor);
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, processId));

@@ -63,8 +63,8 @@ public class ReversalUnitPutPresenter extends AbstractFormPresenter<ReversalUnit
 	}
 	
 	public void resetSmooth() {
-		if (deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()) != null) {
-			putStep.getRobotSettings().setSmoothPoint(deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()).getSmoothToPoint());
+		if (deviceSettings.getDefaultClamping(putStep.getDeviceSettings().getWorkArea()) != null) {
+			putStep.getRobotSettings().setSmoothPoint(deviceSettings.getDefaultClamping(putStep.getDeviceSettings().getWorkArea()).getSmoothToPoint());
 			putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 			getView().refresh();
 		}

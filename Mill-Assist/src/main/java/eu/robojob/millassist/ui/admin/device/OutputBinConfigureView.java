@@ -194,7 +194,7 @@ public class OutputBinConfigureView extends AbstractFormView<OutputBinConfigureP
 			numtxtSmoothToX.setText("" + smoothTo.getX());
 			numtxtSmoothToY.setText("" + smoothTo.getY());
 			numtxtSmoothToZ.setText("" + smoothTo.getZ());
-			cbbUserFrame.setValue(outputBin.getWorkAreas().iterator().next().getUserFrame().getName());
+			cbbUserFrame.setValue(outputBin.getWorkAreaManagers().iterator().next().getUserFrame().getName());
 		}
 	}
 

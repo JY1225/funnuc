@@ -4,7 +4,7 @@ import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
@@ -266,8 +266,8 @@ public class ProcessFlowAdapter {
 	
 	//Only use is when CNC machine is removed from the flow
 	public void updateCNCMachineWorkArea() {
-		WorkArea workArea = getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().getWorkArea().getZone().getWorkAreaWithPrio(getNbCNCMachinesInFlow());
-		workArea.inUse(false);
+		SimpleWorkArea workArea = getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().getWorkArea();
+		workArea.setInUse(false);
 	}
 	
 	public void updateFinalWorkPieceFlow() {

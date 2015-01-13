@@ -17,7 +17,7 @@ import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
@@ -51,17 +51,17 @@ public class ReversalUnit extends AbstractProcessingDevice {
 		this.stationHeight = stationHeight;
 	}
 
-	@Override public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
+	@Override public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
 	@Override public void prepareForStartCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException { }
-	@Override public void prepareForPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
-	@Override public void prepareForPut(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
+	@Override public void prepareForPick(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
+	@Override public void prepareForPut(final DevicePutSettings putSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
 	@Override public void prepareForIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException { }
 	@Override public void pickFinished(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, DeviceActionException { }
 	@Override public void putFinished(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException { }
 	@Override public void interventionFinished(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException { }
 	@Override public void releasePiece(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
 	@Override public void loadDeviceSettings(final DeviceSettings deviceSettings) {
-		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
+		for (Entry<SimpleWorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
 			entry.getKey().setDefaultClamping(entry.getValue());
 		}
 	}
@@ -115,7 +115,7 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH && !isWidthReversal) {
 			c.setX(c.getX() + workPieceDimensions.getWidth()/2);
@@ -128,12 +128,12 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {	
+	public Coordinates getLocationOrientation(final SimpleWorkArea workArea, final ClampingManner clampType) {	
 		return new Coordinates(workArea.getDefaultClamping().getRelativePosition());
 	}
 	
 	@Override
-	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH && !isWidthReversal) {
 			c.setX(c.getX() + workPieceDimensions.getWidth()/2);
@@ -165,10 +165,10 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+	public float getZSafePlane(final WorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		if (approachType.equals(ApproachType.BOTTOM)) {
 			float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
-			zSafePlane += ((ReversalUnit) workArea.getZone().getDevice()).getStationHeight();
+			zSafePlane += ((ReversalUnit) workArea.getWorkAreaManager().getZone().getDevice()).getStationHeight();
 			return (zSafePlane * -1);
 		} else {
 			return super.getZSafePlane(dimensions, workArea, approachType);

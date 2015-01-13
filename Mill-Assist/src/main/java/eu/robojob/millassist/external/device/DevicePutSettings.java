@@ -8,7 +8,7 @@ public class DevicePutSettings extends AbstractDeviceActionSettings<PutStep> {
 	//value from CNC configure
 	private boolean isMachineAirblow = false;
 	
-	public DevicePutSettings(final AbstractDevice device, final WorkArea workArea) {
+	public DevicePutSettings(final AbstractDevice device, final SimpleWorkArea workArea) {
 		super(device, workArea);
 	}
 	

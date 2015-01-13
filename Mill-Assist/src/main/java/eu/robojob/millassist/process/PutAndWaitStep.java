@@ -35,7 +35,7 @@ public class PutAndWaitStep extends PutStep {
 		executeStep(true, workPieceId, executor);
 	}
 	
-	private void executeStep(final boolean teached, final int workPieceId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	private void executeStep(final boolean teached, final int processId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the devices to be used
 		if (!getDevice().lock(getProcessFlow())) {
 			throw new IllegalStateException("Device [" + getDevice() + "] was already locked by [" + getDevice().getLockingProcess() + "].");
@@ -46,7 +46,7 @@ public class PutAndWaitStep extends PutStep {
 			} else {
 				try {
 					checkProcessExecutorStatus(executor);
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, workPieceId));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, processId));
 					Coordinates originalPosition = new Coordinates(getDevice().getPutLocation(getDeviceSettings().getWorkArea(), getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions(), getProcessFlow().getClampingType()));
 					if (needsTeaching()) {
 						Coordinates position = new Coordinates(originalPosition);
@@ -76,31 +76,31 @@ public class PutAndWaitStep extends PutStep {
 						getRobotSettings().setLocation(position);
 					}
 					checkProcessExecutorStatus(executor);
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, processId));
 					logger.debug("Initiating robot: [" + getRobot() + "] move-and-wait action.");
 					getRobotSettings().setTeachingNeeded(teached);
 					checkProcessExecutorStatus(executor);
 					getRobot().initiateMoveWithPiece(getRobotSettings());		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
 					logger.debug("Preparing [" + getDevice() + "] for move-and-wait using [" + getRobot() + "].");
 					checkProcessExecutorStatus(executor);
-					getDevice().prepareForPut(getDeviceSettings());
+					getDevice().prepareForPut(getDeviceSettings(), processId);
 					logger.debug("Device [" + getDevice() + "] prepared for move-and-wait.");
 					checkProcessExecutorStatus(executor);
 					if (teached && needsTeaching()) {
-						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_TEACHED, workPieceId));
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_TEACHED, processId));
 						checkProcessExecutorStatus(executor);
 						getRobot().continueMoveTillAtLocation();
-						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_NEEDED, workPieceId));
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_NEEDED, processId));
 						checkProcessExecutorStatus(executor);
 						getRobot().continueMoveTillWait();
 						checkProcessExecutorStatus(executor);
-						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_FINISHED, workPieceId));
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_FINISHED, processId));
 						Coordinates robotPosition = getRobot().getPosition();
 						Coordinates relTeachedOffset = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, robotPosition.calculateOffset(originalPosition));
 						logger.info("The relative teached offset: [" + relTeachedOffset + "].");
 						setRelativeTeachedOffset(relTeachedOffset);
 					} else {
-						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, workPieceId));
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, processId));
 						checkProcessExecutorStatus(executor);
 						getRobot().continueMoveTillAtLocation();
 						checkProcessExecutorStatus(executor);
@@ -110,7 +110,7 @@ public class PutAndWaitStep extends PutStep {
 					checkProcessExecutorStatus(executor);
 					getDevice().grabPiece(getDeviceSettings());
 					logger.debug("Device [" + getDevice() + "] grabbed piece, about to finalize put.");				
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, processId));
 				} catch (AbstractCommunicationException | RobotActionException | DeviceActionException | InterruptedException e) {
 					throw e;
 				} finally {

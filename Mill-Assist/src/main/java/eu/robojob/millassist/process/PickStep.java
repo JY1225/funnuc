@@ -67,8 +67,8 @@ public class PickStep extends AbstractTransportStep {
 						Coordinates position = new Coordinates(originalPosition);
 						logger.debug("Original coordinates: " + position + ".");
 						if (getRelativeTeachedOffset() == null) {
-							if (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight() < getDeviceSettings().getWorkArea().getActiveClamping(true).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping(true).getHeight()) {
-								float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping(true).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping(true).getHeight()) - (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight());
+							if (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight() < getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getHeight()) {
+								float extraOffset = (getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getHeight()) - (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight());
 								if(devicePickSettings.getDevice() instanceof ReversalUnit && (getRobotSettings().getApproachType().equals(ApproachType.BOTTOM))) {
 									extraOffset -= ((ReversalUnit) devicePickSettings.getDevice()).getStationHeight();
 								}
@@ -105,10 +105,10 @@ public class PickStep extends AbstractTransportStep {
 					} else {
 						robotPickSettings.setIsTIMPick(false);
 					}
-					getRobot().initiatePick(robotPickSettings, getDeviceSettings().getWorkArea().getActiveClamping(true));		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
+					getRobot().initiatePick(robotPickSettings, getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()));		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
 					logger.debug("Preparing [" + getDevice() + "] for pick using [" + getRobot() + "].");
 					checkProcessExecutorStatus(executor);
-					getDevice().prepareForPick(devicePickSettings);
+					getDevice().prepareForPick(devicePickSettings, processId);
 					logger.debug("Device [" + getDevice() + "] prepared for pick.");
 					checkProcessExecutorStatus(executor);
 					if (teached && needsTeaching()) {

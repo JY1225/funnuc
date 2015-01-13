@@ -31,7 +31,7 @@ import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.Clamping.Type;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.EFixtureType;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -686,7 +686,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 		int itemIndex = 0;
 		Set<Integer> addedClampingIds = new HashSet<Integer>();
 		for (AbstractCNCMachine machine : deviceManager.getCNCMachines()) {
-			for (final WorkArea workArea : machine.getWorkAreas()) {
+			for (final WorkAreaManager workArea : machine.getWorkAreaManagers()) {
 				if (workArea.getWorkAreaNr() == 1) {
 					wa1Present = true;
 				} else if (workArea.getWorkAreaNr() == 2) {
@@ -860,7 +860,7 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	}
 	
 	private boolean isInsideMachineBoundaries() {
-		WorkArea workarea;
+		WorkAreaManager workarea;
 		if (cbWa1.isSelected()) {
 			workarea = getPresenter().getWorkArea(1);
 		} else {

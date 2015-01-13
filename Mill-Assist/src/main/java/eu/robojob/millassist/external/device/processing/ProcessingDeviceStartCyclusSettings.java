@@ -1,12 +1,12 @@
 package eu.robojob.millassist.external.device.processing;
 
 import eu.robojob.millassist.external.device.AbstractDeviceActionSettings;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.process.ProcessingStep;
 
 public class ProcessingDeviceStartCyclusSettings extends AbstractDeviceActionSettings<ProcessingStep> {
 
-	public ProcessingDeviceStartCyclusSettings(final AbstractProcessingDevice device, final WorkArea workArea) {
+	public ProcessingDeviceStartCyclusSettings(final AbstractProcessingDevice device, final SimpleWorkArea workArea) {
 		super(device, workArea);
 	}
 	

@@ -46,7 +46,7 @@ public class PutStep extends AbstractTransportStep {
 		executeStep(true, workPieceId, executor);
 	}
 	
-	private void executeStep(final boolean teached, final int workPieceId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+	private void executeStep(final boolean teached, final int processId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the devices to be used
 		if (!getDevice().lock(getProcessFlow())) {
 			throw new IllegalStateException("Device [" + getDevice() + "] was already locked by [" + getDevice().getLockingProcess() + "].");
@@ -57,15 +57,15 @@ public class PutStep extends AbstractTransportStep {
 			} else {
 				try {
 					checkProcessExecutorStatus(executor);
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, workPieceId));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, processId));
 					Coordinates originalPosition = new Coordinates(getDevice().getPutLocation(getDeviceSettings().getWorkArea(), getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions(), getProcessFlow().getClampingType()));
 					if (needsTeaching()) {
 						Coordinates position = new Coordinates(originalPosition);
 						logger.debug("Original coordinates: " + position + ".");
 						if (getRelativeTeachedOffset() == null) {
-							if (originalPosition.getZ() < getDeviceSettings().getWorkArea().getActiveClamping(false).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
+							if (originalPosition.getZ() < getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
 								//float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping().getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping().getHeight()) - (originalPosition.getZ() + getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight());
-								float extraOffset = (getDeviceSettings().getWorkArea().getActiveClamping(false).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getActiveClamping(false).getHeight()) - originalPosition.getZ();
+								float extraOffset = (getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getHeight()) - originalPosition.getZ();
 								if(devicePutSettings.getDevice() instanceof ReversalUnit && getRobotSettings().getApproachType().equals(ApproachType.BOTTOM)) {
 									extraOffset += ((ReversalUnit) devicePutSettings.getDevice()).getStationHeight();
 									setRelativeTeachedOffset(new Coordinates(0, 0, (extraOffset * -1), 0, 0, 0));
@@ -93,7 +93,7 @@ public class PutStep extends AbstractTransportStep {
 						getRobotSettings().setLocation(position);
 					}
 					checkProcessExecutorStatus(executor);
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, processId));
 					logger.debug("Initiating robot: [" + getRobot() + "] put action.");
 					getRobotSettings().setTeachingNeeded(teached);
 					checkProcessExecutorStatus(executor);
@@ -102,27 +102,27 @@ public class PutStep extends AbstractTransportStep {
 					} else {
 						robotPutSettings.setIsTIMPut(false);
 					}
-					getRobot().initiatePut(getRobotSettings(), getDeviceSettings().getWorkArea().getActiveClamping(false));		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
+					getRobot().initiatePut(getRobotSettings(), getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()));		// we send the robot to the (safe) IP point, at the same time, the device can start preparing
 					logger.debug("Preparing [" + getDevice() + "] for put using [" + getRobot() + "].");
 					checkProcessExecutorStatus(executor);
-					getDevice().prepareForPut(getDeviceSettings());
+					getDevice().prepareForPut(getDeviceSettings(), processId);
 					logger.debug("Device [" + getDevice() + "] prepared for put.");
 					checkProcessExecutorStatus(executor);
 					if (teached && needsTeaching()) {
-						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_TEACHED, workPieceId));
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_TEACHED, processId));
 						checkProcessExecutorStatus(executor);
 						getRobot().continuePutTillAtLocation();
-						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_NEEDED, workPieceId));
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_NEEDED, processId));
 						checkProcessExecutorStatus(executor);
 						getRobot().continuePutTillClampAck();
 						checkProcessExecutorStatus(executor);
-						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_FINISHED, workPieceId));
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.TEACHING_FINISHED, processId));
 						Coordinates robotPosition = getRobot().getPosition();
 						Coordinates relTeachedOffset = TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, robotPosition.calculateOffset(originalPosition));
 						logger.info("The relative teached offset: [" + relTeachedOffset + "].");
 						setRelativeTeachedOffset(relTeachedOffset);
 					} else {
-						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, workPieceId));
+						getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.EXECUTE_NORMAL, processId));
 						checkProcessExecutorStatus(executor);
 						getRobot().continuePutTillAtLocation();
 						checkProcessExecutorStatus(executor);
@@ -138,7 +138,7 @@ public class PutStep extends AbstractTransportStep {
 					getRobot().continuePutTillIPPoint();
 					checkProcessExecutorStatus(executor);
 					getDevice().putFinished(getDeviceSettings());
-					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
+					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, processId));
 					logger.debug("Put ready (but not finalized).");
 				} catch (AbstractCommunicationException | RobotActionException | DeviceActionException | InterruptedException e) {
 					throw e;

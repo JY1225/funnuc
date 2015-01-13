@@ -19,7 +19,8 @@ import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.EFixtureType;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
+import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
@@ -139,17 +140,16 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public void prepareForProcess(final ProcessFlow process)  throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
 		//FIXME review! potential problems with reset in double processflow execution
 		clearIndications();
-		// check work area
-		for(WorkArea wa: getWorkAreas()) {
-			wa.resetNbPossibleWPPerClamping(getWayOfOperating().getNbOfSides());
-			wa.setNbUsedClampings(getWayOfOperating().getNbOfSides() * wa.getNbActiveClampingsEachSide());
+		for(WorkAreaManager waManager: getWorkAreaManagers()) {
+			waManager.resetNbPossibleWPPerClamping(getWayOfOperating().getNbOfSides());
+			waManager.setMaxClampingsToUse(getWayOfOperating().getNbOfSides() * waManager.getNbActiveClampingsEachSide());
 		}
 		
 		int command = 0;
 		int ufNr = 0;
 		for (AbstractProcessStep step : process.getProcessSteps()) {
 			if ((step instanceof ProcessingStep) && ((ProcessingStep) step).getDevice().equals(this)) {
-				ufNr = ((ProcessingDeviceStartCyclusSettings) ((ProcessingStep) step).getDeviceSettings()).getWorkArea().getUserFrame().getNumber();
+				ufNr = ((ProcessingDeviceStartCyclusSettings) ((ProcessingStep) step).getDeviceSettings()).getWorkArea().getWorkAreaManager().getUserFrame().getNumber();
 			}
 		}
 		if (ufNr == 3) {
@@ -180,8 +180,9 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void startCyclus(final ProcessingDeviceStartCyclusSettings startCyclusSettings) throws SocketResponseTimedOutException, SocketDisconnectedException, DeviceActionException, InterruptedException, SocketWrongResponseException {
-		int ufNr = startCyclusSettings.getWorkArea().getUserFrame().getNumber();
+	public void startCyclus(final ProcessingDeviceStartCyclusSettings startCyclusSettings, final int processId) 
+			throws SocketResponseTimedOutException, SocketDisconnectedException, DeviceActionException, InterruptedException, SocketWrongResponseException {
+		int ufNr = startCyclusSettings.getWorkArea().getWorkAreaManager().getUserFrame().getNumber();
 		if (getWayOfOperating().equals(EWayOfOperating.START_STOP)) {
 			// check a valid workarea is selected 
 			if (!getWorkAreaNames().contains(startCyclusSettings.getWorkArea().getName())) {
@@ -243,45 +244,46 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		} else if (getWayOfOperating().equals(EWayOfOperating.M_CODES)) {
 			int mCodeLoad = getMCodeIndex(startCyclusSettings.getWorkArea(), true);
 			// we sign of the m code for put
-			finishMCode(mCodeLoad);
+			finishMCode(processId, mCodeLoad);
 			Thread.sleep(500);
 			int mCodeUnLoad = getMCodeIndex(startCyclusSettings.getWorkArea(), false);
-			waitForMCodes(mCodeUnLoad);
+			waitForMCodes(processId, mCodeUnLoad);
 		} 
 		// Twee kanten (spiegel - we moeten dus eigenlijk 2 cycli door)
 		else if (getWayOfOperating().equals(EWayOfOperating.M_CODES_DUAL_LOAD)) {
+			int nbCncInFlow = startCyclusSettings.getStep().getProcessFlow().getNbCNCInFlow();
 			// we sign off the m code for put
 			int mCodeLoad = getMCodeIndex(startCyclusSettings.getWorkArea(), true);
-			finishMCode(mCodeLoad);
-			// we wait for unloading - in the meantime the just loaded piece has gone to the back for processing (kanteltafel)
-			//FIXME- check this... what if we have reversals??? - is this the correct mCode to wait for?
-			int mCodeUnLoad = getMCodeIndex(startCyclusSettings.getWorkArea(), false);
-			waitForMCodes(mCodeUnLoad);
-			// now wait for next load and unload M-code (last unload code is part of this cycle)
-			//if (startCylusSettings.getWorkPieceType().equals(WorkPiece.Type.FINISHED) && startCylusSettings.getStep().getProcessFlow().hasReversalUnit()) {
-			if (startCyclusSettings.getWorkArea().getPrioIfCloned() == startCyclusSettings.getStep().getProcessFlow().getNbCNCInFlow()) {
-				mCodeLoad = getMCodeIndex(startCyclusSettings.getWorkArea(), true);
-				waitForMCodes(mCodeLoad);
-				// We finish m-c load reversal because no load is suppose to come anymore
-				if (startCyclusSettings.getStep().getProcessFlow().getFinishedAmount() == startCyclusSettings.getStep().getProcessFlow().getTotalAmount() - 1) {
-					//TODO - afmelden enkel bij laatste CNC machine in de flow
-					finishMCode(mCodeLoad);
-				}
-			} else {
-				mCodeLoad = getMCodeIndex(startCyclusSettings.getWorkArea(), true);
-				waitForMCodes(mCodeLoad);
-			}
-			// we should finish this M-code if in teach mode (we only use 1 side)
-			if ((startCyclusSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) || (startCyclusSettings.getStep().getProcessFlow().getTotalAmount() <= 1)) {
-				unclampAfterFinish(startCyclusSettings.getWorkArea());
+			finishMCode(processId, mCodeLoad);
+			// we wait for unloading the finished piece from the other process - in the meantime the just loaded piece has gone to the back for processing (kanteltafel)
+			// depending on where we are in the flow, there could be multiple unload options. That is if the other process is in a different CNC step.
+			int prvUnload = getPrvMCode(mCodeLoad, nbCncInFlow);
+			int nxtUnload = getNxtMCode(mCodeLoad, nbCncInFlow);
+			waitForMCodes(processId, prvUnload, nxtUnload);
+			// now wait for next load. This is the load following on the unload from the other process.
+			int nxtPrvLoad = getNxtMCode(prvUnload, nbCncInFlow);
+			int nxtLoad = getNxtMCode(nxtUnload, nbCncInFlow);
+			waitForMCodes(processId, nxtPrvLoad, nxtLoad);
+			// We are in the final step of 1 process. The workpiece has been unloaded and we will now wait for a new process
+			// to load a raw workpiece. However, all workpieces are done, so we can directly finish the mCode (no load will come anymore).
+			//TODO - multiFixture (-1) - end with 2 pieces
+			int nbClampsFilled = startCyclusSettings.getWorkArea().getNbClampingsPerProcessThread(processId);
+			if (startCyclusSettings.getStep().getProcessFlow().getFinishedAmount() == startCyclusSettings.getStep().getProcessFlow().getTotalAmount() - nbClampsFilled) {
+				// This test only succeeds if this process is the last one to be executed - so no other startCyclusSettings of other processes anymore
+				finishMCode(processId, nxtPrvLoad);
+				finishMCode(processId, nxtLoad);
+			} 
+			// we should finish this M-code if in teach mode (we only use 1 side - no pieces in the clampings that is currently at the front of the machine)
+			else if ((startCyclusSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) || (startCyclusSettings.getStep().getProcessFlow().getTotalAmount() <= nbClampsFilled)) {
+				unclampAfterFinish(startCyclusSettings.getWorkArea().getWorkAreaManager());
 				// then finish m-code
-				mCodeLoad = getMCodeIndex(startCyclusSettings.getWorkArea(), true);
-				finishMCode(mCodeLoad);
+				finishMCode(processId, nxtPrvLoad);
+				finishMCode(processId, nxtLoad);
 			}
-			waitForNoMCode(mCodeLoad);
-			//Unload (cycle finished)
-			mCodeUnLoad = getMCodeIndex(startCyclusSettings.getWorkArea(), false);
-			waitForMCodes(mCodeUnLoad);
+			waitForNoMCode(processId, nxtPrvLoad, nxtLoad);
+			//Unload (cycle finished - this process)
+			int mCodeUnLoad = getMCodeIndex(startCyclusSettings.getWorkArea(), false);
+			waitForMCodes(processId, mCodeUnLoad);
 		} else {
 			//This can only occur if a new way of operating is added without updating the function
 			throw new IllegalStateException("Unknown way of operating: " + getWayOfOperating());
@@ -289,25 +291,25 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void prepareForPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void prepareForPick(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check a valid workarea is selected 
 		if (!getWorkAreaNames().contains(pickSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + pickSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
-		int ufNr = pickSettings.getWorkArea().getUserFrame().getNumber();
+		int ufNr = pickSettings.getWorkArea().getWorkAreaManager().getUserFrame().getNumber();
 
 		// if way of operation is m codes, await unloading m code!
 		if ((getWayOfOperating() == EWayOfOperating.M_CODES) || (getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD)) {
 			int mCodeUnLoad = getMCodeIndex(pickSettings.getWorkArea(), false);
-			waitForMCodes(mCodeUnLoad);
+			waitForMCodes(processId, mCodeUnLoad);
 		}
 		
 		int command = 0;
 		if (ufNr == 3) {
 			command = command | CNCMachineConstants.IPC_PICK_WA1_RQST;
-			if (pickSettings.getWorkArea().getActiveClamping(true).getFixtureType() == EFixtureType.FIXTURE_2) {
+			if (pickSettings.getWorkArea().getWorkAreaManager().getActiveClamping(true, pickSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_2) {
 				command = 0 | CNCMachineConstants.IPC_PICK_WA2_RQST;
-			} else if (pickSettings.getWorkArea().getActiveClamping(true).getFixtureType() == EFixtureType.FIXTURE_1_2) {
+			} else if (pickSettings.getWorkArea().getWorkAreaManager().getActiveClamping(true, pickSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_1_2) {
 				command = command | CNCMachineConstants.IPC_PICK_WA2_RQST;
 			}
 		} else if (ufNr == 4) {
@@ -321,14 +323,14 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 		// check pick is prepared
 		if (ufNr == 3) {
-			if (pickSettings.getWorkArea().getActiveClamping(true).getFixtureType() == EFixtureType.FIXTURE_2) {
+			if (pickSettings.getWorkArea().getWorkAreaManager().getActiveClamping(true, pickSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_2) {
 				boolean pickReady =  waitForStatus(CNCMachineConstants.R_PICK_WA2_READY, PREPARE_PICK_TIMEOUT);
 				if (!pickReady) {
 					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
 					waitForStatus(CNCMachineConstants.R_PICK_WA2_READY);
 					setCncMachineTimeout(null);
 				}
-			} else if (pickSettings.getWorkArea().getActiveClamping(true).getFixtureType() == EFixtureType.FIXTURE_1_2) {
+			} else if (pickSettings.getWorkArea().getWorkAreaManager().getActiveClamping(true, pickSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_1_2) {
 				boolean pickReady =  waitForStatus((CNCMachineConstants.R_PICK_WA1_READY | CNCMachineConstants.R_PICK_WA2_READY), PREPARE_PICK_TIMEOUT);
 				if (!pickReady) {
 					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PICK_TIMEOUT));
@@ -357,24 +359,24 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 
 	@Override
-	public void prepareForPut(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {		
+	public void prepareForPut(final DevicePutSettings putSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {		
 		// check a valid workarea is selected 
 		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
-		int ufNr = putSettings.getWorkArea().getUserFrame().getNumber();
+		int ufNr = putSettings.getWorkArea().getWorkAreaManager().getUserFrame().getNumber();
 		// if way of operation is m codes, await loading m code!
 		if ((getWayOfOperating() == EWayOfOperating.M_CODES) || (getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD)) {
 			int mCodeLoad = getMCodeIndex(putSettings.getWorkArea(), true);
-			waitForMCodes(mCodeLoad);
+			waitForMCodes(processId, mCodeLoad);
 		}
 			
 		int command = 0;
 		if (ufNr == 3) {
 			command = command | CNCMachineConstants.IPC_PUT_WA1_REQUEST;
-			if (putSettings.getWorkArea().getActiveClamping(false).getFixtureType() == EFixtureType.FIXTURE_2) {
+			if (putSettings.getWorkArea().getWorkAreaManager().getActiveClamping(false, putSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_2) {
 				command = 0 | CNCMachineConstants.IPC_PUT_WA2_REQUEST;
-			} else if (putSettings.getWorkArea().getActiveClamping(false).getFixtureType() == EFixtureType.FIXTURE_1_2) {
+			} else if (putSettings.getWorkArea().getWorkAreaManager().getActiveClamping(false, putSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_1_2) {
 				command = command | CNCMachineConstants.IPC_PUT_WA2_REQUEST;
 			}
 		} else if (ufNr == 4) {
@@ -387,14 +389,14 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				
 		// check put is prepared
 		if (ufNr == 3) {
-			if (putSettings.getWorkArea().getActiveClamping(false).getFixtureType() == EFixtureType.FIXTURE_2) {
+			if (putSettings.getWorkArea().getWorkAreaManager().getActiveClamping(false,putSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_2) {
 				boolean putReady =  waitForStatus(CNCMachineConstants.R_PUT_WA2_READY, PREPARE_PUT_TIMEOUT);
 				if (!putReady) {
 					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PUT_TIMEOUT));
 					waitForStatus(CNCMachineConstants.R_PUT_WA2_READY);
 					setCncMachineTimeout(null);
 				} 
-			} else if (putSettings.getWorkArea().getActiveClamping(false).getFixtureType() == EFixtureType.FIXTURE_1_2) {
+			} else if (putSettings.getWorkArea().getWorkAreaManager().getActiveClamping(false, putSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_1_2) {
 				boolean putReady =  waitForStatus((CNCMachineConstants.R_PUT_WA1_READY | CNCMachineConstants.R_PUT_WA2_READY), PREPARE_PUT_TIMEOUT);
 				if (!putReady) {
 					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.PREPARE_PUT_TIMEOUT));
@@ -427,14 +429,14 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (!getWorkAreaNames().contains(pickSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + pickSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
-		int ufNr = pickSettings.getWorkArea().getUserFrame().getNumber();
+		int ufNr = pickSettings.getWorkArea().getWorkAreaManager().getUserFrame().getNumber();
 		
 		int command = 0;
 		if (ufNr == 3) {
 			command = command | CNCMachineConstants.IPC_UNCLAMP_WA1_RQST;
-			if (pickSettings.getWorkArea().getActiveClamping(true).getFixtureType() == EFixtureType.FIXTURE_2) {
+			if (pickSettings.getWorkArea().getWorkAreaManager().getActiveClamping(true, pickSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_2) {
 				command = 0 | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
-			} else if (pickSettings.getWorkArea().getActiveClamping(true).getFixtureType() == EFixtureType.FIXTURE_1_2) {
+			} else if (pickSettings.getWorkArea().getWorkAreaManager().getActiveClamping(true, pickSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_1_2) {
 				command = command | CNCMachineConstants.IPC_UNCLAMP_WA2_RQST;
 			}
 		} else if (ufNr == 4) {
@@ -447,14 +449,14 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 		
 		if (ufNr == 3) {
-			if (pickSettings.getWorkArea().getActiveClamping(true).getFixtureType() == EFixtureType.FIXTURE_2) {
+			if (pickSettings.getWorkArea().getWorkAreaManager().getActiveClamping(true, pickSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_2) {
 				boolean clampReady =  waitForStatus(CNCMachineConstants.R_UNCLAMP_WA2_READY, UNCLAMP_TIMEOUT);
 				if (!clampReady) {
 					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
 					waitForStatus(CNCMachineConstants.R_UNCLAMP_WA2_READY);
 					setCncMachineTimeout(null);
 				}
-			} else if (pickSettings.getWorkArea().getActiveClamping(true).getFixtureType() == EFixtureType.FIXTURE_1_2) {
+			} else if (pickSettings.getWorkArea().getWorkAreaManager().getActiveClamping(true,pickSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_1_2) {
 				boolean clampReady =  waitForStatus((CNCMachineConstants.R_UNCLAMP_WA1_READY | CNCMachineConstants.R_UNCLAMP_WA2_READY), UNCLAMP_TIMEOUT);
 				if (!clampReady) {
 					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
@@ -488,34 +490,34 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
-		int ufNr = putSettings.getWorkArea().getUserFrame().getNumber();
+		int ufNr = putSettings.getWorkArea().getWorkAreaManager().getUserFrame().getNumber();
 		
 		int command = 0;
 		if (ufNr == 3) {
 			command = command | CNCMachineConstants.IPC_CLAMP_WA1_REQUEST;
-			if (putSettings.getWorkArea().getActiveClamping(false).getFixtureType() == EFixtureType.FIXTURE_2) {
+			if (putSettings.getWorkArea().getWorkAreaManager().getActiveClamping(false, putSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_2) {
 				command = 0 | CNCMachineConstants.IPC_CLAMP_WA2_REQUEST;
-			} else if (putSettings.getWorkArea().getActiveClamping(false).getFixtureType() == EFixtureType.FIXTURE_1_2) {
+			} else if (putSettings.getWorkArea().getWorkAreaManager().getActiveClamping(false, putSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_1_2) {
 				command = command | CNCMachineConstants.IPC_CLAMP_WA2_REQUEST;
 			}
 		} else if (ufNr == 4) {
 			command = command | CNCMachineConstants.IPC_CLAMP_WA2_REQUEST;
 		} else {
-			throw new IllegalArgumentException("Invalid user frame number: " + putSettings.getWorkArea().getUserFrame().getNumber());
+			throw new IllegalArgumentException("Invalid user frame number: " + putSettings.getWorkArea().getWorkAreaManager().getUserFrame().getNumber());
 		}
 		
 		int[] registers = {command};
 		cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_REQUEST, registers);
 		
 		if (ufNr == 3) {
-			if (putSettings.getWorkArea().getActiveClamping(false).getFixtureType() == EFixtureType.FIXTURE_2) {
+			if (putSettings.getWorkArea().getWorkAreaManager().getActiveClamping(false,putSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_2) {
 				boolean clampReady =  waitForStatus(CNCMachineConstants.R_CLAMP_WA2_READY, CLAMP_TIMEOUT);
 				if (!clampReady) {
 					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CLAMP_TIMEOUT));
 					waitForStatus(CNCMachineConstants.R_CLAMP_WA2_READY);
 					setCncMachineTimeout(null);
 				} 
-			} else if (putSettings.getWorkArea().getActiveClamping(false).getFixtureType() == EFixtureType.FIXTURE_1_2) {
+			} else if (putSettings.getWorkArea().getWorkAreaManager().getActiveClamping(false, putSettings.getWorkArea().getSequenceNb()).getFixtureType() == EFixtureType.FIXTURE_1_2) {
 				boolean clampReady =  waitForStatus((CNCMachineConstants.R_CLAMP_WA1_READY | CNCMachineConstants.R_CLAMP_WA2_READY), CLAMP_TIMEOUT);
 				if (!clampReady) {
 					setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.CLAMP_TIMEOUT));
@@ -538,7 +540,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				setCncMachineTimeout(null);
 			} 
 		} else {
-			throw new IllegalArgumentException("Invalid user frame number: " + putSettings.getWorkArea().getUserFrame().getNumber());
+			throw new IllegalArgumentException("Invalid user frame number: " + putSettings.getWorkArea().getWorkAreaManager().getUserFrame().getNumber());
 		}
 	}
 
@@ -579,35 +581,45 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				nCReset();
 			} else {
 				int mCodeUnLoad = getMCodeIndex(pickSettings.getWorkArea(), false);
-				finishMCode(mCodeUnLoad);
+				finishMCode(processId, mCodeUnLoad);
 				Thread.sleep(500);
 			}
 		} else if (getWayOfOperating() == EWayOfOperating.M_CODES_DUAL_LOAD) {
 			if (isLastWorkPiece(pickSettings)) {
+				logger.debug("This was the last workpiece to be picked.");
 				// all clamps should be empty, because this was the last piece; open them.
-				unclampAfterFinish(pickSettings.getWorkArea());
+				unclampAfterFinish(pickSettings.getWorkArea().getWorkAreaManager());
+				// thread.sleep(500) after every request to the CNC machine - otherwise we could get the error of multiple IPC requests (CNCMachine.Alarm 23)
+				Thread.sleep(500);
 				// last work piece: send reset instead of finishing m code
 				nCReset();
 				Thread.sleep(500);
 				// also finish m code if still active after nc reset
 				for (int activeMCode : getMCodeAdapter().getActiveMCodes()) {
-					finishMCode(activeMCode);
+					finishMCode(processId, activeMCode);
 					Thread.sleep(500);
 				}
 			} else {
 				int mCodeUnLoad = getMCodeIndex(pickSettings.getWorkArea(), false);
-				finishMCode(mCodeUnLoad);
+				finishMCode(processId, mCodeUnLoad);
 				Thread.sleep(500);
-				int nbActiveClampings = pickSettings.getWorkArea().getMaxNbClampingOtherProcessThread(processId);
+				int nbActiveClampings = getNbClampingsInUse(processId);
 				// We are going to put the piece that we have just picked back to the stacker ( +1), so in fact we have finished getFinishedAmount + 1.
 				// There are maximum nbActiveClampings workPieces still in the flow. 
 				if ((pickSettings.getStep().getProcessFlow().getFinishedAmount() + 1 + nbActiveClampings == pickSettings.getStep().getProcessFlow().getTotalAmount()) &&
 						(pickSettings.getStep().getProcessFlow().getType() != ProcessFlow.Type.CONTINUOUS)) {
 					if (!pickSettings.getStep().getRobotSettings().getWorkPiece().getType().equals(WorkPiece.Type.HALF_FINISHED)) {
+						// The process executor which holds the last workpiece is currently waiting for the sequence unload/load from this
+						// executor (last but one - depending on number of fixtures). The pickFinished has already finished the unloading code
+						// so, here we need to get the loading code and confirm it. This is because there is no load m-code supposed to come
+						// anymore. Off course, this is only true in case of a non HALF_FINISHED piece, because otherwise loading can still
+						// come (for reversing the piece).
 						int mCodeLoad = getMCodeIndex(pickSettings.getWorkArea(), true);
 						// last but one work piece: no upcoming put, but we wait for the upcoming LOAD M-code and confirm it
-						waitForMCodes(mCodeLoad);
-						finishMCode(mCodeLoad);
+						mCodeLoad = getNxtMCode(mCodeLoad, pickSettings.getStep().getProcessFlow().getNbCNCInFlow());
+						mCodeLoad = getNxtMCode(mCodeLoad, pickSettings.getStep().getProcessFlow().getNbCNCInFlow());
+						waitForMCodes(processId, mCodeLoad);
+						finishMCode(processId, mCodeLoad);
 						Thread.sleep(500);
 					}
 				}
@@ -623,8 +635,8 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	@Override public void prepareForStartCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException { }
 
 	@Override
-	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
-		Coordinates c = new Coordinates(workArea.getActiveClamping(true).getRelativePosition());
+	public Coordinates getLocationOrientation(final SimpleWorkArea workArea, final ClampingManner clampType) {
+		Coordinates c = new Coordinates(workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			if (clampType.isChanged()) {
 				c.setR(c.getR() + getClampingWidthR());
@@ -642,15 +654,15 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
-		Coordinates c = new Coordinates(workArea.getActiveClamping(true).getRelativePosition());
+	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+		Coordinates c = new Coordinates(workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			if (clampType.isChanged()) {
 				c.setR(c.getR() + getClampingWidthR());
 			} else {
 				c.setR(c.getR());
 			}
-			switch (workArea.getActiveClamping(true).getType()) {
+			switch (workArea.getWorkAreaManager().getActiveClamping(true,workArea.getSequenceNb()).getType()) {
 				case CENTRUM:
 					// no action needed
 					break;
@@ -669,7 +681,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				case NONE:
 					throw new IllegalArgumentException("Machine clamping type can't be NONE.");
 				default:
-					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping(true).getType());
+					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getType());
 			}
 		} else {
 			if (clampType.isChanged()) {
@@ -677,7 +689,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			} else {
 				c.setR(c.getR() + getClampingWidthR());
 			}
-			switch (workArea.getActiveClamping(true).getType()) {
+			switch (workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getType()) {
 			case CENTRUM:
 				// no action needed
 				break;
@@ -696,7 +708,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			case NONE:
 				throw new IllegalArgumentException("Machine clamping type can't be NONE.");
 			default:
-				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping(true).getType());
+				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getType());
 			}
 		}
 		return c;
@@ -704,15 +716,15 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	//TODO - duplicate code
 	@Override
-	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
-		Coordinates c = new Coordinates(workArea.getActiveClamping(false).getRelativePosition());
+	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+		Coordinates c = new Coordinates(workArea.getWorkAreaManager().getActiveClamping(false, workArea.getSequenceNb()).getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			if (clampType.isChanged()) {
 				c.setR(c.getR() + getClampingWidthR());
 			} else {
 				c.setR(c.getR());
 			}
-			switch (workArea.getActiveClamping(false).getType()) {
+			switch (workArea.getWorkAreaManager().getActiveClamping(false, workArea.getSequenceNb()).getType()) {
 				case CENTRUM:
 					// no action needed
 					break;
@@ -731,7 +743,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 				case NONE:
 					throw new IllegalArgumentException("Machine clamping type can't be NONE.");
 				default:
-					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping(false).getType());
+					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getWorkAreaManager().getActiveClamping(false, workArea.getSequenceNb()).getType());
 			}
 		} else {
 			if (clampType.isChanged()) {
@@ -739,7 +751,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			} else {
 				c.setR(c.getR() + getClampingWidthR());
 			}
-			switch (workArea.getActiveClamping(false).getType()) {
+			switch (workArea.getWorkAreaManager().getActiveClamping(false, workArea.getSequenceNb()).getType()) {
 			case CENTRUM:
 				// no action needed
 				break;
@@ -758,7 +770,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			case NONE:
 				throw new IllegalArgumentException("Machine clamping type can't be NONE.");
 			default:
-				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getActiveClamping(false).getType());
+				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getWorkAreaManager().getActiveClamping(false,workArea.getSequenceNb()).getType());
 			}
 		}
 		return c;
@@ -784,7 +796,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		return false;
 	}
 	
-	private void unclampAfterFinish(final WorkArea workarea) throws SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException, InterruptedException, DeviceActionException {
+	private void unclampAfterFinish(final WorkAreaManager workarea) throws SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException, InterruptedException, DeviceActionException {
 		int command2 = 0;
 		boolean multi = false;
 		Set<Clamping> clampingsPresent = workarea.getClampings();
@@ -835,16 +847,16 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	 * @throws InterruptedException
 	 * @throws DeviceActionException
 	 */
-	private void finishMCode(final int mCodeIndex) 
+	private void finishMCode(final int processId, final int mCodeIndex) 
 			throws SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException, InterruptedException, DeviceActionException {
 		Set<Integer> robotServiceOutputs = getMCodeAdapter().getGenericMCode(mCodeIndex).getRobotServiceOutputsUsed();
 		int command = 0;
 		if (robotServiceOutputs.contains(0)) {
-			logger.info("FINISH M CODE " + mCodeIndex);
+			logger.info("PRC[" + processId + "] FINISH M CODE " + mCodeIndex);
 			command = command | CNCMachineConstants.IPC_DOORS_SERV_REQ_FINISH;
 			int[] registers = {command};
 			cncMachineCommunication.writeRegisters(CNCMachineConstants.IPC_READ_REQUEST_2, registers);
-			waitForNoMCode(mCodeIndex);
+			waitForNoMCode(processId, mCodeIndex);
 		}
 	}
 	
@@ -865,7 +877,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		if (pickSettings.getStep().getProcessFlow().getType().equals(ProcessFlow.Type.CONTINUOUS)) {
 			return false;
 		}
-		if (pickSettings.getStep().getProcessFlow().getNbCNCInFlow() == pickSettings.getWorkArea().getPrioIfCloned()) {
+		if (pickSettings.getStep().getProcessFlow().getNbCNCInFlow() == pickSettings.getWorkArea().getSequenceNb()) {
 			//final piece of the flow (amount)
 			if (pickSettings.getStep().getProcessFlow().getFinishedAmount() == pickSettings.getStep().getProcessFlow().getTotalAmount() - 1) {
 				return true;
@@ -874,6 +886,18 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			}
 		}
 		return false;
+	}
+	
+	private int getNbClampingsInUse(final int processId) {
+		int result = 0;
+		for (Zone zone: getZones()) {
+			for (WorkAreaManager workAreaManager: zone.getWorkAreaManagers()) {
+				if (workAreaManager.isInUse()) {
+					result += workAreaManager.getMaxNbClampingOtherProcessThread(processId);
+				}
+			}
+		}
+		return result;
 	}
 }
 

@@ -269,7 +269,7 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 		getPresenter().updateUserFrames();
 		if (prageDevice != null) {
 			fulltxtName.setText(prageDevice.getName());
-			cbbUserFrame.valueProperty().set(prageDevice.getWorkAreas().get(0).getUserFrame().getName());
+			cbbUserFrame.valueProperty().set(prageDevice.getWorkAreaManagers().get(0).getUserFrame().getName());
 			if (prageDevice.getWorkAreas().get(0).getDefaultClamping() != null) {
 				Coordinates relClampingPosition = prageDevice.getWorkAreas().get(0).getDefaultClamping().getRelativePosition();
 				numtxtX.setText("" + relClampingPosition.getX());

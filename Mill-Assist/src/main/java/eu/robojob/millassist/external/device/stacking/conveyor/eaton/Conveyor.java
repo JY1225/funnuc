@@ -21,7 +21,8 @@ import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
+import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
@@ -38,8 +39,8 @@ import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 public class Conveyor extends AbstractConveyor {
 
 	private ConveyorLayout layout;
-	private WorkArea workAreaA;
-	private WorkArea workAreaB;
+	private WorkAreaManager workAreaA;
+	private WorkAreaManager workAreaB;
 	private float nomSpeedA;
 	private float nomSpeedASlow;
 	private float nomSpeedB;
@@ -50,7 +51,7 @@ public class Conveyor extends AbstractConveyor {
 	
 	private static Logger logger = LogManager.getLogger(Conveyor.class.getName());
 
-	public Conveyor(final String name, final Set<Zone> zones, final WorkArea workAreaA, final WorkArea workAreaB,
+	public Conveyor(final String name, final Set<Zone> zones, final WorkAreaManager workAreaA, final WorkAreaManager workAreaB,
 			final ConveyorLayout layout, final SocketConnection socketConnection, final float nomSpeedA, final float nomSpeedASlow,
 			final float nomSpeedB, final float nomSpeedBSlow) {
 		super(name, zones, socketConnection);
@@ -69,7 +70,7 @@ public class Conveyor extends AbstractConveyor {
 		ThreadManager.submit(monitoringThread);
 	}
 
-	public Conveyor(final String name, final WorkArea workAreaA, final WorkArea workAreaB,
+	public Conveyor(final String name, final WorkAreaManager workAreaA, final WorkAreaManager workAreaB,
 			final ConveyorLayout layout, final SocketConnection socketConnection, final float nomSpeedA, final float nomSpeedASlow, 
 			final float nomSpeedB, final float nomSpeedBSlow) {
 		this(name, new HashSet<Zone>(), workAreaA, workAreaB, layout, socketConnection, nomSpeedA, nomSpeedASlow, nomSpeedB, nomSpeedBSlow);
@@ -137,11 +138,11 @@ public class Conveyor extends AbstractConveyor {
 		return (getStatus() & ConveyorConstants.CONV_B_MODE) <= 0;
 	}
 	
-	public WorkArea getWorkAreaA() {
+	public WorkAreaManager getWorkAreaA() {
 		return workAreaA;
 	}
 
-	public WorkArea getWorkAreaB() {
+	public WorkAreaManager getWorkAreaB() {
 		return workAreaB;
 	}
 	
@@ -186,7 +187,7 @@ public class Conveyor extends AbstractConveyor {
 	}
 
 	@Override
-	public Coordinates getLocation(final WorkArea workArea, final Type type, final ClampingManner clampType) throws DeviceActionException, InterruptedException {
+	public Coordinates getLocation(final SimpleWorkArea workArea, final Type type, final ClampingManner clampType) throws DeviceActionException, InterruptedException {
 		if (type == Type.FINISHED) {
 			return getPutLocation(workArea, getFinishedWorkPiece().getDimensions(), clampType);
 		} else if (type == Type.RAW) {
@@ -214,26 +215,26 @@ public class Conveyor extends AbstractConveyor {
 	@Override
 	public boolean canPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException {
 		if (!isTrackBModeLoad()) {
-			pickSettings.setWorkArea(workAreaA);
-			pickSettings.getStep().getRobotSettings().setWorkArea(workAreaA);
+			pickSettings.setWorkArea(workAreaA.getWorkAreaWithSequence(1));
+			pickSettings.getStep().getRobotSettings().setWorkArea(workAreaA.getWorkAreaWithSequence(1));
 		}
 		if (lastTrackPickedA) {
 			// first check track B
 			if (isTrackBModeLoad() && 
 					isModeAuto() && ((getStatus() & ConveyorConstants.CONV_B_WP_IN_POSITION) > 0) && isModeAuto()) {
-				pickSettings.setWorkArea(workAreaB);
-				pickSettings.getStep().getRobotSettings().setWorkArea(workAreaB);
+				pickSettings.setWorkArea(workAreaB.getWorkAreaWithSequence(1));
+				pickSettings.getStep().getRobotSettings().setWorkArea(workAreaB.getWorkAreaWithSequence(1));
 				return true;
 			}
 		}
 		if (isModeAuto() && ((getStatus() & ConveyorConstants.CONV_A_WP_IN_POSITION) > 0)  && isModeAuto()) {
-			pickSettings.setWorkArea(workAreaA);
-			pickSettings.getStep().getRobotSettings().setWorkArea(workAreaA);
+			pickSettings.setWorkArea(workAreaA.getWorkAreaWithSequence(1));
+			pickSettings.getStep().getRobotSettings().setWorkArea(workAreaA.getWorkAreaWithSequence(1));
 			return true;
 		} else if (isTrackBModeLoad() && 
 				isModeAuto() && ((getStatus() & ConveyorConstants.CONV_B_WP_IN_POSITION) > 0) && isModeAuto()) {
-			pickSettings.setWorkArea(workAreaB);
-			pickSettings.getStep().getRobotSettings().setWorkArea(workAreaB);
+			pickSettings.setWorkArea(workAreaB.getWorkAreaWithSequence(1));
+			pickSettings.getStep().getRobotSettings().setWorkArea(workAreaB.getWorkAreaWithSequence(1));
 			return true;
 		}
 		return false;
@@ -262,7 +263,7 @@ public class Conveyor extends AbstractConveyor {
 	}
 
 	@Override
-	public void prepareForPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void prepareForPick(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// wait until work piece in position, obtain interlock
 		if (pickSettings.getWorkArea().equals(workAreaA)) {
 			waitForStatus((ConveyorConstants.CONV_A_WP_IN_POSITION | ConveyorConstants.MODE));
@@ -293,7 +294,7 @@ public class Conveyor extends AbstractConveyor {
 	}
 
 	@Override
-	public void prepareForPut(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void prepareForPut(final DevicePutSettings putSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		if (putSettings.getWorkArea().equals(workAreaB)) {
 			if (!isTrackBModeLoad()) {
 				logger.debug("Checking finished conveyor is not moving, if so, wait until stopped.");
@@ -429,7 +430,7 @@ public class Conveyor extends AbstractConveyor {
 
 	@Override
 	public void loadDeviceSettings(final DeviceSettings deviceSettings) {
-		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
+		for (Entry<SimpleWorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
 			entry.getKey().setDefaultClamping(entry.getValue());
 		}
 		if (deviceSettings instanceof ConveyorSettings) {
@@ -462,7 +463,7 @@ public class Conveyor extends AbstractConveyor {
 	}
 
 	@Override
-	public Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		if (workArea.equals(workAreaA)) {
 			StackingPosition stPos = layout.getStackingPositionTrackA();
 			return stPos.getPosition();
@@ -479,7 +480,7 @@ public class Conveyor extends AbstractConveyor {
 	}
 
 	@Override
-	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		if (workArea.equals(workAreaB)) {
 			if (!isTrackBModeLoad()) {
 				StackingPosition stPos = layout.getStackingPositionTrackB();
@@ -501,7 +502,7 @@ public class Conveyor extends AbstractConveyor {
 	}
 
 	@Override
-	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
+	public Coordinates getLocationOrientation(final SimpleWorkArea workArea, final ClampingManner clampType) {
 		if (workArea.equals(workAreaA)) {
 			return layout.getStackingPositionTrackA().getPosition();
 		} else if (workArea.equals(workAreaB)) {
@@ -528,13 +529,13 @@ public class Conveyor extends AbstractConveyor {
 	}
 	
 	@Override
-	public DevicePickSettings getDefaultPickSettings() {
-		return new DevicePickSettings(this, workAreaA);
+	public DevicePickSettings getDefaultPickSettings(final int sequenceNb) {
+		return new DevicePickSettings(this, workAreaA.getWorkAreaWithSequence(sequenceNb));
 	}
 	
 	@Override
-	public DevicePutSettings getDefaultPutSettings() {
-		return new DevicePutSettings(this, workAreaB);
+	public DevicePutSettings getDefaultPutSettings(final int sequenceNb) {
+		return new DevicePutSettings(this, workAreaB.getWorkAreaWithSequence(sequenceNb));
 	}
 	
 }

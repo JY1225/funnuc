@@ -15,7 +15,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.WorkAreaBoundary;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.robot.AirblowSquare;
@@ -154,14 +154,12 @@ public class CNCMachineOptionView extends GridPane {
 	
 	private void fillBoundBox() {
 		cbbWaBound.getItems().clear();
-		for (WorkArea wa: cncMachineConfigureView.getCNCMachine().getWorkAreas()) {
-			if (!wa.isClone()) {
-				if (wa.getBoundaries() != null) {
-					cbbWaBound.getItems().add(wa.getBoundaries());
-				} else {
-					WorkAreaBoundary bound = new WorkAreaBoundary(wa, new AirblowSquare());
-					cbbWaBound.getItems().add(bound);
-				}
+		for (WorkAreaManager wa: cncMachineConfigureView.getCNCMachine().getWorkAreaManagers()) {
+			if (wa.getBoundaries() != null) {
+				cbbWaBound.getItems().add(wa.getBoundaries());
+			} else {
+				WorkAreaBoundary bound = new WorkAreaBoundary(wa, new AirblowSquare());
+				cbbWaBound.getItems().add(bound);
 			}
 		}
 		cbbWaBound.getSelectionModel().selectFirst();

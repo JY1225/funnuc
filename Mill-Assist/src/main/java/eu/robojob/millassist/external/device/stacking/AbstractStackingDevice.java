@@ -6,7 +6,7 @@ import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.EDeviceGroup;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -27,7 +27,7 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 		super(name);
 	}
 	
-	public abstract Coordinates getLocation(WorkArea workArea, Type type, ClampingManner clampType) throws DeviceActionException, InterruptedException;
+	public abstract Coordinates getLocation(SimpleWorkArea workArea, Type type, ClampingManner clampType) throws DeviceActionException, InterruptedException;
 	
 	@Override
 	public EDeviceGroup getType() {
@@ -53,7 +53,7 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 	public abstract void clearDeviceSettings();
 	
 	@Override
-	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+	public float getZSafePlane(final WorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
 		float wpHeight = dimensions.getHeight(); 
 		if (wpHeight > workArea.getDefaultClamping().getHeight()) {

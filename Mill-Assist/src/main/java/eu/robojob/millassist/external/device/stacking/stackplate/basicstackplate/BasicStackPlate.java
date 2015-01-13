@@ -48,8 +48,8 @@ public class BasicStackPlate extends AbstractStackPlate {
 		this(name, new HashSet<Zone>(), layout);
 	}
 	
-	@Override public void prepareForPick(final DevicePickSettings pickSettings) { }
-	@Override public void prepareForPut(final DevicePutSettings putSettings) { }
+	@Override public void prepareForPick(final DevicePickSettings pickSettings, final int processId) { }
+	@Override public void prepareForPut(final DevicePutSettings putSettings, final int processId) { }
 	@Override public void prepareForIntervention(final DeviceInterventionSettings interventionSettings) { }
 	@Override public void interventionFinished(final DeviceInterventionSettings interventionSettings) { }
 	@Override public void releasePiece(final DevicePickSettings pickSettings) { }

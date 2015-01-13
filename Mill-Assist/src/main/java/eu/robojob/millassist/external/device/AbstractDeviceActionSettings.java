@@ -5,11 +5,11 @@ import eu.robojob.millassist.process.AbstractProcessStep;
 public abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep> {
 	
 	private AbstractDevice device;
-	private WorkArea workArea;
+	private SimpleWorkArea workArea;
 	private T step;
 	private int id;
 	
-	public AbstractDeviceActionSettings(final AbstractDevice device, final WorkArea workArea) {
+	public AbstractDeviceActionSettings(final AbstractDevice device, final SimpleWorkArea workArea) {
 		setDevice(device);
 		setWorkArea(workArea);
 	}
@@ -38,11 +38,11 @@ public abstract class AbstractDeviceActionSettings<T extends AbstractProcessStep
 		this.device = device;
 	}
 
-	public WorkArea getWorkArea() {
+	public SimpleWorkArea getWorkArea() {
 		return workArea;
 	}
 	
-	public void setWorkArea(final WorkArea workArea) {
+	public void setWorkArea(final SimpleWorkArea workArea) {
 		this.workArea = workArea;
 	}
 }

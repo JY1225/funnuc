@@ -311,7 +311,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 			ntxtSmoothY.setText("" + pickStep.getRobotSettings().getSmoothPoint().getY());
 			ntxtSmoothZ.setText("" + pickStep.getRobotSettings().getSmoothPoint().getZ());
 		}
-		if (deviceSettings.getClamping(pickStep.getDeviceSettings().getWorkArea()) == null) {
+		if (deviceSettings.getDefaultClamping(pickStep.getDeviceSettings().getWorkArea()) == null) {
 			btnResetSmooth.setDisable(true);
 		} else {
 			btnResetSmooth.setDisable(false);

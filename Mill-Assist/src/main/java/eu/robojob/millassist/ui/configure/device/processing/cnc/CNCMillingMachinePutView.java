@@ -351,7 +351,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 			ntxtSmoothY.setText("" + putStep.getRobotSettings().getSmoothPoint().getY());
 			ntxtSmoothZ.setText("" + putStep.getRobotSettings().getSmoothPoint().getZ());
 		}
-		if (deviceSettings.getClamping(putStep.getDeviceSettings().getWorkArea()) == null) {
+		if (deviceSettings.getDefaultClamping(putStep.getDeviceSettings().getWorkArea()) == null) {
 			btnResetSmooth.setDisable(true);
 		} else {
 			btnResetSmooth.setDisable(false);

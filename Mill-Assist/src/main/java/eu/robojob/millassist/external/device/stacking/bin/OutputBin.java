@@ -14,7 +14,7 @@ import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -27,21 +27,21 @@ public class OutputBin extends AbstractStackingDevice {
 	public OutputBin(final String name) {
 		super(name);
 		// set first clamping as active one!
-		for (WorkArea wa : getWorkAreas()) {
-			wa.setDefaultClamping(wa.getClampings().iterator().next());
+		for (SimpleWorkArea wa : getWorkAreas()) {
+			wa.setDefaultClamping(wa.getWorkAreaManager().getClampings().iterator().next());
 		}
 	}
 
 	public OutputBin(final String name, final Set<Zone> zones) {
 		super(name, zones);
 		// set first clamping as active one!
-		for (WorkArea wa : getWorkAreas()) {
-			wa.setDefaultClamping(wa.getClampings().iterator().next());
+		for (SimpleWorkArea wa : getWorkAreas()) {
+			wa.setDefaultClamping(wa.getWorkAreaManager().getClampings().iterator().next());
 		}
 	}
 
 	@Override
-	public Coordinates getLocation(final WorkArea workArea, final Type type, final ClampingManner clampType) throws DeviceActionException, InterruptedException {
+	public Coordinates getLocation(final SimpleWorkArea workArea, final Type type, final ClampingManner clampType) throws DeviceActionException, InterruptedException {
 		return workArea.getDefaultClamping().getRelativePosition();
 	}
 	
@@ -73,13 +73,13 @@ public class OutputBin extends AbstractStackingDevice {
 	}
 
 	@Override
-	public void prepareForPick(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {		
+	public void prepareForPick(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {		
 		// pick is not possible
 		throw new IllegalStateException("Pick is not possible");
 	}
 
 	@Override
-	public void prepareForPut(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void prepareForPut(final DevicePutSettings putSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// put is always possible
 	}
 
@@ -121,32 +121,32 @@ public class OutputBin extends AbstractStackingDevice {
 
 	@Override
 	public void loadDeviceSettings(final DeviceSettings deviceSettings) {		
-		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
+		for (Entry<SimpleWorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
 			entry.getKey().setDefaultClamping(entry.getValue());
 		}
 	}
 
 	@Override
 	public DeviceSettings getDeviceSettings() {
-		Map<WorkArea, Clamping> clampings = new HashMap<WorkArea, Clamping>();
-		for (WorkArea wa : getWorkAreas()) {
+		Map<SimpleWorkArea, Clamping> clampings = new HashMap<SimpleWorkArea, Clamping>();
+		for (SimpleWorkArea wa : getWorkAreas()) {
 			clampings.put(wa, wa.getDefaultClamping());
 		}
 		return new DeviceSettings(clampings);
 	}
 
 	@Override
-	public Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		throw new IllegalStateException("Pick from this device is not possible.");
 	}
 
 	@Override
-	public Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		return workArea.getDefaultClamping().getRelativePosition();
 	}
 
 	@Override
-	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
+	public Coordinates getLocationOrientation(final SimpleWorkArea workArea, final ClampingManner clampType) {
 		return workArea.getDefaultClamping().getRelativePosition();
 	}
 

@@ -99,9 +99,9 @@ public class ConveyorLayout {
 		Coordinates coordinates = new Coordinates();
 		coordinates.setX(parent.getRawWorkPiece().getDimensions().getLength()/2 + xPosSensor1);
 		Coordinates coordinatesA = new Coordinates(coordinates);
-		coordinatesA.offset(parent.getWorkAreaA().getDefaultClamping().getRelativePosition());
+		coordinatesA.offset(parent.getWorkAreaA().getWorkAreaWithSequence(1).getDefaultClamping().getRelativePosition());
 		Coordinates coordinatesB = new Coordinates(coordinates);
-		coordinatesB.offset(parent.getWorkAreaB().getDefaultClamping().getRelativePosition());
+		coordinatesB.offset(parent.getWorkAreaB().getWorkAreaWithSequence(1).getDefaultClamping().getRelativePosition());
 		stackingPositionA = new StackingPosition(coordinatesA,parent.getRawWorkPiece());
 		if (parent.isTrackBModeLoad()) {
 			stackingPositionB = new StackingPosition(coordinatesB, parent.getRawWorkPiece());
@@ -114,7 +114,7 @@ public class ConveyorLayout {
 			Coordinates coordinates = new Coordinates();
 			coordinates.setX(parent.getFinishedWorkPiece().getDimensions().getLength()/2 + xPosSensor1);
 			Coordinates coordinatesB = new Coordinates(coordinates);
-			coordinatesB.offset(parent.getWorkAreaB().getDefaultClamping().getRelativePosition());
+			coordinatesB.offset(parent.getWorkAreaB().getWorkAreaWithSequence(1).getDefaultClamping().getRelativePosition());
 			stackingPositionB = new StackingPosition(coordinatesB, parent.getFinishedWorkPiece());
 		}
 	}

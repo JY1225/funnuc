@@ -53,7 +53,7 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 				AbstractProcessStep step = processFlow.getStep(processFlow.getCurrentIndex(PROCESS_0_ID) - 1);
 				if (step instanceof PutStep) {
 					if (((PutStep) step).getDevice() instanceof AbstractCNCMachine) {
-						int nbActiveClamping = ((PutStep) step).getDeviceSettings().getWorkArea().getNbActiveClampingsEachSide();
+						int nbActiveClamping = ((PutStep) step).getDeviceSettings().getWorkArea().getWorkAreaManager().getNbActiveClampingsEachSide();
 						processFlow.setCurrentIndex(PROCESS_0_ID, processFlow.getCurrentIndex(PROCESS_0_ID) - 1);
 						//Show correct status after teaching
 						processFlow.processProcessFlowEvent(new StatusChangedEvent(processFlow, (PutStep) step, StatusChangedEvent.ENDED, PROCESS_0_ID));
@@ -287,7 +287,8 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 					return;
 				}
 				// if other process is waiting for put in machine, tim is possible for this executor
-				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PUT_IN_MACHINE)) {
+				//if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PUT_IN_MACHINE)) {
+				if (processExecutor.getExecutionStatus().equals(getFirstPutState())) {
 					canTIM = true;
 				}
 			}
@@ -344,7 +345,7 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 			if (isFinished) {
 				for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 					if (processExecutor.getNbWPInMachine() > 0) {
-						processExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);
+//						processExecutor.setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);
 						processExecutor.startProcessing();
 					}
 				}

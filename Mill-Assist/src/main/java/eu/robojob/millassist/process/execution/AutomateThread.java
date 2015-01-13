@@ -72,7 +72,7 @@ public class AutomateThread extends Thread implements ProcessExecutor {
 							if ((nextStep != null) && (nextStep instanceof AbstractTransportStep) && (step instanceof AbstractTransportStep)) {
 								AbstractTransportStep trStep = (AbstractTransportStep) step;
 								AbstractTransportStep trNextStep = (AbstractTransportStep) nextStep;
-								if (trStep.getRobotSettings().getWorkArea().getUserFrame().equals(trNextStep.getRobotSettings().getWorkArea().getUserFrame())) {
+								if (trStep.getRobotSettings().getWorkArea().getWorkAreaManager().getUserFrame().equals(trNextStep.getRobotSettings().getWorkArea().getWorkAreaManager().getUserFrame())) {
 									trStep.getRobotSettings().setFreeAfter(false);
 								} else {
 									trStep.getRobotSettings().setFreeAfter(true);

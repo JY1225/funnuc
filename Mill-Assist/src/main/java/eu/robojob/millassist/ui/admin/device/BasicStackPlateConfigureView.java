@@ -324,7 +324,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 			numTxtMaxOverflow.setText(basicStackPlate.getBasicLayout().getMaxOverflow() + "");
 			numTxtMinOverlap.setText(basicStackPlate.getBasicLayout().getMinOverlap() + "");
 			numTxtStudHeight.setText(basicStackPlate.getWorkAreas().get(0).getDefaultClamping().getDefaultHeight() + "");
-			cbbUserFrames.valueProperty().set(basicStackPlate.getWorkAreas().get(0).getUserFrame().getName());
+			cbbUserFrames.valueProperty().set(basicStackPlate.getWorkAreaManagers().get(0).getUserFrame().getName());
 			Coordinates smoothTo = basicStackPlate.getWorkAreas().get(0).getDefaultClamping().getSmoothToPoint();
 			Coordinates smoothFrom = basicStackPlate.getWorkAreas().get(0).getDefaultClamping().getSmoothFromPoint();
 			numtxtSmoothToX.setText(smoothTo.getX() + "");

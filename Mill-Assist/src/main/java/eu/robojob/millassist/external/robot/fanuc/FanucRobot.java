@@ -16,7 +16,7 @@ import eu.robojob.millassist.external.communication.socket.SocketDisconnectedExc
 import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
 import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
 import eu.robojob.millassist.external.device.Clamping;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.robot.AbstractRobot;
@@ -299,7 +299,8 @@ public class FanucRobot extends AbstractRobot {
 		ApproachType approachType = pickSettings.getApproachType();
 		writeServiceHandlingSet(pickSettings.isFreeAfter(), ppMode, pickSettings.getWorkPiece().getDimensions(), pickSettings.getWorkPiece().getWeight(), approachType);
 		Coordinates pickLocation = new Coordinates(fPickSettings.getLocation());
-		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getStep().getRelativeTeachedOffset(), smooth, fPickSettings.getWorkPiece().getDimensions(), fPickSettings.getWorkArea().getDefaultClamping(), approachType);
+		writeServicePointSet(fPickSettings.getWorkArea(), pickLocation, fPickSettings.getStep().getRelativeTeachedOffset(), smooth, fPickSettings.getWorkPiece().getDimensions(), 
+				fPickSettings.getWorkArea().getDefaultClamping(), approachType);
 		logger.info("About to write start service!");
 		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_START_SERVICE, RobotConstants.RESPONSE_START_SERVICE, WRITE_VALUES_TIMEOUT, "1");
 	}
@@ -647,12 +648,12 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_SERVICE_HANDLING, RobotConstants.RESPONSE_WRITE_SERVICE_HANDLING, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-	private void writeServicePointSet(final WorkArea workArea, final Coordinates location, final Coordinates relativeTeachedCoordinates, final Coordinates smoothPoint, final WorkPieceDimensions dimensions, 
+	private void writeServicePointSet(final SimpleWorkArea workArea, final Coordinates location, final Coordinates relativeTeachedCoordinates, final Coordinates smoothPoint, final WorkPieceDimensions dimensions, 
 			final Clamping clamping, final ApproachType approachType) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		List<String> values = new ArrayList<String>();
 		// user frame location ; x offset ; y offset ; z offset ; z correction; w offset, p offset, r offset ; z-safe plane offset ; safety add z ; smooth x ; smooth y ; smooth z ; tangent to/from ; xyz allowed ;
 		// clamp height ; bar break iterations ; bar break main axis ; bar break angle ; bar move length
-		int userFrameId = workArea.getUserFrame().getNumber();
+		int userFrameId = workArea.getWorkAreaManager().getUserFrame().getNumber();
 		//UF: stacker = 1; Machine = 3
 		if (!VALID_USERFRAMES.contains(userFrameId)) {
 			throw new IllegalArgumentException("Illegal Userframe id: " + userFrameId + " should be 1 or 3 or 6.");
@@ -667,23 +668,23 @@ public class FanucRobot extends AbstractRobot {
 		values.add(df.format(location.getP()));		// p offset
 		values.add(df.format(location.getR()));		// r offset			
 		
-		float zSafePlane = workArea.getZone().getDevice().getZSafePlane(dimensions, workArea, approachType);
+		float zSafePlane = workArea.getWorkAreaManager().getZone().getDevice().getZSafePlane(dimensions, workArea, approachType);
 		
 		values.add(df.format(zSafePlane));
 		
 		// Safety add Z, if bottom approach, make value negative, compare to smooth and use the smallest
 		// 	for other approaches: use UF value, compare to smooth and use the largest
 		if (approachType.equals(ApproachType.BOTTOM)) {
-			if (smoothPoint.getZ() < (-workArea.getUserFrame().getzSafeDistance())) {	// safety add z
+			if (smoothPoint.getZ() < (-workArea.getWorkAreaManager().getUserFrame().getzSafeDistance())) {	// safety add z
 				values.add(df.format(smoothPoint.getZ()));
 			} else {
-				values.add("" + (-workArea.getUserFrame().getzSafeDistance()));
+				values.add("" + (-workArea.getWorkAreaManager().getUserFrame().getzSafeDistance()));
 			}
 		} else {
-			if (smoothPoint.getZ() > workArea.getUserFrame().getzSafeDistance()) {	// safety add z
+			if (smoothPoint.getZ() > workArea.getWorkAreaManager().getUserFrame().getzSafeDistance()) {	// safety add z
 				values.add(df.format(smoothPoint.getZ()));
 			} else {
-				values.add("" + workArea.getUserFrame().getzSafeDistance());
+				values.add("" + workArea.getWorkAreaManager().getUserFrame().getzSafeDistance());
 			}
 		}
 		
@@ -692,7 +693,7 @@ public class FanucRobot extends AbstractRobot {
 		values.add(df.format(smoothPoint.getZ()));	// smooth z
 		values.add("1");							// tangent to/from
 		//TODO review if this strategy is always safe
-		if (workArea.getZone().getDevice() instanceof ReversalUnit) {
+		if (workArea.getWorkAreaManager().getZone().getDevice() instanceof ReversalUnit) {
 			values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XY);	// xy allowed
 		} else {
 			values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XYZ);	// xyz allowed

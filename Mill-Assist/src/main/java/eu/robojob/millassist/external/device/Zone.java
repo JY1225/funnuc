@@ -10,20 +10,20 @@ public class Zone {
 	private int id;
 	private int zoneNr;
 	private String name;
-	private Set<WorkArea> workAreas;
+	private Set<WorkAreaManager> workAreaManagers;
 	private AbstractDevice device;
 
-	public Zone(final String name, final Set<WorkArea> workAreas, final int zoneNr) {
+	public Zone(final String name, final Set<WorkAreaManager> workAreaManagers, final int zoneNr) {
 		this.name = name;
-		this.workAreas =  new HashSet<WorkArea>();
-		for (WorkArea workArea : workAreas) {
-			addWorkArea(workArea);
+		this.workAreaManagers =  new HashSet<WorkAreaManager>();
+		for (WorkAreaManager workAreaManager : workAreaManagers) {
+			addWorkArea(workAreaManager);
 		}
 		this.zoneNr = zoneNr;
 	}
 	
 	public Zone(final String name) {
-		this(name, new HashSet<WorkArea>(), 0);
+		this(name, new HashSet<WorkAreaManager>(), 0);
 	}
 	
 	public int getId() {
@@ -46,37 +46,37 @@ public class Zone {
 		this.name = name;
 	}
 
-	public Set<WorkArea> getWorkAreas() {
-		return workAreas;
+	public Set<WorkAreaManager> getWorkAreaManagers() {
+		return workAreaManagers;
 	}
 	
 	public List<String> getWorkAreaNames() {
 		List<String> workAreaNames = new ArrayList<String>();
-		for (WorkArea workArea : workAreas) {
-			workAreaNames.add(workArea.getName());
+		for (WorkAreaManager workAreaManager : workAreaManagers) {
+			workAreaNames.addAll(workAreaManager.getWorkAreaNames());
 		}
 		return workAreaNames;
 	}
 
-	public void setWorkAreas(final Set<WorkArea> workAreas) {
-		this.workAreas = workAreas;
+	public void setWorkAreas(final Set<WorkAreaManager> workAreas) {
+		this.workAreaManagers = workAreas;
 	}
 	
-	public void addWorkArea(final WorkArea workArea) {
+	public void addWorkArea(final WorkAreaManager workArea) {
 		if (getWorkAreaByName(workArea.getName()) != null) {
 			throw new IllegalArgumentException("A workArea with the same id already exists within this zone.");
 		} else {
-			this.workAreas.add(workArea);
+			this.workAreaManagers.add(workArea);
 			workArea.setZone(this);
 		}
 	}
 	
-	public void removeWorkArea(final WorkArea workArea) {
-		this.workAreas.remove(workArea);
+	public void removeWorkArea(final WorkAreaManager workArea) {
+		this.workAreaManagers.remove(workArea);
 	}
 	
-	public WorkArea getWorkAreaByName(final String name) {
-		for (WorkArea workArea : workAreas) {
+	public WorkAreaManager getWorkAreaByName(final String name) {
+		for (WorkAreaManager workArea : workAreaManagers) {
 			if (workArea.getName().equals(name)) {
 				return workArea;
 			}
@@ -99,48 +99,19 @@ public class Zone {
 	 */
 	public boolean clampingSelectionCorrect() {
 		int nbClampingsChosen = -1;
-		for (WorkArea workArea: workAreas) {
-			if (workArea.inUse()) {
-				if (nbClampingsChosen == -1) {
-					nbClampingsChosen = workArea.getNbActiveClampingsEachSide();
-				} else if (workArea.getNbActiveClampingsEachSide() != nbClampingsChosen) {
-					return false;
+		for (WorkAreaManager workAreaManager: workAreaManagers) {
+			for (SimpleWorkArea workArea: workAreaManager.getWorkAreas().values()) {
+				if (workArea.isInUse()) {
+					if (nbClampingsChosen == -1) {
+						nbClampingsChosen = workArea.getAllActiveClampings().size();
+					} else if (workArea.getAllActiveClampings().size() != nbClampingsChosen) {
+						return false;
+					}
 				}
 			}
 		}
 		return true;
 	}
 	
-	/**
-	 * Check whether the clamping that we want to use is not reserved by another workArea. This can be 
-	 * the case if we work with a reversalUnit. Because 2 CNC machines are created which are physically
-	 * the same machine, the clampings of the two machines needs to be considered as one.
-	 * 
-	 * @param currentWorkArea
-	 * @param clamping
-	 * @param processId
-	 * @return
-	 */
-	public boolean clampingInUse(Clamping clamping, int processId) {
-		for (WorkArea workArea: workAreas) {
-			for (Clamping tmpClamp: workArea.getAllActiveClampings()) {
-				if (tmpClamp.getId() == clamping.getId() && tmpClamp.isInUse(processId)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 	
-	public WorkArea getWorkAreaWithPrio(final int priority) throws IllegalArgumentException {
-		if (priority <= 0) {
-			throw new IllegalArgumentException("Priority has to be between 1 and the number of workareas");
-		}
-		for (WorkArea workArea: getWorkAreas()) {
-			if (workArea.getPrioIfCloned() == priority) {
-				return workArea;
-			}
-		}
-		throw new IllegalArgumentException("No workarea with " + priority + " found in the zone.");
-	}
 }

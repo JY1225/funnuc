@@ -10,7 +10,7 @@ import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
@@ -312,40 +312,43 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		int index = processFlowAdapter.getLastCNCMachineIndex();
 		
 		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
-		WorkArea workArea = null;
+		SimpleWorkArea workArea = null;
 		Clamping clamping = null;
+		//Always last one to add - so nb is correct
 		int nbCNCMachine = processFlowAdapter.getNbCNCMachinesInFlow() + 1;
-		if (cncMachine.getWorkAreas().size() >= 1) {
-			for (WorkArea workA: cncMachine.getWorkAreas()) {
-				if (!workA.inUse() && workA.getPrioIfCloned() == nbCNCMachine) {
-					workArea = workA;
-				}
-			}
-			if (workArea == null) {
-				//Not enough workareas for steps in process
-				throw new IllegalArgumentException("Device [" + cncMachine + "] does not contain workarea");
-			}
-			if (workArea.getClampings().size() >= 1) {
-				clamping = workArea.getClampings().iterator().next();
-				if (clamping == null) {
-					throw new IllegalArgumentException("Device [" + cncMachine + "] with workarea [" + workArea + "] does not contain clamping");
-				}
+		for (SimpleWorkArea work: cncMachine.getWorkAreas()) {
+			if (work.getSequenceNb() == nbCNCMachine) {
+				workArea = work;
 			}
 		}
+		if (workArea == null) {
+			//Not enough workareas for steps in process
+			throw new IllegalArgumentException("Device [" + cncMachine + "] does not contain workarea with sequence " + nbCNCMachine);
+		}
+		if (workArea.isInUse()) {
+			throw new IllegalArgumentException("Workarea " + workArea.getWorkAreaManager().getName() + " with sequence " + nbCNCMachine + " is already in use");
+		}
+		if (workArea.getWorkAreaManager().getClampings().size() >= 1) {
+			clamping = workArea.getWorkAreaManager().getClampings().iterator().next();
+			if (clamping == null) {
+				throw new IllegalArgumentException("Device [" + cncMachine + "] with workarea [" + workArea + "] does not contain clamping");
+			}
+		}
+
 		
 		//Clone nemen van robotPick and PutSettings
-		DevicePickSettings devicePickSettings = cncMachine.getDefaultPickSettings();
+		DevicePickSettings devicePickSettings = cncMachine.getDefaultPickSettings(nbCNCMachine);
 		devicePickSettings.setWorkArea(workArea);
 		
 		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = cncMachine.getDefaultStartCyclusSettings();
 		deviceStartCyclusSettings.setWorkArea(workArea);
 
 		//original raw workPiece
-		DevicePutSettings devicePutSettings = cncMachine.getDefaultPutSettings();
+		DevicePutSettings devicePutSettings = cncMachine.getDefaultPutSettings(nbCNCMachine);
 		devicePutSettings.setWorkArea(workArea);
 		
 		DeviceSettings deviceSettings = cncMachine.getDeviceSettings();
-		deviceSettings.setClamping(workArea, clamping);
+		deviceSettings.setDefaultClamping(workArea, clamping);
 		processFlowAdapter.getProcessFlow().setDeviceSettings(cncMachine, deviceSettings);
 		cncMachine.loadDeviceSettings(deviceSettings);
 		
@@ -414,36 +417,31 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		//Get the information about the usage of the device currently at the given index.
 		DeviceInformation deviceInfo = processFlowAdapter.getDeviceInformation(index);
 		//Look for the workarea + clamping to be used by the new device
-		WorkArea workArea = null;
+		SimpleWorkArea workArea = device.getWorkAreas().get(0);
 		Clamping clamping = null;
-		if (device.getWorkAreas().size() >= 1) {
-			workArea = device.getWorkAreas().iterator().next();
-			if (workArea == null) {
-				throw new IllegalArgumentException("Device [" + device + "] does not contain workarea");
-			}
-			if (workArea.getClampings().size() >= 1) {
-				clamping = workArea.getClampings().iterator().next();
-				if (clamping == null) {
-					throw new IllegalArgumentException("Device [" + device + "] with workarea [" + workArea + "] does not contain clamping");
-				}
+		if (workArea == null) {
+			throw new IllegalArgumentException("Device [" + device + "] does not contain workarea");
+		}
+		if (workArea.getWorkAreaManager().getClampings().size() >= 1) {
+			clamping = workArea.getWorkAreaManager().getClampings().iterator().next();
+			if (clamping == null) {
+				throw new IllegalArgumentException("Device [" + device + "] with workarea [" + workArea + "] does not contain clamping");
 			}
 		}
 		
 		//TODO - dit moet standaard een aparte methode worden
 		// Create new devicePick/Put/StartCyclussettings and indicate that the workarea we just choose is the workarea to be used
-		DevicePickSettings devicePickSettings = device.getDefaultPickSettings();
+		DevicePickSettings devicePickSettings = device.getDefaultPickSettings(1);
 		devicePickSettings.setWorkArea(workArea);
 		ProcessingDeviceStartCyclusSettings deviceStartCyclusSettings = device.getDefaultStartCyclusSettings();
 		deviceStartCyclusSettings.setWorkArea(workArea);
-		//TODO - can we give the priority of the workarea?
-		DevicePutSettings devicePutSettings = device.getDefaultPutSettings();
+		DevicePutSettings devicePutSettings = device.getDefaultPutSettings(1);
 		devicePutSettings.setWorkArea(workArea);
 		
 		// Create a new DeviceSettings object - unique for the new step
 		DeviceSettings deviceSettings = device.getDeviceSettings();
-		deviceSettings.setClamping(workArea, clamping);
+		deviceSettings.setDefaultClamping(workArea, clamping);
 		processFlowAdapter.getProcessFlow().setDeviceSettings(device, deviceSettings);
-		//TODO - Wat doet dit exact?
 		device.loadDeviceSettings(deviceSettings);
 		
 		//Set the current Pick settings as put settings 

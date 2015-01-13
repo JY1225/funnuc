@@ -238,7 +238,7 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 			ntxtSmoothY.setText("" + getPresenter().getPutStep().getRobotSettings().getSmoothPoint().getY());
 			ntxtSmoothZ.setText("" + getPresenter().getPutStep().getRobotSettings().getSmoothPoint().getZ());
 		}
-		if (getPresenter().getDeviceSettings().getClamping(getPresenter().getPutStep().getDeviceSettings().getWorkArea()) == null) {
+		if (getPresenter().getDeviceSettings().getDefaultClamping(getPresenter().getPutStep().getDeviceSettings().getWorkArea()) == null) {
 			btnResetSmooth.setDisable(true);
 		} else {
 			btnResetSmooth.setDisable(false);

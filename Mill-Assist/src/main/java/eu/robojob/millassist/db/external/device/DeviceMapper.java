@@ -19,9 +19,10 @@ import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.EFixtureType;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.AbstractDevice.DeviceType;
 import eu.robojob.millassist.external.device.Clamping.Type;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.WorkAreaBoundary;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
@@ -134,10 +135,10 @@ public class DeviceMapper {
 			eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorLayout layout = new eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorLayout(minWorkPieceWidth, maxWorkPieceWidth, trackWidth, supportWidth, xPosSensor1, xPosSensor2, sideWidth);
 			int socketConnectionId = results.getInt("SOCKETCONNECTION");
 			SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
-			WorkArea workAreaA = null;
-			WorkArea workAreaB = null;
+			WorkAreaManager workAreaA = null;
+			WorkAreaManager workAreaB = null;
 			for (Zone zone : zones) {
-				for (WorkArea workArea : zone.getWorkAreas()) {
+				for (WorkAreaManager workArea : zone.getWorkAreaManagers()) {
 					if (workArea.getId() == workAreaAID) {
 						workAreaA = workArea;
 					}
@@ -204,10 +205,10 @@ public class DeviceMapper {
 			ConveyorLayout layout = new ConveyorLayout(rawTrackAmount, rawTrackWidth, spaceBetweenTracks, supportWidth, 
 					finishedConveyorWidth, interferenceDistance, maxWorkPieceLength, rawConveyorLength, 
 					finishedConveyorLength, maxOverlap, minDistRaw, minDistFinished);
-			WorkArea rawWorkArea = null;
-			WorkArea finishedWorkArea = null;
+			WorkAreaManager rawWorkArea = null;
+			WorkAreaManager finishedWorkArea = null;
 			for (Zone zone : zones) {
-				for (WorkArea workArea : zone.getWorkAreas()) {
+				for (WorkAreaManager workArea : zone.getWorkAreaManagers()) {
 					if (workArea.getId() == rawWorkAreaId) {
 						rawWorkArea = workArea;
 					}
@@ -374,7 +375,7 @@ public class DeviceMapper {
 			int id = results.getInt("ID");
 			String name = results.getString("NAME");
 			int zoneNr = results.getInt("ZONE_NR");
-			Set<WorkArea> workAreas = getAllWorkAreasByZoneId(id);
+			Set<WorkAreaManager> workAreas = getAllWorkAreasByZoneId(id);
 			Zone zone;
 			zone = new Zone(name, workAreas, zoneNr);
 			zone.setId(id);
@@ -383,35 +384,50 @@ public class DeviceMapper {
 		return zones;
 	}
 	
-	private Set<WorkArea> getAllWorkAreasByZoneId(final int zoneId) throws SQLException {
+	private Set<WorkAreaManager> getAllWorkAreasByZoneId(final int zoneId) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
 				+ "SELECT * FROM WORKAREA "
 				+ "WHERE ZONE = ?"
-				+ "ORDER BY USERFRAME, PRIO_IF_CLONED");
+				+ "ORDER BY USERFRAME");
 		stmt.setInt(1, zoneId);
 		ResultSet results = stmt.executeQuery();
-		Set<WorkArea> workAreas = new HashSet<WorkArea>();
+		Set<WorkAreaManager> workAreas = new HashSet<WorkAreaManager>();
 		while (results.next()) {
 			int id = results.getInt("ID");
-			String name = results.getString("NAME");
 			int userFrameId = results.getInt("USERFRAME");
-			int prioIfCloned = results.getInt("PRIO_IF_CLONED");
 			UserFrame userFrame = generalMapper.getUserFrameById(userFrameId);
 			Set<Clamping> possibleClampings = getClampingsByWorkAreaId(id);
-			WorkArea workArea = new WorkArea(name, userFrame, possibleClampings, prioIfCloned);
+			WorkAreaManager workArea = new WorkAreaManager(userFrame, possibleClampings);
 			workArea.setId(id);
-			workArea.inUse(false);
-			workAreas.add(workArea);
-			// set default clamping to first
-			if (possibleClampings.size() > 0) {
-				workArea.setDefaultClamping(possibleClampings.iterator().next());
-			}
+//TODO - I do not think this is still needed - yes it is!! for ReversalUnit !!!! 
+			//			// set default clamping to first
+//			if (possibleClampings.size() > 0) {
+//				workArea.setDefaultClamping(possibleClampings.iterator().next());
+//			}
 			AirblowSquare boundaries = getWorkAreaBoundaries(id);
 			if (boundaries != null) {
 				workArea.setWorkAreaBoundary(new WorkAreaBoundary(workArea, boundaries));
 			}
+			getAllSimpleWorkAreasByManagerId(workArea);
+			workAreas.add(workArea);
 		}
 		return workAreas;
+	}
+	
+	private void getAllSimpleWorkAreasByManagerId(final WorkAreaManager waManager) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement(""
+				+ "SELECT * FROM SIMPLE_WORKAREA "
+				+ "WHERE WORKAREA = ?"
+				+ "ORDER BY SEQ_NB");
+		stmt.setInt(1, waManager.getId());
+		ResultSet results = stmt.executeQuery();
+		while (results.next()) {
+			int id = results.getInt("ID");
+			String name = results.getString("NAME");
+			int sequenceNb = results.getInt("SEQ_NB");
+			SimpleWorkArea workArea = new SimpleWorkArea(waManager, name, sequenceNb);
+			workArea.setId(id);
+		}
 	}
 	
 	private AirblowSquare getWorkAreaBoundaries(final int workAreaId) throws SQLException {
@@ -634,12 +650,11 @@ public class DeviceMapper {
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
-	public void updateWorkArea(final WorkArea workArea) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE WORKAREA SET ZONE = ?, USERFRAME = ?, NAME = ? WHERE ID = ?");
+	public void updateWorkArea(final WorkAreaManager workArea) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE WORKAREA SET ZONE = ?, USERFRAME = ? WHERE ID = ?");
 		stmt.setInt(1, workArea.getZone().getId());
 		stmt.setInt(2, workArea.getUserFrame().getId());
-		stmt.setString(3, workArea.getName());
-		stmt.setInt(4, workArea.getId());
+		stmt.setInt(3, workArea.getId());
 		stmt.executeUpdate();
 	}
 	
@@ -650,10 +665,10 @@ public class DeviceMapper {
 			final float smoothToX, final float smoothToY, final float smoothToZ,
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		if ((!basicStackPlate.getWorkAreas().get(0).getUserFrame().getName().equals(userFrameName))) {
+		if ((!basicStackPlate.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
 			UserFrame newUserFrame = getUserFrameByName(userFrameName);
-			basicStackPlate.getWorkAreas().get(0).setUserFrame(newUserFrame);
-			updateWorkArea(basicStackPlate.getWorkAreas().get(0));
+			basicStackPlate.getWorkAreaManagers().get(0).setUserFrame(newUserFrame);
+			updateWorkArea(basicStackPlate.getWorkAreaManagers().get(0));
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE STACKPLATE SET HORIZONTALHOLEAMOUNT = ?, VERTICALHOLEAMOUNT = ?, HOLEDIAMETER = ?, " +
 				"STUDDIAMETER = ?, HORIZONTALPADDING = ?, VERTICALPADDINGTOP = ?, VERTICALPADDINGBOTTOM = ?, HORIZONTALHOLEDISTANCE = ?, INTERFERENCEDISTANCE = ?, " +
@@ -820,10 +835,10 @@ public class DeviceMapper {
 			final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
 			final float smoothToZ) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		if ((!outputBin.getWorkAreas().get(0).getUserFrame().getName().equals(userFrame))) {
+		if ((!outputBin.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrame))) {
 			UserFrame newUserFrame = getUserFrameByName(userFrame);
-			outputBin.getWorkAreas().get(0).setUserFrame(newUserFrame);
-			updateWorkArea(outputBin.getWorkAreas().get(0));
+			outputBin.getWorkAreaManagers().get(0).setUserFrame(newUserFrame);
+			updateWorkArea(outputBin.getWorkAreaManagers().get(0));
 		}
 		Coordinates c = outputBin.getWorkAreas().get(0).getDefaultClamping().getRelativePosition();
 		c.setX(x);
@@ -847,10 +862,10 @@ public class DeviceMapper {
 			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
 			final float stationHeight) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		if ((!reversalUnit.getWorkAreas().get(0).getUserFrame().getName().equals(userFrame))) {
+		if ((!reversalUnit.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrame))) {
 			UserFrame newUserFrame = getUserFrameByName(userFrame);
-			reversalUnit.getWorkAreas().get(0).setUserFrame(newUserFrame);
-			updateWorkArea(reversalUnit.getWorkAreas().get(0));
+			reversalUnit.getWorkAreaManagers().get(0).setUserFrame(newUserFrame);
+			updateWorkArea(reversalUnit.getWorkAreaManagers().get(0));
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE REVERSALUNIT " +
 				"SET STATION_HEIGHT = ? WHERE ID = ?");
@@ -1122,7 +1137,7 @@ public class DeviceMapper {
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
-	public void saveClamping(final Clamping clamping, final Set<WorkArea> workAreas) throws SQLException {
+	public void saveClamping(final Clamping clamping, final Set<WorkAreaManager> workAreas) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		generalMapper.saveCoordinates(clamping.getRelativePosition());
 		generalMapper.saveCoordinates(clamping.getSmoothToPoint());
@@ -1163,7 +1178,7 @@ public class DeviceMapper {
 			ResultSet resultSet = stmt.getGeneratedKeys();
 			if (resultSet.next()) {
 				clamping.setId(resultSet.getInt(1));
-				for (WorkArea workArea : workAreas) {
+				for (WorkAreaManager workArea : workAreas) {
 					PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO WORKAREA_CLAMPING (WORKAREA, CLAMPING) VALUES (?, ?)");
 					stmt2.setInt(1, workArea.getId());
 					stmt2.setInt(2, clamping.getId());

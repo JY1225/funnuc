@@ -46,8 +46,8 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	public abstract boolean canPut(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
 	public abstract boolean canIntervention(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException;
 	
-	public abstract void prepareForPick(DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
-	public abstract void prepareForPut(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
+	public abstract void prepareForPick(DevicePickSettings pickSettings, int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
+	public abstract void prepareForPut(DevicePutSettings putSettings, int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
 	public abstract void prepareForIntervention(DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
 	
 	public abstract void pickFinished(DevicePickSettings pickSettings, int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
@@ -59,6 +59,11 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public abstract void reset() throws AbstractCommunicationException, DeviceActionException, InterruptedException;
 	
+	/**
+	 * Load specific process information into the device
+	 * 
+	 * @param deviceSettings
+	 */
 	public abstract void loadDeviceSettings(DeviceSettings deviceSettings);
 	public abstract DeviceSettings getDeviceSettings();
 	
@@ -71,7 +76,7 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	}
 
 	public boolean validatePutSettings(final DevicePutSettings putSettings) {
-		if ((putSettings != null) && (putSettings.getWorkArea() != null) && (getWorkAreas().contains(putSettings.getWorkArea())) 
+		if ((putSettings != null) && (putSettings.getWorkArea() != null) && (getWorkAreaNames().contains(putSettings.getWorkArea().getName())) 
 				&& (putSettings.getWorkArea().getDefaultClamping() != null)) {
 			return true;
 		} 
@@ -79,16 +84,16 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	}
 
 	public boolean validateInterventionSettings(final DeviceInterventionSettings interventionSettings) {
-		if ((interventionSettings != null) && (interventionSettings.getWorkArea() != null) && (getWorkAreas().contains(interventionSettings.getWorkArea())) 
+		if ((interventionSettings != null) && (interventionSettings.getWorkArea() != null) && (getWorkAreaNames().contains(interventionSettings.getWorkArea().getName())) 
 				&& (interventionSettings.getWorkArea().getDefaultClamping() != null)) {
 			return true;
 		}
 		return false;
 	}
 	
-	public abstract Coordinates getPickLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType);
-	public abstract Coordinates getPutLocation(WorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType);
-	public abstract Coordinates getLocationOrientation(WorkArea workArea, ClampingManner clampType);
+	public abstract Coordinates getPickLocation(SimpleWorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType);
+	public abstract Coordinates getPutLocation(SimpleWorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType);
+	public abstract Coordinates getLocationOrientation(SimpleWorkArea workArea, ClampingManner clampType);
 	
 	public abstract void interruptCurrentAction();
 	
@@ -132,9 +137,9 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		this.zones.remove(zone);
 	}
 	
-	public WorkArea getWorkAreaByName(final String name) {
+	public WorkAreaManager getWorkAreaByName(final String name) {
 		for (Zone zone : zones) {
-			for (WorkArea workArea : zone.getWorkAreas()) {
+			for (WorkAreaManager workArea : zone.getWorkAreaManagers()) {
 				if (workArea.getName().equals(name)) {
 					return workArea;
 				}
@@ -143,21 +148,42 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return null;
 	}
 	
-	public WorkArea getWorkAreaById(final int id) {
+	public SimpleWorkArea getWorkAreaById(final int id) {
 		for (Zone zone : zones) {
-			for (WorkArea workArea : zone.getWorkAreas()) {
-				if (workArea.getId() == id) {
-					return workArea;
+			for (WorkAreaManager workAreaManager : zone.getWorkAreaManagers()) {
+				for (SimpleWorkArea workArea: workAreaManager.getWorkAreas().values()) {
+					if (workArea.getId() == id) {
+						return workArea;
+					}
 				}
 			}
 		}
 		return null;
 	}
 	
-	public List<WorkArea> getWorkAreas() {
-		List<WorkArea> workAreas = new ArrayList<WorkArea>();
+	public WorkAreaManager getWorkAreaManagerById(final int id) {
+		for (Zone zone: zones) {
+			for (WorkAreaManager workAreaManager: zone.getWorkAreaManagers()) {
+				if (workAreaManager.getId() == id) {
+					return workAreaManager;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public List<SimpleWorkArea> getWorkAreas() {
+		List<SimpleWorkArea> workAreas = new ArrayList<SimpleWorkArea>();
+		for (WorkAreaManager workArea: getWorkAreaManagers()) {
+			workAreas.addAll(workArea.getWorkAreas().values());
+		}
+		return workAreas;
+	}
+	
+	public List<WorkAreaManager> getWorkAreaManagers() {
+		List<WorkAreaManager> workAreas = new ArrayList<WorkAreaManager>();
 		for (Zone zone : zones) {
-			workAreas.addAll(zone.getWorkAreas());
+			workAreas.addAll(zone.getWorkAreaManagers());
 		}
 		return workAreas;
 	}
@@ -176,25 +202,25 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 	
 	public abstract EDeviceGroup getType();
 	
-	public DevicePickSettings getDefaultPickSettings() {
-		WorkArea workArea = null;
+	public DevicePickSettings getDefaultPickSettings(int sequenceNb) {
+		SimpleWorkArea workArea = null;
 		if (getWorkAreas().size() == 1) {
-			workArea = getWorkAreas().iterator().next();
+			workArea = getWorkAreaManagers().iterator().next().getWorkAreaWithSequence(sequenceNb);
 		}
 		return new DevicePickSettings(this, workArea);
 	}
 	
-	public DevicePutSettings getDefaultPutSettings() {
-		WorkArea workArea = null;
+	public DevicePutSettings getDefaultPutSettings(int sequenceNb) {
+		SimpleWorkArea workArea = null;
 		if (getWorkAreas().size() == 1) {
-			workArea = getWorkAreas().iterator().next();
+			workArea = getWorkAreaManagers().iterator().next().getWorkAreaWithSequence(sequenceNb);
 		}
 		return new DevicePutSettings(this, workArea);
 	}
 	
-	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+	public float getZSafePlane(final WorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		if (approachType.equals(ApproachType.BOTTOM)) {
-			throw new IllegalArgumentException("Approach from " + ApproachType.BOTTOM + " is not possible for " + workArea.getZone().getDevice().toString());
+			throw new IllegalArgumentException("Approach from " + ApproachType.BOTTOM + " is not possible for " + workArea.getWorkAreaManager().getZone().getDevice().toString());
 		} else {
 			float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
 			zSafePlane += workArea.getDefaultClamping().getHeight(); // position of the clamping 

@@ -225,7 +225,7 @@ public class TeachOptimizedThread extends TeachThread {
 			throw new IllegalStateException("Robot [" + fRobot + "] was already locked by [" + fRobot.getLockingProcess() + "].");
 		} else {
 			getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), putOnStackerStep, StatusChangedEvent.PREPARE_DEVICE, PROCESS_0_ID));
-			stackingDevice.prepareForPut(putOnStackerStep.getDeviceSettings());
+			stackingDevice.prepareForPut(putOnStackerStep.getDeviceSettings(), PROCESS_0_ID);
 			logger.debug("Original coordinates: " + originalCoordinates + ".");
 			logger.debug("Initiating robot: [" + fRobot + "] move action.");
 			Coordinates smoothPointBuffer = null;

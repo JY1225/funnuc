@@ -154,7 +154,6 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractStackingDevice)) {
 					// we can always return to home, as home is typically the same location as the stacker's IP
 					// if no pre-processing is needed, we will than be waiting in home before putting in machine
-					nbWPReversed = 0;
 					((PickStep) currentStep).getRobotSettings().setFreeAfter(false);
 					executePickFromStackerStep((PickStep) currentStep);
 					pickFromStackerStepIndex = processFlow.getCurrentIndex(processId);
@@ -162,6 +161,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					checkStatus();
 					executeProcessingStep((ProcessingStep) currentStep);
 					if (((ProcessingStep) currentStep).getDevice() instanceof AbstractCNCMachine) {
+						nbWPReversed = 0;
 						nbCNCPassed++;
 					}
 				} else {
@@ -345,10 +345,10 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					controllingThread.stopRunning();
 				}
 				controllingThread.notifyPutInMachineFinished(ProcessFlowExecutionThread.this, morePutsToPerform(putStep),
-						putStep.getDeviceSettings().getWorkArea().getNbActiveClampingsEachSide(), 
+						putStep.getDeviceSettings().getWorkArea().getWorkAreaManager().getNbActiveClampingsEachSide(), 
 						putStep.getDeviceSettings().getWorkArea().getNbClampingsPerProcessThread(processId));
 			}
-		});		
+		});		 
 	}
 	
 	public void executePickFromMachineStep(final PickStep pickStep) throws AbstractCommunicationException, RobotActionException, InterruptedException, DeviceActionException {
@@ -373,7 +373,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		checkStatus();
 		pickStep.finalizeStep(this);
 		// Free the clamping that was used by the process so that it can be re-used by the next one
-		pickStep.getDeviceSettings().getWorkArea().freeClamping(processId);
+		pickStep.getDeviceSettings().getWorkArea().getWorkAreaManager().freeClamping(processId);
 		checkStatus();
 		if (!needsReversal) {
 			canContinue = false;
@@ -395,7 +395,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	
 	public void executeProcessingStep(final ProcessingStep processingStep) throws InterruptedException, AbstractCommunicationException, DeviceActionException {
 		checkStatus();
-		int nbOfClampingsInUse = processingStep.getDeviceSettings().getWorkArea().getNbActiveClampingsEachSide();
+//		int nbOfClampingsInUse = processingStep.getDeviceSettings().getWorkArea().getWorkAreaManager().getNbActiveClampingsEachSide();
 		
 		//In case we have more than one clamping in use, it could be that we have to block the execution thread. Consider the following
 		//scenario with 2 clampings: we still have 1 piece to do and 2 pieces are done, so ready to be taken out the clampings. 
@@ -405,19 +405,19 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		//to do in the entire process), but first we have to get the finished piece from the flow - so this executor has to be blocked.
 		//Side note - it is possible to remove nbOfClampingsInUse test, but it is a little bit more efficient since this is the most frequent case.
 		
-		if(nbOfClampingsInUse > 1) {
+//		if(nbOfClampingsInUse > 1) {
 			
 			//Due to timing of threads it could be that we are notified before the wait was started (see call of notifyPutInMachineFinished
 			//in method executePutInMachineStep). Therefore, we check the canStartProcessing flag that is only activated in case the
 			//startProcessing method is called by one of the ControllingThread classes.
-			if(!canStartProcessing) {
+			if(!canStartProcessing && processingStep.getDevice() instanceof AbstractCNCMachine) {
 				synchronized(syncObject) {
 					logger.info("Waiting before processing can start.");
 					syncObject.wait();
 					logger.info("Can continue.");
 				}
 			}
-		}
+//		}
 		processingStep.executeStep(processId, this);
 	}
 	
@@ -446,7 +446,6 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	}
 	
 	boolean needsReversal() {
-		logger.debug("NEEDS REVERSAL = " + this.needsReversal);
 		return this.needsReversal;
 	}
 	
@@ -493,7 +492,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	}
 	
 	private synchronized boolean morePutsToPerform(PutStep step) {
-		int nbActiveClamping = step.getDeviceSettings().getWorkArea().getNbActiveClampingsEachSide();
+		int nbActiveClamping = step.getDeviceSettings().getWorkArea().getWorkAreaManager().getNbActiveClampingsEachSide();
 		if (processFlow.hasReversalUnit() && nbWPReversed < nbWPInFlow && nbWPReversed > 0) {
 			return true;
 		}

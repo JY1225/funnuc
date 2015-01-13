@@ -15,7 +15,7 @@ import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
@@ -84,11 +84,11 @@ public class ProcessFlowManager {
 		AbstractDevice stackingToDevice = deviceManager.getStackingToDevices().iterator().next();
 		AbstractCNCMachine cncMachine = deviceManager.getCNCMachines().iterator().next();
 		AbstractRobot robot = robotManager.getRobots().iterator().next();
-		PickStep pickStep = new PickStep(stackingFromDevice.getDefaultPickSettings(), robot.getDefaultPickSettings());
-		PutStep putStep = new PutStep(cncMachine.getDefaultPutSettings(), robot.getDefaultPutSettings());
+		PickStep pickStep = new PickStep(stackingFromDevice.getDefaultPickSettings(1), robot.getDefaultPickSettings());
+		PutStep putStep = new PutStep(cncMachine.getDefaultPutSettings(1), robot.getDefaultPutSettings());
 		ProcessingStep processingStep = new ProcessingStep(cncMachine.getDefaultStartCyclusSettings());
-		PickStep pickStep2 = new PickStep(cncMachine.getDefaultPickSettings(), robot.getDefaultPickSettings());
-		PutStep putStep2 = new PutStep(stackingToDevice.getDefaultPutSettings(), robot.getDefaultPutSettings());
+		PickStep pickStep2 = new PickStep(cncMachine.getDefaultPickSettings(1), robot.getDefaultPickSettings());
+		PutStep putStep2 = new PutStep(stackingToDevice.getDefaultPutSettings(1), robot.getDefaultPutSettings());
 		List<AbstractProcessStep> processSteps = new ArrayList<AbstractProcessStep>();
 		WorkPiece rawWorkPiece = new WorkPiece(Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f);
 		WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, new WorkPieceDimensions(), Material.OTHER, 0.0f);
@@ -142,28 +142,23 @@ public class ProcessFlowManager {
 				DeviceStep deviceStep = (DeviceStep) step;
 				if (deviceStep.getDevice().getWorkAreas().size() > 0) {
 					
-					WorkArea workArea = deviceStep.getDevice().getWorkAreas().get(0);
-					for (WorkArea wk: deviceStep.getDevice().getWorkAreas()) {
-						if (!wk.isClone()) {
-							workArea = wk;
-						}
-					}
+					WorkAreaManager workAreaManager = deviceStep.getDevice().getWorkAreaManagers().get(0);
 
 					if ((deviceStep instanceof PickStep) && (deviceStep.getDevice() instanceof Conveyor)) {
-						workArea = ((Conveyor) deviceStep.getDevice()).getRawWorkArea();
+						workAreaManager = ((Conveyor) deviceStep.getDevice()).getRawWorkArea();
 					} else if ((deviceStep instanceof PutStep) && (deviceStep.getDevice() instanceof Conveyor)) {
-						workArea = ((Conveyor) deviceStep.getDevice()).getFinishedWorkArea();
+						workAreaManager = ((Conveyor) deviceStep.getDevice()).getFinishedWorkArea();
 					}
 					
-					deviceStep.getDeviceSettings().setWorkArea(workArea);
+					deviceStep.getDeviceSettings().setWorkArea(workAreaManager.getWorkAreaWithSequence(1));
 					if (step instanceof RobotStep) {
-						((RobotStep) step).getRobotSettings().setWorkArea(workArea);						
+						((RobotStep) step).getRobotSettings().setWorkArea(workAreaManager.getWorkAreaWithSequence(1));						
 					}
 					
 					// if clampings present: use them
-					if (workArea.getClampings().size() > 0) {
-						Clamping clamping = workArea.getClampings().iterator().next();
-						deviceSettings.get(deviceStep.getDevice()).setClamping(workArea, clamping);
+					if (workAreaManager.getClampings().size() > 0) {
+						Clamping clamping = workAreaManager.getClampings().iterator().next();
+						deviceSettings.get(deviceStep.getDevice()).setDefaultClamping(workAreaManager.getWorkAreaWithSequence(1), clamping);
 						if (step instanceof PickStep) {
 							if (((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
 								((PickStep) step).getRobotSettings().setSmoothPoint(new Coordinates(clamping.getSmoothFromPoint()));
@@ -205,6 +200,7 @@ public class ProcessFlowManager {
 					logger.info("Updating processflow with id: [" + processFlow.getId() + "] and name: [" + processFlow.getName() + "].");
 					processFlowMapper.updateProcessFlow(processFlow);
 				} else {
+					//FIXME - check op naam ipv id
 					throw new IllegalArgumentException("ProcessFlow should have a valid id for save");
 				}
 			} else {

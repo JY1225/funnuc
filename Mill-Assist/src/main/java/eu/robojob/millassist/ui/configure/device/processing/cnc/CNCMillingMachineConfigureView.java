@@ -28,7 +28,7 @@ import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.ui.controls.IconFlowSelector;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -217,8 +217,8 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			cbbWorkArea.getItems().addAll(getPresenter().getListOfWorkAreas());
 			if ((deviceInfo.getPutStep() != null) && (deviceInfo.getPutStep().getDeviceSettings() != null)
 					&& (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
-				cbbWorkArea.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getName());
-				deviceInfo.getPutStep().getDeviceSettings().getWorkArea().inUse(true);
+				cbbWorkArea.setValue(deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getWorkAreaManager().getName());
+				deviceInfo.getPutStep().getDeviceSettings().getWorkArea().setInUse(true);
 			}
 			if (getPresenter().getListOfWorkAreas().size() > 1) {
 				cbbWorkArea.setDisable(false);
@@ -273,7 +273,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		ifsClamping.clearItems();
 		if ((deviceInfo.getPutStep().getDeviceSettings() != null) && (deviceInfo.getPutStep().getDeviceSettings().getWorkArea() != null)) {
 			int itemIndex = 0;
-			final WorkArea workArea = deviceInfo.getPutStep().getDeviceSettings().getWorkArea();
+			final WorkAreaManager workArea = deviceInfo.getPutStep().getDeviceSettings().getWorkArea().getWorkAreaManager();
 			for (final Clamping clamping : workArea.getClampings()) {
 				ifsClamping.addItem(itemIndex, clamping.getName(), clamping.getImageUrl(), clamping.getFixtureType().toShortString(), new EventHandler<MouseEvent>() {
 					@Override

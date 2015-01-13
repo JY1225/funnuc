@@ -25,7 +25,7 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 		return isInvasive;
 	}
 	
-	public abstract void startCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;	
+	public abstract void startCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings, int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException;	
 	public abstract void prepareForStartCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException;
 		
 	public String toString() {

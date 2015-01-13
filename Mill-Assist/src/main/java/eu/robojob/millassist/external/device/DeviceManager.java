@@ -376,7 +376,8 @@ public class DeviceManager {
 		try { 
 			boolean workAreaChanged = false;
 			for (AbstractCNCMachine cncMachine : getCNCMachines()) {
-				for (WorkArea workArea : cncMachine.getWorkAreas()) {					
+				for (WorkAreaManager workArea : cncMachine.getWorkAreaManagers()) {					
+					//TODO - getWorkAreaNr naar boven 
 					for (Clamping cl : workArea.getClampings()) {
 						if (cl.getId() == clamping.getId()) {
 							if (workArea.getWorkAreaNr() == waNr) {
@@ -409,16 +410,16 @@ public class DeviceManager {
 					new Coordinates(smoothToX, smoothToY, smoothToZ, 0, 0, 0), 
 					new Coordinates(smoothFromX, smoothFromY, smoothFromZ, 0, 0, 0), imagePath, fixtureType);
 			clamping.setDefaultAirblowPoints(new AirblowSquare(bottomAirblowCoord, topAirblowCoord));
-			Set<WorkArea> workAreas = new HashSet<WorkArea>();
+			Set<WorkAreaManager> workAreas = new HashSet<WorkAreaManager>();
 			for (AbstractCNCMachine cncMachine : getCNCMachines()) {
-				for (WorkArea workArea : cncMachine.getWorkAreas()) {
+				for (WorkAreaManager workArea : cncMachine.getWorkAreaManagers()) {
 					if (workArea.getWorkAreaNr() == waNr) {
 						workAreas.add(workArea);
 					}
 				}
 			}
 			deviceMapper.saveClamping(clamping, workAreas);
-			for (WorkArea workArea : workAreas) {
+			for (WorkAreaManager workArea : workAreas) {
 				workArea.addClamping(clamping);
 			}
 		} catch (SQLException e) {
@@ -431,7 +432,7 @@ public class DeviceManager {
 		//Check that the clamping is the active one in processflows
 		for (ProcessFlow flow: processFlowManager.getProcessFlows()) {
 			for (DeviceSettings deviceSettings : flow.getDeviceSettings().values()) {
-				for (Entry<WorkArea, Clamping> workAreaClamping: deviceSettings.getClampings().entrySet()) {
+				for (Entry<SimpleWorkArea, Clamping> workAreaClamping: deviceSettings.getClampings().entrySet()) {
 					if (workAreaClamping.getValue().getId() == clamping.getId()) {
 						throw new ClampingInUseException(clamping.getName(), flow.getName());
 					} else if (workAreaClamping.getValue().getRelatedClampings().contains(clamping)) {
@@ -441,7 +442,7 @@ public class DeviceManager {
 			}
 		}
 		for (AbstractDevice device : devicesById.values()) {
-			for (WorkArea workArea : device.getWorkAreas()) {
+			for (WorkAreaManager workArea : device.getWorkAreaManagers()) {
 				Set<Clamping> tmpClampings = new HashSet<Clamping>(workArea.getClampings());
 				for (Clamping cl: workArea.getClampings()) {
 					if (cl.getId() == clamping.getId()) {

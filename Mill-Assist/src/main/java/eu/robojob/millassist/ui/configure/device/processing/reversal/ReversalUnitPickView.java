@@ -211,7 +211,7 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 			ntxtSmoothY.setText("" + getPresenter().getPickStep().getRobotSettings().getSmoothPoint().getY());
 			ntxtSmoothZ.setText("" + getPresenter().getPickStep().getRobotSettings().getSmoothPoint().getZ());
 		}
-		if (getPresenter().getDeviceSettings().getClamping(getPresenter().getPickStep().getDeviceSettings().getWorkArea()) == null) {
+		if (getPresenter().getDeviceSettings().getDefaultClamping(getPresenter().getPickStep().getDeviceSettings().getWorkArea()) == null) {
 			btnResetSmooth.setDisable(true);
 		} else {
 			btnResetSmooth.setDisable(false);

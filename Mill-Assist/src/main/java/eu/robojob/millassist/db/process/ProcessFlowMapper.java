@@ -24,9 +24,10 @@ import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
@@ -345,9 +346,6 @@ public class ProcessFlowMapper {
 		stmt.setInt(1, deviceStep.getDevice().getId());
 		stmt.setInt(2, deviceStep.getDeviceSettings().getWorkArea().getId());
 		stmt.setInt(3, ((AbstractProcessStep) deviceStep).getId());
-//		if (deviceStep.getDeviceSettings().getWorkPieceType() != null) {
-//			stmt.setInt(4, deviceStep.getDeviceSettings().getWorkPieceType().getTypeId());	
-//		} 
 		if (deviceStep.getDeviceSettings() instanceof DevicePutSettings) {
 			stmt.setBoolean(4, ((DevicePutSettings) deviceStep.getDeviceSettings()).getMachineAirblow()); 
 		} else if (deviceStep.getDeviceSettings() instanceof DevicePickSettings) {
@@ -428,30 +426,35 @@ public class ProcessFlowMapper {
 		if ((keys != null) && (keys.next())) {
 			deviceSettings.setId(keys.getInt(1));
 		}
-		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
+		for (Entry<SimpleWorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM WORKAREA_CLAMPING WHERE WORKAREA = ? AND CLAMPING = ?");
-			stmt2.setInt(1, entry.getKey().getId());
-			stmt2.setInt(2, entry.getValue().getId());
-			ResultSet results = stmt2.executeQuery();
-			int id = 0;
-			if (results.next()) {
-				id = results.getInt("ID");
-				PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICESETTINGS_WORKAREA_CLAMPING (DEVICESETTINGS, WORKAREA_CLAMPING, ACTIVE_FL) VALUES (?, ?, ?)");
-				stmt3.setInt(1, deviceSettings.getId());
-				stmt3.setInt(2, id);
-				stmt3.setBoolean(3, true);
-				stmt3.executeUpdate();
-				for(Clamping relClamping : entry.getValue().getRelatedClampings()) {
-					stmt2.setInt(2, relClamping.getId());
-					ResultSet results2 = stmt2.executeQuery();
-					if(results2.next()) {
-						stmt3.setInt(2, results2.getInt("ID"));
-						stmt3.setBoolean(3, false);
-						stmt3.executeUpdate();
+			SimpleWorkArea workarea = entry.getKey();
+			if (workarea.isInUse() || !(device instanceof AbstractCNCMachine)) {
+				stmt2.setInt(1, workarea.getWorkAreaManager().getId());
+				stmt2.setInt(2, entry.getValue().getId());
+				ResultSet results = stmt2.executeQuery();
+				int id = 0;
+				if (results.next()) {
+					id = results.getInt("ID");
+					PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICESETTINGS_WORKAREA_CLAMPING (DEVICESETTINGS, WORKAREA_CLAMPING, DEFAULT_FL, WORKAREA) VALUES (?, ?, ?, ?)");
+					stmt3.setInt(1, deviceSettings.getId());
+					stmt3.setInt(2, id);
+					stmt3.setBoolean(3, true);
+					stmt3.setInt(4, workarea.getId());
+					stmt3.executeUpdate();
+					for(Clamping relClamping : entry.getValue().getRelatedClampings()) {
+						stmt2.setInt(2, relClamping.getId());
+						ResultSet results2 = stmt2.executeQuery();
+						if(results2.next()) {
+							stmt3.setInt(2, results2.getInt("ID"));
+							stmt3.setBoolean(3, false);
+							stmt3.setInt(4, workarea.getId());
+							stmt3.executeUpdate();
+						}
 					}
+				} else {
+					throw new IllegalStateException("Couldn't find entry for workarea: [" + entry.getKey() + "] and clamping: [" + entry.getValue() + "].");
 				}
-			} else {
-				throw new IllegalStateException("Couldn't find entry for workarea: [" + entry.getKey() + "] and clamping: [" + entry.getValue() + "].");
 			}
 		}
 		if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
@@ -556,6 +559,7 @@ public class ProcessFlowMapper {
 			Timestamp lastOpened = results.getTimestamp("LASTOPENED");
 			int clampingMannerId = results.getInt("CLAMPING_MANNER");
 			List<AbstractProcessStep> processSteps = getProcessSteps(id);
+			// We have 1 deviceSetting per device - per processFlow
 			Map<AbstractDevice, DeviceSettings> deviceSettings = getDeviceSettings(id);
 			Map<AbstractRobot, RobotSettings> robotSettings = getRobotSettings(id);
 			processFlow = new ProcessFlow(name, processSteps, deviceSettings, robotSettings, creation, lastOpened);
@@ -607,48 +611,8 @@ public class ProcessFlowMapper {
 		while (results.next()) {
 			int deviceId = results.getInt("DEVICE");
 			int id = results.getInt("ID");
-			PreparedStatement stmt2 = ConnectionManager.getConnection()
-					.prepareStatement("SELECT * "                                                                         +
-									    "FROM DEVICESETTINGS_WORKAREA_CLAMPING "                                          +
-									    "JOIN WORKAREA_CLAMPING "                                                         +
-									      "ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID " +
-									   "WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? "                       +
-									     "AND DEVICESETTINGS_WORKAREA_CLAMPING.ACTIVE_FL = ?");
-			PreparedStatement stmt3 = ConnectionManager.getConnection()
-					.prepareStatement("SELECT * "                                                                         +
-							            "FROM DEVICESETTINGS_WORKAREA_CLAMPING "                                          +
-							            "JOIN WORKAREA_CLAMPING "                                                         +
-							              "ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID " +
-							           "WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? "                       +
-							             "AND DEVICESETTINGS_WORKAREA_CLAMPING.ACTIVE_FL = ? "                            +
-										 "AND WORKAREA_CLAMPING.WORKAREA = ?");       
-			stmt2.setInt(1, id);
-			stmt2.setBoolean(2, true);
-			ResultSet results2 = stmt2.executeQuery();
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
-			Map<WorkArea, Clamping> clampings = new HashMap<WorkArea, Clamping>();
-			//Get the active clamping for this workarea
-			while (results2.next()) {
-				int workareaId = results2.getInt("WORKAREA");
-				int clampingId = results2.getInt("CLAMPING");
-				WorkArea workArea = device.getWorkAreaById(workareaId);
-				try {
-					Clamping clamping = workArea.getClampingById(clampingId).clone();
-					clampings.put(workArea, clamping);
-					//Get the related clampings for this workarea
-					stmt3.setInt(1, id);
-					stmt3.setBoolean(2, false);
-					stmt3.setInt(3, workareaId);
-					ResultSet results3 = stmt3.executeQuery();
-					while (results3.next()) {
-						clampingId = results3.getInt("CLAMPING");
-						Clamping relClamping = workArea.getClampingById(clampingId).clone();
-						clamping.addRelatedClamping(relClamping);
-					}
-				} catch (CloneNotSupportedException e) {
-					logger.error(e);
-				}
-			}
+			Map<SimpleWorkArea, Clamping> clampings = getDefaultClampingPerWorkArea(id, device);
 			if (device instanceof BasicStackPlate) {
 				AbstractStackPlateDeviceSettings stackPlateSettings = getBasicStackPlateSettings(processId, id, (BasicStackPlate) device, clampings);
 				settings.put(device, stackPlateSettings);
@@ -670,7 +634,60 @@ public class ProcessFlowMapper {
 		return settings;
 	}
 	
-	private ConveyorSettings getConveyorSettings(final int processFlowId, final int deviceSettingsId, final Conveyor conveyor, final Map<WorkArea, Clamping> clampings) throws SQLException {
+	private Map<SimpleWorkArea, Clamping> getDefaultClampingPerWorkArea(final int deviceSettingsId, final AbstractDevice device) throws SQLException {
+		Map<SimpleWorkArea, Clamping> defaultClampings = new HashMap<SimpleWorkArea, Clamping>();
+		PreparedStatement stmt = ConnectionManager.getConnection()
+			.prepareStatement("SELECT CLAMPING, DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA "           			  +
+								"FROM DEVICESETTINGS_WORKAREA_CLAMPING "                     					  +
+							    "JOIN WORKAREA_CLAMPING "                                                         +
+							      "ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID " +
+							   "WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? "  					  +
+				     			 "AND DEVICESETTINGS_WORKAREA_CLAMPING.DEFAULT_FL = ?");
+		stmt.setInt(1, deviceSettingsId);
+		stmt.setBoolean(2, true);
+		ResultSet results = stmt.executeQuery();
+		while (results.next()) {
+			int workAreaId = results.getInt("WORKAREA");
+			int clampingId = results.getInt("CLAMPING");
+			SimpleWorkArea workArea = device.getWorkAreaById(workAreaId);
+			try {
+				Clamping clamping = workArea.getWorkAreaManager().getClampingById(clampingId).clone();
+				defaultClampings.put(workArea, clamping);
+				addRelatedClampings(deviceSettingsId, clamping, workArea);
+				// Do set default becuase this is a cloned clamping, which is thus not the same
+				//workArea.setDefaultClamping(clamping);
+			} catch (CloneNotSupportedException e) {
+				logger.error(e);
+			}
+		}
+		return defaultClampings;
+	}
+	
+	private void addRelatedClampings(final int deviceSettingsId, final Clamping clamping, final SimpleWorkArea workArea) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection()
+				.prepareStatement("SELECT CLAMPING "													              +
+									"FROM DEVICESETTINGS_WORKAREA_CLAMPING "                     					  +
+								    "JOIN WORKAREA_CLAMPING "                                                         +
+								      "ON DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING = WORKAREA_CLAMPING.ID " +
+								   "WHERE DEVICESETTINGS_WORKAREA_CLAMPING.DEVICESETTINGS = ? "  					  +
+								     "AND DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA = ? " 		  					  +
+					     			 "AND DEVICESETTINGS_WORKAREA_CLAMPING.DEFAULT_FL = ?");
+			stmt.setInt(1, deviceSettingsId);
+			stmt.setInt(2, workArea.getId());
+			stmt.setBoolean(3, false);
+			ResultSet results = stmt.executeQuery();
+			while (results.next()) {
+				try {
+					int clampingId = results.getInt("CLAMPING");
+					Clamping relClamping = workArea.getWorkAreaManager().getClampingById(clampingId).clone();
+					clamping.addRelatedClamping(relClamping);
+				} catch (CloneNotSupportedException e) {
+					logger.error(e);
+				}
+			}
+	}
+	
+	private ConveyorSettings getConveyorSettings(final int processFlowId, final int deviceSettingsId, final Conveyor conveyor, final Map<SimpleWorkArea, Clamping> clampings) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CONVEYORSETTINGS WHERE ID = ?");
 		stmt.setInt(1, deviceSettingsId);
 		ResultSet results = stmt.executeQuery();
@@ -689,7 +706,7 @@ public class ProcessFlowMapper {
 		return conveyorSettings;
 	}
 	
-	private eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings getConveyorSettings(final int processFlowId, final int deviceSettingsId, final eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor conveyor, final Map<WorkArea, Clamping> clampings) throws SQLException {
+	private eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings getConveyorSettings(final int processFlowId, final int deviceSettingsId, final eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor conveyor, final Map<SimpleWorkArea, Clamping> clampings) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CONVEYOREATONSETTINGS WHERE ID = ?");
 		stmt.setInt(1, deviceSettingsId);
 		ResultSet results = stmt.executeQuery();
@@ -706,7 +723,7 @@ public class ProcessFlowMapper {
 		return conveyorSettings;
 	}
 	
-	private ReversalUnitSettings getReversalUnitSettings(final int deviceSettingsId, final Map<WorkArea, Clamping> clampings) throws SQLException {
+	private ReversalUnitSettings getReversalUnitSettings(final int deviceSettingsId, final Map<SimpleWorkArea, Clamping> clampings) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM REVERSALUNITSETTINGS WHERE ID = ?");
 		stmt.setInt(1, deviceSettingsId);
 		ResultSet results = stmt.executeQuery();
@@ -719,7 +736,7 @@ public class ProcessFlowMapper {
 		return reversalSettings;
 	}
 	
-	private AbstractStackPlateDeviceSettings getBasicStackPlateSettings(final int processFlowId, final int deviceSettingsId, final BasicStackPlate stackPlate, final Map<WorkArea, Clamping> clampings) throws SQLException {
+	private AbstractStackPlateDeviceSettings getBasicStackPlateSettings(final int processFlowId, final int deviceSettingsId, final BasicStackPlate stackPlate, final Map<SimpleWorkArea, Clamping> clampings) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM STACKPLATESETTINGS WHERE ID = ?");
 		stmt.setInt(1, deviceSettingsId);
 		ResultSet results = stmt.executeQuery();
@@ -861,7 +878,7 @@ public class ProcessFlowMapper {
 		return processingWhileWaitingStep;
 	}
 	
-	public RobotProcessingWhileWaitingSettings getRobotProcessingWhileWaitingRobotSettings(final int processingWhileWaitingId, final WorkArea workArea) throws SQLException {
+	public RobotProcessingWhileWaitingSettings getRobotProcessingWhileWaitingRobotSettings(final int processingWhileWaitingId, final SimpleWorkArea workArea) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ROBOTACTIONSETTINGS WHERE STEP = ?");
 		stmt.setInt(1, processingWhileWaitingId);
 		ResultSet results = stmt.executeQuery();
@@ -892,7 +909,7 @@ public class ProcessFlowMapper {
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
-			WorkArea workArea = device.getWorkAreaById(workAreaId);
+			SimpleWorkArea workArea = device.getWorkAreaById(workAreaId);
 			deviceInterventionSettings = new DeviceInterventionSettings(device, workArea);
 			deviceInterventionSettings.setId(id);
 		}
@@ -909,7 +926,7 @@ public class ProcessFlowMapper {
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
-			WorkArea workArea = device.getWorkAreaById(workAreaId);
+			SimpleWorkArea workArea = device.getWorkAreaById(workAreaId);
 			processingDeviceStartCyclusSettings = new ProcessingDeviceStartCyclusSettings((AbstractProcessingDevice) device, workArea);
 			processingDeviceStartCyclusSettings.setId(id);
 		}
@@ -927,7 +944,7 @@ public class ProcessFlowMapper {
 			int workAreaId = results.getInt("WORKAREA");
 			boolean machineAirblow = results.getBoolean("MACHINE_AIRBLOW");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
-			WorkArea workArea = device.getWorkAreaById(workAreaId);
+			SimpleWorkArea workArea = device.getWorkAreaById(workAreaId);
 			devicePickSettings = new DevicePickSettings(device, workArea);
 			devicePickSettings.setId(id);
 			devicePickSettings.setIsMachineAirblow(machineAirblow);
@@ -943,10 +960,11 @@ public class ProcessFlowMapper {
 		if (results.next()) {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
+			// simpleWorkArea
 			int workAreaId = results.getInt("WORKAREA");
 			boolean machineAirblow = results.getBoolean("MACHINE_AIRBLOW");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
-			WorkArea workArea = device.getWorkAreaById(workAreaId);
+			SimpleWorkArea workArea = device.getWorkAreaById(workAreaId);
 			devicePutSettings = new DevicePutSettings(device, workArea);
 			devicePutSettings.setId(id);
 			devicePutSettings.setIsMachineAirblow(machineAirblow);
@@ -954,7 +972,7 @@ public class ProcessFlowMapper {
 		return devicePutSettings;
 	}
 	
-	public RobotPickSettings getRobotPickSettingsByStepId(final int processFlowId, final int pickStepId, final WorkArea workArea) throws SQLException {
+	public RobotPickSettings getRobotPickSettingsByStepId(final int processFlowId, final int pickStepId, final SimpleWorkArea workArea) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ROBOTACTIONSETTINGS JOIN ROBOTPICKSETTINGS ON ROBOTACTIONSETTINGS.ID = ROBOTPICKSETTINGS.ID WHERE ROBOTACTIONSETTINGS.STEP = ?");
 		stmt.setInt(1, pickStepId);
 		ResultSet results = stmt.executeQuery();
@@ -986,7 +1004,7 @@ public class ProcessFlowMapper {
 		return robotPickSettings;
 	}
 	
-	public RobotPutSettings getRobotPutSettingsByStepId(final int processFlowId, final int putStepId, final WorkArea workArea) throws SQLException {
+	public RobotPutSettings getRobotPutSettingsByStepId(final int processFlowId, final int putStepId, final SimpleWorkArea workArea) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ROBOTACTIONSETTINGS JOIN ROBOTPUTSETTINGS ON ROBOTACTIONSETTINGS.ID = ROBOTPUTSETTINGS.ID WHERE ROBOTACTIONSETTINGS.STEP = ?");
 		stmt.setInt(1, putStepId);
 		ResultSet results = stmt.executeQuery();

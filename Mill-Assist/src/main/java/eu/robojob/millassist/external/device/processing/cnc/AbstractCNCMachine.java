@@ -15,7 +15,7 @@ import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
@@ -302,8 +302,8 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		waitForStatusGoneDevIntv2(registerIndex, status, 0);
 	}
 	
-	protected boolean waitForMCodes(final int... indexList) throws InterruptedException, DeviceActionException {
-		String loggerString = "Waiting for M CODE: " + indexList[0];
+	protected boolean waitForMCodes(final int processId, final int... indexList) throws InterruptedException, DeviceActionException {
+		String loggerString = "PRC[" + processId + "] is waiting for M CODE: " + indexList[0];
 		for (int i = 1; i < indexList.length; i++) {
 			loggerString += " OR " + indexList[i];
 		}
@@ -320,8 +320,8 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		}, 0);
 	}
 	
-	protected boolean waitForNoMCode(final int... indexList) throws InterruptedException, DeviceActionException {
-		String loggerString = "Waiting for M CODE gone: " + indexList[0];
+	protected boolean waitForNoMCode(final int processId, final int... indexList) throws InterruptedException, DeviceActionException {
+		String loggerString = "PRC[" + processId + "] is waiting for M CODE gone: " + indexList[0];
 		for (int i = 1; i < indexList.length; i++) {
 			loggerString += " OR " + indexList[i];
 		}
@@ -351,8 +351,8 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	@Override
 	public void loadDeviceSettings(final DeviceSettings deviceSettings) {
-		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
-			getWorkAreaByName(entry.getKey().getName()).setDefaultClamping(entry.getValue());
+		for (Entry<SimpleWorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
+			entry.getKey().setDefaultClamping(entry.getValue());
 		}
 	}
 
@@ -409,12 +409,25 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	 * @return	index of Mcode
 	 * @see		WorkArea.#getPrioIfCloned()
 	 */
-	public int getMCodeIndex(final WorkArea workarea, final boolean isPut) {
-		int workAreaPrio = workarea.getPrioIfCloned() - 1;
-		int mCodeIndex = workAreaPrio * 2;
+	public int getMCodeIndex(final SimpleWorkArea workarea, final boolean isPut) {
+		int workAreaSeqNb = workarea.getSequenceNb() - 1;
+		int mCodeIndex = workAreaSeqNb * 2;
 		if (isPut) {
 			return mCodeIndex;
 		} 
 		return ++mCodeIndex;
 	}
+	
+	public static int getNxtMCode(final int mCode, final int nbCNCSteps) {
+		//start from 0
+		int maxMCode = nbCNCSteps * 2;
+		return (mCode+1)%maxMCode;
+	}
+	
+	public static int getPrvMCode(final int mCode, final int nbCNCSteps) {
+		//start from 0
+		int maxMCode = nbCNCSteps * 2;
+		return (Math.abs(mCode-1))%maxMCode;
+	}
+
 }

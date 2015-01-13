@@ -14,7 +14,7 @@ import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
@@ -75,7 +75,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	}
 	
 	@Override 
-	public synchronized Coordinates getLocation(final WorkArea workArea, final Type type, final ClampingManner clampType) {
+	public synchronized Coordinates getLocation(final SimpleWorkArea workArea, final Type type, final ClampingManner clampType) {
 		for (StackPlateStackingPosition stackingPos : getLayout().getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == type) && 
 					(stackingPos.getAmount() > 0)) {
@@ -135,7 +135,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public void prepareForPick(DevicePickSettings pickSettings)
+	public void prepareForPick(DevicePickSettings pickSettings, final int processId)
 			throws AbstractCommunicationException, DeviceActionException,
 			InterruptedException {
 		// TODO Auto-generated method stub
@@ -143,7 +143,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public void prepareForPut(DevicePutSettings putSettings)
+	public void prepareForPut(DevicePutSettings putSettings, final int processId)
 			throws AbstractCommunicationException, DeviceActionException,
 			InterruptedException {
 		// TODO Auto-generated method stub
@@ -213,7 +213,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public synchronized void loadDeviceSettings(final DeviceSettings deviceSettings) {
-		for (Entry<WorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
+		for (Entry<SimpleWorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
 			entry.getKey().setDefaultClamping(entry.getValue());
 		}
 		if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
@@ -252,7 +252,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public synchronized Coordinates getPickLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public synchronized Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		for (StackPlateStackingPosition stackingPos : getLayout().getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == Type.RAW) && 
 					(stackingPos.getAmount() > 0)) {
@@ -266,7 +266,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	}
 	
 	@Override
-	public synchronized Coordinates getPutLocation(final WorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public synchronized Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
 		for (StackPlateStackingPosition stackingPos : getLayout().getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() == null) || ((stackingPos.getWorkPiece() != null) && 
 					(stackingPos.getWorkPiece().getType() == Type.FINISHED) && (stackingPos.getAmount() < getLayout().getLayers()))) {
@@ -296,7 +296,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public Coordinates getLocationOrientation(final WorkArea workArea, final ClampingManner clampType) {
+	public Coordinates getLocationOrientation(final SimpleWorkArea workArea, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(getLayout().getStackingPositions().get(0).getPosition());
 		c.offset(workArea.getDefaultClamping().getRelativePosition());
 		c.setX(0);
@@ -394,7 +394,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	public abstract float getR(WorkPieceOrientation orientation);
 	
 	@Override
-	public float getZSafePlane(final WorkPieceDimensions dimensions, final WorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+	public float getZSafePlane(final WorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
 		float wpHeight = layout.getLayers() *  dimensions.getHeight(); 
 		if (wpHeight > workArea.getDefaultClamping().getHeight()) {

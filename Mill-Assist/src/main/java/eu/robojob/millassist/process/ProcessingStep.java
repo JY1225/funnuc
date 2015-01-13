@@ -36,27 +36,27 @@ public class ProcessingStep extends AbstractProcessStep implements DeviceStep {
 	}
 	
 	@Override
-	public void executeStep(final int workPieceId, final ProcessExecutor executor) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
+	public void executeStep(final int processId, final ProcessExecutor executor) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// check if the parent process has locked the device to be used
 		if (!getDevice().lock(getProcessFlow())) {
 			throw new IllegalStateException("Device [" + getDevice() + "] was already locked by [" + getDevice().getLockingProcess() + "].");
 		} else {
 			try {
 				checkProcessExecutorStatus(executor);
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, workPieceId));
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, workPieceId));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, processId));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PREPARE_DEVICE, processId));
 				logger.debug("Preparing device [" + getDevice() + "] for processing.");
 				checkProcessExecutorStatus(executor);
 				getDevice().prepareForStartCyclus(startCyclusSettings);
 				logger.debug("Device [" + getDevice() + "] prepared, starting processing.");
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PROCESSING_STARTED, workPieceId));
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.PROCESSING_STARTED, processId));
 				checkProcessExecutorStatus(executor);
 				processing++;
 				logger.info("Running: " + processing);
-				getDevice().startCyclus(startCyclusSettings);
+				getDevice().startCyclus(startCyclusSettings, processId);
 				processing--;
-				logger.debug("Finished processing for PRC[" + workPieceId + "] in [" + getDevice() + "].");
-				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, workPieceId));
+				logger.debug("Finished processing for PRC[" + processId + "] in [" + getDevice() + "].");
+				getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.ENDED, processId));
 			} catch(Exception e) {
 				throw e;
 			} finally {

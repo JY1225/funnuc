@@ -16,7 +16,7 @@ import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
@@ -184,8 +184,8 @@ public class ProcessFlow {
 				((BasicStackPlate) device).placeFinishedWorkPieces(processFlow.getFinishedAmount());
 			}
 			if (device instanceof AbstractCNCMachine) {
-				for (WorkArea workArea: device.getWorkAreas()) {
-					workArea.inUse(false);
+				for (WorkAreaManager workAreaManager: device.getWorkAreaManagers()) {
+					workAreaManager.resetUse();
 				}
 			}
 		}
@@ -592,11 +592,11 @@ public class ProcessFlow {
 	public int getNbClampingsChosen() {
 		for (AbstractDevice device: getDevices()) {
 			if (device instanceof AbstractCNCMachine) {
-				for (WorkArea workArea: device.getWorkAreas()) {
+				for (WorkAreaManager workAreaManager: device.getWorkAreaManagers()) {
 					//We only check workArea in use. There is no issue in case we have multiple CNC steps, because
 					//we have ensured that the same amount of clampings is selected in each CNC step
-					if (workArea.inUse()) {
-						return workArea.getNbActiveClampingsEachSide();
+					if (workAreaManager.isInUse()) {
+						return workAreaManager.getNbActiveClampingsEachSide();
 					}
 				}
 				return 1;

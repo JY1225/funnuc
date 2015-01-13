@@ -14,7 +14,7 @@ import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.external.robot.RobotPutSettings;
@@ -57,19 +57,19 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		getView().setCNCMillingMachineIds(deviceManager.getCNCMachineNames());
 	}
 	
-	public void changedWorkArea(final String workAreaId) {
-		logger.debug("Changed workarea [" + workAreaId + "].");
-		WorkArea workArea = null;
-		if (workAreaId != null) {
-			workArea = deviceInfo.getDevice().getWorkAreaByName(workAreaId);
+	public void changedWorkArea(final String workAreaName) {
+		logger.debug("Changed workarea [" + workAreaName + "].");
+		SimpleWorkArea workArea = null;
+		if (workAreaName != null) {
+			workArea = deviceInfo.getDevice().getWorkAreaByName(workAreaName).getWorkAreaWithSequence(deviceInfo.getCNCNbInFlow());
 			if (workArea == null) {
-				throw new IllegalArgumentException("Unknown workarea-id [" + workAreaId + "].");
+				throw new IllegalArgumentException("Unknown workarea-id [" + workAreaName + "].");
 			} else {
 				if ((workArea != deviceInfo.getPutStep().getDeviceSettings().getWorkArea()) || (workArea != deviceInfo.getPickStep().getDeviceSettings().getWorkArea())) {
-					deviceInfo.getPutStep().getDeviceSettings().getWorkArea().inUse(false);
-					deviceInfo.getPickStep().getDeviceSettings().getWorkArea().inUse(false);
+					deviceInfo.getPutStep().getDeviceSettings().getWorkArea().setInUse(false);
+					deviceInfo.getPickStep().getDeviceSettings().getWorkArea().setInUse(false);
 					setWorkArea(workArea);
-					workArea.inUse(true);
+					workArea.setInUse(true);
 					setClamping(workArea.getDefaultClamping());
 					addProcessFlowEvent();
 					getView().refreshClampings();
@@ -103,18 +103,18 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	}
 	
 	/**
-	 * Adds the given clamping to the list of active clampings for the current workArea. In case a clamping is already provided for this
+	 * Add the given clamping to the list of active clampings for the current workArea. In case a clamping is already provided for this
 	 * workArea, the clamping will be added to the relatedClampings of the activeClamping.
 	 * 
 	 * @param clamping to add as one of the active clampings to be used for put and pick operations in the machine
 	 */
 	private void addClamping(final Clamping clamping) {
 		DeviceSettings settings = deviceInfo.getDeviceSettings();
-		Clamping activeClamping = settings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
+		Clamping activeClamping = settings.getDefaultClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
 		if(activeClamping != null) {
 			//Add related clamping to activeClamping
-			if ((clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea()))
-					|| (clamping != deviceInfo.getDeviceSettings().getClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea()))) {
+			if ((clamping != deviceInfo.getDeviceSettings().getDefaultClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea()))
+					|| (clamping != deviceInfo.getDeviceSettings().getDefaultClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea()))) {
 				activeClamping.addRelatedClamping(clamping);
 				getView().setDefaultClampingText(clamping.getName(), false);
 				logger.debug("Related clamping " + clamping.getName() +" added.");
@@ -135,7 +135,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	 */
 	private void removeClamping(final Clamping clamping) {
 		DeviceSettings settings = deviceInfo.getDeviceSettings();
-		Clamping activeClamping = settings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
+		Clamping activeClamping = settings.getDefaultClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
 		if(activeClamping.equals(clamping)) {
 			//Remove the active clamping and set the active clamping to one of the related clampings if provided - otherwise set to null
 			if(activeClamping.getRelatedClampings().size() > 0) {
@@ -177,7 +177,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		//In case we want to add the clamping, there is no issue
 		if(isToBeRemoved) {
 			DeviceSettings settings = deviceInfo.getDeviceSettings();
-			Clamping activeClamping = settings.getClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
+			Clamping activeClamping = settings.getDefaultClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
 			if(activeClamping.equals(clamping)) {
 				//There is no other clamp that can take the role of defaultClamping
 				if(activeClamping.getRelatedClampings().size() == 0) {
@@ -191,11 +191,11 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	
 	private void setClamping(final Clamping clamping) {
 		DeviceSettings settings = deviceInfo.getDeviceSettings();		
-		settings.setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);		
+		settings.setDefaultClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);		
 		//sets the active clamping
 		deviceInfo.getDevice().loadDeviceSettings(settings);
-		(deviceInfo.getPickStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
-		(deviceInfo.getPutStep().getDevice().getDeviceSettings()).setClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), clamping);
+		(deviceInfo.getPickStep().getDevice().getDeviceSettings()).setDefaultClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea(), clamping);
+		(deviceInfo.getPutStep().getDevice().getDeviceSettings()).setDefaultClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea(), clamping);
 		deviceInfo.getPutStep().setRelativeTeachedOffset(null);
 		deviceInfo.getPickStep().setRelativeTeachedOffset(null);
 	}
@@ -229,7 +229,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		deviceInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getPickStep().getProcessFlow(), deviceInfo.getPickStep(), true));
 	}
 
-	private void setWorkArea(final WorkArea workArea) {
+	private void setWorkArea(final SimpleWorkArea workArea) {
 		deviceInfo.getPickStep().getDeviceSettings().setWorkArea(workArea);
 		deviceInfo.getPickStep().getRobotSettings().setWorkArea(workArea);
 		deviceInfo.getPutStep().getDeviceSettings().setWorkArea(workArea);
@@ -282,15 +282,15 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 				&& (robotPickSettings.getWorkArea() != null)
 				&& (pickSettings.getWorkArea().equals(robotPickSettings.getWorkArea()))
 				&& (pickSettings.getWorkArea().getDefaultClamping() != null)
-				&& (deviceSettings.getClamping(pickSettings.getWorkArea()) != null)
-				&& (deviceSettings.getClamping(pickSettings.getWorkArea()).equals(pickSettings.getWorkArea().getDefaultClamping()))
+				&& (deviceSettings.getDefaultClamping(pickSettings.getWorkArea()) != null)
+				&& (deviceSettings.getDefaultClamping(pickSettings.getWorkArea()).equals(pickSettings.getWorkArea().getDefaultClamping()))
 				&& (startCyclusSettings.getWorkArea() != null)
 				&& (startCyclusSettings.getWorkArea().getDefaultClamping() != null)
 				&& (putSettings.getWorkArea() != null)
 				&& (robotPutSettings.getWorkArea() != null)
 				&& (putSettings.getWorkArea().equals(robotPutSettings.getWorkArea()))
 				&& (putSettings.getWorkArea().getDefaultClamping() != null)
-				&& (deviceSettings.getClamping(putSettings.getWorkArea()).equals(putSettings.getWorkArea().getDefaultClamping()))
+				&& (deviceSettings.getDefaultClamping(putSettings.getWorkArea()).equals(putSettings.getWorkArea().getDefaultClamping()))
 				&& (correctNbOfActiveClampingsChoosen())		
 			)  {
 			return true;
@@ -300,9 +300,9 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	
 	List<String> getListOfWorkAreas() {
 		List<String> waList = new ArrayList<String>();
-		for (WorkArea workArea: deviceInfo.getDevice().getWorkAreas()) {
-			if (workArea.getPrioIfCloned() == deviceInfo.getCNCNbInFlow()) {
-				waList.add(workArea.getName());
+		for (SimpleWorkArea workArea: deviceInfo.getDevice().getWorkAreas()) {
+			if (workArea.getSequenceNb() == deviceInfo.getCNCNbInFlow()) {
+				waList.add(workArea.getWorkAreaManager().getName());
 			}
 		}
 		return waList;

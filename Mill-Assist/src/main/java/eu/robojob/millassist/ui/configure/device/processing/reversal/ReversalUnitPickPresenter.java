@@ -63,8 +63,8 @@ public class ReversalUnitPickPresenter extends AbstractFormPresenter<ReversalUni
 	}
 	
 	public void resetSmooth() {
-		if (deviceSettings.getClamping(pickStep.getDeviceSettings().getWorkArea()) != null) {
-			pickStep.getRobotSettings().setSmoothPoint(deviceSettings.getClamping(pickStep.getDeviceSettings().getWorkArea()).getSmoothFromPoint());
+		if (deviceSettings.getDefaultClamping(pickStep.getDeviceSettings().getWorkArea()) != null) {
+			pickStep.getRobotSettings().setSmoothPoint(deviceSettings.getDefaultClamping(pickStep.getDeviceSettings().getWorkArea()).getSmoothFromPoint());
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 			getView().refresh();
 		}

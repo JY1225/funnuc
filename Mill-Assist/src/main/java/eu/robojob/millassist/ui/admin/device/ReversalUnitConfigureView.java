@@ -237,7 +237,7 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 			numtxtSmoothFromX.setText("" + smoothFrom.getX());
 			numtxtSmoothFromY.setText("" + smoothFrom.getY());
 			numtxtSmoothFromZ.setText("" + smoothFrom.getZ());
-			cbbUserFrame.setValue(reversalUnit.getWorkAreas().iterator().next().getUserFrame().getName());
+			cbbUserFrame.setValue(reversalUnit.getWorkAreaManagers().iterator().next().getUserFrame().getName());
 			numtxtStationHeight.setText("" + reversalUnit.getStationHeight());
 		}
 	}

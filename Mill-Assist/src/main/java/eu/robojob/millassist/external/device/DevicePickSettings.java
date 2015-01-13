@@ -7,7 +7,7 @@ public class DevicePickSettings extends AbstractDeviceActionSettings<PickStep> {
 	
 	private boolean isMachineAirblow = false;
 	
-	public DevicePickSettings(final AbstractDevice device, final WorkArea workArea) {
+	public DevicePickSettings(final AbstractDevice device, final SimpleWorkArea workArea) {
 		super(device, workArea);
 	}
 	

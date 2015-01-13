@@ -3,7 +3,7 @@ package eu.robojob.millassist.external.robot;
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.robojob.millassist.external.device.WorkArea;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.AbstractProcessStep;
 
@@ -12,7 +12,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 	private int id;
 	private T step;
 	private AbstractRobot robot;
-	private WorkArea workArea;
+	private SimpleWorkArea workArea;
 	private GripperHead gripperHead;
 	private Coordinates smoothPoint;
 	private Coordinates location;
@@ -44,7 +44,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		 }	
 	}
 	
-	public AbstractRobotActionSettings(final AbstractRobot robot, final WorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final boolean gripInner) {
+	public AbstractRobotActionSettings(final AbstractRobot robot, final SimpleWorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final boolean gripInner) {
 		this.robot = robot;
 		this.workArea = workArea;
 		this.gripperHead = gripperHead;
@@ -93,7 +93,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		this.freeAfter = freeAfter;
 	}
 	
-	public WorkArea getWorkArea() {
+	public SimpleWorkArea getWorkArea() {
 		return workArea;
 	}
 	
@@ -121,7 +121,7 @@ public abstract class AbstractRobotActionSettings<T extends AbstractProcessStep>
 		this.location = location;
 	}
 	
-	public void setWorkArea(final WorkArea workArea) {
+	public void setWorkArea(final SimpleWorkArea workArea) {
 		this.workArea = workArea;
 	}
 	
