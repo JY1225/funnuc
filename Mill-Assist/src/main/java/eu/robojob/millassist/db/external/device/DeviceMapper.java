@@ -399,11 +399,6 @@ public class DeviceMapper {
 			Set<Clamping> possibleClampings = getClampingsByWorkAreaId(id);
 			WorkAreaManager workArea = new WorkAreaManager(userFrame, possibleClampings);
 			workArea.setId(id);
-//TODO - I do not think this is still needed - yes it is!! for ReversalUnit !!!! 
-			//			// set default clamping to first
-//			if (possibleClampings.size() > 0) {
-//				workArea.setDefaultClamping(possibleClampings.iterator().next());
-//			}
 			AirblowSquare boundaries = getWorkAreaBoundaries(id);
 			if (boundaries != null) {
 				workArea.setWorkAreaBoundary(new WorkAreaBoundary(workArea, boundaries));

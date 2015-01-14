@@ -429,6 +429,7 @@ public class ProcessFlowMapper {
 		for (Entry<SimpleWorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM WORKAREA_CLAMPING WHERE WORKAREA = ? AND CLAMPING = ?");
 			SimpleWorkArea workarea = entry.getKey();
+			// We saven enkel de workArea's die in gebruik zijn
 			if (workarea.isInUse() || !(device instanceof AbstractCNCMachine)) {
 				stmt2.setInt(1, workarea.getWorkAreaManager().getId());
 				stmt2.setInt(2, entry.getValue().getId());
@@ -654,7 +655,7 @@ public class ProcessFlowMapper {
 				Clamping clamping = workArea.getWorkAreaManager().getClampingById(clampingId).clone();
 				defaultClampings.put(workArea, clamping);
 				addRelatedClampings(deviceSettingsId, clamping, workArea);
-				// Do set default becuase this is a cloned clamping, which is thus not the same
+				// Do not set default because this is a cloned clamping, which is thus not the same. 
 				//workArea.setDefaultClamping(clamping);
 			} catch (CloneNotSupportedException e) {
 				logger.error(e);

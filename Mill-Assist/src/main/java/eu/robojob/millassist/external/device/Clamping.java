@@ -103,7 +103,7 @@ public class Clamping implements Cloneable {
 	public void removeRelatedClamping(final Clamping clamping) {
 		Clamping clToRemove = null;
 		for (Clamping relClamping: relatedClampings) {
-			if (clamping.getName().equals(relClamping.getName()) && clamping.getId() == relClamping.getId()) {
+			if (clamping.equals(relClamping)) {
 				clToRemove = relClamping;
 				break;
 			}
@@ -216,7 +216,6 @@ public class Clamping implements Cloneable {
 	public Clamping clone() throws CloneNotSupportedException {
 		Clamping clonedClamping = new Clamping(this.type, this.name, this.defaultHeight, this.relativePosition, this.smoothToPoint, this.smoothFromPoint, this.imageURL, this.fixtureType);
 		clonedClamping.setDefaultAirblowPoints(this.getDefaultAirblowPoints());
-//		clonedClamping.prcIdUsingClamping = this.prcIdUsingClamping;
 		clonedClamping.setId(this.id);
 		return clonedClamping;
 	}

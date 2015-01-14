@@ -329,10 +329,14 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			throw new IllegalArgumentException("Workarea " + workArea.getWorkAreaManager().getName() + " with sequence " + nbCNCMachine + " is already in use");
 		}
 		if (workArea.getWorkAreaManager().getClampings().size() >= 1) {
-			clamping = workArea.getWorkAreaManager().getClampings().iterator().next();
-			if (clamping == null) {
-				throw new IllegalArgumentException("Device [" + cncMachine + "] with workarea [" + workArea + "] does not contain clamping");
+			try {
+				clamping = workArea.getWorkAreaManager().getClampings().iterator().next().clone();
+			} catch (CloneNotSupportedException e) {
+				logger.error(e);
 			}
+		}
+		if (clamping == null) {
+			throw new IllegalArgumentException("Device [" + cncMachine + "] with workarea [" + workArea + "] does not contain clamping");
 		}
 
 		
@@ -347,9 +351,13 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		DevicePutSettings devicePutSettings = cncMachine.getDefaultPutSettings(nbCNCMachine);
 		devicePutSettings.setWorkArea(workArea);
 		
+		// Make new deviceSettings object using workArea information from the previous one
+		// (there should only be 1 deviceSettings object per device per processflow)
+		// TODO - kunnen we de vorige deviceSettings niet gewoon uitbreiden? (getDeviceSettings gebruikt alle workAreas)
 		DeviceSettings deviceSettings = cncMachine.getDeviceSettings();
 		deviceSettings.setDefaultClamping(workArea, clamping);
 		processFlowAdapter.getProcessFlow().setDeviceSettings(cncMachine, deviceSettings);
+		//TODO - kunnen we hier niet beter met listeners werken? - aangeroepen door setDefault
 		cncMachine.loadDeviceSettings(deviceSettings);
 		
 		FanucRobotPutSettings robotPutSettings = new FanucRobotPutSettings();

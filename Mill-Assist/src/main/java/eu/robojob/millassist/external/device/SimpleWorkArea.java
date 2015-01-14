@@ -122,8 +122,12 @@ public class SimpleWorkArea {
 	 * @throws NoFreeClampingInWorkareaException
 	 */
 	public synchronized void getFreeActiveClamping(int processId) throws NoFreeClampingInWorkareaException {
-		Clamping freeClamping = reserveFreeActiveClampingForProcess(processId);
-		getWorkAreaManager().reserveClamping(freeClamping);
+		if (getWorkAreaManager().canReserveClamping()) {
+			Clamping freeClamping = reserveFreeActiveClampingForProcess(processId);
+			getWorkAreaManager().reserveClamping(freeClamping);
+		} else {
+			throw new NoFreeClampingInWorkareaException();
+		}
 	}
 	
 	private Clamping reserveFreeActiveClampingForProcess(int processId) throws NoFreeClampingInWorkareaException {

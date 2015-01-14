@@ -30,6 +30,7 @@ public class WorkAreaManager {
 	private Map<Integer, SimpleWorkArea> workAreas;
 	// All the possible clampings for the managed workarea
 	private Set<Clamping> clampings;
+	// clampings currently being used by the process
 	private List<Clamping> clampingsInUse;
 	
 	private static Logger logger = LogManager.getLogger(WorkAreaManager.class.getName());
@@ -124,22 +125,22 @@ public class WorkAreaManager {
 		return clampingNames;
 	}
 	
-	public Clamping getClampingByName(final String name) {
+	public Clamping getClampingByName(final String name) throws IllegalArgumentException {
 		for (Clamping clamping : clampings) {
 			if (clamping.getName().equals(name)) {
 				return clamping;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("No clamping found in workarea " + getName() + " with name " + name);
 	}
 	
-	public Clamping getClampingById(final int id) {
+	public Clamping getClampingById(final int id) throws IllegalArgumentException {
 		for (Clamping clamping : clampings) {
 			if (clamping.getId() == id) {
 				return clamping;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("No clamping found in workarea " + getName() + " with id " + id);
 	}
 	
 	public void addWorkArea(SimpleWorkArea workArea) {
@@ -154,8 +155,12 @@ public class WorkAreaManager {
 		return names;
 	}
 	
-	public SimpleWorkArea getWorkAreaWithSequence(int sequenceNb) {
-		return workAreas.get(sequenceNb);
+	public SimpleWorkArea getWorkAreaWithSequence(int sequenceNb) throws IllegalArgumentException {
+		SimpleWorkArea result = workAreas.get(sequenceNb);
+		if (result == null) {
+			throw new IllegalArgumentException("No simple workarea found with sequence " + sequenceNb);
+		}
+		return result;
 	}
 	
 	public Map<Integer, SimpleWorkArea> getWorkAreas() {
@@ -199,10 +204,14 @@ public class WorkAreaManager {
 	}
 	
 	void reserveClamping(Clamping freeClamping) throws NoFreeClampingInWorkareaException {
-		if (clampingsInUse.size() >= maxClampsToFill) {
-			throw new NoFreeClampingInWorkareaException();
-		}
 		clampingsInUse.add(freeClamping);
+	}
+	
+	boolean canReserveClamping() {
+		if (clampingsInUse.size() >= maxClampsToFill) {
+			return false;
+		}
+		return true;
 	}
 	
 	/**

@@ -80,7 +80,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	
 	/**
 	 * Add or remove a given clamping from the list of active clampings. Whether the clamping should be removed or added
-	 * is solely dependent of the boolean value isSelected.
+	 * is solely dependent on the boolean value isSelected.
 	 * 
 	 * @param clamping to be removed/added
 	 * @param isSelected flag 
@@ -110,12 +110,17 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	 */
 	private void addClamping(final Clamping clamping) {
 		DeviceSettings settings = deviceInfo.getDeviceSettings();
+		//This is the cloned clamping
 		Clamping activeClamping = settings.getDefaultClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
 		if(activeClamping != null) {
 			//Add related clamping to activeClamping
 			if ((clamping != deviceInfo.getDeviceSettings().getDefaultClamping(deviceInfo.getPickStep().getDeviceSettings().getWorkArea()))
 					|| (clamping != deviceInfo.getDeviceSettings().getDefaultClamping(deviceInfo.getPutStep().getDeviceSettings().getWorkArea()))) {
-				activeClamping.addRelatedClamping(clamping);
+				try {
+					activeClamping.addRelatedClamping(clamping.clone());
+				} catch (CloneNotSupportedException e) {
+					logger.error(e);
+				}
 				getView().setDefaultClampingText(clamping.getName(), false);
 				logger.debug("Related clamping " + clamping.getName() +" added.");
 			}
@@ -144,9 +149,17 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 				Clamping toBeActiveClamping = null;
 				for(Clamping relClamping: activeClamping.getRelatedClampings()) {
 					if(toBeActiveClamping == null) {
-						toBeActiveClamping = relClamping;
+						try {
+							toBeActiveClamping = relClamping.clone();
+						} catch (CloneNotSupportedException e) {
+							logger.error(e);
+						}
 					} else {
-						newRelatedClampingSet.add(relClamping);
+						try {
+							newRelatedClampingSet.add(relClamping.clone());
+						} catch (CloneNotSupportedException e) {
+							logger.error(e);
+						}
 					}
 				}
 				toBeActiveClamping.setRelatedClampings(newRelatedClampingSet);
