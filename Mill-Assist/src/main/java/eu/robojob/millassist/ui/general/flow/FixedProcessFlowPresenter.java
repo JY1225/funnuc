@@ -107,7 +107,7 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 
 	private void showActiveStepChange(final StatusChangedEvent e) {
 		AbstractProcessStep step = e.getActiveStep();
-		int activeWorkPieceIndex = e.getWorkPieceId();
+		int activeWorkPieceIndex = e.getProcessId();
 		if (step != null) {
 			if (step instanceof PickStep) {
 				if (e.getStatusId() == StatusChangedEvent.ENDED) {

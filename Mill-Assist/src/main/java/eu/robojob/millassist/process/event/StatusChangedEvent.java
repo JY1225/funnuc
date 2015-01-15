@@ -25,13 +25,13 @@ public class StatusChangedEvent extends ProcessFlowEvent {
 	
 	private int statusId;
 	
-	private int workPieceId;
+	private int processId;
 	
-	public StatusChangedEvent(final ProcessFlow source, final AbstractProcessStep activeStep, final int statusId, final int workPieceId) {
+	public StatusChangedEvent(final ProcessFlow source, final AbstractProcessStep activeStep, final int statusId, final int processId) {
 		super(source, ProcessFlowEvent.ACTIVE_STEP_CHANGED);
 		this.activeStep = activeStep;
 		this.statusId = statusId;
-		this.workPieceId = workPieceId;
+		this.processId = processId;
 	}
 
 	public AbstractProcessStep getActiveStep() {
@@ -42,8 +42,8 @@ public class StatusChangedEvent extends ProcessFlowEvent {
 		return statusId;
 	}
 	
-	public int getWorkPieceId() {
-		return workPieceId;
+	public int getProcessId() {
+		return processId;
 	}
 	
 	public String toString() {

@@ -235,13 +235,13 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			int nxtPrvLoad = getNxtMCode(prvUnload, nbCncInFlow);
 			int nxtLoad = getNxtMCode(nxtUnload, nbCncInFlow);
 			waitForMCodes(processId, nxtPrvLoad, nxtLoad);
-			if (startCyclusSettings.getWorkArea().getSequenceNb() == nbCncInFlow) {
-				// We are in the final step of 1 process. The workpiece has been unloaded and we will now wait for a new process
-				// to load a raw workpiece. However, all workpieces are done, so we can directly finish the mCode (no load will come anymore).
-				if (startCyclusSettings.getStep().getProcessFlow().getFinishedAmount() == startCyclusSettings.getStep().getProcessFlow().getTotalAmount() - 1) {
-					finishMCode(processId, nxtPrvLoad);
-					finishMCode(processId, nxtLoad);
-				} 
+			// We are in the final step of 1 process. The workpiece has been unloaded and we will now wait for a new process
+			// to load a raw workpiece. However, all workpieces are done, so we can directly finish the mCode (no load will come anymore).
+			int nbClampsFilled = startCyclusSettings.getWorkArea().getNbClampingsPerProcessThread(processId);
+			if (startCyclusSettings.getStep().getProcessFlow().getFinishedAmount() == startCyclusSettings.getStep().getProcessFlow().getTotalAmount() - nbClampsFilled) {
+				// This test only succeeds if this process is the last one to be executed - so no other startCyclusSettings of other processes anymore
+				finishMCode(processId, nxtPrvLoad);
+				finishMCode(processId, nxtLoad);
 			} 
 			// we should finish this M-code if in teach mode (we only use 1 side - no pieces in the clampings that is currently at the front of the machine)
 			if ((startCyclusSettings.getStep().getProcessFlow().getMode() == Mode.TEACH) || (startCyclusSettings.getStep().getProcessFlow().getTotalAmount() <= 1)) {

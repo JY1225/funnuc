@@ -157,7 +157,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 
 	@Override
 	public void statusChanged(final StatusChangedEvent e) {
-		int workPieceId = e.getWorkPieceId();
+		int workPieceId = e.getProcessId();
 		switch (e.getStatusId()) {
 			case StatusChangedEvent.STARTED :
 				// if not the first, stop pause time measurement after previous step

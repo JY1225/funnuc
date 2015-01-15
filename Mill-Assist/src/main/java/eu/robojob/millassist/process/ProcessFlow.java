@@ -332,9 +332,9 @@ public class ProcessFlow {
 			case ProcessFlowEvent.ACTIVE_STEP_CHANGED:
 				StatusChangedEvent scEvent = (StatusChangedEvent) event;
 				if (scEvent.getActiveStep() != null) {
-					setCurrentIndex(scEvent.getWorkPieceId(), getStepIndex(scEvent.getActiveStep()));
+					setCurrentIndex(scEvent.getProcessId(), getStepIndex(scEvent.getActiveStep()));
 				} else {
-					setCurrentIndex(scEvent.getWorkPieceId(), -1);
+					setCurrentIndex(scEvent.getProcessId(), -1);
 				}
 				for (ProcessFlowListener listener : tempListeners) {
 					listener.statusChanged(scEvent);

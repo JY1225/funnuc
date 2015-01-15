@@ -266,7 +266,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			waitForMCodes(processId, nxtPrvLoad, nxtLoad);
 			// We are in the final step of 1 process. The workpiece has been unloaded and we will now wait for a new process
 			// to load a raw workpiece. However, all workpieces are done, so we can directly finish the mCode (no load will come anymore).
-			//TODO - multiFixture (-1) - end with 2 pieces
 			int nbClampsFilled = startCyclusSettings.getWorkArea().getNbClampingsPerProcessThread(processId);
 			if (startCyclusSettings.getStep().getProcessFlow().getFinishedAmount() == startCyclusSettings.getStep().getProcessFlow().getTotalAmount() - nbClampsFilled) {
 				// This test only succeeds if this process is the last one to be executed - so no other startCyclusSettings of other processes anymore

@@ -37,8 +37,8 @@ public class PutStep extends AbstractTransportStep {
 	}
 	
 	@Override
-	public void executeStep(final int workPieceId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
-		executeStep(false, workPieceId, executor);
+	public void executeStep(final int processId, final ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException {
+		executeStep(false, processId, executor);
 	}
 
 	@Override

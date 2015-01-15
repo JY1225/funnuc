@@ -20,7 +20,7 @@ public abstract class AbstractProcessStep {
 		this(null);
 	}
 	
-	public abstract void executeStep(int workpieceId, ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException;
+	public abstract void executeStep(int processId, ProcessExecutor executor) throws AbstractCommunicationException, RobotActionException, DeviceActionException, InterruptedException;
 	public abstract String toString();
 	public abstract ProcessStepType getType();
 	
