@@ -63,6 +63,7 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 						} else {
 							processFlow.setCurrentIndex(PROCESS_0_ID, processFlow.getCurrentIndex(PROCESS_0_ID) + 1);
 							processFlowExecutors[PROCESS_0_ID].setExecutionStatus(ExecutionThreadStatus.PROCESSING_IN_MACHINE);	
+							processFlowExecutors[PROCESS_0_ID].startProcessing();
 						}
 						processFlowExecutors[PROCESS_0_ID].incrementNbInMachine();
 						processFlowExecutors[PROCESS_0_ID].incrementNbInFlow();
