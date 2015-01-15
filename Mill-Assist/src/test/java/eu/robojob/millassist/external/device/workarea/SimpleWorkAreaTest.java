@@ -132,7 +132,6 @@ public class SimpleWorkAreaTest {
 		workAreaManager1.freeClamping(1);
 		assertFalse(clamping3.getProcessIdUsingClamping().contains(1));
 		assertFalse(clamping2.getProcessIdUsingClamping().contains(1));
-
 	}
 	
 	private void loadDeviceSettings(final DeviceSettings deviceSettings) {
