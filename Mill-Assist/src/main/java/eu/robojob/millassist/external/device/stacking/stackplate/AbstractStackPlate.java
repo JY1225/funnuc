@@ -105,7 +105,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	@Override
 	public void prepareForProcess(ProcessFlow process)
 			throws AbstractCommunicationException, InterruptedException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -138,7 +137,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	public void prepareForPick(DevicePickSettings pickSettings, final int processId)
 			throws AbstractCommunicationException, DeviceActionException,
 			InterruptedException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -146,7 +144,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	public void prepareForPut(DevicePutSettings putSettings, final int processId)
 			throws AbstractCommunicationException, DeviceActionException,
 			InterruptedException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -155,7 +152,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 			DeviceInterventionSettings interventionSettings)
 			throws AbstractCommunicationException, DeviceActionException,
 			InterruptedException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -172,11 +168,39 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public synchronized void putFinished(final DevicePutSettings putSettings) {
+		doCorrectionFinishedWorkPiece();
 		currentPutLocation.setWorkPiece(getFinishedWorkPiece());
 		currentPutLocation.setAmount(currentPutLocation.getAmount() + 1);
 		currentPutLocation = null;
 		notifyLayoutChanged();
 		logger.info("put finished!");
+	}
+	
+	private void doCorrectionFinishedWorkPiece() {
+		float deltaLength = getRawWorkPiece().getDimensions().getLength() - getFinishedWorkPiece().getDimensions().getLength();
+		float deltaWidth = getRawWorkPiece().getDimensions().getWidth() - getFinishedWorkPiece().getDimensions().getWidth();
+		switch (currentPutLocation.getOrientation()) {
+		case HORIZONTAL:
+			currentPutLocation.getPosition().setX(currentPutLocation.getPutPosition().getX() - deltaLength/2);
+			currentPutLocation.getPosition().setY(currentPutLocation.getPutPosition().getY() - deltaWidth/2);
+			break;
+		case DEG90:
+			currentPutLocation.getPosition().setX(currentPutLocation.getPutPosition().getX() - deltaWidth/2);
+			currentPutLocation.getPosition().setY(currentPutLocation.getPutPosition().getY() - deltaLength/2);
+			break;
+		case TILTED:
+			double extraX = (getRawWorkPiece().getDimensions().getLength()/Math.sqrt(2) - getRawWorkPiece().getDimensions().getWidth()/Math.sqrt(2))/2;
+			double extraY = (getRawWorkPiece().getDimensions().getLength()/Math.sqrt(2) + getRawWorkPiece().getDimensions().getWidth()/Math.sqrt(2))/2;
+			currentPutLocation.getPosition().setX((float) (currentPutLocation.getPutPosition().getX() - extraX));
+			currentPutLocation.getPosition().setY((float) (currentPutLocation.getPutPosition().getY() - extraY));
+			extraX = (getFinishedWorkPiece().getDimensions().getLength()/Math.sqrt(2) - getFinishedWorkPiece().getDimensions().getWidth()/Math.sqrt(2))/2;
+			extraY = (getFinishedWorkPiece().getDimensions().getLength()/Math.sqrt(2) + getFinishedWorkPiece().getDimensions().getWidth()/Math.sqrt(2))/2;
+			currentPutLocation.getPosition().setX((float) (currentPutLocation.getPutPosition().getX() + extraX));
+			currentPutLocation.getPosition().setY((float) (currentPutLocation.getPutPosition().getY() + extraY));
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override
@@ -184,7 +208,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 			DeviceInterventionSettings interventionSettings)
 			throws AbstractCommunicationException, DeviceActionException,
 			InterruptedException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -192,7 +215,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	public void releasePiece(DevicePickSettings pickSettings)
 			throws AbstractCommunicationException, DeviceActionException,
 			InterruptedException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -200,14 +222,12 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	public void grabPiece(DevicePutSettings putSettings)
 			throws AbstractCommunicationException, DeviceActionException,
 			InterruptedException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void reset() throws AbstractCommunicationException,
 			DeviceActionException, InterruptedException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -307,7 +327,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public void interruptCurrentAction() {
-		// TODO Auto-generated method stub
 
 	}
 	
@@ -343,7 +362,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public boolean isConnected() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	
