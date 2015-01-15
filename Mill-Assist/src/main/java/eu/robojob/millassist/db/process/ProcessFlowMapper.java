@@ -1052,7 +1052,7 @@ public class ProcessFlowMapper {
 	}
 	
 	public static int getProcessFlowIdForName(final String name) throws SQLException {
-		int id = 0;
+		int id = -1;
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PROCESSFLOW WHERE NAME = ?");
 		stmt.setString(1, name);
 		ResultSet resultSet = stmt.executeQuery();

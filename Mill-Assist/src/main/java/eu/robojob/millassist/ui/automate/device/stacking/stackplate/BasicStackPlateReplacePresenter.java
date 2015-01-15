@@ -85,4 +85,8 @@ public class BasicStackPlateReplacePresenter extends AbstractFormPresenter<Basic
 	public int getFinishedAmount() {
 		return processFlow.getFinishedAmount();
 	}
+	
+	boolean isAutoMode() {
+		return processFlow.getMode().equals(Mode.AUTO);
+	}
 }

@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -175,6 +177,12 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		lblName = new Label(Translator.getTranslation(NAME));
 		fulltxtName = new FullTextField(100);
 		fulltxtName.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+		fulltxtName.setOnChange(new ChangeListener<String>() {
+			@Override
+			public void changed(final ObservableValue<? extends String> arg0, final String arg1, final String arg2) {
+				validate();
+			}
+		});		
 		lblGripperType = new Label(Translator.getTranslation(GRIPPER_TYPE));
 		rbGripperTypeTwoPoint = new RadioButton(Translator.getTranslation(GRIPPER_TYPE_TWOPOINT));
 		rbGripperTypeVacuum = new RadioButton(Translator.getTranslation(GRIPPER_TYPE_VACUUM));
@@ -186,6 +194,12 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 		numtxtHeight = new NumericTextField(3);
 		numtxtHeight.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
 		numtxtHeight.setMaxWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
+		numtxtHeight.setOnChange(new ChangeListener<Float>() {
+			@Override
+			public void changed(final ObservableValue<? extends Float> arg0, final Float arg1, final Float arg2) {
+				validate();
+			}
+		});	
 		spacer = new Region();
 		spacer.setPrefWidth(15);
 		lblFixedHeight = new Label(Translator.getTranslation(FIXED_HEIGHT));
