@@ -243,9 +243,9 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 
 	@Override
 	public boolean canIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {
-		if (interventionSettings.getWorkArea().equals(rawWorkArea)) {
+		if (interventionSettings.getWorkArea().getWorkAreaManager().equals(rawWorkArea)) {
 			return isInterlockRaw();
-		} else if (interventionSettings.getWorkArea().equals(finishedWorkArea)) {
+		} else if (interventionSettings.getWorkArea().getWorkAreaManager().equals(finishedWorkArea)) {
 			return isInterlockFinished();
 		} else {
 			throw new IllegalArgumentException("Illegal workarea: " + interventionSettings.getWorkArea());
@@ -289,7 +289,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 
 	@Override public void prepareForIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// obtain interlock of correct work area, and wait until not moving
-		if (interventionSettings.getWorkArea().equals(rawWorkArea)) {
+		if (interventionSettings.getWorkArea().getWorkAreaManager().equals(rawWorkArea)) {
 			waitForStatusNot((ConveyorConstants.CONV_RAW_MOV));
 			waitForStatus(ConveyorConstants.MODE);
 			int command = 0;
@@ -297,7 +297,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 			int[] commandReg = {command};
 			getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, commandReg);
 			waitForStatus(ConveyorConstants.CONV_RAW_INTERLOCK);
-		} else if (interventionSettings.getWorkArea().equals(finishedWorkArea)) {
+		} else if (interventionSettings.getWorkArea().getWorkAreaManager().equals(finishedWorkArea)) {
 			waitForStatusNot((ConveyorConstants.CONV_FINISHED_MOV));
 			waitForStatus(ConveyorConstants.MODE);
 			int command = 0;
@@ -352,12 +352,12 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	@Override
 	public void interventionFinished(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// release interlock
-		if (interventionSettings.getWorkArea().equals(rawWorkArea)) {
+		if (interventionSettings.getWorkArea().getWorkAreaManager().equals(rawWorkArea)) {
 			int command = 0;
 			command = command | ConveyorConstants.RELEASE_INTERLOCK_RAW;
 			int[] commandReg = {command};
 			getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, commandReg);
-		} else if (interventionSettings.getWorkArea().equals(finishedWorkArea)) {
+		} else if (interventionSettings.getWorkArea().getWorkAreaManager().equals(finishedWorkArea)) {
 			int command = 0;
 			command = command | ConveyorConstants.RELEASE_INTERLOCK_FINISHED;
 			int[] commandReg = {command};
@@ -409,7 +409,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 
 	@Override
 	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
-		if (!workArea.equals(rawWorkArea)) {
+		if (!workArea.getWorkAreaManager().equals(rawWorkArea)) {
 			throw new IllegalStateException("Can only pick from raw conveyor");
 		}
 		//FIXME: review if this is still ok
@@ -452,13 +452,13 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	
 	@Override
 	public Coordinates getLocationOrientation(final SimpleWorkArea workArea, final ClampingManner clampType) {
-		if (workArea.equals(rawWorkArea)) {
+		if (workArea.getWorkAreaManager().equals(rawWorkArea)) {
 			Coordinates c = new Coordinates(layout.getStackingPositionsRawWorkPieces().get(0).getPosition());
 			c.setX(0);
 			c.setY(0);
 			c.setZ(0);
 			return c;
-		} else if (workArea.equals(finishedWorkArea)) {
+		} else if (workArea.getWorkAreaManager().equals(finishedWorkArea)) {
 			Coordinates c = new Coordinates(layout.getStackingPositionsFinishedWorkPieces().get(0).getPosition());
 			c.setX(0);
 			c.setY(0);

@@ -253,9 +253,9 @@ public class Conveyor extends AbstractConveyor {
 
 	@Override
 	public boolean canIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException {
-		if (interventionSettings.getWorkArea().equals(workAreaA)) {
+		if (interventionSettings.getWorkArea().getWorkAreaManager().equals(workAreaA)) {
 			return isTrackAInterlock();
-		} else if (interventionSettings.getWorkArea().equals(workAreaB)) {
+		} else if (interventionSettings.getWorkArea().getWorkAreaManager().equals(workAreaB)) {
 			return isTrackBInterlock();
 		} else {
 			throw new IllegalArgumentException("Illegal workarea: " + interventionSettings.getWorkArea());
@@ -265,7 +265,7 @@ public class Conveyor extends AbstractConveyor {
 	@Override
 	public void prepareForPick(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// wait until work piece in position, obtain interlock
-		if (pickSettings.getWorkArea().equals(workAreaA)) {
+		if (pickSettings.getWorkArea().getWorkAreaManager().equals(workAreaA)) {
 			waitForStatus((ConveyorConstants.CONV_A_WP_IN_POSITION | ConveyorConstants.MODE));
 			int command = 0;
 			command = command | ConveyorConstants.RQST_INTERLOCK_A;
@@ -275,7 +275,7 @@ public class Conveyor extends AbstractConveyor {
 			logger.debug("Waiting for confirmation track A interlock.");
 			waitForStatus(ConveyorConstants.CONV_A_INTERLOCK);
 			logger.debug("Obtained interlock, prepare for pick is ready");
-		} else if (pickSettings.getWorkArea().equals(workAreaB)) {
+		} else if (pickSettings.getWorkArea().getWorkAreaManager().equals(workAreaB)) {
 			if (!isTrackBModeLoad()) {
 				throw new IllegalArgumentException("Track B is not in load mode!");
 			}
@@ -295,7 +295,7 @@ public class Conveyor extends AbstractConveyor {
 
 	@Override
 	public void prepareForPut(final DevicePutSettings putSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
-		if (putSettings.getWorkArea().equals(workAreaB)) {
+		if (putSettings.getWorkArea().getWorkAreaManager().equals(workAreaB)) {
 			if (!isTrackBModeLoad()) {
 				logger.debug("Checking finished conveyor is not moving, if so, wait until stopped.");
 				waitForStatusNot(ConveyorConstants.CONV_B_MOV);
@@ -319,7 +319,7 @@ public class Conveyor extends AbstractConveyor {
 
 	@Override
 	public void prepareForIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
-		if (interventionSettings.getWorkArea().equals(workAreaA)) {
+		if (interventionSettings.getWorkArea().getWorkAreaManager().equals(workAreaA)) {
 			int command = 0;
 			command = command | ConveyorConstants.RQST_INTERLOCK_A;
 			int[] commandReg = {command};
@@ -328,7 +328,7 @@ public class Conveyor extends AbstractConveyor {
 			logger.debug("Waiting for confirmation track A interlock.");
 			waitForStatus(ConveyorConstants.CONV_A_INTERLOCK);
 			logger.debug("Obtained interlock, prepare for intervention is ready");
-		} else if (interventionSettings.getWorkArea().equals(workAreaB)) {
+		} else if (interventionSettings.getWorkArea().getWorkAreaManager().equals(workAreaB)) {
 			if (!isTrackBModeLoad()) {
 				throw new IllegalArgumentException("Track B is not in load mode!");
 			}
@@ -348,7 +348,7 @@ public class Conveyor extends AbstractConveyor {
 	@Override
 	public void pickFinished(final DevicePickSettings pickSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// release interlock and update lastTrackPickedA variable
-		if (pickSettings.getWorkArea().equals(workAreaA)) {
+		if (pickSettings.getWorkArea().getWorkAreaManager().equals(workAreaA)) {
 			int command = 0;
 			command = command | ConveyorConstants.RELEASE_INTERLOCK_A;
 			int[] commandReg = {command};
@@ -357,7 +357,7 @@ public class Conveyor extends AbstractConveyor {
 			logger.debug("Waiting for confirmation interlock A released.");
 			waitForStatusNot(ConveyorConstants.CONV_A_INTERLOCK);
 			lastTrackPickedA = true;
-		} else if (pickSettings.getWorkArea().equals(workAreaB)) {
+		} else if (pickSettings.getWorkArea().getWorkAreaManager().equals(workAreaB)) {
 			int command = 0;
 			command = command | ConveyorConstants.RELEASE_INTERLOCK_B;
 			int[] commandReg = {command};
@@ -374,7 +374,7 @@ public class Conveyor extends AbstractConveyor {
 	@Override
 	public void putFinished(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// release interlock
-		if (putSettings.getWorkArea().equals(workAreaB)) {
+		if (putSettings.getWorkArea().getWorkAreaManager().equals(workAreaB)) {
 			int command = 0;
 			command = command | ConveyorConstants.RELEASE_INTERLOCK_B;
 			int[] commandReg = {command};
@@ -399,13 +399,13 @@ public class Conveyor extends AbstractConveyor {
 	@Override
 	public void interventionFinished(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// release interlock
-		if (interventionSettings.getWorkArea().equals(workAreaA)) {
+		if (interventionSettings.getWorkArea().getWorkAreaManager().equals(workAreaA)) {
 			int command = 0;
 			command = command | ConveyorConstants.RELEASE_INTERLOCK_A;
 			int[] commandReg = {command};
 			getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, commandReg);
 			waitForStatusNot(ConveyorConstants.CONV_A_INTERLOCK);
-		} else if (interventionSettings.getWorkArea().equals(workAreaB)) {
+		} else if (interventionSettings.getWorkArea().getWorkAreaManager().equals(workAreaB)) {
 			int command = 0;
 			command = command | ConveyorConstants.RELEASE_INTERLOCK_B;
 			int[] commandReg = {command};
@@ -464,10 +464,10 @@ public class Conveyor extends AbstractConveyor {
 
 	@Override
 	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
-		if (workArea.equals(workAreaA)) {
+		if (workArea.getWorkAreaManager().equals(workAreaA)) {
 			StackingPosition stPos = layout.getStackingPositionTrackA();
 			return stPos.getPosition();
-		} else if (workArea.equals(workAreaB)) {
+		} else if (workArea.getWorkAreaManager().equals(workAreaB)) {
 			if (isTrackBModeLoad()) {
 				StackingPosition stPos = layout.getStackingPositionTrackB();
 				return stPos.getPosition();
@@ -481,7 +481,7 @@ public class Conveyor extends AbstractConveyor {
 
 	@Override
 	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
-		if (workArea.equals(workAreaB)) {
+		if (workArea.getWorkAreaManager().equals(workAreaB)) {
 			if (!isTrackBModeLoad()) {
 				StackingPosition stPos = layout.getStackingPositionTrackB();
 				return stPos.getPosition();
@@ -503,9 +503,9 @@ public class Conveyor extends AbstractConveyor {
 
 	@Override
 	public Coordinates getLocationOrientation(final SimpleWorkArea workArea, final ClampingManner clampType) {
-		if (workArea.equals(workAreaA)) {
+		if (workArea.getWorkAreaManager().equals(workAreaA)) {
 			return layout.getStackingPositionTrackA().getPosition();
-		} else if (workArea.equals(workAreaB)) {
+		} else if (workArea.getWorkAreaManager().equals(workAreaB)) {
 			return layout.getStackingPositionTrackB().getPosition();
 		} else {
 			throw new IllegalArgumentException("Illegal workarea: " + workArea);
