@@ -674,6 +674,7 @@ public class FanucRobot extends AbstractRobot {
 		
 		// Safety add Z, if bottom approach, make value negative, compare to smooth and use the smallest
 		// 	for other approaches: use UF value, compare to smooth and use the largest
+		// other approachtypes worden geregeld in robot
 		if (approachType.equals(ApproachType.BOTTOM)) {
 			if (smoothPoint.getZ() < (-workArea.getWorkAreaManager().getUserFrame().getzSafeDistance())) {	// safety add z
 				values.add(df.format(smoothPoint.getZ()));
@@ -694,7 +695,17 @@ public class FanucRobot extends AbstractRobot {
 		values.add("1");							// tangent to/from
 		//TODO review if this strategy is always safe
 		if (workArea.getWorkAreaManager().getZone().getDevice() instanceof ReversalUnit) {
-			values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XY);	// xy allowed
+			switch (approachType) {
+			case FRONT:
+				values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XZ);	// xz allowed - y not allowed
+				break;
+			case LEFT:
+				values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_YZ);	// yz allowed - x not allowed
+				break;
+			default:
+				values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XY);	// xy allowed - z not allowed
+				break;
+			}
 		} else {
 			values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XYZ);	// xyz allowed
 		}
