@@ -91,8 +91,8 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return false;
 	}
 	
-	public abstract Coordinates getPickLocation(SimpleWorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType);
-	public abstract Coordinates getPutLocation(SimpleWorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType);
+	public abstract Coordinates getPickLocation(SimpleWorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType, ApproachType approachType);
+	public abstract Coordinates getPutLocation(SimpleWorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType, ApproachType approachType);
 	public abstract Coordinates getLocationOrientation(SimpleWorkArea workArea, ClampingManner clampType);
 	
 	public abstract void interruptCurrentAction();

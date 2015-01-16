@@ -29,6 +29,7 @@ import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarmsOccuredEvent;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.threading.ThreadManager;
@@ -408,7 +409,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	}
 
 	@Override
-	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		if (!workArea.getWorkAreaManager().equals(rawWorkArea)) {
 			throw new IllegalStateException("Can only pick from raw conveyor");
 		}
@@ -471,7 +472,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 
 	@Override
 	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, 
-			final ClampingManner clampType) {
+			final ClampingManner clampType, final ApproachType approachType) {
 		return layout.getStackingPositionsFinishedWorkPieces().get(lastFinishedWorkPieceIndex).getPosition();
 	}
 
@@ -480,7 +481,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		if (type == Type.FINISHED) {
 			return layout.getStackingPositionsFinishedWorkPieces().get(lastFinishedWorkPieceIndex).getPosition();
 		} else if (type == Type.RAW) {
-			return getPickLocation(workArea, getRawWorkPiece().getDimensions(), clampType);
+			return getPickLocation(workArea, getRawWorkPiece().getDimensions(), clampType, ApproachType.TOP);
 		}
 		return null;
 	}

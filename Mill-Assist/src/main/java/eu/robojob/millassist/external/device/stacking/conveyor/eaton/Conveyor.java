@@ -28,6 +28,7 @@ import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataExce
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorListener;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.threading.ThreadManager;
@@ -189,9 +190,9 @@ public class Conveyor extends AbstractConveyor {
 	@Override
 	public Coordinates getLocation(final SimpleWorkArea workArea, final Type type, final ClampingManner clampType) throws DeviceActionException, InterruptedException {
 		if (type == Type.FINISHED) {
-			return getPutLocation(workArea, getFinishedWorkPiece().getDimensions(), clampType);
+			return getPutLocation(workArea, getFinishedWorkPiece().getDimensions(), clampType, ApproachType.TOP);
 		} else if (type == Type.RAW) {
-			return getPickLocation(workArea, getRawWorkPiece().getDimensions(), clampType);
+			return getPickLocation(workArea, getRawWorkPiece().getDimensions(), clampType, ApproachType.TOP);
 		}
 		return null;
 	}
@@ -463,7 +464,7 @@ public class Conveyor extends AbstractConveyor {
 	}
 
 	@Override
-	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		if (workArea.getWorkAreaManager().equals(workAreaA)) {
 			StackingPosition stPos = layout.getStackingPositionTrackA();
 			return stPos.getPosition();
@@ -480,7 +481,7 @@ public class Conveyor extends AbstractConveyor {
 	}
 
 	@Override
-	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		if (workArea.getWorkAreaManager().equals(workAreaB)) {
 			if (!isTrackBModeLoad()) {
 				StackingPosition stPos = layout.getStackingPositionTrackB();

@@ -17,6 +17,7 @@ import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
@@ -124,7 +125,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		throw new IllegalStateException("This method should never be called");
 	}
 	
@@ -148,7 +149,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			if (clampType.isChanged()) {

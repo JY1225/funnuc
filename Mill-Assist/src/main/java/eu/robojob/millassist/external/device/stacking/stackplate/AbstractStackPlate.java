@@ -272,7 +272,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	}
 
 	@Override
-	public synchronized Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public synchronized Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		for (StackPlateStackingPosition stackingPos : getLayout().getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == Type.RAW) && 
 					(stackingPos.getAmount() > 0)) {
@@ -286,7 +286,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	}
 	
 	@Override
-	public synchronized Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public synchronized Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		for (StackPlateStackingPosition stackingPos : getLayout().getStackingPositions()) {
 			if ((stackingPos.getWorkPiece() == null) || ((stackingPos.getWorkPiece() != null) && 
 					(stackingPos.getWorkPiece().getType() == Type.FINISHED) && (stackingPos.getAmount() < getLayout().getLayers()))) {

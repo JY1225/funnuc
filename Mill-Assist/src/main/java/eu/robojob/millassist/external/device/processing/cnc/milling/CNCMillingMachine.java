@@ -30,6 +30,7 @@ import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMonitoring
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
 import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.ProcessFlow;
@@ -653,7 +654,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	}
 	
 	@Override
-	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		Coordinates c = new Coordinates(workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			if (clampType.isChanged()) {
@@ -715,7 +716,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 
 	//TODO - duplicate code
 	@Override
-	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		Coordinates c = new Coordinates(workArea.getWorkAreaManager().getActiveClamping(false, workArea.getSequenceNb()).getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
 			if (clampType.isChanged()) {

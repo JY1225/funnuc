@@ -115,14 +115,16 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH && !isWidthReversal) {
-			c.setX(c.getX() + workPieceDimensions.getWidth()/2);
-			c.setY(c.getY() + workPieceDimensions.getLength()/2);
+			c.setX(c.getX() + getXCoord(workPieceDimensions, approachType));
+			c.setY(c.getY() + getYCoord(workPieceDimensions, approachType));
+			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
 		} else {
-			c.setX(c.getX() + workPieceDimensions.getLength()/2);
-			c.setY(c.getY() + workPieceDimensions.getWidth()/2);
+			c.setX(c.getX() + getYCoord(workPieceDimensions, approachType));
+			c.setY(c.getY() + getXCoord(workPieceDimensions, approachType));
+			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
 		}
 		return c;
 	}
@@ -133,16 +135,57 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType) {
+	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH && !isWidthReversal) {
-			c.setX(c.getX() + workPieceDimensions.getWidth()/2);
-			c.setY(c.getY() + workPieceDimensions.getLength()/2);
+			c.setX(c.getX() + getXCoord(workPieceDimensions, approachType));
+			c.setY(c.getY() + getYCoord(workPieceDimensions, approachType));
+			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
 		} else {
-			c.setX(c.getX() + workPieceDimensions.getLength()/2);
-			c.setY(c.getY() + workPieceDimensions.getWidth()/2);
+			c.setX(c.getX() + getYCoord(workPieceDimensions, approachType));
+			c.setY(c.getY() + getXCoord(workPieceDimensions, approachType));
+			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
 		}
 		return c;
+	}
+	
+	private static float getXCoord(final WorkPieceDimensions workPieceDimensions, final ApproachType approachType) {
+		switch (approachType) {
+		case BOTTOM:
+		case TOP:
+		case LEFT:
+			return workPieceDimensions.getWidth()/2;
+		case FRONT:
+			return workPieceDimensions.getWidth();
+		default:
+			return 0;
+		}
+	}
+	
+	private static float getYCoord(final WorkPieceDimensions workPieceDimensions, final ApproachType approachType) {
+		switch (approachType) {
+		case BOTTOM:
+		case TOP:
+		case FRONT:
+			return workPieceDimensions.getLength()/2;
+		case LEFT:
+			return 0;
+		default:
+			return 0;
+		}
+	}
+	
+	private static float getZCoord(final WorkPieceDimensions workPieceDimensions, final ApproachType approachType) {
+		switch (approachType) {
+		case BOTTOM:
+		case TOP:	
+			return 0;
+		case FRONT:
+		case LEFT:
+			return workPieceDimensions.getHeight()/2;
+		default:
+			return 0;
+		}
 	}
 	
 	@Override
@@ -166,11 +209,16 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	
 	@Override
 	public float getZSafePlane(final WorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
-		if (approachType.equals(ApproachType.BOTTOM)) {
+		//X naar voren, Y naar rechts, Z omhoog
+		switch (approachType) {
+		case BOTTOM:
 			float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
 			zSafePlane += ((ReversalUnit) workArea.getWorkAreaManager().getZone().getDevice()).getStationHeight();
 			return (zSafePlane * -1);
-		} else {
+		case FRONT:
+		case LEFT:
+			return 0;
+		default:
 			return super.getZSafePlane(dimensions, workArea, approachType);
 		}
 	}
