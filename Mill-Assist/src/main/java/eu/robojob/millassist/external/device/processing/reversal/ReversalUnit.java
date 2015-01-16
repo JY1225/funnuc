@@ -3,6 +3,8 @@ package eu.robojob.millassist.external.device.processing.reversal;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -30,6 +32,9 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	
 	private float stationHeight;
 	private boolean isWidthReversal = false;
+	// Also possible to go to bottom via XSafe
+	private boolean bottomApproachViaZSafe = true;
+	private Map<ApproachType, Boolean> allowedApproachTypes = new HashMap<ApproachType, Boolean>();
 	
 	public ReversalUnit(final String name, final float stationHeight) {
 		super(name, false);
@@ -228,4 +233,23 @@ public class ReversalUnit extends AbstractProcessingDevice {
 		return EDeviceGroup.POST_PROCESSING;
 	}
 
+	public void addApproachType(final ApproachType approachType, final boolean isAllowed) {
+		allowedApproachTypes.put(approachType, isAllowed);
+	}
+	
+	public Map<ApproachType, Boolean> getAllowedApproachTypes() {
+		return allowedApproachTypes;
+	}
+	
+	public void setAllowedApproachTypes(Map<ApproachType, Boolean> allowedApproaches) {
+		this.allowedApproachTypes = allowedApproaches;
+	}
+	
+	public boolean getBottomApproachViaZSafe() {
+		return bottomApproachViaZSafe;
+	}
+	
+	public void setBottomApproachViaZSafe(final boolean isViaZSafe) {
+		this.bottomApproachViaZSafe = isViaZSafe;
+	}
 }

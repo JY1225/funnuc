@@ -140,8 +140,8 @@ public final class RobotConstants {
 	public static final int SERVICE_POINT_XYZ_ALLOWED_XYZ			=	1;
 	public static final int SERVICE_POINT_XYZ_ALLOWED_XY			=	2;
 	public static final int SERVICE_POINT_XYZ_ALLOWED_ANGLE			=	3;
-	public static final int SERVICE_POINT_XYZ_ALLOWED_XZ			= 	5;
-	public static final int SERVICE_POINT_XYZ_ALLOWED_YZ			= 	6;
+	public static final int SERVICE_POINT_XYZ_ALLOWED_XZX			= 	5;
+	public static final int SERVICE_POINT_XYZ_ALLOWED_YZX			= 	6;
 	
 	// COMMAND_PERMISSIONS
 	public static final int PERMISSIONS_COMMAND_PICK						=	BIT0;

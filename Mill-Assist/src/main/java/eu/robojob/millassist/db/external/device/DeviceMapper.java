@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import eu.robojob.millassist.db.ConnectionManager;
@@ -42,6 +43,7 @@ import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlateLayout;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
 import eu.robojob.millassist.external.robot.AirblowSquare;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
 
@@ -173,10 +175,24 @@ public class DeviceMapper {
 		ReversalUnit reversalUnit = null;
 		if (results.next()) {
 			int stationHeight = results.getInt("STATION_HEIGHT");
+			boolean bottomViaZSafe = results.getBoolean("BOTTOM_VIA_ZSAFE");
 			reversalUnit = new ReversalUnit(name, zones, stationHeight);
+			reversalUnit.setBottomApproachViaZSafe(bottomViaZSafe);
 			reversalUnit.setId(id);
+			getAllowedApproachTypes(id, reversalUnit);
 		}
 		return reversalUnit;
+	}
+	
+	private void getAllowedApproachTypes(final int id, final ReversalUnit reversalUnit) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ALLOWED_APPROACHTYPE_DEVICE WHERE ID = ?");
+		stmt.setInt(1, id);
+		ResultSet results = stmt.executeQuery();
+		while (results.next()) {
+			ApproachType approachType = ApproachType.getById(results.getInt("APPROACHTYPE"));
+			boolean isAllowed = results.getBoolean("IS_ALLOWED");
+			reversalUnit.addApproachType(approachType, isAllowed);
+		}
 	}
 	
 	private Conveyor getConveyor(final int id, final String name, final Set<Zone> zones) throws SQLException {
@@ -855,7 +871,7 @@ public class DeviceMapper {
 	public void updateReversalUnit(final ReversalUnit reversalUnit, final String name, final String userFrame, final float x, final float y,
 			final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
 			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
-			final float stationHeight) throws SQLException {
+			final float stationHeight, final Map<ApproachType, Boolean> allowedApproaches) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		if ((!reversalUnit.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrame))) {
 			UserFrame newUserFrame = getUserFrameByName(userFrame);
@@ -863,10 +879,17 @@ public class DeviceMapper {
 			updateWorkArea(reversalUnit.getWorkAreaManagers().get(0));
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE REVERSALUNIT " +
-				"SET STATION_HEIGHT = ? WHERE ID = ?");
+				"SET STATION_HEIGHT = ?, BOTTOM_VIA_ZSAFE = ? WHERE ID = ?");
 		stmt.setFloat(1, stationHeight);
-		stmt.setInt(2, reversalUnit.getId());
+		//TODO
+		stmt.setBoolean(2, true);
+		stmt.setInt(3, reversalUnit.getId());
 		stmt.execute();
+		//TODO
+//		hier moet nog iets bij - bottom_via_zsafe/approaches
+		reversalUnit.setBottomApproachViaZSafe(true);
+		saveAllowedApproaches(allowedApproaches, reversalUnit.getId());
+		reversalUnit.setAllowedApproachTypes(allowedApproaches);
 		reversalUnit.setStationHeight(stationHeight);
 		Coordinates c = reversalUnit.getWorkAreas().get(0).getDefaultClamping().getRelativePosition();
 		c.setX(x);
@@ -893,6 +916,17 @@ public class DeviceMapper {
 		reversalUnit.setName(name);
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	private void saveAllowedApproaches(final Map<ApproachType, Boolean> allowedApproaches, final int id) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE ALLOWED_APPROACHTYPE_DEVICE " +
+				"SET IS_ALLOWED = ? WHERE ID = ? AND APPROACHTYPE = ?");
+		stmt.setInt(2, id);
+		for (Entry<ApproachType, Boolean> entry: allowedApproaches.entrySet()) {
+			stmt.setInt(3, entry.getKey().getId());
+			stmt.setBoolean(1, entry.getValue());
+			stmt.execute();
+		}
 	}
 	
 	public void deleteGridPlate(GridPlateLayout gridPlate) throws SQLException {

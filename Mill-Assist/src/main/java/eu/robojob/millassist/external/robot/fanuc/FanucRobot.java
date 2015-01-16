@@ -675,18 +675,10 @@ public class FanucRobot extends AbstractRobot {
 		// Safety add Z, if bottom approach, make value negative, compare to smooth and use the smallest
 		// 	for other approaches: use UF value, compare to smooth and use the largest
 		// other approachtypes worden geregeld in robot
-		if (approachType.equals(ApproachType.BOTTOM)) {
-			if (smoothPoint.getZ() < (-workArea.getWorkAreaManager().getUserFrame().getzSafeDistance())) {	// safety add z
-				values.add(df.format(smoothPoint.getZ()));
-			} else {
-				values.add("" + (-workArea.getWorkAreaManager().getUserFrame().getzSafeDistance()));
-			}
+		if (smoothPoint.getZ() > workArea.getWorkAreaManager().getUserFrame().getzSafeDistance()) {	// safety add z
+			values.add(df.format(smoothPoint.getZ()));
 		} else {
-			if (smoothPoint.getZ() > workArea.getWorkAreaManager().getUserFrame().getzSafeDistance()) {	// safety add z
-				values.add(df.format(smoothPoint.getZ()));
-			} else {
-				values.add("" + workArea.getWorkAreaManager().getUserFrame().getzSafeDistance());
-			}
+			values.add("" + workArea.getWorkAreaManager().getUserFrame().getzSafeDistance());
 		}
 		
 		values.add(df.format(smoothPoint.getX()));	// smooth x
@@ -696,14 +688,16 @@ public class FanucRobot extends AbstractRobot {
 		//TODO review if this strategy is always safe
 		if (workArea.getWorkAreaManager().getZone().getDevice() instanceof ReversalUnit) {
 			switch (approachType) {
+			//TODO front : X safe en X weg & voor bottom een van de twee
 			case FRONT:
-				values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XZ);	// xz allowed - y not allowed
+				values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XZX);	// eerst X, dan zakken en X wegbewegen
 				break;
+			//TODO side: y safe en x weg
 			case LEFT:
-				values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_YZ);	// yz allowed - x not allowed
+				values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_YZX);	// eerst Y, dan Z zakken en X wegbewegen
 				break;
 			default:
-				values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XY);	// xy allowed - z not allowed
+				values.add("" + RobotConstants.SERVICE_POINT_XYZ_ALLOWED_XY);	// first z safe, aftwards XY movements
 				break;
 			}
 		} else {
