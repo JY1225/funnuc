@@ -54,19 +54,19 @@ public class WorkPiece {
 		this.weight = weight;
 	}
 	
+	public WorkPiece(final WorkPiece wp) {
+		this.type = wp.getType();
+		this.dimensions = new WorkPieceDimensions(wp.getDimensions().getLength(), wp.getDimensions().getWidth(), wp.getDimensions().getHeight());
+		this.material = wp.getMaterial();
+		this.weight = wp.getWeight();
+	}
+	
 	public int getId() {
 		return id;
 	}
 
 	public void setId(final int id) {
 		this.id = id;
-	}
-
-	public WorkPiece(final WorkPiece wp) {
-		this.type = wp.getType();
-		this.dimensions = new WorkPieceDimensions(wp.getDimensions().getLength(), wp.getDimensions().getWidth(), wp.getDimensions().getHeight());
-		this.material = wp.getMaterial();
-		this.weight = wp.getWeight();
 	}
 
 	public Type getType() {
@@ -111,10 +111,5 @@ public class WorkPiece {
 	
 	public String toString() {
 		return "WorkPiece: " + type + " - " + dimensions;
-	}
-	
-	@Override
-	public WorkPiece clone() {
-		return new WorkPiece(this);
 	}
 }

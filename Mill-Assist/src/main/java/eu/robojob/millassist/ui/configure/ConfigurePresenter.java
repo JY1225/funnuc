@@ -301,7 +301,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	 * Update the workpieces from the first CNC machine in a way that it generates HALF_FINISHED workpieces
 	 */
 	private static void updateCNCWorkPieces(DeviceInformation deviceInfo) {
-		WorkPiece halfFinishedClone = deviceInfo.getPickStep().getRobotSettings().getWorkPiece().clone();
+		WorkPiece halfFinishedClone = new WorkPiece(deviceInfo.getPickStep().getRobotSettings().getWorkPiece());
 		halfFinishedClone.setType(WorkPiece.Type.HALF_FINISHED);
 		deviceInfo.getPickStep().getRobotSettings().setWorkPiece(halfFinishedClone);
 	}
