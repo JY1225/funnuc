@@ -32,8 +32,8 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	
 	private float stationHeight;
 	private boolean isWidthReversal = false;
-	// Also possible to go to bottom via XSafe
-	private boolean bottomApproachViaZSafe = true;
+	// Also possible to go to bottom via Y
+	private boolean moveToBottomViaX = true;
 	private Map<ApproachType, Boolean> allowedApproachTypes = new HashMap<ApproachType, Boolean>();
 	
 	public ReversalUnit(final String name, final float stationHeight) {
@@ -245,11 +245,11 @@ public class ReversalUnit extends AbstractProcessingDevice {
 		this.allowedApproachTypes = allowedApproaches;
 	}
 	
-	public boolean getBottomApproachViaZSafe() {
-		return bottomApproachViaZSafe;
+	public boolean isMoveToBottomViaX() {
+		return moveToBottomViaX;
 	}
 	
-	public void setBottomApproachViaZSafe(final boolean isViaZSafe) {
-		this.bottomApproachViaZSafe = isViaZSafe;
+	public void setMoveToBottomViaX(final boolean isViaX) {
+		this.moveToBottomViaX = isViaX;
 	}
 }

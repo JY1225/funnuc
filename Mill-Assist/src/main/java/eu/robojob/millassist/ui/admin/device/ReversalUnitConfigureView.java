@@ -1,7 +1,11 @@
 package eu.robojob.millassist.ui.admin.device;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,10 +14,13 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.NumericTextField;
@@ -31,6 +38,14 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	private static final String SMOOTH_FROM = "ReversalUnitConfigureView.smoothFrom";
 	private static final String SAVE = "ReversalUnitConfigureView.save";
 	private static final String STATION_HEIGHT = "ReversalUnitConfigureView.stationHeight";
+	private static final String ALLOWED_APPROACHES = "ReversalUnitConfigureView.allowedApproaches";
+	private static final String TOP_LOAD = "ReversalUnitPickView.topLoad";	
+	private static final String FRONT_LOAD = "ReversalUnitPickView.frontLoad";	
+	private static final String BOTTOM_LOAD = "ReversalUnitPickView.bottomLoad";
+	private static final String LEFT_LOAD = "ReversalUnitPickView.leftLoad";
+	private static final String BOTTOM_VIA_X = "ReversalUnitConfigureView.bottomViaX";
+	private static final String BOTTOM_VIA_Y = "ReversalUnitConfigureView.bottomViaY";
+	private static final String MOVE_TO_BOTTOM = "ReversalUnitConfigureView.moveToBottom";
 	
 	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
 	
@@ -75,6 +90,12 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	private NumericTextField numtxtStationHeight;
 	
 	private ObservableList<String> userFrameNames;
+	
+	private CheckBox cbBottomAllowed, cbTopAllowed, cbFrontAllowed, cbLeftAllowed;
+	private Label lblMoveAway;
+	private Button btnBottomViaX, btnBottomViaY;
+	private Label lblBottom, lblTop, lblFront, lblLeft;
+	private Label lblAllowedApproaches;
 	
 	private Button btnSave;
 	
@@ -128,12 +149,28 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 		numtxtSmoothFromZ = new NumericTextField(10);
 		lblStationHeight = new Label(Translator.getTranslation(STATION_HEIGHT));
 		numtxtStationHeight = new NumericTextField(10);
+		cbTopAllowed = new CheckBox();
+		cbFrontAllowed = new CheckBox();
+		cbLeftAllowed = new CheckBox();
+		cbBottomAllowed = new CheckBox();
+		fullTxtName.setMinWidth(UIConstants.TEXT_FIELD_HEIGHT*7 +8);
+		fullTxtName.setPrefWidth(UIConstants.TEXT_FIELD_HEIGHT*7 +8);
+		fullTxtName.setMaxWidth(UIConstants.TEXT_FIELD_HEIGHT*7 +8);
+		cbbUserFrame.setMinWidth(UIConstants.TEXT_FIELD_HEIGHT*7+8);
+		cbbUserFrame.setPrefWidth(UIConstants.TEXT_FIELD_HEIGHT*7+8);
+		cbbUserFrame.setMaxWidth(UIConstants.TEXT_FIELD_HEIGHT*7+8);
+		lblAllowedApproaches = new Label(Translator.getTranslation(ALLOWED_APPROACHES));
+		lblBottom = new Label(Translator.getTranslation(BOTTOM_LOAD));
+		lblTop= new Label(Translator.getTranslation(TOP_LOAD)); 
+		lblFront= new Label(Translator.getTranslation(FRONT_LOAD));
+		lblLeft= new Label(Translator.getTranslation(LEFT_LOAD));
+		lblMoveAway = new Label(Translator.getTranslation(MOVE_TO_BOTTOM));
 		int column = 0; int row = 0;
 		getContents().add(lblName, column++, row);
-		getContents().add(fullTxtName, column++, row, 4, 1);
+		getContents().add(fullTxtName, column++, row, 5, 1);
 		column = 0; row++;
 		getContents().add(lblUserframe, column++, row);
-		getContents().add(cbbUserFrame, column++, row, 4, 1);
+		getContents().add(cbbUserFrame, column++, row, 5, 1);
 		column = 0; row++;
 		getContents().add(lblPosition, column++, row);
 		getContents().add(lblX, column++, row);
@@ -167,8 +204,16 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 		getContents().add(lblSmoothFromZ, column++, row);
 		getContents().add(numtxtSmoothFromZ, column++, row);
 		column = 0; row++;
-		getContents().add(lblStationHeight, column++, row);
-		getContents().add(numtxtStationHeight, column++, row,2,1);
+		getContents().add(lblAllowedApproaches, column++, row,1,2);
+		getContents().add(cbTopAllowed, column++, row);
+		getContents().add(lblTop, column++, row);
+		getContents().add(cbFrontAllowed, column++, row);
+		getContents().add(lblFront, column, row);
+		column = 1; row++;
+		getContents().add(cbLeftAllowed, column++, row);
+		getContents().add(lblLeft, column++, row);
+		getContents().add(cbBottomAllowed, column++, row);
+		getContents().add(lblBottom, column++, row);
 		column = 0; row++;
 		btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, 
 			new EventHandler<ActionEvent>() {
@@ -187,9 +232,62 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 							Float.parseFloat(numtxtSmoothFromX.getText()),
 							Float.parseFloat(numtxtSmoothFromY.getText()),
 							Float.parseFloat(numtxtSmoothFromZ.getText()),
-							Float.parseFloat(numtxtStationHeight.getText()));
+							Float.parseFloat(numtxtStationHeight.getText()),
+							getAllowedApproaches(),
+							isMoveToBottomViaX());
 				}
 		});
+		btnBottomViaX = createButton(Translator.getTranslation(BOTTOM_VIA_X), UIConstants.BUTTON_HEIGHT * 4, UIConstants.BUTTON_HEIGHT, 
+				new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						moveToForBottomChanged();
+					}	
+		});
+		btnBottomViaY = createButton(Translator.getTranslation(BOTTOM_VIA_Y), UIConstants.BUTTON_HEIGHT * 4, UIConstants.BUTTON_HEIGHT, 
+				new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						moveToForBottomChanged();
+					}	
+		});
+		btnBottomViaY.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT, CSS_CLASS_FORM_BUTTON);
+		btnBottomViaX.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT, CSS_CLASS_FORM_BUTTON);
+		btnBottomViaX.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
+		btnBottomViaY.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+		btnBottomViaX.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		cbTopAllowed.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				cbTopAllowed.setSelected(newValue);
+			}
+		});
+		cbFrontAllowed.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				cbFrontAllowed.setSelected(newValue);
+			}
+		});
+		cbLeftAllowed.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				cbLeftAllowed.setSelected(newValue);
+			}
+		});
+		cbBottomAllowed.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				cbBottomAllowed.setSelected(newValue);
+			}
+		});
+		HBox btnBox = new HBox();
+		btnBox.getChildren().addAll(btnBottomViaX, btnBottomViaY);
+		getContents().add(lblMoveAway, column++, row);
+		getContents().add(btnBox, column, row, 6, 1);
+		column = 0; row++;
+		getContents().add(lblStationHeight, column++, row);
+		getContents().add(numtxtStationHeight, column++, row, 2, 1);
+		column = 0; row++;
 		getContents().add(btnSave, column++, row, 7, 1);
 		GridPane.setHalignment(btnSave, HPos.CENTER);
 	}
@@ -239,7 +337,62 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 			numtxtSmoothFromZ.setText("" + smoothFrom.getZ());
 			cbbUserFrame.setValue(reversalUnit.getWorkAreaManagers().iterator().next().getUserFrame().getName());
 			numtxtStationHeight.setText("" + reversalUnit.getStationHeight());
+			if (reversalUnit.isMoveToBottomViaX()) {
+				btnBottomViaX.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			} else {
+				btnBottomViaY.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			}
+			setAllowedApproaches();
 		}
 	}
-
+	
+	private Map<ApproachType, Boolean> getAllowedApproaches() {
+		Map<ApproachType, Boolean> resultMap = new HashMap<ApproachType, Boolean>();
+		resultMap.put(ApproachType.BOTTOM, cbBottomAllowed.isSelected());
+		resultMap.put(ApproachType.TOP, cbTopAllowed.isSelected());
+		resultMap.put(ApproachType.FRONT, cbFrontAllowed.isSelected());
+		resultMap.put(ApproachType.LEFT, cbLeftAllowed.isSelected());
+		return resultMap;
+	}
+	
+	private void setAllowedApproaches() {
+		Map<ApproachType, Boolean> resultMap = reversalUnit.getAllowedApproachTypes();
+		if (resultMap.containsKey(ApproachType.BOTTOM)) {
+			cbBottomAllowed.setSelected(resultMap.get(ApproachType.BOTTOM));
+		} else {
+			cbBottomAllowed.setSelected(false);
+		}
+		if (resultMap.containsKey(ApproachType.TOP)) {
+			cbTopAllowed.setSelected(resultMap.get(ApproachType.TOP));
+		} else {
+			cbTopAllowed.setSelected(false);
+		}
+		if (resultMap.containsKey(ApproachType.LEFT)) {
+			cbLeftAllowed.setSelected(resultMap.get(ApproachType.LEFT));
+		} else {
+			cbLeftAllowed.setSelected(false);
+		}
+		if (resultMap.containsKey(ApproachType.FRONT)) {
+			cbFrontAllowed.setSelected(resultMap.get(ApproachType.FRONT));
+		} else {
+			cbFrontAllowed.setSelected(false);
+		}
+	}
+	
+	private void moveToForBottomChanged() {
+		if (btnBottomViaY.getStyleClass().contains(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE)) {
+			btnBottomViaY.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			btnBottomViaX.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		} else {
+			btnBottomViaY.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			btnBottomViaX.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		}
+	}
+	
+	private boolean isMoveToBottomViaX() {
+		if (btnBottomViaY.getStyleClass().contains(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE)) {
+			return true;
+		}
+		return false;
+	}
 }

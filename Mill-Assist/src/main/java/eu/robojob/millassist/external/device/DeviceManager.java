@@ -23,6 +23,7 @@ import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
@@ -357,10 +358,11 @@ public class DeviceManager {
 	
 	public void updateReversalUnitData(final ReversalUnit reversalUnit, final String name, final String userFrame, final float x, 
 			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY,
-			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, final float stationHeight) {
+			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, final float stationHeight,
+			final Map<ApproachType, Boolean> allowedApproaches, final boolean isBottomViaX) {
 		try {
 			deviceMapper.updateReversalUnit(reversalUnit, name, userFrame, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-					smoothFromX, smoothFromY, smoothFromZ, stationHeight);
+					smoothFromX, smoothFromY, smoothFromZ, stationHeight, allowedApproaches, isBottomViaX);
 			refresh();
 		} catch (SQLException e) {
 			logger.error(e);

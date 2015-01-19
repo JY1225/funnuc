@@ -19,7 +19,6 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.external.robot.RobotProcessingWhileWaitingSettings;
-import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobotPickSettings;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobotPutSettings;
 import eu.robojob.millassist.process.PickAfterWaitStep;
@@ -490,7 +489,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			ProcessingStep processingStep = new ProcessingStep(deviceStartCyclusSettings);
 			PickStep pickStep = new PickStep(devicePickSettings, robotPickSettings);	
 			
-			pickStep.getRobotSettings().setApproachType(ApproachType.BOTTOM);
+//			pickStep.getRobotSettings().setApproachType(ApproachType.BOTTOM);
 
 			newDeviceInfo.setPutStep(putStep);
 			newDeviceInfo.setPickStep(pickStep);

@@ -1,5 +1,7 @@
 package eu.robojob.millassist.ui.configure.device.processing.reversal;
 
+import java.util.Map.Entry;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -10,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -216,6 +219,58 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 		} else {
 			btnResetSmooth.setDisable(false);
 		} 
+		for (Entry<ApproachType, Boolean> entry: ((ReversalUnit) getPresenter().getPickStep().getDevice()).getAllowedApproachTypes().entrySet()) {
+			enableApproachType(entry.getKey(), entry.getValue());
+		}
 		refreshLoadType(getPresenter().getPickStep().getRobotSettings().getApproachType());
+		refreshLoadButtons();
+	}
+	
+	private void enableApproachType(ApproachType approachType, boolean enable) {
+		switch(approachType) {
+		case BOTTOM:
+			btnBottomLoad.setManaged(enable);
+			btnBottomLoad.setVisible(enable);
+			break;
+		case TOP:
+			btnTopLoad.setManaged(enable);
+			btnTopLoad.setVisible(enable);
+			break;
+		case LEFT:
+			btnLeftLoad.setManaged(enable);
+			btnLeftLoad.setVisible(enable);
+			break;
+		case FRONT:
+			btnFrontLoad.setManaged(enable);
+			btnFrontLoad.setVisible(enable);
+			break;
+		}
+	}
+	
+	private void refreshLoadButtons() {
+		//final button
+		if (!btnBottomLoad.isVisible()) {
+			if (btnLeftLoad.isVisible()) {
+				btnLeftLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+				btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+			} else {
+				if (btnFrontLoad.isVisible()) {
+					btnFrontLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+					btnFrontLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+				}
+			}
+		}
+		//first button
+		if (!btnTopLoad.isVisible()) {
+			if (btnFrontLoad.isVisible()) {
+				btnFrontLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+				btnFrontLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
+			} else {
+				if (btnLeftLoad.isVisible()) {
+					btnLeftLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+					btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
+				}
+			}
+		}
 	}
 }
