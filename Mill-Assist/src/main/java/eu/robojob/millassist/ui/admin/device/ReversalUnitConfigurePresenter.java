@@ -52,9 +52,9 @@ public class ReversalUnitConfigurePresenter extends AbstractFormPresenter<Revers
 	public void saveData(final String name, final String userFrame, final float x, final float y, final float z, final float w,
 			final float p, final float r, final float smoothToX, final float smoothToY, final float smoothToZ, 
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ, final float stationHeight,
-			final Map<ApproachType, Boolean> allowedApproaches, final boolean isMoveToBottomViaX) {
+			final Map<ApproachType, Boolean> allowedApproaches, final float addedXValue) {
 		deviceManager.updateReversalUnitData(reversalUnit, name, userFrame, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-				smoothFromX, smoothFromY, smoothFromZ, stationHeight, allowedApproaches, isMoveToBottomViaX);
+				smoothFromX, smoothFromY, smoothFromZ, stationHeight, allowedApproaches, addedXValue);
 		getView().refresh();
 	}
 

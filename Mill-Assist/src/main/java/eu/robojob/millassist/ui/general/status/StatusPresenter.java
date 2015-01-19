@@ -149,9 +149,9 @@ public class StatusPresenter implements ProcessFlowListener {
 			view.setAlarmMessage(alarmString);
 		}
 	}
-		
-	public void setZRest(final double zRest) {
-		view.setZRest(zRest);
+	
+	public void setRestValues(final double xRest, final double yRest, final double zRest) {
+		view.setRestValues(xRest, yRest, zRest);
 	}
 
 	@Override public void dataChanged(final DataChangedEvent e) { }

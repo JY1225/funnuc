@@ -34,8 +34,9 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 	
 	private Button btnResetSmooth;
 	
-	private Label lblLoadType;
+	private Label lblLoadType, lblShiftedOrigin;
 	private Button btnTopLoad, btnBottomLoad, btnFrontLoad, btnLeftLoad;
+	private Button btnHome, btnHomeExtraX;
 	
 	private NumericTextField ntxtSmoothX;
 	private NumericTextField ntxtSmoothY;
@@ -57,7 +58,9 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 	private static final String FRONT_LOAD = "ReversalUnitPutView.frontLoad";
 	private static final String LEFT_LOAD = "ReversalUnitPutView.leftLoad";
 	private static final String CONFIG_WIDTH = "ReversalUnitPutView.configWidth";
-
+	private static final String SHIFTED_ORIGIN = "ReversalUnitPutView.shiftedOrigin";
+	private static final String NORMAL_ORIGIN = "ReversalUnitPutView.normalOrigin";
+	private static final String EXTRA_X_ORIGIN = "ReversalUnitPutView.extraXOrigin";
 	
 	private static final String CSS_CLASS_CENTER_TEXT = "center-text";
 		
@@ -75,6 +78,7 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		lblSmoothY = new Label(Translator.getTranslation(SMOOTH_Y));
 		lblSmoothZ = new Label(Translator.getTranslation(SMOOTH_Z));
 		lblConfigWidth = new Label(Translator.getTranslation(CONFIG_WIDTH));
+		lblShiftedOrigin = new Label(Translator.getTranslation(SHIFTED_ORIGIN));
 		
 		lblLoadType = new Label(Translator.getTranslation(LOAD_TYPE));
 		
@@ -124,7 +128,7 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		});
 		btnResetSmooth.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
 		btnResetSmooth.setPrefSize(UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT);
-		
+				
 		HBox hboxLoadType = new HBox();
 		hboxLoadType.setAlignment(Pos.CENTER_LEFT);
 		
@@ -161,6 +165,26 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		});
 		btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
 		hboxLoadType.getChildren().addAll(btnTopLoad, btnFrontLoad, btnLeftLoad, btnBottomLoad);
+		btnHome = createButton(Translator.getTranslation(NORMAL_ORIGIN), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				refreshOrigin(false);
+				getPresenter().changedShiftedOrigin(false);
+			}
+		});
+		btnHome.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
+		btnHomeExtraX = createButton(Translator.getTranslation(EXTRA_X_ORIGIN), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				refreshOrigin(true);
+				getPresenter().changedShiftedOrigin(true);
+			}
+		});
+		btnHomeExtraX.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+		btnHomeExtraX.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT, CSS_CLASS_FORM_BUTTON);
+		btnHome.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT, CSS_CLASS_FORM_BUTTON);
+		HBox hboxExtraX = new HBox();
+		hboxExtraX.getChildren().addAll(btnHome, btnHomeExtraX);
 		
 		HBox hBoxConfigWidth = new HBox();
 		hBoxConfigWidth.getChildren().addAll(lblConfigWidth, ntxtConfigWidth);
@@ -178,7 +202,11 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		
 		int column = 0;
 		int row = 0;
-		getContents().add(hBoxConfigWidth, column, row);		
+
+		getContents().add(lblShiftedOrigin, column, row++);
+		getContents().add(hboxExtraX, column, row++);
+		column = 0;
+		getContents().add(hBoxConfigWidth, column, row);	
 		
 		column = 0;
 		row++;
@@ -233,6 +261,16 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 			showNotification(Translator.getTranslation(ReversalUnitMenuPresenter.SAME_APPROACHTYPES), Type.WARNING);
 		}
 	}
+	
+	private void refreshOrigin(final boolean isShifted) {
+		if (isShifted) {
+			btnHome.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			btnHomeExtraX.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		} else {
+			btnHome.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			btnHomeExtraX.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		}
+	}
 
 	@Override
 	public void refresh() {
@@ -253,7 +291,9 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 			enableApproachType(entry.getKey(), entry.getValue());
 		}
 		refreshLoadType(getPresenter().getPutStep().getRobotSettings().getApproachType());
+		refreshOrigin(getPresenter().getDeviceSettings().isShiftedOrigin());
 		refreshLoadButtons();
+		manageOriginButtons();
 	}
 	
 	private void enableApproachType(ApproachType approachType, boolean enable) {
@@ -301,6 +341,24 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 					btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
 				}
 			}
+		}
+	}
+
+	private void manageOriginButtons() {
+		if (getPresenter().hasShiftingPin()) {
+			btnHome.setManaged(true);
+			btnHomeExtraX.setManaged(true);
+			lblShiftedOrigin.setManaged(true);
+			btnHome.setVisible(true);
+			btnHomeExtraX.setVisible(true);
+			lblShiftedOrigin.setVisible(true);
+		} else {
+			btnHome.setManaged(false);
+			btnHomeExtraX.setManaged(false);
+			lblShiftedOrigin.setManaged(false);
+			btnHome.setVisible(false);
+			btnHomeExtraX.setVisible(false);
+			lblShiftedOrigin.setVisible(false);
 		}
 	}
 

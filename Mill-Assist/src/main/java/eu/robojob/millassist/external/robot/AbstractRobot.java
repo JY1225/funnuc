@@ -33,7 +33,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	
 	private Set<RobotAlarm> alarms;
 	private int currentStatus;
-	private double zrest;
+	private double xrest, yrest, zrest;
 	
 	private RobotAlarm robotTimeout;
 	
@@ -51,6 +51,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.currentStatus = 0;
 		this.currentActionSettings = null;
 		this.payload = payload;
+		this.xrest = -1;
+		this.yrest = -1;
 		this.zrest = -1;
 		if (possibleGripperBodies != null) {
 			this.possibleGripperBodies = possibleGripperBodies;
@@ -101,7 +103,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 					listener.robotStatusChanged(event);
 				}
 				break;
-			case RobotEvent.ZREST_CHANGED:
+			case RobotEvent.REST_CHANGED:
 				for (RobotListener listener : listeners) {
 					listener.robotZRestChanged(event);
 				}
@@ -148,11 +150,21 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.currentStatus = status;
 	}
 	
+	public double getXRest() {
+		return xrest;
+	}
+	
+	public double getYRest() {
+		return yrest;
+	}
+	
 	public double getZRest() {
 		return zrest;
 	}
 	
-	public void setZRest(final double zrest) {
+	public void setRestValues(final double xrest, final double yrest, final double zrest) {
+		this.xrest = xrest;
+		this.yrest = yrest;
 		this.zrest = zrest;
 	}
 	
@@ -287,7 +299,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		return robotTimeout;
 	}
 		
-	public abstract void updateStatusZRestAndAlarms() throws AbstractCommunicationException, InterruptedException;
+	public abstract void updateStatusRestAndAlarms() throws AbstractCommunicationException, InterruptedException;
 	public abstract void restartProgram() throws AbstractCommunicationException, InterruptedException;
 	public abstract void reset() throws AbstractCommunicationException, InterruptedException;
 	public abstract Coordinates getPosition() throws AbstractCommunicationException, RobotActionException, InterruptedException;

@@ -67,10 +67,11 @@ public final class RobotConstants {
 	public static final int STATUS_IOACTION_FINISHED			=	BIT14;
 	
 	// COMMAND IDS
-	public static final int COMMAND_ASK_STATUS					=	20;
-	public static final int COMMAND_WRITE_SERVICE_GRIPPER		=	40;
-	public static final int COMMAND_WRITE_SERVICE_HANDLING		=	41;
-	public static final int COMMAND_WRITE_SERVICE_POINT			=	42;
+//	public static final int COMMAND_ASK_STATUS					=	20;
+	public static final int COMMAND_ASK_STATUS					=	22;
+//	public static final int COMMAND_WRITE_SERVICE_GRIPPER		=	40; (for turn-assist)
+//	public static final int COMMAND_WRITE_SERVICE_HANDLING		=	41; (for turn-assist)
+//	public static final int COMMAND_WRITE_SERVICE_POINT			=	42; (for turn-assist)
 	public static final int COMMAND_WRITE_REGISTER				=	43;
 	public static final int COMMAND_WRITE_POSITION_REGISTER		=	44;
 	public static final int COMMAND_WRITE_USERFRAME				=	45;
@@ -89,12 +90,16 @@ public final class RobotConstants {
 	public static final int COMMAND_JAW_CH						=	72;
 	public static final int COMMAND_GRIPPER_ACTION 				=	73;
 	public static final int COMMAND_TO_CUSTOM_POS				=	74;
+	public static final int COMMAND_WRITE_SERVICE_GRIPPER		=	75; 
+	public static final int COMMAND_WRITE_SERVICE_HANDLING		=	76;
+	public static final int COMMAND_WRITE_SERVICE_POINT			=	77;
 	
 	// RESPONSE IDS
-	public static final int RESPONSE_ASK_STATUS					=	120;
-	public static final int RESPONSE_WRITE_SERVICE_GRIPPER		=	140;
-	public static final int RESPONSE_WRITE_SERVICE_HANDLING		=	141;
-	public static final int RESPONSE_WRITE_SERVICE_POINT		=	142;
+//	public static final int RESPONSE_ASK_STATUS					=	120;
+	public static final int RESPONSE_ASK_STATUS					=	122;
+//	public static final int RESPONSE_WRITE_SERVICE_GRIPPER		=	140; (for turn-assist)
+//	public static final int RESPONSE_WRITE_SERVICE_HANDLING		=	141; (for turn-assist)
+//	public static final int RESPONSE_WRITE_SERVICE_POINT		=	142; (for turn-assist)
 	public static final int RESPONSE_WRITE_REGISTER				=	143;
 	public static final int RESPONSE_WIRTE_POSITION_REGISER		=	144;
 	public static final int RESPONSE_WRITE_USERFRAME			=	145;
@@ -113,6 +118,9 @@ public final class RobotConstants {
 	public static final int RESPONSE_JAW_CH						=	172;
 	public static final int RESPONSE_GRIPPER_ACTION				= 	173;
 	public static final int RESPONSE_TO_CUSTOM_POS				=   174;
+	public static final int RESPONSE_WRITE_SERVICE_GRIPPER		=	175; 
+	public static final int RESPONSE_WRITE_SERVICE_HANDLING		=	176; 
+	public static final int RESPONSE_WRITE_SERVICE_POINT		=	177;
 	
 	// SERVICE GRIPPER
 	public static final int SERVICE_GRIPPER_SERVICE_TYPE_TOOL_CHANGE = 1;
@@ -140,8 +148,8 @@ public final class RobotConstants {
 	public static final int SERVICE_POINT_XYZ_ALLOWED_XYZ			=	1;
 	public static final int SERVICE_POINT_XYZ_ALLOWED_XY			=	2;
 	public static final int SERVICE_POINT_XYZ_ALLOWED_ANGLE			=	3;
-	public static final int SERVICE_POINT_XYZ_ALLOWED_XZX			= 	5;
-	public static final int SERVICE_POINT_XYZ_ALLOWED_YZX			= 	6;
+	public static final int SERVICE_POINT_XYZ_ALLOWED_Z				= 	5;
+	public static final int SERVICE_POINT_XYZ_ALLOWED_XZX			= 	6;
 	
 	// COMMAND_PERMISSIONS
 	public static final int PERMISSIONS_COMMAND_PICK						=	BIT0;

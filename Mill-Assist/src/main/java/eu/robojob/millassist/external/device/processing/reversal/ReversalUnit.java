@@ -32,19 +32,21 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	
 	private float stationHeight;
 	private boolean isWidthReversal = false;
-	// Also possible to go to bottom via Y
-	private boolean moveToBottomViaX = true;
+	private float addedXValue;
+	private boolean isShiftedOrigin;
 	private Map<ApproachType, Boolean> allowedApproachTypes = new HashMap<ApproachType, Boolean>();
 	
-	public ReversalUnit(final String name, final float stationHeight) {
+	public ReversalUnit(final String name, final float stationHeight, final float addedXValue) {
 		super(name, false);
 		this.stationHeight = stationHeight;
+		this.addedXValue = addedXValue;
 		setWidthReversal();
 	}
 	
-	public ReversalUnit(final String name, final Set<Zone> zones, final float stationHeight) {
+	public ReversalUnit(final String name, final Set<Zone> zones, final float stationHeight, final float addedXValue) {
 		super(name, zones, false);
 		this.stationHeight = stationHeight;
+		this.addedXValue = addedXValue;
 		setWidthReversal();
 	}
 
@@ -69,6 +71,7 @@ public class ReversalUnit extends AbstractProcessingDevice {
 		for (Entry<SimpleWorkArea, Clamping> entry : deviceSettings.getClampings().entrySet()) {
 			entry.getKey().setDefaultClamping(entry.getValue());
 		}
+		isShiftedOrigin = ((ReversalUnitSettings) deviceSettings).isShiftedOrigin();
 	}
 	@Override public void interruptCurrentAction() { }
 	@Override public void prepareForProcess(final ProcessFlow process) throws AbstractCommunicationException, InterruptedException { }
@@ -131,6 +134,9 @@ public class ReversalUnit extends AbstractProcessingDevice {
 			c.setY(c.getY() + getXCoord(workPieceDimensions, approachType));
 			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
 		}
+		if (isShiftedOrigin) {
+			c.setX(c.getX() + addedXValue);
+		}
 		return c;
 	}
 	
@@ -151,6 +157,9 @@ public class ReversalUnit extends AbstractProcessingDevice {
 			c.setY(c.getY() + getXCoord(workPieceDimensions, approachType));
 			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
 		}
+		if (isShiftedOrigin) {
+			c.setX(c.getX() + addedXValue);
+		}
 		return c;
 	}
 	
@@ -162,11 +171,11 @@ public class ReversalUnit extends AbstractProcessingDevice {
 			return workPieceDimensions.getWidth()/2;
 		case FRONT:
 			return workPieceDimensions.getWidth();
-		default:
+		default: 
 			return 0;
 		}
 	}
-	
+
 	private static float getYCoord(final WorkPieceDimensions workPieceDimensions, final ApproachType approachType) {
 		switch (approachType) {
 		case BOTTOM:
@@ -245,11 +254,18 @@ public class ReversalUnit extends AbstractProcessingDevice {
 		this.allowedApproachTypes = allowedApproaches;
 	}
 	
-	public boolean isMoveToBottomViaX() {
-		return moveToBottomViaX;
+	public float getAddedX() {
+		return addedXValue;
+	}
+
+	public void setAddedX(final float addedX) {
+		this.addedXValue = addedX;
 	}
 	
-	public void setMoveToBottomViaX(final boolean isViaX) {
-		this.moveToBottomViaX = isViaX;
+	public float getAddedXOrigin() {
+		if (isShiftedOrigin) {
+			return addedXValue;
+		} 
+		return 0;
 	}
 }

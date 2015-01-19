@@ -33,8 +33,9 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 	private NumericTextField ntxtSmoothY;
 	private NumericTextField ntxtSmoothZ;
 	
-	private Label lblLoadType;
+	private Label lblLoadType, lblShiftedOrigin;
 	private Button btnTopLoad, btnBottomLoad, btnFrontLoad, btnLeftLoad;
+	private Button btnHome, btnHomeExtraX;
 	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
@@ -49,7 +50,10 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 	private static final String TOP_LOAD = "ReversalUnitPickView.topLoad";
 	private static final String FRONT_LOAD = "ReversalUnitPutView.frontLoad";
 	private static final String LEFT_LOAD = "ReversalUnitPutView.leftLoad";
-	private static final String BOTTOM_LOAD = "ReversalUnitPickView.bottomLoad";
+	private static final String BOTTOM_LOAD = "ReversalUnitPickView.bottomLoad";	
+	private static final String SHIFTED_ORIGIN = "ReversalUnitPutView.shiftedOrigin";
+	private static final String NORMAL_ORIGIN = "ReversalUnitPutView.normalOrigin";
+	private static final String EXTRA_X_ORIGIN = "ReversalUnitPutView.extraXOrigin";
 			
 	public ReversalUnitPickView() {
 		super();
@@ -66,6 +70,7 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 		lblSmoothZ = new Label(Translator.getTranslation(SMOOTH_Z));
 			
 		lblLoadType = new Label(Translator.getTranslation(LOAD_TYPE));
+		lblShiftedOrigin = new Label(Translator.getTranslation(SHIFTED_ORIGIN));
 		
 		ntxtSmoothX = new NumericTextField(MAX_INTEGER_LENGTH);
 		ntxtSmoothX.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
@@ -116,6 +121,26 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 		
 		HBox hboxLoadType = new HBox();
 		hboxLoadType.setAlignment(Pos.CENTER_LEFT);
+		btnHome = createButton(Translator.getTranslation(NORMAL_ORIGIN), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				refreshOrigin(false);
+				getPresenter().changedShiftedOrigin(false);
+			}
+		});
+		btnHome.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
+		btnHomeExtraX = createButton(Translator.getTranslation(EXTRA_X_ORIGIN), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				refreshOrigin(true);
+				getPresenter().changedShiftedOrigin(true);
+			}
+		});
+		btnHomeExtraX.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+		btnHomeExtraX.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT, CSS_CLASS_FORM_BUTTON);
+		btnHome.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT, CSS_CLASS_FORM_BUTTON);
+		HBox hboxExtraX = new HBox();
+		hboxExtraX.getChildren().addAll(btnHome, btnHomeExtraX);
 		
 		btnTopLoad = createButton(Translator.getTranslation(TOP_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
@@ -155,8 +180,11 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 		int column = 0;
 		int row = 0;
 		
+		getContents().add(lblShiftedOrigin, column, row++);
+		getContents().add(hboxExtraX, column, row);
+		
 		column = 0;
-		row = 0;
+		row++;
 		getContents().add(lblSmoothInfo, column++, row);
 		
 		column = 0;
@@ -206,6 +234,16 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 			showNotification(Translator.getTranslation(ReversalUnitMenuPresenter.SAME_APPROACHTYPES), Type.WARNING);
 		}
 	}
+	
+	private void refreshOrigin(final boolean isShifted) {
+		if (isShifted) {
+			btnHome.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			btnHomeExtraX.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		} else {
+			btnHome.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+			btnHomeExtraX.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+		}
+	}
 
 	@Override
 	public void refresh() {
@@ -223,7 +261,9 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 			enableApproachType(entry.getKey(), entry.getValue());
 		}
 		refreshLoadType(getPresenter().getPickStep().getRobotSettings().getApproachType());
+		refreshOrigin(getPresenter().getDeviceSettings().isShiftedOrigin());
 		refreshLoadButtons();
+		manageOriginButtons();
 	}
 	
 	private void enableApproachType(ApproachType approachType, boolean enable) {
@@ -271,6 +311,24 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 					btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
 				}
 			}
+		}
+	}
+	
+	private void manageOriginButtons() {
+		if (getPresenter().hasShiftingPin()) {
+			btnHome.setManaged(true);
+			btnHomeExtraX.setManaged(true);
+			lblShiftedOrigin.setManaged(true);
+			btnHome.setVisible(true);
+			btnHomeExtraX.setVisible(true);
+			lblShiftedOrigin.setVisible(true);
+		} else {
+			btnHome.setManaged(false);
+			btnHomeExtraX.setManaged(false);
+			lblShiftedOrigin.setManaged(false);
+			btnHome.setVisible(false);
+			btnHomeExtraX.setVisible(false);
+			lblShiftedOrigin.setVisible(false);
 		}
 	}
 }

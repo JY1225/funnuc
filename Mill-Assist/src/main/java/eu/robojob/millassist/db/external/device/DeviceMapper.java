@@ -175,9 +175,8 @@ public class DeviceMapper {
 		ReversalUnit reversalUnit = null;
 		if (results.next()) {
 			int stationHeight = results.getInt("STATION_HEIGHT");
-			boolean bottomViaX = results.getBoolean("BOTTOM_VIA_X");
-			reversalUnit = new ReversalUnit(name, zones, stationHeight);
-			reversalUnit.setMoveToBottomViaX(bottomViaX);
+			float addedX = results.getFloat("EXTRA_X");
+			reversalUnit = new ReversalUnit(name, zones, stationHeight, addedX);
 			reversalUnit.setId(id);
 			getAllowedApproachTypes(id, reversalUnit);
 		}
@@ -871,7 +870,7 @@ public class DeviceMapper {
 	public void updateReversalUnit(final ReversalUnit reversalUnit, final String name, final String userFrame, final float x, final float y,
 			final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
 			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
-			final float stationHeight, final Map<ApproachType, Boolean> allowedApproaches, final boolean isBottomViaX) throws SQLException {
+			final float stationHeight, final Map<ApproachType, Boolean> allowedApproaches, final float addedX) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		if ((!reversalUnit.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrame))) {
 			UserFrame newUserFrame = getUserFrameByName(userFrame);
@@ -879,12 +878,12 @@ public class DeviceMapper {
 			updateWorkArea(reversalUnit.getWorkAreaManagers().get(0));
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE REVERSALUNIT " +
-				"SET STATION_HEIGHT = ?, BOTTOM_VIA_ZSAFE = ? WHERE ID = ?");
+				"SET STATION_HEIGHT = ?, EXTRA_X = ? WHERE ID = ?");
 		stmt.setFloat(1, stationHeight);
-		stmt.setBoolean(2, isBottomViaX);
+		stmt.setFloat(2, addedX);
 		stmt.setInt(3, reversalUnit.getId());
 		stmt.execute();
-		reversalUnit.setMoveToBottomViaX(isBottomViaX);
+		reversalUnit.setAddedX(addedX);
 		saveAllowedApproaches(allowedApproaches, reversalUnit.getId());
 		reversalUnit.setAllowedApproachTypes(allowedApproaches);
 		reversalUnit.setStationHeight(stationHeight);

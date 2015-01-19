@@ -279,9 +279,9 @@ public abstract class ExecutionPresenter implements CNCMachineListener, RobotLis
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
 				if (isRunning()) {
-					statusPresenter.setZRest(event.getSource().getZRest());
+					statusPresenter.setRestValues(event.getSource().getXRest(), event.getSource().getYRest(), event.getSource().getZRest());
 				} else {
-					statusPresenter.setZRest(-1);
+					statusPresenter.setRestValues(-1,-1,-1);
 				}
 			}
 		});

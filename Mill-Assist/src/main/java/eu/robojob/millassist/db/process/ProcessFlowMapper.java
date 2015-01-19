@@ -511,9 +511,10 @@ public class ProcessFlowMapper {
 			stmt4.executeUpdate();
 		} else if (deviceSettings instanceof ReversalUnitSettings) {
 			ReversalUnitSettings rSettings = (ReversalUnitSettings) deviceSettings;
-			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO REVERSALUNITSETTINGS (ID, CONFIGWIDTH) VALUES (?, ?)");
+			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO REVERSALUNITSETTINGS (ID, CONFIGWIDTH, SHIFTED_ORIGIN) VALUES (?, ?, ?)");
 			stmt4.setInt(1, rSettings.getId());
 			stmt4.setFloat(2, rSettings.getConfigWidth());
+			stmt4.setBoolean(3, rSettings.isShiftedOrigin());
 			stmt4.executeUpdate();
 		}
 	}
@@ -731,7 +732,8 @@ public class ProcessFlowMapper {
 		ReversalUnitSettings reversalSettings = null;
 		if (results.next()) {
 			float configWidth = results.getInt("CONFIGWIDTH");
-			reversalSettings = new ReversalUnitSettings(configWidth);
+			boolean shiftedOrigin = results.getBoolean("SHIFTED_ORIGIN");
+			reversalSettings = new ReversalUnitSettings(configWidth, shiftedOrigin);
 			reversalSettings.setClampings(clampings);
 		}
 		return reversalSettings;

@@ -11,7 +11,7 @@ public class RobotEvent {
 	public static final int ROBOT_DISCONNECTED = 2;
 	public static final int STATUS_CHANGED = 3;
 	public static final int ALARMS_OCCURED = 4;
-	public static final int ZREST_CHANGED = 5;
+	public static final int REST_CHANGED = 5;
 	public static final int SPEED_CHANGED = 6;
 	
 	public RobotEvent(final AbstractRobot source, final int id) {

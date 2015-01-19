@@ -1,5 +1,6 @@
 package eu.robojob.millassist.ui.configure.device.processing.reversal;
 
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -91,5 +92,16 @@ public class ReversalUnitPutPresenter extends AbstractFormPresenter<ReversalUnit
 			return true;
 		}
 		return false;
+	}
+	
+	public void changedShiftedOrigin(final boolean isShiftedOrigin) {
+		if (deviceSettings.isShiftedOrigin() != isShiftedOrigin) {
+			deviceSettings.setShiftedOrigin(isShiftedOrigin);
+			putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, true));
+		}
+	}
+	
+	boolean hasShiftingPin() {
+		return (((ReversalUnit) putStep.getDevice()).getAddedX() > 0);
 	}
 }

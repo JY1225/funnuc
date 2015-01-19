@@ -15,7 +15,7 @@ public class RobotMonitoringThread implements Runnable, MonitoringThread {
 	
 	private AbstractRobot robot;
 	private boolean alive;
-	private double previousZRest;
+	private double previousXRest,previousYRest,previousZRest;
 	private int previousStatus;
 	private Set<RobotAlarm> previousAlarms;
 	private boolean wasConnected;
@@ -39,7 +39,7 @@ public class RobotMonitoringThread implements Runnable, MonitoringThread {
 							robot.restartProgram();
 							wasConnected = true;
 						}
-						robot.updateStatusZRestAndAlarms();
+						robot.updateStatusRestAndAlarms();
 						int status = robot.getStatus();
 						if (status != previousStatus) {
 							robot.processRobotEvent(new RobotEvent(robot, RobotEvent.STATUS_CHANGED));
@@ -59,10 +59,12 @@ public class RobotMonitoringThread implements Runnable, MonitoringThread {
 							}
 							robot.processRobotEvent(new RobotAlarmsOccuredEvent(robot, alarms));
 						}
+						double xrest = robot.getXRest();
+						double yrest = robot.getYRest();
 						double zrest = robot.getZRest();
-						if (zrest != previousZRest) {
-							robot.processRobotEvent(new RobotEvent(robot, RobotEvent.ZREST_CHANGED));
-						}
+						if (zrest != previousZRest || xrest != previousXRest || yrest != previousYRest) {
+							robot.processRobotEvent(new RobotEvent(robot, RobotEvent.REST_CHANGED));
+						} 
 					} catch (AbstractCommunicationException | InterruptedException e) {
 						if (robot.isConnected()) {
 							logger.error(e);

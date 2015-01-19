@@ -51,7 +51,7 @@ public class StatusView extends VBox {
 	
 	private static final String NO_ERRORS = "StatusView.noErrors";
 	private static final String NO_ALARMS = "StatusView.noAlarms";
-	private static final String DROPS_ANOTHER = "StatusView.dropsAnother";
+	private static final String MOVES_ANOTHER = "StatusView.movesAnother";
 	
 	public StatusView() {
 		build();
@@ -198,9 +198,9 @@ public class StatusView extends VBox {
 		}
 	}
 	
-	public void setZRest(final double zrest) {
-		if (zrest > 1) {
-			lblZRest.setText(" (" + Translator.getTranslation(DROPS_ANOTHER) + " " + zrest + ")");
+	public void setRestValues(final double xrest, final double yrest, final double zrest) {
+		if (xrest > 1 || yrest > 1 || zrest > 1) {
+			lblZRest.setText(" (" + Translator.getTranslation(MOVES_ANOTHER) + " (" + xrest + ", " + yrest + ", "+ zrest + ")"+ ")");
 		} else {
 			lblZRest.setText("");
 		}

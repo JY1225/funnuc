@@ -18,7 +18,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -43,9 +42,7 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	private static final String FRONT_LOAD = "ReversalUnitPickView.frontLoad";	
 	private static final String BOTTOM_LOAD = "ReversalUnitPickView.bottomLoad";
 	private static final String LEFT_LOAD = "ReversalUnitPickView.leftLoad";
-	private static final String BOTTOM_VIA_X = "ReversalUnitConfigureView.bottomViaX";
-	private static final String BOTTOM_VIA_Y = "ReversalUnitConfigureView.bottomViaY";
-	private static final String MOVE_TO_BOTTOM = "ReversalUnitConfigureView.moveToBottom";
+	private static final String ADDED_X_VALUE = "ReversalUnitConfigureView.extraXPin";
 	
 	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
 	
@@ -88,12 +85,12 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	
 	private Label lblStationHeight;
 	private NumericTextField numtxtStationHeight;
+	private Label lblAddedX;
+	private NumericTextField numtxtAddedX;
 	
 	private ObservableList<String> userFrameNames;
 	
 	private CheckBox cbBottomAllowed, cbTopAllowed, cbFrontAllowed, cbLeftAllowed;
-	private Label lblMoveAway;
-	private Button btnBottomViaX, btnBottomViaY;
 	private Label lblBottom, lblTop, lblFront, lblLeft;
 	private Label lblAllowedApproaches;
 	
@@ -149,6 +146,8 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 		numtxtSmoothFromZ = new NumericTextField(10);
 		lblStationHeight = new Label(Translator.getTranslation(STATION_HEIGHT));
 		numtxtStationHeight = new NumericTextField(10);
+		lblAddedX = new Label(Translator.getTranslation(ADDED_X_VALUE));
+		numtxtAddedX = new NumericTextField(10);
 		cbTopAllowed = new CheckBox();
 		cbFrontAllowed = new CheckBox();
 		cbLeftAllowed = new CheckBox();
@@ -164,7 +163,6 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 		lblTop= new Label(Translator.getTranslation(TOP_LOAD)); 
 		lblFront= new Label(Translator.getTranslation(FRONT_LOAD));
 		lblLeft= new Label(Translator.getTranslation(LEFT_LOAD));
-		lblMoveAway = new Label(Translator.getTranslation(MOVE_TO_BOTTOM));
 		int column = 0; int row = 0;
 		getContents().add(lblName, column++, row);
 		getContents().add(fullTxtName, column++, row, 5, 1);
@@ -234,28 +232,9 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 							Float.parseFloat(numtxtSmoothFromZ.getText()),
 							Float.parseFloat(numtxtStationHeight.getText()),
 							getAllowedApproaches(),
-							isMoveToBottomViaX());
+							Float.parseFloat(numtxtAddedX.getText()));
 				}
 		});
-		btnBottomViaX = createButton(Translator.getTranslation(BOTTOM_VIA_X), UIConstants.BUTTON_HEIGHT * 4, UIConstants.BUTTON_HEIGHT, 
-				new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent arg0) {
-						moveToForBottomChanged();
-					}	
-		});
-		btnBottomViaY = createButton(Translator.getTranslation(BOTTOM_VIA_Y), UIConstants.BUTTON_HEIGHT * 4, UIConstants.BUTTON_HEIGHT, 
-				new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent arg0) {
-						moveToForBottomChanged();
-					}	
-		});
-		btnBottomViaY.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT, CSS_CLASS_FORM_BUTTON);
-		btnBottomViaX.getStyleClass().addAll(CSS_CLASS_FORM_BUTTON_LABEL, CSS_CLASS_CENTER_TEXT, CSS_CLASS_FORM_BUTTON);
-		btnBottomViaX.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-		btnBottomViaY.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-		btnBottomViaX.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		cbTopAllowed.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
@@ -280,13 +259,11 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 				cbBottomAllowed.setSelected(newValue);
 			}
 		});
-		HBox btnBox = new HBox();
-		btnBox.getChildren().addAll(btnBottomViaX, btnBottomViaY);
-		getContents().add(lblMoveAway, column++, row);
-		getContents().add(btnBox, column, row, 6, 1);
-		column = 0; row++;
 		getContents().add(lblStationHeight, column++, row);
 		getContents().add(numtxtStationHeight, column++, row, 2, 1);
+		column = 0; row++;
+		getContents().add(lblAddedX, column++, row);
+		getContents().add(numtxtAddedX, column++, row, 2, 1);
 		column = 0; row++;
 		getContents().add(btnSave, column++, row, 7, 1);
 		GridPane.setHalignment(btnSave, HPos.CENTER);
@@ -313,6 +290,7 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 		numtxtSmoothFromY.setFocusListener(listener);
 		numtxtSmoothFromZ.setFocusListener(listener);
 		numtxtStationHeight.setFocusListener(listener);
+		numtxtAddedX.setFocusListener(listener);
 	}
 
 	@Override
@@ -337,12 +315,8 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 			numtxtSmoothFromZ.setText("" + smoothFrom.getZ());
 			cbbUserFrame.setValue(reversalUnit.getWorkAreaManagers().iterator().next().getUserFrame().getName());
 			numtxtStationHeight.setText("" + reversalUnit.getStationHeight());
-			if (reversalUnit.isMoveToBottomViaX()) {
-				btnBottomViaX.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-			} else {
-				btnBottomViaY.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-			}
 			setAllowedApproaches();
+			numtxtAddedX.setText("" + reversalUnit.getAddedX());
 		}
 	}
 	
@@ -377,22 +351,5 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 		} else {
 			cbFrontAllowed.setSelected(false);
 		}
-	}
-	
-	private void moveToForBottomChanged() {
-		if (btnBottomViaY.getStyleClass().contains(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE)) {
-			btnBottomViaY.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-			btnBottomViaX.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		} else {
-			btnBottomViaY.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-			btnBottomViaX.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		}
-	}
-	
-	private boolean isMoveToBottomViaX() {
-		if (btnBottomViaY.getStyleClass().contains(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE)) {
-			return true;
-		}
-		return false;
 	}
 }

@@ -359,10 +359,10 @@ public class DeviceManager {
 	public void updateReversalUnitData(final ReversalUnit reversalUnit, final String name, final String userFrame, final float x, 
 			final float y, final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY,
 			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, final float stationHeight,
-			final Map<ApproachType, Boolean> allowedApproaches, final boolean isBottomViaX) {
+			final Map<ApproachType, Boolean> allowedApproaches, final float addedXValue) {
 		try {
 			deviceMapper.updateReversalUnit(reversalUnit, name, userFrame, x, y, z, w, p, r, smoothToX, smoothToY, smoothToZ, 
-					smoothFromX, smoothFromY, smoothFromZ, stationHeight, allowedApproaches, isBottomViaX);
+					smoothFromX, smoothFromY, smoothFromZ, stationHeight, allowedApproaches, addedXValue);
 			refresh();
 		} catch (SQLException e) {
 			logger.error(e);
