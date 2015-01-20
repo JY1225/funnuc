@@ -17,7 +17,6 @@ import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.Approach
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
-import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 
@@ -34,7 +33,7 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 	private NumericTextField ntxtSmoothZ;
 	
 	private Label lblLoadType, lblShiftedOrigin;
-	private Button btnTopLoad, btnBottomLoad, btnFrontLoad, btnLeftLoad;
+	private Button btnBottomLoad, btnFrontLoad, btnLeftLoad;
 	private Button btnHome, btnHomeExtraX;
 	
 	private static final int HGAP = 15;
@@ -47,7 +46,6 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 	private static final String SMOOTH_Z = "ReversalUnitPickView.smoothZ";
 	private static final String RESET = "ReversalUnitPickView.resetSmooth";
 	private static final String LOAD_TYPE = "ReversalUnitPickView.loadType";
-	private static final String TOP_LOAD = "ReversalUnitPickView.topLoad";
 	private static final String FRONT_LOAD = "ReversalUnitPutView.frontLoad";
 	private static final String LEFT_LOAD = "ReversalUnitPutView.leftLoad";
 	private static final String BOTTOM_LOAD = "ReversalUnitPickView.bottomLoad";	
@@ -142,15 +140,6 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 		HBox hboxExtraX = new HBox();
 		hboxExtraX.getChildren().addAll(btnHome, btnHomeExtraX);
 		
-		btnTopLoad = createButton(Translator.getTranslation(TOP_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent event) {
-				getPresenter().changedPickType(ApproachType.TOP);
-				refreshLoadType(ApproachType.TOP);
-
-			}
-		});
-		btnTopLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
 		btnBottomLoad = createButton(Translator.getTranslation(BOTTOM_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
@@ -158,7 +147,7 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 				refreshLoadType(ApproachType.BOTTOM);
 			}
 		});
-		btnBottomLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+		btnBottomLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
 		btnFrontLoad = createButton(Translator.getTranslation(FRONT_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
@@ -174,8 +163,8 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 				refreshLoadType(ApproachType.LEFT);
 			}
 		});
-		btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
-		hboxLoadType.getChildren().addAll(btnTopLoad, btnFrontLoad, btnLeftLoad, btnBottomLoad);
+		btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+		hboxLoadType.getChildren().addAll(btnBottomLoad,btnFrontLoad, btnLeftLoad);
 		
 		int column = 0;
 		int row = 0;
@@ -210,16 +199,12 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 	
 	private void refreshLoadType(ApproachType activeLoadType) {
 		hideNotification();
-		btnTopLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		btnBottomLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		btnLeftLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		btnFrontLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		switch (activeLoadType) {
 		case BOTTOM:
 			btnBottomLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-			break;
-		case TOP:
-			btnTopLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 			break;
 		case LEFT:
 			btnLeftLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
@@ -229,9 +214,6 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 			break;
 		default:
 			break;
-		}
-		if (getPresenter().getMenuPresenter() != null && getPresenter().getMenuPresenter().isSameApproachType()) {
-			showNotification(Translator.getTranslation(ReversalUnitMenuPresenter.SAME_APPROACHTYPES), Type.WARNING);
 		}
 	}
 	
@@ -260,9 +242,13 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 		for (Entry<ApproachType, Boolean> entry: ((ReversalUnit) getPresenter().getPickStep().getDevice()).getAllowedApproachTypes().entrySet()) {
 			enableApproachType(entry.getKey(), entry.getValue());
 		}
-		refreshLoadType(getPresenter().getPickStep().getRobotSettings().getApproachType());
+		if (getNbAllowedApproaches() > 1) {
+			refreshLoadType(getPresenter().getPickStep().getRobotSettings().getApproachType());
+			refreshLoadButtons();
+		} else {
+			disableAllApproaches();
+		}
 		refreshOrigin(getPresenter().getDeviceSettings().isShiftedOrigin());
-		refreshLoadButtons();
 		manageOriginButtons();
 	}
 	
@@ -272,10 +258,6 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 			btnBottomLoad.setManaged(enable);
 			btnBottomLoad.setVisible(enable);
 			break;
-		case TOP:
-			btnTopLoad.setManaged(enable);
-			btnTopLoad.setVisible(enable);
-			break;
 		case LEFT:
 			btnLeftLoad.setManaged(enable);
 			btnLeftLoad.setVisible(enable);
@@ -284,33 +266,47 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 			btnFrontLoad.setManaged(enable);
 			btnFrontLoad.setVisible(enable);
 			break;
+		default:
+			break;
 		}
+	}
+	
+	private void disableAllApproaches() {
+		lblLoadType.setManaged(false);
+		lblLoadType.setVisible(false);
+		btnBottomLoad.setManaged(false);
+		btnBottomLoad.setVisible(false);
+		btnFrontLoad.setManaged(false);
+		btnFrontLoad.setVisible(false);
+		btnLeftLoad.setManaged(false);
+		btnLeftLoad.setVisible(false);
+	}
+	
+	private int getNbAllowedApproaches() {
+		int result = 0;
+		if (btnBottomLoad.isVisible())
+			result++;
+		if (btnFrontLoad.isVisible())
+			result++;
+		if (btnLeftLoad.isVisible())
+			result++;
+		return result;
 	}
 	
 	private void refreshLoadButtons() {
 		//final button
-		if (!btnBottomLoad.isVisible()) {
-			if (btnLeftLoad.isVisible()) {
-				btnLeftLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
-				btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-			} else {
-				if (btnFrontLoad.isVisible()) {
-					btnFrontLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
-					btnFrontLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-				}
-			}
+		if (!btnLeftLoad.isVisible()) {
+			if (btnFrontLoad.isVisible()) {
+				btnFrontLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+				btnFrontLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+			} 
 		}
 		//first button
-		if (!btnTopLoad.isVisible()) {
+		if (!btnBottomLoad.isVisible()) {
 			if (btnFrontLoad.isVisible()) {
 				btnFrontLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
 				btnFrontLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-			} else {
-				if (btnLeftLoad.isVisible()) {
-					btnLeftLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
-					btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-				}
-			}
+			} 
 		}
 	}
 	

@@ -13,7 +13,8 @@ public abstract class RobotPutSettings extends AbstractRobotActionSettings<PutSt
 	private boolean turnInMachine = false;
 	private boolean isTIMPut = false;
 
-	public RobotPutSettings(final AbstractRobot robot, final SimpleWorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final boolean doMachineAirblow, final boolean releaseBeforeMachine, final boolean gripInner) {
+	public RobotPutSettings(final AbstractRobot robot, final SimpleWorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final boolean doMachineAirblow, 
+			final boolean releaseBeforeMachine, final boolean gripInner) {
 		super(robot, workArea, gripperHead, smoothPoint, location, gripInner);
 		this.doMachineAirblow = doMachineAirblow;
 		this.releaseBeforeMachine = releaseBeforeMachine;

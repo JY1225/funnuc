@@ -268,4 +268,14 @@ public class ReversalUnit extends AbstractProcessingDevice {
 		} 
 		return 0;
 	}
+	
+	public ApproachType getFirstAllowedApproachType() {
+		for (ApproachType type: allowedApproachTypes.keySet()) {
+			//method is only used for pick, where TOP is not allowed since it is the default for the put
+			if (allowedApproachTypes.get(type) && !type.equals(ApproachType.TOP)) {
+				return type;
+			}
+		}
+		return null;
+	}
 }

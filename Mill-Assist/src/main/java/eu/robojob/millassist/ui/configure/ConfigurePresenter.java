@@ -489,7 +489,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			ProcessingStep processingStep = new ProcessingStep(deviceStartCyclusSettings);
 			PickStep pickStep = new PickStep(devicePickSettings, robotPickSettings);	
 			
-//			pickStep.getRobotSettings().setApproachType(ApproachType.BOTTOM);
+			pickStep.getRobotSettings().setApproachType(((ReversalUnit) device).getFirstAllowedApproachType());
 
 			newDeviceInfo.setPutStep(putStep);
 			newDeviceInfo.setPickStep(pickStep);
