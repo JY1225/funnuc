@@ -166,11 +166,11 @@ public class PickStep extends AbstractTransportStep {
 		float extraOffsetZ = 0;
 		if ((getDevice() instanceof ReversalUnit) && !(getRobotSettings().getApproachType().equals(ApproachType.TOP))) {
 			if (getRobotSettings().getApproachType().equals(ApproachType.BOTTOM)) {
-				extraOffsetZ = - ((ReversalUnit) devicePickSettings.getDevice()).getStationHeight();
+				extraOffsetZ = - ((ReversalUnit) getDevice()).getStationHeight();
 			} else if (getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
-				extraOffsetX = ((ReversalUnit) devicePickSettings.getDevice()).getStationLength();
+				extraOffsetX = ((ReversalUnit) getDevice()).getStationLength() - originalPosition.getX();
 			}  else if (getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
-				extraOffsetY = - ((ReversalUnit) devicePickSettings.getDevice()).getStationFixtureWidth();
+				extraOffsetY = - ((ReversalUnit) getDevice()).getStationFixtureWidth();
 			}
 		} else {
 			if (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight() < 
@@ -181,7 +181,7 @@ public class PickStep extends AbstractTransportStep {
 						- (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight());
 			}
 		}
-		setRelativeTeachedOffset(new Coordinates(extraOffsetX, extraOffsetY, extraOffsetZ, 0, 0, 0));
+		setRelativeTeachedOffset(TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, new Coordinates(extraOffsetX, extraOffsetY, extraOffsetZ, 0, 0, 0)));
 	}
 	
 	@Override

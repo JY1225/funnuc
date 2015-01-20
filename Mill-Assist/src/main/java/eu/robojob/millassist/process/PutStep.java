@@ -145,11 +145,11 @@ public class PutStep extends AbstractTransportStep {
 		float extraOffsetZ = 0;
 		if ((getDevice() instanceof ReversalUnit) && !(getRobotSettings().getApproachType().equals(ApproachType.TOP))) {
 			if (getRobotSettings().getApproachType().equals(ApproachType.BOTTOM)) {
-				extraOffsetZ = - ((ReversalUnit) devicePutSettings.getDevice()).getStationHeight();
+				extraOffsetZ = - ((ReversalUnit) getDevice()).getStationHeight();
 			} else if (getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
-				extraOffsetX = ((ReversalUnit) devicePutSettings.getDevice()).getStationLength();
+				extraOffsetX = ((ReversalUnit) getDevice()).getStationLength() - originalPosition.getX();
 			}  else if (getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
-				extraOffsetY = - ((ReversalUnit) devicePutSettings.getDevice()).getStationFixtureWidth();
+				extraOffsetY = - ((ReversalUnit) getDevice()).getStationFixtureWidth();
 			}
 		} else {
 			if (originalPosition.getZ() < getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
@@ -158,7 +158,7 @@ public class PutStep extends AbstractTransportStep {
 						- originalPosition.getZ();
 			}
 		}
-		setRelativeTeachedOffset(new Coordinates(extraOffsetX, extraOffsetY, extraOffsetZ, 0, 0, 0));
+		setRelativeTeachedOffset(TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, new Coordinates(extraOffsetX, extraOffsetY, extraOffsetZ, 0, 0, 0)));
 	}
 	
 	@Override
