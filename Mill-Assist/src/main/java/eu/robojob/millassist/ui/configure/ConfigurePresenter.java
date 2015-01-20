@@ -17,6 +17,7 @@ import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.external.robot.RobotProcessingWhileWaitingSettings;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobotPickSettings;
@@ -484,12 +485,18 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 			deviceSettings = (ReversalUnitSettings) deviceSettings;
 			
 //			robotPutSettings.setRobot(deviceInfo.getPutStep().getRobotSettings().getRobot());
+			WorkPiece newWorkPiece = new WorkPiece(robotPickSettings.getWorkPiece());
+			robotPickSettings.setWorkPiece(newWorkPiece);
 			robotPickSettings.setGripperHead(deviceInfo.getPutStep().getRobotSettings().getGripperHead());
 			PutStep putStep = new PutStep(devicePutSettings, robotPutSettings);
 			ProcessingStep processingStep = new ProcessingStep(deviceStartCyclusSettings);
 			PickStep pickStep = new PickStep(devicePickSettings, robotPickSettings);	
 			
-			pickStep.getRobotSettings().setApproachType(((ReversalUnit) device).getFirstAllowedApproachType());
+			ApproachType type = ((ReversalUnit) device).getFirstAllowedApproachType();
+			pickStep.getRobotSettings().setApproachType(type);
+			if (!type.equals(ApproachType.BOTTOM)) {
+				processFlowAdapter.setNeedsToRevisitWorkPieces(true);
+			}
 
 			newDeviceInfo.setPutStep(putStep);
 			newDeviceInfo.setPickStep(pickStep);
@@ -509,6 +516,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		deviceMenuFactory.clearBuffer();
 		transportMenuFactory.clearBuffer();
 		refresh();
+		processFlowAdapter.revisitWorkPieces();
 	}
 	
 	public void removeDevice(final int index) {
