@@ -27,6 +27,7 @@ import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPl
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotSettings;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
@@ -35,6 +36,8 @@ import eu.robojob.millassist.process.event.ProcessChangedEvent;
 import eu.robojob.millassist.process.event.ProcessFlowEvent;
 import eu.robojob.millassist.process.event.ProcessFlowListener;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class ProcessFlow {
 	
@@ -646,4 +649,32 @@ public class ProcessFlow {
 		}
 		return isConcurrentExecutionPossible;
 	}	
+	
+	public void revisitProcessFlowWorkPieces() {
+		WorkPiece prvWorkPiece = null;
+		//Workpiece set in the Gripper is the one coming from the robotPickSettings
+		for (AbstractProcessStep step: processSteps) {
+			if (step instanceof PickStep) {
+				if (((PickStep) step).getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
+					WorkPieceDimensions wpDim = new WorkPieceDimensions(prvWorkPiece.getDimensions());
+					((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
+					((PickStep) step).getRobotSettings().getWorkPiece().rotateDimensionsAroundY();
+				} else if(((PickStep) step).getRobotSettings().getApproachType().equals(ApproachType.LEFT)) {
+					WorkPieceDimensions wpDim = new WorkPieceDimensions(prvWorkPiece.getDimensions());
+					((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
+					((PickStep) step).getRobotSettings().getWorkPiece().rotateDimensionsAroundX();
+				} else {
+					//Neem de dimensies van de vorige pick over - probleem bij aanpassingen door CNC machine
+					if (prvWorkPiece != null) {
+						WorkPieceDimensions wpDim = new WorkPieceDimensions(prvWorkPiece.getDimensions());
+						((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
+					}
+				}
+				prvWorkPiece = ((PickStep) step).getRobotSettings().getWorkPiece();
+			}
+			if (step instanceof PutStep && ((PutStep) step).getDevice() instanceof AbstractStackingDevice) {
+				((AbstractStackingDevice) ((PutStep) step).getDevice()).getFinishedWorkPiece().setDimensions(new WorkPieceDimensions(prvWorkPiece.getDimensions()));
+			}
+		}
+	}
 }
