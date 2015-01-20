@@ -36,6 +36,8 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	private static final String SMOOTH_TO = "ReversalUnitConfigureView.smoothTo";
 	private static final String SMOOTH_FROM = "ReversalUnitConfigureView.smoothFrom";
 	private static final String SAVE = "ReversalUnitConfigureView.save";
+	private static final String STATION_LENGTH = "ReversalUnitConfigureView.stationLength";
+	private static final String STATION_FIXTURE_WIDTH = "ReversalUnitConfigureView.stationFixtureWidth";
 	private static final String STATION_HEIGHT = "ReversalUnitConfigureView.stationHeight";
 	private static final String ALLOWED_APPROACHES = "ReversalUnitConfigureView.allowedApproaches";
 	private static final String FRONT_LOAD = "ReversalUnitPickView.frontLoad";	
@@ -82,6 +84,10 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	private Label lblSmoothFromZ;
 	private NumericTextField numtxtSmoothFromZ;
 	
+	private Label lblStationLength;
+	private NumericTextField numtxtStationLength;
+	private Label lblStationFixtureWidth;
+	private NumericTextField numtxtStationFixtureWidth;
 	private Label lblStationHeight;
 	private NumericTextField numtxtStationHeight;
 	private Label lblAddedX;
@@ -106,9 +112,9 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	@Override
 	protected void build() {
 		getContents().setAlignment(Pos.TOP_CENTER);
-		getContents().setPadding(new Insets(50, 0, 0, 0));
-		getContents().setVgap(15);
-		getContents().setHgap(15);
+		getContents().setPadding(new Insets(25, 0, 0, 0));
+		getContents().setVgap(10);
+		getContents().setHgap(10);
 		lblName = new Label(Translator.getTranslation(NAME));
 		fullTxtName = new FullTextField(100);
 		lblUserframe = new Label(Translator.getTranslation(USERFRAME));
@@ -143,6 +149,10 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 		numtxtSmoothFromY = new NumericTextField(10);
 		lblSmoothFromZ = new Label("Z");
 		numtxtSmoothFromZ = new NumericTextField(10);
+		lblStationLength = new Label(Translator.getTranslation(STATION_LENGTH));
+		numtxtStationLength = new NumericTextField(10);
+		lblStationFixtureWidth = new Label(Translator.getTranslation(STATION_FIXTURE_WIDTH));
+		numtxtStationFixtureWidth = new NumericTextField(10);
 		lblStationHeight = new Label(Translator.getTranslation(STATION_HEIGHT));
 		numtxtStationHeight = new NumericTextField(10);
 		lblAddedX = new Label(Translator.getTranslation(ADDED_X_VALUE));
@@ -224,6 +234,8 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 							Float.parseFloat(numtxtSmoothFromX.getText()),
 							Float.parseFloat(numtxtSmoothFromY.getText()),
 							Float.parseFloat(numtxtSmoothFromZ.getText()),
+							Float.parseFloat(numtxtStationLength.getText()),
+							Float.parseFloat(numtxtStationFixtureWidth.getText()),
 							Float.parseFloat(numtxtStationHeight.getText()),
 							getAllowedApproaches(),
 							Float.parseFloat(numtxtAddedX.getText()));
@@ -247,6 +259,12 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 				cbBottomAllowed.setSelected(newValue);
 			}
 		});
+		getContents().add(lblStationLength, column++, row);
+		getContents().add(numtxtStationLength, column++, row, 2, 1);
+		column = 0; row++;
+		getContents().add(lblStationFixtureWidth, column++, row);
+		getContents().add(numtxtStationFixtureWidth, column++, row, 2, 1);
+		column = 0; row++;
 		getContents().add(lblStationHeight, column++, row);
 		getContents().add(numtxtStationHeight, column++, row, 2, 1);
 		column = 0; row++;
@@ -302,6 +320,8 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 			numtxtSmoothFromY.setText("" + smoothFrom.getY());
 			numtxtSmoothFromZ.setText("" + smoothFrom.getZ());
 			cbbUserFrame.setValue(reversalUnit.getWorkAreaManagers().iterator().next().getUserFrame().getName());
+			numtxtStationLength.setText("" + reversalUnit.getStationLength());
+			numtxtStationFixtureWidth.setText("" + reversalUnit.getStationFixtureWidth());
 			numtxtStationHeight.setText("" + reversalUnit.getStationHeight());
 			setAllowedApproaches();
 			numtxtAddedX.setText("" + reversalUnit.getAddedX());

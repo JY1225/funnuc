@@ -30,20 +30,26 @@ import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 public class ReversalUnit extends AbstractProcessingDevice {
 	
 	private float stationHeight;
+	private float stationLength;
+	private float stationFixtureWidth;
 	private boolean isWidthReversal = false;
 	private float addedXValue;
 	private boolean isShiftedOrigin;
 	private Map<ApproachType, Boolean> allowedApproachTypes = new HashMap<ApproachType, Boolean>();
 	
-	public ReversalUnit(final String name, final float stationHeight, final float addedXValue) {
+	public ReversalUnit(final String name, final float stationLength, final float stationFixtureWidth, final float stationHeight, final float addedXValue) {
 		super(name, false);
+		this.stationLength = stationLength;
+		this.stationFixtureWidth = stationFixtureWidth;
 		this.stationHeight = stationHeight;
 		this.addedXValue = addedXValue;
 		setWidthReversal();
 	}
 	
-	public ReversalUnit(final String name, final Set<Zone> zones, final float stationHeight, final float addedXValue) {
+	public ReversalUnit(final String name, final Set<Zone> zones, final float stationLength, final float stationFixtureWidth, final float stationHeight, final float addedXValue) {
 		super(name, zones, false);
+		this.stationLength = stationLength;
+		this.stationFixtureWidth = stationFixtureWidth;
 		this.stationHeight = stationHeight;
 		this.addedXValue = addedXValue;
 		setWidthReversal();
@@ -55,6 +61,22 @@ public class ReversalUnit extends AbstractProcessingDevice {
 
 	public void setStationHeight(final float stationHeight) {
 		this.stationHeight = stationHeight;
+	}
+	
+	public float getStationLength() {
+		return stationLength;
+	}
+
+	public void setStationLength(float stationLength) {
+		this.stationLength = stationLength;
+	}
+
+	public float getStationFixtureWidth() {
+		return stationFixtureWidth;
+	}
+
+	public void setStationFixtureWidth(float stationFixtureWidth) {
+		this.stationFixtureWidth = stationFixtureWidth;
 	}
 
 	@Override public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
