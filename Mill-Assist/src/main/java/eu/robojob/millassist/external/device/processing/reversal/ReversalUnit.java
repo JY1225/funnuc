@@ -188,8 +188,9 @@ public class ReversalUnit extends AbstractProcessingDevice {
 		switch (approachType) {
 		case BOTTOM:
 		case TOP:
-		case LEFT:
 			return workPieceDimensions.getWidth()/2;
+		case LEFT:
+			return workPieceDimensions.getHeight()/2;
 		case FRONT:
 			return workPieceDimensions.getWidth();
 		default: 
@@ -201,8 +202,9 @@ public class ReversalUnit extends AbstractProcessingDevice {
 		switch (approachType) {
 		case BOTTOM:
 		case TOP:
-		case FRONT:
 			return workPieceDimensions.getLength()/2;
+		case FRONT:
+			return workPieceDimensions.getHeight()/2;
 		case LEFT:
 			return 0;
 		default:
@@ -216,8 +218,9 @@ public class ReversalUnit extends AbstractProcessingDevice {
 		case TOP:	
 			return 0;
 		case FRONT:
+			return workPieceDimensions.getLength()/2;
 		case LEFT:
-			return workPieceDimensions.getHeight()/2;
+			return workPieceDimensions.getWidth()/2;
 		default:
 			return 0;
 		}
