@@ -10,6 +10,7 @@ public class RobotAlarm {
 	public static final int INVALID_SERVICE_TYPE							=	1;
 	public static final int INVALID_USERFRAME								=	2;
 	public static final int INVALID_GRIPTYPE_FOR_SERVICE					=	3;
+	public static final int INVALID_DATA									=	5;
 	public static final int NO_PNEUMATIC_PRESSURE							=	10;
 	public static final int REQUESTED_BODY_NOT_IN_TOOLBAY					=	20;
 	public static final int REQUESTED_SUBAGRIP_NOT_IN_TOOLBAY				=	21;
@@ -100,6 +101,9 @@ public class RobotAlarm {
 					break;
 				case RobotConstants.E_INVALID_GRIPTYPE_FOR_SERVICE:
 					alarms.add(new RobotAlarm(RobotAlarm.INVALID_GRIPTYPE_FOR_SERVICE));
+					break;
+				case RobotConstants.E_INVALID_DATA:
+					alarms.add(new RobotAlarm(RobotAlarm.INVALID_DATA));
 					break;
 				case RobotConstants.E_NO_PNEUMATIC_PRESSURE:
 					alarms.add(new RobotAlarm(RobotAlarm.NO_PNEUMATIC_PRESSURE));
