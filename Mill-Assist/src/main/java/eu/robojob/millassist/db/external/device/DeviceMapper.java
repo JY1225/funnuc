@@ -174,9 +174,11 @@ public class DeviceMapper {
 		ResultSet results = stmt.executeQuery();
 		ReversalUnit reversalUnit = null;
 		if (results.next()) {
-			int stationHeight = results.getInt("STATION_HEIGHT");
+			float stationHeight = results.getFloat("STATION_HEIGHT");
+			float stationLength = results.getFloat("STATION_LENGTH");
+			float stationFixtureWidth = results.getFloat("STATION_FIXTURE_WIDTH");
 			float addedX = results.getFloat("EXTRA_X");
-			reversalUnit = new ReversalUnit(name, zones, stationHeight, addedX);
+			reversalUnit = new ReversalUnit(name, zones, stationLength, stationFixtureWidth, stationHeight, addedX);
 			reversalUnit.setId(id);
 			getAllowedApproachTypes(id, reversalUnit);
 		}
@@ -870,7 +872,8 @@ public class DeviceMapper {
 	public void updateReversalUnit(final ReversalUnit reversalUnit, final String name, final String userFrame, final float x, final float y,
 			final float z, final float w, final float p, final float r, final float smoothToX, final float smoothToY, 
 			final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, 
-			final float stationHeight, final Map<ApproachType, Boolean> allowedApproaches, final float addedX) throws SQLException {
+			final float stationLength, final float stationFixtureWidth, final float stationHeight,
+			final Map<ApproachType, Boolean> allowedApproaches, final float addedX) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		if ((!reversalUnit.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrame))) {
 			UserFrame newUserFrame = getUserFrameByName(userFrame);
@@ -878,10 +881,12 @@ public class DeviceMapper {
 			updateWorkArea(reversalUnit.getWorkAreaManagers().get(0));
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE REVERSALUNIT " +
-				"SET STATION_HEIGHT = ?, EXTRA_X = ? WHERE ID = ?");
-		stmt.setFloat(1, stationHeight);
-		stmt.setFloat(2, addedX);
-		stmt.setInt(3, reversalUnit.getId());
+				"SET STATION_LENGTH = ?, STATION_FIXTURE_WIDTH = ?, STATION_HEIGHT = ?, EXTRA_X = ? WHERE ID = ?");
+		stmt.setFloat(1, stationLength);
+		stmt.setFloat(2, stationFixtureWidth);
+		stmt.setFloat(3, stationHeight);
+		stmt.setFloat(4, addedX);
+		stmt.setInt(5, reversalUnit.getId());
 		stmt.execute();
 		reversalUnit.setAddedX(addedX);
 		saveAllowedApproaches(allowedApproaches, reversalUnit.getId());
