@@ -184,7 +184,7 @@ public class DeviceMapper {
 	}
 	
 	private void getAllowedApproachTypes(final int id, final ReversalUnit reversalUnit) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ALLOWED_APPROACHTYPE_DEVICE WHERE ID = ?");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ALLOWED_APPROACHTYPE_DEVICE WHERE DEVICE_ID = ?");
 		stmt.setInt(1, id);
 		ResultSet results = stmt.executeQuery();
 		while (results.next()) {
@@ -916,7 +916,7 @@ public class DeviceMapper {
 	
 	private void saveAllowedApproaches(final Map<ApproachType, Boolean> allowedApproaches, final int id) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE ALLOWED_APPROACHTYPE_DEVICE " +
-				"SET IS_ALLOWED = ? WHERE ID = ? AND APPROACHTYPE = ?");
+				"SET IS_ALLOWED = ? WHERE DEVICE_ID = ? AND APPROACHTYPE = ?");
 		stmt.setInt(2, id);
 		for (Entry<ApproachType, Boolean> entry: allowedApproaches.entrySet()) {
 			stmt.setInt(3, entry.getKey().getId());
