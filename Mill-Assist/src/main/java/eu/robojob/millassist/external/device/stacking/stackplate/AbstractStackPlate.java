@@ -168,7 +168,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public synchronized void putFinished(final DevicePutSettings putSettings) {
-		doCorrectionFinishedWorkPiece();
 		currentPutLocation.setWorkPiece(getFinishedWorkPiece());
 		currentPutLocation.setAmount(currentPutLocation.getAmount() + 1);
 		currentPutLocation = null;
@@ -291,6 +290,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 			if ((stackingPos.getWorkPiece() == null) || ((stackingPos.getWorkPiece() != null) && 
 					(stackingPos.getWorkPiece().getType() == Type.FINISHED) && (stackingPos.getAmount() < getLayout().getLayers()))) {
 				currentPutLocation = stackingPos;
+				doCorrectionFinishedWorkPiece();
 				Coordinates c = new Coordinates(stackingPos.getPutPosition());
 				c.offset(workArea.getDefaultClamping().getRelativePosition());
 				return c;
