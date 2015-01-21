@@ -44,8 +44,8 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 			WorkPieceDimensions prevDimensions = getPreviousPickDimensions();
 			float weight = pickStep.getRobotSettings().getWorkPiece().getWeight();
 			float prevWeight = getPreviousWorkPiece().getWeight();
-			if ((myDimensions.getWidth() > 0) && (myDimensions.getLength() > 0) && (myDimensions.getHeight() > 0)/* && (myDimensions.getWidth() <= prevDimensions.getWidth()) && (myDimensions.getLength() <= prevDimensions.getLength()) 
-					&& (myDimensions.getHeight() <= prevDimensions.getHeight())*/ && 
+			if ((myDimensions.getWidth() > 0) && (myDimensions.getLength() > 0) && (myDimensions.getHeight() > 0) && (myDimensions.getWidth() <= prevDimensions.getWidth()) && (myDimensions.getLength() <= prevDimensions.getLength()) 
+					&& (myDimensions.getHeight() <= prevDimensions.getHeight()) && 
 					(pickStep.getRobotSettings().getWorkPiece().getWeight() > 0) &&
 					((weight <= prevWeight) || ((weight > prevWeight) && (Math.abs(weight - prevWeight) < 0.01)))) {
 				return true;
@@ -64,9 +64,9 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 					|| (weight <= 0)) {
 				getView().showNotification(Translator.getTranslation(INCORRECT_DATA), Type.WARNING);
 			//FIXME - add check using the coordination changes
-//			} else if ((myDimensions.getWidth() > prevDimensions.getWidth()) || (myDimensions.getLength() > prevDimensions.getLength())
-//					 || (myDimensions.getHeight() > prevDimensions.getHeight())) {
-//				getView().showNotification(Translator.getTranslation(DIMENSIONS_DO_NOT_MATCH), Type.WARNING);
+			} else if ((myDimensions.getWidth() > prevDimensions.getWidth()) || (myDimensions.getLength() > prevDimensions.getLength())
+					 || (myDimensions.getHeight() > prevDimensions.getHeight())) {
+				getView().showNotification(Translator.getTranslation(DIMENSIONS_DO_NOT_MATCH), Type.WARNING);
 			} else if ((weight > prevWeight) && (Math.abs(weight - prevWeight) > 0.01)) {
 				getView().showNotification(Translator.getTranslation(WEIGHTS_DO_NOT_MATCH), Type.WARNING);
 			} else {
