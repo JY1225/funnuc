@@ -41,8 +41,8 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 		if (reversalCount >= getNbConcurrentProcessesInMachine()) {
 			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_FOR_PICK_MACHINE_BEFORE_REVERSAL)) {
-					processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.REVERSING_WITH_ROBOT);
-					processFlowExecutor.continueExecution();
+					processExecutor.setExecutionStatus(ExecutionThreadStatus.REVERSING_WITH_ROBOT);
+					processExecutor.continueExecution();
 				}
 			}
 			return;
