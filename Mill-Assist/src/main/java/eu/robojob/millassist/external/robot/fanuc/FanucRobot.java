@@ -722,6 +722,7 @@ public class FanucRobot extends AbstractRobot {
 		values.add(df.format(smoothPoint.getY()));	// smooth y
 		values.add(df.format(smoothPoint.getZ()));	// smooth z
 		//TODO review if this strategy is always safe
+		// The approach strategy can be overwritten by the robot in case the height of the IP-point is lower than the reversal unit + height of workpiece
 		if (workArea.getWorkAreaManager().getZone().getDevice() instanceof ReversalUnit) {
 			switch (approachType) {
 			case BOTTOM:
