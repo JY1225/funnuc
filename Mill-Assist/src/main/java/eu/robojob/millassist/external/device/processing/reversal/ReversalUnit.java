@@ -146,15 +146,13 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
-		if (!isWidthReversal) {
-			c.setX(c.getX() + getXCoord(workPieceDimensions, approachType));
-			c.setY(c.getY() + getYCoord(workPieceDimensions, approachType));
-			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
-		} else {
-			c.setX(c.getX() + getYCoord(workPieceDimensions, approachType));
-			c.setY(c.getY() + getXCoord(workPieceDimensions, approachType));
-			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
-		}
+		WorkPieceDimensions dimensions = workPieceDimensions;
+		if (isWidthReversal) {
+			dimensions = new WorkPieceDimensions(workPieceDimensions.getWidth(), workPieceDimensions.getLength(), workPieceDimensions.getHeight());
+		}	
+		c.setX(c.getX() + getXCoord(dimensions, approachType));
+		c.setY(c.getY() + getYCoord(dimensions, approachType));
+		c.setZ(c.getZ() + getZCoord(dimensions, approachType));
 		if (isShiftedOrigin) {
 			c.setX(c.getX() + addedXValue);
 		}
@@ -169,15 +167,13 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
-		if (!isWidthReversal) {
-			c.setX(c.getX() + getXCoord(workPieceDimensions, approachType));
-			c.setY(c.getY() + getYCoord(workPieceDimensions, approachType));
-			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
-		} else {
-			c.setX(c.getX() + getYCoord(workPieceDimensions, approachType));
-			c.setY(c.getY() + getXCoord(workPieceDimensions, approachType));
-			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
+		WorkPieceDimensions dimensions = workPieceDimensions;
+		if (isWidthReversal) {
+			dimensions = new WorkPieceDimensions(workPieceDimensions.getWidth(), workPieceDimensions.getLength(), workPieceDimensions.getHeight());
 		}
+		c.setX(c.getX() + getXCoord(dimensions, approachType));
+		c.setY(c.getY() + getYCoord(dimensions, approachType));
+		c.setZ(c.getZ() + getZCoord(dimensions, approachType));
 		if (isShiftedOrigin) {
 			c.setX(c.getX() + addedXValue);
 		}

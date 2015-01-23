@@ -19,6 +19,7 @@ import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
@@ -657,23 +658,31 @@ public class ProcessFlow {
 			if (step instanceof PickStep) {
 				if (((PickStep) step).getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
 					WorkPieceDimensions wpDim = new WorkPieceDimensions(prvWorkPiece.getDimensions());
+					float prvWeight = prvWorkPiece.getWeight();
 					((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
+					((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
 					((PickStep) step).getRobotSettings().getWorkPiece().rotateDimensionsAroundY();
 				} else if(((PickStep) step).getRobotSettings().getApproachType().equals(ApproachType.LEFT)) {
 					WorkPieceDimensions wpDim = new WorkPieceDimensions(prvWorkPiece.getDimensions());
+					float prvWeight = prvWorkPiece.getWeight();
 					((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
+					((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
 					((PickStep) step).getRobotSettings().getWorkPiece().rotateDimensionsAroundX();
 				} else {
 					//Neem de dimensies van de vorige pick over - probleem bij aanpassingen door CNC machine
 					if (prvWorkPiece != null) {
 						WorkPieceDimensions wpDim = new WorkPieceDimensions(prvWorkPiece.getDimensions());
+						float prvWeight = prvWorkPiece.getWeight();
+						((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
 						((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
 					}
 				}
 				prvWorkPiece = ((PickStep) step).getRobotSettings().getWorkPiece();
 			}
-			if (step instanceof PutStep && ((PutStep) step).getDevice() instanceof AbstractStackingDevice) {
+			if (step instanceof PutStep && ((PutStep) step).getDevice() instanceof AbstractStackingDevice && !(((PutStep) step).getDevice() instanceof OutputBin)) {
+				float prvWeight = prvWorkPiece.getWeight();
 				((AbstractStackingDevice) ((PutStep) step).getDevice()).getFinishedWorkPiece().setDimensions(new WorkPieceDimensions(prvWorkPiece.getDimensions()));
+				((AbstractStackingDevice) ((PutStep) step).getDevice()).getFinishedWorkPiece().setWeight(prvWeight);
 			}
 		}
 	}
