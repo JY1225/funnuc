@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor.SupportState;
 import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class ConveyorLayout {
@@ -28,8 +29,9 @@ public class ConveyorLayout {
 	private float maxOverlap;
 	private float minDistRaw;
 	private float minDistFinished;
-	private Boolean[] currentSupportStatus;
+	private Conveyor.SupportState[] currentSupportStatus;
 	private Boolean[] requestedSupportStatus;
+	private Boolean[] supportSelectionStatus;
 	private float offsetSupport1;
 	private float offsetOtherSupports;
 	
@@ -56,11 +58,13 @@ public class ConveyorLayout {
 		this.maxOverlap = maxOverlap;
 		this.minDistRaw = minDistRaw;
 		this.minDistFinished = minDistFinished;
-		int supportAmount = rawTrackAmount - 1;
-		currentSupportStatus = new Boolean[supportAmount];
+		int supportAmount = rawTrackAmount;
+		currentSupportStatus = new Conveyor.SupportState[supportAmount];
 		requestedSupportStatus = new Boolean[supportAmount];
-		Arrays.fill(currentSupportStatus, Boolean.FALSE);
+		supportSelectionStatus = new Boolean[supportAmount];
+		Arrays.fill(currentSupportStatus, SupportState.UNKNOWN);
 		Arrays.fill(requestedSupportStatus, Boolean.FALSE);
+		Arrays.fill(supportSelectionStatus, Boolean.FALSE);
 		this.stackingPositionsRawWorkPieces = new ArrayList<StackingPosition>();
 		this.stackingPositionsFinishedWorkPieces = new ArrayList<StackingPosition>();
 		this.finishedStackingPositionWorkPieces = new ArrayList<Boolean>();
@@ -196,11 +200,11 @@ public class ConveyorLayout {
 		this.finishedConveyorLength = finishedConveyorLength;
 	}
 
-	public Boolean[] getCurrentSupportStatus() {
+	public Conveyor.SupportState[] getCurrentSupportStatus() {
 		return currentSupportStatus;
 	}
 
-	public void setCurrentSupportStatus(final Boolean[] currentSupportStatus) {
+	public void setCurrentSupportStatus(final Conveyor.SupportState[] currentSupportStatus) {
 		this.currentSupportStatus = currentSupportStatus;
 	}
 
@@ -212,6 +216,14 @@ public class ConveyorLayout {
 		this.requestedSupportStatus = requestedSupportStatus;
 	}
 	
+	public Boolean[] getSupportSelectionStatus() {
+		return supportSelectionStatus;
+	}
+
+	public void setSupportSelectionStatus(Boolean[] supportSelectionStatus) {
+		this.supportSelectionStatus = supportSelectionStatus;
+	}
+
 	public float getMaxOverlap() {
 		return maxOverlap;
 	}
@@ -304,12 +316,8 @@ public class ConveyorLayout {
 			}
 			// add the distance of the tracks used by previous work pieces
 			// add the distance of the space between tracks used by previous work pieces
-			if (i > 0) {
-				y += (i * amount) * rawTrackWidth;
-				y += (i * amount) * spaceBetweenTracks;
-				//y += supportWidth;
-
-			}
+			y += (i * amount) * rawTrackWidth;
+			y += (i * amount) * spaceBetweenTracks;
 			// if not the first, add the distance of support and distance between support en 
 			// track below
 			// if not the first add the distance between the first support and the first track
@@ -323,11 +331,10 @@ public class ConveyorLayout {
 			StackingPosition stackingPos = new StackingPosition(x, y, 0, workPiece);
 			this.stackingPositionsRawWorkPieces.add(stackingPos);
 			// set requested support below
-			if (i > 0) {
-				requestedSupportStatus[i*amount - 1] = true;
-			}
+			requestedSupportStatus[i*amount] = true;
 		}
-		
+		logger.info("Requested support status: " + requestedSupportStatus[0] + " - "  + requestedSupportStatus[1] +
+				 " - "  + requestedSupportStatus[2] + " - "  + requestedSupportStatus[3]);
 		configureFinishedWorkPieceStackingPositions();
 	}
 	

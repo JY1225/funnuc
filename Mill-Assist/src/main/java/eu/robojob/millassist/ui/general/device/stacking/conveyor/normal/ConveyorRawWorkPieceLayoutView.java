@@ -14,6 +14,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -29,6 +30,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor.SupportState;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLayout;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractMenuPresenter;
@@ -54,6 +57,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 	private List<Rectangle> workPieceWindows;
 	private List<Rectangle> workPieces;
 	private List<Text> texts;
+	private List<CheckBox> supportsSelected;
 	private Group conveyorGroup;
 	private Pane p;
 	
@@ -71,7 +75,6 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 	private static final String CSS_CLASS_CONVEYOR_BACKGROUND = "conveyor-background";
 	private static final String CSS_CLASS_DISTANCE_BETWEEN_TRACKS = "distance-between-tracks";
 	private static final String CSS_CLASS_TRACK = "track";	
-	private static final String CSS_CLASS_SUPPORT_FIXED = "support-fixed";
 	private static final String CSS_CLASS_WORKPIECE_AREA = "workPiece-area";
 	private static final String CSS_CLASS_WORKPIECE  = "workpiece-c";
 	
@@ -97,6 +100,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		this.workPieces = new ArrayList<Rectangle>();
 		this.supports = new ArrayList<Rectangle>();
 		this.texts = new ArrayList<Text>();
+		this.supportsSelected = new ArrayList<CheckBox>(); 
 		this.conveyorGroup = new Group();
 		this.p = new Pane();
 		p.getChildren().add(conveyorGroup);
@@ -192,6 +196,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		workPieceWindows.clear();
 		workPieces.clear();
 		supports.clear();
+		supportsSelected.clear();
 		texts.clear();
 		
 		conveyorGroup.getChildren().clear();
@@ -224,25 +229,14 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			support.setArcHeight(3);
 			support.setArcWidth(3);
 			// add supports, except for first one
-			if (i > 0) {
-				supports.add(support);
-				support.getStyleClass().add(CSS_CLASS_SUPPORT_DOWN);
-			} else {
-				support.getStyleClass().add(CSS_CLASS_SUPPORT_FIXED);
-			}
+			supports.add(support);
+			support.getStyleClass().add(CSS_CLASS_SUPPORT_DOWN);
 			Rectangle spaceBetween = new Rectangle();
-			if (i == 0) {
-				spaceBetween.setX(74);
-				spaceBetween.setWidth(VISIBLE_AREA-4 + 10);
-				spaceBetween.setY(-ySpaceBetweenFirst);
-				spaceBetween.setHeight(ySpaceBetweenFirst);
-			} else {
-				spaceBetween.setX(74);
-				spaceBetween.setWidth(VISIBLE_AREA-4 + 10);
-				spaceBetween.setY(-(i * (conveyorLayout.getSpaceBetweenTracks() + conveyorLayout.getRawTrackWidth()) + 
-						ySpaceBetweenFirst));
-				spaceBetween.setHeight(conveyorLayout.getSpaceBetweenTracks());
-			}
+			spaceBetween.setX(74);
+			spaceBetween.setWidth(VISIBLE_AREA-4 + 10);
+			spaceBetween.setY(-(i * (conveyorLayout.getSpaceBetweenTracks() + conveyorLayout.getRawTrackWidth()) + 
+					ySpaceBetweenFirst));
+			spaceBetween.setHeight(conveyorLayout.getSpaceBetweenTracks());
 			spaceBetween.getStyleClass().add(CSS_CLASS_DISTANCE_BETWEEN_TRACKS);
 			// add track
 			Rectangle track = new Rectangle();
@@ -270,10 +264,21 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			// add text
 			Text txt = new Text("0000.00");
 			txt.setX(0);
-			txt.setY(-(i * (conveyorLayout.getRawTrackWidth() + conveyorLayout.getSpaceBetweenTracks()) + yTrackFirst - conveyorLayout.getRawTrackWidth()));
+			txt.setY(-(i * (conveyorLayout.getRawTrackWidth() + conveyorLayout.getSpaceBetweenTracks()) + yTrackFirst - conveyorLayout.getRawTrackWidth()/2 - 8));
 			txt.setWrappingWidth(60);
 			txt.getStyleClass().add(CSS_CLASS_DISTANCE_TEXT);
 			texts.add(txt);
+			final CheckBox cbSelected = new CheckBox();
+			cbSelected.setLayoutX(30);
+			cbSelected.setLayoutY(-(i * (conveyorLayout.getRawTrackWidth() + conveyorLayout.getSpaceBetweenTracks()) + yTrackFirst - conveyorLayout.getRawTrackWidth() + 1));
+			final int j = i;
+			cbSelected.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent arg0) {
+					getPresenter().updateSupportSelection(j, cbSelected.selectedProperty().get());
+				}
+			});
+			supportsSelected.add(cbSelected);
 			conveyorGroup.getChildren().add(spaceBetween);
 			conveyorGroup.getChildren().add(support);
 			conveyorGroup.getChildren().add(track);
@@ -283,6 +288,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			support.toBack();
 			spaceBetween.toBack();
 			conveyorGroup.getChildren().add(txt);
+			conveyorGroup.getChildren().add(cbSelected);
 		}
 		bg.toBack();
 		total.toBack();
@@ -316,6 +322,15 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		p.setPrefHeight(conveyorGroup.getBoundsInParent().getHeight());
 		
 		setMoving(false);
+	}
+	
+	public Boolean[] getSupportSelection() {
+		Boolean[] selection = new Boolean[4];
+		selection[0] = supportsSelected.get(0).isSelected();
+		selection[1] = supportsSelected.get(1).isSelected();
+		selection[2] = supportsSelected.get(2).isSelected();
+		selection[3] = supportsSelected.get(3).isSelected();
+		return selection;
 	}
 	
 	@Override
@@ -378,22 +393,23 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			} else {
 				texts.get(i+1).setVisible(false);
 			}*/
+			supportsSelected.get(i).setSelected(conveyorLayout.getSupportSelectionStatus()[i]);
 		}
 	}
 	
-	private void setSupport(final Rectangle rectangle, final boolean currentState, final boolean requestedState) {
+	private void setSupport(final Rectangle rectangle, final Conveyor.SupportState currentState, final boolean requestedState) {
 		rectangle.getStyleClass().remove(CSS_CLASS_SUPPORT_DOWN);
 		rectangle.getStyleClass().remove(CSS_CLASS_SUPPORT_DOWN_SHOULD_BE_UP);
 		rectangle.getStyleClass().remove(CSS_CLASS_SUPPORT_UP);
 		rectangle.getStyleClass().remove(CSS_CLASS_SUPPORT_UP_SHOULD_BE_DOWN);
 		if (requestedState) {
-			if (currentState) {
+			if (currentState == SupportState.UP) {
 				rectangle.getStyleClass().add(CSS_CLASS_SUPPORT_UP);
 			} else {
 				rectangle.getStyleClass().add(CSS_CLASS_SUPPORT_DOWN_SHOULD_BE_UP);
 			}
 		} else {
-			if (currentState) {
+			if (currentState == SupportState.UP) {
 				rectangle.getStyleClass().add(CSS_CLASS_SUPPORT_UP_SHOULD_BE_DOWN);
 			} else {
 				rectangle.getStyleClass().add(CSS_CLASS_SUPPORT_DOWN);

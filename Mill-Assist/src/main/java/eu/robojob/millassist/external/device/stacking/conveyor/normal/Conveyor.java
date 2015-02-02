@@ -55,6 +55,10 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	private ConveyorLayout layout;
 		
 	private static Logger logger = LogManager.getLogger(Conveyor.class.getName());
+	
+	public enum SupportState {
+		UP, DOWN, UNKNOWN;
+	}
 				
 	public Conveyor(final String name, final Set<Zone> zones, final WorkAreaManager rawWorkArea, final WorkAreaManager finishedWorkArea, 
 			final ConveyorLayout layout, final SocketConnection socketConnection, final float nomSpeed1, final float nomSpeed2) {
@@ -88,19 +92,49 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		List<Integer> alarmInts = getSocketCommunication().readRegisters(ConveyorConstants.ALARMS_REG, 1);
 		int alarmReg1 = alarmInts.get(0);
 		setAlarms(ConveyorAlarm.parseConveyorAlarms(alarmReg1, statusInt, getConveyorTimeout()));
-		this.sensorValues = getSocketCommunication().readRegisters(ConveyorConstants.SENSOR_1_REG, 4);
-		//TODO what if more or less supports?
-		Boolean[] currentSupportStatus = new Boolean[3];
-		currentSupportStatus[0] = (statusInt & ConveyorConstants.SUPPORT_1_STATUS) > 0; 
-		currentSupportStatus[1] = (statusInt & ConveyorConstants.SUPPORT_2_STATUS) > 0;
-		currentSupportStatus[2] = (statusInt & ConveyorConstants.SUPPORT_3_STATUS) > 0;
+		this.sensorValues = getSocketCommunication().readRegisters(ConveyorConstants.SENSOR_0_REG, 4);
+		SupportState[] currentSupportStatus = new SupportState[4];
+		if ((statusInt & ConveyorConstants.USE_SUPPORT_SENSORS) > 0) {
+			if ((statusInt & ConveyorConstants.SUPPORT_0_IS_DOWN) > 0) {
+				currentSupportStatus[0] = SupportState.DOWN;
+			} else {
+				currentSupportStatus[0] = SupportState.UP;
+			}
+			if ((statusInt & ConveyorConstants.SUPPORT_1_IS_DOWN) > 0) {
+				currentSupportStatus[1] = SupportState.DOWN;
+			} else {
+				currentSupportStatus[1] = SupportState.UP;
+			}
+			if ((statusInt & ConveyorConstants.SUPPORT_2_IS_DOWN) > 0) {
+				currentSupportStatus[2] = SupportState.DOWN;
+			} else {
+				currentSupportStatus[2] = SupportState.UP;
+			}
+			if ((statusInt & ConveyorConstants.SUPPORT_3_IS_DOWN) > 0) {
+				currentSupportStatus[3] = SupportState.DOWN;
+			} else {
+				currentSupportStatus[3] = SupportState.UP;
+			}
+		} else {
+			currentSupportStatus[0] = SupportState.UNKNOWN;
+			currentSupportStatus[1] = SupportState.UNKNOWN;
+			currentSupportStatus[2] = SupportState.UNKNOWN;
+			currentSupportStatus[3] = SupportState.UNKNOWN;
+		}
 		layout.setCurrentSupportStatus(currentSupportStatus);
+		Boolean[] supportSelectionStatus = new Boolean[4];
+		int supportsSelectionInt = (getSocketCommunication().readRegisters(ConveyorConstants.SUPPORT_SELECTION, 1)).get(0);
+		supportSelectionStatus[0] = ((supportsSelectionInt & ConveyorConstants.SUPPORT_0_SELECTED) > 0);
+		supportSelectionStatus[1] = ((supportsSelectionInt & ConveyorConstants.SUPPORT_1_SELECTED) > 0);
+		supportSelectionStatus[2] = ((supportsSelectionInt & ConveyorConstants.SUPPORT_2_SELECTED) > 0);
+		supportSelectionStatus[3] = ((supportsSelectionInt & ConveyorConstants.SUPPORT_3_SELECTED) > 0);
+		layout.setSupportSelectionStatus(supportSelectionStatus);
 	}
 	
 	public void configureSupports() {
 		try {
 			configureSupports(layout.getRequestedSupportStatus());
-		} catch (AbstractCommunicationException	| InterruptedException e) {
+		} catch (AbstractCommunicationException	| InterruptedException | DeviceActionException e) {
 			e.printStackTrace();
 			logger.error(e);
 		}
@@ -116,31 +150,84 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	}
 	
 	public void allSupportsDown() {
-		Boolean[] allDown = new Boolean[3];
+		Boolean[] supportSelection = layout.getSupportSelectionStatus();
+		Boolean[] allDown = new Boolean[4];
 		Arrays.fill(allDown, false);
 		try {
 			configureSupports(allDown);
-		} catch (AbstractCommunicationException	| InterruptedException e) {
+			selectSupports(supportSelection);
+		} catch (AbstractCommunicationException	| InterruptedException | DeviceActionException e) {
 			e.printStackTrace();
 			logger.error(e);
 		}
 	}
 	
-	private void configureSupports(final Boolean[] requestedSupportState) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
+	private void configureSupports(final Boolean[] requestedSupportState) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException, DeviceActionException {
 		int command = 0;
-		command = command | ConveyorConstants.UPDATE_SUPPORTS;
+		int[] values = new int[1];
+		if ((getStatus() & ConveyorConstants.SUPPORTS_UPDATED) > 0) {
+			// First reset status
+			command = command | ConveyorConstants.PREPARE_FOR_CMD;
+			values[0] = command;
+			getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, values);
+			waitForStatusNot(ConveyorConstants.SUPPORTS_UPDATED);
+			command = 0;
+		}
+		command = command | ConveyorConstants.SUPPORTS_UPDATE;
 		if (requestedSupportState[0]) {
-			command = command | ConveyorConstants.SUPPORT_1_REQ_VAL;
+			command = command | ConveyorConstants.SUPPORT_0;
 		}
 		if (requestedSupportState[1]) {
-			command = command | ConveyorConstants.SUPPORT_2_REQ_VAL;
+			command = command | ConveyorConstants.SUPPORT_1;
 		}
 		if (requestedSupportState[2]) {
-			command = command | ConveyorConstants.SUPPORT_3_REQ_VAL;
+			command = command | ConveyorConstants.SUPPORT_2;
 		}
-		int[] values = new int[1];
+		if (requestedSupportState[3]) {
+			command = command | ConveyorConstants.SUPPORT_3;
+		}
 		values[0] = command;
 		getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, values);
+		waitForStatus(ConveyorConstants.SUPPORTS_UPDATED);
+	}
+	
+	public void changeSupportsSelection(final Boolean[] supportSelection) {
+		try {
+			selectSupports(supportSelection);
+		} catch (SocketResponseTimedOutException | SocketDisconnectedException
+				| SocketWrongResponseException | InterruptedException | DeviceActionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void selectSupports(final Boolean[] supportSelection) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException, DeviceActionException {
+		int command = 0;
+		int[] values = new int[1];
+		if ((getStatus() & ConveyorConstants.SUPPORTS_SELECTED) > 0) {
+			// First reset status
+			command = command | ConveyorConstants.PREPARE_FOR_CMD;
+			values[0] = command;
+			getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, values);
+			waitForStatusNot(ConveyorConstants.SUPPORTS_SELECTED);
+			command = 0;
+		}
+		command = command | ConveyorConstants.SUPPORTS_SELECT;
+		if (supportSelection[0]) {
+			command = command | ConveyorConstants.SUPPORT_0;
+		}
+		if (supportSelection[1]) {
+			command = command | ConveyorConstants.SUPPORT_1;
+		}
+		if (supportSelection[2]) {
+			command = command | ConveyorConstants.SUPPORT_2;
+		}
+		if (supportSelection[3]) {
+			command = command | ConveyorConstants.SUPPORT_3;
+		}
+		values[0] = command;
+		getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, values);
+		waitForStatus(ConveyorConstants.SUPPORTS_SELECTED);
 	}
 	
 	@Override
@@ -176,19 +263,19 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	}
 
 	public boolean isInterlockRaw() {
-		return (getStatus() & ConveyorConstants.CONV_RAW_INTERLOCK) > 0;
+		return (getStatus() & ConveyorConstants.RAW_CONV_INTERLOCK) > 0;
 	}
 	
 	public boolean isInterlockFinished() {
-		return (getStatus() & ConveyorConstants.CONV_FINISHED_INTERLOCK) > 0;
+		return (getStatus() & ConveyorConstants.FIN_CONV_INTERLOCK) > 0;
 	}
 	
 	public boolean isMovingRaw() {
-		return (getStatus() & ConveyorConstants.CONV_RAW_MOV) > 0;
+		return (getStatus() & ConveyorConstants.RAW_CONV_MOV) > 0;
 	}
 
 	public boolean isMovingFinished() {
-		return (getStatus() & ConveyorConstants.CONV_FINISHED_MOV) > 0;
+		return (getStatus() & ConveyorConstants.FIN_CONV_MOV) > 0;
 	}
 	
 	@Override public void reset() throws AbstractCommunicationException, DeviceActionException, InterruptedException { 
@@ -208,7 +295,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		int workPieceLength = (int) Math.round(getRawWorkPiece().getDimensions().getLength());
 		workPieceLength +=  workPieceShift;
 		int[] length = {workPieceLength};
-		getSocketCommunication().writeRegisters(ConveyorConstants.LENGTH_WP_RAW, length);
+		getSocketCommunication().writeRegisters(ConveyorConstants.LENGTH_WP_RAW_SHIFT, length);
 	}
 	
 	public void writeFinishedWorkPieceLength() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
@@ -266,7 +353,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		logger.info("Sending interlock raw conveyor command.");
 		getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, commandReg);
 		logger.info("Waiting for confirmation raw conveyor interlock.");
-		waitForStatus(ConveyorConstants.CONV_RAW_INTERLOCK);
+		waitForStatus(ConveyorConstants.RAW_CONV_INTERLOCK);
 		logger.info("Obtained interlock, prepare for pick is ready");		
 	}
 
@@ -274,7 +361,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	public void prepareForPut(final DevicePutSettings putSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// wait until the finished conveyor is not moving
 		logger.info("Checking finished conveyor is not moving, if so, wait until stopped.");
-		waitForStatusNot((ConveyorConstants.CONV_FINISHED_MOV));
+		waitForStatusNot((ConveyorConstants.FIN_CONV_MOV));
 		logger.info("Finished conveyor is not moving, wait for mode = auto.");
 		waitForStatus(ConveyorConstants.MODE);
 		logger.info("Mode = auto, so we can continue.");
@@ -284,28 +371,28 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		logger.info("Sending interlock finished conveyor command.");
 		getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, commandReg);
 		logger.info("Waiting for confirmation finished conveyor interlock.");
-		waitForStatus(ConveyorConstants.CONV_FINISHED_INTERLOCK);
+		waitForStatus(ConveyorConstants.FIN_CONV_INTERLOCK);
 		logger.info("Obtained interlock, prepare for put is ready");		
 	}
 
 	@Override public void prepareForIntervention(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 		// obtain interlock of correct work area, and wait until not moving
 		if (interventionSettings.getWorkArea().getWorkAreaManager().equals(rawWorkArea)) {
-			waitForStatusNot((ConveyorConstants.CONV_RAW_MOV));
+			waitForStatusNot((ConveyorConstants.RAW_CONV_MOV));
 			waitForStatus(ConveyorConstants.MODE);
 			int command = 0;
 			command = command | ConveyorConstants.RQST_INTERLOCK_RAW;
 			int[] commandReg = {command};
 			getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, commandReg);
-			waitForStatus(ConveyorConstants.CONV_RAW_INTERLOCK);
+			waitForStatus(ConveyorConstants.RAW_CONV_INTERLOCK);
 		} else if (interventionSettings.getWorkArea().getWorkAreaManager().equals(finishedWorkArea)) {
-			waitForStatusNot((ConveyorConstants.CONV_FINISHED_MOV));
+			waitForStatusNot((ConveyorConstants.FIN_CONV_MOV));
 			waitForStatus(ConveyorConstants.MODE);
 			int command = 0;
 			command = command | ConveyorConstants.RQST_INTERLOCK_FINISHED;
 			int[] commandReg = {command};
 			getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, commandReg);
-			waitForStatus(ConveyorConstants.CONV_FINISHED_INTERLOCK);
+			waitForStatus(ConveyorConstants.FIN_CONV_INTERLOCK);
 		} else {
 			throw new IllegalArgumentException("Illegal workarea");
 		}
@@ -334,7 +421,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, commandReg);
 		// if last piece: do shift
 		if (lastFinishedWorkPieceIndex == layout.getStackingPositionsFinishedWorkPieces().size() - 1) {
-			waitForStatusNot(ConveyorConstants.CONV_FINISHED_INTERLOCK);
+			waitForStatusNot(ConveyorConstants.FIN_CONV_INTERLOCK);
 			// just to be sure, write the finished work piece shift length
 			//writeFinishedWorkPieceLength();
 			int command2 = 0;

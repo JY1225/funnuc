@@ -46,25 +46,25 @@ public class ConveyorAlarm extends eu.robojob.millassist.external.device.stackin
 		if ((alarmReg1 & ConveyorConstants.ALR_FINISHED_CONV_FULL) > 0) {
 			alarms.add(new ConveyorAlarm(ConveyorAlarm.ALR_FINISHED_CONV_FULL));
 		}
-		if ((alarmReg1 & ConveyorConstants.ALR_SUPPORT_1) > 0) {
+		if ((alarmReg1 & ConveyorConstants.ALR_SUPPORT_0) > 0) {
 			alarms.add(new ConveyorAlarm(ConveyorAlarm.ALR_SUPPORT_1));
 		}
-		if ((alarmReg1 & ConveyorConstants.ALR_SUPPORT_2) > 0) {
+		if ((alarmReg1 & ConveyorConstants.ALR_SUPPORT_1) > 0) {
 			alarms.add(new ConveyorAlarm(ConveyorAlarm.ALR_SUPPORT_2));
 		}
-		if ((alarmReg1 & ConveyorConstants.ALR_SUPPORT_3) > 0) {
+		if ((alarmReg1 & ConveyorConstants.ALR_SUPPORT_2) > 0) {
 			alarms.add(new ConveyorAlarm(ConveyorAlarm.ALR_SUPPORT_3));
 		}
-		if ((alarmReg1 & ConveyorConstants.ALR_SENSOR_1) > 0) {
+		if ((alarmReg1 & ConveyorConstants.ALR_SENSOR_0) > 0) {
 			alarms.add(new ConveyorAlarm(ConveyorAlarm.ALR_SENSOR_1));
 		}
-		if ((alarmReg1 & ConveyorConstants.ALR_SENSOR_2) > 0) {
+		if ((alarmReg1 & ConveyorConstants.ALR_SENSOR_1) > 0) {
 			alarms.add(new ConveyorAlarm(ConveyorAlarm.ALR_SENSOR_2));
 		}
-		if ((alarmReg1 & ConveyorConstants.ALR_SENSOR_3) > 0) {
+		if ((alarmReg1 & ConveyorConstants.ALR_SENSOR_2) > 0) {
 			alarms.add(new ConveyorAlarm(ConveyorAlarm.ALR_SENSOR_3));
 		}
-		if ((alarmReg1 & ConveyorConstants.ALR_SENSOR_4) > 0) {
+		if ((alarmReg1 & ConveyorConstants.ALR_SENSOR_3) > 0) {
 			alarms.add(new ConveyorAlarm(ConveyorAlarm.ALR_SENSOR_4));
 		}
 		if ((statusInt & ConveyorConstants.MODE) == 0) {
