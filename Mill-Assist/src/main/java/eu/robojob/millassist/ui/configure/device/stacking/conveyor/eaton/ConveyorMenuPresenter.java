@@ -55,11 +55,6 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 	}
 
 	@Override
-	public void configureOffsets() {
-		
-	}
-
-	@Override
 	public void configurePick() {
 		getView().setConfigurePickActive();
 		getParent().setBottomRightView(configurePickPresenter.getView());

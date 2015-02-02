@@ -91,9 +91,6 @@ public class BasicStackPlateMenuPresenter extends AbstractStackingDeviceMenuPres
 	}
 
 	@Override
-	public void configureOffsets() {}
-
-	@Override
 	public void configurePick() {
 		getView().setConfigurePickActive();
 		getParent().setBottomRightView(configurePickPresenter.getView());

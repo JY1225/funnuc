@@ -13,14 +13,12 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 	private StackingDeviceConfigurePresenter configurePresenter;
 	private ConveyorRawWorkPiecePresenter rawWorkPiecePresenter;
 	private AbstractWorkPieceLayoutPresenter<?, ConveyorMenuPresenter> workPieceLayoutPresenter;
-	private ConveyorRawWorkPieceOffsetPresenter conveyorRawWorkPieceOffsetPresenter;
 	private ConfigureSmoothPresenter<ConveyorMenuPresenter> configurePickPresenter;
 	private ConfigureSmoothPresenter<ConveyorMenuPresenter> configurePutPresenter;
 	
 	public ConveyorMenuPresenter(final StackingDeviceMenuView view, final DeviceInformation deviceInfo,
 			final StackingDeviceConfigurePresenter configurePresenter, final ConveyorRawWorkPiecePresenter rawWorkPiecePresenter, 
 				final AbstractWorkPieceLayoutPresenter<?, ConveyorMenuPresenter> workPieceLayoutPresenter, 
-					final ConveyorRawWorkPieceOffsetPresenter conveyorRawWorkPieceOffsetPresenter, 
 					final ConfigureSmoothPresenter<ConveyorMenuPresenter> configurePickPresenter, 
 					final ConfigureSmoothPresenter<ConveyorMenuPresenter> configurePutPresenter) {
 		super(view, deviceInfo);
@@ -33,10 +31,6 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 		if (rawWorkPiecePresenter != null) {
 			this.rawWorkPiecePresenter = rawWorkPiecePresenter;
 			rawWorkPiecePresenter.setMenuPresenter(this);
-		}
-		if (conveyorRawWorkPieceOffsetPresenter != null) {
-			this.conveyorRawWorkPieceOffsetPresenter = conveyorRawWorkPieceOffsetPresenter;
-			conveyorRawWorkPieceOffsetPresenter.setMenuPresenter(this);
 		}
 		if (configurePickPresenter != null) {
 			this.configurePickPresenter = configurePickPresenter;
@@ -58,12 +52,6 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 	public void configureWorkPiece() {
 		getView().setConfigureWorkPieceActive();
 		getParent().setBottomRightView(rawWorkPiecePresenter.getView());
-	}
-
-	@Override
-	public void configureOffsets() {
-		getView().setConfigureOffsetsActive();
-		getParent().setBottomRightView(conveyorRawWorkPieceOffsetPresenter.getView());
 	}
 	
 	@Override
@@ -92,9 +80,6 @@ public class ConveyorMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 		configurePresenter.setTextFieldListener(listener);
 		if (rawWorkPiecePresenter != null) {
 			rawWorkPiecePresenter.setTextFieldListener(listener);
-		}
-		if (conveyorRawWorkPieceOffsetPresenter != null) {
-			conveyorRawWorkPieceOffsetPresenter.setTextFieldListener(listener);
 		}
 		if (configurePickPresenter != null) {
 			configurePickPresenter.setTextFieldListener(listener);
