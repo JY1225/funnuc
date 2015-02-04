@@ -328,7 +328,12 @@ public class ConveyorLayout {
 				// else add the distance of the first support and gap
 				y += supportWidth + (spaceBetweenTracks - supportWidth) / 2;
 			}*/
-			StackingPosition stackingPos = new StackingPosition(x, y, 0, workPiece);
+			StackingPosition stackingPos;
+			if (parent.isLeftSetup()) {
+				stackingPos = new StackingPosition(x, y, 0, workPiece);
+			} else {
+				stackingPos = new StackingPosition(y, x, 0, workPiece);
+			}
 			this.stackingPositionsRawWorkPieces.add(stackingPos);
 			// set requested support below
 			requestedSupportStatus[i*amount] = true;
@@ -374,8 +379,13 @@ public class ConveyorLayout {
 			} else {
 				float x = xFirst;
 				float y = yFirst + i * (workPiece.getDimensions().getWidth() + spaceBetween);
-				StackingPosition stPos = new StackingPosition(x, y, 0, workPiece);
-				stackingPositionsFinishedWorkPieces.add(stPos);
+				if (parent.isLeftSetup()) {
+					StackingPosition stPos = new StackingPosition(x, y, 0, workPiece);
+					stackingPositionsFinishedWorkPieces.add(stPos);
+				} else {
+					StackingPosition stPos = new StackingPosition(y, x, 0, workPiece);
+					stackingPositionsFinishedWorkPieces.add(stPos);
+				}
 			}
 			finishedStackingPositionWorkPieces.add(false);
 		}

@@ -1,9 +1,13 @@
 package eu.robojob.millassist.external.device.stacking.conveyor.normal;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -47,6 +51,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	private float nomSpeed2;
 	private List<Integer> sensorValues;
 	private int amount;
+	private boolean isLeftSetup;
 	
 	private float workPieceShift;
 	
@@ -73,6 +78,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		this.listeners = new ArrayList<ConveyorListener>();
 		this.sensorValues = new ArrayList<Integer>();
 		this.workPieceShift = 20;
+		checkSetup();
 		ConveyorMonitoringThread monitoringThread = new ConveyorMonitoringThread(this);
 		ThreadManager.submit(monitoringThread);
 	}
@@ -533,7 +539,11 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		}
 		StackingPosition stPos = layout.getStackingPositionsRawWorkPieces().get(sensorIndex);
 		Coordinates c = new Coordinates(stPos.getPosition());
-		c.setX((((float) sensorValue)/100) + stPos.getWorkPiece().getDimensions().getLength()/2);
+		if (isLeftSetup) {
+			c.setX((((float) sensorValue)/100) + stPos.getWorkPiece().getDimensions().getLength()/2);
+		} else {
+			c.setY((((float) sensorValue)/100) + stPos.getWorkPiece().getDimensions().getLength()/2);
+		}
 		logger.info("Pick location at sensor: " + sensorIndex + " - coordinates: " + c);
 		return c;
 	}
@@ -656,6 +666,24 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	@Override
 	public String toString() {
 		return "Conveyor: " + getName();
+	}
+	
+	private void checkSetup() {
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream(new File("settings.properties")));
+			if ((properties.get("conveyor-setup") != null) && (properties.get("conveyor-setup").equals("left"))) {
+				isLeftSetup = true;
+			} else {
+				isLeftSetup = false;
+			}
+		} catch (IOException e) {
+
+		}
+	}
+	
+	public boolean isLeftSetup() {
+		return this.isLeftSetup;
 	}
 
 }
