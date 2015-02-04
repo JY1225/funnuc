@@ -3,6 +3,10 @@ package eu.robojob.millassist.ui.general.device.stacking.conveyor.normal;
 import java.util.List;
 
 import javafx.application.Platform;
+import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
+import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
+import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarmsOccuredEvent;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorEvent;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
@@ -94,7 +98,7 @@ public class ConveyorRawWorkPieceLayoutPresenter<T extends AbstractMenuPresenter
 		
 	}
 	
-	public void updateSupportSelection(final int index, final boolean newValue) {
+	public void updateSupportSelection(final int index, final boolean newValue) throws SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException, InterruptedException, DeviceActionException {
 		Boolean[] selection = getView().getSupportSelection();
 		selection[index] = newValue;
 		System.out.println("Setting support: " + index + " to " + newValue);

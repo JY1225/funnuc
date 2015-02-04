@@ -197,14 +197,8 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		waitForStatus(ConveyorConstants.SUPPORTS_UPDATED);
 	}
 	
-	public void changeSupportsSelection(final Boolean[] supportSelection) {
-		try {
-			selectSupports(supportSelection);
-		} catch (SocketResponseTimedOutException | SocketDisconnectedException
-				| SocketWrongResponseException | InterruptedException | DeviceActionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void changeSupportsSelection(final Boolean[] supportSelection) throws SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException, InterruptedException, DeviceActionException {
+		selectSupports(supportSelection);
 	}
 	
 	private void selectSupports(final Boolean[] supportSelection) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException, DeviceActionException {

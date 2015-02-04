@@ -8,6 +8,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -29,10 +30,15 @@ import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
+import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
+import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor.SupportState;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLayout;
+import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractMenuPresenter;
 import eu.robojob.millassist.util.Translator;
@@ -274,8 +280,31 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			final int j = i;
 			cbSelected.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
-				public void handle(ActionEvent arg0) {
-					getPresenter().updateSupportSelection(j, cbSelected.selectedProperty().get());
+				public void handle(ActionEvent event) {
+					cbSelected.setDisable(true);
+					ThreadManager.submit(new Thread() {
+						public void run() {
+							try {
+								getPresenter().updateSupportSelection(j, cbSelected.selectedProperty().get());
+							} catch (SocketResponseTimedOutException
+									| SocketDisconnectedException
+									| SocketWrongResponseException
+									| InterruptedException | DeviceActionException e) {
+								logger.error(e);
+								e.printStackTrace();
+							}
+							Platform.runLater(new Thread() {
+								public void run() {
+									try {
+										cbSelected.setDisable(false);
+									} catch (Exception e) {
+										logger.error(e);
+										e.printStackTrace();
+									}
+								}
+							});
+						}
+					});
 				}
 			});
 			supportsSelected.add(cbSelected);
@@ -494,7 +523,6 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 					int j = 1;
 					boolean foundThis = false;
 					if (sensorValues.get(i) > 0) {
-						logger.info("found: " + sensorValues.get(i));
 						foundThis = true;
 					}
 					while ((i+j-1) < conveyorLayout.getRequestedSupportStatus().length && !conveyorLayout.getRequestedSupportStatus()[i-1+j]) {
