@@ -374,7 +374,12 @@ public class ConveyorLayout {
 			float xFirst = minDistFinished + workPiece.getDimensions().getLength()/2;
 			float yFirst = workPiece.getDimensions().getWidth()/2;
 			if (i == 0) {
-				StackingPosition stPos = new StackingPosition(xFirst, yFirst, 0, workPiece);
+				StackingPosition stPos;
+				if (parent.isLeftSetup()) {
+					stPos = new StackingPosition(xFirst, yFirst, 0, workPiece);
+				} else {
+					stPos = new StackingPosition(yFirst, xFirst, 0, workPiece);
+				}
 				stackingPositionsFinishedWorkPieces.add(stPos);
 			} else {
 				float x = xFirst;
