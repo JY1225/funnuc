@@ -672,10 +672,10 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		Properties properties = new Properties();
 		try {
 			properties.load(new FileInputStream(new File("settings.properties")));
-			if ((properties.get("conveyor-setup") != null) && (properties.get("conveyor-setup").equals("left"))) {
-				isLeftSetup = true;
-			} else {
+			if ((properties.get("conveyor-setup") != null) && (properties.get("conveyor-setup").equals("right"))) {
 				isLeftSetup = false;
+			} else {
+				isLeftSetup = true;
 			}
 		} catch (IOException e) {
 
