@@ -31,6 +31,7 @@ public final class ConveyorConstants {
 	public static final int FIN_CONV_INTERLOCK			=	BIT4;
 	public static final int SHIFT_FINISHED_WP_OK		=	BIT5;
 	public static final int RAW_WP_IN_POSITION			=	BIT6;
+	public static final int READY_FOR_CMD				=	BIT7;
 	public static final int SUPPORTS_UPDATED			=	BIT8;
 	public static final int SUPPORTS_SELECTED			=	BIT9;
 	// BIT 10 currently not used

@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -60,6 +60,10 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	private ConveyorLayout layout;
 		
 	private static Logger logger = LogManager.getLogger(Conveyor.class.getName());
+	
+	private static final long WAIT_FOR_READY_FOR_CMD_TIMEOUT = 2000;
+	private static final long SUPPORTS_SELECT_TIMEOUT = 1000;
+	private static final long SUPPORTS_UPDATE_TIMEOUT = 10000;
 	
 	public enum SupportState {
 		UP, DOWN, UNKNOWN;
@@ -171,14 +175,15 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	private void configureSupports(final Boolean[] requestedSupportState) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException, DeviceActionException {
 		int command = 0;
 		int[] values = new int[1];
-		if ((getStatus() & ConveyorConstants.SUPPORTS_UPDATED) > 0) {
-			// First reset status
-			command = command | ConveyorConstants.PREPARE_FOR_CMD;
-			values[0] = command;
-			getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, values);
-			waitForStatusNot(ConveyorConstants.SUPPORTS_UPDATED);
-			command = 0;
+		command = command | ConveyorConstants.PREPARE_FOR_CMD;
+		values[0] = command;
+		getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, values);
+		boolean ready = waitForStatus(ConveyorConstants.READY_FOR_CMD, WAIT_FOR_READY_FOR_CMD_TIMEOUT);
+		if (!ready) {
+			logger.error("Timeout while preparing for update cmd");
+			return;
 		}
+		command = 0;
 		command = command | ConveyorConstants.SUPPORTS_UPDATE;
 		if (requestedSupportState[0]) {
 			command = command | ConveyorConstants.SUPPORT_0;
@@ -194,7 +199,11 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		}
 		values[0] = command;
 		getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, values);
-		waitForStatus(ConveyorConstants.SUPPORTS_UPDATED);
+		boolean updated = waitForStatus(ConveyorConstants.SUPPORTS_UPDATED, SUPPORTS_UPDATE_TIMEOUT);
+		if (!updated) {
+			logger.error("Timeout while updating supports");
+			return;
+		}
 	}
 	
 	public void changeSupportsSelection(final Boolean[] supportSelection) throws SocketResponseTimedOutException, SocketDisconnectedException, SocketWrongResponseException, InterruptedException, DeviceActionException {
@@ -204,14 +213,16 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	private void selectSupports(final Boolean[] supportSelection) throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException, DeviceActionException {
 		int command = 0;
 		int[] values = new int[1];
-		if ((getStatus() & ConveyorConstants.SUPPORTS_SELECTED) > 0) {
-			// First reset status
-			command = command | ConveyorConstants.PREPARE_FOR_CMD;
-			values[0] = command;
-			getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, values);
-			waitForStatusNot(ConveyorConstants.SUPPORTS_SELECTED);
-			command = 0;
+		// First reset status
+		command = command | ConveyorConstants.PREPARE_FOR_CMD;
+		values[0] = command;
+		getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, values);
+		boolean ready = waitForStatus(ConveyorConstants.READY_FOR_CMD, WAIT_FOR_READY_FOR_CMD_TIMEOUT);
+		if (!ready) {
+			logger.error("Timeout while preparing for select cmd");
+			return;
 		}
+		command = 0;
 		command = command | ConveyorConstants.SUPPORTS_SELECT;
 		if (supportSelection[0]) {
 			command = command | ConveyorConstants.SUPPORT_0;
@@ -227,7 +238,11 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		}
 		values[0] = command;
 		getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, values);
-		waitForStatus(ConveyorConstants.SUPPORTS_SELECTED);
+		boolean selected = waitForStatus(ConveyorConstants.SUPPORTS_SELECTED, SUPPORTS_SELECT_TIMEOUT);
+		if (!selected) {
+			logger.error("Timeout while selecting supports");
+			return;
+		}
 	}
 	
 	@Override

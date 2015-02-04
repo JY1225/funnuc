@@ -166,13 +166,53 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		btnConfigureSupports = createButton(ICON_ARROW_BOTH, CSS_CLASS_WHITE_ICON, Translator.getTranslation(SETUP_SUPPORTS), UIConstants.BUTTON_HEIGHT*4, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				getPresenter().configureSupports();
+				ConveyorRawWorkPieceLayoutView.this.setDisable(true);
+				ThreadManager.submit(new Thread() {
+					public void run() {
+						try {
+							getPresenter().configureSupports();
+							Platform.runLater(new Thread() {
+								public void run() {
+									try {
+										ConveyorRawWorkPieceLayoutView.this.setDisable(false);
+									} catch(Exception e) {
+										e.printStackTrace();
+										logger.error(e);
+									}
+								}
+							});
+						} catch(Exception e) {
+							e.printStackTrace();
+							logger.error(e);
+						}
+					}
+				});
 			}
 		});
 		btnAllSupportsDown = createButton(ICON_ARROW_DOWN, CSS_CLASS_WHITE_ICON, Translator.getTranslation(ALL_SUPPORTS_DOWN), UIConstants.BUTTON_HEIGHT*4, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				getPresenter().allSupportsDown();
+				ConveyorRawWorkPieceLayoutView.this.setDisable(true);
+				ThreadManager.submit(new Thread() {
+					public void run() {
+						try {
+							getPresenter().allSupportsDown();
+							Platform.runLater(new Thread() {
+								public void run() {
+									try {
+										ConveyorRawWorkPieceLayoutView.this.setDisable(false);
+									} catch(Exception e) {
+										e.printStackTrace();
+										logger.error(e);
+									}
+								}
+							});
+						} catch(Exception e) {
+							e.printStackTrace();
+							logger.error(e);
+						}
+					}
+				});
 			}
 		});
 		
@@ -281,7 +321,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			cbSelected.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					cbSelected.setDisable(true);
+					ConveyorRawWorkPieceLayoutView.this.setDisable(true);
 					ThreadManager.submit(new Thread() {
 						public void run() {
 							try {
@@ -296,7 +336,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 							Platform.runLater(new Thread() {
 								public void run() {
 									try {
-										cbSelected.setDisable(false);
+										ConveyorRawWorkPieceLayoutView.this.setDisable(false);
 									} catch (Exception e) {
 										logger.error(e);
 										e.printStackTrace();
@@ -380,7 +420,11 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			Rectangle wp = new Rectangle();
 			conveyorGroup.getChildren().add(wp);
 			wp.setLayoutX(200);
-			wp.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			if (conveyorLayout.isLeftSetup()) {
+				wp.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			} else {
+				wp.setY(-(stPos.getPosition().getX() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			}
 			wp.setWidth(stPos.getWorkPiece().getDimensions().getLength());
 			wp.setHeight(stPos.getWorkPiece().getDimensions().getWidth());
 			wp.getStyleClass().add(CSS_CLASS_WORKPIECE);
