@@ -419,4 +419,8 @@ public class ConveyorLayout {
 		return finishedConveyorWidth + maxOverlap;
 	}
 	
+	public boolean isLeftSetup() {
+		return parent.isLeftSetup();
+	}
+	
 }

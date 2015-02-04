@@ -389,8 +389,13 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			
 			Rectangle ra = new Rectangle();
 			conveyorGroup.getChildren().add(ra);
-			ra.setX(stPos.getPosition().getX() + 70 - stPos.getWorkPiece().getDimensions().getLength()/2);
-			ra.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			if (conveyorLayout.isLeftSetup()) {
+				ra.setX(stPos.getPosition().getX() + 70 - stPos.getWorkPiece().getDimensions().getLength()/2);
+				ra.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			} else {
+				ra.setX(stPos.getPosition().getY() + 70 - stPos.getWorkPiece().getDimensions().getLength()/2);
+				ra.setY(-(stPos.getPosition().getX() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			}
 			ra.setWidth(stPos.getWorkPiece().getDimensions().getLength());
 			ra.setHeight(stPos.getWorkPiece().getDimensions().getWidth());
 			ra.getStyleClass().add(CSS_CLASS_WORKPIECE_AREA);
