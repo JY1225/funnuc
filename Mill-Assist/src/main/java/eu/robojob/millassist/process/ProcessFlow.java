@@ -1,5 +1,8 @@
 package eu.robojob.millassist.process;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -27,8 +31,8 @@ import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPl
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
-import eu.robojob.millassist.external.robot.RobotSettings;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
+import eu.robojob.millassist.external.robot.RobotSettings;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
@@ -621,10 +625,27 @@ public class ProcessFlow {
 		return "ProcessFlow: " + getName();
 	}
 	
+	public boolean isSingleCycle() {
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream(new File("settings.properties")));
+			if ((properties.get("single-cycle") != null) && (properties.get("single-cycle").equals("true"))) {
+				return true;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return false;
+	}
+	
 	public boolean isConcurrentExecutionPossible() {
 		// this is possible if the CNC machine is used only once, and the gripper used to put the piece in the 
 		// CNC machine is not the same as the gripper used to pick the piece from the CNC machine and the total weight
-		// is lower than the max work piece weight
+		// is lower than the max work piece weight and settings single-cycle not set
+		if (isSingleCycle()) {
+			return false;
+		}
 		PickStep pickFromStacker = null;
 		PickStep pickFromMachine = null;
 		PutStep putToMachine = null;
