@@ -567,7 +567,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			} else {
 				texts.get(i).setText("--");
 			}
-			if ((i == 0)  || (conveyorLayout.getRequestedSupportStatus()[i-1])) {
+			if (conveyorLayout.getRequestedSupportStatus()[i]) {
 				if (wpIndex < workPieces.size()) {	// prevents from updating when workpieces are not yet recalculated but supports are
 					double dest = ((float) sensorValues.get(i))/100 + 70; 
 					// check if other sensor indicates smaller value
@@ -581,7 +581,6 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 							dest = ((float) sensorValues.get(i+j))/100 + 70;
 							if (sensorValues.get(i+j) > 0) {
 								foundThis = true;
-								logger.info("found: " + sensorValues.get(i+j) + " - " + j + " - " + wpIndex);
 							}
 						}
 						j++;
