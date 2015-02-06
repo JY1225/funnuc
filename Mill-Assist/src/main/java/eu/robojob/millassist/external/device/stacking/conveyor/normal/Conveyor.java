@@ -63,7 +63,9 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	
 	private static final long WAIT_FOR_READY_FOR_CMD_TIMEOUT = 2000;
 	private static final long SUPPORTS_SELECT_TIMEOUT = 1000;
-	private static final long SUPPORTS_UPDATE_TIMEOUT = 10000;
+	private static final long SUPPORTS_UPDATE_TIMEOUT = 10000;	
+	private static final int OPERATOR_RQST_BLUE_LAMP_VAL = 5;
+	private static final int FINISH_BLUE_LAMP_VAL = 10;
 	
 	public enum SupportState {
 		UP, DOWN, UNKNOWN;
@@ -302,6 +304,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	
 	@Override
 	public void prepareForProcess(final ProcessFlow process) throws AbstractCommunicationException, InterruptedException {
+		clearIndications();
 		writeRawWorkPieceLength();
 		writeFinishedWorkPieceLength();
 	}
@@ -525,7 +528,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 		int sensorIndex = -1;
 		int validIndex = 0;
 		for (int i = 0; i < sensorValues.size(); i++) {
-			if ((i == 0) || ((i > 0) && (layout.getRequestedSupportStatus()[i-1]))) {
+			if (layout.getRequestedSupportStatus()[i]) {
 				logger.info("OK: " + i);
 				if ((sensorValues.get(i) < sensorValue) && (sensorValues.get(i) > 0)) {
 					sensorIndex = validIndex;
@@ -533,7 +536,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 				}
 				// also check next sensors if their supports are down
 				int j = 1;
-				while ((i+j-1) < layout.getRequestedSupportStatus().length && !layout.getRequestedSupportStatus()[i-1+j]) {
+				while ((i+j) < layout.getRequestedSupportStatus().length && !layout.getRequestedSupportStatus()[i+j]) {
 					if ((sensorValues.get(j+i) < sensorValue) && (sensorValues.get(j+i) > 0)) {
 						sensorIndex = validIndex;
 						sensorValue = sensorValues.get(i+j);
@@ -693,6 +696,29 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	
 	public boolean isLeftSetup() {
 		return this.isLeftSetup;
+	}
+
+	@Override
+	public void indicateAllProcessed() throws AbstractCommunicationException,
+			InterruptedException, DeviceActionException {
+		int[] registers = {FINISH_BLUE_LAMP_VAL};
+		getSocketCommunication().writeRegisters(ConveyorConstants.BLUE_LAMP, registers);
+	}
+
+	@Override
+	public void indicateOperatorRequested(boolean requested) throws AbstractCommunicationException, InterruptedException {
+		int command = 0;
+		if (requested) {
+			command = OPERATOR_RQST_BLUE_LAMP_VAL;
+		}
+		int[] registers = {command};
+		getSocketCommunication().writeRegisters(ConveyorConstants.BLUE_LAMP, registers);
+	}
+
+	@Override
+	public void clearIndications() throws AbstractCommunicationException, InterruptedException {
+		// reset blue lamp
+		indicateOperatorRequested(false);
 	}
 
 }

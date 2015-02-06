@@ -7,6 +7,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
@@ -107,6 +108,9 @@ public class AutomateThread extends Thread implements ProcessExecutor {
 						if (device instanceof AbstractCNCMachine) {
 							AbstractCNCMachine cncMachine = (AbstractCNCMachine) device;
 							cncMachine.indicateAllProcessed();
+						}
+						if (device instanceof AbstractConveyor) {
+							((AbstractConveyor) device).indicateAllProcessed();
 						}
 					}
 				} else {

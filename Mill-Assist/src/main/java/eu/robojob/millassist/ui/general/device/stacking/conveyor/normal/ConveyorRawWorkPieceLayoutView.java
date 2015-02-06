@@ -98,6 +98,8 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 	
 	private static final float VISIBLE_AREA = 275;
 	
+	private static final float INVALID_VAL = 20000;
+	
 	private static Logger logger = LogManager.getLogger(ConveyorRawWorkPieceLayoutView.class.getName());
 	
 	public ConveyorRawWorkPieceLayoutView() {
@@ -419,7 +421,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		for (StackingPosition stPos : conveyorLayout.getStackingPositionsRawWorkPieces()) {
 			Rectangle wp = new Rectangle();
 			conveyorGroup.getChildren().add(wp);
-			wp.setLayoutX(200);
+			wp.setLayoutX(300);
 			if (conveyorLayout.isLeftSetup()) {
 				wp.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
 			} else {
@@ -560,7 +562,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		boolean found = false;
 		int wpIndex = 0;
 		for (int i = 0; i < sensorValues.size(); i++) {
-			if (sensorValues.get(i) > 0) {
+			if ((sensorValues.get(i) > 0) && (sensorValues.get(i) < INVALID_VAL)) {
 				texts.get(i).setText(df.format(((float) sensorValues.get(i))/100));
 			} else {
 				texts.get(i).setText("--");
@@ -571,10 +573,10 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 					// check if other sensor indicates smaller value
 					int j = 1;
 					boolean foundThis = false;
-					if (sensorValues.get(i) > 0) {
+					if ((sensorValues.get(i) > 0) && (sensorValues.get(i) < INVALID_VAL)){
 						foundThis = true;
 					}
-					while ((i+j-1) < conveyorLayout.getRequestedSupportStatus().length && !conveyorLayout.getRequestedSupportStatus()[i-1+j]) {
+					while ((i+j) < conveyorLayout.getRequestedSupportStatus().length && !conveyorLayout.getRequestedSupportStatus()[i+j]) {
 						if (((sensorValues.get(j+i) < sensorValues.get(i)) || (sensorValues.get(i) == 0)) && (sensorValues.get(j+i) > 0)) {
 							dest = ((float) sensorValues.get(i+j))/100 + 70;
 							if (sensorValues.get(i+j) > 0) {

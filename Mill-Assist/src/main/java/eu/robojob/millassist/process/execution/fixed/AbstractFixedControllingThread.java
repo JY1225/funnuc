@@ -1,5 +1,9 @@
 package eu.robojob.millassist.process.execution.fixed;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +33,8 @@ public abstract class AbstractFixedControllingThread implements Runnable {
 	protected boolean isConcurrentExecutionPossible;
 	protected int nbProcesses;
 	
+	protected boolean sideLoad;
+	
 	protected Object finishedSyncObject;
 	
 	protected static Logger logger = LogManager.getLogger(AbstractFixedControllingThread.class.getName());
@@ -36,7 +42,22 @@ public abstract class AbstractFixedControllingThread implements Runnable {
 	protected AbstractFixedControllingThread(final ProcessFlow processFlow, final int nbProcesses) {
 		this.processFlow = processFlow;
 		this.nbProcesses = nbProcesses;
+		checkSideLoad();
 		reset();
+	}
+	
+	private void checkSideLoad() {
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream(new File("settings.properties")));
+			if ((properties.get("side-load") != null) && (properties.get("side-load").equals("true"))) {
+				sideLoad = true;
+			} else {
+				sideLoad = false;
+			}
+		} catch (IOException e) {
+
+		}
 	}
 	
 	protected void initExecutors() {

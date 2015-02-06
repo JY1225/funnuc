@@ -285,7 +285,7 @@ public class ConveyorLayout {
 			distance = amount * rawTrackWidth;
 			// calculate extra space on top
 			if (amount < rawTrackAmount) {
-				distance += (spaceBetweenTracks - supportWidth) / 2;
+				// no extra offset
 			} else if (amount == rawTrackAmount) {
 				distance += maxOverlap;
 			} else {
@@ -293,8 +293,6 @@ public class ConveyorLayout {
 			}
 			// calculate space between tracks
 			distance += (amount - 1) * spaceBetweenTracks;
-			// calculate extra space on bottom
-			distance += (spaceBetweenTracks -  supportWidth) / 2;
 			//FIXME replace 5 by new parameter: interference distance raw
 			if (distance - 5 >= workPiece.getDimensions().getWidth()) {
 				finished = true;

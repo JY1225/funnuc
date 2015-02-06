@@ -3,6 +3,7 @@ package eu.robojob.millassist.process.execution.fixed;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
@@ -90,6 +91,10 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 					if (device instanceof AbstractCNCMachine) {
 						checkStatus();
 						((AbstractCNCMachine) device).indicateAllProcessed();
+					}
+					if (device instanceof AbstractConveyor) {
+						checkStatus();
+						((AbstractConveyor) device).indicateAllProcessed();
 					}
 				}
 				for (AbstractRobot robot : processFlow.getRobots()) {
@@ -216,11 +221,13 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 			if (!isContinuing) {
 				processFlowExecutor.startProcessing();
 			}
-			try {
-				processFlow.getRobots().iterator().next().moveToHome();
-			} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
-				e.printStackTrace();
-				logger.error(e);
+			if (!sideLoad) {
+				try {
+					processFlow.getRobots().iterator().next().moveToHome();
+				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
 			}
 		}
 	}

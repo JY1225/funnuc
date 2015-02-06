@@ -579,7 +579,11 @@ public class FanucRobot extends AbstractRobot {
 			values.add("3");
 		}
 		values.add("" + (int) Math.floor(gHeadA.getGripper().getHeight()));		// a height
-		values.add("" + (int) Math.floor(gHeadB.getGripper().getHeight()));		// b height
+		if (gHeadB != null) {
+			values.add("" + (int) Math.floor(gHeadB.getGripper().getHeight()));		// b height
+		} else {
+			values.add("0");		// b height
+		}
 		// inner/outer gripper type
 		if (gripInner) {
 			values.add("1");			// inner

@@ -232,8 +232,13 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 			
 			Rectangle wp = new Rectangle();
 			gpWorkPieces.getChildren().add(wp);
-			wp.setLayoutX(stPos.getPosition().getX() - stPos.getWorkPiece().getDimensions().getLength()/2);
-			wp.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2));
+			if (conveyorLayout.isLeftSetup()) {
+				wp.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2));
+				wp.setLayoutX(stPos.getPosition().getX() - stPos.getWorkPiece().getDimensions().getLength()/2);
+			} else {
+				wp.setY(-(stPos.getPosition().getX() + stPos.getWorkPiece().getDimensions().getWidth()/2));
+				wp.setLayoutX(stPos.getPosition().getY() - stPos.getWorkPiece().getDimensions().getLength()/2);
+			}
 			wp.setWidth(stPos.getWorkPiece().getDimensions().getLength());
 			wp.setHeight(stPos.getWorkPiece().getDimensions().getWidth());
 			wp.getStyleClass().add(CSS_CLASS_WORKPIECE);

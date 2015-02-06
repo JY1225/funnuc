@@ -1,5 +1,10 @@
 package eu.robojob.millassist.process.execution;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,6 +29,7 @@ public class TeachThread implements Runnable, ProcessExecutor {
 
 	private ProcessFlow processFlow;
 	private boolean running;
+	protected boolean sideLoad;
 	
 	private static Logger logger = LogManager.getLogger(TeachThread.class.getName());
 	private static final int WORKPIECE_ID = 0;
@@ -33,6 +39,21 @@ public class TeachThread implements Runnable, ProcessExecutor {
 	public TeachThread(final ProcessFlow processFlow) {
 		this.processFlow = processFlow;
 		this.running = false;
+		checkSideLoad();
+	}
+	
+	private void checkSideLoad() {
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream(new File("settings.properties")));
+			if ((properties.get("side-load") != null) && (properties.get("side-load").equals("true"))) {
+				sideLoad = true;
+			} else {
+				sideLoad = false;
+			}
+		} catch (IOException e) {
+
+		}
 	}
 	
 	@Override
@@ -66,7 +87,11 @@ public class TeachThread implements Runnable, ProcessExecutor {
 						nextStep = processFlow.getProcessSteps().get(2 + getProcessFlow().getCurrentIndex(WORKPIECE_ID));
 					}
 					if (step instanceof AbstractTransportStep) {
-						((AbstractTransportStep) step).getRobotSettings().setFreeAfter(true);
+						if (!sideLoad) {
+							((AbstractTransportStep) step).getRobotSettings().setFreeAfter(true);
+						} else {
+							((AbstractTransportStep) step).getRobotSettings().setFreeAfter(false);
+						}
 						if (step instanceof PickStep) {
 							((PickStep) step).getRobotSettings().setFreeAfter(false);
 						} else if (step instanceof PutStep && ((PutStep) step).getDevice() instanceof ReversalUnit) {
