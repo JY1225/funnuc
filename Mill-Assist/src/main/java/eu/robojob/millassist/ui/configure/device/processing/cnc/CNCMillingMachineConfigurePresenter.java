@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.ClampingManner.ClampingMannerAllowed;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DevicePickSettings;
@@ -320,4 +321,9 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 		}
 		return waList;
 	}
+	
+	boolean isClampingBlocked() {
+		return !deviceInfo.getProcessingStep().getProcessFlow().getClampingType().getClampingMannerAllowed().equals(ClampingMannerAllowed.FREE);
+	}
+	
 }

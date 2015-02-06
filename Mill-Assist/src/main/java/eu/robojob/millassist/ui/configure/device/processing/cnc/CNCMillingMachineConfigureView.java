@@ -45,7 +45,6 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	private static final String CLAMP_WIDTH_ICON2 = "M 4.6875 0 L 4.6875 3.625 L 3.3125 2.25 L 2.0625 3.5 L 5.5625 7 L 9.0625 3.5 L 7.84375 2.25 L 6.46875 3.625 L 6.46875 0 L 4.6875 0 z M 5.5625 7 L 4 7 L 4 23.75 L 5.5625 23.75 L 11.15625 23.75 L 11.15625 7 L 5.5625 7 z M 5.5625 23.75 L 2.0625 27.25 L 3.3125 28.46875 L 4.6875 27.09375 L 4.6875 30.75 L 6.46875 30.75 L 6.46875 27.09375 L 7.84375 28.46875 L 9.0625 27.25 L 5.5625 23.75 z M 0 7 L 0 23.75 L 2 23.75 L 2 7 L 0 7 z";
 	private static final String CLAMP_HEIGHT_ICON2 = "M 7.5 0 L 7.5 3.625 L 6.125 2.25 L 4.875 3.5 L 8.375 7 L 11.875 3.5 L 10.65625 2.25 L 9.28125 3.625 L 9.28125 0 L 7.5 0 z M 8.375 7 L 0 7 L 0 14.15625 L 16.75 14.15625 L 16.75 7 L 8.375 7 z M 0 16.15625 L 0 18.15625 L 8.375 18.15625 L 16.75 18.15625 L 16.75 16.15625 L 0 16.15625 z M 8.375 18.15625 L 4.875 21.65625 L 6.125 22.875 L 7.5 21.5 L 7.5 25.15625 L 9.28125 25.15625 L 9.28125 21.5 L 10.65625 22.875 L 11.875 21.65625 L 8.375 18.15625 z";
 	
-	
 	private Label lblMachine;
 	private ComboBox<String> cbbMachine;
 	private Label lblWorkArea;
@@ -316,17 +315,26 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	public void refreshClampType() {
 		btnLength.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		btnWidth.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-		if (deviceInfo.getProcessingStep() != null) {
-			if (deviceInfo.getProcessingStep().getProcessFlow().getClampingType().getType() == Type.LENGTH) {
-				btnLength.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-			} else {
-				btnWidth.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-			}
+		boolean isLength = deviceInfo.getProcessingStep().getProcessFlow().getClampingType().getType().equals(Type.LENGTH);
+		if (getPresenter().isClampingBlocked()) {
+			isLength = isLength ^ deviceInfo.getProcessingStep().getProcessFlow().getClampingType().isChanged();
+			btnLength.setDisable(!isLength);
+			btnWidth.setDisable(isLength);
+		} else {
+			btnLength.setDisable(false);
+			btnWidth.setDisable(false);
+		}
+		if (isLength) {
+			btnLength.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		} else {
+			btnWidth.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		}
 	}
 	
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
 	}
+	
+
 
 }
