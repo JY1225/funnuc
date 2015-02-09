@@ -78,6 +78,7 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 							cbGridPlate.setDisable(false);
 							cbGridPlate.setSelected(false);
 							cbbGridPlates.setDisable(true);
+							//TODO - setManaged
 						} else {
 							cbGridPlate.setDisable(true);
 							selectGridPlate(false);

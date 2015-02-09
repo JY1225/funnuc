@@ -4,29 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
-import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.StudPosition;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class StackPlateStackingPosition extends StackingPosition {
 	
-	private WorkPieceOrientation orientation;
+	private double orientation;
 	private int amount;	
 	private List<StudPosition> studs;
 	
-	public StackPlateStackingPosition(final Coordinates position, final WorkPiece workPiece, final int amount, final WorkPieceOrientation orientation, final List<StudPosition> studs) {
+	public StackPlateStackingPosition(final Coordinates position, final WorkPiece workPiece, final int amount, final double orientation, final List<StudPosition> studs) {
 		super(position, workPiece);
 		this.studs = studs;
 		this.orientation = orientation;
 		this.amount = amount;
 	}
 	
-	public StackPlateStackingPosition(final Coordinates position, final WorkPiece workPiece, final int amount, final WorkPieceOrientation orientation) {
+	public StackPlateStackingPosition(final Coordinates position, final WorkPiece workPiece, final int amount, final double orientation) {
 		this(position, workPiece, amount, orientation, new ArrayList<StudPosition>());
 	}
 
-	public StackPlateStackingPosition(final float horizontalPosition, final float verticalPosition, final float r, final WorkPiece workPiece, final int amount, final WorkPieceOrientation orientation) {
+	public StackPlateStackingPosition(final float horizontalPosition, final float verticalPosition, final float r, final WorkPiece workPiece, final int amount, final double orientation) {
 		this (new Coordinates(horizontalPosition, verticalPosition, 0, 0, 0, r), workPiece, amount, orientation);
 	}
 	
@@ -34,7 +33,7 @@ public class StackPlateStackingPosition extends StackingPosition {
 		return studs;
 	}
 	
-	public WorkPieceOrientation getOrientation() {
+	public double getOrientation() {
 		return orientation;
 	}
 	

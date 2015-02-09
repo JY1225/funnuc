@@ -40,25 +40,33 @@ public abstract class AbstractDialogView<T extends AbstractDialogPresenter<?, ?>
 	}
 	
 	private void build() {
-		// Title
-		lblTitle = new Label();
-		lblTitle.setText(title);
-		lblTitle.getStyleClass().add(CSS_CLASS_TITLE_LABEL);
-		lblTitle.setPrefHeight(TITLE_HEIGHT - PADDING);
-		lblTitle.setPrefWidth(Double.MAX_VALUE - 2*PADDING);
-		lblTitle.setTextAlignment(TextAlignment.CENTER);
-		hBoxTitle = new HBox();
-		hBoxTitle.setSpacing(PADDING);
-		hBoxTitle.getChildren().addAll(lblTitle);
-		hBoxTitle.getStyleClass().add(CSS_CLASS_TITLE);
-		hBoxTitle.setAlignment(Pos.BOTTOM_CENTER);
-		hBoxTitle.setPrefHeight(TITLE_HEIGHT);
-		HBox.setHgrow(lblTitle, Priority.ALWAYS);
-		// Contents
 		vBoxDialog = new VBox();
-		contents = getContents();
-		vBoxDialog.getStyleClass().add(CSS_CLASS_DIALOG);
-		vBoxDialog.getChildren().addAll(hBoxTitle, contents);
+		if (!title.equals("")) {
+			// Title
+			lblTitle = new Label();
+			lblTitle.setText(title);
+			lblTitle.getStyleClass().add(CSS_CLASS_TITLE_LABEL);
+			lblTitle.setPrefHeight(TITLE_HEIGHT - PADDING);
+			lblTitle.setPrefWidth(Double.MAX_VALUE - 2*PADDING);
+			lblTitle.setTextAlignment(TextAlignment.CENTER);
+			hBoxTitle = new HBox();
+			hBoxTitle.setSpacing(PADDING);
+			hBoxTitle.getChildren().addAll(lblTitle);
+			hBoxTitle.getStyleClass().add(CSS_CLASS_TITLE);
+			hBoxTitle.setAlignment(Pos.BOTTOM_CENTER);
+			hBoxTitle.setPrefHeight(TITLE_HEIGHT);
+			HBox.setHgrow(lblTitle, Priority.ALWAYS);
+			vBoxDialog.getChildren().add(hBoxTitle);
+			// Contents
+			contents = getContents();
+			vBoxDialog.getStyleClass().add(CSS_CLASS_DIALOG);
+			vBoxDialog.getChildren().add(contents);
+		} else {
+			// Contents
+			contents = getContents();
+			vBoxDialog.getChildren().add(contents);
+			vBoxDialog.setAlignment(Pos.CENTER);
+		}
 		spOverlay = new StackPane();
 		spOverlay.getStyleClass().add(CSS_CLASS_OVERLAY);
 		spOverlay.setPrefSize(UIConstants.TOTAL_WIDTH, UIConstants.TOTAL_HEIGHT);
@@ -84,15 +92,19 @@ public abstract class AbstractDialogView<T extends AbstractDialogPresenter<?, ?>
 		vBoxDialog.setPrefSize(width, height);
 		vBoxDialog.setMaxSize(width, height);
 		vBoxDialog.setMinSize(width, height);
-		lblTitle.setMinWidth(width);
-		hBoxTitle.setPrefWidth(width);
+		if (!title.equals("")) {
+			lblTitle.setMinWidth(width);
+			hBoxTitle.setPrefWidth(width);
+		}
 	}
 	
 	public void setDialogWidth(final double width) {
 		vBoxDialog.setPrefWidth(width);
 		vBoxDialog.setMaxWidth(width);
 		vBoxDialog.setMinWidth(width);
-		lblTitle.setMinWidth(width);
+		if (!title.equals("")) {
+			lblTitle.setMinWidth(width);
+		}
 	}
 	
 	public void setPosition(final Pos position) {

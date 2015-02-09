@@ -126,7 +126,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 				if ((menu != null) && (menu.isConfigured())) {
 					processFlowPresenter.setDeviceConfigured(i, true);
 				} else {
-					if (deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(i)) != null) {
+					if (menu != null) {
 						processFlowPresenter.setDeviceConfigured(i, false);
 						configured = false;
 					} else {

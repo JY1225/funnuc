@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
@@ -23,7 +22,7 @@ import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 public abstract class AbstractStackPlateLayout {
 
 	//General settings
-	private WorkPieceOrientation orientation;
+	private float orientation;
 	private int horizontalAmount;
 	private int verticalAmount;
 	private int layers;
@@ -40,11 +39,11 @@ public abstract class AbstractStackPlateLayout {
 		setAlignRight();
 		//Default values
 		this.layers = 1;
-		this.orientation = WorkPieceOrientation.HORIZONTAL;
+		this.orientation = 0;
 		this.stackingPositions = new ArrayList<StackPlateStackingPosition>();
 	}
 	
-	public void configureStackingPositions(final WorkPiece rawWorkPiece, final WorkPieceOrientation orientation, final int layers) throws IncorrectWorkPieceDataException {
+	public void configureStackingPositions(final WorkPiece rawWorkPiece, final float orientation, final int layers) throws IncorrectWorkPieceDataException {
 		stackingPositions.clear();
 		setLayers(layers);
 		if(rawWorkPiece != null) {
@@ -57,7 +56,7 @@ public abstract class AbstractStackPlateLayout {
 		}
 	}
 	
-	private void configureStackingPositions(final WorkPieceDimensions dimensions, final WorkPieceOrientation orientation) throws IncorrectWorkPieceDataException {
+	private void configureStackingPositions(final WorkPieceDimensions dimensions, final float orientation) throws IncorrectWorkPieceDataException {
 		if (dimensions.getLength() < dimensions.getWidth()) {
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.LENGTH_SMALLER_WIDTH);
 		}
@@ -70,13 +69,13 @@ public abstract class AbstractStackPlateLayout {
 		initStackingPositions(horizontalAmount, verticalAmount, dimensions, orientation);
 	}
 	
-	protected abstract void checkSpecialStackingConditions(final WorkPieceDimensions dimensions, final WorkPieceOrientation orientation)  throws IncorrectWorkPieceDataException;
+	protected abstract void checkSpecialStackingConditions(final WorkPieceDimensions dimensions, final float orientation)  throws IncorrectWorkPieceDataException;
 	
-	protected abstract int getMaxHorizontalAmount(final WorkPieceDimensions dimensions, final WorkPieceOrientation orientation);
+	protected abstract int getMaxHorizontalAmount(final WorkPieceDimensions dimensions, final float orientation);
 	
-	protected abstract int getMaxVerticalAmount(final WorkPieceDimensions dimensions, final WorkPieceOrientation orientation);
+	protected abstract int getMaxVerticalAmount(final WorkPieceDimensions dimensions, final float orientation);
 	
-	protected abstract void initStackingPositions(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, WorkPieceOrientation orientation);
+	protected abstract void initStackingPositions(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, float orientation);
 	
 	/**
 	 * Remove all the workpieces from the stacking positions, making the plate empty again.
@@ -262,11 +261,11 @@ public abstract class AbstractStackPlateLayout {
 		this.plateLength = length;
 	}
 
-	public WorkPieceOrientation getOrientation() {
+	public float getOrientation() {
 		return this.orientation;
 	}
 
-	public void setOrientation(WorkPieceOrientation orientation) {
+	public void setOrientation(float orientation) {
 		this.orientation = orientation;
 	}
 

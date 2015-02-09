@@ -8,7 +8,6 @@ import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.event.ProcessChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -93,17 +92,14 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 	}
 	
 	public String getGridPlateName() {
-		if(getGridPlateLayout() == null)
-			return null;
-		else
-			return getGridPlateLayout().getName();
-	}
-	
-	private GridPlateLayout getGridPlateLayout() {
 		try {
 			AbstractStackPlateDeviceSettings devSettings = (AbstractStackPlateDeviceSettings) deviceInfo.getDeviceSettings();
-			return deviceManager.getGridPlateByID(devSettings.getGridId());
-		} catch(ClassCastException e) {
+			if (devSettings.getGridId() > 0) {
+				return deviceManager.getGridPlateByID(devSettings.getGridId()).getName();
+			} else {
+				return null;
+			}
+		} catch (ClassCastException e) {
 			return null;
 		}
 	}

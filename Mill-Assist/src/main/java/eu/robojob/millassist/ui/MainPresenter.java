@@ -1,6 +1,7 @@
 package eu.robojob.millassist.ui;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +25,8 @@ import eu.robojob.millassist.ui.general.dialog.ConfirmationDialogPresenter;
 import eu.robojob.millassist.ui.general.dialog.ConfirmationDialogView;
 import eu.robojob.millassist.ui.general.dialog.DialogInputStringPresenter;
 import eu.robojob.millassist.ui.general.dialog.DialogInputStringView;
+import eu.robojob.millassist.ui.general.dialog.NodeOverlayPresenter;
+import eu.robojob.millassist.ui.general.dialog.NodeOverlayView;
 import eu.robojob.millassist.ui.general.dialog.NotificationDialogPresenter;
 import eu.robojob.millassist.ui.general.dialog.NotificationDialogView;
 import eu.robojob.millassist.ui.menu.MenuBarPresenter;
@@ -240,6 +243,30 @@ public class MainPresenter implements ProcessFlowListener {
 		return returnValue;
 	}
 	
+	public void showOverlayNode(final Node node) {
+		final NodeOverlayView view = new NodeOverlayView(node);
+		NodeOverlayPresenter presenter = new NodeOverlayPresenter(view);
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				getView().showDialog(view);
+			}
+		});
+		try {
+			presenter.getResult();
+		} catch (InterruptedException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		Platform.runLater(new Thread() {
+			@Override
+			public void run() {
+				getView().hideDialog();
+			}
+		});
+	}
+
+	
 	public void showNotificationOverlay(final String title, final String message) {
 		final NotificationDialogView view = new NotificationDialogView(title, message);
 		NotificationDialogPresenter confirmationDialogPresenter = new NotificationDialogPresenter(view);
@@ -293,7 +320,7 @@ public class MainPresenter implements ProcessFlowListener {
 		});
 
 	}
-	
+		
 	public boolean isTeachingActiveAfterTeaching() {
 		if (activeContentPresenter != null) {
 			if ((activeContentPresenter == teachPresenter || activeContentPresenter == automatePresenter) && process.getMode().equals(Mode.READY)) {

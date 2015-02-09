@@ -18,14 +18,13 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import eu.robojob.millassist.external.device.ClampingManner;
-import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.external.device.stacking.stackplate.StackPlateStackingPosition;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlateLayout;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.StudPosition;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.StudPosition.StudType;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
-import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout.HoleOrientation;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -133,7 +132,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 				if (basicStackPlate.getLayout().getStackingPositions().size() > 0) {
 					if(basicStackPlate.hasGridPlate()) {
 						GridPlateLayout layout = (GridPlateLayout) basicStackPlate.getLayout();
-						group.getChildren().add(getCompleteGridPlateLayoutView(layout));
+						group.getChildren().add(getGridPlateView(layout.getGridPlate()));
 					} else {
 						configureStuds();
 					}
@@ -283,11 +282,10 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 		}
 	}
 	
-	//FIXME - this can be made a lot simpler because every workpiece can be represented by the same rectangle which is in fact rotated (0,-90,-45) degrees
 	private void configureWorkPieces() {
 		for (StackPlateStackingPosition stackingPosition : basicStackPlate.getLayout().getStackingPositions()) {
 			if (stackingPosition.getWorkPiece() != null) {
-				if (stackingPosition.getOrientation() == WorkPieceOrientation.HORIZONTAL) {
+				if (stackingPosition.getOrientation() != 90 || basicStackPlate.hasGridPlate()) {
 					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
 							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
@@ -305,53 +303,22 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);
 					txtAmount.setX(stackingPosition.getPosition().getX() - txtAmount.getBoundsInParent().getWidth()/2);
 					txtAmount.setY(width - stackingPosition.getPosition().getY() + txtAmount.getBoundsInParent().getHeight()/2);
+					Rotate rotate = new Rotate(stackingPosition.getOrientation()*-1, stackingPosition.getPosition().getX(), width - stackingPosition.getPosition().getY());
+					rp.getTransforms().add(rotate);
 					rp.getStyleClass().add(CSS_CLASS_WORKPIECE);
 					rp2.getStyleClass().add(CSS_CLASS_WORKPIECE_MARK);
 					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
 						rp.getStyleClass().add(CSS_CLASS_FINISHED);
 						rp2.getStyleClass().add(CSS_CLASS_FINISHED_MARK);
 					}
+					rp2.getTransforms().add(rotate);
 					rp.setArcHeight(0);
 					rp.setArcWidth(0);
 					group.getChildren().add(rp);
 					//RP2 is the orientation marker in the workpiece (grey line)
 					group.getChildren().add(rp2);
 					group.getChildren().add(txtAmount);
-				} else if (stackingPosition.getOrientation() == WorkPieceOrientation.TILTED) {
-					// TILTED
-					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
-							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
-					Rectangle rp2 = null;
-					if (basicStackPlate.getR(basicStackPlate.getLayout().getOrientation()) >= -0.01) {
-						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
-								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
-					} else {
-						rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength() / 2 - 10, 
-								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
-					}
-					Text txtAmount = new Text(stackingPosition.getAmount() + "");
-					txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);
-					txtAmount.setX(stackingPosition.getPosition().getX() - txtAmount.getBoundsInParent().getWidth()/2);
-					txtAmount.setY(width - stackingPosition.getPosition().getY() + txtAmount.getBoundsInParent().getHeight()/2);
-					Rotate rotate = new Rotate(-45, stackingPosition.getPosition().getX(), width - stackingPosition.getPosition().getY());
-					rp.getTransforms().add(rotate);
-					rp.getStyleClass().add(CSS_CLASS_WORKPIECE);
-					rp2.getTransforms().add(rotate);
-					rp2.getStyleClass().add(CSS_CLASS_WORKPIECE_MARK);
-				//	txtAmount.getTransforms().add(rotate);
-					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
-						rp.getStyleClass().add(CSS_CLASS_FINISHED);
-						rp2.getStyleClass().add(CSS_CLASS_FINISHED_MARK);
-					}
-					rp.setArcHeight(0);
-					rp.setArcWidth(0);
-					group.getChildren().add(rp);
-					group.getChildren().add(rp2);
-					group.getChildren().add(txtAmount);
-				} else if (stackingPosition.getOrientation() == WorkPieceOrientation.DEG90) {
+				} else if (stackingPosition.getOrientation() == 90) {
 					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
 							stackingPosition.getWorkPiece().getDimensions().getWidth(), stackingPosition.getWorkPiece().getDimensions().getLength());
@@ -396,46 +363,12 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	 * @return
 	 * 		Group including Gridplate + holes (both represented by rectangles)
 	 */
-	private Shape getCompleteGridPlateLayoutView(GridPlateLayout layout) {
-		Shape gridPlate = getGridPlateView(layout);
-		for (Rectangle r : configureHoles(layout)) {
-			gridPlate = Shape.subtract(gridPlate, r);
-		}
-		gridPlate.getStyleClass().add(CSS_CLASS_GRIDPLATE);
-		//gridGroup.getChildren().add(getGridPlateView(layout));
-		//gridGroup.getChildren().addAll(configureHoles(layout));
-		gridPlate.relocate(layout.getPosX(), (basicStackPlate.getBasicLayout().getPlateWidth() - (layout.getPosY() + layout.getWidth())));
-		return gridPlate;
-	}
-	
-	private static Rectangle getGridPlateView(GridPlateLayout layout) {
-		Rectangle r = new Rectangle(0, 0, layout.getLength(), layout.getWidth());
-		r.setArcHeight(10);
-		r.setArcWidth(10);
-		r.setStrokeWidth(0);
-		r.getStyleClass().add(CSS_CLASS_GRIDPLATE);
-		return r;
-	}
-	
-	private static List<Rectangle> configureHoles(GridPlateLayout layout) {
-		List<Rectangle> holeList = new ArrayList<Rectangle>();
-		float xPos = 0;
-		float yPos = 0;
-		for(int hIndex = 0; hIndex < layout.getHorizontalAmount(); hIndex++) {
-			for(int vIndex = 0; vIndex < layout.getVerticalAmount(); vIndex++) {
-				xPos = layout.getHorizontalOffsetNxtPiece()*hIndex + layout.getFirstHolePosX();
-				yPos = layout.getVerticalOffsetNxtPiece()*vIndex + layout.getFirstHolePosY();
-				Rectangle hole = new Rectangle(xPos, layout.getWidth()-yPos - layout.getHoleWidth(), layout.getHoleLength(), layout.getHoleWidth());
-				hole.setStrokeWidth(0);
-				if(layout.getHoleOrientation() == HoleOrientation.TILTED) {
-					Rotate rotate = new Rotate(-45, xPos, layout.getWidth()-yPos);
-					hole.getTransforms().add(rotate);
-				}
-				hole.getStyleClass().add(CSS_CLASS_STACKPLATE);
-				holeList.add(hole);
-			}
-		}
-		return holeList;
+	//FIXME - this comment is not correct anymore
+	private Shape getGridPlateView(GridPlate gridPlate) {
+		Shape gridPlateShape = gridPlate.createShape();
+		gridPlateShape.getStyleClass().add(CSS_CLASS_GRIDPLATE);
+		gridPlateShape.relocate(gridPlate.getOffsetX(), (basicStackPlate.getBasicLayout().getPlateWidth() - (gridPlate.getOffsetY() + gridPlate.getHeight())));
+		return gridPlateShape;
 	}
 
 	@Override

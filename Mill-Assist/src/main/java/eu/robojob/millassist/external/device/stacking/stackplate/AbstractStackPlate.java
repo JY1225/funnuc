@@ -28,30 +28,6 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractStackPlate extends AbstractStackingDevice {
-
-	public enum WorkPieceOrientation {
-		
-		HORIZONTAL {
-			@Override
-			public int getDegrees() {
-				return 0;
-			}
-		}, TILTED {
-
-			@Override
-			public int getDegrees() {
-				return 45;
-			}
-		}, DEG90 {
-
-			@Override
-			public int getDegrees() {
-				return 90;
-			}
-		};
-		
-		public abstract int getDegrees();
-	}
 	
 	private AbstractStackPlateLayout layout;
 	private StackPlateStackingPosition currentPickLocation;
@@ -179,16 +155,14 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	private void doCorrectionFinishedWorkPiece() {
 		float deltaLength = getRawWorkPiece().getDimensions().getLength() - getFinishedWorkPiece().getDimensions().getLength();
 		float deltaWidth = getRawWorkPiece().getDimensions().getWidth() - getFinishedWorkPiece().getDimensions().getWidth();
-		switch (currentPutLocation.getOrientation()) {
-		case HORIZONTAL:
+		//FIXME- check this for gridplates
+		if (currentPutLocation.getOrientation() == 0) {
 			currentPutLocation.getPosition().setX(currentPutLocation.getPutPosition().getX() - deltaLength/2);
 			currentPutLocation.getPosition().setY(currentPutLocation.getPutPosition().getY() - deltaWidth/2);
-			break;
-		case DEG90:
+		} else if ( currentPutLocation.getOrientation() == 90) {
 			currentPutLocation.getPosition().setX(currentPutLocation.getPutPosition().getX() - deltaWidth/2);
 			currentPutLocation.getPosition().setY(currentPutLocation.getPutPosition().getY() - deltaLength/2);
-			break;
-		case TILTED:
+		} else if (currentPutLocation.getOrientation() == 45) {
 			double extraX = (getRawWorkPiece().getDimensions().getLength()/Math.sqrt(2) - getRawWorkPiece().getDimensions().getWidth()/Math.sqrt(2))/2;
 			double extraY = (getRawWorkPiece().getDimensions().getLength()/Math.sqrt(2) + getRawWorkPiece().getDimensions().getWidth()/Math.sqrt(2))/2;
 			currentPutLocation.getPosition().setX((float) (currentPutLocation.getPutPosition().getX() - extraX));
@@ -197,9 +171,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 			extraY = (getFinishedWorkPiece().getDimensions().getLength()/Math.sqrt(2) + getFinishedWorkPiece().getDimensions().getWidth()/Math.sqrt(2))/2;
 			currentPutLocation.getPosition().setX((float) (currentPutLocation.getPutPosition().getX() + extraX));
 			currentPutLocation.getPosition().setY((float) (currentPutLocation.getPutPosition().getY() + extraY));
-			break;
-		default:
-			break;
 		}
 	}
 
@@ -249,6 +220,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 					getLayout().initRawWorkPieces(getRawWorkPiece(), settings.getAmount());
 				} else {
 					logger.info("Raw workpiece was null!");
+					//FIXME - is this correct? settings.getRawWorkPiece is always null
 					setRawWorkPiece(settings.getRawWorkPiece());
 					setFinishedWorkPiece(settings.getFinishedWorkPiece());
 					getLayout().configureStackingPositions(null, settings.getOrientation(), settings.getLayers());
@@ -266,9 +238,10 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	public AbstractStackPlateDeviceSettings getDeviceSettings() {
 		int gridId = 0;
 		if(layout instanceof GridPlateLayout) {
-			gridId = ((GridPlateLayout) layout).getId();
+			gridId = ((GridPlateLayout) layout).getGridPlate().getId();
 		}
-		return new AbstractStackPlateDeviceSettings(getRawWorkPiece(), getFinishedWorkPiece(), getLayout().getOrientation(), getLayout().getLayers(), getLayout().getWorkPieceAmount(WorkPiece.Type.RAW), getWorkAreas().get(0).getDefaultClamping().getHeight(), gridId);
+		return new AbstractStackPlateDeviceSettings(getRawWorkPiece(), getFinishedWorkPiece(), getLayout().getOrientation(), getLayout().getLayers(), 
+				getLayout().getWorkPieceAmount(WorkPiece.Type.RAW), getWorkAreas().get(0).getDefaultClamping().getHeight(), gridId);
 	}
 
 	@Override
@@ -409,7 +382,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 		}
 	}
 	
-	public abstract float getR(WorkPieceOrientation orientation);
+	public abstract float getR(double orientation);
 	
 	@Override
 	public float getZSafePlane(final WorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {

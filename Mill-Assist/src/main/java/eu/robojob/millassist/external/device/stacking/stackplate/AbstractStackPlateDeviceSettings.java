@@ -1,7 +1,6 @@
 package eu.robojob.millassist.external.device.stacking.stackplate;
 
 import eu.robojob.millassist.external.device.DeviceSettings;
-import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class AbstractStackPlateDeviceSettings extends DeviceSettings {
@@ -9,13 +8,13 @@ public class AbstractStackPlateDeviceSettings extends DeviceSettings {
 	private WorkPiece rawWorkPiece;
 	private WorkPiece finishedWorkPiece;
 	//TODO maybe in the future, a list of intermediate half-finished workpieces could be added
-	private WorkPieceOrientation orientation;
+	private float orientation;
 	private int layers;
 	private int amount;
 	private float studHeight;
 	private int gridId;
 	
-	protected AbstractStackPlateDeviceSettings(final WorkPiece workPiece, final WorkPiece finishedWorkPiece, final WorkPieceOrientation orientation, final int layers, final int amount) {
+	protected AbstractStackPlateDeviceSettings(final WorkPiece workPiece, final WorkPiece finishedWorkPiece, final float orientation, final int layers, final int amount) {
 		this.layers = layers;
 		this.amount = amount;
 		this.orientation = orientation;
@@ -24,12 +23,12 @@ public class AbstractStackPlateDeviceSettings extends DeviceSettings {
 		this.gridId = 0;
 	}
 	
-	public AbstractStackPlateDeviceSettings(final WorkPiece workPiece, final WorkPiece finishedWorkPiece, final WorkPieceOrientation orientation, final int layers, final int amount, final float studHeight) {
+	public AbstractStackPlateDeviceSettings(final WorkPiece workPiece, final WorkPiece finishedWorkPiece, final float orientation, final int layers, final int amount, final float studHeight) {
 		this(workPiece, finishedWorkPiece, orientation, layers, amount);
 		this.studHeight = studHeight;
 	}
 	
-	public AbstractStackPlateDeviceSettings(final WorkPiece workPiece, final WorkPiece finishedWorkPiece, final WorkPieceOrientation orientation, final int layers, final int amount, final float studHeight, int gridId) {
+	public AbstractStackPlateDeviceSettings(final WorkPiece workPiece, final WorkPiece finishedWorkPiece, final float orientation, final int layers, final int amount, final float studHeight, int gridId) {
 		this(workPiece, finishedWorkPiece, orientation, layers, amount, studHeight);
 		this.gridId = gridId;
 	}
@@ -54,7 +53,7 @@ public class AbstractStackPlateDeviceSettings extends DeviceSettings {
 		this.finishedWorkPiece = finishedWorkPiece;
 	}
 
-	public void setOrientation(final WorkPieceOrientation orientation) {
+	public void setOrientation(final float orientation) {
 		this.orientation = orientation;
 	}
 
@@ -78,7 +77,7 @@ public class AbstractStackPlateDeviceSettings extends DeviceSettings {
 		return this.finishedWorkPiece;
 	}
 	
-	public WorkPieceOrientation getOrientation() {
+	public float getOrientation() {
 		return orientation;
 	}
 	

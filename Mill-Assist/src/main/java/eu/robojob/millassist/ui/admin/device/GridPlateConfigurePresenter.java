@@ -1,22 +1,23 @@
 package eu.robojob.millassist.ui.admin.device;
 
+import java.util.SortedSet;
+
 import eu.robojob.millassist.external.device.DeviceManager;
-import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
-import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout.HoleOrientation;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridHole;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
+import eu.robojob.millassist.threading.ThreadManager;
+import eu.robojob.millassist.ui.RoboSoftAppFactory;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.util.Translator;
 
-public class GridPlateConfigurePresenter extends AbstractFormPresenter<GridPlateConfigureView, DeviceMenuPresenter> {
+public class GridPlateConfigurePresenter extends AbstractFormPresenter<GridPlateConfigureView2, DeviceMenuPresenter> {
 
-	private GridPlateLayout selectedGridPlate;
-	private int selectedOrientation;
+	private GridPlate selectedGridPlate;
 	private DeviceManager deviceManager;
-	private boolean editMode;
 	
-	public GridPlateConfigurePresenter(final GridPlateConfigureView view, final DeviceManager deviceManager) {
+	public GridPlateConfigurePresenter(final GridPlateConfigureView2 view, final DeviceManager deviceManager) {
 		super(view);
 		this.deviceManager = deviceManager;
-		this.editMode = false;
-		this.selectedOrientation = 0;
 		getView().build();
 		getView().refresh();
 	}
@@ -28,7 +29,6 @@ public class GridPlateConfigurePresenter extends AbstractFormPresenter<GridPlate
 	
 	public void disableEditMode() {
 		this.selectedGridPlate = null;
-		this.editMode = false;
 	}
 	
 	// not used
@@ -38,57 +38,56 @@ public class GridPlateConfigurePresenter extends AbstractFormPresenter<GridPlate
 	}
 	
 	public void updateGridPlates() {
-		getView().setGridPlates(deviceManager.getAllGridPlateNames());
+		getView().setGridPlates(deviceManager.getAllGridPlates());
 	}
 	
-	public void clickedEdit(String gridPlateName) {
-		//If we are already in editMode - a reset is sent to disable the details screen
-		if (editMode) {
-			getView().reset();
-			this.selectedGridPlate = null;
-			editMode = false;	
-		} else {
-			this.selectedGridPlate = deviceManager.getGridPlateByName(gridPlateName);
-			getView().gridPlateSelected(selectedGridPlate);
-			getView().showFormEdit();
-			editMode = true;
-		}
+	public void clickedEdit(GridPlate gridPlate) {
+		this.selectedGridPlate = gridPlate;
+		getView().gridPlateSelected(selectedGridPlate);
 	}
 	
 	public void clickedNew() {
 		getView().reset();
-		if (!editMode) {
-			this.selectedGridPlate = null;
-			getView().showFormNew();
-			editMode = true;
-		} else {
-			editMode = false;
-		}
+		this.selectedGridPlate = null;
 	}
 	
-	public void saveData(final String name, final float posFirstX, final float posFirstY, final float offsetX, final float offsetY,
-			final int nbRows, final int nbColumns, final float height, final float holeLength, final float holeWidth,
-			final float length, final float width, final float posX, final float posY, final float smoothToX,
-			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ) {
+	public void saveData(final String name, final float width, final float height, final float depth, final float offsetX,
+			final float offsetY, final float holeLength, final float holeWidth, final SortedSet<GridHole> gridholes) {
 		if(selectedGridPlate == null) {
-			deviceManager.saveGridPlate(name, posFirstX, posFirstY, offsetX, offsetY, nbRows, nbColumns, height, 
-					holeLength, holeWidth, length, width, posX, posY, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, 
-					smoothFromZ, selectedOrientation);
+			deviceManager.saveGridPlate(name, width, height, depth, offsetX, offsetY, holeLength, holeWidth, gridholes);
 		} else {
-			deviceManager.updateGridPlate(selectedGridPlate, name, posFirstX, posFirstY, offsetX, offsetY, nbRows, nbColumns, height, 
-					holeLength, holeWidth, length, width, posX, posY, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, 
-					smoothFromZ, selectedOrientation);
+			deviceManager.updateGridPlate(selectedGridPlate, name, width, height, depth, offsetX, offsetY, holeLength, holeWidth, gridholes);
 		}
-	}
-
-	public void changedOrientation(HoleOrientation orientation) {
-		this.selectedOrientation = orientation.getId();
-		getView().setOrientation(selectedOrientation);
 	}
 
 	public void deleteGridPlate() {
 		deviceManager.deleteGridPlate(selectedGridPlate);	
+		this.selectedGridPlate = null;
 	}
 	
+	public void setActiveGridPlateByName(String name) {
+		this.selectedGridPlate = deviceManager.getGridPlateByName(name);
+	}
+	
+	void saveAsData(final float width, final float height, final float depth, final float offsetX,
+			final float offsetY, final float holeLength, final float holeWidth, final SortedSet<GridHole> gridholes) {
+		ThreadManager.submit(new Runnable() {
 
+			@Override
+			public void run() {
+				String name = RoboSoftAppFactory.getMainPresenter().askInputString(Translator.getTranslation(GridPlateConfigureView2.COPY), 
+						Translator.getTranslation(GridPlateConfigureView2.SAVE_AS_DIALOG), 
+						Translator.getTranslation(GridPlateConfigureView2.NAME));
+				if(!name.equals("")) {
+					try {
+						deviceManager.saveGridPlate(name, width, height, depth, offsetX, offsetY, holeLength, holeWidth, gridholes);
+					} catch (IllegalArgumentException e) {
+						RoboSoftAppFactory.getMainPresenter().closeInputString(getView());
+						return;
+					}
+				}
+				RoboSoftAppFactory.getMainPresenter().closeInputString(getView());
+			}
+		});
+	}
 }

@@ -13,7 +13,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
-import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.NumericTextField;
@@ -270,7 +269,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		btnHorizontal = createButton(HORIZONTAL_ICON, CSS_CLASS_BUTTON_ORIENTATION, Translator.getTranslation(HORIZONTAL), BTN_WIDTH*0.9, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
-				getPresenter().changedOrientation(WorkPieceOrientation.HORIZONTAL);
+				getPresenter().changedOrientation(0);
 			}
 		});
 		btnHorizontal.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
@@ -278,7 +277,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		btnTilted = createButton(TILTED_ICON, CSS_CLASS_BUTTON_ORIENTATION, Translator.getTranslation(TILTED), BTN_WIDTH*0.9, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
-				getPresenter().changedOrientation(WorkPieceOrientation.TILTED);
+				getPresenter().changedOrientation(45);
 			}
 		});
 		btnTilted.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
@@ -287,7 +286,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		btnVertical = createButton(VERTICAL_ICON, CSS_CLASS_BUTTON_ORIENTATION, "90°", BTN_WIDTH*0.9, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
-				getPresenter().changedOrientation(WorkPieceOrientation.DEG90);
+				getPresenter().changedOrientation(90);
 			}
 		});
 		btnVertical.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
@@ -368,18 +367,21 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		setDimensions(settings.getRawWorkPiece().getDimensions());
 		itxtWorkPieceAmount.setText("" + settings.getAmount());
 		itxtLayers.setText("" + settings.getLayers());
-		setOrientation(settings.getOrientation());
+		if (!getPresenter().hasGridPlate()) {
+			setOrientation(settings.getOrientation());
+		}
 		setWeight(settings.getRawWorkPiece().getMaterial(), settings.getRawWorkPiece().getWeight());
 		ntxtStudHeight.setText(settings.getStudHeight() + "");
+		showOrientation(!getPresenter().hasGridPlate());
 	}
 	
-	private void setOrientation(final WorkPieceOrientation orientation) {
+	private void setOrientation(final float orientation) {
 		btnHorizontal.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		btnTilted.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		btnVertical.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-		if (orientation == WorkPieceOrientation.HORIZONTAL) {
+		if (orientation == 0) {
 			btnHorizontal.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-		} else if (orientation == WorkPieceOrientation.TILTED){
+		} else if (orientation == 45){
 			btnTilted.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		} else {
 			btnVertical.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
@@ -427,6 +429,12 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 				btnFe.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
 			}
 		}
+	}
+	
+	private void showOrientation(final boolean flag) {
+		btnVertical.setVisible(flag);
+		btnHorizontal.setVisible(flag);
+		btnTilted.setVisible(flag);
 	}
 
 }

@@ -32,7 +32,6 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
-import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
@@ -74,10 +73,6 @@ public class ProcessFlowMapper {
 	private static final int STEP_TYPE_PUTANDWAIT = 5;
 	private static final int STEP_TYPE_PICKAFTERWAIT = 6;
 	private static final int STEP_TYPE_PROCESSINGWHILEWAITING = 7;
-	
-	private static final int STACKPLATE_ORIENTATION_HORIZONTAL = 1;
-	private static final int STACKPLATE_ORIENTATION_TILTED = 2;
-	private static final int STACKPLATE_ORIENTATION_VERTICAL = 3;
 	
 	private static final int CLAMPING_MANNER_LENGTH = 1;
 	private static final int CLAMPING_MANNER_WIDTH = 2;
@@ -465,17 +460,7 @@ public class ProcessFlowMapper {
 			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO STACKPLATESETTINGS (ID, AMOUNT, ORIENTATION, RAWWORKPIECE, FINISHEDWORKPIECE, LAYERS, STUDHEIGHT) VALUES (?, ?, ?, ?, ?, ?, ?)");
 			stmt4.setInt(1, bspSettings.getId());
 			stmt4.setInt(2, bspSettings.getAmount());
-			int orientation = 0;
-			if (bspSettings.getOrientation() == WorkPieceOrientation.HORIZONTAL) {
-				orientation = STACKPLATE_ORIENTATION_HORIZONTAL;
-			} else if (bspSettings.getOrientation() == WorkPieceOrientation.TILTED) {
-				orientation = STACKPLATE_ORIENTATION_TILTED;
-			} else  if (bspSettings.getOrientation() == WorkPieceOrientation.DEG90) {
-				orientation = STACKPLATE_ORIENTATION_VERTICAL;
-			} else {
-				throw new IllegalStateException("Unknown workpiece orientation: [" + bspSettings.getOrientation() + "].");
-			}
-			stmt4.setInt(3, orientation);
+			stmt4.setFloat(3, bspSettings.getOrientation());
 			stmt4.setInt(4, bspSettings.getRawWorkPiece().getId());
 			stmt4.setInt(5, bspSettings.getFinishedWorkPiece().getId());
 			stmt4.setInt(6,  bspSettings.getLayers());
@@ -746,7 +731,7 @@ public class ProcessFlowMapper {
 		AbstractStackPlateDeviceSettings basicStackPlateSettings = null;
 		if (results.next()) {
 			int amount = results.getInt("AMOUNT");
-			int orientation = results.getInt("ORIENTATION");
+			float orientation = results.getInt("ORIENTATION");
 			int rawWorkPieceId = results.getInt("RAWWORKPIECE");
 			int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
 			int layers = results.getInt("LAYERS");
@@ -754,15 +739,7 @@ public class ProcessFlowMapper {
 			int gridId = results.getInt("GRID_ID");
 			WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(processFlowId, rawWorkPieceId);
 			WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
-			if (orientation == STACKPLATE_ORIENTATION_HORIZONTAL) {
-				basicStackPlateSettings = new AbstractStackPlateDeviceSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.HORIZONTAL, layers, amount, studHeight, gridId);
-			} else if (orientation == STACKPLATE_ORIENTATION_TILTED) {
-				basicStackPlateSettings = new AbstractStackPlateDeviceSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.TILTED, layers, amount, studHeight, gridId);
-			} else if (orientation == STACKPLATE_ORIENTATION_VERTICAL) {
-				basicStackPlateSettings = new AbstractStackPlateDeviceSettings(rawWorkPiece, finishedWorkPiece, WorkPieceOrientation.DEG90, layers, amount, studHeight, gridId);
-			} else {
-				throw new IllegalStateException("Unknown workpiece orientation: [" + orientation + "].");
-			}
+			basicStackPlateSettings = new AbstractStackPlateDeviceSettings(rawWorkPiece, finishedWorkPiece, orientation, layers, amount, studHeight, gridId);
 			basicStackPlateSettings.setClampings(clampings);
 		}
 		return basicStackPlateSettings;

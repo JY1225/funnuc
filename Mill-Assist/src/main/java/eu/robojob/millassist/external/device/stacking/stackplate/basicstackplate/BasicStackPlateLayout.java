@@ -2,7 +2,6 @@ package eu.robojob.millassist.external.device.stacking.stackplate.basicstackplat
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateLayout;
-import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.external.device.stacking.stackplate.StackPlateStackingPosition;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.StudPosition.StudType;
 import eu.robojob.millassist.workpiece.WorkPiece;
@@ -116,7 +115,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 	 * Configures the list of Stacking-positions and updates the 2D-array of studPositions 
 	 * @throws IncorrectWorkPieceDataException 
 	 */
-	public void configureStackingPositions(final WorkPiece rawWorkPiece, final WorkPieceOrientation orientation, final int layers) throws IncorrectWorkPieceDataException {
+	public void configureStackingPositions(final WorkPiece rawWorkPiece, final float orientation, final int layers) throws IncorrectWorkPieceDataException {
 		clearStuds();
 		super.configureStackingPositions(rawWorkPiece, orientation, layers);
 	}
@@ -128,7 +127,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 	/////////////////////////
 	
 	@Override
-	protected void checkSpecialStackingConditions(final WorkPieceDimensions dimensions, final WorkPieceOrientation orientation)  
+	protected void checkSpecialStackingConditions(final WorkPieceDimensions dimensions, final float orientation)  
 			throws IncorrectWorkPieceDataException {
 		checkCorners(dimensions, orientation);
 		boolean overFlow = checkInitialOverflow(dimensions, orientation);
@@ -149,20 +148,17 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 	 * 		- false, in case the piece is too big for the stacker and thus overflow occurs
 	 * @throws IncorrectWorkPieceDataException 
 	 */
-	private boolean checkInitialOverflow(WorkPieceDimensions dimensions, WorkPieceOrientation orientation) throws IncorrectWorkPieceDataException  {
+	private boolean checkInitialOverflow(WorkPieceDimensions dimensions, float orientation) throws IncorrectWorkPieceDataException  {
 		boolean overflowR, overflowTop;
 		int remainingStudsRight = horizontalHoleAmount - 1;
 		int remainingStudsTop = verticalHoleAmount - 1;
-		switch(orientation) {
-		case HORIZONTAL:
+		if (orientation == 0) {
 			overflowR = isOverFlowRightHorizontal(dimensions.getLength(), dimensions.getWidth(), remainingStudsRight);
 			overflowTop = isOverFlowTopHorizontal(dimensions.getLength(), dimensions.getWidth(), remainingStudsTop);
-			break;
-		case DEG90:
+		} else if (orientation == 90) {
 			overflowR = isOverFlowRightHorizontal(dimensions.getWidth(), dimensions.getLength(), remainingStudsRight);
 			overflowTop = isOverFlowTopHorizontal(dimensions.getWidth(), dimensions.getLength(), remainingStudsTop);
-			break;
-		case TILTED:
+		} else if (orientation == 45) {
 			int n = getAmountOfStudsLeft(dimensions.getLength(), dimensions.getWidth());
 			if (n >= horizontalHoleAmount/2) {
 				throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.TOO_LARGE);
@@ -170,8 +166,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 			remainingStudsRight = horizontalHoleAmount - n;
 			overflowR = isOverFlowRightTilted(dimensions.getLength(), dimensions.getWidth(), remainingStudsRight);
 			overflowTop = isOverFlowTiltedTop(dimensions.getLength(), dimensions.getWidth(), remainingStudsTop);
-			break;
-		default:
+		} else {
 			throw new IllegalArgumentException("Unknown work piece orientation");
 		}
 		return (overflowR && overflowTop);
@@ -229,21 +224,17 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 	//      CORNERS       // 
 	//                    //
 	////////////////////////
-	private boolean checkCorners(final WorkPieceDimensions dimensions, final WorkPieceOrientation orientation) 
+	private boolean checkCorners(final WorkPieceDimensions dimensions, final float orientation) 
 			throws IllegalArgumentException {
 		boolean result = false;
-		switch(orientation) {
-			case HORIZONTAL:
+		if (orientation == 0) {
 				result = isCornerNeededNormal(dimensions.getLength(), dimensions.getWidth());
-				break;
-			case DEG90:
+		} else if (orientation == 90) {
 				result = isCornerNeededNormal(dimensions.getWidth(), dimensions.getLength());
-				break;
-			case TILTED:
+		} else if (orientation == 45) {
 				result = isCornerNeededTilted(dimensions.getLength(), dimensions.getWidth());
-				break;
-			default: 
-				throw new IllegalArgumentException("Unknown work piece orientation");
+		} else { 
+			throw new IllegalArgumentException("Unknown work piece orientation");
 		}
 		return result;
 	}
@@ -280,20 +271,20 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 	//                     //
 	/////////////////////////
 	@Override
-	protected int getMaxHorizontalAmount(final WorkPieceDimensions dimensions, final WorkPieceOrientation orientation)  {
-		switch(orientation) {
-		case HORIZONTAL:
+	protected int getMaxHorizontalAmount(final WorkPieceDimensions dimensions, final float orientation)  {
+		if (orientation == 0) {
 			return getMaxHorizontalAmountNormal(dimensions.getLength(), dimensions.getWidth(), orientation);			
-		case DEG90:
-			return getMaxHorizontalAmountNormal(dimensions.getWidth(), dimensions.getLength(), orientation);
-		case TILTED:
-			return getMaxHorizontalAmountTilted(dimensions.getLength(), dimensions.getWidth(), orientation);
-		default:
-			throw new IllegalArgumentException("Unknown work piece orientation");
 		}
+		if (orientation == 90) {
+			return getMaxHorizontalAmountNormal(dimensions.getWidth(), dimensions.getLength(), orientation);
+		} 
+		if (orientation == 45) {
+			return getMaxHorizontalAmountTilted(dimensions.getLength(), dimensions.getWidth(), orientation);
+		}
+		throw new IllegalArgumentException("Unknown work piece orientation");
 	}
 	
-	private int getMaxHorizontalAmountNormal(float length, float width, WorkPieceOrientation orientation) {
+	private int getMaxHorizontalAmountNormal(float length, float width, float orientation) {
 		int amountOfHorizontalStudsWorkPiece = getNumberOfStudsPerWorkPiece(length, true);
 		int remainingStudsRight = horizontalHoleAmount - 1;
 		int maxHorizontalIndex = (int) Math.floor(remainingStudsRight/amountOfHorizontalStudsWorkPiece);
@@ -306,7 +297,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		return maxHorizontalIndex;
 	}
 	
-	private int getMaxHorizontalAmountTilted(float length, float width, WorkPieceOrientation orientation) {
+	private int getMaxHorizontalAmountTilted(float length, float width, float orientation) {
 		double a = horizontalHoleDistance/(Math.sqrt(2)) - studDiameter/2;
 		double b = horizontalHoleDistance/(Math.sqrt(2));
 		
@@ -345,10 +336,8 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		return (extraStudsLeft + 2);	// also added the aligning stud of this one and the wp to the left
 	}
 	
-	private boolean isSufficientStudsLeftHorizontal(int remainingStudsRight, WorkPieceOrientation orientation, boolean corner) {
-		switch(orientation) {
-		case HORIZONTAL:
-		case DEG90:
+	private boolean isSufficientStudsLeftHorizontal(int remainingStudsRight, float orientation, boolean corner) {
+		if (orientation == 0 || orientation == 90) {
 			if (remainingStudsRight < 0) {
 				return false;
 			}
@@ -357,7 +346,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 			if (((corner) && (remainingStudsRight <= 1)) || ((!corner) && (remainingStudsRight < 2))) {
 				return false;
 			}
-		case TILTED:
+		} else if (orientation == 45) {
 			if (remainingStudsRight < 1) {
 				return false;
 			}
@@ -416,20 +405,20 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 	}
 	
 	@Override
-	protected int getMaxVerticalAmount(final WorkPieceDimensions dimensions, final WorkPieceOrientation orientation) {
-		switch(orientation) {
-		case HORIZONTAL:
+	protected int getMaxVerticalAmount(final WorkPieceDimensions dimensions, final float orientation) {
+		if (orientation == 0) {
 			return getMaxVerticalAmountNormal(dimensions.getLength(), dimensions.getWidth(), orientation);			
-		case DEG90:
-			return getMaxVerticalAmountNormal(dimensions.getWidth(), dimensions.getLength(), orientation);
-		case TILTED:
-			return getMaxVerticalAmountTilted(dimensions.getLength(), dimensions.getWidth(), orientation);
-		default:
-			throw new IllegalArgumentException("Unknown work piece orientation");
 		}
+		if (orientation == 90) {
+			return getMaxVerticalAmountNormal(dimensions.getWidth(), dimensions.getLength(), orientation);
+		} 
+		if (orientation == 45) {
+			return getMaxVerticalAmountTilted(dimensions.getLength(), dimensions.getWidth(), orientation);
+		}
+		throw new IllegalArgumentException("Unknown work piece orientation");
 	}
 	
-	private int getMaxVerticalAmountNormal(float length, float width, WorkPieceOrientation orientation) {
+	private int getMaxVerticalAmountNormal(float length, float width, float orientation) {
 		int amountOfStudsWorkPieceVertical = getNumberOfStudsPerWorkPiece(width, false);
 		int remainingStudsTop = verticalHoleAmount - 1;
 		int maxVerticalIndex = (int) Math.floor(remainingStudsTop/amountOfStudsWorkPieceVertical);
@@ -442,7 +431,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		return maxVerticalIndex;
 	}
 	
-	private int getVerticalIndex(float length, float width, WorkPieceOrientation orientation) {
+	private int getVerticalIndex(float length, float width, float orientation) {
 		boolean ok = false;
 		double a = horizontalHoleDistance/(Math.sqrt(2)) - studDiameter/2;
 		double b = horizontalHoleDistance/(Math.sqrt(2));
@@ -467,7 +456,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		return verticalRowIndex;
 	}
 	
-	private int getMaxVerticalAmountTilted(float length, float width, WorkPieceOrientation orientation) {
+	private int getMaxVerticalAmountTilted(float length, float width, float orientation) {
 		boolean ok = false;
 		int verticalRowIndex = getVerticalIndex(length, width, orientation);
 		int remainingStudsTop = verticalHoleAmount - 1;
@@ -483,10 +472,8 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		return maxVerticalIndex;
 	}
 	
-	private boolean isSufficientStudsLeftTop(int remainingStudsTop, WorkPieceOrientation orientation, boolean corner) {
-		switch(orientation) {
-		case HORIZONTAL:
-		case DEG90:
+	private boolean isSufficientStudsLeftTop(int remainingStudsTop, float orientation, boolean corner) {
+		if (orientation == 0 || orientation == 90) {
 			if (remainingStudsTop < 0) {
 				return false;
 			}
@@ -494,7 +481,8 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 				return false;
 			}
 			return true;
-		case TILTED:
+		}
+		if (orientation == 45) {
 			if ((!corner) && (remainingStudsTop < 1)) {
 				return false;
 			}
@@ -510,15 +498,13 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 	//                        //
 	////////////////////////////
 	@Override
-	protected void initStackingPositions(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, WorkPieceOrientation orientation) {
+	protected void initStackingPositions(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, float orientation) {
 		int verticalStuds, horizontalStuds;
-		switch(orientation) {
-		case HORIZONTAL:
+		if (orientation == 0) {
 			verticalStuds = getNumberOfStudsPerWorkPiece(dimensions.getWidth(), false); 
 			horizontalStuds = getNumberOfStudsPerWorkPiece(dimensions.getLength(), true);
 			initializeRawWorkPiecePositionsHorizontal(dimensions, horizontalStuds, verticalStuds, nbHorizontal, nbVertical, isCornerLength, isCornerWidth);
-			break;
-		case DEG90:
+		} else if (orientation == 90) {
 			verticalStuds = getNumberOfStudsPerWorkPiece(dimensions.getLength(), false); 
 			horizontalStuds = getNumberOfStudsPerWorkPiece(dimensions.getWidth(), true);
 			if(isRightAligned()) {
@@ -526,14 +512,12 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 			} else {
 				initializeRawWorkPiecePositionsDeg90(dimensions, horizontalStuds, verticalStuds, nbHorizontal, nbVertical, isCornerLength, isCornerWidth);
 			}
-			break;
-		case TILTED:
+		} else if (orientation == 45) {
 			int n = getAmountOfStudsLeft(dimensions.getLength(), dimensions.getWidth());
 			double a = horizontalHoleDistance/(Math.sqrt(2)) - studDiameter/2;
 			double b = horizontalHoleDistance/(Math.sqrt(2));
 			int leftOther = getNbStudsLeftOther(dimensions.getLength(), dimensions.getWidth(), a, b);
 			initializeRawWorkPiecePositionsTilted(dimensions, n, leftOther, nbHorizontal, getVerticalIndex(dimensions.getLength(), dimensions.getWidth(), orientation), nbVertical, isCornerLength, isCornerWidth);
-			break;
 		}
 	}
 	
@@ -599,7 +583,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 				double yBottomLeft = getVerticalPaddingBottom() + (amountOfStudsBottom - 1)*verticalHoleDistance + studDiameter/2;
 				float x = (float) xBottomRight - dimensions.getWidth()/2;
 				float y = (float) yBottomLeft + dimensions.getLength()/2;
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(getOrientation()), null, 0, WorkPieceOrientation.DEG90);
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(getOrientation()), null, 0, 90);
 				getStackingPositions().add(stPos);
 				int firstStudPosX = (j + 1) * amountOfStudsWorkPiece - 1;
 				if (amountHorizontal * amountOfStudsWorkPiece > horizontalHoleAmount) {
@@ -667,7 +651,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 				double yBottomLeft = getVerticalPaddingBottom() + (amountOfStudsBottom - 1)*verticalHoleDistance + studDiameter/2;
 				float x = (float) xBottomLeft + dimensions.getLength()/2;
 				float y = (float) yBottomLeft + dimensions.getWidth()/2;
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(getOrientation()), null, 0, WorkPieceOrientation.HORIZONTAL);
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(getOrientation()), null, 0, 0);
 				getStackingPositions().add(stPos);
 				int firstStudPosX = j * amountOfStudsWorkPiece;
 				int firstStudPosY = i * amountOfStudsWorkPieceVertical;
@@ -719,7 +703,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 				double extraY = (dimensions.getLength()/Math.sqrt(2) + dimensions.getWidth()/Math.sqrt(2))/2;
 				float x = (float) (xBottom + extraX);
 				float y = (float) (yBottom + extraY);
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(getOrientation()), null, 0, WorkPieceOrientation.TILTED);
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(getOrientation()), null, 0, 45);
 				getStackingPositions().add(stPos);
 				int firstStudPosX = amountOfStudsLeftFirst + j * amountOfStudsLeftOther - 1;
 				int firstStudPosY = amountOfStudsVertical * i;
@@ -923,8 +907,8 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		this.horizontalR = horizontalR;
 	}
 
-	public float getR(WorkPieceOrientation orientation) {
-		if(orientation.equals(WorkPieceOrientation.TILTED))
+	public float getR(float orientation) {
+		if(orientation == 45)
 			return getTiltedR();
 		else
 			return getHorizontalR();

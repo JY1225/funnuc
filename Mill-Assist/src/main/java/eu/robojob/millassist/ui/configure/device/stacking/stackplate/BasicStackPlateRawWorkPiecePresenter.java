@@ -4,11 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
-import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout.HoleOrientation;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.PickStep;
@@ -26,7 +25,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	private AbstractStackPlateDeviceSettings deviceSettings;
 	private PickStep pickStep;
 	private WorkPieceDimensions dimensions;
-	private WorkPieceOrientation orientation;
+	private float orientation;
 	private WorkPiece workPiece;
 		
 	private static Logger logger = LogManager.getLogger(BasicStackPlateRawWorkPiecePresenter.class.getName());
@@ -43,10 +42,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		deviceSettings.setRawWorkPiece(workPiece);	
 		this.dimensions = workPiece.getDimensions();
 		orientation = deviceSettings.getOrientation();
-		if (orientation == null) {
-			orientation = WorkPieceOrientation.HORIZONTAL;
-			deviceSettings.setOrientation(orientation);
-		}
+		deviceSettings.setOrientation(orientation);
 		view.build();
 		recalculate();
 	}
@@ -73,25 +69,11 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public boolean isGridPlateOK() {
 		if (getStackPlate().hasGridPlate()) {
-			GridPlateLayout layout = ((GridPlateLayout) getStackPlate().getLayout());
-			//In case the gridplate is oriented with an angle of 45°, the workpiece has to be like that as well
-			if(deviceSettings.getOrientation() == WorkPieceOrientation.TILTED && layout.getHoleOrientation() != HoleOrientation.TILTED) {
+			GridPlate gridplate = ((GridPlateLayout) getStackPlate().getLayout()).getGridPlate();
+			if(dimensions.getLength() > gridplate.getHoleLength())
 				return false;
-			} 
-			if(deviceSettings.getOrientation() != WorkPieceOrientation.TILTED && layout.getHoleOrientation() == HoleOrientation.TILTED) {
+			if(dimensions.getWidth() > gridplate.getHoleWidth())
 				return false;
-			} 
-			if(deviceSettings.getOrientation() == WorkPieceOrientation.DEG90) {
-				if(dimensions.getWidth() > layout.getHoleLength())
-					return false;
-				if(dimensions.getLength() > layout.getHoleWidth())
-					return false;
-			} else {
-				if(dimensions.getLength() > layout.getHoleLength())
-					return false;
-				if(dimensions.getWidth() > layout.getHoleWidth())
-					return false;
-			} 
 			return true;
 		} else {
 			return true;
@@ -188,8 +170,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			pickStep.getProcessFlow().setFinishedAmount(0);
 			getStackPlate().getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
 			getStackPlate().getLayout().initRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
-			if ((deviceSettings.getOrientation() == WorkPieceOrientation.DEG90) || 
-					((deviceSettings.getOrientation() == WorkPieceOrientation.TILTED) && (getStackPlate().getBasicLayout().getTiltedR() < getStackPlate().getBasicLayout().getHorizontalR()))) {
+			if ((deviceSettings.getOrientation() == 90) || 
+					((deviceSettings.getOrientation() == 45) && (getStackPlate().getBasicLayout().getTiltedR() < getStackPlate().getBasicLayout().getHorizontalR()))) {
 				pickStep.getProcessFlow().getClampingType().setChanged(true);
 			} else {
 				pickStep.getProcessFlow().getClampingType().setChanged(false);
@@ -210,9 +192,9 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		getStackPlate().notifyLayoutChanged();
 	}
 	
-	public void changedOrientation(final WorkPieceOrientation orientation) {
+	public void changedOrientation(final float orientation) {
 		logger.info("Set orientation [" + orientation + "].");
-		if (!orientation.equals(deviceSettings.getOrientation())) {
+		if (orientation != deviceSettings.getOrientation()) {
 			deviceSettings.setOrientation(orientation);
 			this.orientation = orientation;
 			recalculate();
@@ -231,7 +213,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	@Override
 	public boolean isConfigured() {
 		BasicStackPlate plate = getStackPlate();
-		if ((dimensions != null) && (orientation != null) && (plate.getLayout().getStackingPositions() != null)
+		if ((dimensions != null) && (plate.getLayout().getStackingPositions() != null)
 				&& (plate.getLayout().getStackingPositions().size() > 0) && (workPiece.getWeight() > 0) 
 				&& (deviceSettings.getStudHeight() >= 0)
 				&& (isAmountOk())) {
@@ -242,8 +224,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public void setMaxAmount() {
 		BasicStackPlate plate = getStackPlate();
-		deviceSettings.setAmount(plate.getLayout().getMaxPiecesPossibleAmount());
 		plate.loadDeviceSettings(deviceSettings);
+		deviceSettings.setAmount(plate.getLayout().getMaxPiecesPossibleAmount());
 		recalculate();
 		getView().refresh();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
@@ -256,6 +238,10 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 
 	public AbstractStackPlateDeviceSettings getDeviceSettings() {
 		return this.deviceSettings;
+	}
+	
+	public boolean hasGridPlate() {
+		return getStackPlate().hasGridPlate();
 	}
 	
 }

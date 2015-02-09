@@ -17,6 +17,8 @@ import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.workpiece.WorkPiece;
@@ -101,14 +103,16 @@ public class BasicStackPlate extends AbstractStackPlate {
 		return (getLayout() instanceof GridPlateLayout);
 	}
 	
-	public void setGridPlate(GridPlateLayout layout) {
-		if(layout != null) {
-			logger.debug("Adding gridplate [" + layout.getName() + "] to stackplate.");
-			getDeviceSettings().setGridId(layout.getId());
-			setLayout(layout);
+	public void setGridPlate(GridPlate gridPlate) {
+		AbstractStackPlateDeviceSettings deviceSettings = getDeviceSettings();
+		if(gridPlate != null) {
+			logger.debug("Adding gridplate [" + gridPlate.getName() + "] to stackplate.");
+			deviceSettings.setGridId(gridPlate.getId());
+			setLayout(new GridPlateLayout(gridPlate));
+			loadDeviceSettings(deviceSettings);
 		} else {
 			logger.debug("Gridplate removed from stackplate.");
-			getDeviceSettings().setGridId(0);
+			deviceSettings.setGridId(0);
 			setLayout(getBasicLayout());
 		}
 	}
@@ -118,8 +122,8 @@ public class BasicStackPlate extends AbstractStackPlate {
 		notifyLayoutChanged();
 	}
 	
-	public float getR(WorkPieceOrientation orientation) {
-		if(orientation.equals(WorkPieceOrientation.TILTED))
+	public float getR(double orientation) {
+		if(orientation == 45)
 			return basicLayout.getTiltedR();
 		else
 			return basicLayout.getHorizontalR();

@@ -1,5 +1,6 @@
 package eu.robojob.millassist.ui.general;
 
+import javafx.scene.Node;
 import eu.robojob.millassist.ui.RoboSoftAppFactory;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 
@@ -39,6 +40,10 @@ public abstract class AbstractFormPresenter<T extends AbstractFormView<?>, S ext
 	
 	public void showNotificationOverlay(final String title, final String message) {
 		RoboSoftAppFactory.getMainPresenter().showNotificationOverlay(title, message);
+	}
+	
+	public void showOverlayNode(final Node node) {
+		RoboSoftAppFactory.getMainPresenter().showOverlayNode(node);
 	}
 	
 }

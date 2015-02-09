@@ -22,7 +22,6 @@ import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
-import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
@@ -448,7 +447,7 @@ public class ProcessFlow {
 		for (Entry<AbstractDevice, DeviceSettings> settings : deviceSettings.entrySet()) {
 			settings.getKey().loadDeviceSettings(settings.getValue());
 			if (settings.getValue() instanceof AbstractStackPlateDeviceSettings) {
-				if (((AbstractStackPlateDeviceSettings) settings.getValue()).getOrientation() == WorkPieceOrientation.DEG90) {
+				if (((AbstractStackPlateDeviceSettings) settings.getValue()).getOrientation() == 90) {
 					getClampingType().setChanged(true);
 				}
 			}

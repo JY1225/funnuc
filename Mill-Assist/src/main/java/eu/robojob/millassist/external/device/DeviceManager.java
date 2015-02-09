@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +23,8 @@ import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
-import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridHole;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -39,8 +41,8 @@ public class DeviceManager {
 	private Map<String, AbstractProcessingDevice> postProcessingDevicesByName;
 	private Map<String, AbstractStackingDevice> stackingFromDevicesByName;
 	private Map<String, AbstractStackingDevice> stackingToDevicesByName;
-	private Map<String, GridPlateLayout> gridPlatesByName;
-	private Map<Integer, GridPlateLayout> gridPlatesById;
+	private Map<String, GridPlate> gridPlatesByName;
+	private Map<Integer, GridPlate> gridPlatesById;
 	private ProcessFlowManager processFlowManager;
 	
 	private static Logger logger = LogManager.getLogger(DeviceManager.class.getName());
@@ -55,8 +57,8 @@ public class DeviceManager {
 		this.postProcessingDevicesByName = new HashMap<String, AbstractProcessingDevice>();
 		this.stackingFromDevicesByName = new HashMap<String, AbstractStackingDevice>();
 		this.stackingToDevicesByName = new HashMap<String, AbstractStackingDevice>();
-		this.gridPlatesByName = new HashMap<String, GridPlateLayout>();
-		this.gridPlatesById = new HashMap<Integer, GridPlateLayout>();
+		this.gridPlatesByName = new HashMap<String, GridPlate>();
+		this.gridPlatesById = new HashMap<Integer, GridPlate>();
 		initialize();
 	}
 	
@@ -84,8 +86,8 @@ public class DeviceManager {
 					stackingToDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
 				}
 			}
-			Set<GridPlateLayout> allGridPlates = deviceMapper.getAllGridPlates();
-			for(GridPlateLayout gridPlate: allGridPlates) {
+			Set<GridPlate> allGridPlates = deviceMapper.getAllGridPlates();
+			for(GridPlate gridPlate: allGridPlates) {
 				gridPlatesByName.put(gridPlate.getName(), gridPlate);	
 				gridPlatesById.put(gridPlate.getId(), gridPlate);
 			}
@@ -211,15 +213,15 @@ public class DeviceManager {
 		}
 	}
 	
-	public GridPlateLayout getGridPlateByID(final int ID) {
+	public GridPlate getGridPlateByID(final int ID) {
 		return gridPlatesById.get(ID);
 	}
 	
-	public GridPlateLayout getGridPlateByName(final String name) {
+	public GridPlate getGridPlateByName(final String name) {
 		return gridPlatesByName.get(name);
 	}
 
-	public Collection<GridPlateLayout> getAllGridPlates() {
+	public Collection<GridPlate> getAllGridPlates() {
 		return gridPlatesByName.values();
 	}
 	
@@ -265,15 +267,17 @@ public class DeviceManager {
 		}		
 	}
 	
-	public void saveGridPlate(final String name, final float posFirstX, final float posFirstY, final float offsetX, final float offsetY,
-			final int nbRows, final int nbColumns, final float height, final float holeLength, final float holeWidth,
-			final float length, final float width, final float posX, final float posY, final float smoothToX,
-			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, int orientation) {
-		GridPlateLayout gridPlate = new GridPlateLayout(name, length, width, height, posFirstX, posFirstY, holeLength, holeWidth, offsetX, offsetY, nbColumns, nbRows,
-				posX, posY, orientation);
+	public void saveGridPlate(final String name, final float width, final float height, final float depth, final float offsetX, final float offsetY, 
+			final float holeLength, final float holeWidth, final SortedSet<GridHole> gridholes) {
+		GridPlate gridPlate = new GridPlate(name, width, height, gridholes);
+		gridPlate.setOffsetX(offsetX);
+		gridPlate.setOffsetY(offsetY);
+		gridPlate.setDepth(depth);
+		gridPlate.setHoleLength(holeLength);
+		gridPlate.setHoleWidth(holeWidth);
 		try {
 			if(!gridPlatesByName.containsKey(name)) {
-				deviceMapper.saveGridPlate(gridPlate, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ);
+				deviceMapper.saveGridPlate(gridPlate);
 				gridPlatesByName.put(name, gridPlate);
 				gridPlatesById.put(gridPlate.getId(), gridPlate);
 				refresh();	
@@ -287,18 +291,14 @@ public class DeviceManager {
 		}
 	}
 	
-	public void updateGridPlate(final GridPlateLayout gridPlate, final String name, final float posFirstX, final float posFirstY, final float offsetX, final float offsetY,
-			final int nbRows, final int nbColumns, final float height, final float holeLength, final float holeWidth,
-			final float length, final float width, final float posX, final float posY, final float smoothToX,
-			final float smoothToY, final float smoothToZ, final float smoothFromX, final float smoothFromY, final float smoothFromZ, int orientation) {
+	public void updateGridPlate(final GridPlate gridPlate, final String name, final float width, final float height, final float depth, final float offsetX, 
+			final float offsetY, final float holeLength, final float holeWidth, final SortedSet<GridHole> gridholes) {
 		try {
 			if(!gridPlate.getName().equals(name)) {
 				gridPlatesByName.remove(gridPlate.getName());
 				gridPlatesByName.put(name, gridPlate);
 			}
-			deviceMapper.updateGridPlate(gridPlate, name, posFirstX, posFirstY, offsetX, offsetY, nbRows, nbColumns, height, 
-					holeLength, holeWidth, length, width, posX, posY, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, 
-					smoothFromZ, orientation);
+			deviceMapper.updateGridPlate(gridPlate, name, width, height, depth, offsetX, offsetY, holeLength, holeWidth, gridholes);
 			refresh();
 		} catch (SQLException e) {
 			logger.error(e);
@@ -306,7 +306,7 @@ public class DeviceManager {
 		}
 	}
 	
-	public void deleteGridPlate(final GridPlateLayout gridPlate) {
+	public void deleteGridPlate(final GridPlate gridPlate) {
 		try{
 			deviceMapper.deleteGridPlate(gridPlate);
 			gridPlatesByName.remove(gridPlate.getName());
