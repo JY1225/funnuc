@@ -10,12 +10,12 @@ import eu.robojob.millassist.ui.RoboSoftAppFactory;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.util.Translator;
 
-public class GridPlateConfigurePresenter extends AbstractFormPresenter<GridPlateConfigureView2, DeviceMenuPresenter> {
+public class GridPlateConfigurePresenter extends AbstractFormPresenter<GridPlateConfigureView, DeviceMenuPresenter> {
 
 	private GridPlate selectedGridPlate;
 	private DeviceManager deviceManager;
 	
-	public GridPlateConfigurePresenter(final GridPlateConfigureView2 view, final DeviceManager deviceManager) {
+	public GridPlateConfigurePresenter(final GridPlateConfigureView view, final DeviceManager deviceManager) {
 		super(view);
 		this.deviceManager = deviceManager;
 		getView().build();
@@ -75,9 +75,9 @@ public class GridPlateConfigurePresenter extends AbstractFormPresenter<GridPlate
 
 			@Override
 			public void run() {
-				String name = RoboSoftAppFactory.getMainPresenter().askInputString(Translator.getTranslation(GridPlateConfigureView2.COPY), 
-						Translator.getTranslation(GridPlateConfigureView2.SAVE_AS_DIALOG), 
-						Translator.getTranslation(GridPlateConfigureView2.NAME));
+				String name = RoboSoftAppFactory.getMainPresenter().askInputString(Translator.getTranslation(GridPlateConfigureView.COPY), 
+						Translator.getTranslation(GridPlateConfigureView.SAVE_AS_DIALOG), 
+						Translator.getTranslation(GridPlateConfigureView.NAME));
 				if(!name.equals("")) {
 					try {
 						deviceManager.saveGridPlate(name, width, height, depth, offsetX, offsetY, holeLength, holeWidth, gridholes);

@@ -1,7 +1,7 @@
 package eu.robojob.millassist.ui.admin.device.gridplate;
 
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
-import eu.robojob.millassist.ui.admin.device.GridPlateConfigureView2;
+import eu.robojob.millassist.ui.admin.device.GridPlateConfigureView;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
@@ -40,7 +40,7 @@ public class GeneralInfoGridPlateNode extends GridPane {
 	private NumericTextField numtxtHoleLength, numtxtHoleWidth;
 	private Button previewButton;
 	
-	private GridPlateConfigureView2 parent;
+	private GridPlateConfigureView parent;
 		
 	public GeneralInfoGridPlateNode() {
 		initComponents();
@@ -220,7 +220,7 @@ public class GeneralInfoGridPlateNode extends GridPane {
 		return numtxtOriginY.getValue();
 	}
 	
-	public void setParent(GridPlateConfigureView2 parent) {
+	public void setParent(GridPlateConfigureView parent) {
 		this.parent = parent;
 	}
 	

@@ -19,7 +19,7 @@ import eu.robojob.millassist.ui.admin.device.DeviceAdminPresenter;
 import eu.robojob.millassist.ui.admin.device.DeviceMenuPresenter;
 import eu.robojob.millassist.ui.admin.device.DeviceMenuView;
 import eu.robojob.millassist.ui.admin.device.GridPlateConfigurePresenter;
-import eu.robojob.millassist.ui.admin.device.GridPlateConfigureView2;
+import eu.robojob.millassist.ui.admin.device.GridPlateConfigureView;
 import eu.robojob.millassist.ui.admin.device.OutputBinConfigurePresenter;
 import eu.robojob.millassist.ui.admin.device.OutputBinConfigureView;
 import eu.robojob.millassist.ui.admin.device.PrageDeviceConfigurePresenter;
@@ -395,7 +395,7 @@ public final class RoboSoftAppFactory {
 	}
 	
 	private static GridPlateConfigurePresenter getGridPlateConfigurePresenter() {
-		GridPlateConfigureView2 view = new GridPlateConfigureView2();
+		GridPlateConfigureView view = new GridPlateConfigureView();
 		gridPlateConfigurePresenter = new GridPlateConfigurePresenter(view, deviceManager);
 		return gridPlateConfigurePresenter;
 	}
