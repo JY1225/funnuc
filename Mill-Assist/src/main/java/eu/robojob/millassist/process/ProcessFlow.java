@@ -88,6 +88,7 @@ public class ProcessFlow {
 	public static final int WORKPIECE_2_ID = 2;
 	
 	private ClampingManner clampingManner;
+	private boolean isSingleCycle;
 	
 	public ProcessFlow(final String name, final List<AbstractProcessStep> processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, 
 			RobotSettings> robotSettings, final ClampingManner clampingManner, final Timestamp creation, final Timestamp lastOpened) {
@@ -625,7 +626,7 @@ public class ProcessFlow {
 		return "ProcessFlow: " + getName();
 	}
 	
-	public boolean isSingleCycle() {
+	public boolean hasSingleCycleSetting() {
 		Properties properties = new Properties();
 		try {
 			properties.load(new FileInputStream(new File("settings.properties")));
@@ -639,11 +640,19 @@ public class ProcessFlow {
 		return false;
 	}
 	
+	public void setSingleCycle(boolean isSingleCycle) {
+		this.isSingleCycle = isSingleCycle;
+	}
+	
+	public boolean isSingleCycle() {
+		return this.isSingleCycle;
+	}
+	
 	public boolean isConcurrentExecutionPossible() {
 		// this is possible if the CNC machine is used only once, and the gripper used to put the piece in the 
 		// CNC machine is not the same as the gripper used to pick the piece from the CNC machine and the total weight
 		// is lower than the max work piece weight and settings single-cycle not set
-		if (isSingleCycle()) {
+		if (hasSingleCycleSetting() || isSingleCycle) {
 			return false;
 		}
 		PickStep pickFromStacker = null;

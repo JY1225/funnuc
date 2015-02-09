@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -24,6 +25,8 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 
 	private Button btnAddDeviceStep;
 	private Button btnRemoveDeviceStep;
+	private CheckBox cbSingleCycle;
+	private Label lblSingleCycle;
 	
 	private static final int BUTTON_WIDTH = 150;
 		
@@ -43,6 +46,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 	private static final String NAME = "ProcessConfigureView.name";
 	private static final String ADD = "ProcessConfigureView.add";
 	private static final String REMOVE = "ProcessConfigureView.remove";
+	private static final String SINGLE_CYCLE = "ProcessConfigureView.singleCycle";
 
 	private ProcessFlowAdapter processFlowAdapter;
 	
@@ -102,6 +106,19 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 			btnRemoveDeviceStep.setDisable(true);
 		}
 		getContents().add(btnRemoveDeviceStep, 1, 1);
+		cbSingleCycle = new CheckBox();
+		cbSingleCycle.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+				if ((oldValue == null) || (!oldValue.equals(newValue)))  
+					getPresenter().setSingleCycle(newValue);
+			}
+		});
+		lblSingleCycle = new Label(Translator.getTranslation(SINGLE_CYCLE));
+		HBox singleCycleBox = new HBox();
+		singleCycleBox.getChildren().addAll(cbSingleCycle, lblSingleCycle);
+		singleCycleBox.setSpacing(10);
+		getContents().add(singleCycleBox, 0, 2, 2, 1);
 	}
 	
 	@Override
@@ -140,6 +157,11 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		} else {
 			btnRemoveDeviceStep.setDisable(false);
 		}
+		boolean hasSingleCycleSetting = processFlowAdapter.getProcessFlow().hasSingleCycleSetting();
+		disableSingleCycle(hasSingleCycleSetting);
+		if (!hasSingleCycleSetting) {
+			cbSingleCycle.setSelected(processFlowAdapter.getProcessFlow().isSingleCycle());
+		} 
 		fulltxtName.setText(processFlowAdapter.getProcessFlow().getName());
 	}
 	
@@ -148,6 +170,13 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		btnAddDeviceStep.setManaged(false);
 		btnRemoveDeviceStep.setVisible(false);
 		btnRemoveDeviceStep.setManaged(false);
+	}
+	
+	public void disableSingleCycle(boolean hasSingleCycleSetting) {
+		cbSingleCycle.setVisible(!hasSingleCycleSetting);
+		cbSingleCycle.setManaged(!hasSingleCycleSetting);
+		lblSingleCycle.setVisible(!hasSingleCycleSetting);
+		lblSingleCycle.setManaged(!hasSingleCycleSetting);
 	}
 
 }
