@@ -32,7 +32,7 @@ public class ProcessFlowView extends StackPane {
 	
 	private GridPane gpFlow;
 	
-	private ProcessFlowAdapter processFlowAdapter;
+	protected ProcessFlowAdapter processFlowAdapter;
 	private AbstractProcessFlowPresenter presenter;
 	
 	private List<DeviceButton> deviceButtons;
@@ -58,7 +58,7 @@ public class ProcessFlowView extends StackPane {
 	private static final String CSS_CLASS_PROGRESS_BAR_PIECE_YELLOW = "progressbar-piece-yellow";
 	private static final String CSS_CLASS_PROCESS_NAME = "process-name";
 	private static final String CSS_CLASS_PROCESS_NAME_UNSAVED = "unsaved";
-	private int progressBarAmount;
+	protected int progressBarAmount;
 			
 	public ProcessFlowView(final int progressBarAmount) {
 		this.progressBarAmount = progressBarAmount;

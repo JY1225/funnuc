@@ -294,7 +294,7 @@ public final class RoboSoftAppFactory {
 	
 	private static AutomateProcessFlowPresenter getAutomateProcessFlowPresenter() {
 		if (automateProcessFlowPresenter == null) {
-			AutomateProcessFlowView processFlowView = new AutomateProcessFlowView(deviceManager.getCNCMachines().iterator().next().getWayOfOperating().getNbOfSides() + 1);
+			AutomateProcessFlowView processFlowView = new AutomateProcessFlowView(deviceManager.getCNCMachines().iterator().next().getWayOfOperating().getNbOfSides());
 			automateProcessFlowPresenter = new AutomateProcessFlowPresenter(processFlowView, getAutomateDeviceMenuFactory());
 		}
 		return automateProcessFlowPresenter;
