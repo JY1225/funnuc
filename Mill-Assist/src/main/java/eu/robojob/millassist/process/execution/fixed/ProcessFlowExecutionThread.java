@@ -58,6 +58,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	private int nbWPInFlow = 0;
 	private int nbWPInMachine = 0;
 	private int nbWPReversed = 0;
+	private boolean vacuumContinue = false;
 	private Object syncObject2;
 	// Is the reversal still to come?
 	private boolean needsReversal;
@@ -137,12 +138,14 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 				else if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
 					checkStatus();
 					executePutInMachineStep((PutStep) currentStep);
+					vacuumContinue = false;
 					//More workpieces to put (multiple fixtures present - jump back a few steps)
 					//TODO - review (nbCNCPassed to use?)
 					if (morePutsToPerform((PutStep) currentStep) && processFlow.hasReversalUnit() && nbWPReversed < nbWPInMachine && nbWPReversed > 0) {
 						needsReversal = true;
 						processFlow.setCurrentIndex(processId, pickFromMachineBeforeReversalStepIndex-1);
 					} else if (morePutsToPerform((PutStep) currentStep)) {
+						vacuumContinue = true;
 						processFlow.setCurrentIndex(processId, pickFromStackerStepIndex-1);
 					}
 				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
@@ -302,7 +305,10 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	}
 	
 	public boolean isWaitForVacuum() {
-		if (controllingThread.getNbProcessesWithStatus(ExecutionThreadStatus.IDLE) >= 1 || !processFlow.isConcurrentExecutionPossible()) {
+		if (!processFlow.isConcurrentExecutionPossible() || controllingThread.getNbProcessesWithStatus(ExecutionThreadStatus.IDLE) >= 1) {
+			return false;
+		}
+		if (vacuumContinue) {
 			return false;
 		}
 		PickStep pickStep = (PickStep) processFlow.getStep(processFlow.getCurrentIndex(processId));
