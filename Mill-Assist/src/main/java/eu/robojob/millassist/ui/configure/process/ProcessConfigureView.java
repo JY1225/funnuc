@@ -107,11 +107,11 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		}
 		getContents().add(btnRemoveDeviceStep, 1, 1);
 		cbSingleCycle = new CheckBox();
+		cbSingleCycle.setSelected(processFlowAdapter.getProcessFlow().isSingleCycle());
 		cbSingleCycle.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
-				if ((oldValue == null) || (!oldValue.equals(newValue)))  
-					getPresenter().setSingleCycle(newValue);
+				getPresenter().setSingleCycle(newValue);
 			}
 		});
 		lblSingleCycle = new Label(Translator.getTranslation(SINGLE_CYCLE));

@@ -184,6 +184,7 @@ public class ProcessFlow {
 		this.lastOpened = new Timestamp(System.currentTimeMillis());
 		this.deviceSettings = processFlow.getDeviceSettings();
 		this.robotSettings = processFlow.getRobotSettings();
+		this.isSingleCycle = processFlow.isSingleCycle();
 		initialize();
 		this.finishedAmount = processFlow.getFinishedAmount();
 		this.clampingManner.setType(processFlow.getClampingType().getType());
