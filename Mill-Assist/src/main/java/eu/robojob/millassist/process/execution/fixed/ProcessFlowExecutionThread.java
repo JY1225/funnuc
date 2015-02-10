@@ -9,6 +9,7 @@ import eu.robojob.millassist.external.device.NoFreeClampingInWorkareaException;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.robot.Gripper;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
@@ -31,6 +32,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		WAITING_BEFORE_PICK_FROM_STACKER,
 		WAITING_FOR_WORKPIECES_STACKER,
 		WAITING_FOR_PICK_FROM_STACKER,
+		WAITING_FOR_PICK_STACKER_VACUUM,
 		WAITING_BEFORE_PUT_IN_MACHINE,
 		PROCESSING_IN_MACHINE,
 		WAITING_BEFORE_PICK_FROM_MACHINE,
@@ -297,6 +299,17 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		nbWPInFlow++;
 		checkStatus();
 		pickStep.finalizeStep(this);
+	}
+	
+	public boolean isWaitForVacuum() {
+		if (controllingThread.getNbProcessesWithStatus(ExecutionThreadStatus.IDLE) >= 1 || !processFlow.isConcurrentExecutionPossible()) {
+			return false;
+		}
+		PickStep pickStep = (PickStep) processFlow.getStep(processFlow.getCurrentIndex(processId));
+		if (pickStep.getRobotSettings().getGripperHead().getGripper().getType().equals(Gripper.Type.VACUUM)) {
+			return true;
+		}
+		return false;
 	}
 	
 	private void executePutInMachineStep(final PutStep putStep) throws InterruptedException, AbstractCommunicationException, RobotActionException, DeviceActionException, NoFreeClampingInWorkareaException {

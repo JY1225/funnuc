@@ -253,4 +253,14 @@ public abstract class AbstractFixedControllingThread implements Runnable {
 	
 	@Override
 	public abstract String toString();
+
+	int getNbProcessesWithStatus(ExecutionThreadStatus status) {
+		int nbProcess = 0;
+		for (ProcessFlowExecutionThread processFlowExecutor: processFlowExecutors) {
+			if (processFlowExecutor.getExecutionStatus().equals(status)) {
+				nbProcess++;
+			}
+		}
+		return nbProcess;
+	}
 }
