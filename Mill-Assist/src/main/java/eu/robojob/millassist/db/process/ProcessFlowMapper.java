@@ -387,7 +387,7 @@ public class ProcessFlowMapper {
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPICKSETTINGS (ID, WORKPIECE, AIRBLOW, APPROACHTYPE, TURN_IN_MACHINE) VALUES (?, ?, ?, ?, ?)");
 			stmt2.setInt(1, robotStep.getRobotSettings().getId());
 			stmt2.setInt(2, robotPickSettings.getWorkPiece().getId());
-			stmt2.setBoolean(3, robotPickSettings.isDoMachineAirblow());
+			stmt2.setBoolean(3, robotPickSettings.isRobotAirblow());
 			stmt2.setInt(4, robotPickSettings.getApproachType().getId());
 			stmt2.setBoolean(5, robotPickSettings.getTurnInMachine());
 			stmt2.executeUpdate();
@@ -396,7 +396,7 @@ public class ProcessFlowMapper {
 			RobotPutSettings robotPutSettings = ((PutStep) robotStep).getRobotSettings();
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPUTSETTINGS (ID, AIRBLOW, RELEASEBEFORE, APPROACHTYPE, TURN_IN_MACHINE) VALUES (?, ?, ?, ?, ?)");
 			stmt2.setInt(1, robotStep.getRobotSettings().getId());
-			stmt2.setBoolean(2, robotPutSettings.isDoMachineAirblow());
+			stmt2.setBoolean(2, robotPutSettings.isRobotAirblow());
 			stmt2.setBoolean(3, ((PutStep) robotStep).getRobotSettings().isReleaseBeforeMachine());
 			stmt2.setInt(4, robotPutSettings.getApproachType().getId());
 			stmt2.setBoolean(5, robotPutSettings.getTurnInMachine());

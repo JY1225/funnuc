@@ -103,11 +103,13 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 	}
 	
 	public void changedAirblow(final boolean airblow) {
-		putStep.getRobotSettings().setDoMachineAirblow(airblow);
-		if (!airblow) {
-			putStep.getRobotSettings().clearAirblowSettings();
+		if (putStep.getRobotSettings().isRobotAirblow() != airblow) {
+			putStep.getRobotSettings().setRobotAirblow(airblow);
+			if (!airblow) {
+				putStep.getRobotSettings().clearAirblowSettings();
+			}
+			changedCoordinate();
 		}
-		changedCoordinate();
 	}
 	
 	void changedClamping(String clampingName) {
@@ -128,15 +130,15 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 	
 	@Override
 	public boolean isConfigured() {
-		if (putStep.getRobotSettings().isDoMachineAirblow() && putStep.getRobotSettings().getRobotAirblowSettings().isEmpty()) {
+		if (putStep.getRobotSettings().isRobotAirblow() && putStep.getRobotSettings().getRobotAirblowSettings().isEmpty()) {
 			getView().showNotification(Translator.getTranslation(AIRBLOW_NOT_CORRECT), Type.WARNING);
 			return false;
 		}
-		if (!isAirblowConfigured() && putStep.getRobotSettings().isDoMachineAirblow()) {
+		if (!isAirblowConfigured() && putStep.getRobotSettings().isRobotAirblow()) {
 			getView().showNotification(Translator.getTranslation(AIRBLOW_NOT_CORRECT), Type.WARNING);
 			return false;
 		}
-		if (putStep.getRobotSettings().isDoMachineAirblow() && !isInsideMachineBoundaries()) {
+		if (putStep.getRobotSettings().isRobotAirblow() && !isInsideMachineBoundaries()) {
 			getView().showNotification(Translator.getTranslation(AIRBLOW_OUTSIDE_BOUND), Type.WARNING);
 			return false;
 		}
@@ -161,8 +163,10 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 	}
 	
 	public void changedTIM(final boolean newValue) {
-		putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
-		putStep.getRobotSettings().setTurnInMachine(newValue);
+		if (putStep.getRobotSettings().getTurnInMachine() != newValue) {
+			putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
+			putStep.getRobotSettings().setTurnInMachine(newValue);
+		}
 	}
 	
 	Set<String> getSelectedClampings() {
@@ -199,7 +203,9 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 	}
 
 	public void changedMachineAirblow(final boolean newValue) {
-		putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
-		putStep.getDeviceSettings().setIsMachineAirblow(newValue);
+		if (putStep.getDeviceSettings().getMachineAirblow() != newValue) {
+			putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
+			putStep.getDeviceSettings().setIsMachineAirblow(newValue);
+		}
 	}
 }

@@ -365,7 +365,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		robotPutSettings.setGripperHead(deviceInfo.getPutStep().getRobotSettings().getGripperHead());
 		robotPutSettings.setSmoothPoint(null);
 		robotPutSettings.setWorkArea(workArea);
-		robotPutSettings.setDoMachineAirblow(false);
+		robotPutSettings.setRobotAirblow(false);
 		
 		RobotPickSettings robotPickSettings = new FanucRobotPickSettings();
 		robotPickSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());
@@ -458,7 +458,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		robotPutSettings.setGripperHead(deviceInfo.getPickStep().getRobotSettings().getGripperHead());
 		robotPutSettings.setSmoothPoint(null);
 		robotPutSettings.setWorkArea(workArea);
-		robotPutSettings.setDoMachineAirblow(false);
+		robotPutSettings.setRobotAirblow(false);
 		
 		RobotPickSettings robotPickSettings = new FanucRobotPickSettings();
 		robotPickSettings.setRobot(deviceInfo.getPickStep().getRobotSettings().getRobot());

@@ -9,8 +9,8 @@ import eu.robojob.millassist.positioning.Coordinates;
 public class FanucRobotPutSettings extends RobotPutSettings {
 	
 	public FanucRobotPutSettings(final AbstractRobot robot, final SimpleWorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location,
-			final boolean doMachineAirblow, final boolean releaseBeforeMachine, final boolean gripInner) {
-		super(robot, workArea, gripperHead, smoothPoint, location, doMachineAirblow, releaseBeforeMachine, gripInner);
+			final boolean doRobotAirblow, final boolean releaseBeforeMachine, final boolean gripInner) {
+		super(robot, workArea, gripperHead, smoothPoint, location, doRobotAirblow, releaseBeforeMachine, gripInner);
 	}
 	
 	public FanucRobotPutSettings() {

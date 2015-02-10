@@ -178,7 +178,7 @@ public class FanucRobot extends AbstractRobot {
 		if (fPutSettings.isReleaseBeforeMachine()) {
 			ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_21;
 		}
-		if (fPutSettings.isDoMachineAirblow()) {
+		if (fPutSettings.isRobotAirblow()) {
 			writeAirblowPointSet(clamping, putSettings.getAirblowSquare(clamping.getId()));
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 		}
@@ -284,7 +284,7 @@ public class FanucRobot extends AbstractRobot {
 		RobotPickSettings fPickSettings = (RobotPickSettings) pickSettings;		
 		writeServiceGripperSet(pickSettings.getGripperHead().getName(), this.getGripperBody().getGripperHeadByName(HEAD_A_ID), this.getGripperBody().getGripperHeadByName(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK, pickSettings.isGripInner());
 		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
-		if (fPickSettings.isDoMachineAirblow()) {
+		if (fPickSettings.isRobotAirblow()) {
 			writeAirblowPointSet(clamping, pickSettings.getAirblowSquare(clamping.getId()));
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 		}

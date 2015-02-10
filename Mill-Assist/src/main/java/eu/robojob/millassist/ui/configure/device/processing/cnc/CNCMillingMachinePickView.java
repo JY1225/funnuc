@@ -46,7 +46,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	private NumericTextField ntxtSmoothY;
 	private NumericTextField ntxtSmoothZ;
 	
-	private CheckBox cbAirblow;
+	private CheckBox cbRobotAirblow;
 	private CheckBox cbTIM;
 	private CheckBox cbMachineAirblow;
 	private CoordinateBox coordBAirblowBottom;
@@ -137,11 +137,11 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		hBoxSmoothPoint.setAlignment(Pos.CENTER_LEFT);
 		hBoxSmoothPoint.setTranslateX(30);
 		
-		cbAirblow = new CheckBox(Translator.getTranslation(AIRBLOW));
-		cbAirblow.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		cbRobotAirblow = new CheckBox(Translator.getTranslation(AIRBLOW));
+		cbRobotAirblow.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
-				getPresenter().changedAirblow(newValue);
+				getPresenter().changedRobotAirblow(newValue);
 				showAirblow();
 			}
 		});		
@@ -236,7 +236,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		row++;
 
 		HBox airblowHBox = new HBox();
-		airblowHBox.getChildren().add(cbAirblow);
+		airblowHBox.getChildren().add(cbRobotAirblow);
 		cbbClamping.setTranslateX(10);
 		cbbClamping.setTranslateY(-8);
 		btnResetAirblow.setTranslateY(-5);
@@ -249,9 +249,9 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		try {
 			properties.load(new FileInputStream(new File("settings.properties")));
 			if ((properties.get("robot-airblow") != null) && (properties.get("robot-airblow").equals("false"))) {
-				cbAirblow.setVisible(false);
-				cbAirblow.setManaged(false);
-				pickStep.getRobotSettings().setDoMachineAirblow(false);
+				cbRobotAirblow.setVisible(false);
+				cbRobotAirblow.setManaged(false);
+				pickStep.getRobotSettings().setRobotAirblow(false);
 			}
 		} catch (IOException e) {
 			logger.error(e);
@@ -289,15 +289,15 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	}
 	
 	private void showAirblow() {
-		coordBAirblowBottom.setVisible(cbAirblow.isSelected() && cbAirblow.isVisible());
+		coordBAirblowBottom.setVisible(cbRobotAirblow.isSelected() && cbRobotAirblow.isVisible());
 		coordBAirblowBottom.setManaged(coordBAirblowBottom.isVisible());
-		coordBAirblowTop.setVisible(cbAirblow.isSelected() && cbAirblow.isVisible());
+		coordBAirblowTop.setVisible(cbRobotAirblow.isSelected() && cbRobotAirblow.isVisible());
 		coordBAirblowTop.setManaged(coordBAirblowTop.isVisible());
 		cbbClamping.setVisible(coordBAirblowBottom.isVisible());
 		cbbClamping.setManaged(coordBAirblowBottom.isVisible());
 		btnResetAirblow.setVisible(coordBAirblowTop.isVisible());
 		btnResetAirblow.setManaged(coordBAirblowBottom.isVisible());
-		if (cbAirblow.isSelected() && cbAirblow.isVisible()) {
+		if (cbRobotAirblow.isSelected() && cbRobotAirblow.isVisible()) {
 			getPresenter().changedClamping(cbbClamping.getItems().get(0));
 		}
 	}
@@ -316,10 +316,10 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		} else {
 			btnResetSmooth.setDisable(false);
 		} 
-		if (pickStep.getRobotSettings().isDoMachineAirblow()) {
-			cbAirblow.setSelected(true);
+		if (pickStep.getRobotSettings().isRobotAirblow()) {
+			cbRobotAirblow.setSelected(true);
 		} else {
-			cbAirblow.setSelected(false);
+			cbRobotAirblow.setSelected(false);
 		}
 		showTurnInMachine();
 		showMachineAirblow();

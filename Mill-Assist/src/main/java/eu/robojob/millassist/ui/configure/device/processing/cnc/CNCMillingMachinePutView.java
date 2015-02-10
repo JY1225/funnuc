@@ -207,8 +207,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		cbMachineAirblow.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
-				if ((oldValue == null) || (!oldValue.equals(newValue)))  
-					getPresenter().changedMachineAirblow(newValue);
+				getPresenter().changedMachineAirblow(newValue);
 			}
 		});
 		
@@ -299,7 +298,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 			if ((properties.get("robot-airblow") != null) && (properties.get("robot-airblow").equals("false"))) {
 				cbAirblow.setVisible(false);
 				cbAirblow.setManaged(false);
-				putStep.getRobotSettings().setDoMachineAirblow(false);
+				putStep.getRobotSettings().setRobotAirblow(false);
 			}
 		} catch (IOException e) {
 			logger.error(e);
@@ -356,7 +355,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		} else {
 			btnResetSmooth.setDisable(false);
 		}
-		if (putStep.getRobotSettings().isDoMachineAirblow()) {
+		if (putStep.getRobotSettings().isRobotAirblow()) {
 			cbAirblow.setSelected(true);
 		} else {
 			cbAirblow.setSelected(false);
