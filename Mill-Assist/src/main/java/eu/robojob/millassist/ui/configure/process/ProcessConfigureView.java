@@ -14,6 +14,7 @@ import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
@@ -47,6 +48,7 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 	private static final String ADD = "ProcessConfigureView.add";
 	private static final String REMOVE = "ProcessConfigureView.remove";
 	private static final String SINGLE_CYCLE = "ProcessConfigureView.singleCycle";
+	private static final String WARNING_NO_NAME = "ProcessConfigureView.noName";
 
 	private ProcessFlowAdapter processFlowAdapter;
 	
@@ -163,6 +165,11 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 			cbSingleCycle.setSelected(processFlowAdapter.getProcessFlow().isSingleCycle());
 		} 
 		fulltxtName.setText(processFlowAdapter.getProcessFlow().getName());
+		if (fulltxtName.getText().equals("")) {
+			showNotification(Translator.getTranslation(WARNING_NO_NAME), Type.WARNING);
+		} else {
+			hideNotification();
+		}
 	}
 	
 	public void disableAddRemove() {
