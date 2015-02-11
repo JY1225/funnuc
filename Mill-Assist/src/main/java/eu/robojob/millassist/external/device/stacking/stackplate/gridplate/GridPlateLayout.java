@@ -46,7 +46,7 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 				double theta = hole.getAngle() * Math.PI / 180;
 				float extraX = (float) (side * Math.cos(alpha + theta));
 				float extraY = (float) (side * Math.sin(alpha + theta));
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(hole.getX() + extraX, hole.getY() + extraY, hole.getAngle(), null, 0, hole.getAngle());
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(hole.getX() + extraX, hole.getY() + extraY, getStackPlate().getR(hole.getAngle()), null, 0, hole.getAngle());
 				getStackingPositions().add(stPos);
 			} else {
 				double tangens = (double) dimensions.getLength()/2 / ((double) gridPlate.getHoleWidth() - dimensions.getWidth()/2);
@@ -56,7 +56,7 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 				theta = Math.PI/2 - (Math.PI/2 - (theta - Math.PI/2) + alpha);
 				float extraX = Math.abs((float) (side * Math.cos(theta)));
 				float extraY = Math.abs((float) (side * Math.sin(theta)));
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(hole.getX() - extraX, hole.getY() + extraY, hole.getAngle() - 180, null, 0, hole.getAngle());
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(hole.getX() - extraX, hole.getY() + extraY, getStackPlate().getR(hole.getAngle()), null, 0, hole.getAngle());
 				getStackingPositions().add(stPos);
 			}
 		}	

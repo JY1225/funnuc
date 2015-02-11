@@ -27,6 +27,8 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 
 	private float tiltedR;
 	private float horizontalR;
+	private float extraRMinus90;
+	private float extraRPlus90;
 
 	private StudPosition[][] studPositions;
 
@@ -40,7 +42,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		
 	public BasicStackPlateLayout(final int horizontalHoleAmount, final int verticalHoleAmount, final float holeDiameter, final float studDiameter, final float horizontalPadding,
 			final float verticalPaddingTop, final float verticalPaddingBottom, final float horizontalHoleDistance, final float interferenceDistance, final float overflowPercentage,
-				final float horizontalR, final float tiltedR, final double maxOverflow, final double minOverlap) {
+				final float horizontalR, final float tiltedR, final double maxOverflow, final double minOverlap, final float extraRMin90, final float extraRPlus90) {
 		super();
 		this.horizontalPadding = horizontalPadding;
 		this.verticalPaddingBottom = verticalPaddingBottom;
@@ -57,6 +59,8 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		this.minOverlap = minOverlap;
 		this.tiltedR = tiltedR;
 		this.horizontalR = horizontalR;
+		this.extraRMinus90 = extraRMin90;
+		this.extraRPlus90 = extraRPlus90;
 		initStudPositions();
 		calcPlateWidth();
 		calcPlateLength();
@@ -912,5 +916,21 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 			return getTiltedR();
 		else
 			return getHorizontalR();
+	}
+
+	public float getExtraRMinus90() {
+		return this.extraRMinus90;
+	}
+	
+	public void setExtraRMinus90(final float extraRMinus90) {
+		this.extraRMinus90 = extraRMinus90;
+	}
+	
+	public float getExtraRPlus90() {
+		return this.extraRPlus90;
+	}
+	
+	public void setExtraRPlus90(final float extraRPlus90) {
+		this.extraRPlus90 = extraRPlus90;
 	}
 }

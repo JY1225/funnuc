@@ -123,6 +123,13 @@ public class BasicStackPlate extends AbstractStackPlate {
 	}
 	
 	public float getR(double orientation) {
+		if (hasGridPlate()) {
+			if (orientation < 90) {
+				return (float) orientation + getBasicLayout().getExtraRMinus90();
+			} else {
+				return (float) orientation + getBasicLayout().getExtraRPlus90();
+			}
+		}
 		if(orientation == 45)
 			return basicLayout.getTiltedR();
 		else
