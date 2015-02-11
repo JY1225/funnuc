@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor.SupportState;
 import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class ConveyorLayout {
@@ -28,8 +29,9 @@ public class ConveyorLayout {
 	private float maxOverlap;
 	private float minDistRaw;
 	private float minDistFinished;
-	private Boolean[] currentSupportStatus;
+	private Conveyor.SupportState[] currentSupportStatus;
 	private Boolean[] requestedSupportStatus;
+	private Boolean[] supportSelectionStatus;
 	private float offsetSupport1;
 	private float offsetOtherSupports;
 	
@@ -56,11 +58,13 @@ public class ConveyorLayout {
 		this.maxOverlap = maxOverlap;
 		this.minDistRaw = minDistRaw;
 		this.minDistFinished = minDistFinished;
-		int supportAmount = rawTrackAmount - 1;
-		currentSupportStatus = new Boolean[supportAmount];
+		int supportAmount = rawTrackAmount;
+		currentSupportStatus = new Conveyor.SupportState[supportAmount];
 		requestedSupportStatus = new Boolean[supportAmount];
-		Arrays.fill(currentSupportStatus, Boolean.FALSE);
+		supportSelectionStatus = new Boolean[supportAmount];
+		Arrays.fill(currentSupportStatus, SupportState.UNKNOWN);
 		Arrays.fill(requestedSupportStatus, Boolean.FALSE);
+		Arrays.fill(supportSelectionStatus, Boolean.FALSE);
 		this.stackingPositionsRawWorkPieces = new ArrayList<StackingPosition>();
 		this.stackingPositionsFinishedWorkPieces = new ArrayList<StackingPosition>();
 		this.finishedStackingPositionWorkPieces = new ArrayList<Boolean>();
@@ -196,11 +200,11 @@ public class ConveyorLayout {
 		this.finishedConveyorLength = finishedConveyorLength;
 	}
 
-	public Boolean[] getCurrentSupportStatus() {
+	public Conveyor.SupportState[] getCurrentSupportStatus() {
 		return currentSupportStatus;
 	}
 
-	public void setCurrentSupportStatus(final Boolean[] currentSupportStatus) {
+	public void setCurrentSupportStatus(final Conveyor.SupportState[] currentSupportStatus) {
 		this.currentSupportStatus = currentSupportStatus;
 	}
 
@@ -212,6 +216,14 @@ public class ConveyorLayout {
 		this.requestedSupportStatus = requestedSupportStatus;
 	}
 	
+	public Boolean[] getSupportSelectionStatus() {
+		return supportSelectionStatus;
+	}
+
+	public void setSupportSelectionStatus(Boolean[] supportSelectionStatus) {
+		this.supportSelectionStatus = supportSelectionStatus;
+	}
+
 	public float getMaxOverlap() {
 		return maxOverlap;
 	}
@@ -273,7 +285,7 @@ public class ConveyorLayout {
 			distance = amount * rawTrackWidth;
 			// calculate extra space on top
 			if (amount < rawTrackAmount) {
-				distance += (spaceBetweenTracks - supportWidth) / 2;
+				// no extra offset
 			} else if (amount == rawTrackAmount) {
 				distance += maxOverlap;
 			} else {
@@ -281,8 +293,6 @@ public class ConveyorLayout {
 			}
 			// calculate space between tracks
 			distance += (amount - 1) * spaceBetweenTracks;
-			// calculate extra space on bottom
-			distance += (spaceBetweenTracks -  supportWidth) / 2;
 			//FIXME replace 5 by new parameter: interference distance raw
 			if (distance - 5 >= workPiece.getDimensions().getWidth()) {
 				finished = true;
@@ -304,12 +314,8 @@ public class ConveyorLayout {
 			}
 			// add the distance of the tracks used by previous work pieces
 			// add the distance of the space between tracks used by previous work pieces
-			if (i > 0) {
-				y += (i * amount) * rawTrackWidth;
-				y += (i * amount) * spaceBetweenTracks;
-				//y += supportWidth;
-
-			}
+			y += (i * amount) * rawTrackWidth;
+			y += (i * amount) * spaceBetweenTracks;
 			// if not the first, add the distance of support and distance between support en 
 			// track below
 			// if not the first add the distance between the first support and the first track
@@ -320,14 +326,18 @@ public class ConveyorLayout {
 				// else add the distance of the first support and gap
 				y += supportWidth + (spaceBetweenTracks - supportWidth) / 2;
 			}*/
-			StackingPosition stackingPos = new StackingPosition(x, y, 0, workPiece);
+			StackingPosition stackingPos;
+			if (parent.isLeftSetup()) {
+				stackingPos = new StackingPosition(x, y, 0, workPiece);
+			} else {
+				stackingPos = new StackingPosition(y, x, 0, workPiece);
+			}
 			this.stackingPositionsRawWorkPieces.add(stackingPos);
 			// set requested support below
-			if (i > 0) {
-				requestedSupportStatus[i*amount - 1] = true;
-			}
+			requestedSupportStatus[i*amount] = true;
 		}
-		
+		logger.info("Requested support status: " + requestedSupportStatus[0] + " - "  + requestedSupportStatus[1] +
+				 " - "  + requestedSupportStatus[2] + " - "  + requestedSupportStatus[3]);
 		configureFinishedWorkPieceStackingPositions();
 	}
 	
@@ -362,13 +372,23 @@ public class ConveyorLayout {
 			float xFirst = minDistFinished + workPiece.getDimensions().getLength()/2;
 			float yFirst = workPiece.getDimensions().getWidth()/2;
 			if (i == 0) {
-				StackingPosition stPos = new StackingPosition(xFirst, yFirst, 0, workPiece);
+				StackingPosition stPos;
+				if (parent.isLeftSetup()) {
+					stPos = new StackingPosition(xFirst, yFirst, 0, workPiece);
+				} else {
+					stPos = new StackingPosition(yFirst, xFirst, 0, workPiece);
+				}
 				stackingPositionsFinishedWorkPieces.add(stPos);
 			} else {
 				float x = xFirst;
 				float y = yFirst + i * (workPiece.getDimensions().getWidth() + spaceBetween);
-				StackingPosition stPos = new StackingPosition(x, y, 0, workPiece);
-				stackingPositionsFinishedWorkPieces.add(stPos);
+				if (parent.isLeftSetup()) {
+					StackingPosition stPos = new StackingPosition(x, y, 0, workPiece);
+					stackingPositionsFinishedWorkPieces.add(stPos);
+				} else {
+					StackingPosition stPos = new StackingPosition(y, x, 0, workPiece);
+					stackingPositionsFinishedWorkPieces.add(stPos);
+				}
 			}
 			finishedStackingPositionWorkPieces.add(false);
 		}
@@ -395,6 +415,10 @@ public class ConveyorLayout {
 	
 	public float getWidthFinishedWorkPieceConveyorWithOverlap() {
 		return finishedConveyorWidth + maxOverlap;
+	}
+	
+	public boolean isLeftSetup() {
+		return parent.isLeftSetup();
 	}
 	
 }

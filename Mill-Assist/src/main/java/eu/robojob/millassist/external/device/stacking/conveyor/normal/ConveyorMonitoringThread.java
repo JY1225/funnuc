@@ -1,6 +1,7 @@
 package eu.robojob.millassist.external.device.stacking.conveyor.normal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,7 @@ public class ConveyorMonitoringThread implements Runnable, MonitoringThread {
 	
 	private boolean alive;
 	private int previousStatus;
+	private Boolean[] previousSupportSelectionStatus;
 	private Set<ConveyorAlarm> previousAlarms;
 	private List<Integer> previousSensorValues;
 		
@@ -31,6 +33,7 @@ public class ConveyorMonitoringThread implements Runnable, MonitoringThread {
 		this.alive = true;
 		this.previousAlarms = new HashSet<ConveyorAlarm>();
 		this.previousSensorValues = new ArrayList<Integer>();
+		this.previousSupportSelectionStatus = new Boolean[conveyor.getLayout().getRawTrackAmount()];
 	}
 	
 	@Override
@@ -41,7 +44,8 @@ public class ConveyorMonitoringThread implements Runnable, MonitoringThread {
 					try {
 						conveyor.updateStatusAndAlarms();
 						int status = conveyor.getStatus();
-						if (status != previousStatus) {
+						Boolean[] supportSelectionStatus = conveyor.getLayout().getSupportSelectionStatus();
+						if ((status != previousStatus) || (!Arrays.equals(supportSelectionStatus, previousSupportSelectionStatus))) {
 							conveyor.processConveyorEvent(new ConveyorEvent(conveyor, ConveyorEvent.STATUS_CHANGED));
 						}
 						this.previousStatus = status;

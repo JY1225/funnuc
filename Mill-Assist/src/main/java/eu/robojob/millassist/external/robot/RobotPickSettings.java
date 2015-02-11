@@ -9,16 +9,16 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 public abstract class RobotPickSettings extends AbstractRobotActionSettings<PickStep> {
 	
 	private WorkPiece workPiece;
-	private boolean doMachineAirblow;
+	private boolean doRobotAirblow;
 	private ApproachType approachType;
 	private boolean turnInMachine = false;
 	private boolean isTIMPick = false;
 
 	public RobotPickSettings(final AbstractRobot robot, final SimpleWorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, 
-			final WorkPiece workPiece, final boolean doMachineAirblow, final boolean gripInner) {
+			final WorkPiece workPiece, final boolean doRobotAirblow, final boolean gripInner) {
 		super(robot, workArea, gripperHead, smoothPoint, location, gripInner);
 		this.workPiece = workPiece;
-		this.doMachineAirblow = doMachineAirblow;
+		this.doRobotAirblow = doRobotAirblow;
 		this.approachType = ApproachType.TOP;
 	}
 
@@ -30,12 +30,12 @@ public abstract class RobotPickSettings extends AbstractRobotActionSettings<Pick
 		this.workPiece = workPiece;
 	}
 
-	public boolean isDoMachineAirblow() {
-		return doMachineAirblow;
+	public boolean isRobotAirblow() {
+		return doRobotAirblow;
 	}
 
-	public void setDoMachineAirblow(final boolean doMachineAirblow) {
-		this.doMachineAirblow = doMachineAirblow;
+	public void setRobotAirblow(final boolean robotAirblow) {
+		this.doRobotAirblow = robotAirblow;
 	}
 	
 	public void updateWorkPieceType() {

@@ -232,6 +232,7 @@ public class CNCMillingMachineWorkPieceView extends AbstractFormView<CNCMillingM
 
 	@Override
 	public void refresh() {
+		hideNotification();
 		setDimensions(pickStep.getRobotSettings().getWorkPiece().getDimensions());
 		setWeight(pickStep.getRobotSettings().getWorkPiece().getWeight());
 		if (pickStep.getRobotSettings().getWorkPiece().getMaterial().equals(Material.OTHER)) {

@@ -36,9 +36,10 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	private static final String SMOOTH_TO = "ReversalUnitConfigureView.smoothTo";
 	private static final String SMOOTH_FROM = "ReversalUnitConfigureView.smoothFrom";
 	private static final String SAVE = "ReversalUnitConfigureView.save";
+	private static final String STATION_LENGTH = "ReversalUnitConfigureView.stationLength";
+	private static final String STATION_FIXTURE_WIDTH = "ReversalUnitConfigureView.stationFixtureWidth";
 	private static final String STATION_HEIGHT = "ReversalUnitConfigureView.stationHeight";
 	private static final String ALLOWED_APPROACHES = "ReversalUnitConfigureView.allowedApproaches";
-	private static final String TOP_LOAD = "ReversalUnitPickView.topLoad";	
 	private static final String FRONT_LOAD = "ReversalUnitPickView.frontLoad";	
 	private static final String BOTTOM_LOAD = "ReversalUnitPickView.bottomLoad";
 	private static final String LEFT_LOAD = "ReversalUnitPickView.leftLoad";
@@ -83,6 +84,10 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	private Label lblSmoothFromZ;
 	private NumericTextField numtxtSmoothFromZ;
 	
+	private Label lblStationLength;
+	private NumericTextField numtxtStationLength;
+	private Label lblStationFixtureWidth;
+	private NumericTextField numtxtStationFixtureWidth;
 	private Label lblStationHeight;
 	private NumericTextField numtxtStationHeight;
 	private Label lblAddedX;
@@ -90,8 +95,8 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	
 	private ObservableList<String> userFrameNames;
 	
-	private CheckBox cbBottomAllowed, cbTopAllowed, cbFrontAllowed, cbLeftAllowed;
-	private Label lblBottom, lblTop, lblFront, lblLeft;
+	private CheckBox cbBottomAllowed, cbFrontAllowed, cbLeftAllowed;
+	private Label lblBottom, lblFront, lblLeft;
 	private Label lblAllowedApproaches;
 	
 	private Button btnSave;
@@ -107,9 +112,9 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	@Override
 	protected void build() {
 		getContents().setAlignment(Pos.TOP_CENTER);
-		getContents().setPadding(new Insets(50, 0, 0, 0));
-		getContents().setVgap(15);
-		getContents().setHgap(15);
+		getContents().setPadding(new Insets(25, 0, 0, 0));
+		getContents().setVgap(10);
+		getContents().setHgap(10);
 		lblName = new Label(Translator.getTranslation(NAME));
 		fullTxtName = new FullTextField(100);
 		lblUserframe = new Label(Translator.getTranslation(USERFRAME));
@@ -144,11 +149,14 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 		numtxtSmoothFromY = new NumericTextField(10);
 		lblSmoothFromZ = new Label("Z");
 		numtxtSmoothFromZ = new NumericTextField(10);
+		lblStationLength = new Label(Translator.getTranslation(STATION_LENGTH));
+		numtxtStationLength = new NumericTextField(10);
+		lblStationFixtureWidth = new Label(Translator.getTranslation(STATION_FIXTURE_WIDTH));
+		numtxtStationFixtureWidth = new NumericTextField(10);
 		lblStationHeight = new Label(Translator.getTranslation(STATION_HEIGHT));
 		numtxtStationHeight = new NumericTextField(10);
 		lblAddedX = new Label(Translator.getTranslation(ADDED_X_VALUE));
 		numtxtAddedX = new NumericTextField(10);
-		cbTopAllowed = new CheckBox();
 		cbFrontAllowed = new CheckBox();
 		cbLeftAllowed = new CheckBox();
 		cbBottomAllowed = new CheckBox();
@@ -160,7 +168,6 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 		cbbUserFrame.setMaxWidth(UIConstants.TEXT_FIELD_HEIGHT*7+8);
 		lblAllowedApproaches = new Label(Translator.getTranslation(ALLOWED_APPROACHES));
 		lblBottom = new Label(Translator.getTranslation(BOTTOM_LOAD));
-		lblTop= new Label(Translator.getTranslation(TOP_LOAD)); 
 		lblFront= new Label(Translator.getTranslation(FRONT_LOAD));
 		lblLeft= new Label(Translator.getTranslation(LEFT_LOAD));
 		int column = 0; int row = 0;
@@ -202,12 +209,9 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 		getContents().add(lblSmoothFromZ, column++, row);
 		getContents().add(numtxtSmoothFromZ, column++, row);
 		column = 0; row++;
-		getContents().add(lblAllowedApproaches, column++, row,1,2);
-		getContents().add(cbTopAllowed, column++, row);
-		getContents().add(lblTop, column++, row);
+		getContents().add(lblAllowedApproaches, column++, row);
 		getContents().add(cbFrontAllowed, column++, row);
-		getContents().add(lblFront, column, row);
-		column = 1; row++;
+		getContents().add(lblFront, column++, row);
 		getContents().add(cbLeftAllowed, column++, row);
 		getContents().add(lblLeft, column++, row);
 		getContents().add(cbBottomAllowed, column++, row);
@@ -230,16 +234,12 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 							Float.parseFloat(numtxtSmoothFromX.getText()),
 							Float.parseFloat(numtxtSmoothFromY.getText()),
 							Float.parseFloat(numtxtSmoothFromZ.getText()),
+							Float.parseFloat(numtxtStationLength.getText()),
+							Float.parseFloat(numtxtStationFixtureWidth.getText()),
 							Float.parseFloat(numtxtStationHeight.getText()),
 							getAllowedApproaches(),
 							Float.parseFloat(numtxtAddedX.getText()));
 				}
-		});
-		cbTopAllowed.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
-				cbTopAllowed.setSelected(newValue);
-			}
 		});
 		cbFrontAllowed.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -259,6 +259,12 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 				cbBottomAllowed.setSelected(newValue);
 			}
 		});
+		getContents().add(lblStationLength, column++, row);
+		getContents().add(numtxtStationLength, column++, row, 2, 1);
+		column = 0; row++;
+		getContents().add(lblStationFixtureWidth, column++, row);
+		getContents().add(numtxtStationFixtureWidth, column++, row, 2, 1);
+		column = 0; row++;
 		getContents().add(lblStationHeight, column++, row);
 		getContents().add(numtxtStationHeight, column++, row, 2, 1);
 		column = 0; row++;
@@ -314,6 +320,8 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 			numtxtSmoothFromY.setText("" + smoothFrom.getY());
 			numtxtSmoothFromZ.setText("" + smoothFrom.getZ());
 			cbbUserFrame.setValue(reversalUnit.getWorkAreaManagers().iterator().next().getUserFrame().getName());
+			numtxtStationLength.setText("" + reversalUnit.getStationLength());
+			numtxtStationFixtureWidth.setText("" + reversalUnit.getStationFixtureWidth());
 			numtxtStationHeight.setText("" + reversalUnit.getStationHeight());
 			setAllowedApproaches();
 			numtxtAddedX.setText("" + reversalUnit.getAddedX());
@@ -323,7 +331,6 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	private Map<ApproachType, Boolean> getAllowedApproaches() {
 		Map<ApproachType, Boolean> resultMap = new HashMap<ApproachType, Boolean>();
 		resultMap.put(ApproachType.BOTTOM, cbBottomAllowed.isSelected());
-		resultMap.put(ApproachType.TOP, cbTopAllowed.isSelected());
 		resultMap.put(ApproachType.FRONT, cbFrontAllowed.isSelected());
 		resultMap.put(ApproachType.LEFT, cbLeftAllowed.isSelected());
 		return resultMap;
@@ -335,11 +342,6 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 			cbBottomAllowed.setSelected(resultMap.get(ApproachType.BOTTOM));
 		} else {
 			cbBottomAllowed.setSelected(false);
-		}
-		if (resultMap.containsKey(ApproachType.TOP)) {
-			cbTopAllowed.setSelected(resultMap.get(ApproachType.TOP));
-		} else {
-			cbTopAllowed.setSelected(false);
 		}
 		if (resultMap.containsKey(ApproachType.LEFT)) {
 			cbLeftAllowed.setSelected(resultMap.get(ApproachType.LEFT));

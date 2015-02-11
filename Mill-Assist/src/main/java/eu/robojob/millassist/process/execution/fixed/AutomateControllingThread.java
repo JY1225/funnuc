@@ -3,6 +3,7 @@ package eu.robojob.millassist.process.execution.fixed;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
@@ -91,6 +92,10 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 						checkStatus();
 						((AbstractCNCMachine) device).indicateAllProcessed();
 					}
+					if (device instanceof AbstractConveyor) {
+						checkStatus();
+						((AbstractConveyor) device).indicateAllProcessed();
+					}
 				}
 				for (AbstractRobot robot : processFlow.getRobots()) {
 					checkStatus();
@@ -138,6 +143,17 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 	synchronized void notifyWorkPiecesPresent(ProcessFlowExecutionThread processFlowExecutor) {
 		// work pieces present, can continue if no other executor is working with robot
 		processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_FOR_PICK_FROM_STACKER);
+		// we have a vacuum gripper. To save power, we will block the pick from the stacker until the other workpiece is done processing
+		if (processFlowExecutor.isWaitForVacuum()) {
+			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.WAITING_FOR_PICK_STACKER_VACUUM);
+			try {
+				processFlow.getRobots().iterator().next().moveToHome();
+			} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+				e.printStackTrace();
+				logger.error(e);
+			}
+			return;
+		}
 		if (isRobotFree()) {
 			processFlowExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
 			processFlowExecutor.continueExecution();	
@@ -174,6 +190,7 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 	@Override
 	synchronized void notifyPutInMachineFinished(final ProcessFlowExecutionThread processFlowExecutor, final boolean moreToPut,
 			final int nbActiveClampings, final int nbFilled) {
+		firstPiece = false;
 		// This processFlow has no more pieces to put in the machine - processing can start once the other processflow has cleared the clampings
 		if(!moreToPut) {
 			logger.info("Put in machine finished.");
@@ -216,11 +233,13 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 			if (!isContinuing) {
 				processFlowExecutor.startProcessing();
 			}
-			try {
-				processFlow.getRobots().iterator().next().moveToHome();
-			} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
-				e.printStackTrace();
-				logger.error(e);
+			if (!sideLoad) {
+				try {
+					processFlow.getRobots().iterator().next().moveToHome();
+				} catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
 			}
 		}
 	}
@@ -283,6 +302,11 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
 			boolean canTIM = false;
 			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
 				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_BEFORE_PICK_FROM_STACKER)) { 
+					processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
+					processExecutor.continueExecution();
+					return;
+				}
+				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_FOR_PICK_STACKER_VACUUM)) { 
 					processExecutor.setExecutionStatus(ExecutionThreadStatus.WORKING_WITH_ROBOT);
 					processExecutor.continueExecution();
 					return;

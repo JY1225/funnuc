@@ -16,9 +16,7 @@ public abstract class AbstractStackingDeviceMenuPresenter extends AbstractMenuPr
 	public abstract void configureDevice();
 	
 	public abstract void configureWorkPiece();
-	
-	public abstract void configureOffsets();
-	
+		
 	public abstract void configurePick();
 	
 	public abstract void configurePut();

@@ -538,5 +538,12 @@ public class Conveyor extends AbstractConveyor {
 	public DevicePutSettings getDefaultPutSettings(final int sequenceNb) {
 		return new DevicePutSettings(this, workAreaB.getWorkAreaWithSequence(sequenceNb));
 	}
+
+	@Override
+	public void indicateAllProcessed() throws AbstractCommunicationException, InterruptedException, DeviceActionException {}
+	@Override
+	public void indicateOperatorRequested(boolean requested) throws AbstractCommunicationException, InterruptedException {}
+	@Override
+	public void clearIndications() throws AbstractCommunicationException, InterruptedException {}
 	
 }

@@ -55,6 +55,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public void recalcWeight() {
 		workPiece.calculateWeight();
 		getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
+		pickStep.getProcessFlow().revisitProcessFlowWorkPieces();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		recalculate();
 	}
@@ -92,6 +93,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			} else {
 				workPiece.setMaterial(material);
 				workPiece.calculateWeight();
+				pickStep.getProcessFlow().revisitProcessFlowWorkPieces();
 				pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 			}
 			getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
@@ -132,8 +134,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		if (height != dimensions.getHeight()) {
 			dimensions.setHeight(height);
 			recalculate();
-			//clearTeachedOffsets();
-			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+			clearTeachedOffsets();
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 		}
 	}
 	
@@ -206,6 +208,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public void changedWeight(final float weight) {
 		workPiece.setWeight(weight);
 		getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
+		pickStep.getProcessFlow().revisitProcessFlowWorkPieces();
 		recalculate();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 	}

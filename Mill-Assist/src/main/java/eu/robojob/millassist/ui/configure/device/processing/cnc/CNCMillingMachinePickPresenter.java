@@ -96,12 +96,14 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 		}
 	}
 	
-	public void changedAirblow(final boolean airblow) {
-		pickStep.getRobotSettings().setDoMachineAirblow(airblow);
-		if (!airblow) {
-			pickStep.getRobotSettings().clearAirblowSettings();
+	public void changedRobotAirblow(final boolean airblow) {
+		if (pickStep.getRobotSettings().isRobotAirblow() != airblow) {
+			pickStep.getRobotSettings().setRobotAirblow(airblow);
+			if (!airblow) {
+				pickStep.getRobotSettings().clearAirblowSettings();
+			}
+			changedCoordinate();
 		}
-		changedCoordinate();
 	}
 	
 	void changedClamping(final String clampingName) {
@@ -122,15 +124,15 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 
 	@Override
 	public boolean isConfigured() {
-		if (pickStep.getRobotSettings().isDoMachineAirblow() && pickStep.getRobotSettings().getRobotAirblowSettings().isEmpty()) {
+		if (pickStep.getRobotSettings().isRobotAirblow() && pickStep.getRobotSettings().getRobotAirblowSettings().isEmpty()) {
 			getView().showNotification(Translator.getTranslation(AIRBLOW_NOT_CORRECT), Type.WARNING);
 			return false;
 		}
-		if (!isAirblowConfigured() && pickStep.getRobotSettings().isDoMachineAirblow()) {
+		if (!isAirblowConfigured() && pickStep.getRobotSettings().isRobotAirblow()) {
 			getView().showNotification(Translator.getTranslation(AIRBLOW_NOT_CORRECT), Type.WARNING);
 			return false;
 		}
-		if (pickStep.getRobotSettings().isDoMachineAirblow() && !isInsideMachineBoundaries()) {
+		if (pickStep.getRobotSettings().isRobotAirblow() && !isInsideMachineBoundaries()) {
 			getView().showNotification(Translator.getTranslation(AIRBLOW_OUTSIDE_BOUND), Type.WARNING);
 			return false;
 		}
@@ -155,8 +157,10 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 	}
 
 	public void changedTIM(final boolean newValue) {
-		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
-		pickStep.getRobotSettings().setTurnInMachine(newValue);
+		if (pickStep.getRobotSettings().getTurnInMachine() != newValue) {
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+			pickStep.getRobotSettings().setTurnInMachine(newValue);
+		}
 	}
 
 	Set<String> getSelectedClampings() {
@@ -194,7 +198,9 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 	}
 	
 	public void changedMachineAirblow(final boolean newValue) {
-		pickStep.getDeviceSettings().setIsMachineAirblow(newValue);
-		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+		if (pickStep.getDeviceSettings().getMachineAirblow() != newValue) {
+			pickStep.getDeviceSettings().setIsMachineAirblow(newValue);
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+		}
 	}
 }

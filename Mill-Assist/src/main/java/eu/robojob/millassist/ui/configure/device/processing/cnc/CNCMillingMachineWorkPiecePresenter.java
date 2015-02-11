@@ -63,6 +63,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 			if ((myDimensions.getWidth() <= 0) || (myDimensions.getLength() <= 0) || (myDimensions.getHeight() <= 0) 
 					|| (weight <= 0)) {
 				getView().showNotification(Translator.getTranslation(INCORRECT_DATA), Type.WARNING);
+			//FIXME - add check using the coordination changes
 			} else if ((myDimensions.getWidth() > prevDimensions.getWidth()) || (myDimensions.getLength() > prevDimensions.getLength())
 					 || (myDimensions.getHeight() > prevDimensions.getHeight())) {
 				getView().showNotification(Translator.getTranslation(DIMENSIONS_DO_NOT_MATCH), Type.WARNING);
@@ -176,14 +177,11 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 						reteach = true;
 						this.pickStep.setRelativeTeachedOffset(null);
 					}
-					this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setLength(pickStep.getRobotSettings().getWorkPiece().getDimensions().getLength());
-					this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setWidth(pickStep.getRobotSettings().getWorkPiece().getDimensions().getWidth());
-					this.pickStep.getRobotSettings().getWorkPiece().getDimensions().setHeight(pickStep.getRobotSettings().getWorkPiece().getDimensions().getHeight());
+					this.pickStep.getProcessFlow().revisitProcessFlowWorkPieces();
 					this.pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.pickStep.getProcessFlow(), this.pickStep, reteach));
 				}
 				this.pickStep.getRobotSettings().getWorkPiece().setMaterial(pickStep.getRobotSettings().getWorkPiece().getMaterial());
 				this.pickStep.getRobotSettings().getWorkPiece().setWeight(pickStep.getRobotSettings().getWorkPiece().getWeight());
-				this.pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.pickStep.getProcessFlow(), this.pickStep, false));
 			}
 		}
 	}

@@ -10,8 +10,8 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 public class FanucRobotPickSettings extends RobotPickSettings {
 
 	public FanucRobotPickSettings(final AbstractRobot robot, final SimpleWorkArea workArea, final GripperHead gripperHead, final Coordinates smoothPoint, final Coordinates location, final WorkPiece workPiece,
-			final boolean doMachineAirblow, final boolean gripInner) {
-		super(robot, workArea, gripperHead, smoothPoint, location, workPiece, doMachineAirblow, gripInner);
+			final boolean doRobotAirblow, final boolean gripInner) {
+		super(robot, workArea, gripperHead, smoothPoint, location, workPiece, doRobotAirblow, gripInner);
 	}
 	
 	public FanucRobotPickSettings() {

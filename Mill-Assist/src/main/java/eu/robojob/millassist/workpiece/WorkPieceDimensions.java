@@ -15,6 +15,10 @@ public class WorkPieceDimensions {
 		this.knownShape = false;
 	}
 	
+	public WorkPieceDimensions(final WorkPieceDimensions dimensions) {
+		this(dimensions.getLength(), dimensions.getWidth(), dimensions.getHeight());
+	}
+	
 	public WorkPieceDimensions() {
 		this(-1, -1, -1);
 	}

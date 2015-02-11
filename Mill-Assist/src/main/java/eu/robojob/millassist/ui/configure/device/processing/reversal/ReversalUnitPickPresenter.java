@@ -75,6 +75,7 @@ public class ReversalUnitPickPresenter extends AbstractFormPresenter<ReversalUni
 		if (!pickStep.getRobotSettings().getApproachType().equals(loadType)) {
 			pickStep.getRobotSettings().setApproachType(loadType);
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+			pickStep.getProcessFlow().revisitProcessFlowWorkPieces();
 		}
 	}
 

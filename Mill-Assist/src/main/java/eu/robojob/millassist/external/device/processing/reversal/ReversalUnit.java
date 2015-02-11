@@ -12,7 +12,6 @@ import java.util.Set;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner;
-import eu.robojob.millassist.external.device.ClampingManner.Type;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
@@ -31,20 +30,26 @@ import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 public class ReversalUnit extends AbstractProcessingDevice {
 	
 	private float stationHeight;
+	private float stationLength;
+	private float stationFixtureWidth;
 	private boolean isWidthReversal = false;
 	private float addedXValue;
 	private boolean isShiftedOrigin;
 	private Map<ApproachType, Boolean> allowedApproachTypes = new HashMap<ApproachType, Boolean>();
 	
-	public ReversalUnit(final String name, final float stationHeight, final float addedXValue) {
+	public ReversalUnit(final String name, final float stationLength, final float stationFixtureWidth, final float stationHeight, final float addedXValue) {
 		super(name, false);
+		this.stationLength = stationLength;
+		this.stationFixtureWidth = stationFixtureWidth;
 		this.stationHeight = stationHeight;
 		this.addedXValue = addedXValue;
 		setWidthReversal();
 	}
 	
-	public ReversalUnit(final String name, final Set<Zone> zones, final float stationHeight, final float addedXValue) {
+	public ReversalUnit(final String name, final Set<Zone> zones, final float stationLength, final float stationFixtureWidth, final float stationHeight, final float addedXValue) {
 		super(name, zones, false);
+		this.stationLength = stationLength;
+		this.stationFixtureWidth = stationFixtureWidth;
 		this.stationHeight = stationHeight;
 		this.addedXValue = addedXValue;
 		setWidthReversal();
@@ -56,6 +61,22 @@ public class ReversalUnit extends AbstractProcessingDevice {
 
 	public void setStationHeight(final float stationHeight) {
 		this.stationHeight = stationHeight;
+	}
+	
+	public float getStationLength() {
+		return stationLength;
+	}
+
+	public void setStationLength(float stationLength) {
+		this.stationLength = stationLength;
+	}
+
+	public float getStationFixtureWidth() {
+		return stationFixtureWidth;
+	}
+
+	public void setStationFixtureWidth(float stationFixtureWidth) {
+		this.stationFixtureWidth = stationFixtureWidth;
 	}
 
 	@Override public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
@@ -125,15 +146,13 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
-		if (clampType.getType() == Type.LENGTH && !isWidthReversal) {
-			c.setX(c.getX() + getXCoord(workPieceDimensions, approachType));
-			c.setY(c.getY() + getYCoord(workPieceDimensions, approachType));
-			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
-		} else {
-			c.setX(c.getX() + getYCoord(workPieceDimensions, approachType));
-			c.setY(c.getY() + getXCoord(workPieceDimensions, approachType));
-			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
-		}
+		WorkPieceDimensions dimensions = workPieceDimensions;
+		if (isWidthReversal) {
+			dimensions = new WorkPieceDimensions(workPieceDimensions.getWidth(), workPieceDimensions.getLength(), workPieceDimensions.getHeight());
+		}	
+		c.setX(c.getX() + getXCoord(dimensions, approachType));
+		c.setY(c.getY() + getYCoord(dimensions, approachType));
+		c.setZ(c.getZ() + getZCoord(dimensions, approachType));
 		if (isShiftedOrigin) {
 			c.setX(c.getX() + addedXValue);
 		}
@@ -148,15 +167,13 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	@Override
 	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
-		if (clampType.getType() == Type.LENGTH && !isWidthReversal) {
-			c.setX(c.getX() + getXCoord(workPieceDimensions, approachType));
-			c.setY(c.getY() + getYCoord(workPieceDimensions, approachType));
-			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
-		} else {
-			c.setX(c.getX() + getYCoord(workPieceDimensions, approachType));
-			c.setY(c.getY() + getXCoord(workPieceDimensions, approachType));
-			c.setZ(c.getZ() + getZCoord(workPieceDimensions, approachType));
+		WorkPieceDimensions dimensions = workPieceDimensions;
+		if (isWidthReversal) {
+			dimensions = new WorkPieceDimensions(workPieceDimensions.getWidth(), workPieceDimensions.getLength(), workPieceDimensions.getHeight());
 		}
+		c.setX(c.getX() + getXCoord(dimensions, approachType));
+		c.setY(c.getY() + getYCoord(dimensions, approachType));
+		c.setZ(c.getZ() + getZCoord(dimensions, approachType));
 		if (isShiftedOrigin) {
 			c.setX(c.getX() + addedXValue);
 		}
@@ -170,7 +187,7 @@ public class ReversalUnit extends AbstractProcessingDevice {
 		case LEFT:
 			return workPieceDimensions.getWidth()/2;
 		case FRONT:
-			return workPieceDimensions.getWidth();
+			return workPieceDimensions.getHeight();
 		default: 
 			return 0;
 		}
@@ -195,8 +212,9 @@ public class ReversalUnit extends AbstractProcessingDevice {
 		case TOP:	
 			return 0;
 		case FRONT:
+			return workPieceDimensions.getWidth()/2;
 		case LEFT:
-			return workPieceDimensions.getHeight()/2;
+			return workPieceDimensions.getLength()/2;
 		default:
 			return 0;
 		}
@@ -267,5 +285,15 @@ public class ReversalUnit extends AbstractProcessingDevice {
 			return addedXValue;
 		} 
 		return 0;
+	}
+	
+	public ApproachType getFirstAllowedApproachType() {
+		for (ApproachType type: allowedApproachTypes.keySet()) {
+			//method is only used for pick, where TOP is not allowed since it is the default for the put
+			if (allowedApproachTypes.get(type) && !type.equals(ApproachType.TOP)) {
+				return type;
+			}
+		}
+		return null;
 	}
 }

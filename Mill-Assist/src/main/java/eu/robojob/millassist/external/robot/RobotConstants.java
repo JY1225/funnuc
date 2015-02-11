@@ -168,6 +168,7 @@ public final class RobotConstants {
 	public static final int E_INVALID_SERVICE_TYPE							=	1;
 	public static final int E_INVALID_USERFRAME								=	2;
 	public static final int E_INVALID_GRIPTYPE_FOR_SERVICE					=	3;
+	public static final int E_INVALID_DATA									=	5;
 	public static final int E_NO_PNEUMATIC_PRESSURE							=	10;
 	public static final int E_REQUESTED_BODY_NOT_IN_TOOLBAY					=	20;
 	public static final int E_REQUESTED_SUBAGRIP_NOT_IN_TOOLBAY				=	21;

@@ -109,6 +109,20 @@ public class WorkPiece {
 		}
 	}
 	
+	//Occurs when reversalUnit.approachType = LEFT (X-as ligt naar voren)
+	public void rotateDimensionsAroundX() {
+		WorkPieceDimensions bckUpDimensions = new WorkPieceDimensions(dimensions.getLength(), dimensions.getWidth(), dimensions.getHeight());
+		dimensions.setLength(bckUpDimensions.getHeight());
+		dimensions.setHeight(bckUpDimensions.getLength());
+	}
+	
+	//Occurs when reversalUnit.approachType = FRONT (Y-as ligt naar rechts)
+	public void rotateDimensionsAroundY() {
+		WorkPieceDimensions bckUpDimensions = new WorkPieceDimensions(dimensions.getLength(), dimensions.getWidth(), dimensions.getHeight());
+		dimensions.setWidth(bckUpDimensions.getHeight());
+		dimensions.setHeight(bckUpDimensions.getWidth());
+	}
+	
 	public String toString() {
 		return "WorkPiece: " + type + " - " + dimensions;
 	}

@@ -13,6 +13,7 @@ import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOu
 import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner;
+import eu.robojob.millassist.external.device.ClampingManner.ClampingMannerAllowed;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
@@ -638,13 +639,13 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public Coordinates getLocationOrientation(final SimpleWorkArea workArea, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			if (clampType.isChanged()) {
+			if (clampType.isChanged() && clampType.getClampingMannerAllowed().equals(ClampingMannerAllowed.FREE)) {
 				c.setR(c.getR() + getClampingWidthR());
 			} else {
 				c.setR(c.getR());
 			}
 		} else {
-			if (clampType.isChanged()) {
+			if (clampType.isChanged() && clampType.getClampingMannerAllowed().equals(ClampingMannerAllowed.FREE)) {
 				c.setR(c.getR());
 			} else {
 				c.setR(c.getR() + getClampingWidthR());
@@ -657,7 +658,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		Coordinates c = new Coordinates(workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			if (clampType.isChanged()) {
+			if (clampType.isChanged() && clampType.getClampingMannerAllowed().equals(ClampingMannerAllowed.FREE)) {
 				c.setR(c.getR() + getClampingWidthR());
 			} else {
 				c.setR(c.getR());
@@ -684,7 +685,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getType());
 			}
 		} else {
-			if (clampType.isChanged()) {
+			if (clampType.isChanged() && clampType.getClampingMannerAllowed().equals(ClampingMannerAllowed.FREE)) {
 				c.setR(c.getR());
 			} else {
 				c.setR(c.getR() + getClampingWidthR());
@@ -719,7 +720,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
 		Coordinates c = new Coordinates(workArea.getWorkAreaManager().getActiveClamping(false, workArea.getSequenceNb()).getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
-			if (clampType.isChanged()) {
+			if (clampType.isChanged() && clampType.getClampingMannerAllowed().equals(ClampingMannerAllowed.FREE)) {
 				c.setR(c.getR() + getClampingWidthR());
 			} else {
 				c.setR(c.getR());
@@ -746,7 +747,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getWorkAreaManager().getActiveClamping(false, workArea.getSequenceNb()).getType());
 			}
 		} else {
-			if (clampType.isChanged()) {
+			if (clampType.isChanged() && clampType.getClampingMannerAllowed().equals(ClampingMannerAllowed.FREE)) {
 				c.setR(c.getR());
 			} else {
 				c.setR(c.getR() + getClampingWidthR());

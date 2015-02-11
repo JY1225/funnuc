@@ -123,7 +123,7 @@ public class ProcessFlowMapper {
 	
 	public void updateProcessFlow(final ProcessFlow processFlow) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE PROCESSFLOW SET NAME = ?, LASTOPENED = ?, CLAMPING_MANNER = ? WHERE ID = ?");
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE PROCESSFLOW SET NAME = ?, LASTOPENED = ?, CLAMPING_MANNER = ? , SINGLE_CYCLE = ? WHERE ID = ?");
 		stmt.setString(1, processFlow.getName());
 		stmt.setTimestamp(2, processFlow.getLastOpened());
 		int clampingMannerId = CLAMPING_MANNER_LENGTH;
@@ -131,7 +131,8 @@ public class ProcessFlowMapper {
 			clampingMannerId = CLAMPING_MANNER_WIDTH;
 		}
 		stmt.setInt(3, clampingMannerId);
-		stmt.setInt(4, processFlow.getId());
+		stmt.setBoolean(4, processFlow.isSingleCycle());
+		stmt.setInt(5, processFlow.getId());
 		try {
 			stmt.executeUpdate();
 			deleteStepsAndSettings(processFlow);
@@ -152,7 +153,7 @@ public class ProcessFlowMapper {
 		clearProcessFlowStepsSettingsAndReferencedIds(processFlow);
 		processFlow.setCreation(new Timestamp(System.currentTimeMillis()));
 		processFlow.setLastOpened(new Timestamp(System.currentTimeMillis()));
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO PROCESSFLOW (NAME, CREATION, LASTOPENED, CLAMPING_MANNER) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO PROCESSFLOW (NAME, CREATION, LASTOPENED, CLAMPING_MANNER, SINGLE_CYCLE) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setString(1, processFlow.getName());
 		stmt.setTimestamp(2, processFlow.getCreation());
 		stmt.setTimestamp(3, processFlow.getLastOpened());
@@ -161,6 +162,7 @@ public class ProcessFlowMapper {
 			clampingMannerId = CLAMPING_MANNER_WIDTH;
 		}
 		stmt.setInt(4, clampingMannerId);
+		stmt.setBoolean(5, processFlow.isSingleCycle());
 		try {
 			stmt.executeUpdate();
 			ResultSet resultSet = stmt.getGeneratedKeys();
@@ -380,7 +382,7 @@ public class ProcessFlowMapper {
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPICKSETTINGS (ID, WORKPIECE, AIRBLOW, APPROACHTYPE, TURN_IN_MACHINE) VALUES (?, ?, ?, ?, ?)");
 			stmt2.setInt(1, robotStep.getRobotSettings().getId());
 			stmt2.setInt(2, robotPickSettings.getWorkPiece().getId());
-			stmt2.setBoolean(3, robotPickSettings.isDoMachineAirblow());
+			stmt2.setBoolean(3, robotPickSettings.isRobotAirblow());
 			stmt2.setInt(4, robotPickSettings.getApproachType().getId());
 			stmt2.setBoolean(5, robotPickSettings.getTurnInMachine());
 			stmt2.executeUpdate();
@@ -389,7 +391,7 @@ public class ProcessFlowMapper {
 			RobotPutSettings robotPutSettings = ((PutStep) robotStep).getRobotSettings();
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROBOTPUTSETTINGS (ID, AIRBLOW, RELEASEBEFORE, APPROACHTYPE, TURN_IN_MACHINE) VALUES (?, ?, ?, ?, ?)");
 			stmt2.setInt(1, robotStep.getRobotSettings().getId());
-			stmt2.setBoolean(2, robotPutSettings.isDoMachineAirblow());
+			stmt2.setBoolean(2, robotPutSettings.isRobotAirblow());
 			stmt2.setBoolean(3, ((PutStep) robotStep).getRobotSettings().isReleaseBeforeMachine());
 			stmt2.setInt(4, robotPutSettings.getApproachType().getId());
 			stmt2.setBoolean(5, robotPutSettings.getTurnInMachine());
@@ -545,12 +547,14 @@ public class ProcessFlowMapper {
 			Timestamp creation = results.getTimestamp("CREATION");
 			Timestamp lastOpened = results.getTimestamp("LASTOPENED");
 			int clampingMannerId = results.getInt("CLAMPING_MANNER");
+			boolean isSingleCycle = results.getBoolean("SINGLE_CYCLE");
 			List<AbstractProcessStep> processSteps = getProcessSteps(id);
 			// We have 1 deviceSetting per device - per processFlow
 			Map<AbstractDevice, DeviceSettings> deviceSettings = getDeviceSettings(id);
 			Map<AbstractRobot, RobotSettings> robotSettings = getRobotSettings(id);
 			processFlow = new ProcessFlow(name, processSteps, deviceSettings, robotSettings, creation, lastOpened);
 			processFlow.setId(id);
+			processFlow.setSingleCycle(isSingleCycle);
 			if (clampingMannerId == CLAMPING_MANNER_LENGTH) {
 				processFlow.getClampingType().setType(ClampingManner.Type.LENGTH);
 			} else if (clampingMannerId == CLAMPING_MANNER_WIDTH) {

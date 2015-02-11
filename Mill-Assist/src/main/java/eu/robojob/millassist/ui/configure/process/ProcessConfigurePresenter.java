@@ -75,5 +75,12 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 	public boolean isConfigured() {
 		return false;
 	}
+	
+	public void setSingleCycle(boolean isSingleCycle) {
+		if (processFlow.isSingleCycle() != isSingleCycle) {
+			this.processFlow.setSingleCycle(isSingleCycle);
+			processFlow.processProcessFlowEvent(new DataChangedEvent(processFlow, null, false));
+		}
+	}
 
 }

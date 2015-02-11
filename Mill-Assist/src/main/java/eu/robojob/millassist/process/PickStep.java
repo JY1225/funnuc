@@ -67,34 +67,13 @@ public class PickStep extends AbstractTransportStep {
 						Coordinates position = new Coordinates(originalPosition);
 						logger.debug("Original coordinates: " + position + ".");
 						if (getRelativeTeachedOffset() == null) {
-							float extraOffsetZ = 0;
-							// (originalPosition.getZ() + workPiece.getHeight()) < (activeClamping.getZ() + activeClamping.getHeight()) 
-							if (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight() < 
-									getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() 
-									+ getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getHeight()) {
-								// extraOffsetZ = activeClamping.getZ() + activeClamping.getHeight() - originalPosition.getZ() - workPiece.getHeight()
-								extraOffsetZ = (getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() 
-										+ getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getHeight()) 
-										- (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight());
-								if(devicePickSettings.getDevice() instanceof ReversalUnit && (getRobotSettings().getApproachType().equals(ApproachType.BOTTOM))) {
-									extraOffsetZ -= ((ReversalUnit) devicePickSettings.getDevice()).getStationHeight();
-								}
-							} else if(devicePickSettings.getDevice() instanceof ReversalUnit && (getRobotSettings().getApproachType().equals(ApproachType.BOTTOM))) {
-								extraOffsetZ = ((ReversalUnit) devicePickSettings.getDevice()).getStationHeight() * -1;
-							}
-							setRelativeTeachedOffset(new Coordinates(0, 0, extraOffsetZ, 0, 0, 0));
+							initSafeTeachedOffset(originalPosition);
 						}
-						if (getRelativeTeachedOffset() == null) {
-							if (!teached) {
-								throw new IllegalStateException("Teaching was needed, but no relative offset value available and 'teach mode' is not active!");
-							}
-						} else {
-							logger.debug("The teached offset that will be used: [" + getRelativeTeachedOffset() + "].");
-							Coordinates absoluteOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, getRelativeTeachedOffset());
-							logger.debug("The absolute offset that will be used: [" + absoluteOffset + "].");
-							position.offset(absoluteOffset);
-							logger.debug("Exact pick location: [" + position + "].");
-						}
+						logger.debug("The teached offset that will be used: [" + getRelativeTeachedOffset() + "].");
+						Coordinates absoluteOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, getRelativeTeachedOffset());
+						logger.debug("The absolute offset that will be used: [" + absoluteOffset + "].");
+						position.offset(absoluteOffset);
+						logger.debug("Exact pick location: [" + position + "].");
 						robotPickSettings.setLocation(position);
 					} else {
 						Coordinates position = new Coordinates(originalPosition);
@@ -174,6 +153,35 @@ public class PickStep extends AbstractTransportStep {
 				getRobot().release();
 			}
 		}
+	}
+	
+	/**
+	 * Ajust teached offset, so robot is in a safe position before teaching
+	 * @param devicePutSettings
+	 * @param originalPosition
+	 */
+	private void initSafeTeachedOffset(final Coordinates originalPosition) {
+		float extraOffsetX = 0;
+		float extraOffsetY = 0;
+		float extraOffsetZ = 0;
+		if ((getDevice() instanceof ReversalUnit) && !(getRobotSettings().getApproachType().equals(ApproachType.TOP))) {
+			if (getRobotSettings().getApproachType().equals(ApproachType.BOTTOM)) {
+				extraOffsetZ = - ((ReversalUnit) getDevice()).getStationHeight();
+			} else if (getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
+				extraOffsetX = ((ReversalUnit) getDevice()).getStationLength() - originalPosition.getX();
+			}  else if (getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
+				extraOffsetY = - ((ReversalUnit) getDevice()).getStationFixtureWidth();
+			}
+		} else {
+			if (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight() < 
+					getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() 
+					+ getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getHeight()) {
+				extraOffsetZ = (getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() 
+						+ getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getHeight()) 
+						- (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight());
+			}
+		}
+		setRelativeTeachedOffset(TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, new Coordinates(extraOffsetX, extraOffsetY, extraOffsetZ, 0, 0, 0)));
 	}
 	
 	@Override

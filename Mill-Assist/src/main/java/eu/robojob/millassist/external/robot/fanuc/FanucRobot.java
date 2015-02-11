@@ -178,7 +178,7 @@ public class FanucRobot extends AbstractRobot {
 		if (fPutSettings.isReleaseBeforeMachine()) {
 			ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_21;
 		}
-		if (fPutSettings.isDoMachineAirblow()) {
+		if (fPutSettings.isRobotAirblow()) {
 			writeAirblowPointSet(clamping, putSettings.getAirblowSquare(clamping.getId()));
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 		}
@@ -284,7 +284,7 @@ public class FanucRobot extends AbstractRobot {
 		RobotPickSettings fPickSettings = (RobotPickSettings) pickSettings;		
 		writeServiceGripperSet(pickSettings.getGripperHead().getName(), this.getGripperBody().getGripperHeadByName(HEAD_A_ID), this.getGripperBody().getGripperHeadByName(HEAD_B_ID), RobotConstants.SERVICE_GRIPPER_SERVICE_TYPE_PICK, pickSettings.isGripInner());
 		int ppMode = RobotConstants.SERVICE_HANDLING_PP_MODE_ORDER_12;
-		if (fPickSettings.isDoMachineAirblow()) {
+		if (fPickSettings.isRobotAirblow()) {
 			writeAirblowPointSet(clamping, pickSettings.getAirblowSquare(clamping.getId()));
 			ppMode = ppMode | RobotConstants.SERVICE_HANDLING_PP_MODE_AIRBLOW;
 		}
@@ -579,7 +579,11 @@ public class FanucRobot extends AbstractRobot {
 			values.add("3");
 		}
 		values.add("" + (int) Math.floor(gHeadA.getGripper().getHeight()));		// a height
-		values.add("" + (int) Math.floor(gHeadB.getGripper().getHeight()));		// b height
+		if (gHeadB != null) {
+			values.add("" + (int) Math.floor(gHeadB.getGripper().getHeight()));		// b height
+		} else {
+			values.add("0");		// b height
+		}
 		// inner/outer gripper type
 		if (gripInner) {
 			values.add("1");			// inner
@@ -722,6 +726,7 @@ public class FanucRobot extends AbstractRobot {
 		values.add(df.format(smoothPoint.getY()));	// smooth y
 		values.add(df.format(smoothPoint.getZ()));	// smooth z
 		//TODO review if this strategy is always safe
+		// The approach strategy can be overwritten by the robot in case the height of the IP-point is lower than the reversal unit + height of workpiece
 		if (workArea.getWorkAreaManager().getZone().getDevice() instanceof ReversalUnit) {
 			switch (approachType) {
 			case BOTTOM:

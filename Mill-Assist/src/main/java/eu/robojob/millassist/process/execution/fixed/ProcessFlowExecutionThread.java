@@ -9,6 +9,7 @@ import eu.robojob.millassist.external.device.NoFreeClampingInWorkareaException;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.robot.Gripper;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
@@ -31,6 +32,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		WAITING_BEFORE_PICK_FROM_STACKER,
 		WAITING_FOR_WORKPIECES_STACKER,
 		WAITING_FOR_PICK_FROM_STACKER,
+		WAITING_FOR_PICK_STACKER_VACUUM,
 		WAITING_BEFORE_PUT_IN_MACHINE,
 		PROCESSING_IN_MACHINE,
 		WAITING_BEFORE_PICK_FROM_MACHINE,
@@ -56,6 +58,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	private int nbWPInFlow = 0;
 	private int nbWPInMachine = 0;
 	private int nbWPReversed = 0;
+	private boolean vacuumContinue = false;
 	private Object syncObject2;
 	// Is the reversal still to come?
 	private boolean needsReversal;
@@ -135,12 +138,14 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 				else if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
 					checkStatus();
 					executePutInMachineStep((PutStep) currentStep);
+					vacuumContinue = false;
 					//More workpieces to put (multiple fixtures present - jump back a few steps)
 					//TODO - review (nbCNCPassed to use?)
 					if (morePutsToPerform((PutStep) currentStep) && processFlow.hasReversalUnit() && nbWPReversed < nbWPInMachine && nbWPReversed > 0) {
 						needsReversal = true;
 						processFlow.setCurrentIndex(processId, pickFromMachineBeforeReversalStepIndex-1);
 					} else if (morePutsToPerform((PutStep) currentStep)) {
+						vacuumContinue = true;
 						processFlow.setCurrentIndex(processId, pickFromStackerStepIndex-1);
 					}
 				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
@@ -297,6 +302,20 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 		nbWPInFlow++;
 		checkStatus();
 		pickStep.finalizeStep(this);
+	}
+	
+	public boolean isWaitForVacuum() {
+		if (!processFlow.isConcurrentExecutionPossible() || controllingThread.getNbProcessesWithStatus(ExecutionThreadStatus.IDLE) >= 1) {
+			return false;
+		}
+		if (vacuumContinue) {
+			return false;
+		}
+		PickStep pickStep = (PickStep) processFlow.getStep(processFlow.getCurrentIndex(processId));
+		if (pickStep.getRobotSettings().getGripperHead().getGripper().getType().equals(Gripper.Type.VACUUM)) {
+			return true;
+		}
+		return false;
 	}
 	
 	private void executePutInMachineStep(final PutStep putStep) throws InterruptedException, AbstractCommunicationException, RobotActionException, DeviceActionException, NoFreeClampingInWorkareaException {

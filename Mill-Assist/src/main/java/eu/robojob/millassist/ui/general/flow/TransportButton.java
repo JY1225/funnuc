@@ -15,7 +15,7 @@ import eu.robojob.millassist.ui.general.model.TransportInformation;
 
 public class TransportButton extends StackPane {
 
-	private Region shapeRegion;
+	private Region shapeRegion, clickableRegion;
 	private SVGPath svgPauseLeft;
 	private HBox hboxPauseLeft;
 	private Label lblLeft;
@@ -25,6 +25,7 @@ public class TransportButton extends StackPane {
 	
 	private static final double WIDTH = 80;
 	private static final double SHAPE_HEIGHT = 7;
+	private static final double CLICK_HEIGHT = 50;
 	private static final String PAUSE_ICON = "M 0,0 0,10 2.5,10 2.5,0 0,0 z M 5,0 5,10 7.5,10 7.5,0 5,0 z";
 	private TransportInformation transportInfo;
 	private static final double PAUSE_ICON_WIDTH = 7.5;
@@ -47,13 +48,17 @@ public class TransportButton extends StackPane {
 	}
 	
 	private void build() {
+		clickableRegion = new Region();
+		clickableRegion.setPrefSize(WIDTH, CLICK_HEIGHT);
+		clickableRegion.setMinSize(WIDTH, CLICK_HEIGHT);
+		clickableRegion.setMaxSize(WIDTH, CLICK_HEIGHT);
 		shapeRegion = new Region();
 		shapeRegion.setPrefSize(WIDTH, SHAPE_HEIGHT);
 		shapeRegion.setMinSize(WIDTH, SHAPE_HEIGHT);
 		shapeRegion.setMaxSize(WIDTH, SHAPE_HEIGHT);
 		shapeRegion.getStyleClass().add("transport-button");
 		this.getStyleClass().add("transport-button-wrapper");
-		this.getChildren().add(shapeRegion);
+		this.getChildren().addAll(shapeRegion, clickableRegion);
 		this.setPrefWidth(WIDTH);
 		this.setMinWidth(WIDTH);
 				

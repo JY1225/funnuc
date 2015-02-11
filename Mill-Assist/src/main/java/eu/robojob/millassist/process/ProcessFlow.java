@@ -1,5 +1,8 @@
 package eu.robojob.millassist.process;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,12 +23,14 @@ import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.RobotSettings;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
@@ -34,6 +40,8 @@ import eu.robojob.millassist.process.event.ProcessChangedEvent;
 import eu.robojob.millassist.process.event.ProcessFlowEvent;
 import eu.robojob.millassist.process.event.ProcessFlowListener;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class ProcessFlow {
 	
@@ -79,6 +87,7 @@ public class ProcessFlow {
 	public static final int WORKPIECE_2_ID = 2;
 	
 	private ClampingManner clampingManner;
+	private boolean isSingleCycle;
 	
 	public ProcessFlow(final String name, final List<AbstractProcessStep> processSteps, final Map<AbstractDevice, DeviceSettings> deviceSettings, final Map<AbstractRobot, 
 			RobotSettings> robotSettings, final ClampingManner clampingManner, final Timestamp creation, final Timestamp lastOpened) {
@@ -174,6 +183,7 @@ public class ProcessFlow {
 		this.lastOpened = new Timestamp(System.currentTimeMillis());
 		this.deviceSettings = processFlow.getDeviceSettings();
 		this.robotSettings = processFlow.getRobotSettings();
+		this.isSingleCycle = processFlow.isSingleCycle();
 		initialize();
 		this.finishedAmount = processFlow.getFinishedAmount();
 		this.clampingManner.setType(processFlow.getClampingType().getType());
@@ -616,10 +626,35 @@ public class ProcessFlow {
 		return "ProcessFlow: " + getName();
 	}
 	
+	public boolean hasSingleCycleSetting() {
+		Properties properties = new Properties();
+		try {
+			properties.load(new FileInputStream(new File("settings.properties")));
+			if ((properties.get("single-cycle") != null) && (properties.get("single-cycle").equals("true"))) {
+				return true;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return false;
+	}
+	
+	public void setSingleCycle(boolean isSingleCycle) {
+		this.isSingleCycle = isSingleCycle;
+	}
+	
+	public boolean isSingleCycle() {
+		return this.isSingleCycle;
+	}
+	
 	public boolean isConcurrentExecutionPossible() {
 		// this is possible if the CNC machine is used only once, and the gripper used to put the piece in the 
 		// CNC machine is not the same as the gripper used to pick the piece from the CNC machine and the total weight
-		// is lower than the max work piece weight
+		// is lower than the max work piece weight and settings single-cycle not set
+		if (hasSingleCycleSetting() || isSingleCycle) {
+			return false;
+		}
 		PickStep pickFromStacker = null;
 		PickStep pickFromMachine = null;
 		PutStep putToMachine = null;
@@ -645,4 +680,40 @@ public class ProcessFlow {
 		}
 		return isConcurrentExecutionPossible;
 	}	
+	
+	public void revisitProcessFlowWorkPieces() {
+		WorkPiece prvWorkPiece = null;
+		//Workpiece set in the Gripper is the one coming from the robotPickSettings
+		for (AbstractProcessStep step: processSteps) {
+			if (step instanceof PickStep) {
+				if (((PickStep) step).getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
+					WorkPieceDimensions wpDim = new WorkPieceDimensions(prvWorkPiece.getDimensions());
+					float prvWeight = prvWorkPiece.getWeight();
+					((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
+					((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
+					((PickStep) step).getRobotSettings().getWorkPiece().rotateDimensionsAroundY();
+				} else if(((PickStep) step).getRobotSettings().getApproachType().equals(ApproachType.LEFT)) {
+					WorkPieceDimensions wpDim = new WorkPieceDimensions(prvWorkPiece.getDimensions());
+					float prvWeight = prvWorkPiece.getWeight();
+					((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
+					((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
+					((PickStep) step).getRobotSettings().getWorkPiece().rotateDimensionsAroundX();
+				} else {
+					//Neem de dimensies van de vorige pick over - probleem bij aanpassingen door CNC machine
+					if (prvWorkPiece != null) {
+						WorkPieceDimensions wpDim = new WorkPieceDimensions(prvWorkPiece.getDimensions());
+						float prvWeight = prvWorkPiece.getWeight();
+						((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
+						((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
+					}
+				}
+				prvWorkPiece = ((PickStep) step).getRobotSettings().getWorkPiece();
+			}
+			if (step instanceof PutStep && ((PutStep) step).getDevice() instanceof AbstractStackingDevice && !(((PutStep) step).getDevice() instanceof OutputBin)) {
+				float prvWeight = prvWorkPiece.getWeight();
+				((AbstractStackingDevice) ((PutStep) step).getDevice()).getFinishedWorkPiece().setDimensions(new WorkPieceDimensions(prvWorkPiece.getDimensions()));
+				((AbstractStackingDevice) ((PutStep) step).getDevice()).getFinishedWorkPiece().setWeight(prvWeight);
+			}
+		}
+	}
 }

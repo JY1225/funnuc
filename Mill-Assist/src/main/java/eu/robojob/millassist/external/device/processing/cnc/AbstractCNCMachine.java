@@ -160,9 +160,9 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 			case CNCMachineEvent.ALARM_OCCURED : 
 				for (CNCMachineListener listener : listeners) {
 					listener.cNCMachineAlarmsOccured((CNCMachineAlarmsOccuredEvent) event);
-					for (CNCMachineAlarm alarm : getAlarms()) {
+					/*for (CNCMachineAlarm alarm : getAlarms()) {
 						logger.error(alarm);
-					}
+					}*/
 				}
 				break;
 			case CNCMachineEvent.STATUS_CHANGED : 

@@ -8,12 +8,14 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -28,8 +30,15 @@ import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
+import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
+import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor.SupportState;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLayout;
+import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractMenuPresenter;
 import eu.robojob.millassist.util.Translator;
@@ -54,6 +63,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 	private List<Rectangle> workPieceWindows;
 	private List<Rectangle> workPieces;
 	private List<Text> texts;
+	private List<CheckBox> supportsSelected;
 	private Group conveyorGroup;
 	private Pane p;
 	
@@ -71,7 +81,6 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 	private static final String CSS_CLASS_CONVEYOR_BACKGROUND = "conveyor-background";
 	private static final String CSS_CLASS_DISTANCE_BETWEEN_TRACKS = "distance-between-tracks";
 	private static final String CSS_CLASS_TRACK = "track";	
-	private static final String CSS_CLASS_SUPPORT_FIXED = "support-fixed";
 	private static final String CSS_CLASS_WORKPIECE_AREA = "workPiece-area";
 	private static final String CSS_CLASS_WORKPIECE  = "workpiece-c";
 	
@@ -89,6 +98,8 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 	
 	private static final float VISIBLE_AREA = 275;
 	
+	private static final float INVALID_VAL = 20000;
+	
 	private static Logger logger = LogManager.getLogger(ConveyorRawWorkPieceLayoutView.class.getName());
 	
 	public ConveyorRawWorkPieceLayoutView() {
@@ -97,6 +108,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		this.workPieces = new ArrayList<Rectangle>();
 		this.supports = new ArrayList<Rectangle>();
 		this.texts = new ArrayList<Text>();
+		this.supportsSelected = new ArrayList<CheckBox>(); 
 		this.conveyorGroup = new Group();
 		this.p = new Pane();
 		p.getChildren().add(conveyorGroup);
@@ -156,13 +168,53 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		btnConfigureSupports = createButton(ICON_ARROW_BOTH, CSS_CLASS_WHITE_ICON, Translator.getTranslation(SETUP_SUPPORTS), UIConstants.BUTTON_HEIGHT*4, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				getPresenter().configureSupports();
+				ConveyorRawWorkPieceLayoutView.this.setDisable(true);
+				ThreadManager.submit(new Thread() {
+					public void run() {
+						try {
+							getPresenter().configureSupports();
+							Platform.runLater(new Thread() {
+								public void run() {
+									try {
+										ConveyorRawWorkPieceLayoutView.this.setDisable(false);
+									} catch(Exception e) {
+										e.printStackTrace();
+										logger.error(e);
+									}
+								}
+							});
+						} catch(Exception e) {
+							e.printStackTrace();
+							logger.error(e);
+						}
+					}
+				});
 			}
 		});
 		btnAllSupportsDown = createButton(ICON_ARROW_DOWN, CSS_CLASS_WHITE_ICON, Translator.getTranslation(ALL_SUPPORTS_DOWN), UIConstants.BUTTON_HEIGHT*4, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				getPresenter().allSupportsDown();
+				ConveyorRawWorkPieceLayoutView.this.setDisable(true);
+				ThreadManager.submit(new Thread() {
+					public void run() {
+						try {
+							getPresenter().allSupportsDown();
+							Platform.runLater(new Thread() {
+								public void run() {
+									try {
+										ConveyorRawWorkPieceLayoutView.this.setDisable(false);
+									} catch(Exception e) {
+										e.printStackTrace();
+										logger.error(e);
+									}
+								}
+							});
+						} catch(Exception e) {
+							e.printStackTrace();
+							logger.error(e);
+						}
+					}
+				});
 			}
 		});
 		
@@ -192,6 +244,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		workPieceWindows.clear();
 		workPieces.clear();
 		supports.clear();
+		supportsSelected.clear();
 		texts.clear();
 		
 		conveyorGroup.getChildren().clear();
@@ -224,25 +277,14 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			support.setArcHeight(3);
 			support.setArcWidth(3);
 			// add supports, except for first one
-			if (i > 0) {
-				supports.add(support);
-				support.getStyleClass().add(CSS_CLASS_SUPPORT_DOWN);
-			} else {
-				support.getStyleClass().add(CSS_CLASS_SUPPORT_FIXED);
-			}
+			supports.add(support);
+			support.getStyleClass().add(CSS_CLASS_SUPPORT_DOWN);
 			Rectangle spaceBetween = new Rectangle();
-			if (i == 0) {
-				spaceBetween.setX(74);
-				spaceBetween.setWidth(VISIBLE_AREA-4 + 10);
-				spaceBetween.setY(-ySpaceBetweenFirst);
-				spaceBetween.setHeight(ySpaceBetweenFirst);
-			} else {
-				spaceBetween.setX(74);
-				spaceBetween.setWidth(VISIBLE_AREA-4 + 10);
-				spaceBetween.setY(-(i * (conveyorLayout.getSpaceBetweenTracks() + conveyorLayout.getRawTrackWidth()) + 
-						ySpaceBetweenFirst));
-				spaceBetween.setHeight(conveyorLayout.getSpaceBetweenTracks());
-			}
+			spaceBetween.setX(74);
+			spaceBetween.setWidth(VISIBLE_AREA-4 + 10);
+			spaceBetween.setY(-(i * (conveyorLayout.getSpaceBetweenTracks() + conveyorLayout.getRawTrackWidth()) + 
+					ySpaceBetweenFirst));
+			spaceBetween.setHeight(conveyorLayout.getSpaceBetweenTracks());
 			spaceBetween.getStyleClass().add(CSS_CLASS_DISTANCE_BETWEEN_TRACKS);
 			// add track
 			Rectangle track = new Rectangle();
@@ -270,10 +312,44 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			// add text
 			Text txt = new Text("0000.00");
 			txt.setX(0);
-			txt.setY(-(i * (conveyorLayout.getRawTrackWidth() + conveyorLayout.getSpaceBetweenTracks()) + yTrackFirst - conveyorLayout.getRawTrackWidth()));
+			txt.setY(-(i * (conveyorLayout.getRawTrackWidth() + conveyorLayout.getSpaceBetweenTracks()) + yTrackFirst - conveyorLayout.getRawTrackWidth()/2 - 8));
 			txt.setWrappingWidth(60);
 			txt.getStyleClass().add(CSS_CLASS_DISTANCE_TEXT);
 			texts.add(txt);
+			final CheckBox cbSelected = new CheckBox();
+			cbSelected.setLayoutX(30);
+			cbSelected.setLayoutY(-(i * (conveyorLayout.getRawTrackWidth() + conveyorLayout.getSpaceBetweenTracks()) + yTrackFirst - conveyorLayout.getRawTrackWidth() + 1));
+			final int j = i;
+			cbSelected.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					ConveyorRawWorkPieceLayoutView.this.setDisable(true);
+					ThreadManager.submit(new Thread() {
+						public void run() {
+							try {
+								getPresenter().updateSupportSelection(j, cbSelected.selectedProperty().get());
+							} catch (SocketResponseTimedOutException
+									| SocketDisconnectedException
+									| SocketWrongResponseException
+									| InterruptedException | DeviceActionException e) {
+								logger.error(e);
+								e.printStackTrace();
+							}
+							Platform.runLater(new Thread() {
+								public void run() {
+									try {
+										ConveyorRawWorkPieceLayoutView.this.setDisable(false);
+									} catch (Exception e) {
+										logger.error(e);
+										e.printStackTrace();
+									}
+								}
+							});
+						}
+					});
+				}
+			});
+			supportsSelected.add(cbSelected);
 			conveyorGroup.getChildren().add(spaceBetween);
 			conveyorGroup.getChildren().add(support);
 			conveyorGroup.getChildren().add(track);
@@ -283,6 +359,7 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			support.toBack();
 			spaceBetween.toBack();
 			conveyorGroup.getChildren().add(txt);
+			conveyorGroup.getChildren().add(cbSelected);
 		}
 		bg.toBack();
 		total.toBack();
@@ -318,6 +395,15 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		setMoving(false);
 	}
 	
+	public Boolean[] getSupportSelection() {
+		Boolean[] selection = new Boolean[4];
+		selection[0] = supportsSelected.get(0).isSelected();
+		selection[1] = supportsSelected.get(1).isSelected();
+		selection[2] = supportsSelected.get(2).isSelected();
+		selection[3] = supportsSelected.get(3).isSelected();
+		return selection;
+	}
+	
 	@Override
 	public void refresh() {
 		updateSupportStatus();
@@ -335,8 +421,12 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		for (StackingPosition stPos : conveyorLayout.getStackingPositionsRawWorkPieces()) {
 			Rectangle wp = new Rectangle();
 			conveyorGroup.getChildren().add(wp);
-			wp.setLayoutX(200);
-			wp.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			wp.setLayoutX(300);
+			if (conveyorLayout.isLeftSetup()) {
+				wp.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			} else {
+				wp.setY(-(stPos.getPosition().getX() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			}
 			wp.setWidth(stPos.getWorkPiece().getDimensions().getLength());
 			wp.setHeight(stPos.getWorkPiece().getDimensions().getWidth());
 			wp.getStyleClass().add(CSS_CLASS_WORKPIECE);
@@ -345,8 +435,13 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			
 			Rectangle ra = new Rectangle();
 			conveyorGroup.getChildren().add(ra);
-			ra.setX(stPos.getPosition().getX() + 70 - stPos.getWorkPiece().getDimensions().getLength()/2);
-			ra.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			if (conveyorLayout.isLeftSetup()) {
+				ra.setX(stPos.getPosition().getX() + 70 - stPos.getWorkPiece().getDimensions().getLength()/2);
+				ra.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			} else {
+				ra.setX(stPos.getPosition().getY() + 70 - stPos.getWorkPiece().getDimensions().getLength()/2);
+				ra.setY(-(stPos.getPosition().getX() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+			}
 			ra.setWidth(stPos.getWorkPiece().getDimensions().getLength());
 			ra.setHeight(stPos.getWorkPiece().getDimensions().getWidth());
 			ra.getStyleClass().add(CSS_CLASS_WORKPIECE_AREA);
@@ -378,22 +473,23 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			} else {
 				texts.get(i+1).setVisible(false);
 			}*/
+			supportsSelected.get(i).setSelected(conveyorLayout.getSupportSelectionStatus()[i]);
 		}
 	}
 	
-	private void setSupport(final Rectangle rectangle, final boolean currentState, final boolean requestedState) {
+	private void setSupport(final Rectangle rectangle, final Conveyor.SupportState currentState, final boolean requestedState) {
 		rectangle.getStyleClass().remove(CSS_CLASS_SUPPORT_DOWN);
 		rectangle.getStyleClass().remove(CSS_CLASS_SUPPORT_DOWN_SHOULD_BE_UP);
 		rectangle.getStyleClass().remove(CSS_CLASS_SUPPORT_UP);
 		rectangle.getStyleClass().remove(CSS_CLASS_SUPPORT_UP_SHOULD_BE_DOWN);
 		if (requestedState) {
-			if (currentState) {
+			if (currentState == SupportState.UP) {
 				rectangle.getStyleClass().add(CSS_CLASS_SUPPORT_UP);
 			} else {
 				rectangle.getStyleClass().add(CSS_CLASS_SUPPORT_DOWN_SHOULD_BE_UP);
 			}
 		} else {
-			if (currentState) {
+			if (currentState == SupportState.UP) {
 				rectangle.getStyleClass().add(CSS_CLASS_SUPPORT_UP_SHOULD_BE_DOWN);
 			} else {
 				rectangle.getStyleClass().add(CSS_CLASS_SUPPORT_DOWN);
@@ -466,27 +562,25 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 		boolean found = false;
 		int wpIndex = 0;
 		for (int i = 0; i < sensorValues.size(); i++) {
-			if (sensorValues.get(i) > 0) {
+			if ((sensorValues.get(i) > 0) && (sensorValues.get(i) < INVALID_VAL)) {
 				texts.get(i).setText(df.format(((float) sensorValues.get(i))/100));
 			} else {
 				texts.get(i).setText("--");
 			}
-			if ((i == 0)  || (conveyorLayout.getRequestedSupportStatus()[i-1])) {
+			if (conveyorLayout.getRequestedSupportStatus()[i]) {
 				if (wpIndex < workPieces.size()) {	// prevents from updating when workpieces are not yet recalculated but supports are
 					double dest = ((float) sensorValues.get(i))/100 + 70; 
 					// check if other sensor indicates smaller value
 					int j = 1;
 					boolean foundThis = false;
-					if (sensorValues.get(i) > 0) {
-						logger.info("found: " + sensorValues.get(i));
+					if ((sensorValues.get(i) > 0) && (sensorValues.get(i) < INVALID_VAL)){
 						foundThis = true;
 					}
-					while ((i+j-1) < conveyorLayout.getRequestedSupportStatus().length && !conveyorLayout.getRequestedSupportStatus()[i-1+j]) {
+					while ((i+j) < conveyorLayout.getRequestedSupportStatus().length && !conveyorLayout.getRequestedSupportStatus()[i+j]) {
 						if (((sensorValues.get(j+i) < sensorValues.get(i)) || (sensorValues.get(i) == 0)) && (sensorValues.get(j+i) > 0)) {
 							dest = ((float) sensorValues.get(i+j))/100 + 70;
 							if (sensorValues.get(i+j) > 0) {
 								foundThis = true;
-								logger.info("found: " + sensorValues.get(i+j) + " - " + j + " - " + wpIndex);
 							}
 						}
 						j++;

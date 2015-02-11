@@ -9,10 +9,14 @@ import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
+import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public abstract class AbstractConveyor extends AbstractStackingDevice {
 
@@ -60,6 +64,19 @@ public abstract class AbstractConveyor extends AbstractStackingDevice {
 	public void setConveyorTimeout(final ConveyorAlarm conveyorTimeout) {
 		this.conveyorTimeout = conveyorTimeout;
 	}
+	
+	@Override
+	public float getZSafePlane(final WorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+		float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
+		float wpHeight = dimensions.getHeight();
+		if (wpHeight > workArea.getDefaultClamping().getHeight()) {
+			zSafePlane += wpHeight;
+		} else {
+			zSafePlane += workArea.getDefaultClamping().getHeight();
+		}
+		zSafePlane += dimensions.getHeight();
+		return zSafePlane;
+	}
 
 	public void addListener(final ConveyorListener listener) {
 		listeners.add(listener);
@@ -103,6 +120,10 @@ public abstract class AbstractConveyor extends AbstractStackingDevice {
 	}
 	
 	public abstract void notifyFinishedShifted();
+	
+	public abstract void indicateAllProcessed() throws AbstractCommunicationException, InterruptedException, DeviceActionException;
+	public abstract void indicateOperatorRequested(boolean requested) throws AbstractCommunicationException, InterruptedException;
+	public abstract void clearIndications() throws AbstractCommunicationException, InterruptedException;
 	
 	protected boolean waitForStatusCondition(final Callable<Boolean> condition, final long timeout) throws InterruptedException, DeviceActionException {
 		long waitedTime = 0;

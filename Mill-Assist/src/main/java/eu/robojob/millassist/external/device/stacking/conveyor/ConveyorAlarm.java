@@ -45,7 +45,7 @@ public abstract class ConveyorAlarm {
 	}
 	
 	public String toString() {
-		return "CNCMachineAlarm: " + id;
+		return "Conveyor alarm: " + id;
 	}
 	
 }

@@ -26,6 +26,7 @@ public class ProcessFlowAdapter {
 	//TODO review the max amount - this can disappear
 	//private static final int MAX_DEVICE_AMOUNT = 6;
 	private static final int MAX_DEVICE_AMOUNT = 100;
+	private boolean needsRevisitWP = false;
 	
 	private ProcessFlow processFlow;
 	
@@ -280,6 +281,17 @@ public class ProcessFlowAdapter {
 			((eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings) deviceSettingsLastWP).setFinishedWorkPiece(finishedWorkPiece);
 		} else if (deviceSettingsLastWP instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) {
 			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettingsLastWP).setFinishedWorkPiece(finishedWorkPiece);
+		}
+	}
+	
+	public void setNeedsToRevisitWorkPieces(final boolean flag) {
+		this.needsRevisitWP = flag;
+	}
+	
+	public void revisitWorkPieces() {
+		if (needsRevisitWP) {
+			processFlow.revisitProcessFlowWorkPieces();
+			needsRevisitWP = false;
 		}
 	}
 }

@@ -63,31 +63,13 @@ public class PutStep extends AbstractTransportStep {
 						Coordinates position = new Coordinates(originalPosition);
 						logger.debug("Original coordinates: " + position + ".");
 						if (getRelativeTeachedOffset() == null) {
-							//originalPosition.getZ < (activeClamping.getZ() + activeClamping.getHeight())
-							float extraOffsetZ = 0;
-							if (originalPosition.getZ() < getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
-								//extraOffset = activeClamping.getZ() + activeClamping.getHeight() - originalPosition.getZ()
-								extraOffsetZ = (getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() 
-										+ getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getHeight()) 
-										- originalPosition.getZ();
-								if(devicePutSettings.getDevice() instanceof ReversalUnit && getRobotSettings().getApproachType().equals(ApproachType.BOTTOM)) {
-									extraOffsetZ += ((ReversalUnit) devicePutSettings.getDevice()).getStationHeight();
-									extraOffsetZ *= -1;
-								} 
-							}
-							setRelativeTeachedOffset(new Coordinates(0, 0, extraOffsetZ, 0, 0, 0));
+							initSafeTeachedOffset(originalPosition);
 						}
-						if (getRelativeTeachedOffset() == null) {
-							if (!teached) {
-								throw new IllegalStateException("Teaching was needed, but no relative offset value available and 'teach mode' is not active!");
-							}
-						} else {
-							logger.debug("The teached offset that will be used: [" + getRelativeTeachedOffset() + "].");
-							Coordinates absoluteOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, getRelativeTeachedOffset());
-							logger.debug("The absolute offset that will be used: [" + absoluteOffset + "].");
-							position.offset(absoluteOffset);
-							logger.debug("Exact put location: [" + position + "].");
-						}
+						logger.debug("The teached offset that will be used: [" + getRelativeTeachedOffset() + "].");
+						Coordinates absoluteOffset = TeachedCoordinatesCalculator.calculateAbsoluteOffset(position, getRelativeTeachedOffset());
+						logger.debug("The absolute offset that will be used: [" + absoluteOffset + "].");
+						position.offset(absoluteOffset);
+						logger.debug("Exact put location: [" + position + "].");
 						getRobotSettings().setLocation(position);
 					} else {
 						Coordinates position = new Coordinates(originalPosition);
@@ -150,6 +132,33 @@ public class PutStep extends AbstractTransportStep {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Ajust teached offset, so robot is in a safe position before teaching
+	 * @param devicePutSettings
+	 * @param originalPosition
+	 */
+	private void initSafeTeachedOffset(final Coordinates originalPosition) {
+		float extraOffsetX = 0;
+		float extraOffsetY = 0;
+		float extraOffsetZ = 0;
+		if ((getDevice() instanceof ReversalUnit) && !(getRobotSettings().getApproachType().equals(ApproachType.TOP))) {
+			if (getRobotSettings().getApproachType().equals(ApproachType.BOTTOM)) {
+				extraOffsetZ = - ((ReversalUnit) getDevice()).getStationHeight();
+			} else if (getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
+				extraOffsetX = ((ReversalUnit) getDevice()).getStationLength() - originalPosition.getX();
+			}  else if (getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
+				extraOffsetY = - ((ReversalUnit) getDevice()).getStationFixtureWidth();
+			}
+		} else {
+			if (originalPosition.getZ() < getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
+				extraOffsetZ = (getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() 
+						+ getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getHeight()) 
+						- originalPosition.getZ();
+			}
+		}
+		setRelativeTeachedOffset(TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, new Coordinates(extraOffsetX, extraOffsetY, extraOffsetZ, 0, 0, 0)));
 	}
 	
 	@Override

@@ -8,6 +8,7 @@ import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
+import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
@@ -49,6 +50,10 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 							checkProcessExecutorStatus(executor);
 							((AbstractCNCMachine) device).indicateOperatorRequested(true);
 						}
+						if (device instanceof AbstractConveyor) {
+							checkProcessExecutorStatus(executor);
+							((AbstractConveyor) device).indicateOperatorRequested(true);
+						}
 					}
 					logger.debug("Device: [" + getDevice() + "] prepared for intervention.");
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.INTERVENTION_READY, workPieceId));
@@ -67,6 +72,9 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 			if (device instanceof AbstractCNCMachine) {
 				((AbstractCNCMachine) device).indicateOperatorRequested(false);
 				logger.debug("OPERATOR NO LONGER REQUESTED");
+			}
+			if (device instanceof AbstractConveyor) {
+				((AbstractConveyor) device).indicateOperatorRequested(false);
 			}
 		}
 	}

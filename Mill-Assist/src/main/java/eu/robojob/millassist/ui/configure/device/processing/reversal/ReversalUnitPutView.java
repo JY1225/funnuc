@@ -1,7 +1,5 @@
 package eu.robojob.millassist.ui.configure.device.processing.reversal;
 
-import java.util.Map.Entry;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -12,12 +10,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
-import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
-import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 
@@ -34,8 +29,7 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 	
 	private Button btnResetSmooth;
 	
-	private Label lblLoadType, lblShiftedOrigin;
-	private Button btnTopLoad, btnBottomLoad, btnFrontLoad, btnLeftLoad;
+	private Label lblShiftedOrigin;
 	private Button btnHome, btnHomeExtraX;
 	
 	private NumericTextField ntxtSmoothX;
@@ -52,11 +46,6 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 	private static final String SMOOTH_Y = "ReversalUnitPutView.smoothY";
 	private static final String SMOOTH_Z = "ReversalUnitPutView.smoothZ";
 	private static final String SMOOTH_RESET = "ReversalUnitPutView.resetSmooth";
-	private static final String LOAD_TYPE = "ReversalUnitPutView.loadType";
-	private static final String TOP_LOAD = "ReversalUnitPutView.topLoad";
-	private static final String BOTTOM_LOAD = "ReversalUnitPutView.bottomLoad";
-	private static final String FRONT_LOAD = "ReversalUnitPutView.frontLoad";
-	private static final String LEFT_LOAD = "ReversalUnitPutView.leftLoad";
 	private static final String CONFIG_WIDTH = "ReversalUnitPutView.configWidth";
 	private static final String SHIFTED_ORIGIN = "ReversalUnitPutView.shiftedOrigin";
 	private static final String NORMAL_ORIGIN = "ReversalUnitPutView.normalOrigin";
@@ -79,9 +68,7 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		lblSmoothZ = new Label(Translator.getTranslation(SMOOTH_Z));
 		lblConfigWidth = new Label(Translator.getTranslation(CONFIG_WIDTH));
 		lblShiftedOrigin = new Label(Translator.getTranslation(SHIFTED_ORIGIN));
-		
-		lblLoadType = new Label(Translator.getTranslation(LOAD_TYPE));
-		
+				
 		ntxtSmoothX = new NumericTextField(MAX_INTEGER_LENGTH);
 		ntxtSmoothX.setPrefSize(UIConstants.NUMERIC_TEXT_FIELD_WIDTH, UIConstants.TEXT_FIELD_HEIGHT);
 		ntxtSmoothX.setOnChange(new ChangeListener<Float>() {
@@ -129,42 +116,6 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		btnResetSmooth.getStyleClass().add(CSS_CLASS_FORM_BUTTON);
 		btnResetSmooth.setPrefSize(UIConstants.BUTTON_HEIGHT * 1.5, UIConstants.BUTTON_HEIGHT);
 				
-		HBox hboxLoadType = new HBox();
-		hboxLoadType.setAlignment(Pos.CENTER_LEFT);
-		
-		btnTopLoad = createButton(Translator.getTranslation(TOP_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent event) {
-				getPresenter().changedPutType(ApproachType.TOP);
-				refreshLoadType(ApproachType.TOP);
-			}
-		});
-		btnTopLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-		btnBottomLoad = createButton(Translator.getTranslation(BOTTOM_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent event) {
-				getPresenter().changedPutType(ApproachType.BOTTOM);
-				refreshLoadType(ApproachType.BOTTOM);
-			}
-		});
-		btnBottomLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-		btnFrontLoad = createButton(Translator.getTranslation(FRONT_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent event) {
-				getPresenter().changedPutType(ApproachType.FRONT);
-				refreshLoadType(ApproachType.FRONT);
-			}
-		});
-		btnFrontLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
-		btnLeftLoad = createButton(Translator.getTranslation(LEFT_LOAD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent event) {
-				getPresenter().changedPutType(ApproachType.LEFT);
-				refreshLoadType(ApproachType.LEFT);
-			}
-		});
-		btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
-		hboxLoadType.getChildren().addAll(btnTopLoad, btnFrontLoad, btnLeftLoad, btnBottomLoad);
 		btnHome = createButton(Translator.getTranslation(NORMAL_ORIGIN), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent event) {
@@ -216,14 +167,6 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		row++;
 		getContents().add(hBoxSmoothPoint, column++, row);
 		
-		column = 0;
-		row++;
-		getContents().add(lblLoadType, column++, row);
-		
-		column = 0;
-		row++;
-		getContents().add(hboxLoadType, column++, row);
-		
 		refresh();
 	}
 
@@ -233,33 +176,6 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		ntxtSmoothY.setFocusListener(listener);
 		ntxtSmoothZ.setFocusListener(listener);
 		ntxtConfigWidth.setFocusListener(listener);
-	}
-	
-	private void refreshLoadType(ApproachType activeLoadType) {
-		hideNotification();
-		btnTopLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		btnBottomLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		btnLeftLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		btnFrontLoad.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		switch (activeLoadType) {
-		case BOTTOM:
-			btnBottomLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-			break;
-		case TOP:
-			btnTopLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-			break;
-		case LEFT:
-			btnLeftLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-			break;
-		case FRONT:
-			btnFrontLoad.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-			break;
-		default:
-			break;
-		}
-		if (getPresenter().getMenuPresenter() != null && getPresenter().getMenuPresenter().isSameApproachType()) {
-			showNotification(Translator.getTranslation(ReversalUnitMenuPresenter.SAME_APPROACHTYPES), Type.WARNING);
-		}
 	}
 	
 	private void refreshOrigin(final boolean isShifted) {
@@ -287,61 +203,8 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		if (getPresenter().getDeviceSettings().getConfigWidth() > 0 ) {
 			ntxtConfigWidth.setText("" + getPresenter().getDeviceSettings().getConfigWidth());
 		}
-		for (Entry<ApproachType, Boolean> entry: ((ReversalUnit) getPresenter().getPutStep().getDevice()).getAllowedApproachTypes().entrySet()) {
-			enableApproachType(entry.getKey(), entry.getValue());
-		}
-		refreshLoadType(getPresenter().getPutStep().getRobotSettings().getApproachType());
 		refreshOrigin(getPresenter().getDeviceSettings().isShiftedOrigin());
-		refreshLoadButtons();
 		manageOriginButtons();
-	}
-	
-	private void enableApproachType(ApproachType approachType, boolean enable) {
-		switch(approachType) {
-		case BOTTOM:
-			btnBottomLoad.setManaged(enable);
-			btnBottomLoad.setVisible(enable);
-			break;
-		case TOP:
-			btnTopLoad.setManaged(enable);
-			btnTopLoad.setVisible(enable);
-			break;
-		case LEFT:
-			btnLeftLoad.setManaged(enable);
-			btnLeftLoad.setVisible(enable);
-			break;
-		case FRONT:
-			btnFrontLoad.setManaged(enable);
-			btnFrontLoad.setVisible(enable);
-			break;
-		}
-	}
-	
-	private void refreshLoadButtons() {
-		//final button
-		if (!btnBottomLoad.isVisible()) {
-			if (btnLeftLoad.isVisible()) {
-				btnLeftLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
-				btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-			} else {
-				if (btnFrontLoad.isVisible()) {
-					btnFrontLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
-					btnFrontLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-				}
-			}
-		}
-		//first button
-		if (!btnTopLoad.isVisible()) {
-			if (btnFrontLoad.isVisible()) {
-				btnFrontLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
-				btnFrontLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-			} else {
-				if (btnLeftLoad.isVisible()) {
-					btnLeftLoad.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
-					btnLeftLoad.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-				}
-			}
-		}
 	}
 
 	private void manageOriginButtons() {

@@ -39,6 +39,12 @@ public class AutomateControllingThreadReversal extends AutomateControllingThread
 				reversalCount++;
 		}
 		if (reversalCount >= getNbConcurrentProcessesInMachine()) {
+			for (ProcessFlowExecutionThread processExecutor: processFlowExecutors) {
+				if (processExecutor.getExecutionStatus().equals(ExecutionThreadStatus.WAITING_FOR_PICK_MACHINE_BEFORE_REVERSAL)) {
+					processExecutor.setExecutionStatus(ExecutionThreadStatus.REVERSING_WITH_ROBOT);
+					processExecutor.continueExecution();
+				}
+			}
 			return;
 		}
 		super.notifyWaitingBeforePickFromStacker(processFlowExecutor);

@@ -2,7 +2,6 @@ package eu.robojob.millassist.ui.configure.device.processing.reversal;
 
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
-import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
@@ -76,13 +75,6 @@ public class ReversalUnitPutPresenter extends AbstractFormPresenter<ReversalUnit
 			deviceSettings.setConfigWidth(configWidth);		
 			putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
 
-		}
-	}
-	
-	public void changedPutType(final ApproachType loadType) {
-		if (!putStep.getRobotSettings().getApproachType().equals(loadType)) {
-			putStep.getRobotSettings().setApproachType(loadType);
-			putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, true));
 		}
 	}
 	

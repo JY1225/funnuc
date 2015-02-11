@@ -31,9 +31,6 @@ public class OutputBinMenuPresenter extends AbstractStackingDeviceMenuPresenter 
 	public void configureWorkPiece() { }
 
 	@Override
-	public void configureOffsets() { }
-
-	@Override
 	public void configurePick() { }
 
 	@Override

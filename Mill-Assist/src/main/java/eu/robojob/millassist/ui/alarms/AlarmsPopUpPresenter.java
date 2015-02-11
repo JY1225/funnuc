@@ -119,6 +119,16 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 						}
 					}
 				}
+				if (device instanceof AbstractConveyor) {
+					if (device.isConnected()) {
+						try {
+							((AbstractConveyor) device).indicateOperatorRequested(true);
+						} catch (AbstractCommunicationException | InterruptedException e) {
+							e.printStackTrace();
+							logger.error(e);
+						}
+					}
+				}
 			}
 			if (getParent() != null) {
 				getParent().indicateAlarmsPresent(true);
@@ -129,6 +139,16 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 					if (device.isConnected()) {
 						try {
 							((AbstractCNCMachine) device).indicateOperatorRequested(false);
+						} catch (AbstractCommunicationException | InterruptedException e) {
+							e.printStackTrace();
+							logger.error(e);
+						}
+					}
+				}
+				if (device instanceof AbstractConveyor) {
+					if (device.isConnected()) {
+						try {
+							((AbstractConveyor) device).indicateOperatorRequested(false);
 						} catch (AbstractCommunicationException | InterruptedException e) {
 							e.printStackTrace();
 							logger.error(e);
