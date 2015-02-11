@@ -291,13 +291,25 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
 					Rectangle rp2 = null;
 					if (basicStackPlate.getBasicLayout().getHorizontalR() >= -0.01) {
-						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
-								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+						if (markerNeedsTranslation(stackingPosition.getOrientation())) {
+							rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength() / 2 - 10, 
+									width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
+									5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+						} else {
+							rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
+									width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
+									5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+						}
 					} else {
-						rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength() / 2 - 10, 
-								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+						if (markerNeedsTranslation(stackingPosition.getOrientation())) {
+							rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
+									width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
+									5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+						} else {
+							rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength() / 2 - 10, 
+									width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
+									5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+						}
 					}
 					Text txtAmount = new Text(stackingPosition.getAmount() + "");
 					txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);
@@ -352,6 +364,22 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 				}
 			}
 		}
+	}
+	
+	private boolean markerNeedsTranslation(double orientation) {
+		if (basicStackPlate.hasGridPlate()) {
+			if (orientation > 90) {
+				if (basicStackPlate.getBasicLayout().getExtraRPlus90() != basicStackPlate.getBasicLayout().getHorizontalR()) {
+					return true;
+				}
+			} else {
+				if (basicStackPlate.getBasicLayout().getExtraRMinus90() != basicStackPlate.getBasicLayout().getHorizontalR()) {
+					return true;
+				}
+			}
+			
+		}
+		return false;
 	}
 	
 	/**

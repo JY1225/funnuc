@@ -54,16 +54,16 @@ public class GridHolePane extends GridPane {
 	}
 	
 	private void initComponents() {	
-		
+		numtxtX = new NumericTextField(5);
+		numtxtY = new NumericTextField(5);
+		numtxtR = new NumericTextField(5);
+		table = new TableView<GridHole>();
 	}
 	
 	private HBox getButtonBox() {
 		HBox buttonBox = new HBox();
-		numtxtX = new NumericTextField(5);
 		numtxtX.setPrefHeight(35);
-		numtxtY = new NumericTextField(5);
 		numtxtY.setPrefHeight(35);
-		numtxtR = new NumericTextField(5);
 		numtxtR.setPrefHeight(35);
 		addButton = AbstractFormView.createButton("OK", 70, 35, new EventHandler<ActionEvent>() {
 			
@@ -72,7 +72,7 @@ public class GridHolePane extends GridPane {
 				if (numtxtR.getValue() >= 0 && numtxtR.getValue() <= 180) {
 					GridHole newGridHole = new GridHole(numtxtX.getValue(), numtxtY.getValue(), numtxtR.getValue());
 					data.add(newGridHole);
-				}
+				} 
 			}
 		});
 		buttonBox.setSpacing(10);
@@ -82,7 +82,6 @@ public class GridHolePane extends GridPane {
 	}
 	
 	private void getTable() {
-		table = new TableView<GridHole>();
 		table.setItems(data);
 		table.setEditable(false);
 		TableColumn<GridHole, Float> xColumn = new TableColumn<GridHole, Float>("X");
@@ -156,7 +155,9 @@ public class GridHolePane extends GridPane {
 				}
 			}
 		});
-		table.setPlaceholder(new Label(Translator.getTranslation(GRIDTABLE_PLACEHOLDER)));
+		Label placeHolder = new Label(Translator.getTranslation(GRIDTABLE_PLACEHOLDER));
+		placeHolder.setWrapText(true);
+		table.setPlaceholder(placeHolder);
 	}
 	
 	public void setTextFieldListener(final TextInputControlListener listener) {
