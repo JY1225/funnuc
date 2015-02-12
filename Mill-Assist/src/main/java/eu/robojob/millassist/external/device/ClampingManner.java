@@ -28,7 +28,7 @@ public class ClampingManner {
 		} else {
 			this.type = Type.WIDTH;
 		}
-		this.changed = false;
+		setChanged(false);
 	}
 
 	public Type getType() {
@@ -44,7 +44,22 @@ public class ClampingManner {
 	}
 
 	public void setChanged(boolean changed) {
+
 		this.changed = changed;
+		if (clampingMannerAllowed.equals(ClampingMannerAllowed.LENGTH)) {
+			if (!changed) {
+				setType(Type.LENGTH);
+			} else{
+				setType(Type.WIDTH);
+			}
+		} else if (clampingMannerAllowed.equals(ClampingMannerAllowed.WIDTH)) {
+			if (!changed) {
+				setType(Type.WIDTH);
+			} else{
+				setType(Type.LENGTH);
+			}
+		}
+
 	}
 	
 	public void setClampingMannerAllowed(ClampingMannerAllowed allowed) {

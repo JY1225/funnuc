@@ -317,7 +317,6 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		btnWidth.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
 		boolean isLength = deviceInfo.getProcessingStep().getProcessFlow().getClampingType().getType().equals(Type.LENGTH);
 		if (getPresenter().isClampingBlocked()) {
-			isLength = isLength ^ deviceInfo.getProcessingStep().getProcessFlow().getClampingType().isChanged();
 			btnLength.setDisable(!isLength);
 			btnWidth.setDisable(isLength);
 		} else {
