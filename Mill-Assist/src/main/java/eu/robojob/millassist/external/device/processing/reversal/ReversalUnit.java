@@ -1,12 +1,8 @@
 package eu.robojob.millassist.external.device.processing.reversal;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
@@ -25,6 +21,8 @@ import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyc
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.util.PropertyManager;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class ReversalUnit extends AbstractProcessingDevice {
@@ -226,17 +224,7 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	}
 	
 	private void setWidthReversal() {
-		Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(new File("settings.properties")));
-			if ((properties.get("reversal-width") != null) && (properties.get("reversal-width").equals("true"))) {
-				this.isWidthReversal = true;
-			} else {
-				this.isWidthReversal = false;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.isWidthReversal = PropertyManager.hasSettingValue(Setting.REVERSAL_WIDTH, "true");
 	}
 	
 	@Override

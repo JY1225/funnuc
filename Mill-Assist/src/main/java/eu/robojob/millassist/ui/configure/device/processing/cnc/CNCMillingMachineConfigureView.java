@@ -1,9 +1,5 @@
 package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
 import java.util.Set;
 
 import javafx.beans.value.ChangeListener;
@@ -21,9 +17,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
@@ -34,8 +27,10 @@ import eu.robojob.millassist.ui.controls.IconFlowSelector;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 
 public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingMachineConfigurePresenter> {
 
@@ -75,7 +70,6 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	private static final String WIDTH = "CNCMillingMachineConfigureView.width";
 	
 	private static final String CSS_CLASS_BUTTON_CLAMPING = "btn-clamping";
-	private static Logger logger = LogManager.getLogger(CNCMillingMachineConfigureView.class.getName());
 	
 	public void setDeviceInfo(final DeviceInformation deviceInfo) {
 		this.deviceInfo = deviceInfo;
@@ -169,16 +163,9 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		GridPane.setMargin(lblWorkArea, new Insets(0, 0, 0, 10));
 		refresh();
 		
-		Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(new File("settings.properties")));
-			if ((properties.get("use-clamp-orientation") != null) && (properties.get("use-clamp-orientation").equals("false"))) {
-				hboxBtns.setVisible(false);
-				hboxBtns.setManaged(false);
-			}
-		} catch (IOException e) {
-			logger.error(e);
-			e.printStackTrace();
+		if (PropertyManager.hasSettingValue(Setting.CLAMP_ORIENTATION, "false")) {
+			hboxBtns.setVisible(false);
+			hboxBtns.setManaged(false);
 		}
 	}
 	

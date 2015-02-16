@@ -1,10 +1,5 @@
 package eu.robojob.millassist.ui.robot;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -12,12 +7,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.millassist.ui.general.PopUpView;
+import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 
 public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 
@@ -64,24 +58,17 @@ public class RobotPopUpView extends PopUpView<RobotPopUpPresenter> {
 	private static final int TOP_LEFT_X = 65;
 	private static final int TOP_LEFT_Y = 0;
 	
-	private static Logger logger = LogManager.getLogger(RobotPopUpView.class.getName());
-	
 	private int speed;
 	
 	public RobotPopUpView() {
 		super(TOP_LEFT_X, TOP_LEFT_Y, WIDTH * 2 - 1, HEIGHT);
-		final Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(new File("settings.properties")));
-			if (properties.containsKey("to-custom-pos") && properties.get("to-custom-pos").equals("true")) {
-				vBoxMenuItems2.getChildren().add(btnToCustomPos);
-				setHeight((AMOUNT_OF_ITEMS + 1) * BUTTON_HEIGHT);
-				setPrefHeight((AMOUNT_OF_ITEMS + 1) * BUTTON_HEIGHT);
-				setMaxHeight((AMOUNT_OF_ITEMS + 1) * BUTTON_HEIGHT);
-				//btnCloseB.getStyleClass().remove(CSS_CLASS_POPUP_BUTTON_BOTTOM);
-			}
-		} catch (IOException e) {
-			logger.error(e);
+		
+		if (PropertyManager.hasSettingValue(Setting.CUSTOM_POS, "true")) {
+			vBoxMenuItems2.getChildren().add(btnToCustomPos);
+			setHeight((AMOUNT_OF_ITEMS + 1) * BUTTON_HEIGHT);
+			setPrefHeight((AMOUNT_OF_ITEMS + 1) * BUTTON_HEIGHT);
+			setMaxHeight((AMOUNT_OF_ITEMS + 1) * BUTTON_HEIGHT);
+			//btnCloseB.getStyleClass().remove(CSS_CLASS_POPUP_BUTTON_BOTTOM);
 		}
 	}
 	

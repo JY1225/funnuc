@@ -1,14 +1,10 @@
 package eu.robojob.millassist.external.device.stacking.conveyor.normal;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -37,6 +33,8 @@ import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.Approach
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.threading.ThreadManager;
+import eu.robojob.millassist.util.PropertyManager;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
@@ -681,17 +679,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	}
 	
 	private void checkSetup() {
-		Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(new File("settings.properties")));
-			if ((properties.get("conveyor-setup") != null) && (properties.get("conveyor-setup").equals("right"))) {
-				isLeftSetup = false;
-			} else {
-				isLeftSetup = true;
-			}
-		} catch (IOException e) {
-
-		}
+		this.isLeftSetup = !PropertyManager.hasSettingValue(Setting.CONVEYOR_SETUP, "right");
 	}
 	
 	public boolean isLeftSetup() {

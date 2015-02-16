@@ -1,8 +1,5 @@
 package eu.robojob.millassist.process;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -41,6 +37,8 @@ import eu.robojob.millassist.process.event.ProcessChangedEvent;
 import eu.robojob.millassist.process.event.ProcessFlowEvent;
 import eu.robojob.millassist.process.event.ProcessFlowListener;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.util.PropertyManager;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
@@ -628,17 +626,7 @@ public class ProcessFlow {
 	}
 	
 	public boolean hasSingleCycleSetting() {
-		Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(new File("settings.properties")));
-			if ((properties.get("single-cycle") != null) && (properties.get("single-cycle").equals("true"))) {
-				return true;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
-		return false;
+		return PropertyManager.hasSettingValue(Setting.SINGLE_CYCLE, "true");
 	}
 	
 	public void setSingleCycle(boolean isSingleCycle) {

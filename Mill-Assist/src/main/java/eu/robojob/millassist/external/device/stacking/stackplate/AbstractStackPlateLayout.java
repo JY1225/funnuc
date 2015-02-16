@@ -1,17 +1,15 @@
 package eu.robojob.millassist.external.device.stacking.stackplate;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate.WorkPieceOrientation;
+import eu.robojob.millassist.util.PropertyManager;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
@@ -337,18 +335,7 @@ public abstract class AbstractStackPlateLayout {
 	}
 	
 	public void setAlignRight() {
-		final Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(new File("settings.properties")));
-			if (properties.containsKey("align-right") && properties.get("align-right").equals("true")) {
-				alignRight = true;
-			} else {
-				alignRight = false;
-			}
-		} catch (IOException e) {
-			logger.error(e);
-			e.printStackTrace();
-		}
+		alignRight = PropertyManager.hasSettingValue(Setting.ALIGN_RIGHT, "true");
 	}
 
 	public AbstractStackPlate getStackPlate() {
