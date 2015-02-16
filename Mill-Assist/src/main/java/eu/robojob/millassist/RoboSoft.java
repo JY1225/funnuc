@@ -16,6 +16,7 @@ import javafx.stage.StageStyle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import eu.robojob.millassist.db.ConnectionManager;
 import eu.robojob.millassist.db.GeneralMapper;
@@ -47,6 +48,8 @@ public class RoboSoft extends Application {
 
 	@Override
 	public void start(final Stage stage) throws Exception {
+		File loggerConfig = new File("log4j2.xml");
+		Configurator.initialize("logger", null, loggerConfig.toURI());
 		logger.info("Started application.");
 		StdErrLog.tieSystemOutAndErrToLog();
 		Font.loadFont(this.getClass().getResourceAsStream("/fonts/Open Sans/OpenSans-Light.ttf"), 12).getName();
