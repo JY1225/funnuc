@@ -10,6 +10,7 @@ import javafx.scene.layout.StackPane;
 import eu.robojob.millassist.ui.general.PopUpView;
 import eu.robojob.millassist.ui.general.dialog.AbstractDialogView;
 import eu.robojob.millassist.ui.menu.MenuBarView;
+import eu.robojob.millassist.util.SizeManager;
 
 public class MainView extends BorderPane {
 	
@@ -20,17 +21,17 @@ public class MainView extends BorderPane {
 	
 	public MainView() {
 		super();
-		this.setPrefSize(800, 600);
-		this.setMinSize(800, 600);
-		this.setMaxSize(800, 600);
+		this.setPrefSize(SizeManager.WIDTH, SizeManager.HEIGHT);
+		this.setMinSize(SizeManager.WIDTH, SizeManager.HEIGHT);
+		this.setMaxSize(SizeManager.WIDTH, SizeManager.HEIGHT);
 		mainPane = new StackPane();
 		contents = new BorderPane();
-		mainPane.setPrefSize(800, 600);
-		mainPane.setMinSize(800, 600);
-		mainPane.setMaxSize(800, 600);
-		contents.setPrefSize(800, 600);
-		contents.setMinSize(800, 600);
-		contents.setMaxSize(800, 600);
+		mainPane.setPrefSize(SizeManager.WIDTH, SizeManager.HEIGHT);
+		mainPane.setMinSize(SizeManager.WIDTH, SizeManager.HEIGHT);
+		mainPane.setMaxSize(SizeManager.WIDTH, SizeManager.HEIGHT);
+		contents.setPrefSize(SizeManager.WIDTH, SizeManager.HEIGHT);
+		contents.setMinSize(SizeManager.WIDTH, SizeManager.HEIGHT);
+		contents.setMaxSize(SizeManager.WIDTH, SizeManager.HEIGHT);
 		this.setCenter(mainPane);
 		mainPane.getChildren().add(contents);
 		contentPane = new StackPane();

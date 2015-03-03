@@ -35,6 +35,7 @@ import eu.robojob.millassist.ui.controls.IconFlowSelector;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 
@@ -45,7 +46,8 @@ public class RobotGripperView extends AbstractFormView<RobotGripperPresenter> {
 	
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
-	private static final double ICONFLOWSELECTOR_WIDTH = 540;
+	private static final double ICONFLOWSELECTOR_PADDING = 20;
+	private static final double ICONFLOWSELECTOR_WIDTH = SizeManager.WIDTH - SizeManager.ADMIN_MENU_WIDTH - SizeManager.ADMIN_SUBMENU_WIDTH - ICONFLOWSELECTOR_PADDING;
 	
 	private static final String NAME = "RobotGripperView.name";
 	private static final String HEIGHT = "RobotGripperView.height";

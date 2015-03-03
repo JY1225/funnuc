@@ -21,8 +21,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.process.ProcessFlow;
-import eu.robojob.millassist.ui.general.MainContentView;
 import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
+import eu.robojob.millassist.util.SizeManager;
 
 public class ProcessFlowView extends StackPane {
 
@@ -115,8 +115,8 @@ public class ProcessFlowView extends StackPane {
 			column++;
 		}
 		gpFlow.setAlignment(Pos.TOP_CENTER);
-		gpFlow.setPrefHeight(MainContentView.HEIGHT_TOP);
-		gpFlow.setPrefWidth(MainContentView.WIDTH);
+		gpFlow.setPrefHeight(SizeManager.HEIGHT_TOP);
+		gpFlow.setPrefWidth(SizeManager.WIDTH);
 		gpFlow.getStyleClass().add(CSS_CLASS_PROCESSFLOW_VIEW);
 		gpFlow.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 			@Override
@@ -135,6 +135,8 @@ public class ProcessFlowView extends StackPane {
 		scrollPane.setFitToHeight(false);
 		scrollPane.setFitToWidth(false);
 		scrollPane.setPannable(false);
+		this.setPrefWidth(SizeManager.WIDTH);
+		this.setPrefHeight(SizeManager.HEIGHT_TOP);
 	}
 	
 	public List<DeviceButton> getDeviceButtons() {

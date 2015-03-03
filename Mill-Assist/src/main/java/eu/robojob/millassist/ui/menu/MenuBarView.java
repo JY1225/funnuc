@@ -10,7 +10,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.millassist.threading.ThreadManager;
+import eu.robojob.millassist.ui.MainPresenter;
+import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.Translator;
 
 public class MenuBarView extends ToolBar {
@@ -61,6 +67,8 @@ public class MenuBarView extends ToolBar {
 	private static final String CONFIGURE = "MenuBarView.configure";
 	private static final String TEACH = "MenuBarView.teach";
 	private static final String AUTOMATE = "MenuBarView.automate";
+
+	private final Logger logger = LogManager.getLogger(MainPresenter.class.getName());
 	
 	public MenuBarView() {
 		buildView();
@@ -206,6 +214,7 @@ public class MenuBarView extends ToolBar {
 		buttonBar.setPadding(new Insets(0, 0, 0, 0));
 		this.getItems().add(buttonBar);
 		this.setPrefHeight(45);
+		this.setPrefWidth(SizeManager.WIDTH);
 		
 	}
 	

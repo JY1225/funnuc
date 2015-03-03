@@ -11,8 +11,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
-import eu.robojob.millassist.ui.general.MainContentView;
 import eu.robojob.millassist.ui.general.status.StatusView;
+import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 
@@ -48,7 +48,7 @@ public class TeachStatusView extends VBox {
 	
 	public void build() {
 		
-		setPrefHeight(MainContentView.HEIGHT_BOTTOM);
+		setPrefHeight(SizeManager.HEIGHT_BOTTOM);
 		setAlignment(Pos.CENTER);
 		getChildren().clear();
 		statusView.setWidth(WIDTH);

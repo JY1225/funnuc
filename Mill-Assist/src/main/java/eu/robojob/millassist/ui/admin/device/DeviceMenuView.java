@@ -23,9 +23,6 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 	@Override
 	protected void build() {
 		this.getStyleClass().add("admin-menu");
-		setPrefWidth(150);
-		setMinWidth(150);
-		setMaxWidth(150);
 		int index = 0;
 		addTextMenuItem(index++, Translator.getTranslation(USERFRAMES), true, new EventHandler<ActionEvent>() {
 			@Override

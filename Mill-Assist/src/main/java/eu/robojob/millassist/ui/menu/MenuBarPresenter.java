@@ -19,7 +19,7 @@ public class MenuBarPresenter {
 	private static final String UNSAVED_CHANGES = "MenuBarPresenter.unsavedChanges";
 	private static final String BACK_TO_CFG_TITLE = "MenuBarPresenter.backToConfigureTitle";
 	private static final String BACK_TO_CONFIGURE = "MenuBarPresenter.backToConfigure";
-	
+
 	public MenuBarPresenter(final MenuBarView processMenuBarView) {
 		this.view = processMenuBarView;
 		processMenuBarView.setPresenter(this);

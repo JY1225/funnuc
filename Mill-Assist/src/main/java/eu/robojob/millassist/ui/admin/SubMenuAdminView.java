@@ -9,6 +9,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import eu.robojob.millassist.ui.admin.robot.RobotAdminPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.SizeManager;
 
 public class SubMenuAdminView extends HBox {
 
@@ -18,7 +19,6 @@ public class SubMenuAdminView extends HBox {
 	
 	private StackPane menuView;
 	private StackPane contentView;
-	
 	public SubMenuAdminView() {
 		super();
 		build();
@@ -42,7 +42,7 @@ public class SubMenuAdminView extends HBox {
 		getChildren().add(contentView);
 		HBox.setHgrow(contentView, Priority.ALWAYS);
 		contentView.setAlignment(Pos.TOP_CENTER);
-		contentView.setPrefWidth(800 - MENU_WIDTH - 50);
+		contentView.setPrefWidth(SizeManager.WIDTH - MENU_WIDTH - 50);
 	}
 	
 	public void setMenuView(final Node menuView) {

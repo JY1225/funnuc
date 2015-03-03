@@ -3,6 +3,8 @@ package eu.robojob.millassist.ui.admin.device.cnc;
 import java.util.List;
 import java.util.Set;
 
+import com.sun.glass.ui.Size;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -18,6 +20,7 @@ import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 
@@ -42,7 +45,7 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		
 	private static final String SAVE = "CNCMachineGeneralView.save";
 	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
-	private static final double WIDTH = 600;
+	private static final double WIDTH = SizeManager.WIDTH - SizeManager.ADMIN_MENU_WIDTH - SizeManager.ADMIN_SUBMENU_WIDTH;
 	
 	
 	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;

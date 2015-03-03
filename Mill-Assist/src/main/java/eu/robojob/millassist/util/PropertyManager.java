@@ -31,7 +31,10 @@ public final class PropertyManager {
 		SINGLE_CYCLE("single-cycle"),
 		CLAMPING_MANNER_ALLOWED("clamping-manner-allowed"),
 		CONVEYOR_SETUP("conveyor-setup"),
-		SIDE_LOAD("side-load");
+		SIDE_LOAD("side-load"),
+		FULL_SCREEN("full-screen"),
+		SCREEN_WIDTH("screen-width"),
+		SCREEN_HEIGHT("screen-height");
 		
 		private String settingsText;
 		

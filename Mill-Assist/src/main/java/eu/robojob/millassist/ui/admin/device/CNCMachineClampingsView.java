@@ -41,6 +41,7 @@ import eu.robojob.millassist.ui.controls.IconFlowSelector;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 
@@ -131,7 +132,9 @@ public class CNCMachineClampingsView extends AbstractFormView<CNCMachineClamping
 	private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
 	private static final String DELETE_ICON_PATH = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 5 8.75 L 15 8.75 L 15 11.25 L 5 11.25 L 5 8.75 z";
 
-	private static final double ICONFLOWSELECTOR_WIDTH = 540;
+	private static final double ICONFLOWSELECTOR_PADDING = 20;
+	
+	private static final double ICONFLOWSELECTOR_WIDTH = SizeManager.WIDTH-ICONFLOWSELECTOR_PADDING*2 - SizeManager.ADMIN_MENU_WIDTH - SizeManager.ADMIN_SUBMENU_WIDTH;
 	private static final double IMG_WIDTH = 90;
 	private static final double IMG_HEIGHT = 90;
 	private static final double LBL_WIDTH = 25;
