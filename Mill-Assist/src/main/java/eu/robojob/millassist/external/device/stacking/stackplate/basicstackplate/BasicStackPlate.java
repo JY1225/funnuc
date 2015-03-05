@@ -118,7 +118,7 @@ public class BasicStackPlate extends AbstractStackPlate {
 	}
 
 	public synchronized void addWorkPieces(final int amount, boolean reset) throws IncorrectWorkPieceDataException {
-		getLayout().placeRawWorkPieces(getRawWorkPiece(), amount, reset);
+		getLayout().placeRawWorkPieces(getRawWorkPiece(), amount, reset, true);
 		notifyLayoutChanged();
 	}
 	

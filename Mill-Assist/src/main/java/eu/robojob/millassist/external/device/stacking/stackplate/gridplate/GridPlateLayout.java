@@ -37,6 +37,7 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	}
 	
 	@Override
+	//FIXME - make right align possible for all angles
 	protected void initStackingPositions(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, float orientation) {
 		for (GridHole hole: gridPlate.getGridHoles()) {
 			if (hole.getAngle() < 90) {
@@ -67,7 +68,6 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 			WorkPieceDimensions dimensions, float orientation)
 			throws IncorrectWorkPieceDataException {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	public GridPlate getGridPlate() {

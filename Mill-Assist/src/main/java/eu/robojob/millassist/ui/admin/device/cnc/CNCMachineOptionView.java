@@ -1,10 +1,6 @@
 package eu.robojob.millassist.ui.admin.device.cnc;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -22,7 +18,9 @@ import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.ui.controls.CoordinateBox;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 
 public class CNCMachineOptionView extends GridPane {
 	
@@ -202,15 +200,9 @@ public class CNCMachineOptionView extends GridPane {
 	}
 	
 	private void airblowActive() {
-		Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(new File("settings.properties")));
-			if ((properties.get("robot-airblow") != null) && (properties.get("robot-airblow").equals("false"))) {
-				topCoord.setDisable(true);
-				bottomCoord.setDisable(true);
-			}
-		} catch (IOException e) {
-
+		if (PropertyManager.hasSettingValue(Setting.AIRBLOW, "false")) {
+			topCoord.setDisable(true);
+			bottomCoord.setDisable(true);
 		}
 	}
 

@@ -1,9 +1,7 @@
 package eu.robojob.millassist.external.device;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
+import eu.robojob.millassist.util.PropertyManager;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 
 public class ClampingManner {
 
@@ -70,18 +68,13 @@ public class ClampingManner {
 		return this.clampingMannerAllowed;
 	}
 	
-	private void checkClampingMannerAllowed() {
-		Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(new File("settings.properties")));
-			if ((properties.get("clamping-manner-allowed") != null) && (properties.get("clamping-manner-allowed").equals("length"))) {
-				setClampingMannerAllowed(ClampingMannerAllowed.LENGTH);
-			} else if ((properties.get("clamping-manner-allowed") != null) && (properties.get("clamping-manner-allowed").equals("width"))) {
-				setClampingMannerAllowed(ClampingMannerAllowed.WIDTH);
-			} else {
-				setClampingMannerAllowed(ClampingMannerAllowed.FREE);
-			}
-		} catch (IOException e) {
+	private void checkClampingMannerAllowed() {	
+		if (PropertyManager.hasSettingValue(Setting.CLAMPING_MANNER_ALLOWED, "length")) {
+			setClampingMannerAllowed(ClampingMannerAllowed.LENGTH);
+		} else if(PropertyManager.hasSettingValue(Setting.CLAMPING_MANNER_ALLOWED, "width")) {
+			setClampingMannerAllowed(ClampingMannerAllowed.WIDTH);
+		} else {
+			setClampingMannerAllowed(ClampingMannerAllowed.FREE);
 		}
 	}
 	

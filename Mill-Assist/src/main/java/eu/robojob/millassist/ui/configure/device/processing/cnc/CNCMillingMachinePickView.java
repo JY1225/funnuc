@@ -1,10 +1,5 @@
 package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -18,9 +13,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -29,8 +21,10 @@ import eu.robojob.millassist.ui.controls.CoordinateBox;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 
 public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachinePickPresenter> {
 
@@ -68,9 +62,7 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 	private static final String AIRBLOW = "CNCMillingMachinePickView.airblow";
 	private static final String TIM = "CNCMillingMachinePickView.tim";
 	private static final String MACHINE_AIRBLOW = "CNCMillingMachinePickView.machineAirblow";
-	
-	private static Logger logger = LogManager.getLogger(CNCMillingMachinePickView.class.getName());
-		
+			
 	public CNCMillingMachinePickView() {
 		super();
 		getContents().setHgap(HGAP);
@@ -245,17 +237,11 @@ public class CNCMillingMachinePickView extends AbstractFormView<CNCMillingMachin
 		getContents().add(coordBAirblowBottom, 0, row);
 		getContents().add(btnResetAirblow, column, row++);
 		getContents().add(coordBAirblowTop, 0, row++);
-		Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(new File("settings.properties")));
-			if ((properties.get("robot-airblow") != null) && (properties.get("robot-airblow").equals("false"))) {
-				cbRobotAirblow.setVisible(false);
-				cbRobotAirblow.setManaged(false);
-				pickStep.getRobotSettings().setRobotAirblow(false);
-			}
-		} catch (IOException e) {
-			logger.error(e);
-			e.printStackTrace();
+		
+		if (PropertyManager.hasSettingValue(Setting.AIRBLOW, "false")) {
+			cbRobotAirblow.setVisible(false);
+			cbRobotAirblow.setManaged(false);
+			pickStep.getRobotSettings().setRobotAirblow(false);
 		}
 	}
 

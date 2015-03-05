@@ -1,9 +1,5 @@
 package eu.robojob.millassist.process.execution.fixed;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +12,8 @@ import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.process.execution.fixed.ProcessFlowExecutionThread.ExecutionThreadStatus;
+import eu.robojob.millassist.util.PropertyManager;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 
 public abstract class AbstractFixedControllingThread implements Runnable {
 
@@ -47,17 +45,7 @@ public abstract class AbstractFixedControllingThread implements Runnable {
 	}
 	
 	private void checkSideLoad() {
-		Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(new File("settings.properties")));
-			if ((properties.get("side-load") != null) && (properties.get("side-load").equals("true"))) {
-				sideLoad = true;
-			} else {
-				sideLoad = false;
-			}
-		} catch (IOException e) {
-
-		}
+		sideLoad = PropertyManager.hasSettingValue(Setting.SIDE_LOAD, "true");
 	}
 	
 	protected void initExecutors() {

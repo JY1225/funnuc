@@ -1,16 +1,14 @@
 package eu.robojob.millassist.external.device.stacking.stackplate;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
+import eu.robojob.millassist.util.PropertyManager;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 import eu.robojob.millassist.workpiece.WorkPieceDimensions;
@@ -28,7 +26,8 @@ public abstract class AbstractStackPlateLayout {
 	private int layers;
 	private float plateWidth;
 	private float plateLength;
-	private boolean alignRight;
+	private boolean alignRightVertical;
+	private boolean alignRightHorizontal;
 	private AbstractStackPlate stackPlate;
 	
 	private List<StackPlateStackingPosition> stackingPositions;
@@ -134,7 +133,7 @@ public abstract class AbstractStackPlateLayout {
 		logger.debug("Placing raw workpieces: [" + amount + "].");
 		resetStackingPositions();
 		if(amount <= getMaxPiecesPossibleAmount()) {
-			placeRawWorkPieces(rawWorkPiece, amount, false);
+			placeRawWorkPieces(rawWorkPiece, amount, false, false);
 		} else {
 			logger.debug("Trying to place [" + amount + "] but maximum is [" + getMaxPiecesPossibleAmount() + "].");
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
@@ -147,8 +146,10 @@ public abstract class AbstractStackPlateLayout {
 	 *
 	 * @param rawWorkPiece
 	 * @param amount
+	 * @param resetFirst - flag to indicate whether or not the first position can be changed by new pieces
+	 * @param isAddOperation - flag to indicate whether the function is called from the ADD/REPLACE function
 	 */
-	public void placeRawWorkPieces(final WorkPiece rawWorkPiece, final int amount, boolean resetFirst) {
+	public void placeRawWorkPieces(final WorkPiece rawWorkPiece, final int amount, boolean resetFirst, boolean isAddOperation) {
 		logger.debug("Adding raw workpieces: [" + amount + "].");
 		int placedAmount = 0;
 		int stackingPos = 0;
@@ -166,6 +167,34 @@ public abstract class AbstractStackPlateLayout {
 			}
 			stackingPos++;
 		}
+		if (isAddOperation) {
+			transferLastToFirst(stackingPos-1);
+		}
+	}
+	
+	public void transferLastToFirst(int lastPosition) {
+		//If the final stack of pieces (in case of multiple layers) does not hold the maximum, try to move pieces from the 
+		//first raw stack to the last raw stack (min of first stack is always 1)
+		if (getLayers() > 1) {
+			StackPlateStackingPosition lastStackingPosition = getStackingPositions().get(lastPosition);
+			StackPlateStackingPosition firstStackingPosition = null;
+			if (lastStackingPosition.getAmount() < getLayers()) {
+				int amountToTransfer1 = getLayers() - lastStackingPosition.getAmount();
+				int amountToTransfer2 = 0;
+				for (StackPlateStackingPosition stPlatePosition: getStackingPositions()) {
+					if (stPlatePosition.getWorkPiece().getType().equals(Type.RAW)) {
+						firstStackingPosition = stPlatePosition;
+						amountToTransfer2 = stPlatePosition.getAmount() - 1;
+						break;
+					}
+				}
+				int amountToTransfer = Math.min(amountToTransfer1, amountToTransfer2);
+				if (firstStackingPosition != null && !firstStackingPosition.equals(getStackingPositions().get(0))) {
+					lastStackingPosition.setAmount(lastStackingPosition.getAmount() + amountToTransfer);
+					firstStackingPosition.setAmount(lastStackingPosition.getAmount() - amountToTransfer);
+				}
+			}
+		} 
 	}
 	
 	private boolean placeFirstPiece(final WorkPiece workPiece, boolean isEmptyPiece) {
@@ -301,23 +330,17 @@ public abstract class AbstractStackPlateLayout {
 		this.stackingPositions = stackingPositions;
 	}
 	
-	public boolean isRightAligned() {
-		return this.alignRight;
+	public boolean isRightAlignedVertical() {
+		return this.alignRightVertical;
+	}
+	
+	public boolean isRightAlignedHorizontal() {
+		return this.alignRightHorizontal;
 	}
 	
 	public void setAlignRight() {
-		final Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(new File("settings.properties")));
-			if (properties.containsKey("align-right") && properties.get("align-right").equals("true")) {
-				alignRight = true;
-			} else {
-				alignRight = false;
-			}
-		} catch (IOException e) {
-			logger.error(e);
-			e.printStackTrace();
-		}
+		alignRightVertical = PropertyManager.hasSettingValue(Setting.ALIGN_RIGHT_VERTICAL, "true");
+		alignRightHorizontal = PropertyManager.hasSettingValue(Setting.ALIGN_RIGHT_HORIZONTAL, "true");
 	}
 
 	public AbstractStackPlate getStackPlate() {

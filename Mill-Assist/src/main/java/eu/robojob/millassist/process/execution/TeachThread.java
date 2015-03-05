@@ -1,10 +1,5 @@
 package eu.robojob.millassist.process.execution;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +18,9 @@ import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 
 public class TeachThread implements Runnable, ProcessExecutor {
 
@@ -43,17 +40,7 @@ public class TeachThread implements Runnable, ProcessExecutor {
 	}
 	
 	private void checkSideLoad() {
-		Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(new File("settings.properties")));
-			if ((properties.get("side-load") != null) && (properties.get("side-load").equals("true"))) {
-				sideLoad = true;
-			} else {
-				sideLoad = false;
-			}
-		} catch (IOException e) {
-
-		}
+		sideLoad = PropertyManager.hasSettingValue(Setting.SIDE_LOAD, "true");
 	}
 	
 	@Override
