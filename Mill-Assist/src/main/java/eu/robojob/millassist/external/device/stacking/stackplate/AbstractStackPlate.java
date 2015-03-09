@@ -367,7 +367,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	
 	public abstract void notifyLayoutChanged();
 	
-	public void placeFinishedWorkPieces(final int finishedAmount) {
+	public void placeFinishedWorkPieces(final int finishedAmount, final boolean hasBinForFinished) {
 		int placedAmount = 0;
 		int nbLayers = getLayout().getLayers();
 		int position = 0;
@@ -376,14 +376,22 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 			StackPlateStackingPosition stPos = getLayout().getStackingPositions().get(position);
 			if(!stPos.hasWorkPiece()) {
 				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, getRawWorkPiece().getDimensions(), null, Float.NaN);
-				stPos.setWorkPiece(finishedWorkPiece);
+				if (hasBinForFinished) {
+					stPos.setWorkPiece(null);
+				} else {
+					stPos.setWorkPiece(finishedWorkPiece);
+				}
 				while(stPos.getAmount() < nbLayers && placedAmount < finishedAmount) {
 					stPos.incrementAmount();
 					placedAmount++;
 				}
 			} else if (stPos.getWorkPiece().getType().equals(WorkPiece.Type.RAW)) {
 				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, getRawWorkPiece().getDimensions(), null, Float.NaN);
-				stPos.setWorkPiece(finishedWorkPiece);
+				if (hasBinForFinished) {
+					stPos.setWorkPiece(null);
+				} else {
+					stPos.setWorkPiece(finishedWorkPiece);
+				}
 				replacedAmount += stPos.getAmount();
 				stPos.setAmount(0);
 				while(stPos.getAmount() < nbLayers && placedAmount < finishedAmount) {
@@ -401,7 +409,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 		decreaseAmountOfFirstRawPieces(placedAmount - replacedAmount);
 		notifyLayoutChanged();
 	}
-	
+		
 	private void decreaseAmountOfFirstRawPieces(final int amount) {
 		int position = getLayout().getFirstRawPosition();
 		if(position >= 0) {
