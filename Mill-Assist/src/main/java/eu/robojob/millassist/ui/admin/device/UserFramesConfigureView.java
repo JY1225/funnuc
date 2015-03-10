@@ -2,6 +2,9 @@ package eu.robojob.millassist.ui.admin.device;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -15,6 +18,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import eu.robojob.millassist.RoboSoft;
 import eu.robojob.millassist.positioning.UserFrame;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
@@ -74,6 +78,8 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 	
 	private ObservableList<String> userFrameNames;
 	
+	private static Logger logger = LogManager.getLogger(UserFramesConfigureView.class.getName());
+	
 	public UserFramesConfigureView() {
 		this.userFrameNames = FXCollections.observableArrayList();
 	}
@@ -94,6 +100,7 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		cbbUfs.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(final ObservableValue<? extends String> observableValue, final String oldValue, final String newValue) {
+				logger.info(newValue);
 				if (newValue != null) {
 					btnEdit.setDisable(false);
 				} else {
@@ -104,6 +111,7 @@ public class UserFramesConfigureView extends AbstractFormView<UserFramesConfigur
 		cbbUfs.setItems(userFrameNames);
 
 		HBox hboxButtons = new HBox();
+		
 		btnEdit = createButton(EDIT_PATH, null, Translator.getTranslation(EDIT), BTN_WIDTH, BTN_HEIGHT, null);
 		btnEdit.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
 		btnEdit.setOnAction(new EventHandler<ActionEvent>() {
