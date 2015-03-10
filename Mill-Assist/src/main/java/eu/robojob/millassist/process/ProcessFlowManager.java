@@ -67,6 +67,16 @@ public class ProcessFlowManager {
 		return null;
 	}
 	
+	public ProcessFlow getProcessFlowForId(final int processFlowId) {
+		try {
+			return processFlowMapper.getProcessFlowById(processFlowId);
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	//TODO add buffer and look at delete!
 	public List<ProcessFlow> getProcessFlows() {
 		try {
@@ -238,7 +248,8 @@ public class ProcessFlowManager {
 		}
 	}
 	
-	public void deleteProcessFlow(final ProcessFlow processFlow) {
+	public void deleteProcessFlow(final int processFlowId) {
+		ProcessFlow processFlow = getProcessFlowForId(processFlowId);
 		try {
 			processFlowMapper.deleteProcessFlow(processFlow);
 			processFlow.setId(0);

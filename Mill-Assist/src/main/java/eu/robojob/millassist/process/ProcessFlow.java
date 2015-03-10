@@ -107,7 +107,9 @@ public class ProcessFlow {
 		setCurrentIndex(WORKPIECE_0_ID, -1);
 		setCurrentIndex(WORKPIECE_1_ID, -1);
 		setCurrentIndex(WORKPIECE_2_ID, -1);
-		setFinishedAmount(0);
+		if(processSteps.size() > 0) {
+			setFinishedAmount(0);
+		}
 		this.hasChangesSinceLastSave = false;
 	}
 	

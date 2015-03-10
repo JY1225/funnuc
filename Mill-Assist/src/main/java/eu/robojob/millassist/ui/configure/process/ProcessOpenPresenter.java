@@ -67,7 +67,8 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 		return activeProcessFlow.getName();
 	}
 	
-	public void openProcess(final ProcessFlow processFlow) {
+	public void openProcess(final int processFlowId) {
+		final ProcessFlow processFlow = processFlowManager.getProcessFlowForId(processFlowId);
 		// Do this on seperate thread (not on UI thread)
 		if(activeProcessFlow.hasChangesSinceLastSave()) {
 			ThreadManager.submit(new Thread() {
@@ -102,7 +103,7 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 				
 	}
 	
-	public void deleteProcess(final ProcessFlow process) {
+	public void deleteProcess(final int processId) {
 		ThreadManager.submit(new Thread() {
 			@Override
 			public void run() {
@@ -111,10 +112,10 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 						Platform.runLater(new Thread() {
 							@Override
 							public void run() {
-								if (process.getId() == activeProcessFlow.getId()) {
+								if (processId == activeProcessFlow.getId()) {
 									activeProcessFlow.processProcessFlowEvent(new DataChangedEvent(activeProcessFlow, null, false));
 								}
-								processFlowManager.deleteProcessFlow(process);
+								processFlowManager.deleteProcessFlow(processId);
 								getMenuPresenter().refreshParent();
 								refreshProcessFlowList();
 								filterChanged(getView().getFilter());

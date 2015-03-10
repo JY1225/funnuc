@@ -112,13 +112,13 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 				
 		});
 
-		nameColumn.prefWidthProperty().bind(table.widthProperty().divide(10).multiply(5));
+		nameColumn.prefWidthProperty().bind(table.widthProperty().divide(10).multiply(4));
 		nameColumn.setResizable(false);
 
 		lastOpenedColumn.prefWidthProperty().bind(table.widthProperty().divide(10).multiply(4));
 		lastOpenedColumn.setResizable(false);
 
-		deleteProcessColumn.prefWidthProperty().bind(table.widthProperty().divide(10));
+		deleteProcessColumn.prefWidthProperty().bind(table.widthProperty().divide(10).multiply(2));
 		deleteProcessColumn.setResizable(false);
 		
 		table.getColumns().add(nameColumn);
@@ -133,7 +133,7 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		btnLoad = createButton(openIconPath, CSS_CLASS_BUTTON_LOAD, Translator.getTranslation(LOAD), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				getPresenter().openProcess(table.getSelectionModel().selectedItemProperty().getValue());
+				getPresenter().openProcess(table.getSelectionModel().selectedItemProperty().getValue().getId());
 			}
 		});
 		table.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -205,7 +205,7 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		DeleteButton() {
 			deleteButton = createButton(deleteIconPath, CSS_CLASS_DELETE_OPEN_BTN, "", 32, 0, new EventHandler<ActionEvent>() {
 				 @Override public void handle(ActionEvent actionEvent) {
-					 getPresenter().deleteProcess(p);
+					 getPresenter().deleteProcess(p.getId());
 				 }
 			});
 		}

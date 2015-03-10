@@ -11,8 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.derby.iapi.types.SQLTime;
+import org.apache.derby.iapi.types.SQLTimestamp;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.sun.tools.hat.internal.server.QueryListener;
 
 import eu.robojob.millassist.db.ConnectionManager;
 import eu.robojob.millassist.db.GeneralMapper;
@@ -107,7 +111,7 @@ public class ProcessFlowMapper {
 		List<ProcessFlow> processFlows = new ArrayList<ProcessFlow>();
 		while (results.next()) {
 			int id = results.getInt("ID");
-			ProcessFlow processFlow = getProcessFlowById(id);
+			ProcessFlow processFlow = getLightWeightedProcessFlowById(id);
 			processFlows.add(processFlow);
 		}
 		return processFlows;
@@ -216,34 +220,40 @@ public class ProcessFlowMapper {
 	private void deleteStepsAndSettings(final ProcessFlow processFlow) throws SQLException {
 		// delete all coordinates and work pieces (these are not cascaded)
 		// delete all coordinates
-		PreparedStatement stmtDeleteCoordinates = ConnectionManager.getConnection().prepareStatement("" +
-				"delete from coordinates where coordinates.id in " 													+ 
-				"	( " 																							+
-                "		(select coordinates from step_teachedcoordinates where step_teachedcoordinates.step in " 	+
-                "        	(select id from step where step.processflow = ?) "										+
-                "		) " 																						+
-                " 		union "																						+
-                "		(select smoothpoint from robotactionsettings where robotactionsettings.step in "			+
-                "			(select id from step where step.processflow = ?) "										+
-                "		)"                                                                                          +
-				"	) "	
+		PreparedStatement stmtgetCoordinatesToDelete = ConnectionManager.getConnection().prepareStatement(""  
+                + "		(select step_teachedcoordinates.coordinates from step_teachedcoordinates "
+                + "			JOIN step "
+                + "			ON step.id = step_teachedcoordinates.step "
+                + "			where step.processflow=?"
+                + "		) " 	
+                + " 		union "																						
+                + "		(select robotactionsettings.smoothpoint from robotactionsettings "
+                + "			JOIN step "
+                + "			ON step.id = robotactionsettings.step "
+                + "			where step.processflow=?"
+                + "		) "
 				);	
-		stmtDeleteCoordinates.setInt(1, processFlow.getId());
-		stmtDeleteCoordinates.setInt(2, processFlow.getId());
-		stmtDeleteCoordinates.executeUpdate();
-		// delete all work pieces (it suffices to delete the work pieces from the pick settings
-		PreparedStatement stmtDeleteWorkPieces = ConnectionManager.getConnection().prepareStatement("" 	+
-				"delete from workpiece where workpiece.id in "											+ 
-				"	(" 																					+
-				"		(select distinct workpiece from robotpicksettings where robotpicksettings.id in"+
-				"			(" 																			+
-				"				select id from robotactionsettings where robotactionsettings.step in " 	+
-				"					(select id from step where step.processflow = ?)" 					+
-				"			)" 																			+
-				"		)" 																				+
-				"	) ");
-		stmtDeleteWorkPieces.setInt(1, processFlow.getId());
-		stmtDeleteWorkPieces.executeUpdate();
+		stmtgetCoordinatesToDelete.setInt(1, processFlow.getId());
+		stmtgetCoordinatesToDelete.setInt(2, processFlow.getId());
+		ResultSet resultCoordinates = stmtgetCoordinatesToDelete.executeQuery();
+		while(resultCoordinates.next()) {
+			deleteCoordinate(resultCoordinates.getInt(1));
+		}
+		// delete all work pieces (it suffices to delete the work pieces from the pick setting
+		PreparedStatement stmtGetWorkPiecesToDelete = ConnectionManager.getConnection().prepareStatement("" 	
+				+ "select distinct workpiece from robotpicksettings "
+				+ "join robotactionsettings "
+				+ "on robotactionsettings.id = robotpicksettings.id "
+				+ "join step "
+				+ "on robotactionsettings.step = step.id "
+				+ "where step.processflow=?"
+				+ "");
+		stmtGetWorkPiecesToDelete.setInt(1, processFlow.getId());
+		ResultSet resultset =stmtGetWorkPiecesToDelete.executeQuery();
+		while(resultset.next()) {
+			deleteWorkPiece(resultset.getInt("workpiece"));
+		}
+		
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM DEVICESETTINGS WHERE PROCESSFLOW = ?");
 		stmt.setInt(1, processFlow.getId());
 		stmt.executeUpdate();	// note the cascade delete settings take care of deleting all referenced rows
@@ -255,6 +265,18 @@ public class ProcessFlowMapper {
 		stmt3.executeUpdate();	// note the cascade delete settings take care of deleting all referenced rows
 	}
 
+	private void deleteWorkPiece(Integer workPieceId) throws SQLException {
+		PreparedStatement stmtDeleteCoordinates = ConnectionManager.getConnection().prepareStatement("delete from workpiece where id=?");
+		stmtDeleteCoordinates.setInt(1, workPieceId);
+		stmtDeleteCoordinates.executeUpdate();
+	}
+	
+	private void deleteCoordinate(Integer coordinateId) throws SQLException {
+		PreparedStatement stmtDeleteCoordinates = ConnectionManager.getConnection().prepareStatement("delete from coordinates where id=?");
+		stmtDeleteCoordinates.setInt(1, coordinateId);
+		stmtDeleteCoordinates.executeUpdate();
+	}
+	
 	private void clearProcessFlowStepsSettingsAndReferencedIds(final ProcessFlow processFlow) {
 		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
 			if (step instanceof PickStep) {
@@ -578,6 +600,23 @@ public class ProcessFlowMapper {
 				throw new IllegalStateException("Unknown clamping manner type: " + clampingMannerId);
 			}
 		}
+		return processFlow;
+	}
+	
+	private ProcessFlow getLightWeightedProcessFlowById(final int id) throws SQLException {
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID, NAME, LASTOPENED FROM PROCESSFLOW WHERE ID = ?");
+		stmt.setInt(1, id);
+		ResultSet results = stmt.executeQuery();
+		ProcessFlow processFlow = null;
+		if (results.next()) {
+			generalMapper.clearBuffers(id);
+			String name = results.getString("NAME");
+			Timestamp lastOpened = results.getTimestamp("LASTOPENED");
+			processFlow = new ProcessFlow(name);
+			processFlow.setId(id);
+			processFlow.setLastOpened(lastOpened);
+		}
+		
 		return processFlow;
 	}
 	
