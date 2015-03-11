@@ -292,11 +292,13 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
 					Rectangle rp2 = null;
+					//R at 0 = 90
 					if (basicStackPlate.getBasicLayout().getHorizontalR() >= -0.01) {
 						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
 								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
 					} else {
+						//R at 0 = -90
 						rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength() / 2 - 10, 
 								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
@@ -319,34 +321,60 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					group.getChildren().add(txtAmount);
 				} else if (stackingPosition.getOrientation() == WorkPieceOrientation.TILTED) {
 					// TILTED
-					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
-							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
-					Rectangle rp2 = null;
-					if (basicStackPlate.getR(basicStackPlate.getLayout().getOrientation()) >= -0.01) {
-						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
+					Rectangle rp=null;
+					Rectangle rp2=null;
+					if(((basicStackPlate.getBasicLayout().getTiltedR() == 135.0f || basicStackPlate.getBasicLayout().getTiltedR() == -45.0f) && !basicStackPlate.getBasicLayout().isRightAligned()) || ((basicStackPlate.getBasicLayout().getTiltedR() == 45.0f || basicStackPlate.getBasicLayout().getTiltedR() == -135.0f) && basicStackPlate.getBasicLayout().isRightAligned())) {
+						//0
+						rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
 								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
-					} else {
-						rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength() / 2 - 10, 
-								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-								5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+								stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
+						rp2 = null;
+						//R at 0 = 90
+						if (basicStackPlate.getBasicLayout().getHorizontalR() >= -0.01) {
+							rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
+									width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
+									5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+						} else {
+							//R at 0 = -90
+							rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength() / 2 - 10, 
+									width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
+									5, stackingPosition.getWorkPiece().getDimensions().getWidth());
+						}
+					}
+					else if(((basicStackPlate.getBasicLayout().getTiltedR() == 135.0f || basicStackPlate.getBasicLayout().getTiltedR() == -45.0f) && basicStackPlate.getBasicLayout().isRightAligned()) || ((basicStackPlate.getBasicLayout().getTiltedR() == 45.0f || basicStackPlate.getBasicLayout().getTiltedR() == -135.0f) && !basicStackPlate.getBasicLayout().isRightAligned())) {
+						//90deg
+						rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
+								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
+								stackingPosition.getWorkPiece().getDimensions().getWidth(), stackingPosition.getWorkPiece().getDimensions().getLength());
+						rp2 = null;
+						if (basicStackPlate.getBasicLayout().getHorizontalR() >= -0.01) {
+							rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2 + 5, 
+									width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
+									5, stackingPosition.getWorkPiece().getDimensions().getLength());
+						} else {
+							rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getWidth() / 2 - 10, 
+									width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
+									5, stackingPosition.getWorkPiece().getDimensions().getLength());
+						}
 					}
 					Text txtAmount = new Text(stackingPosition.getAmount() + "");
 					txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);
 					txtAmount.setX(stackingPosition.getPosition().getX() - txtAmount.getBoundsInParent().getWidth()/2);
 					txtAmount.setY(width - stackingPosition.getPosition().getY() + txtAmount.getBoundsInParent().getHeight()/2);
-					int rotation = -WorkPieceOrientation.TILTED.getDegrees();
-					if(basicStackPlate.getBasicLayout().isRightAligned()) {
-						//Turn the work piece so that it is right aligned.
-						rotation = -(rotation - 180);
+					
+					//If tilted R = -135 or 45 => rotate 45
+					int rotation = 45;
+					//If tilted R = 135 or -45 => rotate -45
+					if(basicStackPlate.getBasicLayout().getTiltedR() == -45.0f || basicStackPlate.getBasicLayout().getTiltedR() == 135.0f) {
+						rotation = -rotation;
 					}
+					
 					Rotate rotate = new Rotate(rotation, stackingPosition.getPosition().getX(), width - stackingPosition.getPosition().getY());
 					rp.getTransforms().add(rotate);
 					rp.getStyleClass().add(CSS_CLASS_WORKPIECE);
 					rp2.getTransforms().add(rotate);
 					rp2.getStyleClass().add(CSS_CLASS_WORKPIECE_MARK);
-				//	txtAmount.getTransforms().add(rotate);
+//					txtAmount.getTransforms().add(rotate);
 					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
 						rp.getStyleClass().add(CSS_CLASS_FINISHED);
 						rp2.getStyleClass().add(CSS_CLASS_FINISHED_MARK);
