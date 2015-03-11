@@ -65,7 +65,16 @@ public class RoboSoft extends Application {
 			SizeManager.setApplicationSizes(true);
 		}
 		else {
-			SizeManager.setApplicationSizes(Integer.parseInt(PropertyManager.getValue(Setting.SCREEN_WIDTH)), Integer.parseInt(PropertyManager.getValue(Setting.SCREEN_HEIGHT)));
+			String width_str = PropertyManager.getValue(Setting.SCREEN_WIDTH);
+			String heigth_str = PropertyManager.getValue(Setting.SCREEN_HEIGHT);
+			int width = 800;
+			int heigth = 600;
+			if(width_str != null || heigth_str != null) {
+				width = Integer.valueOf(width_str);
+				heigth = Integer.valueOf(heigth_str);
+			}
+
+			SizeManager.setApplicationSizes(width, heigth);
 		}
 		
 		Scene scene2 = new Scene(preloader, SizeManager.WIDTH, SizeManager.HEIGHT);
