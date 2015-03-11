@@ -336,7 +336,12 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);
 					txtAmount.setX(stackingPosition.getPosition().getX() - txtAmount.getBoundsInParent().getWidth()/2);
 					txtAmount.setY(width - stackingPosition.getPosition().getY() + txtAmount.getBoundsInParent().getHeight()/2);
-					Rotate rotate = new Rotate(-45, stackingPosition.getPosition().getX(), width - stackingPosition.getPosition().getY());
+					int rotation = -WorkPieceOrientation.TILTED.getDegrees();
+					if(basicStackPlate.getBasicLayout().isRightAligned()) {
+						//Turn the work piece so that it is right aligned.
+						rotation = -(rotation - 180);
+					}
+					Rotate rotate = new Rotate(rotation, stackingPosition.getPosition().getX(), width - stackingPosition.getPosition().getY());
 					rp.getTransforms().add(rotate);
 					rp.getStyleClass().add(CSS_CLASS_WORKPIECE);
 					rp2.getTransforms().add(rotate);

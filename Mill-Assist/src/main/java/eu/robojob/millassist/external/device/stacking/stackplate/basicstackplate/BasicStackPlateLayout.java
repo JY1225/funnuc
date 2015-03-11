@@ -532,7 +532,12 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 			double a = horizontalHoleDistance/(Math.sqrt(2)) - studDiameter/2;
 			double b = horizontalHoleDistance/(Math.sqrt(2));
 			int leftOther = getNbStudsLeftOther(dimensions.getLength(), dimensions.getWidth(), a, b);
-			initializeRawWorkPiecePositionsTilted(dimensions, n, leftOther, nbHorizontal, getVerticalIndex(dimensions.getLength(), dimensions.getWidth(), orientation), nbVertical, isCornerLength, isCornerWidth);
+			if(isRightAligned()) {
+				initializeRawWorkPiecePositionsTiltedRight(dimensions, leftOther - n, leftOther, nbHorizontal, getVerticalIndex(dimensions.getLength(), dimensions.getWidth(), orientation), nbVertical, isCornerLength, isCornerWidth);
+			}
+			else {
+				initializeRawWorkPiecePositionsTilted(dimensions, n, leftOther, nbHorizontal, getVerticalIndex(dimensions.getLength(), dimensions.getWidth(), orientation), nbVertical, isCornerLength, isCornerWidth);
+			}
 			break;
 		}
 	}
@@ -702,7 +707,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 			}
 		}
 	}
-
+	
 	private void initializeRawWorkPiecePositionsTilted(final WorkPieceDimensions dimensions, final int amountOfStudsLeftFirst,
 			final int amountOfStudsLeftOther, final int amountHorizontal, final int amountOfStudsVertical, 
 				final int amountVertical, final boolean cornerLength, final boolean cornerWidth) {
@@ -745,6 +750,68 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 							}
 						} else if ((studPositions[0].length > (maxTimes * 2 + firstStudPosX + 1)) && (studPositions.length > (maxTimes + firstStudPosY))) {
 							int positionX = maxTimes * 2 + firstStudPosX + 1;
+							int positionY = maxTimes + firstStudPosY;
+							StudPosition studPos2 = new StudPosition(positionX, positionY, studPositions[positionY][positionX].getCenterPosition(), StudType.NORMAL);
+							stPos.addstud(studPos2);
+							ok = true;
+						} else {
+							maxTimes--;
+						}		
+					}
+				}
+			}
+		}
+	}
+
+	private void initializeRawWorkPiecePositionsTiltedRight(final WorkPieceDimensions dimensions, final int amountOfStudsLeftFirst,
+			final int amountOfStudsLeftOther, final int amountHorizontal, final int amountOfStudsVertical, 
+				final int amountVertical, final boolean cornerLength, final boolean cornerWidth) {
+		double a = horizontalHoleDistance/(Math.sqrt(2)) - studDiameter/2;
+		getStackingPositions().clear();
+		for (int i = 0; i < amountVertical; i++) {
+			for (int j = 0; j < amountHorizontal; j++) {
+				int amountOfStudsLeft = amountOfStudsLeftFirst + j * amountOfStudsLeftOther;
+				int amountOfStudsBottom = 1 + i * amountOfStudsVertical;
+				double adjustment = (horizontalHoleDistance/2 - studDiameter/Math.sqrt(2));
+				double xBottom = getHorizontalPadding() + (amountOfStudsLeft - 1)*horizontalHoleDistance + horizontalHoleDistance/2;
+				double yBottom = getVerticalPaddingBottom() - adjustment + (amountOfStudsBottom - 1)*verticalHoleDistance;
+				double extraX = (dimensions.getLength()/Math.sqrt(2) - dimensions.getWidth()/Math.sqrt(2))/2;
+				double extraY = (dimensions.getLength()/Math.sqrt(2) + dimensions.getWidth()/Math.sqrt(2))/2;
+				float x = (float) (xBottom - extraX);
+				float y = (float) (yBottom + extraY);
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(getOrientation()), null, 0, WorkPieceOrientation.TILTED);
+				getStackingPositions().add(stPos);
+				int firstStudPosX = amountOfStudsLeftFirst + j * amountOfStudsLeftOther - 1;
+				int firstStudPosY = amountOfStudsVertical * i;
+				StudPosition studPos = null;
+				if (cornerLength || cornerWidth) {
+					studPos = new StudPosition(firstStudPosX, firstStudPosY, studPositions[firstStudPosY][firstStudPosX].getCenterPosition(), StudType.TILTED_CORNER);
+					stPos.addstud(studPos);
+					// if the corner is not needed because of the length, we will add an extra stud for stability
+				} else {
+					if(firstStudPosX < studPositions[firstStudPosY].length-1) {
+						studPos = new StudPosition(firstStudPosX, firstStudPosY, studPositions[firstStudPosY][firstStudPosX].getCenterPosition(), StudType.NORMAL);
+						StudPosition studPos2 = new StudPosition(firstStudPosX + 1, firstStudPosY, studPositions[firstStudPosY][firstStudPosX + 1].getCenterPosition(), StudType.NORMAL);
+						stPos.addstud(studPos);
+						stPos.addstud(studPos2);
+					}
+					else {
+						getStackingPositions().remove(stPos);
+						break;
+					}
+					
+				}
+				if (!cornerLength) {
+					boolean ok = false;
+					int maxTimes = (int) Math.floor((dimensions.getLength() - a - minOverlap) / ((horizontalHoleDistance*2) * Math.sqrt(2)));
+					while (!ok) {
+						if (maxTimes <= 0) {
+							ok = true;
+							if (!cornerWidth) {
+								getStackingPositions().remove(stPos);	// remove the last work piece as it can not be supported correctly
+							}
+						} else if ((0 <= (firstStudPosX - maxTimes * 2)) && (studPositions.length > (maxTimes + firstStudPosY))) {
+							int positionX = firstStudPosX - maxTimes * 2;
 							int positionY = maxTimes + firstStudPosY;
 							StudPosition studPos2 = new StudPosition(positionX, positionY, studPositions[positionY][positionX].getCenterPosition(), StudType.NORMAL);
 							stPos.addstud(studPos2);
