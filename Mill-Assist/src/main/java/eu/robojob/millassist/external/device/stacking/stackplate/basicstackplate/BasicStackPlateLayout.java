@@ -537,7 +537,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 			double b = horizontalHoleDistance/(Math.sqrt(2));
 			int leftOther = getNbStudsLeftOther(dimensions.getLength(), dimensions.getWidth(), a, b);
 			if(isRightAlignedHorizontal()) {
-				initializeRawWorkPiecePositionsTiltedRight(dimensions, leftOther - n, leftOther, nbHorizontal, getVerticalIndex(dimensions.getLength(), dimensions.getWidth(), orientation), nbVertical, isCornerLength, isCornerWidth);
+				initializeRawWorkPiecePositionsTiltedRight(dimensions, leftOther, leftOther, nbHorizontal, getVerticalIndex(dimensions.getLength(), dimensions.getWidth(), orientation), nbVertical, isCornerLength, isCornerWidth);
 			}
 			else {
 				initializeRawWorkPiecePositionsTilted(dimensions, n, leftOther, nbHorizontal, getVerticalIndex(dimensions.getLength(), dimensions.getWidth(), orientation), nbVertical, isCornerLength, isCornerWidth);
@@ -848,7 +848,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 					stPos.addstud(studPos);
 					// if the corner is not needed because of the length, we will add an extra stud for stability
 				} else {
-					if(firstStudPosX < studPositions[firstStudPosY].length-1) {
+					if(firstStudPosX < studPositions[firstStudPosY].length -1) {
 						studPos = new StudPosition(firstStudPosX, firstStudPosY, studPositions[firstStudPosY][firstStudPosX].getCenterPosition(), StudType.NORMAL);
 						StudPosition studPos2 = new StudPosition(firstStudPosX + 1, firstStudPosY, studPositions[firstStudPosY][firstStudPosX + 1].getCenterPosition(), StudType.NORMAL);
 						stPos.addstud(studPos);
