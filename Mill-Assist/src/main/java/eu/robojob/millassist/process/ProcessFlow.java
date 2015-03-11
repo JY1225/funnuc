@@ -191,7 +191,7 @@ public class ProcessFlow {
 		for (AbstractDevice device : getDevices()) {
 			if (device instanceof BasicStackPlate) {
 				((BasicStackPlate) device).setLayout(((BasicStackPlate) device).getBasicLayout());
-				((BasicStackPlate) device).placeFinishedWorkPieces(processFlow.getFinishedAmount());
+				((BasicStackPlate) device).placeFinishedWorkPieces(processFlow.getFinishedAmount(), false);
 			}
 			if (device instanceof AbstractCNCMachine) {
 				for (WorkAreaManager workAreaManager: device.getWorkAreaManagers()) {

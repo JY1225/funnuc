@@ -238,10 +238,14 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	protected void initStackingPositions(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, WorkPieceOrientation orientation) {
 		switch(orientation) {
 		case HORIZONTAL:
-			initStackingPositionsHorizontal(nbHorizontal, nbVertical, dimensions, orientation);
+			if (isRightAlignedHorizontal()) {
+				initStackingPositionsHorizontalRight(nbHorizontal, nbVertical, dimensions, orientation);	
+			} else {
+				initStackingPositionsHorizontal(nbHorizontal, nbVertical, dimensions, orientation);	
+			}
 			break;
 		case DEG90:
-			if(isRightAligned()) {
+			if(isRightAlignedVertical()) {
 				initStackingPositionsDeg90Right(nbHorizontal, nbVertical, dimensions, orientation);
 			} else {
 				initStackingPositionsDeg90(nbHorizontal, nbVertical, dimensions, orientation);
@@ -267,6 +271,19 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 				double xBottomLeft = posX + j * horizontalOffsetNxtPiece + firstX;
 				double yBottomLeft = posY + i * verticalOffsetNxtPiece + firstY;
 				float x = (float) xBottomLeft + dimensions.getLength()/2;
+				float y = (float) yBottomLeft + dimensions.getWidth()/2;
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getStackPlate().getR(orientation), null, 0, orientation);
+				getStackingPositions().add(stPos);
+			}
+		}
+	}
+	
+	private void initStackingPositionsHorizontalRight(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, WorkPieceOrientation orientation) {
+		for(int i = 0; i < nbVertical; i++) {
+			for(int j = 0; j < nbHorizontal; j++) {
+				double xBottomLeft = posX + j * horizontalOffsetNxtPiece + firstX + holeLength;
+				double yBottomLeft = posY + i * verticalOffsetNxtPiece + firstY;
+				float x = (float) xBottomLeft - dimensions.getLength()/2;
 				float y = (float) yBottomLeft + dimensions.getWidth()/2;
 				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getStackPlate().getR(orientation), null, 0, orientation);
 				getStackingPositions().add(stPos);
