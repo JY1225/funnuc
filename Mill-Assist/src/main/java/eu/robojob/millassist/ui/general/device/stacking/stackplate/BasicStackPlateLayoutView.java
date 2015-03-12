@@ -323,7 +323,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					// TILTED
 					Rectangle rp=null;
 					Rectangle rp2=null;
-					if(((basicStackPlate.getBasicLayout().getTiltedR() == 135.0f || basicStackPlate.getBasicLayout().getTiltedR() == -45.0f) && !basicStackPlate.getBasicLayout().isRightAlignedHorizontal()) || ((basicStackPlate.getBasicLayout().getTiltedR() == 45.0f || basicStackPlate.getBasicLayout().getTiltedR() == -135.0f) && basicStackPlate.getBasicLayout().isRightAlignedHorizontal())) {
+					if(((basicStackPlate.getBasicLayout().getTiltedR() == 135.0f || basicStackPlate.getBasicLayout().getTiltedR() == -45.0f) && !basicStackPlate.getBasicLayout().isRightAligned()) || ((basicStackPlate.getBasicLayout().getTiltedR() == 45.0f || basicStackPlate.getBasicLayout().getTiltedR() == -135.0f) && basicStackPlate.getBasicLayout().isRightAligned())) {
 						//0
 						rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
 								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
@@ -341,7 +341,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 									5, stackingPosition.getWorkPiece().getDimensions().getWidth());
 						}
 					}
-					else if(((basicStackPlate.getBasicLayout().getTiltedR() == 135.0f || basicStackPlate.getBasicLayout().getTiltedR() == -45.0f) && basicStackPlate.getBasicLayout().isRightAlignedHorizontal()) || ((basicStackPlate.getBasicLayout().getTiltedR() == 45.0f || basicStackPlate.getBasicLayout().getTiltedR() == -135.0f) && !basicStackPlate.getBasicLayout().isRightAlignedHorizontal())) {
+					else if(((basicStackPlate.getBasicLayout().getTiltedR() == 135.0f || basicStackPlate.getBasicLayout().getTiltedR() == -45.0f) && basicStackPlate.getBasicLayout().isRightAligned()) || ((basicStackPlate.getBasicLayout().getTiltedR() == 45.0f || basicStackPlate.getBasicLayout().getTiltedR() == -135.0f) && !basicStackPlate.getBasicLayout().isRightAligned())) {
 						//90deg
 						rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
 								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 

@@ -537,7 +537,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		case HORIZONTAL:
 			verticalStuds = getNumberOfStudsPerWorkPiece(dimensions.getWidth(), false); 
 			horizontalStuds = getNumberOfStudsPerWorkPiece(dimensions.getLength(), true);
-			if (isRightAlignedHorizontal()) {
+			if (isRightAligned()) {
 				initializeRawWorkPiecePositionsHorizontalRight(dimensions, horizontalStuds, verticalStuds, nbHorizontal, nbVertical, isCornerLength, isCornerWidth);
 			} else {
 				initializeRawWorkPiecePositionsHorizontal(dimensions, horizontalStuds, verticalStuds, nbHorizontal, nbVertical, isCornerLength, isCornerWidth);
@@ -546,7 +546,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		case DEG90:
 			verticalStuds = getNumberOfStudsPerWorkPiece(dimensions.getLength(), false); 
 			horizontalStuds = getNumberOfStudsPerWorkPiece(dimensions.getWidth(), true);
-			if(isRightAlignedVertical()) {
+			if(isRightAligned()) {
 				initializeRawWorkPiecePositionsDeg90Right(dimensions, horizontalStuds, verticalStuds, nbHorizontal, nbVertical, isCornerLength, isCornerWidth);
 			} else {
 				initializeRawWorkPiecePositionsDeg90(dimensions, horizontalStuds, verticalStuds, nbHorizontal, nbVertical, isCornerLength, isCornerWidth);
@@ -558,7 +558,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 			double a = horizontalHoleDistance/(Math.sqrt(2)) - studDiameter/2;
 			double b = horizontalHoleDistance/(Math.sqrt(2));
 			int leftOther = getNbStudsLeftOther(dimensions.getLength(), dimensions.getWidth(), a, b);
-			if(isRightAlignedHorizontal()) {
+			if(isRightAligned()) {
 				initializeRawWorkPiecePositionsTiltedRight(dimensions, nAlignRight, leftOther, nbHorizontal, getVerticalIndex(dimensions.getLength(), dimensions.getWidth(), orientation), nbVertical, isCornerLength, isCornerWidth);
 			}
 			else {

@@ -191,8 +191,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			getStackPlate().getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
 			getStackPlate().getLayout().initRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
 			if ((deviceSettings.getOrientation() == WorkPieceOrientation.DEG90) || 
-					((deviceSettings.getOrientation() == WorkPieceOrientation.TILTED) && (getStackPlate().getBasicLayout().getTiltedR() < getStackPlate().getBasicLayout().getHorizontalR() && (!getStackPlate().getBasicLayout().isRightAlignedHorizontal()))) ||
-					((deviceSettings.getOrientation() == WorkPieceOrientation.TILTED) && (getStackPlate().getBasicLayout().getTiltedR() > getStackPlate().getBasicLayout().getHorizontalR() && (getStackPlate().getBasicLayout().isRightAlignedHorizontal())))) {
+					((deviceSettings.getOrientation() == WorkPieceOrientation.TILTED) && (getStackPlate().getBasicLayout().getTiltedR() < getStackPlate().getBasicLayout().getHorizontalR() && (!getStackPlate().getBasicLayout().isRightAligned()))) ||
+					((deviceSettings.getOrientation() == WorkPieceOrientation.TILTED) && (getStackPlate().getBasicLayout().getTiltedR() > getStackPlate().getBasicLayout().getHorizontalR() && (getStackPlate().getBasicLayout().isRightAligned())))) {
 				pickStep.getProcessFlow().getClampingType().setChanged(true);
 			} else {
 				pickStep.getProcessFlow().getClampingType().setChanged(false);
