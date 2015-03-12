@@ -851,12 +851,14 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		getStackingPositions().clear();
 		for (int i = 0; i < amountVertical; i++) {
 			for (int j = 0; j < amountHorizontal; j++) {
-				int amountOfStudsLeft = amountOfStudsLeftFirst + j * amountOfStudsLeftOther;
+				
 				int maxTimes = (int) Math.floor((dimensions.getLength() - a - minOverlap) / ((horizontalHoleDistance*2) * Math.sqrt(2)));
 				//If the maximal number of studs under a work piece is greater than the current amount of studs to the left => shift the piece so that it can be supported correctly
-				if(amountOfStudsLeft < maxTimes*2) {
-					amountOfStudsLeft = maxTimes * 2;
+				int amountOfStudsLeftFirstExtra = 0;
+				if(amountOfStudsLeftFirst < maxTimes*2) {
+					amountOfStudsLeftFirstExtra = maxTimes * 2 - amountOfStudsLeftFirst;
 				}
+				int amountOfStudsLeft = amountOfStudsLeftFirst + amountOfStudsLeftFirstExtra + j * amountOfStudsLeftOther;
 				int amountOfStudsBottom = 1 + i * amountOfStudsVertical;
 				double adjustment = (horizontalHoleDistance/2 - studDiameter/Math.sqrt(2));
 				double xBottom = getHorizontalPadding() + (amountOfStudsLeft)*horizontalHoleDistance + horizontalHoleDistance/2;
