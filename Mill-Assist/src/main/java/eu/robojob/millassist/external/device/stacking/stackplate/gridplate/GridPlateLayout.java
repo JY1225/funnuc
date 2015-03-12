@@ -238,14 +238,14 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	protected void initStackingPositions(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, WorkPieceOrientation orientation) {
 		switch(orientation) {
 		case HORIZONTAL:
-			if (isRightAlignedHorizontal()) {
+			if (isRightAligned()) {
 				initStackingPositionsHorizontalRight(nbHorizontal, nbVertical, dimensions, orientation);	
 			} else {
 				initStackingPositionsHorizontal(nbHorizontal, nbVertical, dimensions, orientation);	
 			}
 			break;
 		case DEG90:
-			if(isRightAlignedVertical()) {
+			if(isRightAligned()) {
 				initStackingPositionsDeg90Right(nbHorizontal, nbVertical, dimensions, orientation);
 			} else {
 				initStackingPositionsDeg90(nbHorizontal, nbVertical, dimensions, orientation);

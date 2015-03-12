@@ -10,7 +10,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import eu.robojob.millassist.util.SizeManager;
-import eu.robojob.millassist.util.UIConstants;
 
 public abstract class AbstractDialogView<T extends AbstractDialogPresenter<?, ?>> extends StackPane {
 	
