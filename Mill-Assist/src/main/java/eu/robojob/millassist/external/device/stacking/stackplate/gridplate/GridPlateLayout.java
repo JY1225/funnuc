@@ -252,7 +252,7 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 			}
 			break;
 		case TILTED:
-			if(isRightAlignedHorizontal()) {
+			if(isRightAligned()) {
 				initStackingPositionsTiltedRight(nbHorizontal, nbVertical, dimensions, orientation);
 			}
 			else {

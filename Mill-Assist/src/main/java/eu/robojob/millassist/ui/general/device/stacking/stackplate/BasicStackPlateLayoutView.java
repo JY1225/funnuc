@@ -462,7 +462,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 				hole.setStrokeWidth(0);
 				if(layout.getHoleOrientation() == HoleOrientation.TILTED) {
 					int rotation = -45;
-					if(basicStackPlate.getBasicLayout().isRightAlignedHorizontal()) {
+					if(basicStackPlate.getBasicLayout().isRightAligned()) {
 						Rotate rotate = new Rotate(rotation-90, xPos, layout.getWidth()-yPos);
 						hole.getTransforms().add(rotate);
 						Translate translate = new Translate(0,layout.getHoleWidth());
