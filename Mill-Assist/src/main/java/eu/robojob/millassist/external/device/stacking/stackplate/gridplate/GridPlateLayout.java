@@ -252,7 +252,12 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 			}
 			break;
 		case TILTED:
-			initStackingPositionsTilted(nbHorizontal, nbVertical, dimensions, orientation);
+			if(isRightAlignedHorizontal()) {
+				initStackingPositionsTiltedRight(nbHorizontal, nbVertical, dimensions, orientation);
+			}
+			else {
+				initStackingPositionsTilted(nbHorizontal, nbVertical, dimensions, orientation);
+			}
 			break;
 		}
 	}
@@ -281,7 +286,7 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	private void initStackingPositionsHorizontalRight(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, WorkPieceOrientation orientation) {
 		for(int i = 0; i < nbVertical; i++) {
 			for(int j = 0; j < nbHorizontal; j++) {
-				double xBottomLeft = posX + j * horizontalOffsetNxtPiece + firstX + holeLength;
+				double xBottomLeft = posX + j * horizontalOffsetNxtPiece + firstX;
 				double yBottomLeft = posY + i * verticalOffsetNxtPiece + firstY;
 				float x = (float) xBottomLeft - dimensions.getLength()/2;
 				float y = (float) yBottomLeft + dimensions.getWidth()/2;
@@ -325,6 +330,21 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 				double extraX = (dimensions.getLength()/Math.sqrt(2) - dimensions.getWidth()/Math.sqrt(2))/2;
 				double extraY = (dimensions.getLength()/Math.sqrt(2) + dimensions.getWidth()/Math.sqrt(2))/2;
 				float x = (float) (xBottom + extraX);
+				float y = (float) (yBottom + extraY);
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getStackPlate().getR(getOrientation()), null, 0, WorkPieceOrientation.TILTED);
+				getStackingPositions().add(stPos);
+			}
+		}
+	}
+	
+	private void initStackingPositionsTiltedRight(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, WorkPieceOrientation orientation) {
+		for (int i = 0; i < nbVertical; i++) {
+			for (int j = 0; j < nbHorizontal; j++) {
+				double xBottom = posX + j * horizontalOffsetNxtPiece + firstX;
+				double yBottom = posY  + i * verticalOffsetNxtPiece + firstY;
+				double extraX = (dimensions.getLength()/Math.sqrt(2) - dimensions.getWidth()/Math.sqrt(2))/2;
+				double extraY = (dimensions.getLength()/Math.sqrt(2) + dimensions.getWidth()/Math.sqrt(2))/2;
+				float x = (float) (xBottom - extraX);
 				float y = (float) (yBottom + extraY);
 				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getStackPlate().getR(getOrientation()), null, 0, WorkPieceOrientation.TILTED);
 				getStackingPositions().add(stPos);

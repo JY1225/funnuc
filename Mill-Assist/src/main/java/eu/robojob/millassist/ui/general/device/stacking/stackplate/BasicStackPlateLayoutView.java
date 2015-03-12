@@ -450,7 +450,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 		return r;
 	}
 	
-	private static List<Rectangle> configureHoles(GridPlateLayout layout) {
+	private List<Rectangle> configureHoles(GridPlateLayout layout) {
 		List<Rectangle> holeList = new ArrayList<Rectangle>();
 		float xPos = 0;
 		float yPos = 0;
@@ -461,8 +461,20 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 				Rectangle hole = new Rectangle(xPos, layout.getWidth()-yPos - layout.getHoleWidth(), layout.getHoleLength(), layout.getHoleWidth());
 				hole.setStrokeWidth(0);
 				if(layout.getHoleOrientation() == HoleOrientation.TILTED) {
-					Rotate rotate = new Rotate(-45, xPos, layout.getWidth()-yPos);
-					hole.getTransforms().add(rotate);
+					int rotation = -45;
+					if(basicStackPlate.getBasicLayout().isRightAlignedHorizontal()) {
+						Rotate rotate = new Rotate(rotation-90, xPos, layout.getWidth()-yPos);
+						hole.getTransforms().add(rotate);
+						Translate translate = new Translate(0,layout.getHoleWidth());
+						hole.getTransforms().add(translate);
+						
+					}
+					else {
+						Rotate rotate = new Rotate(rotation, xPos, layout.getWidth()-yPos);
+						hole.getTransforms().add(rotate);
+					}
+					
+					
 				}
 				hole.getStyleClass().add(CSS_CLASS_STACKPLATE);
 				holeList.add(hole);
