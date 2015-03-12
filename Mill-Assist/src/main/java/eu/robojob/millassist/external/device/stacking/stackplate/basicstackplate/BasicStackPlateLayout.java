@@ -224,6 +224,24 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		return n + 1;
 	}
 	
+	private int getAmountOfStudsLeftAlignRight(float length, float width) {
+		float lengthHorizontal = (float) (length / Math.sqrt(2.0f));
+		boolean ok = false;
+		int n = 0;
+		while(!ok) {
+			double overflowHorL = lengthHorizontal - horizontalHoleDistance*n - horizontalHoleDistance/2 - studDiameter/2  - getHorizontalPadding();	// check the horizontal distance overflowing the stacker to the left
+			if (isOverFlow(overflowHorL, length*width)) {	// if this distance is negative, or small enough, everything is ok
+				ok = true;
+			} else {
+				n++; // if not, we increase the amount of studs to the left
+			}
+		}
+		if(n==0) {
+			n++;
+		}
+		return n;
+	}
+	
 	////////////////////////
 	//                    //
 	//      CORNERS       // 
@@ -315,6 +333,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		// calculate amount of pieces horizontally by checking overflow to the right
 		int maxHorizontalIndex = 0;
 		int remainingStudsRight = horizontalHoleAmount - getAmountOfStudsLeft(length, width);
+		
 		boolean ok = false;
 		while (!ok) {
 			if(isSufficientStudsLeftHorizontal(remainingStudsRight, orientation, isCornerLength || isCornerWidth)) {
@@ -330,6 +349,8 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		}
 		return maxHorizontalIndex;
 	}
+	
+	
 	
 	private int getNbStudsLeftOther(float length, float width, double a, double b) {
 		//Calculate the stud pieces to the left of the workpiece
@@ -533,11 +554,12 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 			break;
 		case TILTED:
 			int n = getAmountOfStudsLeft(dimensions.getLength(), dimensions.getWidth());
+			int nAlignRight = getAmountOfStudsLeftAlignRight(dimensions.getLength(), dimensions.getWidth());
 			double a = horizontalHoleDistance/(Math.sqrt(2)) - studDiameter/2;
 			double b = horizontalHoleDistance/(Math.sqrt(2));
 			int leftOther = getNbStudsLeftOther(dimensions.getLength(), dimensions.getWidth(), a, b);
 			if(isRightAlignedHorizontal()) {
-				initializeRawWorkPiecePositionsTiltedRight(dimensions, leftOther, leftOther, nbHorizontal, getVerticalIndex(dimensions.getLength(), dimensions.getWidth(), orientation), nbVertical, isCornerLength, isCornerWidth);
+				initializeRawWorkPiecePositionsTiltedRight(dimensions, nAlignRight, leftOther, nbHorizontal, getVerticalIndex(dimensions.getLength(), dimensions.getWidth(), orientation), nbVertical, isCornerLength, isCornerWidth);
 			}
 			else {
 				initializeRawWorkPiecePositionsTilted(dimensions, n, leftOther, nbHorizontal, getVerticalIndex(dimensions.getLength(), dimensions.getWidth(), orientation), nbVertical, isCornerLength, isCornerWidth);
@@ -830,9 +852,14 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		for (int i = 0; i < amountVertical; i++) {
 			for (int j = 0; j < amountHorizontal; j++) {
 				int amountOfStudsLeft = amountOfStudsLeftFirst + j * amountOfStudsLeftOther;
+				int maxTimes = (int) Math.floor((dimensions.getLength() - a - minOverlap) / ((horizontalHoleDistance*2) * Math.sqrt(2)));
+				//If the maximal number of studs under a work piece is greater than the current amount of studs to the left => shift the piece so that it can be supported correctly
+				if(amountOfStudsLeft < maxTimes*2) {
+					amountOfStudsLeft = maxTimes * 2;
+				}
 				int amountOfStudsBottom = 1 + i * amountOfStudsVertical;
 				double adjustment = (horizontalHoleDistance/2 - studDiameter/Math.sqrt(2));
-				double xBottom = getHorizontalPadding() + (amountOfStudsLeft - 1)*horizontalHoleDistance + horizontalHoleDistance/2;
+				double xBottom = getHorizontalPadding() + (amountOfStudsLeft)*horizontalHoleDistance + horizontalHoleDistance/2;
 				double yBottom = getVerticalPaddingBottom() - adjustment + (amountOfStudsBottom - 1)*verticalHoleDistance;
 				double extraX = (dimensions.getLength()/Math.sqrt(2) - dimensions.getWidth()/Math.sqrt(2))/2;
 				double extraY = (dimensions.getLength()/Math.sqrt(2) + dimensions.getWidth()/Math.sqrt(2))/2;
@@ -840,7 +867,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 				float y = (float) (yBottom + extraY);
 				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(getOrientation()), null, 0, WorkPieceOrientation.TILTED);
 				getStackingPositions().add(stPos);
-				int firstStudPosX = amountOfStudsLeftFirst + j * amountOfStudsLeftOther - 1;
+				int firstStudPosX = amountOfStudsLeft;
 				int firstStudPosY = amountOfStudsVertical * i;
 				StudPosition studPos = null;
 				if (cornerLength || cornerWidth) {
@@ -862,7 +889,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 				}
 				if (!cornerLength) {
 					boolean ok = false;
-					int maxTimes = (int) Math.floor((dimensions.getLength() - a - minOverlap) / ((horizontalHoleDistance*2) * Math.sqrt(2)));
+					
 					while (!ok) {
 						if (maxTimes <= 0) {
 							ok = true;
