@@ -111,7 +111,9 @@ public class ProcessFlow {
 		setCurrentIndex(WORKPIECE_0_ID, -1);
 		setCurrentIndex(WORKPIECE_1_ID, -1);
 		setCurrentIndex(WORKPIECE_2_ID, -1);
-		setFinishedAmount(0);
+		if(processSteps.size() > 0) {
+			setFinishedAmount(0);
+		}
 		this.hasChangesSinceLastSave = false;
 	}
 	
@@ -193,7 +195,7 @@ public class ProcessFlow {
 		for (AbstractDevice device : getDevices()) {
 			if (device instanceof BasicStackPlate) {
 				((BasicStackPlate) device).setLayout(((BasicStackPlate) device).getBasicLayout());
-				((BasicStackPlate) device).placeFinishedWorkPieces(processFlow.getFinishedAmount());
+				((BasicStackPlate) device).placeFinishedWorkPieces(processFlow.getFinishedAmount(), false);
 			}
 			if (device instanceof AbstractCNCMachine) {
 				for (WorkAreaManager workAreaManager: device.getWorkAreaManagers()) {

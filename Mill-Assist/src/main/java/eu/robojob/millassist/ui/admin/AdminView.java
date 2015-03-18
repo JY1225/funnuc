@@ -5,11 +5,9 @@ import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import eu.robojob.millassist.ui.controls.keyboard.NumericKeyboardView;
+import eu.robojob.millassist.util.SizeManager;
 
 public class AdminView extends StackPane {
-
-	public static final int HEIGHT = 545;
-	public static final int WIDTH = 800;
 	
 	protected static final double MAIN_MENU_WIDTH = 50;
 	
@@ -36,11 +34,11 @@ public class AdminView extends StackPane {
 	}
 	
 	private void build() {
-		setPrefSize(WIDTH, HEIGHT);
+		setPrefSize(SizeManager.WIDTH, SizeManager.HEIGHT);
 		getStyleClass().add(CSS_CLASS_MAIN);
 		getStyleClass().add("admin-main");
 		hBoxMain = new HBox();
-		hBoxMain.setPrefSize(WIDTH, HEIGHT);
+		hBoxMain.setPrefSize(SizeManager.WIDTH, SizeManager.HEIGHT);
 		this.getChildren().add(hBoxMain);
 		mainMenu = new StackPane();
 		mainMenu.setPrefWidth(MAIN_MENU_WIDTH);

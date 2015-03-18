@@ -48,6 +48,7 @@ public abstract class AbstractMenuView<T extends AbstractMenuPresenter<?>> exten
 		setAlignment(Pos.TOP_CENTER);
 		this.getStyleClass().add(CSS_CLASS_LEFT_MENU);
 		this.menuItems = new HashMap<Integer, Button>();
+		this.setFillWidth(true);
 	}
 	
 	public void setPresenter(final T presenter) {

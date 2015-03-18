@@ -28,8 +28,7 @@ public abstract class AbstractStackPlateLayout{
 	private int layers;
 	private float plateWidth;
 	private float plateLength;
-	private boolean alignRightVertical;
-	private boolean alignRightHorizontal;
+	private boolean alignRight;
 	private AbstractStackPlate stackPlate;
 	
 	private List<StackPlateStackingPosition> rawStackingPositions, finishedStackingPositions;
@@ -365,17 +364,12 @@ public abstract class AbstractStackPlateLayout{
 		this.finishedStackingPositions = stackingPositions;
 	}
 	
-	public boolean isRightAlignedVertical() {
-		return this.alignRightVertical;
-	}
-	
-	public boolean isRightAlignedHorizontal() {
-		return this.alignRightHorizontal;
+	public boolean isRightAligned() {
+		return this.alignRight;
 	}
 	
 	public void setAlignRight() {
-		alignRightVertical = PropertyManager.hasSettingValue(Setting.ALIGN_RIGHT_VERTICAL, "true");
-		alignRightHorizontal = PropertyManager.hasSettingValue(Setting.ALIGN_RIGHT_HORIZONTAL, "true");
+		alignRight = PropertyManager.hasSettingValue(Setting.ALIGN_RIGHT, "true");
 	}
 
 	public AbstractStackPlate getStackPlate() {

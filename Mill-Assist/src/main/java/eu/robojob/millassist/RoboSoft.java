@@ -32,20 +32,20 @@ import eu.robojob.millassist.ui.RoboSoftAppFactory;
 import eu.robojob.millassist.ui.controls.keyboard.FullKeyboardView.KeyboardType;
 import eu.robojob.millassist.ui.preloader.RoboJobPreloader;
 import eu.robojob.millassist.util.PropertyManager;
+import eu.robojob.millassist.util.PropertyManager.Setting;
+import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.StdErrLog;
 import eu.robojob.millassist.util.Translator;
-import eu.robojob.millassist.util.PropertyManager.Setting;
 
 public class RoboSoft extends Application {
 
 	private static Logger logger = LogManager.getLogger(RoboSoft.class.getName());
-	private static final int WIDTH = 800;
-	private static final int HEIGHT = 600;
+
 	
 	public static void main(final String[] args) {
 		launch(args);
 	}
-
+	
 	@Override
 	public void start(final Stage stage) throws Exception {
 		File loggerConfig = new File("log4j2.xml");
@@ -61,16 +61,33 @@ public class RoboSoft extends Application {
 			ThreadManager.submit(new MemoryUsageMonitoringThread());
 		}
 		final RoboJobPreloader preloader = new RoboJobPreloader();
-		Scene scene2 = new Scene(preloader, WIDTH, HEIGHT);
+		if (PropertyManager.hasSettingValue(Setting.FULL_SCREEN, "true")) {
+			SizeManager.setApplicationSizes(true);
+		}
+		else {
+			String width_str = PropertyManager.getValue(Setting.SCREEN_WIDTH);
+			String heigth_str = PropertyManager.getValue(Setting.SCREEN_HEIGHT);
+			int width = 800;
+			int heigth = 600;
+			if(width_str != null || heigth_str != null) {
+				width = Integer.valueOf(width_str);
+				heigth = Integer.valueOf(heigth_str);
+			}
+
+			SizeManager.setApplicationSizes(width, heigth);
+		}
+		
+		Scene scene2 = new Scene(preloader, SizeManager.WIDTH, SizeManager.HEIGHT);
 		scene2.getStylesheets().add("styles/preloader-style.css");
 		stage.setScene(scene2);
 		stage.setTitle("RoboSoft");
 		stage.centerOnScreen();
-		stage.setResizable(false);
+		stage.setResizable(true);
 		if (!PropertyManager.hasSettingValue(Setting.TITLEBAR, "true")) {
 			stage.initStyle(StageStyle.UNDECORATED);
 		}
 		stage.getIcons().add(new Image("images/icon.png"));
+		
 		stage.show();
 		ThreadManager.submit(new Thread () {
 			@Override
@@ -114,7 +131,7 @@ public class RoboSoft extends Application {
 					Platform.runLater(new Runnable() {
 						@Override
 						public void run() {
-							final Scene scene = new Scene(mainPresenter.getView(), WIDTH, HEIGHT);
+							final Scene scene = new Scene(mainPresenter.getView(), SizeManager.WIDTH, SizeManager.HEIGHT);
 							
 							if (!PropertyManager.hasSettingValue(Setting.MOUSE_VISIBLE, "true")) {
 								scene.setCursor(Cursor.NONE);
@@ -128,7 +145,7 @@ public class RoboSoft extends Application {
 							scene.getStylesheets().add("styles/general-style.css");
 							scene.getStylesheets().add("styles/header-style.css");
 							scene.getStylesheets().add("styles/processflow-style.css");
-							stage.setScene(scene);						
+							stage.setScene(scene);
 						}
 					});
 				} catch(Exception e) {

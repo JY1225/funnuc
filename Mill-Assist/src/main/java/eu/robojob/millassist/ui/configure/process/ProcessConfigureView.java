@@ -14,6 +14,7 @@ import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.ui.general.MainContentView;
 import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
 import eu.robojob.millassist.util.Translator;
@@ -66,7 +67,6 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		getContents().setVgap(VGAP);
 		
 		getContents().getChildren().clear();
-		
 		HBox hbox = new HBox();
 		lblName = new Label(Translator.getTranslation(NAME));
 		lblName.getStyleClass().addAll(CSS_CLASS_FORM_LABEL, CSS_CLASS_FORM_LABEL_NAME);
@@ -121,6 +121,8 @@ public class ProcessConfigureView extends AbstractFormView<ProcessConfigurePrese
 		singleCycleBox.getChildren().addAll(cbSingleCycle, lblSingleCycle);
 		singleCycleBox.setSpacing(10);
 		getContents().add(singleCycleBox, 0, 2, 2, 1);
+		
+		this.fillWidthProperty();
 	}
 	
 	@Override

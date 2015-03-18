@@ -45,7 +45,7 @@ public class BasicStackPlateReplacePresenter extends AbstractFormPresenter<Basic
 					throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
 				} else {
 					processFlow.setFinishedAmount(amount + processFlow.getFinishedAmount());
-					stackPlate.placeFinishedWorkPieces(amount);
+					stackPlate.placeFinishedWorkPieces(amount, processFlow.hasBinForFinishedPieces());
 				}
 			} catch (IncorrectWorkPieceDataException e) {
 				getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
@@ -79,9 +79,9 @@ public class BasicStackPlateReplacePresenter extends AbstractFormPresenter<Basic
 	
 	public int getNbRawWorkPiecesToReplace() {
 		// In case we put our finished pieces into a bin, we do not have to replace raw pieces by finished ones since the finished ones do not go onto the stacker
-		if(processFlow.hasBinForFinishedPieces()) {
-			return 0;
-		}
+//		if(processFlow.hasBinForFinishedPieces()) {
+//			return 0;
+//		}
 		return stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
 	}
 	

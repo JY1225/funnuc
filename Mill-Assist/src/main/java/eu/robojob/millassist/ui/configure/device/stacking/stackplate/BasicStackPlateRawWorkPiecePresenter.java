@@ -197,11 +197,12 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			getStackPlate().getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getFinishedWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
 			getStackPlate().getLayout().initRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
 			if ((deviceSettings.getOrientation() == 90) || 
-					((deviceSettings.getOrientation() == 45) && (getStackPlate().getBasicLayout().getTiltedR() < getStackPlate().getBasicLayout().getHorizontalR()))) {
+					((deviceSettings.getOrientation() == 45) && (getStackPlate().getBasicLayout().getTiltedR() < getStackPlate().getBasicLayout().getHorizontalR() && (!getStackPlate().getBasicLayout().isRightAligned()))) ||
+					((deviceSettings.getOrientation() == 45) && (getStackPlate().getBasicLayout().getTiltedR() > getStackPlate().getBasicLayout().getHorizontalR() && (getStackPlate().getBasicLayout().isRightAligned())))) {
 				pickStep.getProcessFlow().getClampingType().setChanged(true);
 			} else {
 				pickStep.getProcessFlow().getClampingType().setChanged(false);
-			}			// FIXME: in principe ook hier, als de hoek voor 45° kleiner is dan de hoek voor 90°!!
+			}
 			getView().hideNotification();
 			if (!isWeightOk()) {
 				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO), Type.WARNING);

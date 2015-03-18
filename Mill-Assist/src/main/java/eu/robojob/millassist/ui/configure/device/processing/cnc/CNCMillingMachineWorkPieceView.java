@@ -51,6 +51,7 @@ public class CNCMillingMachineWorkPieceView extends AbstractFormView<CNCMillingM
 	protected static final double ICON_PANE_WIDTH = 60;
 	protected static final double ICON_PANE_HEIGHT = 50;
 	private static final int MAX_INTEGER_LENGTH = 6;
+	private static final int CONTENT_WIDTH = 450;
 
 	private static final String RESET = "CNCMillingMachineWorkPieceView.reset";
 	protected static final String WIDTH = "CNCMillingMachineWorkPieceView.width";
@@ -92,7 +93,7 @@ public class CNCMillingMachineWorkPieceView extends AbstractFormView<CNCMillingM
 			}
 		});
 		dimensions.add(ntxtWorkPieceLength, column++, row);
-		dimensions.setPrefWidth(450);
+		dimensions.setPrefWidth(CONTENT_WIDTH);
 		dimensions.setAlignment(Pos.CENTER);
 		btnResetLength = new Button();
 		Text txtBtnResetLength = new Text(Translator.getTranslation(RESET));

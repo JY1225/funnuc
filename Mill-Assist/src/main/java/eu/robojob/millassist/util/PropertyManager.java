@@ -25,15 +25,17 @@ public final class PropertyManager {
 		CLAMP_ORIENTATION("use-clamp-orientation"),
 		AIRBLOW("robot-airblow"),
 		TITLEBAR("title-bar"),
-		ALIGN_RIGHT_VERTICAL("align-right"),
-		ALIGN_RIGHT_HORIZONTAL("align-right-horizontal"),
+		ALIGN_RIGHT("align-right"),
 		CUSTOM_POS("to-custom-pos"),
 		REVERSAL_WIDTH("reversal-width"),
 		SINGLE_CYCLE("single-cycle"),
 		CLAMPING_MANNER_ALLOWED("clamping-manner-allowed"),
 		CONVEYOR_SETUP("conveyor-setup"),
 		SIDE_LOAD("side-load"),
-		ROUND_PIECES("round-pieces");
+		ROUND_PIECES("round-pieces"),
+		FULL_SCREEN("full-screen"),
+		SCREEN_WIDTH("screen-width"),
+		SCREEN_HEIGHT("screen-height");
 		
 		private String settingsText;
 		

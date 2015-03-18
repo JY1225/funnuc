@@ -7,7 +7,7 @@ import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.ui.general.SubContentPresenter;
 
 public class DeviceAdminPresenter implements SubContentPresenter {
-
+	
 	private SubMenuAdminView view;
 	private DeviceMenuPresenter deviceMenuPresenter;
 	private MainMenuPresenter parent;
@@ -16,7 +16,7 @@ public class DeviceAdminPresenter implements SubContentPresenter {
 		this.view = view;
 		this.deviceMenuPresenter = deviceMenuPresenter;
 		deviceMenuPresenter.setParent(this);
-		view.setMenuView(deviceMenuPresenter.getView());
+		getView().setMenuView(deviceMenuPresenter.getView());
 	}
 	
 	@Override

@@ -157,6 +157,8 @@
 	-fx-fill: #2a2d31;
 	-fx-scale-x: 0.80;
 	-fx-scale-y: 0.80;
+	-fx-stroke-line-cap: round;
+	-fx-stroke: #2a2d31;
 }
 
 .stackplate {

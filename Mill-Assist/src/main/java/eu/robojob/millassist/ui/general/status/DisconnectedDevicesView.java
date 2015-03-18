@@ -9,7 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
-import eu.robojob.millassist.ui.general.MainContentView;
+import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.Translator;
 
 public class DisconnectedDevicesView extends VBox {
@@ -34,7 +34,7 @@ public class DisconnectedDevicesView extends VBox {
 	}
 	
 	private void build() {
-		setPrefHeight(MainContentView.HEIGHT_BOTTOM);
+		setPrefHeight(SizeManager.HEIGHT_BOTTOM);
 		this.setAlignment(Pos.CENTER);
 		
 		Pane warningIconPane = new Pane();

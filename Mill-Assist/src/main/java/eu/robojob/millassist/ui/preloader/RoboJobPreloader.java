@@ -1,5 +1,6 @@
 package eu.robojob.millassist.ui.preloader;
 
+import eu.robojob.millassist.util.SizeManager;
 import javafx.animation.Interpolator;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
@@ -25,9 +26,9 @@ public class RoboJobPreloader extends BorderPane {
 	}
 	
 	private void build() {
-		this.setPrefSize(800, 600);
-		this.setMinSize(800, 600);
-		this.setMaxSize(800, 600);
+		this.setPrefSize(SizeManager.WIDTH, SizeManager.HEIGHT);
+		this.setMinSize(SizeManager.WIDTH, SizeManager.HEIGHT);
+		this.setMaxSize(SizeManager.WIDTH, SizeManager.HEIGHT);
 		getStyleClass().add(CSS_PRELOADER);
 		image = new Image("images/robojoblogo.png", 402, 52, true, true);
 		imageVw = new ImageView(image);

@@ -9,6 +9,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import eu.robojob.millassist.RoboSoft;
+import eu.robojob.millassist.util.SizeManager;
+
 public class MainContentView extends VBox {
 
 	private StackPane top;
@@ -17,12 +23,6 @@ public class MainContentView extends VBox {
 	private HBox hbBottom;
 	private StackPane bottomLeft;
 	private Pane bottomRight;
-	
-	public static final int HEIGHT_TOP = 200;
-	public static final int HEIGHT_BOTTOM = 355;
-	public static final int WIDTH = 800;
-
-	public static final int WIDTH_BOTTOM_LEFT = 210;
 	
 	private static final String CSS_CLASS_BOTTOM_LEFT_PANE = "bottom-left";
 	private static final String CSS_CLASS_BOTTOM_RIGHT_PANE = "bottom-right";
@@ -33,29 +33,33 @@ public class MainContentView extends VBox {
 	public static final String CSS_CLASS_TEACH_BUTTON = "content-btn";
 	public static final String CSS_CLASS_INFO_MESSAGE_TITLE = "info-msg-title";
 
+
+	private static Logger logger = LogManager.getLogger(RoboSoft.class.getName());
+	
 	public MainContentView() {
 		build();
 	}
 	
 	private void build() {
 		this.setFillWidth(true);
+		
 		this.setAlignment(Pos.CENTER);
 		top = new StackPane();
 		getChildren().add(top);
-		top.setPrefHeight(HEIGHT_TOP);
-		top.setPrefWidth(WIDTH);
+		top.setPrefHeight(SizeManager.HEIGHT_TOP);
+		top.setPrefWidth(SizeManager.WIDTH);
 		top.getStyleClass().add(CSS_CLASS_TOP_PANEL);
 		
 		spBottom = new StackPane();
-		spBottom.setPrefHeight(HEIGHT_BOTTOM);
-		spBottom.setPrefWidth(WIDTH);
+		spBottom.setPrefHeight(SizeManager.HEIGHT_BOTTOM);
+		spBottom.setPrefWidth(SizeManager.WIDTH);
 		getChildren().add(spBottom);
 		VBox.setVgrow(spBottom, Priority.ALWAYS);
 
 		gpBottom = new GridPane();
 		gpBottom.setAlignment(Pos.TOP_CENTER);
-		gpBottom.setPrefHeight(HEIGHT_BOTTOM);
-		gpBottom.setPrefWidth(WIDTH);
+		gpBottom.setPrefHeight(SizeManager.HEIGHT_BOTTOM);
+		gpBottom.setPrefWidth(SizeManager.WIDTH);
 		gpBottom.getStyleClass().add(CSS_CLASS_CONTENT_BOTTOM);
 		
 		spBottom.getChildren().add(gpBottom);
@@ -63,14 +67,14 @@ public class MainContentView extends VBox {
 		hbBottom = new HBox();
 		bottomLeft = new StackPane();
 		hbBottom.getChildren().add(bottomLeft);
-		bottomLeft.setPrefWidth(WIDTH_BOTTOM_LEFT);
+		bottomLeft.setPrefWidth(SizeManager.WIDTH_BOTTOM_LEFT);
 		bottomLeft.getStyleClass().add(CSS_CLASS_BOTTOM_LEFT_PANE);
 		
 		bottomRight = new StackPane();
 		hbBottom.getChildren().add(bottomRight);
 		bottomRight.getStyleClass().add(CSS_CLASS_BOTTOM_RIGHT_PANE);
-		bottomRight.setPrefWidth(WIDTH - WIDTH_BOTTOM_LEFT);
-		bottomRight.setPrefHeight(HEIGHT_BOTTOM);
+		bottomRight.setPrefWidth(SizeManager.WIDTH-SizeManager.WIDTH_BOTTOM_LEFT);
+		bottomRight.setPrefHeight(SizeManager.HEIGHT_BOTTOM);
 	}
 	
 	public void addNodeToTop(final Node node) {

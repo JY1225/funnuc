@@ -9,7 +9,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
-import eu.robojob.millassist.util.UIConstants;
+import eu.robojob.millassist.util.SizeManager;
 
 public abstract class AbstractDialogView<T extends AbstractDialogPresenter<?, ?>> extends StackPane {
 	
@@ -69,9 +69,9 @@ public abstract class AbstractDialogView<T extends AbstractDialogPresenter<?, ?>
 		}
 		spOverlay = new StackPane();
 		spOverlay.getStyleClass().add(CSS_CLASS_OVERLAY);
-		spOverlay.setPrefSize(UIConstants.TOTAL_WIDTH, UIConstants.TOTAL_HEIGHT);
-		spOverlay.setMaxSize(UIConstants.TOTAL_WIDTH, UIConstants.TOTAL_HEIGHT);
-		spOverlay.setMinSize(UIConstants.TOTAL_WIDTH, UIConstants.TOTAL_HEIGHT);
+		spOverlay.setPrefSize(SizeManager.WIDTH, SizeManager.HEIGHT);
+		spOverlay.setMaxSize(SizeManager.WIDTH, SizeManager.HEIGHT);
+		spOverlay.setMinSize(SizeManager.WIDTH, SizeManager.HEIGHT);
 		getChildren().addAll(spOverlay, vBoxDialog);
 		StackPane.setAlignment(vBoxDialog, Pos.CENTER);
 		setAlignment(Pos.CENTER);

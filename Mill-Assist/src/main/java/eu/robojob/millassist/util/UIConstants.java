@@ -12,9 +12,6 @@ public final class UIConstants {
 	public static final int COMBO_WIDTH = 200;
 	public static final int COMBO_HEIGHT = 35;
 	
-	public static final int TOTAL_WIDTH = 800;
-	public static final int TOTAL_HEIGHT = 600;
-	
 	public static final String IMG_NOT_FOUND_URL = "images/notfound.png";
 
 }

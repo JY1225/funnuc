@@ -108,7 +108,7 @@ public class DeviceMenuFactory {
 	
 	private ConfigureSmoothPresenter<OutputBinMenuPresenter> getOutputBinSmoothToPresenter(final DeviceInformation deviceInfo) {
 		ConfigureSmoothView view = new ConfigureSmoothView();
-		ConfigureSmoothPresenter<OutputBinMenuPresenter> presenter = new ConfigureSmoothPresenter<OutputBinMenuPresenter>(view, deviceInfo.getPutStep().getRobotSettings());
+		ConfigureSmoothPresenter<OutputBinMenuPresenter> presenter = new ConfigureSmoothPresenter<OutputBinMenuPresenter>(view, deviceInfo.getPutStep().getRobotSettings(), deviceInfo.getPutStep());
 		return presenter;
 	}
 	
@@ -192,9 +192,9 @@ public class DeviceMenuFactory {
 		ConfigureSmoothPresenter<BasicStackPlateMenuPresenter> smoothPickPresenter = null;
 		ConfigureSmoothPresenter<BasicStackPlateMenuPresenter> smoothPutPresenter = null;
 		if (deviceInfo.hasPickStep()) {
-			smoothPickPresenter = new ConfigureSmoothPresenter<BasicStackPlateMenuPresenter>(smoothView, deviceInfo.getPickStep().getRobotSettings());
+			smoothPickPresenter = new ConfigureSmoothPresenter<BasicStackPlateMenuPresenter>(smoothView, deviceInfo.getPickStep().getRobotSettings(), deviceInfo.getPickStep());
 		} else if (deviceInfo.hasPutStep()) {
-			smoothPutPresenter = new ConfigureSmoothPresenter<BasicStackPlateMenuPresenter>(smoothView, deviceInfo.getPutStep().getRobotSettings());
+			smoothPutPresenter = new ConfigureSmoothPresenter<BasicStackPlateMenuPresenter>(smoothView, deviceInfo.getPutStep().getRobotSettings(), deviceInfo.getPutStep());
 		} else {
 			throw new IllegalStateException("No pick or put step for basic stack plate");
 		}
@@ -239,11 +239,11 @@ public class DeviceMenuFactory {
 		ConfigureSmoothPresenter<eu.robojob.millassist.ui.configure.device.stacking.conveyor.eaton.ConveyorMenuPresenter> smoothPresenter = null;
 		if (deviceInfo.getPickStep() != null) {
 			// first step
-			smoothPresenter = new ConfigureSmoothPresenter<eu.robojob.millassist.ui.configure.device.stacking.conveyor.eaton.ConveyorMenuPresenter>(smoothView, deviceInfo.getPickStep().getRobotSettings());
+			smoothPresenter = new ConfigureSmoothPresenter<eu.robojob.millassist.ui.configure.device.stacking.conveyor.eaton.ConveyorMenuPresenter>(smoothView, deviceInfo.getPickStep().getRobotSettings(), deviceInfo.getPickStep());
 			conveyorMenuPresenter = new eu.robojob.millassist.ui.configure.device.stacking.conveyor.eaton.ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), getConveyorEatonRawWorkPiecePresenter(deviceInfo), getEatonRawWorkPieceLayoutPresenter(deviceInfo), smoothPresenter, null);
 		} else {
 			// last step
-			smoothPresenter = new ConfigureSmoothPresenter<eu.robojob.millassist.ui.configure.device.stacking.conveyor.eaton.ConveyorMenuPresenter>(smoothView, deviceInfo.getPutStep().getRobotSettings());
+			smoothPresenter = new ConfigureSmoothPresenter<eu.robojob.millassist.ui.configure.device.stacking.conveyor.eaton.ConveyorMenuPresenter>(smoothView, deviceInfo.getPutStep().getRobotSettings(), deviceInfo.getPutStep());
 			conveyorMenuPresenter = new eu.robojob.millassist.ui.configure.device.stacking.conveyor.eaton.ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), null, getEatonFinishedWorkPieceLayoutPresenter(deviceInfo), null, smoothPresenter);
 		}
 		return conveyorMenuPresenter;
@@ -278,11 +278,11 @@ public class DeviceMenuFactory {
 		ConfigureSmoothPresenter<ConveyorMenuPresenter> smoothPresenter = null;
 		if (deviceInfo.getPickStep() != null) {
 			// first device 
-			smoothPresenter = new ConfigureSmoothPresenter<ConveyorMenuPresenter>(smoothView, deviceInfo.getPickStep().getRobotSettings());
+			smoothPresenter = new ConfigureSmoothPresenter<ConveyorMenuPresenter>(smoothView, deviceInfo.getPickStep().getRobotSettings(), deviceInfo.getPickStep());
 			presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), getConveyorRawWorkPiecePresenter(deviceInfo), getRawWorkPieceLayoutPresenter(deviceInfo), smoothPresenter, null);
 		} else {
 			// last device
-			smoothPresenter = new ConfigureSmoothPresenter<ConveyorMenuPresenter>(smoothView, deviceInfo.getPutStep().getRobotSettings());
+			smoothPresenter = new ConfigureSmoothPresenter<ConveyorMenuPresenter>(smoothView, deviceInfo.getPutStep().getRobotSettings(), deviceInfo.getPutStep());
 			presenter = new ConveyorMenuPresenter(menuView, deviceInfo, getConveyorConfigurePresenter(deviceInfo), null, getFinishedWorkPieceLayoutPresenter(deviceInfo), null, smoothPresenter);
 		}
 		return presenter;

@@ -29,7 +29,7 @@ public abstract class AbstractKeyboardView extends GridPane {
 	
 	protected void buildView() {
 		this.getChildren().clear();
-		
+		this.getStylesheets().add("styles/keyboard-style.css");
 		gridPane = new GridPane();
 		
 		gridPane.setHgap(getSpacing());

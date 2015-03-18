@@ -1,5 +1,6 @@
 package eu.robojob.millassist.ui.controls.keyboard;
 
+import eu.robojob.millassist.util.SizeManager;
 import javafx.scene.input.KeyCode;
 
 public class FullKeyboardView extends AbstractKeyboardView {
@@ -22,7 +23,7 @@ public class FullKeyboardView extends AbstractKeyboardView {
 	
 	@Override
 	public double getPreferedWidth() {
-		return 800;
+		return SizeManager.WIDTH;
 	}
 	
 	@Override

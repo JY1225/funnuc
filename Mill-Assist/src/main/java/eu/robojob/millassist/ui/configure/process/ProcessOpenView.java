@@ -24,6 +24,7 @@ import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 
@@ -110,24 +111,21 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 			}
 				
 		});
-		nameColumn.setMinWidth(240);
-		nameColumn.setMaxWidth(240);
-		nameColumn.setPrefWidth(240);
+
+		nameColumn.prefWidthProperty().bind(table.widthProperty().divide(10).multiply(4));
 		nameColumn.setResizable(false);
-		lastOpenedColumn.setPrefWidth(170);
-		lastOpenedColumn.setMinWidth(170);
-		lastOpenedColumn.setMaxWidth(170);
+
+		lastOpenedColumn.prefWidthProperty().bind(table.widthProperty().divide(10).multiply(4));
 		lastOpenedColumn.setResizable(false);
-		deleteProcessColumn.setMinWidth(90);
-		deleteProcessColumn.setMaxWidth(90);
-		deleteProcessColumn.setPrefWidth(90);
+
+		deleteProcessColumn.prefWidthProperty().bind(table.widthProperty().divide(10).multiply(2));
 		deleteProcessColumn.setResizable(false);
+		
 		table.getColumns().add(nameColumn);
 		table.getColumns().add(lastOpenedColumn);
 		table.getColumns().add(deleteProcessColumn);
-		table.setPrefSize(502, 230);
-		table.setMinSize(502, 160);
-		table.setMaxSize(502, 230);
+		table.setPrefSize((int)(SizeManager.WIDTH-SizeManager.WIDTH_BOTTOM_LEFT), (int)(SizeManager.HEIGHT_BOTTOM));
+		table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 		table.setTableMenuButtonVisible(false);	
 		table.getStyleClass().add(CSS_CLASS_TABLE);
 		table.setPlaceholder(new Label(Translator.getTranslation(NO_CONTENT)));
@@ -135,7 +133,7 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		btnLoad = createButton(openIconPath, CSS_CLASS_BUTTON_LOAD, Translator.getTranslation(LOAD), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				getPresenter().openProcess(table.getSelectionModel().selectedItemProperty().getValue());
+				getPresenter().openProcess(table.getSelectionModel().selectedItemProperty().getValue().getId());
 			}
 		});
 		table.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -207,7 +205,7 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		DeleteButton() {
 			deleteButton = createButton(deleteIconPath, CSS_CLASS_DELETE_OPEN_BTN, "", 32, 0, new EventHandler<ActionEvent>() {
 				 @Override public void handle(ActionEvent actionEvent) {
-					 getPresenter().deleteProcess(p);
+					 getPresenter().deleteProcess(p.getId());
 				 }
 			});
 		}

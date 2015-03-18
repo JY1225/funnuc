@@ -94,7 +94,6 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 			} else {
 				getRoundStrategy().configureStackingPositions((RoundDimensions) rawWorkPiece.getDimensions(), (RoundDimensions) finishedWorkPiece.getDimensions());
 			}
-			//FIXME - wijzigen van vorm niet direct recalculate doen - wel revisit voor elk stuk!
 		} else {
 			super.configureStackingPositions(rawWorkPiece, finishedWorkPiece, orientation, layers);
 		}
