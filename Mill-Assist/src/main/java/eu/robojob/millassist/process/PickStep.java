@@ -62,7 +62,13 @@ public class PickStep extends AbstractTransportStep {
 					logger.info("Can pick - " + devicePickSettings.getWorkArea());
 					checkProcessExecutorStatus(executor);
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, processId));
-					Coordinates originalPosition = new Coordinates(getDevice().getPickLocation(devicePickSettings.getWorkArea(), getRobotSettings().getWorkPiece().getDimensions(), getProcessFlow().getClampingType(), getRobotSettings().getApproachType()));
+					@SuppressWarnings("unchecked")
+					Coordinates originalPosition = new Coordinates(getDevice().getPickLocation(
+							getProcessFlow().getPiecePlacementVisitor(getRobotSettings().getWorkPiece().getShape()),
+							devicePickSettings.getWorkArea(), 
+							getRobotSettings().getWorkPiece().getDimensions(), 
+							getProcessFlow().getClampingType(), 
+							getRobotSettings().getApproachType()));
 					if (needsTeaching()) {
 						Coordinates position = new Coordinates(originalPosition);
 						logger.debug("Original coordinates: " + position + ".");
@@ -173,12 +179,12 @@ public class PickStep extends AbstractTransportStep {
 				extraOffsetY = - ((ReversalUnit) getDevice()).getStationFixtureWidth();
 			}
 		} else {
-			if (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight() < 
+			if (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getZSafe() < 
 					getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() 
 					+ getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getHeight()) {
 				extraOffsetZ = (getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() 
 						+ getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(true, getDeviceSettings().getWorkArea().getSequenceNb()).getHeight()) 
-						- (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getHeight());
+						- (originalPosition.getZ() + getRobotSettings().getWorkPiece().getDimensions().getZSafe());
 			}
 		}
 		setRelativeTeachedOffset(TeachedCoordinatesCalculator.calculateRelativeTeachedOffset(originalPosition, new Coordinates(extraOffsetX, extraOffsetY, extraOffsetZ, 0, 0, 0)));

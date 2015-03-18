@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 
 public final class Translator {
 	
-	private static Locale locale = new Locale("nl");;
+	private static Locale locale = new Locale("nl");
 	private static ResourceBundle messages = ResourceBundle.getBundle("messages", locale);
 	
 	private Translator() {

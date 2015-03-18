@@ -24,7 +24,8 @@ import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 /**
  * This device needs to maintain state (position contents change during process-execution). 
@@ -32,7 +33,6 @@ import eu.robojob.millassist.workpiece.WorkPieceDimensions;
  */
 public class BasicStackPlate extends AbstractStackPlate {
 
-	public static final float STUD_HEIGHT = 30;
 	private List<BasicStackPlateListener> listeners;
 	private BasicStackPlateLayout basicLayout;
 		
@@ -43,7 +43,7 @@ public class BasicStackPlate extends AbstractStackPlate {
 		this.listeners = new ArrayList<BasicStackPlateListener>();
 		setLayout(layout);
 		this.basicLayout = layout;
-		setRawWorkPiece(new WorkPiece(Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f));
+		setRawWorkPiece(new WorkPiece(Type.RAW, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
 	}
 	
 	public BasicStackPlate(final String name, final BasicStackPlateLayout layout) {
@@ -108,11 +108,13 @@ public class BasicStackPlate extends AbstractStackPlate {
 		if(gridPlate != null) {
 			logger.debug("Adding gridplate [" + gridPlate.getName() + "] to stackplate.");
 			deviceSettings.setGridId(gridPlate.getId());
+			deviceSettings.setStudHeight(gridPlate.getDepth());
 			setLayout(new GridPlateLayout(gridPlate));
 			loadDeviceSettings(deviceSettings);
 		} else {
 			logger.debug("Gridplate removed from stackplate.");
 			deviceSettings.setGridId(0);
+			deviceSettings.setStudHeight(getWorkAreas().get(0).getDefaultClamping().getDefaultHeight());
 			setLayout(getBasicLayout());
 		}
 	}
@@ -134,5 +136,10 @@ public class BasicStackPlate extends AbstractStackPlate {
 			return basicLayout.getTiltedR();
 		else
 			return basicLayout.getHorizontalR();
+	}
+
+	@Override
+	public float getRRound() {
+		return basicLayout.getHorizontalR();
 	}
 }

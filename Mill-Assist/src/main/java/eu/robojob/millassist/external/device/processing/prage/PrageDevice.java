@@ -17,11 +17,12 @@ import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 
 public class PrageDevice extends AbstractProcessingDevice {
 		
@@ -125,11 +126,6 @@ public class PrageDevice extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
-		throw new IllegalStateException("This method should never be called");
-	}
-	
-	@Override
 	public Coordinates getLocationOrientation(final SimpleWorkArea workArea, final ClampingManner clampType) {
 		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
 		if (clampType.getType() == Type.LENGTH) {
@@ -148,67 +144,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 		return c;
 	}
 	
-	@Override
-	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
-		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
-		if (clampType.getType() == Type.LENGTH) {
-			if (clampType.isChanged()) {
-				c.setR(c.getR() + clampingWidthDeltaR);
-			} else {
-				c.setR(c.getR());
-			}
-			switch (workArea.getDefaultClamping().getType()) {
-				case CENTRUM:
-					// no action needed
-					break;
-				case FIXED_XM:
-					c.setX(c.getX() - workPieceDimensions.getWidth()/2);
-					break;
-				case FIXED_YM:
-					c.setY(c.getY() - workPieceDimensions.getWidth()/2);
-					break;
-				case FIXED_XP:
-					c.setX(c.getX() + workPieceDimensions.getWidth()/2);
-					break;
-				case FIXED_YP:
-					c.setY(c.getY() + workPieceDimensions.getWidth()/2);
-					break;
-				case NONE:
-					throw new IllegalArgumentException("Machine clamping type can't be NONE.");
-				default:
-					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getDefaultClamping().getType());
-			}
-		} else {
-			if (clampType.isChanged()) {
-				c.setR(c.getR());
-			} else {
-				c.setR(c.getR() + clampingWidthDeltaR);
-			}
-			switch (workArea.getDefaultClamping().getType()) {
-			case CENTRUM:
-				// no action needed
-				break;
-			case FIXED_XM:
-				c.setX(c.getX() - workPieceDimensions.getLength()/2);
-				break;
-			case FIXED_YM:
-				c.setY(c.getY() - workPieceDimensions.getLength()/2);
-				break;
-			case FIXED_XP:
-				c.setX(c.getX() + workPieceDimensions.getLength()/2);
-				break;
-			case FIXED_YP:
-				c.setY(c.getY() + workPieceDimensions.getLength()/2);
-				break;
-			case NONE:
-				throw new IllegalArgumentException("Machine clamping type can't be NONE.");
-			default:
-				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getDefaultClamping().getType());
-			}
-		}
-		return c;
-	}
-	
+
 	@Override
 	public boolean isConnected() {
 		return true;
@@ -217,6 +153,21 @@ public class PrageDevice extends AbstractProcessingDevice {
 	@Override
 	public EDeviceGroup getType() {
 		return EDeviceGroup.PRE_PROCESSING;
+	}
+
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getPutLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
+			T dimensions, ClampingManner clampType, ApproachType approachType) {
+		// TODO Auto-generated method stub
+		return visitor.getPutLocation(this, workArea, dimensions, clampType, approachType);
+	}
+
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getPickLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
+			T dimensions, ClampingManner clampType, ApproachType approachType) {
+		return visitor.getPutLocation(this, workArea, dimensions, clampType, approachType);
 	}
 
 }

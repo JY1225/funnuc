@@ -30,7 +30,8 @@ import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public class ProcessFlowManager {
 
@@ -90,8 +91,8 @@ public class ProcessFlowManager {
 		PickStep pickStep2 = new PickStep(cncMachine.getDefaultPickSettings(1), robot.getDefaultPickSettings());
 		PutStep putStep2 = new PutStep(stackingToDevice.getDefaultPutSettings(1), robot.getDefaultPutSettings());
 		List<AbstractProcessStep> processSteps = new ArrayList<AbstractProcessStep>();
-		WorkPiece rawWorkPiece = new WorkPiece(Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f);
-		WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, new WorkPieceDimensions(), Material.OTHER, 0.0f);
+		WorkPiece rawWorkPiece = new WorkPiece(Type.RAW, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f);
+		WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f);
 		pickStep.getRobotSettings().setWorkPiece(rawWorkPiece);
 		pickStep2.getRobotSettings().setWorkPiece(finishedWorkPiece);
 		processSteps.add(pickStep);
@@ -122,11 +123,11 @@ public class ProcessFlowManager {
 			((ConveyorSettings) deviceSettings.get(stackingToDevice)).setRawWorkPiece(rawWorkPiece);
 			((ConveyorSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
-		if (stackingFromDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
+		if (stackingFromDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton) {
 			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);
 			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingFromDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
-		if (stackingToDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
+		if (stackingToDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton) {
 			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingToDevice)).setRawWorkPiece(rawWorkPiece);
 			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}

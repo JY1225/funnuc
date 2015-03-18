@@ -25,6 +25,7 @@ import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 
 public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<CNCMillingMachineConfigureView, CNCMillingMachineMenuPresenter> {
 
@@ -324,6 +325,10 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	
 	boolean isClampingBlocked() {
 		return !deviceInfo.getProcessingStep().getProcessFlow().getClampingType().getClampingMannerAllowed().equals(ClampingMannerAllowed.FREE);
+	}
+	
+	boolean isCylindricMode() {
+		return deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getShape().equals(WorkPieceShape.CYLINDRICAL);
 	}
 	
 }

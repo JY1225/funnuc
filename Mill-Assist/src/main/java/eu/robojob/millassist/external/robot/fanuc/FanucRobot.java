@@ -32,8 +32,10 @@ import eu.robojob.millassist.external.robot.RobotPutSettings;
 import eu.robojob.millassist.external.robot.RobotSocketCommunication;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.threading.ThreadManager;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
+import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 
 public class FanucRobot extends AbstractRobot {
 
@@ -594,7 +596,7 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_SERVICE_GRIPPER, RobotConstants.RESPONSE_WRITE_SERVICE_GRIPPER, WRITE_VALUES_TIMEOUT, values);
 	}
 
-	private void writeServiceHandlingSet(final boolean freeAfterService, final int serviceHandlingPPMode, final WorkPieceDimensions dimensions, final float weight2, final ApproachType approachType)
+	private void writeServiceHandlingSet(final boolean freeAfterService, final int serviceHandlingPPMode, final IWorkPieceDimensions dimensions, final float weight2, final ApproachType approachType)
 			throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		List<String> values = new ArrayList<String>();
 		// free after this service ; shape WP ;  WP length ; WP width ; WP height ;  
@@ -605,10 +607,17 @@ public class FanucRobot extends AbstractRobot {
 		} else {
 			values.add("0");
 		}
-		values.add("1");	// select shape (Box - 1)
-		values.add(df.format(Math.max(dimensions.getLength(), dimensions.getWidth())));	// WP length (WP diameter)
-		values.add(df.format(Math.min(dimensions.getLength(), dimensions.getWidth())));	// WP width
-		values.add(df.format(dimensions.getHeight()));	// WP height
+		if (dimensions instanceof RectangularDimensions) {
+			values.add("1");	// select shape (Box - 1)
+			values.add(df.format(Math.max(dimensions.getDimension(Dimensions.LENGTH), dimensions.getDimension(Dimensions.WIDTH))));	// WP length (WP diameter)
+			values.add(df.format(Math.min(dimensions.getDimension(Dimensions.LENGTH), dimensions.getDimension(Dimensions.WIDTH))));	// WP width
+			values.add(df.format(dimensions.getDimension(Dimensions.HEIGHT)));	// WP height
+		} else {
+			values.add("2");	// select shape (Round - 2)
+			values.add(df.format(dimensions.getDimension(Dimensions.DIAMETER)));	// WP length (WP diameter)
+			values.add(df.format(dimensions.getDimension(Dimensions.DIAMETER)));	// WP width
+			values.add(df.format(dimensions.getDimension(Dimensions.HEIGHT)));	// WP height
+		}
 		values.add("0");					// gripped height
 
 		if ((getSpeed() < 5) || (getSpeed() > 100)) {
@@ -642,58 +651,7 @@ public class FanucRobot extends AbstractRobot {
 		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_SERVICE_HANDLING, RobotConstants.RESPONSE_WRITE_SERVICE_HANDLING, WRITE_VALUES_TIMEOUT, values);
 	}
 	
-//	private void writeServiceHandlingSet(final boolean freeAfterService, final int serviceHandlingPPMode, final WorkPieceDimensions dimensions, final float weight2, final ApproachType approachType) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
-//		List<String> values = new ArrayList<String>();
-//		// free after this service ; WP thickness ;  WP Z grip ; grip Z face till front ; dx correction P1 ; dy correction P1 ; dx correction P2 ; dy correction P2 ; dW correction ;
-//		//    dP correction ; robot speed ; payload 1 ; payload 2 ; PP mode ; bar move distance
-//		if (freeAfterService) {				// free after this service
-//			values.add("1");
-//		} else {
-//			values.add("0");
-//		}
-//		values.add(df.format(dimensions.getHeight()));	// WP thickness
-//		
-//		values.add(df.format(Math.max(dimensions.getLength(), dimensions.getWidth())));	// WP diameter
-//		values.add("0");					// WP Z grip
-//		values.add("0");					// grip Z face till front
-//		values.add("0");					// dx correction P1
-//		values.add("0");					// dy correction P1
-//		values.add("0");					// dx correction P2
-//		values.add("0");					// dy correction P2
-//		values.add("0");					// dw correction
-//		values.add("0");					// dp correction
-//		if ((getSpeed() < 5) || (getSpeed() > 100)) {
-//			throw new IllegalStateException("The current speed value: [" + getSpeed() + "] is illegal.");
-//		}
-//		WorkPiece wp1 = null;
-//		WorkPiece wp2 = null;
-//		if ((getGripperBody().getGripperHeadByName("A") != null) && (getGripperBody().getGripperHeadByName("A").getGripper() != null)) {
-//			wp1 = getGripperBody().getGripperHeadByName("A").getGripper().getWorkPiece();
-//		}
-//		if ((getGripperBody().getGripperHeadByName("B") != null) && (getGripperBody().getGripperHeadByName("B").getGripper() != null)) {
-//			wp2 = getGripperBody().getGripperHeadByName("B").getGripper().getWorkPiece();
-//		}
-//		float payLoad1 = 0.0f;
-//		float payLoad2 = 0.0f;
-//		if (wp1 != null) {
-//			payLoad1 = wp1.getWeight() * 10;
-//			payLoad2 = wp1.getWeight() * 10;
-//		}
-//		if (wp2 != null) {
-//			payLoad1 += wp2.getWeight() * 10;
-//			payLoad2 += wp2.getWeight() * 10;
-//		}
-//		payLoad2 = payLoad2 + weight2;
-//		values.add(getSpeed() + "");		// robot speed
-//		values.add(df2.format(Math.ceil(payLoad1)));					// payload 1
-//		values.add(df2.format(Math.ceil(payLoad2)));					// payload 2
-//		values.add("" + serviceHandlingPPMode);		// PP mode
-//		values.add("" + approachType.getId());		// reversalType (empty/top/bottom)
-//		logger.debug("Writing service handling set: " + values);
-//		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_SERVICE_HANDLING, RobotConstants.RESPONSE_WRITE_SERVICE_HANDLING, WRITE_VALUES_TIMEOUT, values);
-//	}
-	
-	private void writeServicePointSet(final SimpleWorkArea workArea, final Coordinates location, final Coordinates smoothPoint, final WorkPieceDimensions dimensions, 
+	private void writeServicePointSet(final SimpleWorkArea workArea, final Coordinates location, final Coordinates smoothPoint, final IWorkPieceDimensions dimensions, 
 			final Clamping clamping, final ApproachType approachType) throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
 		List<String> values = new ArrayList<String>();
 		// user frame id ; x destination ; y destination ; z destination ; w destination, p destination, r destination ; z-safe plane ; safety add z ; smooth x ; smooth y ; smooth z ; 

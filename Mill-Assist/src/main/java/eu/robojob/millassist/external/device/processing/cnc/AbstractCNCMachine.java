@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
@@ -19,6 +20,10 @@ import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
+import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 
 //FIXME - aparte methodes devIntV2 moeten in overervingstructuur komen!!!
 public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
@@ -37,6 +42,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private Map<Integer, Integer> statusMap;
 	private boolean timAllowed;
 	private boolean machineAirblow;
+	private float rRoundPieces;
 	
 	private static Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());
 	
@@ -44,7 +50,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private static final String EXCEPTION_WHILE_WAITING = "AbstractCNCMachine.exceptionWhileWaiting";
 	
 	public AbstractCNCMachine(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, final int clampingWidthR,
-			final int nbFixtures) {
+			final int nbFixtures, final float rRoundPieces) {
 		super(name, zones, true);
 		this.mCodeAdapter = mCodeAdapter;
 		this.wayOfOperating = wayOfOperating;
@@ -56,6 +62,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.stopAction = false;
 		this.clampingWidthR = clampingWidthR;
 		this.nbFixtures = nbFixtures;
+		this.rRoundPieces = rRoundPieces;
 		//default values
 		this.timAllowed = false;
 		this.machineAirblow = false;
@@ -385,6 +392,14 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		this.nbFixtures = nbFixtures;
 	}
 	
+	public float getRRoundPieces() {
+		return this.rRoundPieces;
+	}
+	
+	public void setRRoundPieces(float r) {
+		this.rRoundPieces = r;
+	}
+	
 	public boolean getTIMAllowed() {
 		return this.timAllowed;
 	}
@@ -428,6 +443,20 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		//start from 0
 		int maxMCode = nbCNCSteps * 2;
 		return (Math.abs(mCode-1))%maxMCode;
+	}
+	
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getPutLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
+			T dimensions, ClampingManner clampType, ApproachType approachType) {
+		return visitor.getPutLocation(this, workArea, dimensions, clampType, approachType);
+	}
+
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getPickLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
+			T dimensions, ClampingManner clampType, ApproachType approachType) {
+		return visitor.getPickLocation(this, workArea, dimensions, clampType, approachType);
 	}
 
 }

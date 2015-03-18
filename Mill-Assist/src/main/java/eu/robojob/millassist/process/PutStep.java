@@ -58,7 +58,13 @@ public class PutStep extends AbstractTransportStep {
 				try {
 					checkProcessExecutorStatus(executor);
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, processId));
-					Coordinates originalPosition = new Coordinates(getDevice().getPutLocation(getDeviceSettings().getWorkArea(), getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions(), getProcessFlow().getClampingType(), getRobotSettings().getApproachType()));
+					@SuppressWarnings("unchecked")
+					Coordinates originalPosition = new Coordinates(getDevice().getPutLocation(
+							getProcessFlow().getPiecePlacementVisitor(getRobotSettings().getGripperHead().getGripper().getWorkPiece().getShape()),
+							getDeviceSettings().getWorkArea(), 
+							getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions(), 
+							getProcessFlow().getClampingType(), 
+							getRobotSettings().getApproachType()));
 					if (needsTeaching()) {
 						Coordinates position = new Coordinates(originalPosition);
 						logger.debug("Original coordinates: " + position + ".");
@@ -152,7 +158,8 @@ public class PutStep extends AbstractTransportStep {
 				extraOffsetY = - ((ReversalUnit) getDevice()).getStationFixtureWidth();
 			}
 		} else {
-			if (originalPosition.getZ() < getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() + getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
+			if (originalPosition.getZ() < getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() + 
+					getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
 				extraOffsetZ = (getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getRelativePosition().getZ() 
 						+ getDeviceSettings().getWorkArea().getWorkAreaManager().getActiveClamping(false, getDeviceSettings().getWorkArea().getSequenceNb()).getHeight()) 
 						- originalPosition.getZ();

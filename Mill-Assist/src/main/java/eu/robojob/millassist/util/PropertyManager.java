@@ -32,7 +32,8 @@ public final class PropertyManager {
 		SINGLE_CYCLE("single-cycle"),
 		CLAMPING_MANNER_ALLOWED("clamping-manner-allowed"),
 		CONVEYOR_SETUP("conveyor-setup"),
-		SIDE_LOAD("side-load");
+		SIDE_LOAD("side-load"),
+		ROUND_PIECES("round-pieces");
 		
 		private String settingsText;
 		

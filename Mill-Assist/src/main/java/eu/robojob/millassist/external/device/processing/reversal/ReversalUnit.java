@@ -18,12 +18,13 @@ import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.AbstractProcessingDevice;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.PropertyManager.Setting;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 
 public class ReversalUnit extends AbstractProcessingDevice {
 	
@@ -75,6 +76,14 @@ public class ReversalUnit extends AbstractProcessingDevice {
 
 	public void setStationFixtureWidth(float stationFixtureWidth) {
 		this.stationFixtureWidth = stationFixtureWidth;
+	}
+	
+	public boolean isReversalWidth() {
+		return isWidthReversal;
+	}
+	
+	public boolean isShiftedOrigin() {
+		return isShiftedOrigin;
 	}
 
 	@Override public void startCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings, final int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException { }
@@ -142,80 +151,8 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
-		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
-		WorkPieceDimensions dimensions = workPieceDimensions;
-		if (isWidthReversal) {
-			dimensions = new WorkPieceDimensions(workPieceDimensions.getWidth(), workPieceDimensions.getLength(), workPieceDimensions.getHeight());
-		}	
-		c.setX(c.getX() + getXCoord(dimensions, approachType));
-		c.setY(c.getY() + getYCoord(dimensions, approachType));
-		c.setZ(c.getZ() + getZCoord(dimensions, approachType));
-		if (isShiftedOrigin) {
-			c.setX(c.getX() + addedXValue);
-		}
-		return c;
-	}
-	
-	@Override
 	public Coordinates getLocationOrientation(final SimpleWorkArea workArea, final ClampingManner clampType) {	
 		return new Coordinates(workArea.getDefaultClamping().getRelativePosition());
-	}
-	
-	@Override
-	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
-		Coordinates c = new Coordinates(workArea.getDefaultClamping().getRelativePosition());
-		WorkPieceDimensions dimensions = workPieceDimensions;
-		if (isWidthReversal) {
-			dimensions = new WorkPieceDimensions(workPieceDimensions.getWidth(), workPieceDimensions.getLength(), workPieceDimensions.getHeight());
-		}
-		c.setX(c.getX() + getXCoord(dimensions, approachType));
-		c.setY(c.getY() + getYCoord(dimensions, approachType));
-		c.setZ(c.getZ() + getZCoord(dimensions, approachType));
-		if (isShiftedOrigin) {
-			c.setX(c.getX() + addedXValue);
-		}
-		return c;
-	}
-	
-	private static float getXCoord(final WorkPieceDimensions workPieceDimensions, final ApproachType approachType) {
-		switch (approachType) {
-		case BOTTOM:
-		case TOP:
-		case LEFT:
-			return workPieceDimensions.getWidth()/2;
-		case FRONT:
-			return workPieceDimensions.getHeight();
-		default: 
-			return 0;
-		}
-	}
-
-	private static float getYCoord(final WorkPieceDimensions workPieceDimensions, final ApproachType approachType) {
-		switch (approachType) {
-		case BOTTOM:
-		case TOP:
-		case FRONT:
-			return workPieceDimensions.getLength()/2;
-		case LEFT:
-			return 0;
-		default:
-			return 0;
-		}
-	}
-	
-	private static float getZCoord(final WorkPieceDimensions workPieceDimensions, final ApproachType approachType) {
-		switch (approachType) {
-		case BOTTOM:
-		case TOP:	
-			return 0;
-		case FRONT:
-			return workPieceDimensions.getWidth()/2;
-		case LEFT:
-			return workPieceDimensions.getLength()/2;
-		default:
-			return 0;
-		}
 	}
 	
 	@Override
@@ -228,7 +165,7 @@ public class ReversalUnit extends AbstractProcessingDevice {
 	}
 	
 	@Override
-	public float getZSafePlane(final WorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+	public float getZSafePlane(final IWorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		//X naar voren, Y naar rechts, Z omhoog
 		switch (approachType) {
 		case BOTTOM:
@@ -283,5 +220,19 @@ public class ReversalUnit extends AbstractProcessingDevice {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getPickLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea, 
+			T dimensions, ClampingManner clampType, ApproachType approachType) {
+		return visitor.getPickLocation(this, workArea, dimensions, clampType, approachType);
+	}
+
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getPutLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
+			T dimensions, ClampingManner clampType, ApproachType approachType) {
+		return visitor.getPutLocation(this, workArea, dimensions, clampType, approachType);
 	}
 }

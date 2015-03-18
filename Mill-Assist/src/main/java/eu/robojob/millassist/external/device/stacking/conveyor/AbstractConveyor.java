@@ -16,7 +16,7 @@ import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 
 public abstract class AbstractConveyor extends AbstractStackingDevice {
 
@@ -66,15 +66,15 @@ public abstract class AbstractConveyor extends AbstractStackingDevice {
 	}
 	
 	@Override
-	public float getZSafePlane(final WorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+	public float getZSafePlane(final IWorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
-		float wpHeight = dimensions.getHeight();
+		float wpHeight = dimensions.getZSafe();
 		if (wpHeight > workArea.getDefaultClamping().getHeight()) {
 			zSafePlane += wpHeight;
 		} else {
 			zSafePlane += workArea.getDefaultClamping().getHeight();
 		}
-		zSafePlane += dimensions.getHeight();
+		zSafePlane += dimensions.getZSafe();
 		return zSafePlane;
 	}
 

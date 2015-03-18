@@ -4,14 +4,14 @@ import java.util.Set;
 
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.ClampingManner;
-import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
+import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
 public abstract class AbstractStackingDevice extends AbstractDevice {
@@ -26,9 +26,7 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 	public AbstractStackingDevice(final String name) {
 		super(name);
 	}
-	
-	public abstract Coordinates getLocation(SimpleWorkArea workArea, Type type, ClampingManner clampType) throws DeviceActionException, InterruptedException;
-	
+		
 	@Override
 	public EDeviceGroup getType() {
 		return EDeviceGroup.STACKING;
@@ -53,9 +51,9 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 	public abstract void clearDeviceSettings();
 	
 	@Override
-	public float getZSafePlane(final WorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+	public float getZSafePlane(final IWorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
-		float wpHeight = dimensions.getHeight(); 
+		float wpHeight = dimensions.getZSafe(); 
 		if (wpHeight > workArea.getDefaultClamping().getHeight()) {
 			zSafePlane += wpHeight;
 		} else {
@@ -63,4 +61,7 @@ public abstract class AbstractStackingDevice extends AbstractDevice {
 		}
 		return zSafePlane;
 	}
+	
+	public abstract <T extends IWorkPieceDimensions> Coordinates getLocation(AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea, Type type, ClampingManner clampType);
+
 }

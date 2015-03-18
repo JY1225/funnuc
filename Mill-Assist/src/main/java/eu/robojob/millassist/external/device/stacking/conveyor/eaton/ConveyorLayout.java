@@ -3,10 +3,11 @@ package eu.robojob.millassist.external.device.stacking.conveyor.eaton;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 
 public class ConveyorLayout {
 
-	private Conveyor parent;
+	private ConveyorEaton parent;
 	private float minWorkPieceWidth;
 	private float maxWorkPieceWidth;
 	private float trackWidth;
@@ -97,7 +98,7 @@ public class ConveyorLayout {
 
 	public void configureRawWorkPieceStackingPositions() throws IncorrectWorkPieceDataException {
 		Coordinates coordinates = new Coordinates();
-		coordinates.setX(parent.getRawWorkPiece().getDimensions().getLength()/2 + xPosSensor1);
+		coordinates.setX(parent.getRawWorkPiece().getDimensions().getDimension(Dimensions.LENGTH)/2 + xPosSensor1);
 		Coordinates coordinatesA = new Coordinates(coordinates);
 		coordinatesA.offset(parent.getWorkAreaA().getWorkAreaWithSequence(1).getDefaultClamping().getRelativePosition());
 		Coordinates coordinatesB = new Coordinates(coordinates);
@@ -112,7 +113,7 @@ public class ConveyorLayout {
 	public void configureFinishedWorkPieceStackingPositions() throws IncorrectWorkPieceDataException {
 		if (!parent.isTrackBModeLoad()) {
 			Coordinates coordinates = new Coordinates();
-			coordinates.setX(parent.getFinishedWorkPiece().getDimensions().getLength()/2 + xPosSensor1);
+			coordinates.setX(parent.getFinishedWorkPiece().getDimensions().getDimension(Dimensions.LENGTH)/2 + xPosSensor1);
 			Coordinates coordinatesB = new Coordinates(coordinates);
 			coordinatesB.offset(parent.getWorkAreaB().getWorkAreaWithSequence(1).getDefaultClamping().getRelativePosition());
 			stackingPositionB = new StackingPosition(coordinatesB, parent.getFinishedWorkPiece());
@@ -145,11 +146,11 @@ public class ConveyorLayout {
 		this.sideWidth = sideWidth;
 	}
 
-	public Conveyor getParent() {
+	public ConveyorEaton getParent() {
 		return parent;
 	}
 
-	public void setParent(final Conveyor parent) {
+	public void setParent(final ConveyorEaton parent) {
 		this.parent = parent;
 	}
 

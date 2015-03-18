@@ -18,11 +18,15 @@ import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.PropertyManager;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 
 public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStackPlateRawWorkPiecePresenter> {
 	
@@ -32,19 +36,20 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	private static final String HORIZONTAL_ICON = "M 3.3125 3.28125 L 3.3125 14.4375 L 20.0625 14.4375 L 20.0625 3.28125 L 3.3125 3.28125 z ";
 	private static final String TILTED_ICON = "M 11.90625 0.03125 L 0.0625 11.875 L 7.96875 19.78125 L 19.8125 7.9375 L 11.90625 0.03125 z ";
 	private static final String VERTICAL_ICON = "m 6.109375,17.234375 11.15625,0 0,-16.75 -11.15625,0 0,16.75 z";
+	private static final String CYLINDER_DIAMETER = "m 8.4357379,16.70846 -0.015644,31.60486 c 0,1.83398 5.4596541,3.99378 12.0288061,3.99378 6.56915,0 11.900559,-2.2207 11.900559,-4.05469 l -0.0441,-31.48556 c -1.78515,1.45145 -6.433942,2.50296 -11.83022,2.50296 -5.509607,0 -10.311542,-1.07226 -12.0394961,-2.56135 z M 32.081029,14.60227 c 0,1.93077 -5.272392,3.53256 -11.683023,3.53256 -6.410638,0 -11.7873951,-1.567 -11.7873951,-3.49777 0,-1.93078 5.3767571,-3.49778 11.7873951,-3.49778 6.410631,0 11.683023,1.53222 11.683023,3.46299 z m -23.4103001,-0.02421 0,-10.2948892 M 32.018289,14.57536 l 0,-10.2416999 m -21.235196,1.41328 18.646656,0 0,0.21668 -18.646656,0 z m -0.309491,0.11481 c -0.46117,-0.00712 -1.3836751,0 -1.3836751,0 l 3.1787431,-0.85175 -0.880021,0.88003 c 0,0 -0.609922,-0.023566 -0.915047,-0.02828 z m 0.02376,0.0155 -1.3836661,0 3.1787421,0.85174 -0.880021,-0.88002 z m 19.757157,-0.005 1.38366,0 -3.178726,0.85174 0.880016,-0.88002 z m -0.0239,-0.0155 1.38366,0 -3.178725,-0.85175 0.880025,0.88003 z";
+	private static final String CYLINDER_HEIGHT = "m 59.12577,42.48719 0,26.662364 -0.182734,0 0,-26.662364 z m -0.09784,-0.326464 c 0.007,-0.46117 0,-1.383675 0,-1.383675 l 0.85175,3.178743 -0.88003,-0.880021 c 0,0 0.0236,-0.609922 0.0283,-0.915047 z m -0.0155,0.02376 0,-1.383666 -0.85174,3.178742 0.88002,-0.880021 z m -0.0058,28.24891 0,1.38366 -0.85174,-3.178726 0.88002,0.880016 z m 0.0155,-0.0239 0,1.38366 0.85175,-3.178725 -0.88003,0.880025 z m -8.407166,1.723808 10.2417,0 m -10.401569,-31.720323 10.29489,0 M 50.17359,38.263197 c 0,1.930767 -5.272392,3.532557 -11.683023,3.532557 -6.410638,0 -11.787395,-1.567 -11.787395,-3.497767 0,-1.93078 5.376757,-3.49778 11.787395,-3.49778 6.410631,0 11.683023,1.53222 11.683023,3.46299 z m -23.645291,2.106187 -0.01564,31.60486 c 0,1.83398 5.459654,3.99378 12.028806,3.99378 6.56915,0 11.900559,-2.2207 11.900559,-4.05469 l -0.0441,-31.48556 c -1.78515,1.45145 -6.433942,2.50296 -11.83022,2.50296 -5.509607,0 -10.311542,-1.07226 -12.039496,-2.56135 z";
 	
-	private StackPane icon1Pane;
-	private SVGPath workPieceWidthPath;
-	private StackPane icon2Pane;
-	private SVGPath workPieceLengthPath;
-	private StackPane icon3Pane;
-	private SVGPath workPieceHeightPath;
+	private StackPane iconWidthPane;
+	private SVGPath workPieceWidthPath, workPieceHeightPath, workPieceLengthPath, workPieceDiameterPath, workPieceCylinderHeightPath;
+	private StackPane iconLengthPane;
+	private StackPane iconHeightPane;
 	
 	private Label lblWorkPieceWidth;
 	private Label lblWorkPieceLength;
 	private Label lblWorkPieceHeight;
 	private Label lblStudHeight;
 	private Label lblWorkPieceWeight;	
+	private Label lblShape;
 	
 	private Label lblLayers;
 	private Label lblWorkPieceAmount;
@@ -62,14 +67,11 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	private IntegerTextField itxtLayers;
 	
 	private HBox orientationsBox;
+	private Button btnHorizontal, btnTilted, btnVertical;
 	private HBox materialsBox;
-	private Button btnHorizontal;
-	private Button btnTilted;
-	private Button btnVertical;
-	private Button btnAl;
-	private Button btnFe;
-	private Button btnCu;
-	private Button btnOther;
+	private Button btnAl, btnFe, btnCu, btnOther;
+	private HBox shapeBox;
+	private Button btnCubic, btnCylindric;
 	
 	private Region spacer;
 	
@@ -83,6 +85,7 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	
 	protected static final String WIDTH = "BasicStackPlateWorkPieceView.width";
 	protected static final String LENGTH = "BasicStackPlateWorkPieceView.length";
+	private static final String DIAMETER = "BasicStackPlateWorkPieceView.diameter";
 	private static final String HEIGHT = "BasicStackPlateWorkPieceView.height";
 	private static final String WEIGHT = "BasicStackPlateWorkPieceView.weight";
 	private static final String HORIZONTAL = "BasicStackPlateWorkPieceView.horizontal";
@@ -94,24 +97,34 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 	private static final String OTHER = "BasicStackPlateWorkPieceView.other";
 	private static final String STACKS = "BasicStackPlateWorkPieceView.layers";
 	private static final String STUDS = "BasicStackPlateWorkPieceView.studHeight";
+	private static final String SHAPE = "BasicStackPlateWorkPieceView.shape";
+	private static final String CYLINDER_SHAPE = "BasicStackPlateWorkPieceView.cylinderShape";
+	private static final String CUBIC_SHAPE = "BasicStackPlateWorkPieceView.cubicShape";
 	
 	private static final String CSS_CLASS_BUTTON_ORIENTATION = "btn-orientation";
+	private static final String CSS_CLASS_CYLINDER = "cylinder-svg";
 	
 	@Override
 	protected void build() {
 		
 		int row = 0;
-		int column = 0;
+		int column = 1;
 		
-		workPieceLengthPath = new SVGPath();
-		workPieceLengthPath.setContent(LENGTH_ICON);
-		workPieceLengthPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
-		icon2Pane = new StackPane();
-		icon2Pane.getChildren().add(workPieceLengthPath);
-		icon2Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
-		icon2Pane.setMaxSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
+		buildIcons();
+		
+		if (hasRoundPieces()) {
+			buildShapeBox(); 
+			getContents().add(lblShape, column++, row);
+			getContents().add(shapeBox, column, row++, 4, 1);
+		}
+		column = 0;
+		
+		iconLengthPane = new StackPane();
+		iconLengthPane.getChildren().add(workPieceLengthPath);
+		iconLengthPane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
+		iconLengthPane.setMaxSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
 		StackPane.setAlignment(workPieceLengthPath, Pos.BOTTOM_RIGHT);
-		getContents().add(icon2Pane, column++, row);
+		getContents().add(iconLengthPane, column++, row);
 		lblWorkPieceLength = new Label(Translator.getTranslation(LENGTH));
 		getContents().add(lblWorkPieceLength, column++, row);
 		ntxtWorkPieceLength = new NumericTextField(MAX_INTEGER_LENGTH);
@@ -130,12 +143,12 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		workPieceWidthPath = new SVGPath();
 		workPieceWidthPath.setContent(WIDTH_ICON);
 		workPieceWidthPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
-		icon1Pane = new StackPane();
-		icon1Pane.getChildren().add(workPieceWidthPath);
-		icon1Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
-		icon1Pane.setMaxSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
+		iconWidthPane = new StackPane();
+		iconWidthPane.getChildren().add(workPieceWidthPath);
+		iconWidthPane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
+		iconWidthPane.setMaxSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
 		StackPane.setAlignment(workPieceWidthPath, Pos.BOTTOM_RIGHT);
-		getContents().add(icon1Pane, column++, row);
+		getContents().add(iconWidthPane, column++, row);
 		lblWorkPieceWidth = new Label(Translator.getTranslation(WIDTH));
 		getContents().add(lblWorkPieceWidth, column++, row);
 		ntxtWorkPieceWidth = new NumericTextField(MAX_INTEGER_LENGTH);
@@ -151,15 +164,13 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		column = 0;
 		row++;
 		
-		workPieceHeightPath = new SVGPath();
-		workPieceHeightPath.setContent(HEIGTH_ICON);
-		workPieceHeightPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
-		icon3Pane = new StackPane();
-		icon3Pane.getChildren().add(workPieceHeightPath);
-		icon3Pane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
-		icon3Pane.setMaxSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
+
+		iconHeightPane = new StackPane();
+		iconHeightPane.getChildren().add(workPieceHeightPath);
+		iconHeightPane.setPrefSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
+		iconHeightPane.setMaxSize(ICON_PANE_WIDTH, ICON_PANE_HEIGHT);
 		StackPane.setAlignment(workPieceHeightPath, Pos.BOTTOM_RIGHT);
-		getContents().add(icon3Pane, column++, row);
+		getContents().add(iconHeightPane, column++, row);
 		lblWorkPieceHeight = new Label(Translator.getTranslation(HEIGHT));
 		getContents().add(lblWorkPieceHeight, column++, row);
 		ntxtWorkPieceHeight = new NumericTextField(MAX_INTEGER_LENGTH);
@@ -297,6 +308,9 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		orientationsBox.setMinWidth(3 * BTN_WIDTH * 0.9);
 		
 		row = 0;
+		if (hasRoundPieces()) {
+			row = 1;
+		}
 		column = 4;
 		getContents().add(orientationsBox, column, row, 3, 1);
 		column = 4;
@@ -349,6 +363,53 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		
 		refresh();
 	}
+	
+	private void buildIcons() {
+		workPieceLengthPath = new SVGPath();
+		workPieceLengthPath.setContent(LENGTH_ICON);
+		workPieceLengthPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
+		workPieceHeightPath = new SVGPath();
+		workPieceHeightPath.setContent(HEIGTH_ICON);
+		workPieceHeightPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
+		workPieceWidthPath = new SVGPath();
+		workPieceWidthPath.setContent(WIDTH_ICON);
+		workPieceWidthPath.getStyleClass().add(CSS_CLASS_FORM_ICON);
+		workPieceDiameterPath = new SVGPath();
+		workPieceDiameterPath.setContent(CYLINDER_DIAMETER);
+		workPieceDiameterPath.getStyleClass().addAll(CSS_CLASS_FORM_ICON, CSS_CLASS_CYLINDER);
+		workPieceCylinderHeightPath = new SVGPath();
+		workPieceCylinderHeightPath.setContent(CYLINDER_HEIGHT);
+		workPieceCylinderHeightPath.getStyleClass().addAll(CSS_CLASS_FORM_ICON, CSS_CLASS_CYLINDER);
+	}
+	
+	private void buildShapeBox() {
+		lblShape = new Label(Translator.getTranslation(SHAPE));
+		shapeBox = new HBox();
+		shapeBox.setAlignment(Pos.CENTER_LEFT);
+		GridPane.setMargin(shapeBox, new Insets(5, 0, 0, 0));
+		btnCubic = createButton(Translator.getTranslation(CUBIC_SHAPE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				setShape(WorkPieceShape.CUBIC);
+				getPresenter().changedShape(WorkPieceShape.CUBIC);
+				showShapeView(WorkPieceShape.CUBIC);
+			}
+		});
+		btnCubic.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
+		shapeBox.getChildren().add(btnCubic);
+		btnCylindric = createButton(Translator.getTranslation(CYLINDER_SHAPE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(final ActionEvent event) {
+				setShape(WorkPieceShape.CYLINDRICAL);
+				getPresenter().changedShape(WorkPieceShape.CYLINDRICAL);
+				showShapeView(WorkPieceShape.CYLINDRICAL);
+			}
+		});
+		btnCylindric.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+		shapeBox.getChildren().add(btnCylindric);
+		shapeBox.setMaxWidth(2 * BTN_WIDTH);
+		shapeBox.setAlignment(Pos.CENTER);
+	}
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
@@ -373,6 +434,10 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		setWeight(settings.getRawWorkPiece().getMaterial(), settings.getRawWorkPiece().getWeight());
 		ntxtStudHeight.setText(settings.getStudHeight() + "");
 		showOrientation(!getPresenter().hasGridPlate());
+		if (hasRoundPieces()) {
+			setShape(settings.getRawWorkPiece().getShape());
+			showShapeView(settings.getRawWorkPiece().getShape());
+		}
 	}
 	
 	private void setOrientation(final float orientation) {
@@ -388,20 +453,23 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		}
 	}
 	
-	private void setDimensions(final WorkPieceDimensions workPieceDimensions) {
-		float width = workPieceDimensions.getWidth();
-		if (width > 0) {
-			ntxtWorkPieceWidth.setText("" + width);
+	private void setDimensions(final IWorkPieceDimensions workPieceDimensions) {
+		float widthDiameter = workPieceDimensions.getDimension(Dimensions.WIDTH);
+		if (widthDiameter == -1) {
+			widthDiameter = workPieceDimensions.getDimension(Dimensions.DIAMETER);
+		}		
+		if (widthDiameter > 0) {
+			ntxtWorkPieceWidth.setText("" + widthDiameter);
 		} else {
 			ntxtWorkPieceWidth.setText("");
 		}
-		float length = workPieceDimensions.getLength();
+		float length = workPieceDimensions.getDimension(Dimensions.LENGTH);
 		if (length > 0) {
 			ntxtWorkPieceLength.setText("" + length);
 		} else {
 			ntxtWorkPieceLength.setText("");
 		}
-		float height = workPieceDimensions.getHeight();
+		float height = workPieceDimensions.getDimension(Dimensions.HEIGHT);
 		if (height > 0) {
 			ntxtWorkPieceHeight.setText("" + height);
 		} else {
@@ -436,5 +504,47 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<BasicStack
 		btnHorizontal.setVisible(flag);
 		btnTilted.setVisible(flag);
 	}
-
+	
+	private void setShape(final WorkPieceShape shape) {
+		btnCubic.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		btnCylindric.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		if (shape.equals(WorkPieceShape.CUBIC)) {			
+			btnCubic.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		} else {
+			btnCylindric.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+		}
+	}
+	
+	private boolean hasRoundPieces() {
+		return PropertyManager.hasSettingValue(Setting.ROUND_PIECES, "true");
+	}
+	
+	private void showShapeView(WorkPieceShape shape) {
+		if (shape.equals(WorkPieceShape.CUBIC)) {
+			iconWidthPane.getChildren().clear();
+			iconWidthPane.getChildren().add(workPieceWidthPath);
+			iconHeightPane.getChildren().clear();
+			iconHeightPane.getChildren().add(workPieceHeightPath);
+			lblWorkPieceWidth.setText(Translator.getTranslation(WIDTH));
+			setCubicFieldsVisible(true);
+		} else if (shape.equals(WorkPieceShape.CYLINDRICAL)) {
+			iconWidthPane.getChildren().clear();
+			iconWidthPane.getChildren().add(workPieceDiameterPath);
+			iconHeightPane.getChildren().clear();
+			iconHeightPane.getChildren().add(workPieceCylinderHeightPath);
+			lblWorkPieceWidth.setText(Translator.getTranslation(DIAMETER));
+			setCubicFieldsVisible(false);
+		}
+	}
+	
+	private void setCubicFieldsVisible(boolean visible) {
+		orientationsBox.setVisible(visible);
+		orientationsBox.setManaged(visible);
+		lblWorkPieceLength.setVisible(visible);
+		ntxtWorkPieceLength.setVisible(visible);
+		iconLengthPane.setVisible(visible);
+		lblWorkPieceLength.setManaged(visible);
+		ntxtWorkPieceLength.setManaged(visible);
+		iconLengthPane.setManaged(visible);
+	}
 }

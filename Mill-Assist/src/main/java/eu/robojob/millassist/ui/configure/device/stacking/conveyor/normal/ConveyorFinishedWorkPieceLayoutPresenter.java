@@ -6,6 +6,7 @@ import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -40,5 +41,7 @@ public class ConveyorFinishedWorkPieceLayoutPresenter extends eu.robojob.millass
 	@Override public void modeChanged(final ModeChangedEvent e) { }
 
 	@Override public void statusChanged(final StatusChangedEvent e) { }
+	
+	@Override public void dimensionChanged(DimensionsChangedEvent e) {	}
 
 }

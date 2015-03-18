@@ -93,7 +93,7 @@ public class DeviceMapper {
 					devices.add(conveyor);
 					break;
 				case DEVICE_TYPE_CONVEYOR_EATON:
-					eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor conveyorEaton = getConveyorEaton(id, name, zones);
+					eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton conveyorEaton = getConveyorEaton(id, name, zones);
 					devices.add(conveyorEaton);
 					break;
 				case DEVICE_TYPE_BIN:
@@ -117,11 +117,11 @@ public class DeviceMapper {
 		return bin;
 	}
 	
-	private eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor getConveyorEaton(final int id, final String name, final Set<Zone> zones) throws SQLException {
+	private eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton getConveyorEaton(final int id, final String name, final Set<Zone> zones) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CONVEYOREATON WHERE ID = ?");
 		stmt.setInt(1, id);
 		ResultSet results = stmt.executeQuery();
-		eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor conveyor = null;
+		eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton conveyor = null;
 		if (results.next()) {
 			int workAreaAID = results.getInt("WORK_AREA_A");
 			int workAreaBID = results.getInt("WORK_AREA_B");
@@ -151,7 +151,7 @@ public class DeviceMapper {
 					}
 				}
 			}
-			conveyor = new eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor(name, zones, workAreaA, workAreaB, layout, socketConnection, nomSpeedA, nomSpeedASlow, nomSpeedB, nomSpeedBSlow);
+			conveyor = new eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton(name, zones, workAreaA, workAreaB, layout, socketConnection, nomSpeedA, nomSpeedASlow, nomSpeedB, nomSpeedBSlow);
 			conveyor.setId(id);
 		}
 		return conveyor;
@@ -262,11 +262,12 @@ public class DeviceMapper {
 			float horizontalR = results.getFloat("HORIZONTAL_R");
 			float tiltedR = results.getFloat("TILTED_R");
 			double maxOverflow = results.getDouble("MAX_OVERFLOW");
+			double maxUnderflow = results.getDouble("MAX_UNDERFLOW");
 			double minOverlap = results.getDouble("MIN_OVERLAP");
 			float extraRMinus90 = results.getFloat("EXTRA_R_MIN_90");
 			float extraRPlus90 = results.getFloat("EXTRA_R_PLUS_90");
 			BasicStackPlateLayout layout = new BasicStackPlateLayout(horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, horizontalPadding, verticalPaddingTop, 
-					verticalPaddingBottom, horizontalHoleDistance, interferenceDistance, overflowPercentage, horizontalR, tiltedR, maxOverflow, minOverlap, extraRMinus90, extraRPlus90);
+					verticalPaddingBottom, horizontalHoleDistance, interferenceDistance, overflowPercentage, horizontalR, tiltedR, maxOverflow, maxUnderflow, minOverlap, extraRMinus90, extraRPlus90);
 			stackPlate = new BasicStackPlate(name, zones, layout);
 			stackPlate.setId(id);
 		}
@@ -283,6 +284,7 @@ public class DeviceMapper {
 			int clampingWidthR = results.getInt("CLAMPING_WIDTH_R");
 			boolean usesNewDevInt = results.getBoolean("NEW_DEV_INT");
 			int nbFixtures = results.getInt("NB_FIXTURES");
+			float rRoundPieces = results.getFloat("R_ROUND_PIECES");
 			EWayOfOperating wayOfOperating = EWayOfOperating.getWayOfOperatingById(results.getInt("WAYOFOPERATING"));
 			PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("SELECT * FROM DEVICEINTERFACE WHERE ID = ?");
 			stmt2.setInt(1, deviceInterfaceId);
@@ -291,9 +293,9 @@ public class DeviceMapper {
 				int socketConnectionId = results2.getInt("SOCKETCONNECTION");
 				SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
 				if(usesNewDevInt) {
-					cncMillingMachine = new CNCMillingMachineDevIntv2(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR, nbFixtures);
+					cncMillingMachine = new CNCMillingMachineDevIntv2(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR, nbFixtures, rRoundPieces);
 				} else {
-					cncMillingMachine = new CNCMillingMachine(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR, nbFixtures);
+					cncMillingMachine = new CNCMillingMachine(name, wayOfOperating, getMCodeAdapter(id), zones, socketConnection, clampingWidthR, nbFixtures, rRoundPieces);
 				}
 				Map<ECNCOption, Boolean> cncOptions = getCNCOptions(id);
 				if (cncOptions.get(ECNCOption.TIM_ALLOWED) != null) {
@@ -679,7 +681,7 @@ public class DeviceMapper {
 	public void updateBasicStackPlate(final BasicStackPlate basicStackPlate, final String name, final String userFrameName, final int horizontalHoleAmount, final int verticalHoleAmount, 
 			final float holeDiameter, final float studDiameter, final float horizontalHoleDistance, final float horizontalPadding, 
 			final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage,
-			final float horizontalR, final float tiltedR, final float maxOverlow, final float minOverlap, final float studHeight,
+			final float horizontalR, final float tiltedR, final float maxOverlow, final float maxUnderflow, final float minOverlap, final float studHeight,
 			final float smoothToX, final float smoothToY, final float smoothToZ,
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ, final float extraRMinus90, final float extraRPlus90) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
@@ -690,7 +692,8 @@ public class DeviceMapper {
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE STACKPLATE SET HORIZONTALHOLEAMOUNT = ?, VERTICALHOLEAMOUNT = ?, HOLEDIAMETER = ?, " +
 				"STUDDIAMETER = ?, HORIZONTALPADDING = ?, VERTICALPADDINGTOP = ?, VERTICALPADDINGBOTTOM = ?, HORIZONTALHOLEDISTANCE = ?, INTERFERENCEDISTANCE = ?, " +
-				" OVERFLOWPERCENTAGE = ?, HORIZONTAL_R = ?, TILTED_R = ?, MAX_OVERFLOW = ?, MIN_OVERLAP = ?, EXTRA_R_MIN_90 = ?, EXTRA_R_PLUS_90 = ? WHERE ID = ?");
+				" OVERFLOWPERCENTAGE = ?, HORIZONTAL_R = ?, TILTED_R = ?, MAX_OVERFLOW = ?, MIN_OVERLAP = ?, EXTRA_R_MIN_90 = ?, EXTRA_R_PLUS_90 = ?, MAX_UNDERFLOW = ? "
+				+ "WHERE ID = ?");
 		stmt.setInt(1, horizontalHoleAmount);
 		stmt.setInt(2, verticalHoleAmount);
 		stmt.setFloat(3, holeDiameter);
@@ -707,7 +710,8 @@ public class DeviceMapper {
 		stmt.setFloat(14, minOverlap);
 		stmt.setFloat(15, extraRMinus90);
 		stmt.setFloat(16, extraRPlus90);
-		stmt.setInt(17, basicStackPlate.getId());
+		stmt.setFloat(17, maxUnderflow);
+		stmt.setInt(18, basicStackPlate.getId());
 		stmt.execute();
 		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
 		stmt2.setString(1, name);
@@ -737,6 +741,7 @@ public class DeviceMapper {
 		basicStackPlate.getBasicLayout().setInterferenceDistance(interferenceDistance);
 		basicStackPlate.getBasicLayout().setOverflowPercentage(overflowPercentage);
 		basicStackPlate.getBasicLayout().setMaxOverflow(maxOverlow);
+		basicStackPlate.getBasicLayout().setMaxUnderflow(maxUnderflow);
 		basicStackPlate.getBasicLayout().setMinOverlap(minOverlap);
 		basicStackPlate.getBasicLayout().setHorizontalR(horizontalR);
 		basicStackPlate.getBasicLayout().setTiltedR(tiltedR);
@@ -750,7 +755,7 @@ public class DeviceMapper {
 	}
 	
 	public void updateCNCMachine(final AbstractCNCMachine cncMachine, final String name, final EWayOfOperating wayOfOperating,
-			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final boolean timAllowed,
+			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final float rRoundPieces, final boolean timAllowed,
 			final boolean machineAirblow, final List<WorkAreaBoundary> airblowBounds, final List<String> robotServiceInputNames, 
 			final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
 			final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs) throws SQLException {
@@ -767,12 +772,14 @@ public class DeviceMapper {
 		stmt2.setString(1, name);
 		stmt2.setInt(2, cncMachine.getId());
 		stmt2.execute();
-		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CNCMILLINGMACHINE SET CLAMPING_WIDTH_R = ? , WAYOFOPERATING = ?, NEW_DEV_INT = ?, NB_FIXTURES = ? WHERE ID = ?");
+		PreparedStatement stmt3 = ConnectionManager.getConnection().
+				prepareStatement("UPDATE CNCMILLINGMACHINE SET CLAMPING_WIDTH_R = ? , WAYOFOPERATING = ?, NEW_DEV_INT = ?, NB_FIXTURES = ?, R_ROUND_PIECES = ? WHERE ID = ?");
 		stmt3.setInt(1, clampingWidthR);
 		stmt3.setInt(2, wayOfOperating.getId());
 		stmt3.setBoolean(3, newDevInt);
 		stmt3.setInt(4, nbFixtures);
-		stmt3.setInt(5, cncMachine.getId());
+		stmt3.setFloat(5, rRoundPieces);
+		stmt3.setInt(6, cncMachine.getId());
 		stmt3.execute();
 		updateCNCOption(ECNCOption.TIM_ALLOWED, timAllowed, cncMachine.getId());
 		updateCNCOption(ECNCOption.MACHINE_AIRBLOW, machineAirblow, cncMachine.getId());
@@ -791,6 +798,7 @@ public class DeviceMapper {
 		cncMachine.setWayOfOperating(wayOfOperating);
 		cncMachine.setClampingWidthR(clampingWidthR);
 		cncMachine.setNbFixtures(nbFixtures);
+		cncMachine.setRRoundPieces(rRoundPieces);
 		cncMachine.setTIMAllowed(timAllowed);
 		cncMachine.setMachineAirblow(machineAirblow);
 		saveAirblowBound(cncMachine, airblowBounds);

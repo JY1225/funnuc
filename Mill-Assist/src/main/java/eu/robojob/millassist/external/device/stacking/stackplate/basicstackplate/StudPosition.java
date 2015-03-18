@@ -58,4 +58,9 @@ public class StudPosition {
 		this.rowIndex = rowIndex;
 	}
 	
+	@Override
+	public String toString() {
+		return "Stud["+ studType.toString() + "] at " + centerPosition.toString();
+	}
+	
 }

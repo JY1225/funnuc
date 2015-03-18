@@ -19,7 +19,7 @@ import javafx.util.Duration;
 import eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorLayout;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractMenuPresenter;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayoutView<ConveyorFinishedWorkPieceLayoutPresenter<? extends AbstractMenuPresenter<?>>> {
 	
@@ -300,7 +300,7 @@ public class ConveyorFinishedWorkPieceLayoutView extends AbstractWorkPieceLayout
 	@Override
 	public void refresh() {
 		setConnected(getPresenter().getConveyor().isConnected());
-		WorkPieceDimensions wpDimB = conveyorLayout.getStackingPositionTrackB().getWorkPiece().getDimensions();
+		RectangularDimensions wpDimB = (RectangularDimensions) conveyorLayout.getStackingPositionTrackB().getWorkPiece().getDimensions();
 		workPieceB.setWidth(wpDimB.getLength());
 		workPieceB.setHeight(wpDimB.getWidth());
 		workPieceB.setY(conveyorLayout.getSideWidth() + (conveyorLayout.getTrackWidth()/2) - wpDimB.getWidth()/2);

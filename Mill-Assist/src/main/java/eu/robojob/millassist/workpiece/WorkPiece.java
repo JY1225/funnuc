@@ -1,7 +1,14 @@
 package eu.robojob.millassist.workpiece;
 
+import eu.robojob.millassist.ui.shape.IDrawableObject;
+import eu.robojob.millassist.ui.shape.RectanglePieceRepresentation;
+import eu.robojob.millassist.ui.shape.RoundPieceRepresentation;
 
 public class WorkPiece {
+	
+	public enum Dimensions {
+		LENGTH, WIDTH, HEIGHT, DIAMETER;
+	}
 
 	public enum Type {
 		RAW(1), HALF_FINISHED(2), FINISHED(3);
@@ -27,38 +34,82 @@ public class WorkPiece {
 	}
 	
 	public enum Material {
-		AL(0.000002702f), CU(0.00000896f), FE(0.00000786f), OTHER(Float.NaN);
-		
+		AL(1, 0.000002702f), CU(2, 0.00000896f), FE(3, 0.00000786f), OTHER(4, Float.NaN);
+
+		private int id;
 		private float density;
-		
-		private Material(float density) {
+
+		private Material(int id, float density) {
+			this.id = id;
 			this.density = density;
 		}
-		
+
 		public float getDensity() {
 			return this.density;
+		}
+
+		public int getId() {
+			return this.id;
+		}
+
+		public static Material getMaterialById(int id) throws IllegalStateException {
+			for (Material workPieceMaterial: Material.values()) {
+				if (workPieceMaterial.getId() == id) {
+					return workPieceMaterial;
+				}
+			}
+			throw new IllegalStateException("Unknown workpiece material: [" + id + "].");
+		}
+	}
+	
+	public enum WorkPieceShape {
+		CUBIC(1), CYLINDRICAL(2);
+		
+		private int id;
+		
+		private WorkPieceShape(int id) {
+			this.id = id;
+		}
+		
+		public int getShapeId() {
+			return this.id;
+		}
+		
+		public static WorkPieceShape getShapeById(int id) throws IllegalStateException {
+			for (WorkPieceShape workPieceShape: WorkPieceShape.values()) {
+				if (workPieceShape.getShapeId() == id) {
+					return workPieceShape;
+				}
+			}
+			throw new IllegalStateException("Unknown workpiece shape: [" + id + "].");
 		}
 	}
 	
 	private int id;
 	
 	private Type type;
-	private WorkPieceDimensions dimensions;
+	private IWorkPieceDimensions dimensions;
+	private WorkPieceShape shape;
 	private Material material;
 	private float weight;
+	private IDrawableObject representation;
 	
-	public WorkPiece(final Type type, final WorkPieceDimensions dimensions, final Material material, final float weight) {
+	public WorkPiece(final Type type, final IWorkPieceDimensions dimensions, final Material material, 
+			final WorkPieceShape shape, final float weight) {
 		this.type = type;
 		this.dimensions = dimensions;
 		this.material = material;
+		setShape(shape);
 		this.weight = weight;
 	}
 	
 	public WorkPiece(final WorkPiece wp) {
-		this.type = wp.getType();
-		this.dimensions = new WorkPieceDimensions(wp.getDimensions().getLength(), wp.getDimensions().getWidth(), wp.getDimensions().getHeight());
-		this.material = wp.getMaterial();
-		this.weight = wp.getWeight();
+		this(wp.getType(), wp.getDimensions().clone(), wp.getMaterial(), wp.getShape(), wp.getWeight());
+	}
+	
+	public WorkPiece(final WorkPiece wp, final WorkPieceShape shape) {
+		this(wp);
+		this.shape = shape;
 	}
 	
 	public int getId() {
@@ -76,12 +127,33 @@ public class WorkPiece {
 	public void setType(final Type type) {
 		this.type = type;
 	}
+	
+	public WorkPieceShape getShape() {
+		return shape;
+	}
+	
+	public void setShape(WorkPieceShape shape) {
+		if (this.shape == null || !this.shape.equals(shape)) {
+			if (shape.equals(WorkPieceShape.CUBIC)) {
+				this.dimensions = new RectangularDimensions();
+				this.representation = new RectanglePieceRepresentation(this);
+			} else {
+				this.dimensions = new RoundDimensions();
+				this.representation = new RoundPieceRepresentation(this);
+			}
+			this.shape = shape;
+		}
+	}
+	
+	public IDrawableObject getRepresentation() {
+		return this.representation;
+	}
 
-	public WorkPieceDimensions getDimensions() {
+	public IWorkPieceDimensions getDimensions() {
 		return dimensions;
 	}
 
-	public void setDimensions(final WorkPieceDimensions dimensions) {
+	public void setDimensions(final IWorkPieceDimensions dimensions) {
 		this.dimensions = dimensions;
 	}
 	
@@ -107,20 +179,6 @@ public class WorkPiece {
 		} else {
 			setWeight(getDimensions().getVolume() * material.getDensity());
 		}
-	}
-	
-	//Occurs when reversalUnit.approachType = LEFT (X-as ligt naar voren)
-	public void rotateDimensionsAroundX() {
-		WorkPieceDimensions bckUpDimensions = new WorkPieceDimensions(dimensions.getLength(), dimensions.getWidth(), dimensions.getHeight());
-		dimensions.setLength(bckUpDimensions.getHeight());
-		dimensions.setHeight(bckUpDimensions.getLength());
-	}
-	
-	//Occurs when reversalUnit.approachType = FRONT (Y-as ligt naar rechts)
-	public void rotateDimensionsAroundY() {
-		WorkPieceDimensions bckUpDimensions = new WorkPieceDimensions(dimensions.getLength(), dimensions.getWidth(), dimensions.getHeight());
-		dimensions.setWidth(bckUpDimensions.getHeight());
-		dimensions.setHeight(bckUpDimensions.getWidth());
 	}
 	
 	public String toString() {

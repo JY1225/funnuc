@@ -16,7 +16,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
-
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner.Type;
@@ -53,6 +52,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	private Set<String> cncMillingMachineIds;
 	private SVGPath svgPathIconLength;
 	private SVGPath svgPathIconWidth;
+	private HBox clampBox;
 	
 	private static final int HGAP = 10;
 	private static final int VGAP = 10;
@@ -153,19 +153,19 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		svgPathIconWidth = (SVGPath) spIconWidth.getChildren().get(0);
 		
 		btnWidth.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-		HBox hboxBtns = new HBox();
-		hboxBtns.getChildren().add(lblClampingType);
-		hboxBtns.getChildren().add(btnLength);
-		hboxBtns.getChildren().add(btnWidth);
-		hboxBtns.setAlignment(Pos.CENTER_LEFT);
+		clampBox = new HBox();
+		clampBox.getChildren().add(lblClampingType);
+		clampBox.getChildren().add(btnLength);
+		clampBox.getChildren().add(btnWidth);
+		clampBox.setAlignment(Pos.CENTER_LEFT);
 		HBox.setMargin(lblClampingType, new Insets(0, 10, 0, 0));
-		getContents().add(hboxBtns, column++, row, 4, 1);
+		getContents().add(clampBox, column++, row, 4, 1);
 		GridPane.setMargin(lblWorkArea, new Insets(0, 0, 0, 10));
 		refresh();
 		
 		if (PropertyManager.hasSettingValue(Setting.CLAMP_ORIENTATION, "false")) {
-			hboxBtns.setVisible(false);
-			hboxBtns.setManaged(false);
+			clampBox.setVisible(false);
+			clampBox.setManaged(false);
 		}
 	}
 	
@@ -300,20 +300,25 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	}
 	
 	public void refreshClampType() {
-		btnLength.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-		btnWidth.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-		boolean isLength = deviceInfo.getProcessingStep().getProcessFlow().getClampingType().getType().equals(Type.LENGTH);
-		if (getPresenter().isClampingBlocked()) {
-			btnLength.setDisable(!isLength);
-			btnWidth.setDisable(isLength);
+		if (getPresenter().isCylindricMode()) {
+			clampBox.setVisible(false);
 		} else {
-			btnLength.setDisable(false);
-			btnWidth.setDisable(false);
-		}
-		if (isLength) {
-			btnLength.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-		} else {
-			btnWidth.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			clampBox.setVisible(true);
+			btnLength.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			btnWidth.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			boolean isLength = deviceInfo.getProcessingStep().getProcessFlow().getClampingType().getType().equals(Type.LENGTH);
+			if (getPresenter().isClampingBlocked()) {
+				btnLength.setDisable(!isLength);
+				btnWidth.setDisable(isLength);
+			} else {
+				btnLength.setDisable(false);
+				btnWidth.setDisable(false);
+			}
+			if (isLength) {
+				btnLength.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			} else {
+				btnWidth.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+			}
 		}
 	}
 	

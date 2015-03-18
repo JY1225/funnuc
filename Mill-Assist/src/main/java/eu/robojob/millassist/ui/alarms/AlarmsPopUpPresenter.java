@@ -30,6 +30,7 @@ import eu.robojob.millassist.external.robot.RobotListener;
 import eu.robojob.millassist.external.robot.RobotManager;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -329,4 +330,6 @@ public class AlarmsPopUpPresenter extends AbstractPopUpPresenter<AlarmsPopUpView
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) { }
 	
 	@Override public void finishedShifted(final float distance) { }
+	
+	@Override public void dimensionChanged(DimensionsChangedEvent e) {	}
 }

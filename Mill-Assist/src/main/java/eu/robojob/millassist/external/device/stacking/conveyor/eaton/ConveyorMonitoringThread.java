@@ -16,7 +16,7 @@ public class ConveyorMonitoringThread implements Runnable, MonitoringThread {
 
 	public static final int REFRESH_TIME = 25;
 	
-	private Conveyor conveyor;
+	private ConveyorEaton conveyor;
 	
 	private boolean alive;
 	private int previousStatus;
@@ -24,7 +24,7 @@ public class ConveyorMonitoringThread implements Runnable, MonitoringThread {
 		
 	private static Logger logger = LogManager.getLogger(ConveyorMonitoringThread.class.getName());
 	
-	public ConveyorMonitoringThread(final Conveyor conveyor) {
+	public ConveyorMonitoringThread(final ConveyorEaton conveyor) {
 		this.conveyor = conveyor;
 		this.alive = true;
 		this.previousAlarms = new HashSet<ConveyorAlarm>();

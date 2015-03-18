@@ -709,3 +709,12 @@
 	-fx-text-alignment: right;
 	-fx-alignment: center-right;
 }
+
+.cylinder-svg {
+	-fx-fill:#2a2d31;
+	-fx-stroke:#2a2d31;
+	-fx-stroke-width:0.34595424px;
+	-fx-stroke-linecap:round;
+	-fx-stroke-linejoin:round;
+	-fx-stroke-opacity:1;
+}

@@ -7,10 +7,11 @@ import java.util.Set;
 
 import eu.robojob.millassist.external.AbstractServiceProvider;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 
 public abstract class AbstractDevice extends AbstractServiceProvider {
 	
@@ -91,8 +92,6 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return false;
 	}
 	
-	public abstract Coordinates getPickLocation(SimpleWorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType, ApproachType approachType);
-	public abstract Coordinates getPutLocation(SimpleWorkArea workArea, WorkPieceDimensions workPieceDimensions, ClampingManner clampType, ApproachType approachType);
 	public abstract Coordinates getLocationOrientation(SimpleWorkArea workArea, ClampingManner clampType);
 	
 	public abstract void interruptCurrentAction();
@@ -218,15 +217,18 @@ public abstract class AbstractDevice extends AbstractServiceProvider {
 		return new DevicePutSettings(this, workArea);
 	}
 	
-	public float getZSafePlane(final WorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+	public float getZSafePlane(final IWorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		if (approachType.equals(ApproachType.BOTTOM)) {
 			throw new IllegalArgumentException("Approach from " + ApproachType.BOTTOM + " is not possible for " + workArea.getWorkAreaManager().getZone().getDevice().toString());
 		} else {
 			float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
 			zSafePlane += workArea.getDefaultClamping().getHeight(); // position of the clamping 
-			zSafePlane += dimensions.getHeight(); // add height of workpiece held by robot 
+			zSafePlane += dimensions.getZSafe(); // add height of workpiece held by robot 
 			return zSafePlane;
 		}
 	}
+	
+	public abstract <T extends IWorkPieceDimensions> Coordinates getPutLocation(AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType);
+	public abstract <T extends IWorkPieceDimensions> Coordinates getPickLocation(AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType);
 	
 }

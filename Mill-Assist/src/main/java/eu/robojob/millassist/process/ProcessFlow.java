@@ -25,10 +25,14 @@ import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
+import eu.robojob.millassist.external.device.visitor.CubicPlacementVisitor;
+import eu.robojob.millassist.external.device.visitor.CylindricPlacementVisitor;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.RobotSettings;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -38,8 +42,9 @@ import eu.robojob.millassist.process.event.ProcessFlowListener;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.PropertyManager.Setting;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 
 public class ProcessFlow {
 	
@@ -269,7 +274,7 @@ public class ProcessFlow {
 		} else if (stackingDevice instanceof Conveyor) {
 			ConveyorSettings conveyorSettings = (ConveyorSettings) deviceSettings.get(stackingDevice);
 			return conveyorSettings.getAmount();
-		} else if (stackingDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
+		} else if (stackingDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton) {
 			eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = (eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingDevice);
 			return conveyorSettings.getAmount();
 		}
@@ -293,7 +298,7 @@ public class ProcessFlow {
 		} else if (stackingDevice instanceof Conveyor) {
 			ConveyorSettings conveyorSettings = (ConveyorSettings) deviceSettings.get(stackingDevice);
 			conveyorSettings.setAmount(amount);
-		} else if (stackingDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
+		} else if (stackingDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton) {
 			eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = (eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingDevice);
 			conveyorSettings.setAmount(amount);
 		}
@@ -317,10 +322,10 @@ public class ProcessFlow {
 					conveyorSettings.setAmount(-1);
 					((Conveyor) device).setAmount(-1);
 				}
-				if (device instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
+				if (device instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton) {
 					eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = (eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(device);
 					conveyorSettings.setAmount(-1);
-					((eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) device).setAmount(-1);
+					((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton) device).setAmount(-1);
 				}
 			}
 		}
@@ -348,8 +353,14 @@ public class ProcessFlow {
 				}
 				break;
 			case ProcessFlowEvent.DATA_CHANGED:
-				for (ProcessFlowListener listener : tempListeners) {
-					listener.dataChanged((DataChangedEvent) event);
+				if (event instanceof DimensionsChangedEvent) {
+					for (ProcessFlowListener listener : tempListeners) {
+						listener.dimensionChanged((DimensionsChangedEvent) event);
+					}
+				} else {
+					for (ProcessFlowListener listener : tempListeners) {
+						listener.dataChanged((DataChangedEvent) event);
+					}
 				}
 				break;
 			case ProcessFlowEvent.FINISHED_AMOUNT_CHANGED:
@@ -675,21 +686,21 @@ public class ProcessFlow {
 		for (AbstractProcessStep step: processSteps) {
 			if (step instanceof PickStep) {
 				if (((PickStep) step).getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
-					WorkPieceDimensions wpDim = new WorkPieceDimensions(prvWorkPiece.getDimensions());
+					IWorkPieceDimensions wpDim = prvWorkPiece.getDimensions().clone();
 					float prvWeight = prvWorkPiece.getWeight();
 					((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
 					((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
-					((PickStep) step).getRobotSettings().getWorkPiece().rotateDimensionsAroundY();
+					((PickStep) step).getRobotSettings().getWorkPiece().getDimensions().rotateDimensionsAroundY();
 				} else if(((PickStep) step).getRobotSettings().getApproachType().equals(ApproachType.LEFT)) {
-					WorkPieceDimensions wpDim = new WorkPieceDimensions(prvWorkPiece.getDimensions());
+					IWorkPieceDimensions wpDim =  prvWorkPiece.getDimensions().clone();
 					float prvWeight = prvWorkPiece.getWeight();
 					((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
 					((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
-					((PickStep) step).getRobotSettings().getWorkPiece().rotateDimensionsAroundX();
+					((PickStep) step).getRobotSettings().getWorkPiece().getDimensions().rotateDimensionsAroundX();
 				} else {
 					//Neem de dimensies van de vorige pick over - probleem bij aanpassingen door CNC machine
 					if (prvWorkPiece != null) {
-						WorkPieceDimensions wpDim = new WorkPieceDimensions(prvWorkPiece.getDimensions());
+						IWorkPieceDimensions wpDim = prvWorkPiece.getDimensions().clone();
 						float prvWeight = prvWorkPiece.getWeight();
 						((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
 						((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
@@ -699,9 +710,19 @@ public class ProcessFlow {
 			}
 			if (step instanceof PutStep && ((PutStep) step).getDevice() instanceof AbstractStackingDevice && !(((PutStep) step).getDevice() instanceof OutputBin)) {
 				float prvWeight = prvWorkPiece.getWeight();
-				((AbstractStackingDevice) ((PutStep) step).getDevice()).getFinishedWorkPiece().setDimensions(new WorkPieceDimensions(prvWorkPiece.getDimensions()));
+				IWorkPieceDimensions dim = prvWorkPiece.getDimensions().clone();
+				((AbstractStackingDevice) ((PutStep) step).getDevice()).getFinishedWorkPiece().setDimensions(dim);
 				((AbstractStackingDevice) ((PutStep) step).getDevice()).getFinishedWorkPiece().setWeight(prvWeight);
 			}
+		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public AbstractPiecePlacementVisitor getPiecePlacementVisitor(WorkPieceShape shape) {
+		if (shape.equals(WorkPieceShape.CYLINDRICAL))
+			return new CylindricPlacementVisitor();
+		else {
+			return new CubicPlacementVisitor();
 		}
 	}
 }

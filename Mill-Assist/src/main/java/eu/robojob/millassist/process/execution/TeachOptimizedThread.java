@@ -187,21 +187,29 @@ public class TeachOptimizedThread extends TeachThread {
 			stackingDevice = (AbstractStackingDevice) pickFromStackingDeviceStep.getDevice();
 		}
 		if (stackingDevice instanceof BasicStackPlate) {
-			((BasicStackPlate) stackingDevice).getLayout().getStackingPositions().get(0).setWorkPiece(((BasicStackPlate) stackingDevice).getFinishedWorkPiece());
-			((BasicStackPlate) stackingDevice).getLayout().getStackingPositions().get(0).setAmount(1);
+			((BasicStackPlate) stackingDevice).getLayout().getRawStackingPositions().get(0).setWorkPiece(((BasicStackPlate) stackingDevice).getFinishedWorkPiece());
+			((BasicStackPlate) stackingDevice).getLayout().getRawStackingPositions().get(0).setAmount(1);
 		} else if (stackingDevice instanceof Conveyor) {
 			// FIXME implement
 			throw new IllegalStateException("Not yet implemented!");
 		}  
 		getProcessFlow().setFinishedAmount(1);
-		Coordinates originalCoordinates = stackingDevice.getLocation(putOnStackerStep.getRobotSettings().getWorkArea(), WorkPiece.Type.FINISHED, getProcessFlow().getClampingType());
+		Coordinates originalCoordinates = stackingDevice.getLocation(
+				getProcessFlow().getPiecePlacementVisitor(pickFromStackingDeviceStep.getRobotSettings().getWorkPiece().getShape()),
+				putOnStackerStep.getRobotSettings().getWorkArea(), 
+				WorkPiece.Type.FINISHED, 
+				getProcessFlow().getClampingType());
 		if (putOnStackerStep.needsTeaching()) {
 			Coordinates position = new Coordinates(originalCoordinates);
 			logger.debug("Original coordinates: " + position + ".");
 			// update teached offset based on clamp height
 			if (putOnStackerStep.getRelativeTeachedOffset() == null) {
-				if (position.getZ() + putOnStackerStep.getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight() < putOnStackerStep.getDeviceSettings().getWorkArea().getDefaultClamping().getRelativePosition().getZ() + putOnStackerStep.getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
-					float extraOffset = (putOnStackerStep.getDeviceSettings().getWorkArea().getDefaultClamping().getRelativePosition().getZ() + putOnStackerStep.getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) - (position.getZ() + putOnStackerStep.getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getHeight());
+				if (position.getZ() + putOnStackerStep.getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getZSafe() < 
+						putOnStackerStep.getDeviceSettings().getWorkArea().getDefaultClamping().getRelativePosition().getZ() + 
+						putOnStackerStep.getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) {
+					float extraOffset = (putOnStackerStep.getDeviceSettings().getWorkArea().getDefaultClamping().getRelativePosition().getZ() + 
+							putOnStackerStep.getDeviceSettings().getWorkArea().getDefaultClamping().getHeight()) - 
+							(position.getZ() + putOnStackerStep.getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions().getZSafe());
 					putOnStackerStep.setRelativeTeachedOffset(new Coordinates(0, 0, extraOffset, 0, 0, 0));
 				}
 			}

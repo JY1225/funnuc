@@ -28,7 +28,7 @@ import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridP
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormView;
-import eu.robojob.millassist.workpiece.WorkPiece.Type;
+import eu.robojob.millassist.ui.shape.IDrawableObject;
 
 /*
  * This class represents the BasicStackPlate (with or without a gridplate)
@@ -64,10 +64,6 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	private static final String CSS_CLASS_HOLE = "hole";
 	private static final String CSS_CLASS_NORMALSTUD = "normal-stud";
 	private static final String CSS_CLASS_CORNERSHAPE = "corner-shape";
-	private static final String CSS_CLASS_WORKPIECE  = "workpiece";
-	private static final String CSS_CLASS_WORKPIECE_MARK = "workpiece-mark";
-	private static final String CSS_CLASS_FINISHED = "finished";
-	private static final String CSS_CLASS_FINISHED_MARK = "workpiece-finished-mark";
 	private static final String CSS_CLASS_AMOUNT = "amount-text";
 			
 	public BasicStackPlateLayoutView() {
@@ -282,86 +278,56 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 		}
 	}
 	
+	private Rectangle createMarker(StackPlateStackingPosition stackingPosition, IDrawableObject workPiece) {
+		Rectangle marker = null; 
+		if (stackingPosition.getOrientation() == 90 && !basicStackPlate.hasGridPlate()) {
+			marker = workPiece.createMarker(true);
+			if (basicStackPlate.getR(basicStackPlate.getLayout().getOrientation()) >= -0.01) {
+				marker.setTranslateY(5);		
+			} else {
+				marker.setTranslateY(workPiece.getYTranslationMarker());	
+			}
+		} else {
+			marker = workPiece.createMarker(false);
+			if (basicStackPlate.getR(basicStackPlate.getLayout().getOrientation()) >= -0.01) {
+				if (markerNeedsTranslation(stackingPosition.getOrientation())) {
+					marker.setTranslateX(workPiece.getXTranslationMarker());	
+				} else {
+					marker.setTranslateX(5);		
+				}
+			} else {
+				if (markerNeedsTranslation(stackingPosition.getOrientation())) {
+					marker.setTranslateX(5);	
+				} else {
+					marker.setTranslateX(workPiece.getXTranslationMarker());	
+				}
+			}
+		}
+		return marker;
+	}
+	
 	private void configureWorkPieces() {
 		for (StackPlateStackingPosition stackingPosition : basicStackPlate.getLayout().getStackingPositions()) {
 			if (stackingPosition.getWorkPiece() != null) {
-				if (stackingPosition.getOrientation() != 90 || basicStackPlate.hasGridPlate()) {
-					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
-							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-							stackingPosition.getWorkPiece().getDimensions().getLength(), stackingPosition.getWorkPiece().getDimensions().getWidth());
-					Rectangle rp2 = null;
-					if (basicStackPlate.getBasicLayout().getHorizontalR() >= -0.01) {
-						if (markerNeedsTranslation(stackingPosition.getOrientation())) {
-							rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength() / 2 - 10, 
-									width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-									5, stackingPosition.getWorkPiece().getDimensions().getWidth());
-						} else {
-							rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
-									width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-									5, stackingPosition.getWorkPiece().getDimensions().getWidth());
-						}
-					} else {
-						if (markerNeedsTranslation(stackingPosition.getOrientation())) {
-							rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2 + 5, 
-									width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-									5, stackingPosition.getWorkPiece().getDimensions().getWidth());
-						} else {
-							rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getLength() / 2 - 10, 
-									width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-									5, stackingPosition.getWorkPiece().getDimensions().getWidth());
-						}
-					}
-					Text txtAmount = new Text(stackingPosition.getAmount() + "");
-					txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);
-					txtAmount.setX(stackingPosition.getPosition().getX() - txtAmount.getBoundsInParent().getWidth()/2);
-					txtAmount.setY(width - stackingPosition.getPosition().getY() + txtAmount.getBoundsInParent().getHeight()/2);
-					Rotate rotate = new Rotate(stackingPosition.getOrientation()*-1, stackingPosition.getPosition().getX(), width - stackingPosition.getPosition().getY());
-					rp.getTransforms().add(rotate);
-					rp.getStyleClass().add(CSS_CLASS_WORKPIECE);
-					rp2.getStyleClass().add(CSS_CLASS_WORKPIECE_MARK);
-					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
-						rp.getStyleClass().add(CSS_CLASS_FINISHED);
-						rp2.getStyleClass().add(CSS_CLASS_FINISHED_MARK);
-					}
-					rp2.getTransforms().add(rotate);
-					rp.setArcHeight(0);
-					rp.setArcWidth(0);
-					group.getChildren().add(rp);
-					//RP2 is the orientation marker in the workpiece (grey line)
-					group.getChildren().add(rp2);
-					group.getChildren().add(txtAmount);
-				} else if (stackingPosition.getOrientation() == 90) {
-					Rectangle rp = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2, 
-							width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
-							stackingPosition.getWorkPiece().getDimensions().getWidth(), stackingPosition.getWorkPiece().getDimensions().getLength());
-					Rectangle rp2 = null;
-					if (basicStackPlate.getBasicLayout().getHorizontalR() >= -0.01) {
-						rp2 = new Rectangle(stackingPosition.getPosition().getX() - stackingPosition.getWorkPiece().getDimensions().getWidth() / 2 + 5, 
-								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
-								5, stackingPosition.getWorkPiece().getDimensions().getLength());
-					} else {
-						rp2 = new Rectangle(stackingPosition.getPosition().getX() + stackingPosition.getWorkPiece().getDimensions().getWidth() / 2 - 10, 
-								width - stackingPosition.getPosition().getY() - stackingPosition.getWorkPiece().getDimensions().getLength() / 2, 
-								5, stackingPosition.getWorkPiece().getDimensions().getLength());
-					}
-					Text txtAmount = new Text(stackingPosition.getAmount() + "");
-					txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);
-					txtAmount.setX(stackingPosition.getPosition().getX() - txtAmount.getBoundsInParent().getWidth()/2);
-					txtAmount.setY(width - stackingPosition.getPosition().getY() + txtAmount.getBoundsInParent().getHeight()/2);
-					rp.getStyleClass().add(CSS_CLASS_WORKPIECE);
-					rp2.getStyleClass().add(CSS_CLASS_WORKPIECE_MARK);
-					if (stackingPosition.getWorkPiece().getType() == Type.FINISHED) {
-						rp.getStyleClass().add(CSS_CLASS_FINISHED);
-						rp2.getStyleClass().add(CSS_CLASS_FINISHED_MARK);
-					}
-					rp.setArcHeight(0);
-					rp.setArcWidth(0);
-					group.getChildren().add(rp);
-					group.getChildren().add(rp2);
-					group.getChildren().add(txtAmount);
-				} else {
-					throw new IllegalArgumentException("Unknown orientation");
+				IDrawableObject workPieceRepre = stackingPosition.getWorkPiece().getRepresentation();
+				Shape workPiece = workPieceRepre.createShape();
+				Group group2 = new Group();
+				group2.getChildren().add(workPiece);
+				if (workPieceRepre.needsMarkers()) {
+					Rectangle marker = createMarker(stackingPosition, workPieceRepre);
+					group2.getChildren().add(marker);
 				}
+				//LayoutX - the origin of the piece (left bottom corner)
+				group2.setLayoutX(stackingPosition.getPosition().getX() - workPieceRepre.getXCorrection());
+				//LayoutY - the origin of the piece (left bottom corner)
+				group2.setLayoutY(width - stackingPosition.getPosition().getY() - workPieceRepre.getYCorrection());
+				group2.setRotate(stackingPosition.getOrientation()*-1);
+				group.getChildren().add(group2);
+				Text txtAmount = new Text(stackingPosition.getAmount() + "");
+				txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);
+				txtAmount.setX(stackingPosition.getPosition().getX() - txtAmount.getBoundsInParent().getWidth()/2);
+				txtAmount.setY(width - stackingPosition.getPosition().getY() + txtAmount.getBoundsInParent().getHeight()/2);
+				group.getChildren().add(txtAmount);		
 			}
 		}
 	}

@@ -21,7 +21,7 @@ import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public class ConveyorRawWorkPieceView extends AbstractFormView<ConveyorRawWorkPiecePresenter> {
 
@@ -244,11 +244,11 @@ public class ConveyorRawWorkPieceView extends AbstractFormView<ConveyorRawWorkPi
 
 	@Override
 	public void refresh() {
-		setDimensions(settings.getRawWorkPiece().getDimensions());
+		setDimensions((RectangularDimensions) settings.getRawWorkPiece().getDimensions());
 		setWeight(settings.getRawWorkPiece().getMaterial(), settings.getRawWorkPiece().getWeight());
 	}
 	
-	private void setDimensions(final WorkPieceDimensions workPieceDimensions) {
+	private void setDimensions(final RectangularDimensions workPieceDimensions) {
 		float width = workPieceDimensions.getWidth();
 		if (width > 0) {
 			ntxtWorkPieceWidth.setText("" + width);

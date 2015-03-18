@@ -31,13 +31,11 @@ import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMonitoring
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
 import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
-import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.workpiece.WorkPiece;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	
@@ -55,8 +53,8 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	private static Logger logger = LogManager.getLogger(CNCMillingMachineDevIntv2.class.getName());
 	
 	public CNCMillingMachineDevIntv2(final String name, final EWayOfOperating wayOfOperating, final MCodeAdapter mCodeAdapter, final Set<Zone> zones, 
-			final SocketConnection socketConnection, final int clampingWidthR, final int nbFixtures) {
-		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR, nbFixtures);
+			final SocketConnection socketConnection, final int clampingWidthR, final int nbFixtures, final float rRoundPieces) {
+		super(name, wayOfOperating, mCodeAdapter, zones, clampingWidthR, nbFixtures, rRoundPieces);
 		this.cncMachineCommunication = new CNCMachineSocketCommunication(socketConnection, this);
 		CNCMachineMonitoringThreadDevIntv2 cncMachineMonitoringThread = new CNCMachineMonitoringThreadDevIntv2(this);
 		// start monitoring thread at creation of this object
@@ -498,128 +496,6 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 				c.setR(c.getR());
 			} else {
 				c.setR(c.getR() + getClampingWidthR());
-			}
-		}
-		return c;
-	}
-	
-	@Override
-	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
-		Coordinates c = new Coordinates(workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getRelativePosition());
-		if (clampType.getType() == Type.LENGTH) {
-			if (clampType.isChanged())  {
-				c.setR(c.getR() + getClampingWidthR());
-			} else {
-				c.setR(c.getR());
-			}
-			switch (workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getType()) {
-				case CENTRUM:
-					// no action needed
-					break;
-				case FIXED_XM:
-					c.setX(c.getX() - workPieceDimensions.getWidth()/2);
-					break;
-				case FIXED_YM:
-					c.setY(c.getY() - workPieceDimensions.getWidth()/2);
-					break;
-				case FIXED_XP:
-					c.setX(c.getX() + workPieceDimensions.getWidth()/2);
-					break;
-				case FIXED_YP:
-					c.setY(c.getY() + workPieceDimensions.getWidth()/2);
-					break;
-				case NONE:
-					throw new IllegalArgumentException("Machine clamping type can't be NONE.");
-				default:
-					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getType());
-			}
-		} else {
-			if (clampType.isChanged()) {
-				c.setR(c.getR());
-			} else {
-				c.setR(c.getR() + getClampingWidthR());
-			}
-			switch (workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getType()) {
-			case CENTRUM:
-				// no action needed
-				break;
-			case FIXED_XM:
-				c.setX(c.getX() - workPieceDimensions.getLength()/2);
-				break;
-			case FIXED_YM:
-				c.setY(c.getY() - workPieceDimensions.getLength()/2);
-				break;
-			case FIXED_XP:
-				c.setX(c.getX() + workPieceDimensions.getLength()/2);
-				break;
-			case FIXED_YP:
-				c.setY(c.getY() + workPieceDimensions.getLength()/2);
-				break;
-			case NONE:
-				throw new IllegalArgumentException("Machine clamping type can't be NONE.");
-			default:
-				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getWorkAreaManager().getActiveClamping(true, workArea.getSequenceNb()).getType());
-			}
-		}
-		return c;
-	}
-
-	@Override
-	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
-		Coordinates c = new Coordinates(workArea.getWorkAreaManager().getActiveClamping(false,workArea.getSequenceNb()).getRelativePosition());
-		if (clampType.getType() == Type.LENGTH) {
-			if (clampType.isChanged()) {
-				c.setR(c.getR() + getClampingWidthR());
-			} else {
-				c.setR(c.getR());
-			}
-			switch (workArea.getWorkAreaManager().getActiveClamping(false, workArea.getSequenceNb()).getType()) {
-				case CENTRUM:
-					// no action needed
-					break;
-				case FIXED_XM:
-					c.setX(c.getX() - workPieceDimensions.getWidth()/2);
-					break;
-				case FIXED_YM:
-					c.setY(c.getY() - workPieceDimensions.getWidth()/2);
-					break;
-				case FIXED_XP:
-					c.setX(c.getX() + workPieceDimensions.getWidth()/2);
-					break;
-				case FIXED_YP:
-					c.setY(c.getY() + workPieceDimensions.getWidth()/2);
-					break;
-				case NONE:
-					throw new IllegalArgumentException("Machine clamping type can't be NONE.");
-				default:
-					throw new IllegalArgumentException("Unknown clamping type: " + workArea.getWorkAreaManager().getActiveClamping(false, workArea.getSequenceNb()).getType());
-			}
-		} else {
-			if (clampType.isChanged()) {
-				c.setR(c.getR());
-			} else {
-				c.setR(c.getR() + getClampingWidthR());
-			}
-			switch (workArea.getWorkAreaManager().getActiveClamping(false, workArea.getSequenceNb()).getType()) {
-			case CENTRUM:
-				// no action needed
-				break;
-			case FIXED_XM:
-				c.setX(c.getX() - workPieceDimensions.getLength()/2);
-				break;
-			case FIXED_YM:
-				c.setY(c.getY() - workPieceDimensions.getLength()/2);
-				break;
-			case FIXED_XP:
-				c.setX(c.getX() + workPieceDimensions.getLength()/2);
-				break;
-			case FIXED_YP:
-				c.setY(c.getY() + workPieceDimensions.getLength()/2);
-				break;
-			case NONE:
-				throw new IllegalArgumentException("Machine clamping type can't be NONE.");
-			default:
-				throw new IllegalArgumentException("Unknown clamping type: " + workArea.getWorkAreaManager().getActiveClamping(false, workArea.getSequenceNb()).getType());
 			}
 		}
 		return c;

@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.ProcessFlow.Type;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -109,6 +110,7 @@ public class AutomateStatusPresenter implements ProcessFlowListener {
 	}
 	
 	@Override public void statusChanged(final StatusChangedEvent e) { }
+	@Override public void dimensionChanged(DimensionsChangedEvent e) {	}
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) { }
 
 	@Override

@@ -255,6 +255,10 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	public int getNbFixtures() {
 		return cncMachineOptionView.getNbFixtures();
 	}
+	
+	public float getRRoundPieces() {
+		return cncMachineOptionView.getRRoundPieces();
+	}
 
 	public boolean getTIMAllowed() {
 		return cncMachineOptionView.getTIMAllowed();

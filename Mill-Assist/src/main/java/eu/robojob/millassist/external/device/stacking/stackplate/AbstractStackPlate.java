@@ -19,13 +19,16 @@ import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
+import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
+import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 import eu.robojob.millassist.workpiece.WorkPiece;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	
@@ -49,29 +52,16 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 		this.layout = layout;
 		layout.setStackPlate(this);
 	}
-	
-	@Override 
-	public synchronized Coordinates getLocation(final SimpleWorkArea workArea, final Type type, final ClampingManner clampType) {
-		for (StackPlateStackingPosition stackingPos : getLayout().getStackingPositions()) {
-			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == type) && 
-					(stackingPos.getAmount() > 0)) {
-				Coordinates c = new Coordinates(stackingPos.getPickPosition());
-				c.offset(workArea.getDefaultClamping().getRelativePosition());
-				return c;
-			}
-		}
-		return null;
-	}
 
 	@Override
 	public void clearDeviceSettings() {
-		setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f));
-		setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(), Material.OTHER, 0.0f));
+		setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
+		setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
 		getWorkAreas().get(0).getDefaultClamping().resetHeightToDefault();
 		this.currentPickLocation = null;
 		this.currentPutLocation = null;
 		try {
-			this.getLayout().configureStackingPositions(null, getLayout().getOrientation(), 1);
+			this.getLayout().configureStackingPositions(null, null, getLayout().getOrientation(), 1);
 		} catch (IncorrectWorkPieceDataException e) {
 			logger.error(e);
 		}
@@ -150,28 +140,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 		notifyLayoutChanged();
 		logger.info("put finished!");
 	}
-	
-	private void doCorrectionFinishedWorkPiece() {
-		float deltaLength = getRawWorkPiece().getDimensions().getLength() - getFinishedWorkPiece().getDimensions().getLength();
-		float deltaWidth = getRawWorkPiece().getDimensions().getWidth() - getFinishedWorkPiece().getDimensions().getWidth();
-		//FIXME- check this for gridplates
-		if (currentPutLocation.getOrientation() == 0) {
-			currentPutLocation.getPosition().setX(currentPutLocation.getPutPosition().getX() - deltaLength/2);
-			currentPutLocation.getPosition().setY(currentPutLocation.getPutPosition().getY() - deltaWidth/2);
-		} else if ( currentPutLocation.getOrientation() == 90) {
-			currentPutLocation.getPosition().setX(currentPutLocation.getPutPosition().getX() - deltaWidth/2);
-			currentPutLocation.getPosition().setY(currentPutLocation.getPutPosition().getY() - deltaLength/2);
-		} else if (currentPutLocation.getOrientation() == 45) {
-			double extraX = (getRawWorkPiece().getDimensions().getLength()/Math.sqrt(2) - getRawWorkPiece().getDimensions().getWidth()/Math.sqrt(2))/2;
-			double extraY = (getRawWorkPiece().getDimensions().getLength()/Math.sqrt(2) + getRawWorkPiece().getDimensions().getWidth()/Math.sqrt(2))/2;
-			currentPutLocation.getPosition().setX((float) (currentPutLocation.getPutPosition().getX() - extraX));
-			currentPutLocation.getPosition().setY((float) (currentPutLocation.getPutPosition().getY() - extraY));
-			extraX = (getFinishedWorkPiece().getDimensions().getLength()/Math.sqrt(2) - getFinishedWorkPiece().getDimensions().getWidth()/Math.sqrt(2))/2;
-			extraY = (getFinishedWorkPiece().getDimensions().getLength()/Math.sqrt(2) + getFinishedWorkPiece().getDimensions().getWidth()/Math.sqrt(2))/2;
-			currentPutLocation.getPosition().setX((float) (currentPutLocation.getPutPosition().getX() + extraX));
-			currentPutLocation.getPosition().setY((float) (currentPutLocation.getPutPosition().getY() + extraY));
-		}
-	}
 
 	@Override
 	public void interventionFinished(
@@ -215,14 +183,14 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 				if (settings.getRawWorkPiece() != null) {
 					setRawWorkPiece(settings.getRawWorkPiece());
 					setFinishedWorkPiece(settings.getFinishedWorkPiece());
-					getLayout().configureStackingPositions(settings.getRawWorkPiece(), settings.getOrientation(), settings.getLayers());
+					getLayout().configureStackingPositions(settings.getRawWorkPiece(), settings.getFinishedWorkPiece(), settings.getOrientation(), settings.getLayers());
 					getLayout().initRawWorkPieces(getRawWorkPiece(), settings.getAmount());
 				} else {
 					logger.info("Raw workpiece was null!");
-					//FIXME - is this correct? settings.getRawWorkPiece is always null
 					setRawWorkPiece(settings.getRawWorkPiece());
 					setFinishedWorkPiece(settings.getFinishedWorkPiece());
-					getLayout().configureStackingPositions(null, settings.getOrientation(), settings.getLayers());
+					// Raw workpiece is null
+					getLayout().configureStackingPositions(settings.getRawWorkPiece(), settings.getFinishedWorkPiece(), settings.getOrientation(), settings.getLayers());
 				}
 			} catch (IncorrectWorkPieceDataException e) {
 				logger.error(e);
@@ -242,38 +210,17 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 		return new AbstractStackPlateDeviceSettings(getRawWorkPiece(), getFinishedWorkPiece(), getLayout().getOrientation(), getLayout().getLayers(), 
 				getLayout().getWorkPieceAmount(WorkPiece.Type.RAW), getWorkAreas().get(0).getDefaultClamping().getHeight(), gridId);
 	}
-
-	@Override
-	public synchronized Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
-		for (StackPlateStackingPosition stackingPos : getLayout().getStackingPositions()) {
-			if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == Type.RAW) && 
-					(stackingPos.getAmount() > 0)) {
-				currentPickLocation = stackingPos;
-				Coordinates c = new Coordinates(stackingPos.getPickPosition());
-				c.offset(workArea.getDefaultClamping().getRelativePosition());
-				return c;
-			}
-		}
-		return null;
-	}
 	
-	@Override
-	public synchronized Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
-		for (StackPlateStackingPosition stackingPos : getLayout().getStackingPositions()) {
-			if ((stackingPos.getWorkPiece() == null) || ((stackingPos.getWorkPiece() != null) && 
-					(stackingPos.getWorkPiece().getType() == Type.FINISHED) && (stackingPos.getAmount() < getLayout().getLayers()))) {
-				currentPutLocation = stackingPos;
-				doCorrectionFinishedWorkPiece();
-				Coordinates c = new Coordinates(stackingPos.getPutPosition());
-				c.offset(workArea.getDefaultClamping().getRelativePosition());
-				return c;
-			}
-		}
-		return null;
+	public synchronized void setCurrentPickLocation(StackPlateStackingPosition stackingPos) {
+		this.currentPickLocation = stackingPos;
 	}
 	
 	public synchronized StackPlateStackingPosition getCurrentPickLocation() {
 		return currentPickLocation;
+	}
+	
+	public synchronized void setCurrentPutLocation(StackPlateStackingPosition stackingPos) {
+		this.currentPutLocation = stackingPos;
 	}
 
 	public synchronized StackPlateStackingPosition getCurrentPutLocation() {
@@ -347,17 +294,21 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 		int replacedAmount = 0;
 		while(placedAmount < finishedAmount) {
 			StackPlateStackingPosition stPos = getLayout().getStackingPositions().get(position);
-			if(!stPos.hasWorkPiece()) {
-				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, getRawWorkPiece().getDimensions(), null, Float.NaN);
-				stPos.setWorkPiece(finishedWorkPiece);
+			if(!stPos.hasWorkPiece()) {			
+//				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, getRawWorkPiece().getDimensions(), null, WorkPieceShape.CUBIC, Float.NaN);
+				getLayout().getStackingPositions().set(position, getLayout().getFinishedStackingPositions().get(position));
+				stPos = getLayout().getStackingPositions().get(position);
+				stPos.setWorkPiece(getFinishedWorkPiece());
 				while(stPos.getAmount() < nbLayers && placedAmount < finishedAmount) {
 					stPos.incrementAmount();
 					placedAmount++;
 				}
 			} else if (stPos.getWorkPiece().getType().equals(WorkPiece.Type.RAW)) {
-				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, getRawWorkPiece().getDimensions(), null, Float.NaN);
-				stPos.setWorkPiece(finishedWorkPiece);
+//				WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, getRawWorkPiece().getDimensions(), null, WorkPieceShape.CUBIC, Float.NaN);
+				getLayout().getStackingPositions().set(position, getLayout().getFinishedStackingPositions().get(position));
 				replacedAmount += stPos.getAmount();
+				stPos = getLayout().getStackingPositions().get(position);
+				stPos.setWorkPiece(getFinishedWorkPiece());
 				stPos.setAmount(0);
 				while(stPos.getAmount() < nbLayers && placedAmount < finishedAmount) {
 					stPos.incrementAmount();
@@ -384,17 +335,39 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 	
 	public abstract float getR(double orientation);
 	
+	public abstract float getRRound();
+	
 	@Override
-	public float getZSafePlane(final WorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+	public float getZSafePlane(final IWorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
 		float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
-		float wpHeight = layout.getLayers() *  dimensions.getHeight(); 
+		float wpHeight = layout.getLayers() *  dimensions.getZSafe(); 
 		if (wpHeight > workArea.getDefaultClamping().getHeight()) {
 			zSafePlane += wpHeight;
 		} else {
 			zSafePlane += workArea.getDefaultClamping().getHeight();
 		}
-		zSafePlane += dimensions.getHeight();
+		zSafePlane += dimensions.getZSafe();
 		return zSafePlane;
 	}
+	
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getPutLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
+			T dimensions, ClampingManner clampType, ApproachType approachType) {
+		return visitor.getPutLocation(this, workArea, dimensions, clampType, approachType);
+	}
 
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getPickLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
+			T dimensions, ClampingManner clampType, ApproachType approachType) {
+		return visitor.getPickLocation(this, workArea, dimensions, clampType, approachType);
+	}
+	
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
+			Type type, ClampingManner clampType) {
+		return visitor.getLocation(this, workArea, type, clampType);
+	}
 }

@@ -27,18 +27,21 @@ import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarmsOccuredEvent;
+import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.PropertyManager.Setting;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public class Conveyor extends eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor {
 	
@@ -247,8 +250,8 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	
 	@Override
 	public void clearDeviceSettings() {
-		setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f));
-		setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(), Material.OTHER, 0.0f));
+		setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
+		setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
 		layout.clearSettings();
 		notifyLayoutChanged();
 	}
@@ -308,14 +311,14 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	}
 	
 	public void writeRawWorkPieceLength() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
-		int workPieceLength = (int) Math.round(getRawWorkPiece().getDimensions().getLength());
+		int workPieceLength = (int) Math.round(getRawWorkPiece().getDimensions().getDimension(Dimensions.LENGTH));
 		workPieceLength +=  workPieceShift;
 		int[] length = {workPieceLength};
 		getSocketCommunication().writeRegisters(ConveyorConstants.LENGTH_WP_RAW_SHIFT, length);
 	}
 	
 	public void writeFinishedWorkPieceLength() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {
-		int workPieceLength = (int) Math.round(getFinishedWorkPiece().getDimensions().getLength());
+		int workPieceLength = (int) Math.round(getFinishedWorkPiece().getDimensions().getDimension(Dimensions.LENGTH));
 		workPieceLength +=  workPieceShift;
 		int[] length = {workPieceLength};
 		getSocketCommunication().writeRegisters(ConveyorConstants.LENGTH_WP_FINISHED_SHIFT, length);
@@ -487,12 +490,12 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 			if (settings.getRawWorkPiece() != null) {
 				setRawWorkPiece(settings.getRawWorkPiece());
 			} else {
-				setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new WorkPieceDimensions(), Material.OTHER, 0.0f));
+				setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
 			}
 			if (settings.getFinishedWorkPiece() != null) {
 				setFinishedWorkPiece(settings.getFinishedWorkPiece());
 			} else {
-				setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new WorkPieceDimensions(), Material.OTHER, 0.0f));
+				setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
 			}
 			layout.setOffsetSupport1(settings.getOffsetSupport1());
 			layout.setOffsetOtherSupports(settings.getOffsetOtherSupports());
@@ -509,53 +512,6 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	@Override
 	public DeviceSettings getDeviceSettings() {
 		return new ConveyorSettings(getRawWorkPiece(), getFinishedWorkPiece(), amount, layout.getOffsetSupport1(), layout.getOffsetOtherSupports());
-	}
-
-	@Override
-	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
-		if (!workArea.getWorkAreaManager().equals(rawWorkArea)) {
-			throw new IllegalStateException("Can only pick from raw conveyor");
-		}
-		//FIXME: review if this is still ok
-		/*// wait until workpiece in position
-		logger.info("Waiting for raw work piece in position status.");
-		waitForStatus((ConveyorConstants.RAW_WP_IN_POSITION));
-		logger.info("Work piece in position.");*/
-		// get lowest non-zero sensor value
-		int sensorValue = Integer.MAX_VALUE;
-		int sensorIndex = -1;
-		int validIndex = 0;
-		for (int i = 0; i < sensorValues.size(); i++) {
-			if (layout.getRequestedSupportStatus()[i]) {
-				logger.info("OK: " + i);
-				if ((sensorValues.get(i) < sensorValue) && (sensorValues.get(i) > 0)) {
-					sensorIndex = validIndex;
-					sensorValue = sensorValues.get(i);
-				}
-				// also check next sensors if their supports are down
-				int j = 1;
-				while ((i+j) < layout.getRequestedSupportStatus().length && !layout.getRequestedSupportStatus()[i+j]) {
-					if ((sensorValues.get(j+i) < sensorValue) && (sensorValues.get(j+i) > 0)) {
-						sensorIndex = validIndex;
-						sensorValue = sensorValues.get(i+j);
-					}
-					j++;
-				}
-				validIndex++;
-			}
-		}
-		if (sensorIndex == -1) {
-			throw new IllegalStateException("Couldn't find a stacking position.");
-		}
-		StackingPosition stPos = layout.getStackingPositionsRawWorkPieces().get(sensorIndex);
-		Coordinates c = new Coordinates(stPos.getPosition());
-		if (isLeftSetup) {
-			c.setX((((float) sensorValue)/100) + stPos.getWorkPiece().getDimensions().getLength()/2);
-		} else {
-			c.setY((((float) sensorValue)/100) + stPos.getWorkPiece().getDimensions().getLength()/2);
-		}
-		logger.info("Pick location at sensor: " + sensorIndex + " - coordinates: " + c);
-		return c;
 	}
 	
 	@Override
@@ -578,22 +534,6 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	}
 
 	@Override
-	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, 
-			final ClampingManner clampType, final ApproachType approachType) {
-		return layout.getStackingPositionsFinishedWorkPieces().get(lastFinishedWorkPieceIndex).getPosition();
-	}
-
-	@Override
-	public Coordinates getLocation(final SimpleWorkArea workArea, final Type type, final ClampingManner clampType) throws DeviceActionException, InterruptedException {
-		if (type == Type.FINISHED) {
-			return layout.getStackingPositionsFinishedWorkPieces().get(lastFinishedWorkPieceIndex).getPosition();
-		} else if (type == Type.RAW) {
-			return getPickLocation(workArea, getRawWorkPiece().getDimensions(), clampType, ApproachType.TOP);
-		}
-		return null;
-	}
-
-	@Override
 	public void interruptCurrentAction() {
 		// no action possible
 	}
@@ -605,7 +545,7 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	
 	public void notifyFinishedShifted() {
 		for (ConveyorListener listener : listeners) {
-			listener.finishedShifted(getFinishedWorkPiece().getDimensions().getLength() + workPieceShift);
+			listener.finishedShifted(getFinishedWorkPiece().getDimensions().getDimension(Dimensions.LENGTH) + workPieceShift);
 		}
 	}
 	
@@ -707,6 +647,31 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	public void clearIndications() throws AbstractCommunicationException, InterruptedException {
 		// reset blue lamp
 		indicateOperatorRequested(false);
+	}
+	
+	public int getLastFinishedWorkPieceIndex() {
+		return this.lastFinishedWorkPieceIndex;
+	}
+
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
+			Type type, ClampingManner clampType) {
+		return visitor.getLocation(this, workArea, type, clampType);
+	}
+
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getPutLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
+			T dimensions, ClampingManner clampType, ApproachType approachType) {
+		return visitor.getPutLocation(this, workArea, dimensions, clampType, approachType);
+	}
+
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getPickLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
+			T dimensions, ClampingManner clampType, ApproachType approachType) {
+		return visitor.getPickLocation(this, workArea, dimensions, clampType, approachType);
 	}
 
 }

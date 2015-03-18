@@ -1,6 +1,6 @@
 package eu.robojob.millassist.ui.automate.device.stacking.conveyor.eaton;
 
-import eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton;
 import eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.event.DataChangedEvent;
@@ -9,9 +9,9 @@ import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 public class ConveyorAmountsPresenter extends AbstractFormPresenter<ConveyorAmountsView, ConveyorMenuPresenter> {
 
 	private ProcessFlow processFlow;
-	private Conveyor conveyor;
+	private ConveyorEaton conveyor;
 	
-	public ConveyorAmountsPresenter(final ConveyorAmountsView view, final ProcessFlow processFlow, final Conveyor conveyor) {
+	public ConveyorAmountsPresenter(final ConveyorAmountsView view, final ProcessFlow processFlow, final ConveyorEaton conveyor) {
 		super(view);
 		getView().setProcessFlow(processFlow);
 		getView().build();

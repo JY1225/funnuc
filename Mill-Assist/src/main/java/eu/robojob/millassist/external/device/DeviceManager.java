@@ -253,12 +253,12 @@ public class DeviceManager {
 	public void updateBasicStackPlate(final BasicStackPlate basicStackPlate, final String name, final String userFrameName, final int horizontalHoleAmount, 
 			final int verticalHoleAmount, final float holeDiameter, final float studDiameter, final float horizontalHoleDistance, final float horizontalPadding, 
 			final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage,
-			final float horizontalR, final float tiltedR, final float maxOverflow, final float minOverlap, final float studHeight, final float smoothToX, final float smoothToY, final float smoothToZ,
+			final float horizontalR, final float tiltedR, final float maxOverflow, final float maxUnderflow, final float minOverlap, final float studHeight, final float smoothToX, final float smoothToY, final float smoothToZ,
 			final float smoothFromX, final float smoothFromY, final float smoothFromZ, final float extraRMinus90, final float extraRPlus90) {
 		try {
 			deviceMapper.updateBasicStackPlate(basicStackPlate, name, userFrameName, horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, 
 					horizontalHoleDistance, horizontalPadding, verticalPaddingTop, verticalPaddingBottom, interferenceDistance, overflowPercentage, horizontalR, tiltedR,
-					maxOverflow, minOverlap, studHeight, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, extraRMinus90, extraRPlus90);
+					maxOverflow, maxUnderflow, minOverlap, studHeight, smoothToX, smoothToY, smoothToZ, smoothFromX, smoothFromY, smoothFromZ, extraRMinus90, extraRPlus90);
 			basicStackPlate.loadDeviceSettings(basicStackPlate.getDeviceSettings());
 			refresh();
 		} catch (SQLException e) {
@@ -341,13 +341,13 @@ public class DeviceManager {
 	}
 	
 	public void updateCNCMachineData(final AbstractCNCMachine cncMachine, final String name, final EWayOfOperating wayOfOperating,
-			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final boolean timAllowed, 
-			final boolean machineAirblow, final List<WorkAreaBoundary> airblowBounds, final List<String> robotServiceInputNames, 
+			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final float rRoundPieces,
+			final boolean timAllowed, final boolean machineAirblow, final List<WorkAreaBoundary> airblowBounds, final List<String> robotServiceInputNames, 
 			final List<String> robotServiceOutputNames, final List<String> mCodeNames,	final List<Set<Integer>> mCodeRobotServiceInputs, 
 			final List<Set<Integer>> mCodeRobotServiceOutputs) {
 		try {
 			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port, clampingWidthR, 
-					newDevInt, nbFixtures, timAllowed, machineAirblow, airblowBounds, robotServiceInputNames, 
+					newDevInt, nbFixtures, rRoundPieces, timAllowed, machineAirblow, airblowBounds, robotServiceInputNames, 
 					robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs, mCodeRobotServiceOutputs);
 			refresh();
 		} catch (SQLException e) {

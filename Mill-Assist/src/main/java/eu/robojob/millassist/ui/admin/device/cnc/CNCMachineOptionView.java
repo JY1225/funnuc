@@ -17,6 +17,7 @@ import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.ui.controls.CoordinateBox;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
+import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.Translator;
@@ -24,10 +25,11 @@ import eu.robojob.millassist.util.PropertyManager.Setting;
 
 public class CNCMachineOptionView extends GridPane {
 	
-	private Label lblAirblow, lblTIM, lblMachineAirblow;
+	private Label lblAirblow, lblTIM, lblMachineAirblow, lblRRound;
 	private CheckBox cbTIMAllowed, cbMachineAirblow;
 	private CoordinateBox bottomCoord, topCoord;
 	private ComboBox<WorkAreaBoundary> cbbWaBound;
+	private NumericTextField ntxtRRound;
 	
 	private static final int COMBO_WIDTH = 150;
 	private static final int COMBO_HEIGHT = 40;
@@ -41,6 +43,7 @@ public class CNCMachineOptionView extends GridPane {
 	private static final String MACHINE_AIRBLOW = "CNCMachineOptionView.machineAirblow";
 	private static final String AIRBLOW_BOUND = "CNCMachineOptionView.airblowBound";
 	private static final String MAX_FIX = "CNCMachineGeneralView.maxFix";
+	private static final String R_ROUND = "CNCMachineOptionView.rRound";
 
 	protected static final String CSS_CLASS_FORM_BUTTON_BAR_LEFT = "form-button-bar-left";
 	protected static final String CSS_CLASS_FORM_BUTTON_BAR_RIGHT = "form-button-bar-right";
@@ -84,12 +87,13 @@ public class CNCMachineOptionView extends GridPane {
 		HBox TIMBox = new HBox();
 		TIMBox.getChildren().addAll(cbTIMAllowed, lblTIM);
 		HBox.setMargin(cbTIMAllowed, new Insets(0,15,0,0));
-		add(TIMBox, column, row);
+		add(TIMBox, column, row, 2, 1);
 		column = 0; row++;
-		HBox nbFixBox = new HBox();
-		nbFixBox.getChildren().addAll(lblNbFixtures, itxtNbFix);
-		HBox.setMargin(lblNbFixtures, new Insets(5,15,0,0));
-		add(nbFixBox, column, row++);
+		add(lblNbFixtures, column++, row);
+		add(itxtNbFix, column, row);
+		column = 0; row++;
+		add(lblRRound, column++, row);
+		add(ntxtRRound, column, row);
 		airblowActive();
 	}
 	
@@ -97,6 +101,8 @@ public class CNCMachineOptionView extends GridPane {
 		cbTIMAllowed = new CheckBox();
 		lblTIM = new Label(Translator.getTranslation(TIM_ALLOWED));
 		lblAirblow = new Label(Translator.getTranslation(AIRBLOW_BOUND));
+		lblRRound = new Label(Translator.getTranslation(R_ROUND));
+		ntxtRRound = new NumericTextField(6);
 		cbMachineAirblow = new CheckBox();
 		lblMachineAirblow = new Label(Translator.getTranslation(MACHINE_AIRBLOW));
 		bottomCoord = new CoordinateBox(6, "X", "Y", "Z");
@@ -146,6 +152,7 @@ public class CNCMachineOptionView extends GridPane {
 		cbTIMAllowed.setSelected(cncMachine.getTIMAllowed());
 		cbMachineAirblow.setSelected(cncMachine.getMachineAirblow());
 		itxtNbFix.setText("" + cncMachine.getNbFixtures());
+		ntxtRRound.setText("" + cncMachine.getRRoundPieces());
 		fillBoundBox();
 		setBoundary();
 	}
@@ -181,6 +188,7 @@ public class CNCMachineOptionView extends GridPane {
 		bottomCoord.setTextFieldListener(listener);
 		topCoord.setTextFieldListener(listener);
 		itxtNbFix.setFocusListener(listener);
+		ntxtRRound.setFocusListener(listener);
 	}
 
 	public boolean getTIMAllowed() {
@@ -193,6 +201,10 @@ public class CNCMachineOptionView extends GridPane {
 	
 	public int getNbFixtures() {
 		return Integer.parseInt(itxtNbFix.getText());
+	}
+	
+	public float getRRoundPieces() {
+		return Float.parseFloat(ntxtRRound.getText());
 	}
 	
 	public List<WorkAreaBoundary> getAirblowBounds() {

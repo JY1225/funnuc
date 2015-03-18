@@ -43,6 +43,7 @@ import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractMenuPresenter;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<ConveyorRawWorkPieceLayoutPresenter<? extends AbstractMenuPresenter<?>>> {
 
@@ -422,13 +423,14 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			Rectangle wp = new Rectangle();
 			conveyorGroup.getChildren().add(wp);
 			wp.setLayoutX(300);
+			RectangularDimensions dimensions = (RectangularDimensions) stPos.getWorkPiece().getDimensions();
 			if (conveyorLayout.isLeftSetup()) {
-				wp.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+				wp.setY(-(stPos.getPosition().getY() + dimensions.getWidth()/2 + conveyorLayout.getSupportWidth()));
 			} else {
-				wp.setY(-(stPos.getPosition().getX() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+				wp.setY(-(stPos.getPosition().getX() + dimensions.getWidth()/2 + conveyorLayout.getSupportWidth()));
 			}
-			wp.setWidth(stPos.getWorkPiece().getDimensions().getLength());
-			wp.setHeight(stPos.getWorkPiece().getDimensions().getWidth());
+			wp.setWidth(dimensions.getLength());
+			wp.setHeight(dimensions.getWidth());
 			wp.getStyleClass().add(CSS_CLASS_WORKPIECE);
 			wp.setVisible(false);
 			this.workPieces.add(wp);			
@@ -436,14 +438,14 @@ public class ConveyorRawWorkPieceLayoutView extends AbstractWorkPieceLayoutView<
 			Rectangle ra = new Rectangle();
 			conveyorGroup.getChildren().add(ra);
 			if (conveyorLayout.isLeftSetup()) {
-				ra.setX(stPos.getPosition().getX() + 70 - stPos.getWorkPiece().getDimensions().getLength()/2);
-				ra.setY(-(stPos.getPosition().getY() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+				ra.setX(stPos.getPosition().getX() + 70 - dimensions.getLength()/2);
+				ra.setY(-(stPos.getPosition().getY() + dimensions.getWidth()/2 + conveyorLayout.getSupportWidth()));
 			} else {
-				ra.setX(stPos.getPosition().getY() + 70 - stPos.getWorkPiece().getDimensions().getLength()/2);
-				ra.setY(-(stPos.getPosition().getX() + stPos.getWorkPiece().getDimensions().getWidth()/2 + conveyorLayout.getSupportWidth()));
+				ra.setX(stPos.getPosition().getY() + 70 - dimensions.getLength()/2);
+				ra.setY(-(stPos.getPosition().getX() + dimensions.getWidth()/2 + conveyorLayout.getSupportWidth()));
 			}
-			ra.setWidth(stPos.getWorkPiece().getDimensions().getLength());
-			ra.setHeight(stPos.getWorkPiece().getDimensions().getWidth());
+			ra.setWidth(dimensions.getLength());
+			ra.setHeight(dimensions.getWidth());
 			ra.getStyleClass().add(CSS_CLASS_WORKPIECE_AREA);
 			
 			TranslateTransition tt = new TranslateTransition();

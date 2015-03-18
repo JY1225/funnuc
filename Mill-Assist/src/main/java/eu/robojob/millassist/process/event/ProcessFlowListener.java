@@ -8,6 +8,7 @@ public interface ProcessFlowListener {
 	void dataChanged(DataChangedEvent e);
 	void finishedAmountChanged(FinishedAmountChangedEvent e);
 	void exceptionOccured(ExceptionOccuredEvent e);
+	void dimensionChanged(DimensionsChangedEvent e);
 	
 	void unregister();
 }

@@ -610,8 +610,8 @@ public class ProcessFlowMapper {
 			} else if (device instanceof Conveyor) {
 				ConveyorSettings conveyorSettings = getConveyorSettings(processId, id, (Conveyor) device, clampings);
 				settings.put(device, conveyorSettings);
-			} else if (device instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) {
-				eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = getConveyorSettings(processId, id, (eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor) device, clampings);
+			} else if (device instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton) {
+				eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = getConveyorSettings(processId, id, (eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton) device, clampings);
 				settings.put(device, conveyorSettings);
 			} else if (device instanceof ReversalUnit) {
 				ReversalUnitSettings reversalSettings = getReversalUnitSettings(id, clampings);
@@ -697,7 +697,7 @@ public class ProcessFlowMapper {
 		return conveyorSettings;
 	}
 	
-	private eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings getConveyorSettings(final int processFlowId, final int deviceSettingsId, final eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor conveyor, final Map<SimpleWorkArea, Clamping> clampings) throws SQLException {
+	private eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings getConveyorSettings(final int processFlowId, final int deviceSettingsId, final eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton conveyor, final Map<SimpleWorkArea, Clamping> clampings) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CONVEYOREATONSETTINGS WHERE ID = ?");
 		stmt.setInt(1, deviceSettingsId);
 		ResultSet results = stmt.executeQuery();

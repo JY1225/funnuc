@@ -17,11 +17,12 @@ import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
 
 public class OutputBin extends AbstractStackingDevice {
 	
@@ -39,11 +40,6 @@ public class OutputBin extends AbstractStackingDevice {
 		for (SimpleWorkArea wa : getWorkAreas()) {
 			wa.setDefaultClamping(wa.getWorkAreaManager().getClampings().iterator().next());
 		}
-	}
-
-	@Override
-	public Coordinates getLocation(final SimpleWorkArea workArea, final Type type, final ClampingManner clampType) throws DeviceActionException, InterruptedException {
-		return workArea.getDefaultClamping().getRelativePosition();
 	}
 	
 	@Override
@@ -137,16 +133,6 @@ public class OutputBin extends AbstractStackingDevice {
 	}
 
 	@Override
-	public Coordinates getPickLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
-		throw new IllegalStateException("Pick from this device is not possible.");
-	}
-
-	@Override
-	public Coordinates getPutLocation(final SimpleWorkArea workArea, final WorkPieceDimensions workPieceDimensions, final ClampingManner clampType, final ApproachType approachType) {
-		return workArea.getDefaultClamping().getRelativePosition();
-	}
-
-	@Override
 	public Coordinates getLocationOrientation(final SimpleWorkArea workArea, final ClampingManner clampType) {
 		return workArea.getDefaultClamping().getRelativePosition();
 	}
@@ -165,5 +151,27 @@ public class OutputBin extends AbstractStackingDevice {
 	public EDeviceGroup getType() {
 		return EDeviceGroup.OUTPUT_BIN;
 	}
+
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getPutLocation(AbstractPiecePlacementVisitor<T> visitor,
+			SimpleWorkArea workArea, T dimensions,
+			ClampingManner clampType, ApproachType approachType) {
+		return visitor.getPutLocation(this, workArea, dimensions, clampType, approachType);
+	}
+
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getPickLocation(AbstractPiecePlacementVisitor<T> visitor,
+			SimpleWorkArea workArea, T dimensions,
+			ClampingManner clampType, ApproachType approachType) {
+		return visitor.getPickLocation(this, workArea, dimensions, clampType, approachType);
+	}
+
+	@Override
+	public <T extends IWorkPieceDimensions> Coordinates getLocation(
+			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
+			Type type, ClampingManner clampType) {
+		return visitor.getLocation(this, workArea, type, clampType);
+	}
+
 
 }

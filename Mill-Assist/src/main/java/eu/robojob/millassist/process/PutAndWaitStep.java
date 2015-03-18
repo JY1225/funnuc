@@ -47,7 +47,13 @@ public class PutAndWaitStep extends PutStep {
 				try {
 					checkProcessExecutorStatus(executor);
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, processId));
-					Coordinates originalPosition = new Coordinates(getDevice().getPutLocation(getDeviceSettings().getWorkArea(), getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions(), getProcessFlow().getClampingType(), getRobotSettings().getApproachType()));
+					@SuppressWarnings("unchecked")
+					Coordinates originalPosition = new Coordinates(getDevice().getPutLocation(
+							getProcessFlow().getPiecePlacementVisitor(getRobotSettings().getGripperHead().getGripper().getWorkPiece().getShape()),
+							getDeviceSettings().getWorkArea(), 
+							getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions(), 
+							getProcessFlow().getClampingType(), 
+							getRobotSettings().getApproachType()));
 					if (needsTeaching()) {
 						Coordinates position = new Coordinates(originalPosition);
 						logger.debug("Original coordinates: " + position + ".");

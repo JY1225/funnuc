@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -329,4 +330,6 @@ public class MainPresenter implements ProcessFlowListener {
 		}
 		return false;
 	}
+
+	@Override public void dimensionChanged(DimensionsChangedEvent e) {	}
 }

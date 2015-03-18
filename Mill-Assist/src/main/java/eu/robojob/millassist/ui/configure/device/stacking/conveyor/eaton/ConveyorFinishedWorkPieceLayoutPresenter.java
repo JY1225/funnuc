@@ -2,10 +2,11 @@ package eu.robojob.millassist.ui.configure.device.stacking.conveyor.eaton;
 
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -16,7 +17,7 @@ import eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton.ConveyorF
 public class ConveyorFinishedWorkPieceLayoutPresenter extends eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton.ConveyorFinishedWorkPieceLayoutPresenter<ConveyorMenuPresenter> 
 implements ProcessFlowListener {
 
-public ConveyorFinishedWorkPieceLayoutPresenter(final ConveyorFinishedWorkPieceLayoutView view, final Conveyor conveyor, final PutStep putStep) {
+public ConveyorFinishedWorkPieceLayoutPresenter(final ConveyorFinishedWorkPieceLayoutView view, final ConveyorEaton conveyor, final PutStep putStep) {
 	super(view, conveyor);
 	putStep.getProcessFlow().addListener(this);
 }
@@ -40,5 +41,7 @@ public void dataChanged(final DataChangedEvent e) {
 @Override public void modeChanged(final ModeChangedEvent e) { }
 
 @Override public void statusChanged(final StatusChangedEvent e) { }
+
+@Override public void dimensionChanged(DimensionsChangedEvent e) {	}
 
 }

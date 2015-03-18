@@ -5,6 +5,7 @@ import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -45,7 +46,7 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 			if(amount > getMaxPiecesToAdd(replaceFinishedPieces))
 				throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
 			int nbInFlow = processFlow.getTotalAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW) - processFlow.getFinishedAmount();
-			//Replace finished workpieces by new ones
+			//Replace finished workpieces by raw ones
 			if(replaceFinishedPieces) {
 				stackPlate.getLayout().removeFinishedFromTable();
 			}
@@ -105,6 +106,8 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) { }
 
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) { }
+	
+	@Override public void dimensionChanged(DimensionsChangedEvent e) {	}
 
 	@Override
 	public void unregister() {

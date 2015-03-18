@@ -9,6 +9,7 @@ public class IncorrectWorkPieceDataException extends Exception {
 	public static final String LENGTH_SMALLER_WIDTH = "IncorrectWorkPieceDataException.lengthSmallerThanWidth";
 	public static final String INCORRECT_AMOUNT = "IncorrectWorkPieceDataException.incorrectAmount";
 	public static final String TOO_LARGE = "IncorrectWorkPieceDataException.tooLarge"; 
+	public static final String TOO_SMALL = "IncorrectWorkPieceDataException.tooSmall";
 	public static final String GRID_WRONG_ORIENTATION =  "IncorrectWorkPieceDataException.wrongOrientation"; 
 	public static final String GRID_WRONG_DIMENSIONS =  "IncorrectWorkPieceDataException.gridWrongDimensions"; 
 	

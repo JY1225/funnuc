@@ -12,19 +12,24 @@ import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.DimensionsChangedEvent;
+import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
+import eu.robojob.millassist.process.event.ModeChangedEvent;
+import eu.robojob.millassist.process.event.ProcessFlowListener;
+import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 
-public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<BasicStackPlateRawWorkPieceView, BasicStackPlateMenuPresenter> {
+public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<BasicStackPlateRawWorkPieceView, BasicStackPlateMenuPresenter> implements ProcessFlowListener {
 
 	private AbstractStackPlateDeviceSettings deviceSettings;
 	private PickStep pickStep;
-	private WorkPieceDimensions dimensions;
 	private float orientation;
 	private WorkPiece workPiece;
 		
@@ -40,11 +45,11 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		this.deviceSettings = deviceSettings;
 		this.workPiece = pickStep.getRobotSettings().getWorkPiece();
 		deviceSettings.setRawWorkPiece(workPiece);	
-		this.dimensions = workPiece.getDimensions();
 		orientation = deviceSettings.getOrientation();
 		deviceSettings.setOrientation(orientation);
 		view.build();
 		recalculate();
+		pickStep.getProcessFlow().addListener(this);
 	}
 
 	@Override
@@ -71,10 +76,15 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public boolean isGridPlateOK() {
 		if (getStackPlate().hasGridPlate()) {
 			GridPlate gridplate = ((GridPlateLayout) getStackPlate().getLayout()).getGridPlate();
-			if(dimensions.getLength() > gridplate.getHoleLength())
-				return false;
-			if(dimensions.getWidth() > gridplate.getHoleWidth())
-				return false;
+			if (workPiece.getShape().equals(WorkPieceShape.CYLINDRICAL)) {
+				if(workPiece.getDimensions().getDimension(Dimensions.DIAMETER)/2 > gridplate.getHoleLength())
+					return false;
+			} else {
+				if(workPiece.getDimensions().getDimension(Dimensions.LENGTH) > gridplate.getHoleLength())
+					return false;
+				if(workPiece.getDimensions().getDimension(Dimensions.WIDTH) > gridplate.getHoleWidth())
+					return false;
+			}
 			return true;
 		} else {
 			return true;
@@ -102,13 +112,27 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	}
 	
 	public void changedWidth(final float width) {
-		logger.info("Set width [" + width + "].");
-		if (width != dimensions.getWidth()) {
-			dimensions.setWidth(width);	
+		if (workPiece.getShape().equals(WorkPieceShape.CYLINDRICAL)) {
+			changedDiameter(width);
+		} else {
+			if (width != workPiece.getDimensions().getDimension(Dimensions.WIDTH)) {
+				logger.info("Set width [" + width + "].");
+				workPiece.getDimensions().setDimension(Dimensions.WIDTH, width);
+				recalculate();
+				clearTeachedOffsets();
+				pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+			}
+		}
+	}
+	
+	private void changedDiameter(final float diameter) {
+		if (diameter != workPiece.getDimensions().getDimension(Dimensions.DIAMETER)) {
+			logger.info("Set diameter [" + diameter + "].");
+			workPiece.getDimensions().setDimension(Dimensions.DIAMETER, diameter);
 			recalculate();
 			clearTeachedOffsets();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
-		}
+		}	
 	}
 	
 	private void clearTeachedOffsets() {
@@ -121,8 +145,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public void changedLength(final float length) {
 		logger.info("Set length [" + length + "].");
-		if (length != dimensions.getLength()) {
-			dimensions.setLength(length);
+		if (length != workPiece.getDimensions().getDimension(Dimensions.LENGTH)) {
+			workPiece.getDimensions().setDimension(Dimensions.LENGTH, length);
 			recalculate();
 			clearTeachedOffsets();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
@@ -131,8 +155,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public void changedHeight(final float height) {
 		logger.info("Set height [" + height + "].");
-		if (height != dimensions.getHeight()) {
-			dimensions.setHeight(height);
+		if (height != workPiece.getDimensions().getDimension(Dimensions.HEIGHT)) {
+			workPiece.getDimensions().setDimension(Dimensions.HEIGHT, height);
 			recalculate();
 			clearTeachedOffsets();
 			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
@@ -170,7 +194,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	public void recalculate() {
 		try {
 			pickStep.getProcessFlow().setFinishedAmount(0);
-			getStackPlate().getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
+			getStackPlate().getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(), deviceSettings.getFinishedWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
 			getStackPlate().getLayout().initRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
 			if ((deviceSettings.getOrientation() == 90) || 
 					((deviceSettings.getOrientation() == 45) && (getStackPlate().getBasicLayout().getTiltedR() < getStackPlate().getBasicLayout().getHorizontalR()))) {
@@ -205,6 +229,26 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		}
 	}
 	
+	public void changedShape(final WorkPieceShape shape) {
+		logger.info("Set shape [" + shape + "].");
+		if (!shape.equals(deviceSettings.getRawWorkPiece().getShape())) {
+			//TODO - set new workPiece for raw and finished
+			changeWorkPiece(shape);
+			if (deviceSettings.getFinishedWorkPiece() != null) {
+				deviceSettings.getFinishedWorkPiece().setShape(shape);
+			}
+			recalculate();
+			getView().refresh();
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		}
+	}
+	
+	private void changeWorkPiece(final WorkPieceShape shape) {
+		this.workPiece.setShape(shape);
+		deviceSettings.getRawWorkPiece().setShape(shape);
+		this.pickStep.getRobotSettings().getWorkPiece().setShape(shape);
+	}
+	
 	public void changedWeight(final float weight) {
 		workPiece.setWeight(weight);
 		getView().setWeight(workPiece.getMaterial(), workPiece.getWeight());
@@ -216,8 +260,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	@Override
 	public boolean isConfigured() {
 		BasicStackPlate plate = getStackPlate();
-		if ((dimensions != null) && (plate.getLayout().getStackingPositions() != null)
-				&& (plate.getLayout().getStackingPositions().size() > 0) && (workPiece.getWeight() > 0) 
+		if ((workPiece.getDimensions() != null) && (plate.getLayout().getRawStackingPositions() != null)
+				&& (plate.getLayout().getRawStackingPositions().size() > 0) && (workPiece.getWeight() > 0) 
 				&& (deviceSettings.getStudHeight() >= 0)
 				&& (isAmountOk())) {
 			return true;
@@ -232,7 +276,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		recalculate();
 		getView().refresh();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
-		//plate.notifyLayoutChanged();
+		plate.notifyLayoutChanged();
 	}
 	
 	private BasicStackPlate getStackPlate() {
@@ -245,6 +289,48 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	
 	public boolean hasGridPlate() {
 		return getStackPlate().hasGridPlate();
+	}
+
+	@Override
+	public void modeChanged(ModeChangedEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void statusChanged(StatusChangedEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dataChanged(DataChangedEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void finishedAmountChanged(FinishedAmountChangedEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void exceptionOccured(ExceptionOccuredEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dimensionChanged(DimensionsChangedEvent e) {
+		recalculate();
+		setMaxAmount();
+	}
+
+	@Override
+	public void unregister() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

@@ -3,12 +3,12 @@ package eu.robojob.millassist.ui.general.device.stacking.conveyor.eaton;
 import javafx.application.Platform;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorAlarmsOccuredEvent;
 import eu.robojob.millassist.external.device.stacking.conveyor.ConveyorEvent;
-import eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton;
 import eu.robojob.millassist.ui.general.AbstractMenuPresenter;
 
 public class ConveyorRawWorkPieceLayoutPresenter<T extends AbstractMenuPresenter<?>> extends AbstractWorkPieceLayoutPresenter<ConveyorRawWorkPieceLayoutView, T> {
 	
-	public ConveyorRawWorkPieceLayoutPresenter(final ConveyorRawWorkPieceLayoutView view, final Conveyor conveyor) {
+	public ConveyorRawWorkPieceLayoutPresenter(final ConveyorRawWorkPieceLayoutView view, final ConveyorEaton conveyor) {
 		super(view, conveyor);
 		getConveyor().addListener(this);
 		getView().setConveyorLayout(conveyor.getLayout());

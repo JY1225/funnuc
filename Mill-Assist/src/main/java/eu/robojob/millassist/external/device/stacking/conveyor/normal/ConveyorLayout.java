@@ -12,6 +12,7 @@ import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataExce
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor.SupportState;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 
 public class ConveyorLayout {
 
@@ -272,10 +273,10 @@ public class ConveyorLayout {
 		this.stackingPositionsRawWorkPieces.clear();
 		Arrays.fill(requestedSupportStatus, false);
 		// first calculate the amount of tracks required for one workPiece
-		if (workPiece.getDimensions().getLength() < workPiece.getDimensions().getWidth()) {
+		if (workPiece.getDimensions().getDimension(Dimensions.LENGTH) < workPiece.getDimensions().getDimension(Dimensions.WIDTH)) {
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.LENGTH_SMALLER_WIDTH);
 		}
-		if (workPiece.getDimensions().getLength() > maxWorkPieceLength) {
+		if (workPiece.getDimensions().getDimension(Dimensions.LENGTH) > maxWorkPieceLength) {
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.TOO_LARGE);
 		}
 		int amount = 1;
@@ -294,15 +295,15 @@ public class ConveyorLayout {
 			// calculate space between tracks
 			distance += (amount - 1) * spaceBetweenTracks;
 			//FIXME replace 5 by new parameter: interference distance raw
-			if (distance - 5 >= workPiece.getDimensions().getWidth()) {
+			if (distance - 5 >= workPiece.getDimensions().getDimension(Dimensions.WIDTH)) {
 				finished = true;
 			} else {
 				amount++;
 			}
 		}
 		for (int i = 0; i < Math.floor(rawTrackAmount / amount); i++) {
-			float x = workPiece.getDimensions().getLength()/2 + minDistRaw;			
-			float y = workPiece.getDimensions().getWidth()/2;
+			float x = workPiece.getDimensions().getDimension(Dimensions.LENGTH)/2 + minDistRaw;			
+			float y = workPiece.getDimensions().getDimension(Dimensions.WIDTH)/2;
 			//FIXME review
 			int currentSupportNr = i * amount;
 			if (currentSupportNr == 0) {
@@ -357,7 +358,7 @@ public class ConveyorLayout {
 				amountOneRow--;
 			} else {			
 				amountOneRow++;
-				totalHeight += workPiece.getDimensions().getWidth();
+				totalHeight += workPiece.getDimensions().getDimension(Dimensions.WIDTH);
 				if (amountOneRow > 1) {
 					totalHeight += interferenceDistance;
 				}
@@ -365,12 +366,12 @@ public class ConveyorLayout {
 		}
 		// calculate the amount of space left between pieces without the overlap 
 		float extraSpaceWithoutOverlap = getWidthFinishedWorkPieceConveyor() - 10 - 
-				amountOneRow * workPiece.getDimensions().getWidth() - (amountOneRow - 1) * interferenceDistance;
+				amountOneRow * workPiece.getDimensions().getDimension(Dimensions.WIDTH) - (amountOneRow - 1) * interferenceDistance;
 		float spaceBetween = Math.abs(extraSpaceWithoutOverlap)/(amountOneRow - 1) + interferenceDistance;
 		// place the workPieces
 		for (int i = 0; i < amountOneRow; i++) {
-			float xFirst = minDistFinished + workPiece.getDimensions().getLength()/2;
-			float yFirst = workPiece.getDimensions().getWidth()/2;
+			float xFirst = minDistFinished + workPiece.getDimensions().getDimension(Dimensions.LENGTH)/2;
+			float yFirst = workPiece.getDimensions().getDimension(Dimensions.WIDTH)/2;
 			if (i == 0) {
 				StackingPosition stPos;
 				if (parent.isLeftSetup()) {
@@ -381,7 +382,7 @@ public class ConveyorLayout {
 				stackingPositionsFinishedWorkPieces.add(stPos);
 			} else {
 				float x = xFirst;
-				float y = yFirst + i * (workPiece.getDimensions().getWidth() + spaceBetween);
+				float y = yFirst + i * (workPiece.getDimensions().getDimension(Dimensions.WIDTH) + spaceBetween);
 				if (parent.isLeftSetup()) {
 					StackingPosition stPos = new StackingPosition(x, y, 0, workPiece);
 					stackingPositionsFinishedWorkPieces.add(stPos);

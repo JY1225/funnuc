@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.conveyor.eaton.Conveyor;
+import eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton;
 import eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.AbstractTransportStep;
@@ -15,12 +15,12 @@ import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public class ConveyorRawWorkPiecePresenter extends AbstractFormPresenter<ConveyorRawWorkPieceView, ConveyorMenuPresenter> {
 
 	private PickStep pickStep;
-	private WorkPieceDimensions dimensions;
+	private RectangularDimensions dimensions;
 	private ConveyorSettings deviceSettings;
 	
 	private WorkPiece workPiece;
@@ -35,7 +35,7 @@ public class ConveyorRawWorkPiecePresenter extends AbstractFormPresenter<Conveyo
 		this.workPiece = pickStep.getRobotSettings().getWorkPiece();
 		deviceSettings.setRawWorkPiece(workPiece);	
 		pickStep.getDevice().loadDeviceSettings(deviceSettings);
-		this.dimensions = workPiece.getDimensions();
+		this.dimensions = (RectangularDimensions) workPiece.getDimensions();
 		view.setDeviceSettings(deviceSettings);
 		view.build();
 	}
@@ -111,7 +111,7 @@ public class ConveyorRawWorkPiecePresenter extends AbstractFormPresenter<Conveyo
 	
 	public void recalculate() {
 		try {
-			((Conveyor) pickStep.getDevice()).getLayout().configureRawWorkPieceStackingPositions();
+			((ConveyorEaton) pickStep.getDevice()).getLayout().configureRawWorkPieceStackingPositions();
 			getView().hideNotification();
 			if (!isWeightOk()) {
 				getView().showNotification(Translator.getTranslation(WEIGHT_ZERO), Type.WARNING);

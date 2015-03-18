@@ -45,7 +45,7 @@ public class StackPlateStackingPosition extends StackingPosition {
 		// for pick the top workpiece shouldn't be used!
 		Coordinates position = new Coordinates(super.getPosition());
 		if (amount > 0) {
-			position.setZ((amount - 1) * getWorkPiece().getDimensions().getHeight());
+			position.setZ((amount - 1) * getWorkPiece().getDimensions().getZSafe());
 		} 
 		return position;
 	}
@@ -54,7 +54,7 @@ public class StackPlateStackingPosition extends StackingPosition {
 		// for pick the top workpiece shouldn't be used!
 		Coordinates position = new Coordinates(super.getPosition());
 		if (amount > 0) {
-			position.setZ(amount * getWorkPiece().getDimensions().getHeight());
+			position.setZ(amount * getWorkPiece().getDimensions().getZSafe());
 		}
 		return position;
 	}

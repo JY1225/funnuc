@@ -21,7 +21,7 @@ import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.general.MainContentView;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 
 public class GeneralInfoView extends GridPane {
 	
@@ -183,8 +183,8 @@ public class GeneralInfoView extends GridPane {
 				return false;
 			}
 		}
-		WorkPieceDimensions firstPickStepDimensions = null;
-		WorkPieceDimensions lastPickStepDimensions = null;
+		IWorkPieceDimensions firstPickStepDimensions = null;
+		IWorkPieceDimensions lastPickStepDimensions = null;
 		for (AbstractProcessStep step : processFlow.getProcessSteps()) {
 			if ((step instanceof PickStep) && !(step instanceof PickAfterWaitStep)) {
 				if (((PickStep) step).getRobotSettings().getWorkPiece() != null) {
@@ -195,7 +195,7 @@ public class GeneralInfoView extends GridPane {
 				}
 			}
 		}
-		if ((firstPickStepDimensions.getWidth() != lastPickStepDimensions.getWidth()) || (firstPickStepDimensions.getLength() != lastPickStepDimensions.getLength())) {
+		if (!firstPickStepDimensions.hasSameDimensions(lastPickStepDimensions)) {
 			return false;
 		} 
 		return true;

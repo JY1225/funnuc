@@ -1,11 +1,13 @@
 package eu.robojob.millassist.ui.configure.device.processing.cnc;
 
 import eu.robojob.millassist.external.device.DeviceSettings;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.PickAfterWaitStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -14,8 +16,11 @@ import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
+import eu.robojob.millassist.workpiece.RoundDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
+import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 
 public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<CNCMillingMachineWorkPieceView, CNCMillingMachineMenuPresenter> implements ProcessFlowListener  {
 
@@ -40,13 +45,12 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 	@Override
 	public boolean isConfigured() {
 		if (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null) {
-			WorkPieceDimensions myDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
-			WorkPieceDimensions prevDimensions = getPreviousPickDimensions();
+			IWorkPieceDimensions myDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
+			IWorkPieceDimensions prevDimensions = getPreviousPickDimensions();
 			float weight = pickStep.getRobotSettings().getWorkPiece().getWeight();
 			float prevWeight = getPreviousWorkPiece().getWeight();
-			if ((myDimensions.getWidth() > 0) && (myDimensions.getLength() > 0) && (myDimensions.getHeight() > 0) && (myDimensions.getWidth() <= prevDimensions.getWidth()) && (myDimensions.getLength() <= prevDimensions.getLength()) 
-					&& (myDimensions.getHeight() <= prevDimensions.getHeight()) && 
-					(pickStep.getRobotSettings().getWorkPiece().getWeight() > 0) &&
+			if (myDimensions.isValidDimension() && myDimensions.compareTo(prevDimensions) <= 0 
+					&&	(pickStep.getRobotSettings().getWorkPiece().getWeight() > 0) &&
 					((weight <= prevWeight) || ((weight > prevWeight) && (Math.abs(weight - prevWeight) < 0.01)))) {
 				return true;
 			}
@@ -56,16 +60,14 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 	
 	public void recalculate() {
 		if (pickStep.getRobotSettings().getWorkPiece().getDimensions() != null) {
-			WorkPieceDimensions myDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
+			IWorkPieceDimensions myDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
 			float weight = pickStep.getRobotSettings().getWorkPiece().getWeight();
 			float prevWeight = getPreviousWorkPiece().getWeight();
-			WorkPieceDimensions prevDimensions = getPreviousPickDimensions();
-			if ((myDimensions.getWidth() <= 0) || (myDimensions.getLength() <= 0) || (myDimensions.getHeight() <= 0) 
-					|| (weight <= 0)) {
+			IWorkPieceDimensions prevDimensions = getPreviousPickDimensions();
+			if (!myDimensions.isValidDimension() || (weight <= 0)) {
 				getView().showNotification(Translator.getTranslation(INCORRECT_DATA), Type.WARNING);
 			//FIXME - add check using the coordination changes
-			} else if ((myDimensions.getWidth() > prevDimensions.getWidth()) || (myDimensions.getLength() > prevDimensions.getLength())
-					 || (myDimensions.getHeight() > prevDimensions.getHeight())) {
+			} else if (myDimensions.compareTo(prevDimensions) > 0) {
 				getView().showNotification(Translator.getTranslation(DIMENSIONS_DO_NOT_MATCH), Type.WARNING);
 			} else if ((weight > prevWeight) && (Math.abs(weight - prevWeight) > 0.01)) {
 				getView().showNotification(Translator.getTranslation(WEIGHTS_DO_NOT_MATCH), Type.WARNING);
@@ -77,42 +79,72 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		}
 	}
 	
-	public void changedWidth(final float width) {
-		pickStep.getRobotSettings().getWorkPiece().getDimensions().setWidth(width);
+	public void changedDiameterWidth(final float value) {
+		if (pickStep.getRobotSettings().getWorkPiece().getShape().equals(WorkPieceShape.CYLINDRICAL)) {
+			changedDiameter(value);
+		} else {
+			changedWidth(value);
+		}
+		pickStep.getProcessFlow().processProcessFlowEvent(new DimensionsChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+	}
+	
+	private void changedWidth(final float width) {
+		pickStep.getRobotSettings().getWorkPiece().getDimensions().setDimension(Dimensions.WIDTH, width);
+		pickStep.setRelativeTeachedOffset(null);
+		recalculate();
+		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+	}
+	
+	private void changedDiameter(final float diameter) {
+		pickStep.getRobotSettings().getWorkPiece().getDimensions().setDimension(Dimensions.DIAMETER, diameter);
 		pickStep.setRelativeTeachedOffset(null);
 		recalculate();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	public void resetWidth() {
-		WorkPieceDimensions prevPickDimensions = getPreviousPickDimensions();
-		changedWidth(prevPickDimensions.getWidth());
+		IWorkPieceDimensions prevPickDimensions = getPreviousPickDimensions();
+		if (prevPickDimensions instanceof RoundDimensions) {
+			resetDiameter();
+		} else {
+			changedWidth(prevPickDimensions.getDimension(Dimensions.WIDTH));
+			getView().refresh();
+		}
+		pickStep.getProcessFlow().processProcessFlowEvent(new DimensionsChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+	}
+	
+	private void resetDiameter() {
+		IWorkPieceDimensions prevPickDimensions = getPreviousPickDimensions();
+		changedDiameter(prevPickDimensions.getDimension(Dimensions.DIAMETER));
 		getView().refresh();
 	}
 	
 	public void changedLength(final float length) {
-		pickStep.getRobotSettings().getWorkPiece().getDimensions().setLength(length);
+		pickStep.getRobotSettings().getWorkPiece().getDimensions().setDimension(Dimensions.LENGTH, length);
 		pickStep.setRelativeTeachedOffset(null);
 		recalculate();
+		pickStep.getProcessFlow().processProcessFlowEvent(new DimensionsChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	public void resetLength() {
-		WorkPieceDimensions prevPickDimensions = getPreviousPickDimensions();
-		changedLength(prevPickDimensions.getLength());
+		IWorkPieceDimensions prevPickDimensions = getPreviousPickDimensions();
+		changedLength(prevPickDimensions.getDimension(Dimensions.LENGTH));
+		pickStep.getProcessFlow().processProcessFlowEvent(new DimensionsChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 		getView().refresh();
 	}
 	
 	public void changedHeight(final float height) {
-		pickStep.getRobotSettings().getWorkPiece().getDimensions().setHeight(height);
+		pickStep.getRobotSettings().getWorkPiece().getDimensions().setDimension(Dimensions.HEIGHT, height);
 		//pickStep.setRelativeTeachedOffset(null);
 		recalculate();
+		pickStep.getProcessFlow().processProcessFlowEvent(new DimensionsChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 	}
 	
 	public void resetHeight() {
-		WorkPieceDimensions prevPickDimensions = getPreviousPickDimensions();
-		changedHeight(prevPickDimensions.getHeight());
+		IWorkPieceDimensions prevPickDimensions = getPreviousPickDimensions();
+		changedHeight(prevPickDimensions.getDimension(Dimensions.HEIGHT));
 		getView().refresh();
 	}
 	
@@ -133,7 +165,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		getView().refresh();
 	}
 	
-	private WorkPieceDimensions getPreviousPickDimensions() {
+	private IWorkPieceDimensions getPreviousPickDimensions() {
 		int pickIndex = pickStep.getProcessFlow().getStepIndex(pickStep);
 		for (int i = pickIndex - 1; i >= 0; i--) {
 			AbstractProcessStep step = pickStep.getProcessFlow().getStep(i);
@@ -149,7 +181,9 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		for (int i = pickIndex - 1; i >= 0; i--) {
 			AbstractProcessStep step = pickStep.getProcessFlow().getStep(i);
 			if ((step instanceof PickStep) && !(step instanceof PickAfterWaitStep)) {
-				return ((PickStep) step).getRobotSettings().getWorkPiece();
+				if (!(((PickStep) step).getDevice() instanceof ReversalUnit)) {
+					return ((PickStep) step).getRobotSettings().getWorkPiece();
+				}		
 			}
 		}
 		throw new IllegalArgumentException("Couldn't find previous work piece");
@@ -166,14 +200,11 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		if (e.getStep() instanceof PickStep) {
 			PickStep pickStep = (PickStep) e.getStep();
 			if (pickStep.getDevice() instanceof AbstractStackingDevice) {
-				WorkPieceDimensions currentDimensions = this.pickStep.getRobotSettings().getWorkPiece().getDimensions();
+				IWorkPieceDimensions currentDimensions = this.pickStep.getRobotSettings().getWorkPiece().getDimensions();
 				if (e.isReTeachingNeeded()) {
-					WorkPieceDimensions newDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
+					IWorkPieceDimensions newDimensions = pickStep.getRobotSettings().getWorkPiece().getDimensions();
 					boolean reteach = false;
-					if ( (currentDimensions.getLength() != newDimensions.getLength())
-							|| (currentDimensions.getWidth() != newDimensions.getWidth()) 
-								|| (currentDimensions.getHeight() != newDimensions.getHeight())
-							) {
+					if (currentDimensions.compareTo(newDimensions) != 0) {
 						reteach = true;
 						this.pickStep.setRelativeTeachedOffset(null);
 					}
@@ -182,6 +213,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 				}
 				this.pickStep.getRobotSettings().getWorkPiece().setMaterial(pickStep.getRobotSettings().getWorkPiece().getMaterial());
 				this.pickStep.getRobotSettings().getWorkPiece().setWeight(pickStep.getRobotSettings().getWorkPiece().getWeight());
+				this.pickStep.getRobotSettings().getWorkPiece().setShape(pickStep.getRobotSettings().getWorkPiece().getShape());
 			}
 		}
 	}
@@ -195,5 +227,8 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 	@Override
 	public void unregister() {
 		pickStep.getProcessFlow().removeListener(this);
+	}
+	
+	@Override public void dimensionChanged(DimensionsChangedEvent e) {	
 	}
 }

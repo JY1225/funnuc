@@ -7,6 +7,7 @@ import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessingStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -146,10 +147,10 @@ public class FixedProcessFlowPresenter extends AbstractProcessFlowPresenter impl
 	@Override public void dataChanged(final DataChangedEvent e) { }
 	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) { }
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) { }
+	@Override public void dimensionChanged(DimensionsChangedEvent e) {	}
 
 	@Override
 	public void unregister() {
 		processFlowAdapter.getProcessFlow().removeListener(this);
 	}
-
 }

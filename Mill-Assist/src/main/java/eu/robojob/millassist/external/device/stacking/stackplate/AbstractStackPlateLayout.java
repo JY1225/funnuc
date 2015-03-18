@@ -9,15 +9,17 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.PropertyManager.Setting;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.WorkPieceDimensions;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 /**
  * This class is the main class to represent a stackplate. A stackplate is defined as a plate which holds positions where 
  * workpieces can be put upon. 
  */
-public abstract class AbstractStackPlateLayout {
+public abstract class AbstractStackPlateLayout{
 
 	//General settings
 	private float orientation;
@@ -30,6 +32,8 @@ public abstract class AbstractStackPlateLayout {
 	private boolean alignRightHorizontal;
 	private AbstractStackPlate stackPlate;
 	
+	private List<StackPlateStackingPosition> rawStackingPositions, finishedStackingPositions;
+	// Actual stackingPositions used for workPiece placement
 	private List<StackPlateStackingPosition> stackingPositions;
 	
 	private static Logger logger = LogManager.getLogger(AbstractStackPlateLayout.class.getName());
@@ -39,14 +43,18 @@ public abstract class AbstractStackPlateLayout {
 		//Default values
 		this.layers = 1;
 		this.orientation = 0;
+		this.rawStackingPositions = new ArrayList<StackPlateStackingPosition>();
+		this.finishedStackingPositions = new ArrayList<StackPlateStackingPosition>();
 		this.stackingPositions = new ArrayList<StackPlateStackingPosition>();
 	}
 	
-	public void configureStackingPositions(final WorkPiece rawWorkPiece, final float orientation, final int layers) throws IncorrectWorkPieceDataException {
+	public void configureStackingPositions(final WorkPiece rawWorkPiece, final WorkPiece finishedWorkPiece, final float orientation, final int layers) throws IncorrectWorkPieceDataException {
+		rawStackingPositions.clear();
+		finishedStackingPositions.clear();
 		stackingPositions.clear();
 		setLayers(layers);
 		if(rawWorkPiece != null) {
-			WorkPieceDimensions dimensions = rawWorkPiece.getDimensions();
+			IWorkPieceDimensions dimensions = rawWorkPiece.getDimensions();
 			if(dimensions != null && dimensions.isValidDimension()) {
 				configureStackingPositions(dimensions, orientation);
 			} else {
@@ -55,31 +63,33 @@ public abstract class AbstractStackPlateLayout {
 		}
 	}
 	
-	private void configureStackingPositions(final WorkPieceDimensions dimensions, final float orientation) throws IncorrectWorkPieceDataException {
-		if (dimensions.getLength() < dimensions.getWidth()) {
+	private void configureStackingPositions(final IWorkPieceDimensions dimensions, final float orientation) throws IncorrectWorkPieceDataException {
+		if (dimensions.getDimension(Dimensions.LENGTH) < dimensions.getDimension(Dimensions.WIDTH)) {
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.LENGTH_SMALLER_WIDTH);
 		}
-		checkSpecialStackingConditions(dimensions, orientation);
+		checkSpecialStackingConditions((RectangularDimensions) dimensions, orientation);
 		setOrientation(orientation);
 		
-		horizontalAmount = getMaxHorizontalAmount(dimensions, orientation);
-		verticalAmount = getMaxVerticalAmount(dimensions, orientation);
+		horizontalAmount = getMaxHorizontalAmount((RectangularDimensions) dimensions, orientation);
+		verticalAmount = getMaxVerticalAmount((RectangularDimensions) dimensions, orientation);
 
-		initStackingPositions(horizontalAmount, verticalAmount, dimensions, orientation);
+		initStackingPositions(horizontalAmount, verticalAmount, (RectangularDimensions) dimensions, orientation);
+		finishedStackingPositions.addAll(rawStackingPositions);
 	}
 	
-	protected abstract void checkSpecialStackingConditions(final WorkPieceDimensions dimensions, final float orientation)  throws IncorrectWorkPieceDataException;
+	protected abstract void checkSpecialStackingConditions(final RectangularDimensions dimensions, final float orientation)  throws IncorrectWorkPieceDataException;
 	
-	protected abstract int getMaxHorizontalAmount(final WorkPieceDimensions dimensions, final float orientation);
+	protected abstract int getMaxHorizontalAmount(final RectangularDimensions dimensions, final float orientation);
 	
-	protected abstract int getMaxVerticalAmount(final WorkPieceDimensions dimensions, final float orientation);
+	protected abstract int getMaxVerticalAmount(final RectangularDimensions dimensions, final float orientation);
 	
-	protected abstract void initStackingPositions(int nbHorizontal, int nbVertical, WorkPieceDimensions dimensions, float orientation);
+	protected abstract void initStackingPositions(int nbHorizontal, int nbVertical, RectangularDimensions dimensions, float orientation);
 	
 	/**
 	 * Remove all the workpieces from the stacking positions, making the plate empty again.
 	 */
 	protected void resetStackingPositions() {
+		getStackingPositions().addAll(rawStackingPositions);
 		for (StackPlateStackingPosition stackingPos : getStackingPositions()) {
 			stackingPos.setWorkPiece(null);
 			stackingPos.setAmount(0);
@@ -96,7 +106,8 @@ public abstract class AbstractStackPlateLayout {
 	 */
 	public int getMaxPiecesPossibleAmount() {
 		//First position can only have 1 piece, because the robot must have place to put the finished products
-		return getLayers() * (stackingPositions.size() - 1) + 1;
+		//TODO - kunnen we enkel finishedPositions hebben? 
+		return getLayers() * (rawStackingPositions.size() - 1) + 1;
 	}
 	
 	/**
@@ -132,11 +143,13 @@ public abstract class AbstractStackPlateLayout {
 	public void initRawWorkPieces(final WorkPiece rawWorkPiece, final int amount) throws IncorrectWorkPieceDataException {
 		logger.debug("Placing raw workpieces: [" + amount + "].");
 		resetStackingPositions();
-		if(amount <= getMaxPiecesPossibleAmount()) {
-			placeRawWorkPieces(rawWorkPiece, amount, false, false);
-		} else {
-			logger.debug("Trying to place [" + amount + "] but maximum is [" + getMaxPiecesPossibleAmount() + "].");
-			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
+		if (amount > 0) {
+			if(amount <= getMaxPiecesPossibleAmount()) {
+				placeRawWorkPieces(rawWorkPiece, amount, false, false);
+			} else {
+				logger.debug("Trying to place [" + amount + "] but maximum is [" + getMaxPiecesPossibleAmount() + "].");
+				throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
+			}
 		}
 	}
 
@@ -153,13 +166,13 @@ public abstract class AbstractStackPlateLayout {
 		logger.debug("Adding raw workpieces: [" + amount + "].");
 		int placedAmount = 0;
 		int stackingPos = 0;
-		StackPlateStackingPosition stPos = getStackingPositions().get(0);
 		//For any number of layers, we only put 1 workPiece on the first position. This ensures that the robot
 		//places finished products always at the same position
 		if(amount > 0 && placeFirstPiece(rawWorkPiece, resetFirst)) {
 			placedAmount++;
 		}
 		stackingPos++;
+		StackPlateStackingPosition stPos = getStackingPositions().get(0);
 		while (placedAmount < amount && stackingPos < getStackingPositions().size()) {
 			stPos = getStackingPositions().get(stackingPos);
 			while(placedAmount < amount && addOneWorkPiece(rawWorkPiece, stPos,getLayers(), false) ) {
@@ -259,6 +272,12 @@ public abstract class AbstractStackPlateLayout {
 	public void removeFinishedFromTable() {
 		for (StackPlateStackingPosition position : getStackingPositions()) {
 			if(position.hasWorkPiece() && position.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)) {
+				// Make position ready for raw pieces
+				position.setWorkPiece(null);
+				position.setAmount(0);
+				int positionIdx = getStackingPositions().indexOf(position);
+				getStackingPositions().set(positionIdx, getRawStackingPositions().get(positionIdx));
+				position = getStackingPositions().get(positionIdx);
 				position.setWorkPiece(null);
 				position.setAmount(0);
 			}
@@ -321,13 +340,29 @@ public abstract class AbstractStackPlateLayout {
 	public void setLayers(int layers) {
 		this.layers = layers;
 	}
-
+	
 	public List<StackPlateStackingPosition> getStackingPositions() {
 		return stackingPositions;
 	}
 
-	public void setStackingPositions(List<StackPlateStackingPosition> stackingPositions) {
+	public void getStackingPositions(List<StackPlateStackingPosition> stackingPositions) {
 		this.stackingPositions = stackingPositions;
+	}
+
+	public List<StackPlateStackingPosition> getRawStackingPositions() {
+		return rawStackingPositions;
+	}
+
+	public void setRawStackingPositions(List<StackPlateStackingPosition> stackingPositions) {
+		this.rawStackingPositions = stackingPositions;
+	}
+	
+	public List<StackPlateStackingPosition> getFinishedStackingPositions() {
+		return finishedStackingPositions;
+	}
+
+	public void setFinishedStackingPositions(List<StackPlateStackingPosition> stackingPositions) {
+		this.finishedStackingPositions = stackingPositions;
 	}
 	
 	public boolean isRightAlignedVertical() {
