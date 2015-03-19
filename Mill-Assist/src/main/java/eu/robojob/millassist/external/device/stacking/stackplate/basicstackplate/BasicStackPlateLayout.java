@@ -890,7 +890,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 				float x = (float) (xBottom - extraX);
 				float y = (float) (yBottom + extraY);
 				StackPlateStackingPosition stPos = new StackPlateStackingPosition(x, y, getR(getOrientation()), null, 0, 45);
-				getStackingPositions().add(stPos);
+				getRawStackingPositions().add(stPos);
 				int firstStudPosX = amountOfStudsLeft;
 				int firstStudPosY = amountOfStudsVertical * i;
 				StudPosition studPos = null;

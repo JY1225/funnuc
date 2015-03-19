@@ -277,29 +277,57 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 			}
 		}
 	}
-	
+
 	private Rectangle createMarker(StackPlateStackingPosition stackingPosition, IDrawableObject workPiece) {
-		Rectangle marker = null; 
-		if (stackingPosition.getOrientation() == 90 && !basicStackPlate.hasGridPlate()) {
-			marker = workPiece.createMarker(true);
-			if (basicStackPlate.getR(basicStackPlate.getLayout().getOrientation()) >= -0.01) {
-				marker.setTranslateY(5);		
+		Rectangle marker = null;
+		// if (!basicStackPlate.hasGridPlate()) {
+		if (stackingPosition.getOrientation() == 0) {
+			marker = workPiece.createMarker(false);
+			if (basicStackPlate.getBasicLayout().getHorizontalR() < 0) {
+				marker.setTranslateX(workPiece.getXTranslationMarker());
 			} else {
-				marker.setTranslateY(workPiece.getYTranslationMarker());	
+				marker.setTranslateX(5);
+			}
+		} else if (stackingPosition.getOrientation() == 90) {
+			marker = workPiece.createMarker(true);
+			if (basicStackPlate.getBasicLayout().getHorizontalR() < 0) {
+				marker.setTranslateY(workPiece.getYTranslationMarker());
+			} else {
+				marker.setTranslateY(5);
 			}
 		} else {
-			marker = workPiece.createMarker(false);
-			if (basicStackPlate.getR(basicStackPlate.getLayout().getOrientation()) >= -0.01) {
-				if (markerNeedsTranslation(stackingPosition.getOrientation())) {
-					marker.setTranslateX(workPiece.getXTranslationMarker());	
+			float deltaR = basicStackPlate.getBasicLayout().getTiltedR() - basicStackPlate.getBasicLayout().getHorizontalR();
+			if (deltaR > 0) {
+				if (isRightGrid(stackingPosition.getOrientation())) {
+					marker = workPiece.createMarker(true);
+					if (basicStackPlate.getBasicLayout().getTiltedR() > 0 && stackingPosition.getOrientation() < 90) {
+						marker.setTranslateY(workPiece.getYTranslationMarker());
+					} else {
+						marker.setTranslateY(5);
+					}
 				} else {
-					marker.setTranslateX(5);		
+					marker = workPiece.createMarker(false);
+					if (basicStackPlate.getBasicLayout().getTiltedR() > 0 && stackingPosition.getOrientation() < 90) {
+						marker.setTranslateX(5);
+					} else {
+						marker.setTranslateX(workPiece.getXTranslationMarker());
+					}
 				}
 			} else {
-				if (markerNeedsTranslation(stackingPosition.getOrientation())) {
-					marker.setTranslateX(5);	
+				if (isRightGrid(stackingPosition.getOrientation())) {
+					marker = workPiece.createMarker(false);
+					if (basicStackPlate.getBasicLayout().getTiltedR() > 0 && stackingPosition.getOrientation() < 90) {
+						marker.setTranslateX(5);
+					} else {
+						marker.setTranslateX(workPiece.getXTranslationMarker());
+					}
 				} else {
-					marker.setTranslateX(workPiece.getXTranslationMarker());	
+					marker = workPiece.createMarker(true);
+					if (basicStackPlate.getBasicLayout().getTiltedR() > 0 && stackingPosition.getOrientation() < 90) {
+						marker.setTranslateY(5);
+					} else {
+						marker.setTranslateY(workPiece.getYTranslationMarker());
+					}
 				}
 			}
 		}
@@ -321,7 +349,11 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 				group2.setLayoutX(stackingPosition.getPosition().getX() - workPieceRepre.getXCorrection());
 				//LayoutY - the origin of the piece (left bottom corner)
 				group2.setLayoutY(width - stackingPosition.getPosition().getY() - workPieceRepre.getYCorrection());
-				group2.setRotate(stackingPosition.getOrientation()*-1);
+				if (basicStackPlate.getBasicLayout().isRightAligned() && stackingPosition.getOrientation() == 45) {
+					group2.setRotate(stackingPosition.getOrientation());
+				} else {
+					group2.setRotate(stackingPosition.getOrientation()*-1);
+				}
 				group.getChildren().add(group2);
 				Text txtAmount = new Text(stackingPosition.getAmount() + "");
 				txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);
@@ -330,6 +362,17 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 				group.getChildren().add(txtAmount);		
 			}
 		}
+	}
+
+	private boolean isRightGrid(double orientation) {
+		if (basicStackPlate.hasGridPlate()) {
+			if (orientation >= 90) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return basicStackPlate.getBasicLayout().isRightAligned();
 	}
 	
 	private boolean markerNeedsTranslation(double orientation) {
