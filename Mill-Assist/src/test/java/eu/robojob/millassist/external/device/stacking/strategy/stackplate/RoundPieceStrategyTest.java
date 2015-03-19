@@ -24,7 +24,7 @@ public class RoundPieceStrategyTest {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		context = new BasicStackPlateLayout(27, 7, 10.0f, 15.0f, 45.0f, 40.0f, 26.0f, 35.0f, 5.0f, 50, 90.0f, 135.0f, 5.0f, 5.0f, 5.0f, 90.0f, -90.0f);
+		context = new BasicStackPlateLayout(27, 7, 10.0f, 15.0f, 45.0f, 40.0f, 26.0f, 35.0f, 5.0f, 50, 90.0f, 135.0f, 5.0f, 5.0f, 5.0f);
 	}
 	
 	@Before

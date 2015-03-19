@@ -264,10 +264,8 @@ public class DeviceMapper {
 			double maxOverflow = results.getDouble("MAX_OVERFLOW");
 			double maxUnderflow = results.getDouble("MAX_UNDERFLOW");
 			double minOverlap = results.getDouble("MIN_OVERLAP");
-			float extraRMinus90 = results.getFloat("EXTRA_R_MIN_90");
-			float extraRPlus90 = results.getFloat("EXTRA_R_PLUS_90");
 			BasicStackPlateLayout layout = new BasicStackPlateLayout(horizontalHoleAmount, verticalHoleAmount, holeDiameter, studDiameter, horizontalPadding, verticalPaddingTop, 
-					verticalPaddingBottom, horizontalHoleDistance, interferenceDistance, overflowPercentage, horizontalR, tiltedR, maxOverflow, maxUnderflow, minOverlap, extraRMinus90, extraRPlus90);
+					verticalPaddingBottom, horizontalHoleDistance, interferenceDistance, overflowPercentage, horizontalR, tiltedR, maxOverflow, maxUnderflow, minOverlap);
 			stackPlate = new BasicStackPlate(name, zones, layout);
 			stackPlate.setId(id);
 		}
@@ -683,7 +681,7 @@ public class DeviceMapper {
 			final float verticalPaddingTop, final float verticalPaddingBottom, final float interferenceDistance, final float overflowPercentage,
 			final float horizontalR, final float tiltedR, final float maxOverlow, final float maxUnderflow, final float minOverlap, final float studHeight,
 			final float smoothToX, final float smoothToY, final float smoothToZ,
-			final float smoothFromX, final float smoothFromY, final float smoothFromZ, final float extraRMinus90, final float extraRPlus90) throws SQLException {
+			final float smoothFromX, final float smoothFromY, final float smoothFromZ) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		if ((!basicStackPlate.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
 			UserFrame newUserFrame = getUserFrameByName(userFrameName);
@@ -692,7 +690,7 @@ public class DeviceMapper {
 		}
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE STACKPLATE SET HORIZONTALHOLEAMOUNT = ?, VERTICALHOLEAMOUNT = ?, HOLEDIAMETER = ?, " +
 				"STUDDIAMETER = ?, HORIZONTALPADDING = ?, VERTICALPADDINGTOP = ?, VERTICALPADDINGBOTTOM = ?, HORIZONTALHOLEDISTANCE = ?, INTERFERENCEDISTANCE = ?, " +
-				" OVERFLOWPERCENTAGE = ?, HORIZONTAL_R = ?, TILTED_R = ?, MAX_OVERFLOW = ?, MIN_OVERLAP = ?, EXTRA_R_MIN_90 = ?, EXTRA_R_PLUS_90 = ?, MAX_UNDERFLOW = ? "
+				" OVERFLOWPERCENTAGE = ?, HORIZONTAL_R = ?, TILTED_R = ?, MAX_OVERFLOW = ?, MIN_OVERLAP = ?, MAX_UNDERFLOW = ? "
 				+ "WHERE ID = ?");
 		stmt.setInt(1, horizontalHoleAmount);
 		stmt.setInt(2, verticalHoleAmount);
@@ -708,10 +706,8 @@ public class DeviceMapper {
 		stmt.setFloat(12, tiltedR);
 		stmt.setFloat(13, maxOverlow);
 		stmt.setFloat(14, minOverlap);
-		stmt.setFloat(15, extraRMinus90);
-		stmt.setFloat(16, extraRPlus90);
-		stmt.setFloat(17, maxUnderflow);
-		stmt.setInt(18, basicStackPlate.getId());
+		stmt.setFloat(15, maxUnderflow);
+		stmt.setInt(16, basicStackPlate.getId());
 		stmt.execute();
 		PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
 		stmt2.setString(1, name);
@@ -745,8 +741,6 @@ public class DeviceMapper {
 		basicStackPlate.getBasicLayout().setMinOverlap(minOverlap);
 		basicStackPlate.getBasicLayout().setHorizontalR(horizontalR);
 		basicStackPlate.getBasicLayout().setTiltedR(tiltedR);
-		basicStackPlate.getBasicLayout().setExtraRMinus90(extraRMinus90);
-		basicStackPlate.getBasicLayout().setExtraRPlus90(extraRPlus90);
 		PreparedStatement stmt3 = ConnectionManager.getConnection().prepareStatement("UPDATE CLAMPING SET HEIGHT = ? WHERE ID = ?");
 		stmt3.setFloat(1, studHeight);
 		stmt3.setInt(2, basicStackPlate.getWorkAreas().get(0).getDefaultClamping().getId());

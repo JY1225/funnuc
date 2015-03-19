@@ -375,22 +375,6 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 		return basicStackPlate.getBasicLayout().isRightAligned();
 	}
 	
-	private boolean markerNeedsTranslation(double orientation) {
-		if (basicStackPlate.hasGridPlate()) {
-			if (orientation > 90) {
-				if (basicStackPlate.getBasicLayout().getExtraRPlus90() != basicStackPlate.getBasicLayout().getHorizontalR()) {
-					return true;
-				}
-			} else {
-				if (basicStackPlate.getBasicLayout().getExtraRMinus90() != basicStackPlate.getBasicLayout().getHorizontalR()) {
-					return true;
-				}
-			}
-			
-		}
-		return false;
-	}
-	
 	/**
 	 * Create a group for the gridplate layout. This group holds the gridplate inlcuding the holes.
 	 * Note that the group is already shifted in function of the padding defined in the layout.

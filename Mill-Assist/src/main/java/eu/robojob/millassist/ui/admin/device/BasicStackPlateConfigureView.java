@@ -56,11 +56,6 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	private Label lblTiltedR;
 	private NumericTextField numTxtTiltedR;
 	
-	private Label lblExtraRMinus90;
-	private NumericTextField numtxtExtraRMinus90;
-	private Label lblExtraRPlus90;
-	private NumericTextField numtxtExtraRPlus90;
-	
 	private Label lblMaxOverflow;
 	private NumericTextField numTxtMaxOverflow;
 	private Label lblMaxUnderflow;
@@ -115,8 +110,6 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	private static final String X = "BasicStackPlateConfigureView.x";
 	private static final String Y = "BasicStackPlateConfigureView.y";
 	private static final String Z = "BasicStackPlateConfigureView.z";
-	private static final String EXTRA_R_MIN_90 = "BasicStackPlateConfigureView.extraRMin90";
-	private static final String EXTRA_R_PLUS_90 = "BasicStackPlateConfigureView.extraRPlus90";
 	
 	private BasicStackPlate basicStackPlate;
 	
@@ -166,10 +159,6 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numTxtHorizontalR = new NumericTextField(5);
 		lblTiltedR = new Label(Translator.getTranslation(TILTED_R));
 		numTxtTiltedR = new NumericTextField(5);
-		lblExtraRMinus90 = new Label(Translator.getTranslation(EXTRA_R_MIN_90));
-		numtxtExtraRMinus90 = new NumericTextField(5);
-		lblExtraRPlus90 = new Label(Translator.getTranslation(EXTRA_R_PLUS_90));
-		numtxtExtraRPlus90 = new NumericTextField(5);
 		lblMaxOverflow = new Label(Translator.getTranslation(MAX_OVERFLOW));
 		numTxtMaxOverflow = new NumericTextField(5);
 		lblMaxUnderflow = new Label(Translator.getTranslation(MAX_UNDERFLOW));
@@ -218,8 +207,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 						Float.parseFloat(numTxtMinOverlap.getText()),Float.parseFloat(numTxtStudHeight.getText()),
 						Float.parseFloat(numtxtSmoothToX.getText()), Float.parseFloat(numtxtSmoothToY.getText()), 
 						Float.parseFloat(numtxtSmoothToZ.getText()), Float.parseFloat(numtxtSmoothFromX.getText()), 
-						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()),
-						Float.parseFloat(numtxtExtraRMinus90.getText()), Float.parseFloat(numtxtExtraRPlus90.getText()));
+						Float.parseFloat(numtxtSmoothFromY.getText()), Float.parseFloat(numtxtSmoothFromZ.getText()));
 			}
 		});
 
@@ -266,12 +254,6 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		column++;
 		getContents().add(lblTiltedR, column++, row);
 		getContents().add(numTxtTiltedR, column++, row);
-		column = 0; row++;
-		getContents().add(lblExtraRMinus90, column++, row);
-		getContents().add(numtxtExtraRMinus90, column++, row);
-		column++;
-		getContents().add(lblExtraRPlus90, column++, row);
-		getContents().add(numtxtExtraRPlus90, column++, row);
 		column = 0; row++;
 		getContents().add(lblMaxOverflow, column++, row);
 		getContents().add(numTxtMaxOverflow, column++, row);
@@ -328,8 +310,6 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numtxtSmoothFromX.setFocusListener(listener);
 		numtxtSmoothFromY.setFocusListener(listener);
 		numtxtSmoothFromZ.setFocusListener(listener);
-		numtxtExtraRMinus90.setFocusListener(listener);
-		numtxtExtraRPlus90.setFocusListener(listener);
 	}
 
 	@Override
@@ -362,8 +342,6 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 			numtxtSmoothFromX.setText(smoothFrom.getX() + "");
 			numtxtSmoothFromY.setText(smoothFrom.getY() + "");
 			numtxtSmoothFromZ.setText(smoothFrom.getZ() + "");
-			numtxtExtraRMinus90.setText(basicStackPlate.getBasicLayout().getExtraRMinus90() + "");
-			numtxtExtraRPlus90.setText(basicStackPlate.getBasicLayout().getExtraRPlus90() + "");
 		}
 	}
 
