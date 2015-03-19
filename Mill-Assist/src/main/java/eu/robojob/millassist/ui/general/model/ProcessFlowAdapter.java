@@ -267,7 +267,7 @@ public class ProcessFlowAdapter {
 	
 	//Only use is when CNC machine is removed from the flow
 	public void updateCNCMachineWorkArea() {
-		SimpleWorkArea workArea = getDeviceInformation(getCNCMachineIndex()).getPutStep().getDeviceSettings().getWorkArea();
+		SimpleWorkArea workArea = getDeviceInformation(getLastCNCMachineIndex()).getPutStep().getDeviceSettings().getWorkArea();
 		workArea.setInUse(false);
 	}
 	
