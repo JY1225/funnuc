@@ -109,13 +109,10 @@ public class AutomateStatusView extends HBox {
 	}
 	
 	public void build() {
-		setPrefSize(WIDTH, SizeManager.HEIGHT_BOTTOM);
 		getStyleClass().add(CSS_CLASS_AUTOMATE_BOTTOM);
 		setAlignment(Pos.CENTER_LEFT);
 		bottomRight = new StackPane();
-		bottomRight.setPrefSize(WIDTH_BOTTOM_RIGHT, SizeManager.HEIGHT_BOTTOM);
 		bottomLeft = new StackPane();
-		bottomLeft.setPrefSize(WIDTH - WIDTH_BOTTOM_RIGHT, SizeManager.HEIGHT_BOTTOM);
 		getChildren().add(bottomLeft);
 		getChildren().add(bottomRight);
 		
@@ -126,7 +123,6 @@ public class AutomateStatusView extends HBox {
 		vboxBottomLeft.setAlignment(Pos.TOP_CENTER);
 		statusView.setWidth(TIMING_STATUS_WIDTH);
 		statusView.setPrefHeight(HEIGHT_BOTTOM_LEFT_TOP);
-		statusView.setMinHeight(HEIGHT_BOTTOM_LEFT_TOP);
 		bottomLeft.getChildren().clear();
 		bottomLeft.getChildren().add(vboxBottomLeft);
 		bottomLeft.setAlignment(Pos.CENTER);
