@@ -167,10 +167,11 @@ public class GeneralMapper {
 		ResultSet results = stmt.executeQuery();
 		if (results.next()) {
 			int typeId = results.getInt("TYPE");
+			int shapeId = results.getInt("SHAPE");
 			float weight = results.getFloat("WEIGHT");
 			int materialId = results.getInt("MATERIAL");
 			Material material = Material.getMaterialById(materialId);
-			workPiece = new WorkPiece(WorkPiece.Type.getTypeById(typeId), new RectangularDimensions(), material, weight);
+			workPiece = new WorkPiece(WorkPiece.Type.getTypeById(typeId), WorkPieceShape.getShapeById(shapeId), material, weight);
 			workPiece.setId(workPieceId);
 			getDimensionsByWP(workPiece);
 		}

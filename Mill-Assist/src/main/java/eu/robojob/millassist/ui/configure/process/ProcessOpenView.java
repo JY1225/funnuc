@@ -172,6 +172,7 @@ public class ProcessOpenView extends AbstractFormView<ProcessOpenPresenter> {
 		getContents().add(table, column++, row);
 		HBox.setMargin(hbox, new Insets(TOP_MARGIN, 0, 0, 0));
 		HBox.setMargin(hbox2, new Insets(TOP_MARGIN, 0, 0, 0));
+		getContents().setPadding(new Insets(15));
 	}
 	
 	public String getFilter() {

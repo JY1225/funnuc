@@ -102,6 +102,14 @@ public class WorkPiece {
 		setShape();
 	}
 	
+	public WorkPiece(final Type type, final WorkPieceShape shape, final Material material, final float weight) {
+		this.type = type;
+		transformPiece(shape);
+		this.material = material;
+		this.weight = weight;
+		setShape();
+	}
+	
 	public WorkPiece(final WorkPiece wp) {
 		this(wp.getType(), wp.getDimensions().clone(), wp.getMaterial(), wp.getWeight());
 	}
@@ -143,7 +151,7 @@ public class WorkPiece {
 	 * @post new dimensions are added to the workpiece as well as a new graphical representation object
 	 */
 	public void transformPiece(WorkPieceShape shape) {
-		if (!this.shape.equals(shape)) {
+		if (this.shape == null || !this.shape.equals(shape)) {
 			if (shape.equals(WorkPieceShape.CUBIC)) {
 				this.dimensions = new RectangularDimensions();
 				this.representation = new RectanglePieceRepresentation(this);

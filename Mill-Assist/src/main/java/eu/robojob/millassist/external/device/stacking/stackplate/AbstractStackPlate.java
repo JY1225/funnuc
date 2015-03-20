@@ -306,6 +306,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 					placedAmount++;
 				}
 			} else if (stPos.getWorkPiece().getType().equals(WorkPiece.Type.RAW)) {
+				replacedAmount += stPos.getAmount();
 				if (hasBinForFinished) {
 					stPos.setWorkPiece(null);
 				} else {
@@ -313,7 +314,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 					stPos = getLayout().getStackingPositions().get(position);
 					stPos.setWorkPiece(getFinishedWorkPiece());
 				}
-				replacedAmount += stPos.getAmount();
 				stPos.setAmount(0);
 				while(stPos.getAmount() < nbLayers && placedAmount < finishedAmount) {
 					stPos.incrementAmount();

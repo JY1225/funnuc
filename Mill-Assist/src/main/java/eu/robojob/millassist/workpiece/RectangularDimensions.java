@@ -65,16 +65,18 @@ public class RectangularDimensions implements IWorkPieceDimensions {
 	
 	//Occurs when reversalUnit.approachType = LEFT (X-as ligt naar voren)
 	public void rotateDimensionsAroundX() {
-		RectangularDimensions bckUpDimensions = new RectangularDimensions(getLength(), getWidth(), getHeight());
-		setLength(bckUpDimensions.getHeight());
-		setHeight(bckUpDimensions.getLength());
+		float newLength = getHeight();
+		float newHeight = getLength();
+		setLength(newLength);
+		setHeight(newHeight);
 	}
 	
 	//Occurs when reversalUnit.approachType = FRONT (Y-as ligt naar rechts)
 	public void rotateDimensionsAroundY() {
-		RectangularDimensions bckUpDimensions = new RectangularDimensions(getLength(), getWidth(), getHeight());
-		setWidth(bckUpDimensions.getHeight());
-		setHeight(bckUpDimensions.getWidth());
+		float newWidth = getHeight();
+		float newHeight = getWidth();
+		setWidth(newWidth);
+		setHeight(newHeight);
 	}
 	
 	public RectangularDimensions clone() {
