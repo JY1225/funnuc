@@ -194,7 +194,7 @@ public abstract class AbstractStackPlateLayout{
 				int amountToTransfer1 = getLayers() - lastStackingPosition.getAmount();
 				int amountToTransfer2 = 0;
 				for (StackPlateStackingPosition stPlatePosition: getStackingPositions()) {
-					if (stPlatePosition.getWorkPiece().getType().equals(Type.RAW)) {
+					if (stPlatePosition.getWorkPiece() != null && stPlatePosition.getWorkPiece().getType().equals(Type.RAW)) {
 						firstStackingPosition = stPlatePosition;
 						amountToTransfer2 = stPlatePosition.getAmount() - 1;
 						break;
