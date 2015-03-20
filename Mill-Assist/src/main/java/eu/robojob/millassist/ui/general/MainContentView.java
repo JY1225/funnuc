@@ -13,9 +13,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.RoboSoft;
+import eu.robojob.millassist.ui.controls.keyboard.NumericKeyboardView;
 import eu.robojob.millassist.util.SizeManager;
 
-public class MainContentView extends VBox {
+public class MainContentView extends StackPane {
 
 	private StackPane top;
 	private StackPane spBottom;
@@ -23,6 +24,8 @@ public class MainContentView extends VBox {
 	private HBox hbBottom;
 	private StackPane bottomLeft;
 	private Pane bottomRight;
+	private VBox mainContent;
+	private StackPane keyboardPane;
 	
 	private static final String CSS_CLASS_BOTTOM_LEFT_PANE = "bottom-left";
 	private static final String CSS_CLASS_BOTTOM_RIGHT_PANE = "bottom-right";
@@ -41,11 +44,15 @@ public class MainContentView extends VBox {
 	}
 	
 	private void build() {
-		this.setFillWidth(true);
-		
-		this.setAlignment(Pos.CENTER);
+		keyboardPane = new StackPane();
+		keyboardPane.setMaxHeight(300);
+		StackPane.setAlignment(keyboardPane, Pos.BOTTOM_LEFT);
+		this.mainContent = new VBox();
+		getChildren().add(mainContent);
+		mainContent.setFillWidth(true);
+		mainContent.setAlignment(Pos.CENTER);
 		top = new StackPane();
-		getChildren().add(top);
+		this.mainContent.getChildren().add(top);
 		top.setPrefHeight(SizeManager.HEIGHT_TOP);
 		top.setPrefWidth(SizeManager.WIDTH);
 		top.getStyleClass().add(CSS_CLASS_TOP_PANEL);
@@ -53,7 +60,7 @@ public class MainContentView extends VBox {
 		spBottom = new StackPane();
 		spBottom.setPrefHeight(SizeManager.HEIGHT_BOTTOM);
 		spBottom.setPrefWidth(SizeManager.WIDTH);
-		getChildren().add(spBottom);
+		this.mainContent.getChildren().add(spBottom);
 		VBox.setVgrow(spBottom, Priority.ALWAYS);
 
 		gpBottom = new GridPane();
@@ -135,5 +142,29 @@ public class MainContentView extends VBox {
 	
 	public void setBottomLeftEnabled(final boolean enabled) {
 		this.bottomLeft.setDisable(!enabled);
+	}
+	
+	public void showKeyboardPane(final Node keyboardNode, final boolean top) {
+		if (top) {
+			StackPane.setAlignment(keyboardPane, Pos.TOP_LEFT);
+		} else {
+			StackPane.setAlignment(keyboardPane, Pos.BOTTOM_LEFT);
+		}
+		getChildren().remove(keyboardPane);
+		keyboardPane.getChildren().clear();
+		keyboardPane.getChildren().add(keyboardNode);
+		getChildren().add(keyboardPane);
+		if (keyboardNode instanceof NumericKeyboardView) {
+			keyboardPane.setMaxWidth(200);
+			keyboardPane.setMaxHeight(300);
+		} else {
+			keyboardPane.setMaxWidth(USE_PREF_SIZE);
+			keyboardPane.setMaxHeight(250);
+		}
+	}
+	
+	public void closeKeyboard() {
+		getChildren().remove(keyboardPane);
+		requestFocus();
 	}
 }
