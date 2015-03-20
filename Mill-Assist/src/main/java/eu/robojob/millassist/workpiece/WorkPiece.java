@@ -94,22 +94,16 @@ public class WorkPiece {
 	private float weight;
 	private IDrawableObject representation;
 	
-	public WorkPiece(final Type type, final IWorkPieceDimensions dimensions, final Material material, 
-			final WorkPieceShape shape, final float weight) {
+	public WorkPiece(final Type type, final IWorkPieceDimensions dimensions, final Material material, final float weight) {
 		this.type = type;
 		this.dimensions = dimensions;
 		this.material = material;
-		setShape(shape);
 		this.weight = weight;
+		setShape();
 	}
 	
 	public WorkPiece(final WorkPiece wp) {
-		this(wp.getType(), wp.getDimensions().clone(), wp.getMaterial(), wp.getShape(), wp.getWeight());
-	}
-	
-	public WorkPiece(final WorkPiece wp, final WorkPieceShape shape) {
-		this(wp);
-		this.shape = shape;
+		this(wp.getType(), wp.getDimensions().clone(), wp.getMaterial(), wp.getWeight());
 	}
 	
 	public int getId() {
@@ -132,8 +126,24 @@ public class WorkPiece {
 		return shape;
 	}
 	
-	public void setShape(WorkPieceShape shape) {
-		if (this.shape == null || !this.shape.equals(shape)) {
+	private void setShape() {
+		if (dimensions instanceof RoundDimensions) {
+			this.shape = WorkPieceShape.CYLINDRICAL;
+			this.representation = new RoundPieceRepresentation(this);
+		} else if (dimensions instanceof RectangularDimensions) {
+			this.shape = WorkPieceShape.CUBIC;
+			this.representation = new RectanglePieceRepresentation(this);
+		}
+	}
+	
+	/**
+	 * This method transforms the current workpiece to a given shape.
+	 * 
+	 * @param shape is the new shape of the workpiece
+	 * @post new dimensions are added to the workpiece as well as a new graphical representation object
+	 */
+	public void transformPiece(WorkPieceShape shape) {
+		if (!this.shape.equals(shape)) {
 			if (shape.equals(WorkPieceShape.CUBIC)) {
 				this.dimensions = new RectangularDimensions();
 				this.representation = new RectanglePieceRepresentation(this);

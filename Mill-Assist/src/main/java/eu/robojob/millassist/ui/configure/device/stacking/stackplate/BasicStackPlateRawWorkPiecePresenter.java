@@ -236,7 +236,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 			//TODO - set new workPiece for raw and finished
 			changeWorkPiece(shape);
 			if (deviceSettings.getFinishedWorkPiece() != null) {
-				deviceSettings.getFinishedWorkPiece().setShape(shape);
+				deviceSettings.getFinishedWorkPiece().transformPiece(shape);
 			}
 			recalculate();
 			getView().refresh();
@@ -245,9 +245,9 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 	}
 	
 	private void changeWorkPiece(final WorkPieceShape shape) {
-		this.workPiece.setShape(shape);
-		deviceSettings.getRawWorkPiece().setShape(shape);
-		this.pickStep.getRobotSettings().getWorkPiece().setShape(shape);
+		this.workPiece.transformPiece(shape);
+		deviceSettings.getRawWorkPiece().transformPiece(shape);
+		this.pickStep.getRobotSettings().getWorkPiece().transformPiece(shape);
 	}
 	
 	public void changedWeight(final float weight) {

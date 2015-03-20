@@ -69,7 +69,7 @@ public class RoboSoft extends Application {
 			String heigth_str = PropertyManager.getValue(Setting.SCREEN_HEIGHT);
 			int width = 800;
 			int heigth = 600;
-			if(width_str != null || heigth_str != null) {
+			if(width_str != null && heigth_str != null) {
 				width = Integer.valueOf(width_str);
 				heigth = Integer.valueOf(heigth_str);
 			}

@@ -101,8 +101,8 @@ public class ProcessFlowManager {
 		PickStep pickStep2 = new PickStep(cncMachine.getDefaultPickSettings(1), robot.getDefaultPickSettings());
 		PutStep putStep2 = new PutStep(stackingToDevice.getDefaultPutSettings(1), robot.getDefaultPutSettings());
 		List<AbstractProcessStep> processSteps = new ArrayList<AbstractProcessStep>();
-		WorkPiece rawWorkPiece = new WorkPiece(Type.RAW, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f);
-		WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f);
+		WorkPiece rawWorkPiece = new WorkPiece(Type.RAW, new RectangularDimensions(), Material.OTHER, 0.0f);
+		WorkPiece finishedWorkPiece = new WorkPiece(Type.FINISHED, new RectangularDimensions(), Material.OTHER, 0.0f);
 		pickStep.getRobotSettings().setWorkPiece(rawWorkPiece);
 		pickStep2.getRobotSettings().setWorkPiece(finishedWorkPiece);
 		processSteps.add(pickStep);

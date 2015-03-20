@@ -37,7 +37,6 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public class ConveyorEaton extends AbstractConveyor {
@@ -112,8 +111,8 @@ public class ConveyorEaton extends AbstractConveyor {
 	
 	@Override
 	public void clearDeviceSettings() {
-		setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
-		setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
+		setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new RectangularDimensions(), Material.OTHER, 0.0f));
+		setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new RectangularDimensions(), Material.OTHER, 0.0f));
 		layout.clearSettings();
 		notifyLayoutChanged();
 	}
@@ -432,12 +431,12 @@ public class ConveyorEaton extends AbstractConveyor {
 			if (settings.getRawWorkPiece() != null) {
 				setRawWorkPiece(settings.getRawWorkPiece());
 			} else {
-				setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
+				setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new RectangularDimensions(), Material.OTHER, 0.0f));
 			}
 			if (settings.getFinishedWorkPiece() != null) {
 				setFinishedWorkPiece(settings.getFinishedWorkPiece());
 			} else {
-				setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
+				setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new RectangularDimensions(), Material.OTHER, 0.0f));
 			}
 			this.amount = settings.getAmount();
 			try {

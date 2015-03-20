@@ -106,7 +106,6 @@ public class ProcessFlow {
 		this.lastOpened = lastOpened;
 		this.type = Type.FIXED_AMOUNT;
 		setUpProcess(processSteps);
-		this.currentIndices = new HashMap<Integer, Integer>();
 		//TODO more than two concurrent steps possible?
 		setCurrentIndex(WORKPIECE_0_ID, -1);
 		setCurrentIndex(WORKPIECE_1_ID, -1);
@@ -706,7 +705,7 @@ public class ProcessFlow {
 						float prvWeight = prvWorkPiece.getWeight();
 						((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
 						((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
-					}
+					} 
 				}
 				prvWorkPiece = ((PickStep) step).getRobotSettings().getWorkPiece();
 			}

@@ -26,7 +26,6 @@ import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 
@@ -55,8 +54,8 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 
 	@Override
 	public void clearDeviceSettings() {
-		setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
-		setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
+		setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new RectangularDimensions(), Material.OTHER, 0.0f));
+		setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new RectangularDimensions(), Material.OTHER, 0.0f));
 		getWorkAreas().get(0).getDefaultClamping().resetHeightToDefault();
 		this.currentPickLocation = null;
 		this.currentPutLocation = null;

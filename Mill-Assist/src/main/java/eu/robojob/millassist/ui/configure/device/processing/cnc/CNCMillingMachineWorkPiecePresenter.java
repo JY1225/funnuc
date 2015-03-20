@@ -213,7 +213,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 				}
 				this.pickStep.getRobotSettings().getWorkPiece().setMaterial(pickStep.getRobotSettings().getWorkPiece().getMaterial());
 				this.pickStep.getRobotSettings().getWorkPiece().setWeight(pickStep.getRobotSettings().getWorkPiece().getWeight());
-				this.pickStep.getRobotSettings().getWorkPiece().setShape(pickStep.getRobotSettings().getWorkPiece().getShape());
+				this.pickStep.getRobotSettings().getWorkPiece().transformPiece(pickStep.getRobotSettings().getWorkPiece().getShape());
 			}
 		}
 	}

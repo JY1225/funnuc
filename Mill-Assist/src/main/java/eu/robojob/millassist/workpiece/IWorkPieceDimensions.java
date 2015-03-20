@@ -2,7 +2,7 @@ package eu.robojob.millassist.workpiece;
 
 import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 
-public interface IWorkPieceDimensions extends Comparable<IWorkPieceDimensions> {
+public interface IWorkPieceDimensions extends Comparable<IWorkPieceDimensions>, Cloneable {
 	
 	public float getZSafe();
 	public String toString();

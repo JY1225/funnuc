@@ -3,8 +3,6 @@ package eu.robojob.millassist.ui.admin.device.cnc;
 import java.util.List;
 import java.util.Set;
 
-import com.sun.glass.ui.Size;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;

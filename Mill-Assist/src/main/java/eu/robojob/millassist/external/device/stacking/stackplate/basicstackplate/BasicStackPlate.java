@@ -24,7 +24,6 @@ import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 /**
@@ -43,7 +42,7 @@ public class BasicStackPlate extends AbstractStackPlate {
 		this.listeners = new ArrayList<BasicStackPlateListener>();
 		setLayout(layout);
 		this.basicLayout = layout;
-		setRawWorkPiece(new WorkPiece(Type.RAW, new RectangularDimensions(), Material.OTHER, WorkPieceShape.CUBIC, 0.0f));
+		setRawWorkPiece(new WorkPiece(Type.RAW, new RectangularDimensions(), Material.OTHER, 0.0f));
 	}
 	
 	public BasicStackPlate(final String name, final BasicStackPlateLayout layout) {
