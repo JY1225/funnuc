@@ -77,7 +77,9 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		if (getStackPlate().hasGridPlate()) {
 			GridPlate gridplate = ((GridPlateLayout) getStackPlate().getLayout()).getGridPlate();
 			if (workPiece.getShape().equals(WorkPieceShape.CYLINDRICAL)) {
-				if(workPiece.getDimensions().getDimension(Dimensions.DIAMETER)/2 > gridplate.getHoleLength())
+				if(workPiece.getDimensions().getDimension(Dimensions.DIAMETER) > gridplate.getHoleLength())
+					return false;
+				if(workPiece.getDimensions().getDimension(Dimensions.DIAMETER) > gridplate.getHoleWidth())
 					return false;
 			} else {
 				if(workPiece.getDimensions().getDimension(Dimensions.LENGTH) > gridplate.getHoleLength())
@@ -264,7 +266,8 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		if ((workPiece.getDimensions() != null) && (plate.getLayout().getRawStackingPositions() != null)
 				&& (plate.getLayout().getRawStackingPositions().size() > 0) && (workPiece.getWeight() > 0) 
 				&& (deviceSettings.getStudHeight() >= 0)
-				&& (isAmountOk())) {
+				&& (isAmountOk()) 
+				&& isGridPlateOK()) {
 			return true;
 		}
 		return false;

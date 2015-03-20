@@ -76,7 +76,7 @@ public class RoundGridPlateStrategy extends AGridPlateStrategy<RoundDimensions> 
 	}
 	
 	private static float getXComp(float radius, float yComp) {
-		double C = Math.sqrt(2) * radius;
+		float C = (float) Math.sqrt(2) * radius;
 		return (float) Math.sqrt(C * C - (yComp * yComp));
 	}
 
@@ -84,12 +84,6 @@ public class RoundGridPlateStrategy extends AGridPlateStrategy<RoundDimensions> 
 	protected void isValidWorkPiece(RoundDimensions dimensions) throws IncorrectWorkPieceDataException {
 		if (dimensions == null || !dimensions.isValidDimension()) {
 			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_DATA);
-		}
-		if (dimensions.getDiameter() > getContext().getGridPlate().getHoleLength()) {
-			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.TOO_LARGE);
-		}
-		if (dimensions.getDiameter() > getContext().getGridPlate().getHoleWidth()) {
-			throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.TOO_LARGE);
 		}
 	}
 
