@@ -3,7 +3,6 @@ package eu.robojob.millassist.ui.configure.device.processing.cnc;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
-import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.PickAfterWaitStep;
 import eu.robojob.millassist.process.PickStep;
@@ -99,12 +98,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		pickStep.setRelativeTeachedOffset(null);
 		recalculate();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
-		//FIXME - hier nieuwe recalculate op de stacker doen
-		try {
-			pickStep.getProcessFlow().recalculateStackingPos();
-		} catch (IncorrectWorkPieceDataException e) {
-			e.printStackTrace();
-		}
+		pickStep.getProcessFlow().recalculateStackingPos();
 	}
 	
 	public void resetWidth() {

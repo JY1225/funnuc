@@ -376,7 +376,7 @@ public class ProcessFlow {
 		}
 	}
 	
-	public void recalculateStackingPos() throws IncorrectWorkPieceDataException {
+	public void recalculateStackingPos() {
 		AbstractStackPlate stackplate = null;
 		for (AbstractDevice device: getDevices()) {
 			if (device instanceof AbstractStackPlate) {
@@ -387,9 +387,12 @@ public class ProcessFlow {
 		if (stackplate != null) {
 			AbstractStackPlateDeviceSettings devSettings = (AbstractStackPlateDeviceSettings) getDeviceSettings(stackplate);
 			setFinishedAmount(0);
-			stackplate.getLayout().configureStackingPositions(devSettings.getRawWorkPiece(), devSettings.getFinishedWorkPiece(), devSettings.getOrientation(), devSettings.getLayers());
-			stackplate.getLayout().initRawWorkPieces(devSettings.getRawWorkPiece(), devSettings.getAmount());
-			stackplate.notifyLayoutChanged();
+			try {
+				stackplate.getLayout().configureStackingPositions(devSettings.getRawWorkPiece(), devSettings.getFinishedWorkPiece(), devSettings.getOrientation(), devSettings.getLayers());
+				stackplate.getLayout().initRawWorkPieces(devSettings.getRawWorkPiece(), devSettings.getAmount());
+				stackplate.notifyLayoutChanged();
+			} catch (IncorrectWorkPieceDataException e) {
+			}
 		}
 	}
 	
