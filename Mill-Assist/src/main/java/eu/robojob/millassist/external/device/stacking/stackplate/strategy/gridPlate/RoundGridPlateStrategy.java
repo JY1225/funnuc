@@ -45,7 +45,7 @@ public class RoundGridPlateStrategy extends AGridPlateStrategy<RoundDimensions> 
 				if (hole.getAngle() > 45) {
 					x *= -1;
 				}
-				stPos = new StackPlateStackingPosition(hole.getX() + x, hole.getY() + y, 
+				stPos = new StackPlateStackingPosition(hole.getX() + x + getContext().getGridPlate().getOffsetX(), hole.getY() + y + getContext().getGridPlate().getOffsetY(), 
 						getContext().getStackPlate().getRRound(), null, 0, hole.getAngle());
 			} else if (hole.getAngle() > 90) {			
 				float angle = hole.getAngle();
@@ -53,12 +53,14 @@ public class RoundGridPlateStrategy extends AGridPlateStrategy<RoundDimensions> 
 				float x = getXComp(dimensions.getDiameter() / 2, y);
 				float xLeftUnder = (float) (getContext().getGridPlate().getHoleWidth() * Math.sin(angle * Math.PI/180));
 				float yLeftUnder = (float) (getContext().getGridPlate().getHoleWidth() * Math.cos(angle * Math.PI/180));
-				stPos = new StackPlateStackingPosition(hole.getX() + y - xLeftUnder, hole.getY() + x + yLeftUnder, 
+				stPos = new StackPlateStackingPosition(hole.getX() + y - xLeftUnder + getContext().getGridPlate().getOffsetX(), 
+						hole.getY() + x + yLeftUnder + getContext().getGridPlate().getOffsetY(), 
 						getContext().getStackPlate().getRRound(), null, 0, hole.getAngle());
 			} else {
 				float y = dimensions.getDiameter() / 2;
 				float x = dimensions.getDiameter() / 2;
-				stPos = new StackPlateStackingPosition(hole.getX() + x - getContext().getGridPlate().getHoleWidth(), hole.getY() + y, 
+				stPos = new StackPlateStackingPosition(hole.getX() + x - getContext().getGridPlate().getHoleWidth() + getContext().getGridPlate().getOffsetX(), 
+						hole.getY() + y + getContext().getGridPlate().getOffsetY(), 
 						getContext().getStackPlate().getRRound(), null, 0, hole.getAngle());
 			}
 			if (isRaw) {
