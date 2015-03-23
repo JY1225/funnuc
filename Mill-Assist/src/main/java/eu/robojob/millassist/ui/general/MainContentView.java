@@ -155,7 +155,7 @@ public class MainContentView extends StackPane {
 		keyboardPane.getChildren().add(keyboardNode);
 		getChildren().add(keyboardPane);
 		if (keyboardNode instanceof NumericKeyboardView) {
-			keyboardPane.setMaxWidth(200);
+			keyboardPane.setMaxWidth(SizeManager.WIDTH_BOTTOM_LEFT);
 			keyboardPane.setMaxHeight(300);
 		} else {
 			keyboardPane.setMaxWidth(USE_PREF_SIZE);
