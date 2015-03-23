@@ -45,7 +45,7 @@ public class MainContentView extends StackPane {
 	
 	private void build() {
 		keyboardPane = new StackPane();
-		keyboardPane.setMaxHeight(300);
+		keyboardPane.setMaxHeight(500);
 		StackPane.setAlignment(keyboardPane, Pos.BOTTOM_LEFT);
 		this.mainContent = new VBox();
 		getChildren().add(mainContent);
@@ -156,7 +156,7 @@ public class MainContentView extends StackPane {
 		getChildren().add(keyboardPane);
 		if (keyboardNode instanceof NumericKeyboardView) {
 			keyboardPane.setMaxWidth(SizeManager.WIDTH_BOTTOM_LEFT);
-			keyboardPane.setMaxHeight(300);
+			keyboardPane.setMaxHeight(361);
 		} else {
 			keyboardPane.setMaxWidth(USE_PREF_SIZE);
 			keyboardPane.setMaxHeight(250);

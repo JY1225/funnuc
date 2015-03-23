@@ -19,10 +19,12 @@ import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
@@ -32,7 +34,6 @@ import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.RobotSettings;
 import eu.robojob.millassist.process.event.DataChangedEvent;
-import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -88,7 +89,7 @@ public class ProcessFlow {
 	public static final int WORKPIECE_0_ID = 0;
 	public static final int WORKPIECE_1_ID = 1;
 	public static final int WORKPIECE_2_ID = 2;
-	
+		
 	private ClampingManner clampingManner;
 	private boolean isSingleCycle;
 	
@@ -178,6 +179,7 @@ public class ProcessFlow {
 	//In case this function is called by the activeProcessFlow, the activeProcessFlow will be changed to the one in the argument. (Actually this should be managed by the ProcessFlowManager)
 	public void loadFromOtherProcessFlow(final ProcessFlow processFlow) {
 		this.processSteps = processFlow.getProcessSteps();
+
 		for (AbstractProcessStep step : this.processSteps) {
 			step.setProcessFlow(this);
 		}
@@ -203,6 +205,7 @@ public class ProcessFlow {
 			}
 		}
 		this.processProcessFlowEvent(new ProcessChangedEvent(this));
+		//listeners van huidige proces worden gerecycleerd... 
 		this.setChangesSinceLastSave(false);
 	}
 	
@@ -253,7 +256,7 @@ public class ProcessFlow {
 		this.listeners.add(listener);
 		logger.debug("Now listening to [" + toString() + "]: " + listener.toString());
 	}
-	
+
 	public synchronized void removeListener(final ProcessFlowListener listener) {
 		this.listeners.remove(listener);
 		logger.debug("Stopped listening to [" + toString() + "]: " + listener.toString());
@@ -354,14 +357,8 @@ public class ProcessFlow {
 				}
 				break;
 			case ProcessFlowEvent.DATA_CHANGED:
-				if (event instanceof DimensionsChangedEvent) {
-					for (ProcessFlowListener listener : tempListeners) {
-						listener.dimensionChanged((DimensionsChangedEvent) event);
-					}
-				} else {
-					for (ProcessFlowListener listener : tempListeners) {
-						listener.dataChanged((DataChangedEvent) event);
-					}
+				for (ProcessFlowListener listener : tempListeners) {
+					listener.dataChanged((DataChangedEvent) event);
 				}
 				break;
 			case ProcessFlowEvent.FINISHED_AMOUNT_CHANGED:
@@ -376,6 +373,23 @@ public class ProcessFlow {
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown event type.");
+		}
+	}
+	
+	public void recalculateStackingPos() throws IncorrectWorkPieceDataException {
+		AbstractStackPlate stackplate = null;
+		for (AbstractDevice device: getDevices()) {
+			if (device instanceof AbstractStackPlate) {
+				stackplate = (AbstractStackPlate) device;
+				break;
+			}
+		}
+		if (stackplate != null) {
+			AbstractStackPlateDeviceSettings devSettings = (AbstractStackPlateDeviceSettings) getDeviceSettings(stackplate);
+			setFinishedAmount(0);
+			stackplate.getLayout().configureStackingPositions(devSettings.getRawWorkPiece(), devSettings.getFinishedWorkPiece(), devSettings.getOrientation(), devSettings.getLayers());
+			stackplate.getLayout().initRawWorkPieces(devSettings.getRawWorkPiece(), devSettings.getAmount());
+			stackplate.notifyLayoutChanged();
 		}
 	}
 	
@@ -689,12 +703,14 @@ public class ProcessFlow {
 				if (((PickStep) step).getRobotSettings().getApproachType().equals(ApproachType.FRONT)) {
 					IWorkPieceDimensions wpDim = prvWorkPiece.getDimensions().clone();
 					float prvWeight = prvWorkPiece.getWeight();
+					((PickStep) step).getRobotSettings().getWorkPiece().transformPiece(prvWorkPiece.getShape());
 					((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
 					((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
 					((PickStep) step).getRobotSettings().getWorkPiece().getDimensions().rotateDimensionsAroundY();
 				} else if(((PickStep) step).getRobotSettings().getApproachType().equals(ApproachType.LEFT)) {
 					IWorkPieceDimensions wpDim =  prvWorkPiece.getDimensions().clone();
 					float prvWeight = prvWorkPiece.getWeight();
+					((PickStep) step).getRobotSettings().getWorkPiece().transformPiece(prvWorkPiece.getShape());
 					((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
 					((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
 					((PickStep) step).getRobotSettings().getWorkPiece().getDimensions().rotateDimensionsAroundX();
@@ -703,6 +719,7 @@ public class ProcessFlow {
 					if (prvWorkPiece != null) {
 						IWorkPieceDimensions wpDim = prvWorkPiece.getDimensions().clone();
 						float prvWeight = prvWorkPiece.getWeight();
+						((PickStep) step).getRobotSettings().getWorkPiece().transformPiece(prvWorkPiece.getShape());
 						((PickStep) step).getRobotSettings().getWorkPiece().setWeight(prvWeight);
 						((PickStep) step).getRobotSettings().getWorkPiece().setDimensions(wpDim);
 					} 
@@ -712,6 +729,7 @@ public class ProcessFlow {
 			if (step instanceof PutStep && ((PutStep) step).getDevice() instanceof AbstractStackingDevice && !(((PutStep) step).getDevice() instanceof OutputBin)) {
 				float prvWeight = prvWorkPiece.getWeight();
 				IWorkPieceDimensions dim = prvWorkPiece.getDimensions().clone();
+				((AbstractStackingDevice) ((PutStep) step).getDevice()).getFinishedWorkPiece().transformPiece(prvWorkPiece.getShape());
 				((AbstractStackingDevice) ((PutStep) step).getDevice()).getFinishedWorkPiece().setDimensions(dim);
 				((AbstractStackingDevice) ((PutStep) step).getDevice()).getFinishedWorkPiece().setWeight(prvWeight);
 			}

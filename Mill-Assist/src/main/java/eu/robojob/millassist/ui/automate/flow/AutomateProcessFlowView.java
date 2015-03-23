@@ -2,7 +2,6 @@ package eu.robojob.millassist.ui.automate.flow;
 
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.event.DataChangedEvent;
-import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -76,6 +75,4 @@ public class AutomateProcessFlowView extends ProcessFlowView implements ProcessF
 		// TODO Auto-generated method stub
 		
 	}
-	
-	@Override public void dimensionChanged(DimensionsChangedEvent e) {	}
 }

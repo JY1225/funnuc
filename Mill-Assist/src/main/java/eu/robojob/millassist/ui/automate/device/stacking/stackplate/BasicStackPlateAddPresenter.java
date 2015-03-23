@@ -5,7 +5,6 @@ import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.DataChangedEvent;
-import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -107,8 +106,6 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) { }
 	
-	@Override public void dimensionChanged(DimensionsChangedEvent e) {	}
-
 	@Override
 	public void unregister() {
 		processFlow.removeListener(this);

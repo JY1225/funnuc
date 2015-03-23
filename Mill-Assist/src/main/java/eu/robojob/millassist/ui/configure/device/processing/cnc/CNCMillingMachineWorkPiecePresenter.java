@@ -3,11 +3,11 @@ package eu.robojob.millassist.ui.configure.device.processing.cnc;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.PickAfterWaitStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
-import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -85,7 +85,6 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		} else {
 			changedWidth(value);
 		}
-		pickStep.getProcessFlow().processProcessFlowEvent(new DimensionsChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	private void changedWidth(final float width) {
@@ -100,6 +99,12 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		pickStep.setRelativeTeachedOffset(null);
 		recalculate();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		//FIXME - hier nieuwe recalculate op de stacker doen
+		try {
+			pickStep.getProcessFlow().recalculateStackingPos();
+		} catch (IncorrectWorkPieceDataException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void resetWidth() {
@@ -110,7 +115,6 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 			changedWidth(prevPickDimensions.getDimension(Dimensions.WIDTH));
 			getView().refresh();
 		}
-		pickStep.getProcessFlow().processProcessFlowEvent(new DimensionsChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	private void resetDiameter() {
@@ -123,14 +127,12 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		pickStep.getRobotSettings().getWorkPiece().getDimensions().setDimension(Dimensions.LENGTH, length);
 		pickStep.setRelativeTeachedOffset(null);
 		recalculate();
-		pickStep.getProcessFlow().processProcessFlowEvent(new DimensionsChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 	}
 	
 	public void resetLength() {
 		IWorkPieceDimensions prevPickDimensions = getPreviousPickDimensions();
 		changedLength(prevPickDimensions.getDimension(Dimensions.LENGTH));
-		pickStep.getProcessFlow().processProcessFlowEvent(new DimensionsChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 		getView().refresh();
 	}
 	
@@ -138,7 +140,6 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		pickStep.getRobotSettings().getWorkPiece().getDimensions().setDimension(Dimensions.HEIGHT, height);
 		//pickStep.setRelativeTeachedOffset(null);
 		recalculate();
-		pickStep.getProcessFlow().processProcessFlowEvent(new DimensionsChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
 	}
 	
@@ -227,8 +228,5 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 	@Override
 	public void unregister() {
 		pickStep.getProcessFlow().removeListener(this);
-	}
-	
-	@Override public void dimensionChanged(DimensionsChangedEvent e) {	
 	}
 }

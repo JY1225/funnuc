@@ -8,7 +8,6 @@ import eu.robojob.millassist.external.robot.RobotListener;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.event.DataChangedEvent;
-import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -199,7 +198,5 @@ public class RobotPopUpPresenter extends AbstractPopUpPresenter<RobotPopUpView> 
 		robot.removeListener(this);
 		processFlow.removeListener(this);
 	}
-
-	@Override public void dimensionChanged(DimensionsChangedEvent e) {	}
 	
 }

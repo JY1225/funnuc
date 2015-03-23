@@ -16,7 +16,6 @@ import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.ProcessFlowManager;
 import eu.robojob.millassist.process.event.DataChangedEvent;
-import eu.robojob.millassist.process.event.DimensionsChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
@@ -312,7 +311,5 @@ public class TeachPresenter extends ExecutionPresenter implements ProcessFlowLis
 			getView().requestFocus();
 		}
 	}
-
-	@Override public void dimensionChanged(DimensionsChangedEvent e) {	}
 
 }

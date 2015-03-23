@@ -30,7 +30,6 @@ import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public class ProcessFlowManager {
