@@ -67,14 +67,14 @@ public class RoundPieceStrategyTest {
 	@Test
 	public void getNbCoveredStudsHorizontalTest() {
 		try {
-			Method method = RoundPieceBasicStackerStrategy.class.getDeclaredMethod("getNbStudsCoveredHorizontal", double.class, double.class, double.class);
+			Method method = RoundPieceBasicStackerStrategy.class.getDeclaredMethod("getNbStudsCoveredHorizontal", double.class, double.class, double.class, double.class);
 			method.setAccessible(true);
-			assertEquals(2, (int) method.invoke(null, 46, 25, 60));
-			assertEquals(2, (int) method.invoke(null, 94, 25, 60));
-			assertEquals(2, (int) method.invoke(null, 95, 25, 60));
-			assertEquals(3, (int) method.invoke(null, 96, 25, 60));
-			assertEquals(3, (int) method.invoke(null, 55, 25, 30));
-			assertEquals(2, (int) method.invoke(null, 50, 15, 35));
+			assertEquals(2, (int) method.invoke(null, 46, 25, 60, 0));
+			assertEquals(2, (int) method.invoke(null, 94, 25, 60, 0));
+			assertEquals(2, (int) method.invoke(null, 95, 25, 60, 0));
+			assertEquals(3, (int) method.invoke(null, 96, 25, 60, 0));
+			assertEquals(3, (int) method.invoke(null, 55, 25, 30, 0));
+			assertEquals(2, (int) method.invoke(null, 50, 15, 35, 0));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -83,21 +83,21 @@ public class RoundPieceStrategyTest {
 	@Test 
 	public void getMaxHorizontalTest() {
 		try {
-			Method method = RoundPieceBasicStackerStrategy.class.getDeclaredMethod("calcMaxHorizontalAmount", int.class);
+			Method method = RoundPieceBasicStackerStrategy.class.getDeclaredMethod("calcMaxHorizontalAmount", int.class, int.class, int.class);
 			method.setAccessible(true);
 			Method method2 = ABasicStackPlateStrategy.class.getDeclaredMethod("getMaxHorizontalPieces");
 			method2.setAccessible(true);
 
-			method.invoke(strategy, 5);
+			method.invoke(strategy, 5, 6, 1);
 			assertEquals(5, (int) method2.invoke(strategy));
 			
-			method.invoke(strategy, 13);
+			method.invoke(strategy, 13, 13, 1);
 			assertEquals(2, (int) method2.invoke(strategy));
 			
-			method.invoke(strategy, 14);
+			method.invoke(strategy, 14, 14, 1);
 			assertEquals(1, (int) method2.invoke(strategy));
 			
-			method.invoke(strategy, 4);
+			method.invoke(strategy, 4, 4, 1);
 			assertEquals(6, (int) method2.invoke(strategy));
 			
 		} catch (Exception e) {
