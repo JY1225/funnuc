@@ -3,10 +3,7 @@
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.TextInputControl;
-import javafx.scene.layout.StackPane;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.DevicePickSettings;
@@ -44,7 +41,6 @@ import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.controls.keyboard.FullKeyboardPresenter;
 import eu.robojob.millassist.ui.controls.keyboard.NumericKeyboardPresenter;
-import eu.robojob.millassist.ui.controls.keyboard.NumericKeyboardView;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.ui.general.MainContentPresenter;
 import eu.robojob.millassist.ui.general.MainContentView;
@@ -65,8 +61,6 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	private AbstractMenuPresenter<?> activeMenu;
 	private DeviceMenuFactory deviceMenuFactory;
 	private TransportMenuFactory transportMenuFactory;
-	private boolean keyboardActive;
-	private boolean numericKeyboardActive;
 	private ProcessFlowAdapter processFlowAdapter;
 	private MainPresenter parent;
 	private ProcessMenuPresenter processMenuPresenter;
@@ -89,8 +83,6 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		processMenuPresenter.setParent(this);
 		this.deviceMenuFactory = deviceMenuFactory;
 		this.transportMenuFactory = transportMenuFactory;
-		keyboardActive = false;
-		numericKeyboardActive = false;
 		mode = Mode.NORMAL;
 		view.setTop(processFlowPresenter.getView());
 		this.deviceManager = deviceManager;
@@ -103,12 +95,6 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	
 	public void configureProcess() {
 		view.setBottomLeft(processMenuPresenter.getView());
-		if (keyboardActive) {
-			view.addNodeToTop(keyboardPresenter.getView()); 
-		}
-		if (numericKeyboardActive) {
-			view.addNodeToBottomLeft(numericKeyboardPresenter.getView());
-		}
 		processMenuPresenter.setTextFieldListener(this);
 		processMenuPresenter.openFirst();
 		refreshProgressBar();
@@ -177,20 +163,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 	
 	@Override
 	public synchronized void closeKeyboard() {
-		if (keyboardActive && numericKeyboardActive) {
-			throw new IllegalStateException("Multiple keyboards are active!");
-		}
-		if (keyboardActive) {
-			keyboardActive = false;
-			// we assume the keyboard view is always on top
-			getView().removeNodeFromTop(keyboardPresenter.getView());
-			getView().requestFocus();
-		} else if (numericKeyboardActive) {
-			numericKeyboardActive = false;
-			// we assume the keyboard view is always on top
-			getView().removeNodeFromBottomLeft(numericKeyboardPresenter.getView());
-			getView().requestFocus();
-		}
+		getView().closeKeyboard();
 	}
 	
 	public void setBottomRightView(final AbstractFormView<?> bottomRight) {
@@ -216,26 +189,17 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 
 	private void textFieldFocussed(final FullTextField textField) {
 		keyboardPresenter.setTarget(textField);
-		if (!keyboardActive) {
-			view.showKeyboardPane(keyboardPresenter.getView(), (textField.localToScene(textField.getLayoutBounds().getMinY(), textField.getLayoutBounds().getMaxY()).getY() > 337));
-			keyboardActive = true;
-		}
+		view.showKeyboardPane(keyboardPresenter.getView(), (textField.localToScene(textField.getLayoutBounds().getMinY(), textField.getLayoutBounds().getMaxY()).getY() > 337));
 	}
 	
 	private void textFieldFocussed(final NumericTextField textField) {
 		numericKeyboardPresenter.setTarget(textField);
-		if (!numericKeyboardActive) {
-			view.showKeyboardPane(numericKeyboardPresenter.getView(), false);
-			numericKeyboardActive = true;
-		}
+		view.showKeyboardPane(numericKeyboardPresenter.getView(), false);
 	}
 	
 	private void textFieldFocussed(final IntegerTextField textField) {
 		numericKeyboardPresenter.setTarget(textField);
-		if (!numericKeyboardActive) {
-			view.showKeyboardPane(numericKeyboardPresenter.getView(), false);
-			numericKeyboardActive = true;
-		}
+		view.showKeyboardPane(numericKeyboardPresenter.getView(), false);
 	}
 
 	@Override
