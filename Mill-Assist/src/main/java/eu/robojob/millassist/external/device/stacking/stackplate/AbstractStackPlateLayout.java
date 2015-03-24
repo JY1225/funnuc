@@ -180,11 +180,17 @@ public abstract class AbstractStackPlateLayout{
 			stackingPos++;
 		}
 		if (isAddOperation) {
-			transferLastToFirst(stackingPos-1);
+			transferFirstToLast(stackingPos-1);
 		}
 	}
 	
-	public void transferLastToFirst(int lastPosition) {
+	/**
+	 * In case the last stack of pieces does not hold the maximum, we can try to transfer pieces from the first stack
+	 * to the last one. This ensures that there is always a position free to put finished pieces.
+	 * 
+	 * @param lastPosition
+	 */
+	private void transferFirstToLast(int lastPosition) {
 		//If the final stack of pieces (in case of multiple layers) does not hold the maximum, try to move pieces from the 
 		//first raw stack to the last raw stack (min of first stack is always 1)
 		if (getLayers() > 1) {

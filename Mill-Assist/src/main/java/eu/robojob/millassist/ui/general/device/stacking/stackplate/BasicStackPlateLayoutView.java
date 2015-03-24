@@ -334,7 +334,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 		return marker;
 	}
 	
-	private void configureWorkPieces() {
+	private synchronized void configureWorkPieces() {
 		for (StackPlateStackingPosition stackingPosition : basicStackPlate.getLayout().getStackingPositions()) {
 			if (stackingPosition.getWorkPiece() != null) {
 				IDrawableObject workPieceRepre = stackingPosition.getWorkPiece().getRepresentation();

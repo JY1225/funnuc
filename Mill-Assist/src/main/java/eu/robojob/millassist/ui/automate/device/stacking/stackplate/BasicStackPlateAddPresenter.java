@@ -40,6 +40,12 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 		return false;
 	}
 	
+	/**
+	 * Add a number of raw workpieces to the stacker. 
+	 * 
+	 * @param amount of raw workpieces to add
+	 * @param replaceFinishedPieces indicates whether the finished pieces that are currently located on the stacker can be removed or not (all finished pieces)
+	 */
 	public void addWorkpieces(final int amount, boolean replaceFinishedPieces) {
 		try{	
 			if(amount > getMaxPiecesToAdd(replaceFinishedPieces))
@@ -49,8 +55,8 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 			if(replaceFinishedPieces) {
 				stackPlate.getLayout().removeFinishedFromTable();
 			}
-			//Add new pieces
-			addWorkPieces(amount, (replaceFinishedPieces && processFlow.getMode().equals(ProcessFlow.Mode.AUTO)));
+			//Add new pieces 
+			addWorkPieces(amount, processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
 			processFlow.setFinishedAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
 			processFlow.setTotalAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW) + stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);	
 		} catch(IncorrectWorkPieceDataException e) {
@@ -65,7 +71,13 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 			return getMaxAddAmount();
 	}
 	
-	//Add new workpieces and leave the finished ones on the table
+	/**
+	 * Add workpieces to the stacker.
+	 * 
+	 * @param 	amount to place
+	 * @param 	resetFirst indicates whether the first stacking position needs to be reset (no workpiece) or not
+	 * @throws 	IncorrectWorkPieceDataException
+	 */
 	private void addWorkPieces(int amount, boolean resetFirst) throws IncorrectWorkPieceDataException { 
 		stackPlate.addWorkPieces(amount, resetFirst);	
 		getView().hideNotification();
