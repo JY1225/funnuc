@@ -44,7 +44,6 @@ public class ProcessFlowManager {
 	public ProcessFlowManager(final ProcessFlowMapper processFlowMapper, final DeviceManager deviceManager, final RobotManager robotManager) {
 		this.processFlowMapper = processFlowMapper;
 		this.deviceManager = deviceManager;
-		this.deviceManager.setProcessFlowManager(this);
 		this.robotManager = robotManager;
 		this.robotManager.setProcessFlowManager(this);
 	}

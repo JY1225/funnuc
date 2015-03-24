@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -29,8 +28,6 @@ import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.Approach
 import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
-import eu.robojob.millassist.process.ProcessFlow;
-import eu.robojob.millassist.process.ProcessFlowManager;
 
 public class DeviceManager {
 	
@@ -43,7 +40,6 @@ public class DeviceManager {
 	private Map<String, AbstractStackingDevice> stackingToDevicesByName;
 	private Map<String, GridPlate> gridPlatesByName;
 	private Map<Integer, GridPlate> gridPlatesById;
-	private ProcessFlowManager processFlowManager;
 	
 	private static Logger logger = LogManager.getLogger(DeviceManager.class.getName());
 	private DeviceMapper deviceMapper;
@@ -60,10 +56,6 @@ public class DeviceManager {
 		this.gridPlatesByName = new HashMap<String, GridPlate>();
 		this.gridPlatesById = new HashMap<Integer, GridPlate>();
 		initialize();
-	}
-	
-	public void setProcessFlowManager(final ProcessFlowManager processFlowManager) {
-		this.processFlowManager = processFlowManager;
 	}
 	
 	private void initialize() {
@@ -432,32 +424,25 @@ public class DeviceManager {
 	}
 	
 	public void deleteClamping(final Clamping clamping) throws ClampingInUseException {
-		//Check that the clamping is the active one in processflows
-		for (ProcessFlow flow: processFlowManager.getProcessFlows()) {
-			for (DeviceSettings deviceSettings : flow.getDeviceSettings().values()) {
-				for (Entry<SimpleWorkArea, Clamping> workAreaClamping: deviceSettings.getClampings().entrySet()) {
-					if (workAreaClamping.getValue().getId() == clamping.getId()) {
-						throw new ClampingInUseException(clamping.getName(), flow.getName());
-					} else if (workAreaClamping.getValue().getRelatedClampings().contains(clamping)) {
-						throw new ClampingInUseException(clamping.getName(), flow.getName());
-					}
-				}
-			}
-		}
-		for (AbstractDevice device : devicesById.values()) {
-			for (WorkAreaManager workArea : device.getWorkAreaManagers()) {
-				Set<Clamping> tmpClampings = new HashSet<Clamping>(workArea.getClampings());
-				for (Clamping cl: workArea.getClampings()) {
-					if (cl.getId() == clamping.getId()) {
-						tmpClampings.remove(cl);
-					}
-				}
-				workArea.setClampings(tmpClampings);
-			}
-		}
 		try {
-			deviceMapper.deleteClamping(clamping);
-		} catch (SQLException e) {
+			if (!deviceMapper.hasClamping(clamping.getId())) {
+				for (AbstractDevice device : devicesById.values()) {
+					for (WorkAreaManager workArea : device.getWorkAreaManagers()) {
+						Set<Clamping> tmpClampings = new HashSet<Clamping>(workArea.getClampings());
+						for (Clamping cl: workArea.getClampings()) {
+							if (cl.getId() == clamping.getId()) {
+								tmpClampings.remove(cl);
+							}
+						}
+						workArea.setClampings(tmpClampings);
+					}
+				}
+				deviceMapper.deleteClamping(clamping);
+			}	else {
+				throw new ClampingInUseException(clamping.getName());
+			}
+		}
+		catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();
 		}

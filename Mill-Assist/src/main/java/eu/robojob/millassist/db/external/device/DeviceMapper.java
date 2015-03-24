@@ -1229,5 +1229,24 @@ public class DeviceMapper {
 			ConnectionManager.getConnection().setAutoCommit(true);
 		}
 	}
+	
+	public boolean hasClamping(final int id) throws SQLException {
+		try {
+			PreparedStatement stmt = ConnectionManager.getConnection()
+					.prepareStatement(" SELECT DEVICESETTINGS_WORKAREA_CLAMPING.ID "
+					+ " FROM DEVICESETTINGS_WORKAREA_CLAMPING "
+					+ " JOIN WORKAREA_CLAMPING ON "
+					+ " WORKAREA_CLAMPING.ID = DEVICESETTINGS_WORKAREA_CLAMPING.WORKAREA_CLAMPING "
+					+ " WHERE WORKAREA_CLAMPING.CLAMPING = ? ");
+			stmt.setInt(1, id);
+			ResultSet resultSet = stmt.executeQuery();
+			if (resultSet.next()) {
+				return true;
+			}
+			return false;
+		} catch (SQLException e) {
+			throw e;
+		}
+	}
 
 }
