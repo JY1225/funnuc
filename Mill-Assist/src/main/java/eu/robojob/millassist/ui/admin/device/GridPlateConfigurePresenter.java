@@ -28,7 +28,9 @@ public class GridPlateConfigurePresenter extends AbstractFormPresenter<GridPlate
 	}
 	
 	public void disableEditMode() {
+		getView().reset();
 		this.selectedGridPlate = null;
+		getView().disableEditButton();
 	}
 	
 	// not used
@@ -81,6 +83,7 @@ public class GridPlateConfigurePresenter extends AbstractFormPresenter<GridPlate
 				if(!name.equals("")) {
 					try {
 						deviceManager.saveGridPlate(name, width, height, depth, offsetX, offsetY, holeLength, holeWidth, gridholes);
+						disableEditMode();
 					} catch (IllegalArgumentException e) {
 						RoboSoftAppFactory.getMainPresenter().closeInputString(getView());
 						return;

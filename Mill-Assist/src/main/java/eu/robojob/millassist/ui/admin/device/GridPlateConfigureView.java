@@ -94,6 +94,7 @@ public class GridPlateConfigureView extends AbstractFormView<GridPlateConfigureP
 				refresh();
 				operationBox.disableDeleteButton(false);
 				operationBox.disableSaveAsButton(false);
+				disableEditButton();
 			}
 		});
 		btnEdit.setDisable(true);
@@ -142,7 +143,7 @@ public class GridPlateConfigureView extends AbstractFormView<GridPlateConfigureP
 						gridPlateGeneralInfo.getHoleWidth(),
 						gridHolePane.getGridHoles());
 				refresh();
-				getPresenter().setActiveGridPlateByName(gridPlateGeneralInfo.getName());
+				getPresenter().disableEditMode();
 			}
 		});
 		operationBox.addSaveAsAction(new EventHandler<ActionEvent>() {
@@ -185,6 +186,10 @@ public class GridPlateConfigureView extends AbstractFormView<GridPlateConfigureP
 				getPresenter().showOverlayNode(gridPlate.createShape());
 			}
 		});
+	}
+	
+	void disableEditButton() {
+		btnEdit.setDisable(true);
 	}
 	
 	void reset() {
