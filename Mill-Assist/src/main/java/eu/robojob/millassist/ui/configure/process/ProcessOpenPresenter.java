@@ -82,6 +82,7 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 									activeProcessFlow.loadFromOtherProcessFlow(processFlow);
 									processFlowManager.updateLastOpened(activeProcessFlow);
 									getMenuPresenter().refreshParent();
+									getMenuPresenter().configureProcess();
 								}
 							});
 						}
@@ -98,6 +99,7 @@ public class ProcessOpenPresenter extends AbstractFormPresenter<ProcessOpenView,
 				activeProcessFlow.loadFromOtherProcessFlow(processFlow);
 				processFlowManager.updateLastOpened(activeProcessFlow);
 				getMenuPresenter().refreshParent();
+				getMenuPresenter().configureProcess();
 			}
 		}
 				
