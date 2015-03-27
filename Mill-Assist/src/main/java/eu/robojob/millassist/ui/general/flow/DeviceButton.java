@@ -203,6 +203,11 @@ public class DeviceButton extends VBox implements CNCMachineListener {
 				imagePath.getStyleClass().add(CSS_CLASS_POSTPROCESS);
 				mainButton.getStyleClass().add(CSS_CLASS_BTN_POSTPROCESS);
 				break;
+			case UNLOAD_PALLET:
+			    imagePath.setContent(postStackingPath);
+                imagePath.getStyleClass().add(CSS_CLASS_POSTPROCESS);
+                mainButton.getStyleClass().add(CSS_CLASS_BTN_POSTPROCESS);
+                break;
 			default:
 				throw new IllegalArgumentException("Unknown Device type [" + deviceInfo.getType() + "].");
 		}

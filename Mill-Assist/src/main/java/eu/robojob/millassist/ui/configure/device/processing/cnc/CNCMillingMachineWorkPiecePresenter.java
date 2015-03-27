@@ -91,6 +91,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		pickStep.setRelativeTeachedOffset(null);
 		recalculate();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		pickStep.getProcessFlow().recalculateStackingPos();
 	}
 	
 	private void changedDiameter(final float diameter) {
@@ -122,6 +123,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		pickStep.setRelativeTeachedOffset(null);
 		recalculate();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+		pickStep.getProcessFlow().recalculateStackingPos();
 	}
 	
 	public void resetLength() {

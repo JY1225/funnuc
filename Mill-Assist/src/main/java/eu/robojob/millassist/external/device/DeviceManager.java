@@ -21,6 +21,7 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridHole;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
@@ -72,7 +73,7 @@ public class DeviceManager {
 				} else if (device.getType().equals(EDeviceGroup.POST_PROCESSING)) {
 					postProcessingDevicesByName.put(device.getName(), (AbstractProcessingDevice) device);
 				} else if (device instanceof AbstractStackingDevice) {
-					if (!(device instanceof OutputBin)) {
+					if (!(device instanceof OutputBin) && !(device instanceof UnloadPallet)) {
 						stackingFromDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
 					}
 					stackingToDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
@@ -257,6 +258,16 @@ public class DeviceManager {
 			logger.error(e);
 			e.printStackTrace();
 		}		
+	}
+	
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float width, final float length, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance) {
+	    try {
+            deviceMapper.updateUnloadPallet(unloadPallet, name, userFrameName, width, length, border, xOffset, yOffset, minInterferenceDistance);
+            unloadPallet.loadDeviceSettings(unloadPallet.getDeviceSettings());
+	    } catch (SQLException e) {
+            logger.error(e);
+            e.printStackTrace();
+        }
 	}
 	
 	public void saveGridPlate(final String name, final float width, final float height, final float depth, final float offsetX, final float offsetY, 

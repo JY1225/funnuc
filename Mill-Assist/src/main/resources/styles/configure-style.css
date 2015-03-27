@@ -720,3 +720,15 @@
 	-fx-stroke-linejoin:round;
 	-fx-stroke-opacity:1;
 }
+
+.pallet-bkg {
+    -fx-shape:"m 80.541455,97.355046 0.114276,69.676074 4.660273,5.01548 109.716416,-0.11214 4.51083,-4.50062 0.008,-70.02663 -4.51377,-4.480269 -109.983224,-0.135723 z";
+    -fx-scale-shape:true;
+    -fx-stroke:#fa6208;
+    -fx-stroke-width:1px;
+    -fx-stroke-linecap:butt;
+    -fx-stroke-linejoin:miter;
+    -fx-stroke-opacity:1;
+    -fx-fill:#f3be3e;
+    -fx-fill-rule:evenodd;
+}

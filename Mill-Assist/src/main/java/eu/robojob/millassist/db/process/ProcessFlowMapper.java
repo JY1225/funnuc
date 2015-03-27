@@ -32,6 +32,8 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
@@ -521,7 +523,13 @@ public class ProcessFlowMapper {
 			stmt4.setFloat(2, rSettings.getConfigWidth());
 			stmt4.setBoolean(3, rSettings.isShiftedOrigin());
 			stmt4.executeUpdate();
-		}
+		} else if (deviceSettings instanceof UnloadPalletDeviceSettings) {
+		    UnloadPalletDeviceSettings uSettings = (UnloadPalletDeviceSettings) deviceSettings;
+            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO UNLOADPALLETSETTINGS (ID, FINISHEDWORKPIECE) VALUES (?, ?)");
+            stmt4.setInt(1, uSettings.getId());
+            stmt4.setInt(2, uSettings.getFinishedWorkPiece().getId());
+            stmt4.executeUpdate();
+        }
 	}
 	
 	private void saveRobotSettings(final int processFlowId, final AbstractRobot robot, final RobotSettings robotSettings) throws SQLException {
@@ -651,6 +659,9 @@ public class ProcessFlowMapper {
 			} else if (device instanceof ReversalUnit) {
 				ReversalUnitSettings reversalSettings = getReversalUnitSettings(id, clampings);
 				settings.put(device, reversalSettings);
+			} else if (device instanceof UnloadPallet) {
+			    UnloadPalletDeviceSettings unloadPalletSettings = getUnloadPalletSettings(processId, id, (UnloadPallet)device);
+			    settings.put(device, unloadPalletSettings);
 			} else {
 				DeviceSettings deviceSettings = new DeviceSettings(clampings);
 				deviceSettings.setId(id);
@@ -782,6 +793,19 @@ public class ProcessFlowMapper {
 			basicStackPlateSettings.setClampings(clampings);
 		}
 		return basicStackPlateSettings;
+	}
+	
+	private UnloadPalletDeviceSettings getUnloadPalletSettings(final int processFlowId, final int deviceSettingsId, final UnloadPallet unloadPallet) throws SQLException {
+	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM UNLOADPALLETSETTINGS WHERE ID = ?");
+        stmt.setInt(1, deviceSettingsId);
+        ResultSet results = stmt.executeQuery();
+        UnloadPalletDeviceSettings unloadPalletSettings = null;
+        if (results.next()) {
+            int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
+            WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
+            unloadPalletSettings = new UnloadPalletDeviceSettings(finishedWorkPiece);
+        }
+        return unloadPalletSettings;
 	}
 	
 	public List<AbstractProcessStep> getProcessSteps(final int processId) throws SQLException {
