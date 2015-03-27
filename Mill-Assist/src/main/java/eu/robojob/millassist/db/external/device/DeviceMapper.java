@@ -40,6 +40,8 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLayout;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlateLayout;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridHole;
@@ -104,11 +106,69 @@ public class DeviceMapper {
 					ReversalUnit reversalUnit = getReversalUnit(id, name, zones);
 					devices.add(reversalUnit);
 					break;
+				case DEVICE_TYPE_PALLET:
+				    UnloadPallet pallet = getPallet(id, name, zones);
+				    devices.add(pallet);
+				    break;
 				default:
 					throw new IllegalStateException("Unknown device type: [" + type + "].");
 			}
 		}
 		return devices;
+	}
+	
+	private UnloadPallet getPallet(final int id, final String name, final Set<Zone> zones) throws SQLException {
+	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PALLET WHERE ID = ?");
+        stmt.setInt(1, id);
+        ResultSet results = stmt.executeQuery();
+        UnloadPallet pallet = null;
+        if(results.next()) {
+            float palletWidth=results.getFloat("WIDTH");
+            float palletLength=results.getFloat("LENGTH");
+            float palletFreeBorder=results.getFloat("BORDER");
+            float minXGap=results.getFloat("OFFSET_X");
+            float minYGap=results.getFloat("OFFSET_Y");
+            float minInterferenceDistance = results.getFloat("MIN_INTERFERENCE");
+            PalletLayout layout = new PalletLayout(palletWidth, palletLength, palletFreeBorder, minXGap, minYGap, minInterferenceDistance);
+            pallet = new UnloadPallet(name, zones, layout);
+            pallet.setId(id);
+        }
+        return pallet;
+	}
+	
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float width, final float length, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance) throws SQLException {
+	    
+	    ConnectionManager.getConnection().setAutoCommit(false);
+	    if ((!unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
+            UserFrame newUserFrame = getUserFrameByName(userFrameName);
+            unloadPallet.getWorkAreaManagers().get(0).setUserFrame(newUserFrame);
+            updateWorkArea(unloadPallet.getWorkAreaManagers().get(0));
+        }
+	    
+	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
+        stmt.setString(1, name);
+        stmt.setInt(2, unloadPallet.getId());
+        stmt.execute();
+        
+        PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE PALLET "+
+                "SET WIDTH = ?, LENGTH = ?, BORDER = ?, OFFSET_X = ?, OFFSET_Y = ?, MIN_INTERFERENCE = ? WHERE ID = ?");
+        stmt2.setFloat(1, width);
+        stmt2.setFloat(2, length);
+        stmt2.setFloat(3, border);
+        stmt2.setFloat(4, xOffset);
+        stmt2.setFloat(5, yOffset);
+        stmt2.setFloat(6, minInterferenceDistance);
+        stmt2.setInt(7, unloadPallet.getId());
+        stmt2.execute();
+        unloadPallet.getLayout().setPalletWidth(width);
+        unloadPallet.getLayout().setPalletLength(length);
+        unloadPallet.getLayout().setPalletFreeBorder(border);
+        unloadPallet.getLayout().setMinXGap(xOffset);
+        unloadPallet.getLayout().setMinYGap(yOffset);
+        unloadPallet.getLayout().setMinInterferenceDistance(minInterferenceDistance);
+        unloadPallet.setName(name);
+        ConnectionManager.getConnection().commit();
+        ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
 	private OutputBin getOutputBin(final int id, final String name, final Set<Zone> zones) throws SQLException {

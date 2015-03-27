@@ -24,6 +24,8 @@ import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
@@ -378,10 +380,12 @@ public class ProcessFlow {
 	
 	public void recalculateStackingPos() {
 		AbstractStackPlate stackplate = null;
+		UnloadPallet unloadPallet = null;
 		for (AbstractDevice device: getDevices()) {
 			if (device instanceof AbstractStackPlate) {
 				stackplate = (AbstractStackPlate) device;
-				break;
+			} else if (device instanceof UnloadPallet) {
+			    unloadPallet = (UnloadPallet) device;
 			}
 		}
 		if (stackplate != null) {
@@ -393,6 +397,13 @@ public class ProcessFlow {
 				stackplate.notifyLayoutChanged();
 			} catch (IncorrectWorkPieceDataException e) {
 			}
+		}
+		if (unloadPallet != null) {
+		    UnloadPalletDeviceSettings devSettings = (UnloadPalletDeviceSettings) getDeviceSettings(unloadPallet);
+		    setFinishedAmount(0);
+		    unloadPallet.getLayout().calculateLayoutForWorkPiece(devSettings.getFinishedWorkPiece());
+		    unloadPallet.getLayout().initFinishedWorkPieces(devSettings.getFinishedWorkPiece());
+		    unloadPallet.notifyLayoutChanged();
 		}
 	}
 	

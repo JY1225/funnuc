@@ -26,6 +26,8 @@ import eu.robojob.millassist.ui.admin.device.PrageDeviceConfigurePresenter;
 import eu.robojob.millassist.ui.admin.device.PrageDeviceConfigureView;
 import eu.robojob.millassist.ui.admin.device.ReversalUnitConfigurePresenter;
 import eu.robojob.millassist.ui.admin.device.ReversalUnitConfigureView;
+import eu.robojob.millassist.ui.admin.device.UnloadPalletConfigurePresenter;
+import eu.robojob.millassist.ui.admin.device.UnloadPalletConfigureView;
 import eu.robojob.millassist.ui.admin.device.UserFramesConfigurePresenter;
 import eu.robojob.millassist.ui.admin.device.UserFramesConfigureView;
 import eu.robojob.millassist.ui.admin.device.cnc.CNCMachineConfigurePresenter;
@@ -111,6 +113,7 @@ public final class RoboSoftAppFactory {
 	private static DeviceAdminPresenter deviceAdminPresenter;
 	private static UserFramesConfigurePresenter userFramesConfigurePresenter;
 	private static BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
+	private static UnloadPalletConfigurePresenter unloadPalletConfigurePresenter;
 	private static CNCMachineConfigurePresenter cncMachineConfigurePresenter;
 	private static CNCMachineClampingsPresenter cncMachineClampingsPresenter;
 	private static PrageDeviceConfigurePresenter prageDeviceConfigurePresenter;
@@ -383,7 +386,7 @@ public final class RoboSoftAppFactory {
 		if (deviceAdminPresenter == null) {
 			SubMenuAdminView view = new SubMenuAdminView(); 
 			DeviceMenuView menuView = new DeviceMenuView();
-			DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(menuView, getUserFramesConfigurePresenter(), getBasicStackPlateConfigurePresenter(),
+			DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(menuView, getUserFramesConfigurePresenter(), getBasicStackPlateConfigurePresenter(), getUnloadPalletConfigurePresenter(),
 					getCNCMachineConfigurePresenter(), getCNCMachineClampingsPresenter(), getPrageDeviceConfigurePresenter(),
 					getOutputBinConfigurePresenter(), getGridPlateConfigurePresenter(), getReversalUnitConfigurePresenter(), deviceManager);
 			deviceAdminPresenter = new DeviceAdminPresenter(view, deviceMenuPresenter);
@@ -418,6 +421,14 @@ public final class RoboSoftAppFactory {
 		}
 		return basicStackPlateConfigurePresenter;
 	}
+	
+	private static UnloadPalletConfigurePresenter getUnloadPalletConfigurePresenter() {
+        if (unloadPalletConfigurePresenter == null) {
+            UnloadPalletConfigureView view = new UnloadPalletConfigureView();
+            unloadPalletConfigurePresenter = new UnloadPalletConfigurePresenter(view, deviceManager);
+        }
+        return unloadPalletConfigurePresenter;
+    }
 	
 	private static CNCMachineConfigurePresenter getCNCMachineConfigurePresenter() {
 		if (cncMachineConfigurePresenter == null) {
