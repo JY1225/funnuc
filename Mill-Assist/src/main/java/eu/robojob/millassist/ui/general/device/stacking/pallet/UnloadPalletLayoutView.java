@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
@@ -16,21 +15,20 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
-import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
-import eu.robojob.millassist.ui.configure.device.stacking.pallet.UnloadPalletLayoutPresenter;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.ui.shape.IDrawableObject;
-import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 
-public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> extends AbstractFormView<UnloadPalletLayoutPresenter> {
+public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> extends AbstractFormView<T> {
 
     private UnloadPallet unloadPallet;
     private Label nbOfPieces;
@@ -42,6 +40,9 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
     private GridPane controls;
     private Rectangle unloadPalletRect;
     
+    private Label typeLabel;
+    private HBox typeBox;
+    
     private Label orientationLabel;
     private HBox orientationBox;
     
@@ -51,20 +52,27 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
     private Button shiftedButton;
     private Button notShiftedButton;
     
+    private boolean controlsHidden = false;
+    
     private float width;
     
     private static final String BACKGROUND_PALLET= "m 80.541455,97.355046 0.114276,69.676074 4.660273,5.01548 109.716416,-0.11214 4.51083,-4.50062 0.008,-70.02663 -4.51377,-4.480269 -109.983224,-0.135723 z";
     private static final String PALLET_BKG_CSS = "pallet-bkg";
     private static final String CSS_CLASS_UNLOAD_PALLET = "pallet-bkg";
+    private static final String CSS_CLASS_AMOUNT = "amount-text";
     private static final String LAYOUT_TYPE = "UnloadPalletLayoutView.LayoutType";
     private static final String HORIZONTAL = "UnloadPalletLayoutView.Horizontal";
     private static final String VERTICAL = "UnloadPalletLayoutView.Vertical";
+    private static final String ORIENTATION = "UnloadPalletLayoutView.Orientation";
     private static final String OPTIMAL = "UnloadPalletLayoutView.Optimal";
     private static final String SHIFTED = "UnloadPalletLayoutView.Shifted";
     private static final String NOT_SHIFTED = "UnloadPalletLayoutView.NotShifted";
     private static final double BTN_WIDTH = 80;
     private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void build() {
         nbOfPieces = new Label("Number of pieces:");
@@ -91,8 +99,9 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                 
                 group = new Group();
                 group.setCache(true);
-                
-                buildShapeBox();
+                if(!controlsHidden) {
+                    buildShapeBox();
+                }
                 
                 SVGPath palletBkg = new SVGPath();
                 palletBkg.setContent(BACKGROUND_PALLET);
@@ -102,44 +111,62 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                 unloadPalletRect.getStyleClass().add(CSS_CLASS_UNLOAD_PALLET);
                 group.getChildren().add(unloadPalletRect);
                 configureWorkPieces();
-                Scale s = new Scale(600 / group.getBoundsInParent().getWidth(), 350 / group.getBoundsInParent().getHeight());
+                Scale s = new Scale(450 / group.getBoundsInParent().getWidth(), 300 / group.getBoundsInParent().getHeight());
                 group.getTransforms().add(s);
                 
                 root = new Pane();
                 root.setPrefSize(600, 350);
                 root.getChildren().clear();
-                root.getChildren().add(group);      
+                root.getChildren().add(group);
                 
                 group.setLayoutX(0 - group.getBoundsInParent().getMinX());
                 group.setLayoutY(0 - group.getBoundsInParent().getMinY());
+                nbOfPiecesValue.setText(unloadPallet.getLayout().getStackingPositions().size()+"");
                 
+                int row = 0;
+                int column = 0;
+                if(!controlsHidden) {
+                    controls.add(typeLabel, column, row);
+                    controls.add(typeBox, column+1, row);
+                    row++;
+                    if(unloadPallet.getFinishedWorkPiece().getShape() == WorkPieceShape.CYLINDRICAL) {
+                        controls.add(orientationLabel, column, row);
+                        controls.add(orientationBox, column+1, row);
+                        row++;
+                    }
+                    controls.add(nbOfPieces,column, row);
+                    controls.add(nbOfPiecesValue,column+1, row);
+                    row++;
+                    controls.setVgap(10);
+                    controls.setHgap(10);
+                    contentBox.getChildren().add(controls);
+                }
                 
-                controls.add(orientationLabel, 0, 0);
-                controls.add(orientationBox, 1, 0);
-                controls.add(nbOfPieces,0, 1);
-                controls.add(nbOfPiecesValue,1, 1);
-                controls.setVgap(10);
-                controls.setHgap(10);
-                contentBox.getChildren().addAll(controls, root);
+                contentBox.getChildren().add(root);
                 contentBox.setSpacing(20);
                 getContents().add(contentBox, 0, 0);
-                setLayoutTypeButtonValues();
+                if(!controlsHidden) {
+                    setLayoutTypeButtonValues();
+                }
             }
         });
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setTextFieldListener(TextInputControlListener listener) {
-        // TODO Auto-generated method stub
-        
+        //No textfields on this screen
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void refresh() {
-        unloadPallet.getLayout().calculateLayoutForWorkPiece(unloadPallet.getFinishedWorkPiece());
-        unloadPallet.getLayout().initFinishedWorkPieces(unloadPallet.getFinishedWorkPiece());
-        nbOfPiecesValue.setText(unloadPallet.getLayout().getStackingPositions().size()+"");
-        
+        //The whole screen is refreshed!
+        unloadPallet.notifyLayoutChanged();
     }
 
     public UnloadPallet getUnloadPallet() {
@@ -152,8 +179,11 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
         this.width = unloadPallet.getLayout().getPalletWidth();
     }
     
+    /**
+     * Draw the work pieces on the unload pallet.
+     */
     private synchronized void configureWorkPieces() {
-        for (StackingPosition stackingPosition : unloadPallet.getLayout().getStackingPositions()) {
+        for (PalletStackingPosition stackingPosition : unloadPallet.getLayout().getStackingPositions()) {
             if (stackingPosition.getWorkPiece() != null) {
                 IDrawableObject workPieceRepre = stackingPosition.getWorkPiece().getRepresentation();
                 Shape workPiece = workPieceRepre.createShape();
@@ -168,68 +198,111 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                 if(unloadPallet.getLayout().isRotate90()) {
                     group2.setRotate(90*-1);
                 }
+                Text txtAmount = new Text(stackingPosition.getAmount() + "");
+                txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);
+                txtAmount.setX(stackingPosition.getPosition().getX() - txtAmount.getBoundsInParent().getWidth()/2);
+                txtAmount.setY(width - stackingPosition.getPosition().getY() + txtAmount.getBoundsInParent().getHeight()/2);
+                group.getChildren().add(txtAmount);
             }
         }
     }
     
+    /**
+     * Create the buttons to determine the layout type of the unload pallet.
+     */
     private void buildShapeBox() {
-        orientationLabel = new Label(Translator.getTranslation(LAYOUT_TYPE));
-        orientationBox = new HBox();
-        orientationBox.setAlignment(Pos.CENTER_LEFT);
-        GridPane.setMargin(orientationBox, new Insets(5, 0, 0, 0));
+        typeLabel = new Label(Translator.getTranslation(LAYOUT_TYPE));
+        typeBox = new HBox();
+        typeBox.setAlignment(Pos.CENTER_LEFT);
+        GridPane.setMargin(typeBox, new Insets(5, 0, 0, 0));
         optimalButton = createButton(Translator.getTranslation(OPTIMAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent event) {
-                unloadPallet.getLayout().setLayoutType(PalletLayoutType.OPTIMAL);;
-                getPresenter().layoutChanged();
+                unloadPallet.getLayout().setLayoutType(PalletLayoutType.OPTIMAL);
+                unloadPallet.recalculateLayout();
+                unloadPallet.notifyLayoutChanged();
             }
         });
         optimalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-        orientationBox.getChildren().add(optimalButton);
+        typeBox.getChildren().add(optimalButton);
         if(unloadPallet.getFinishedWorkPiece().getShape() == WorkPieceShape.CUBIC) {
             horizontalButton = createButton(Translator.getTranslation(HORIZONTAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent event) {
-                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.HORIZONTAL);
-                    getPresenter().layoutChanged();
+                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.NOT_SHIFTED_HORIZONTAL);
+                    unloadPallet.recalculateLayout();
+                    unloadPallet.notifyLayoutChanged();
                 }
             });
             horizontalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+            typeBox.getChildren().add(horizontalButton);
+            verticalButton = createButton(Translator.getTranslation(VERTICAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(final ActionEvent event) {
+                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.NOT_SHIFTED_VERTICAL);
+                    unloadPallet.recalculateLayout();
+                    unloadPallet.notifyLayoutChanged();
+                }
+            });
+            typeBox.getChildren().add(verticalButton);
+        }
+        if(unloadPallet.getFinishedWorkPiece().getShape() == WorkPieceShape.CYLINDRICAL) {
+            orientationLabel = new Label(Translator.getTranslation(ORIENTATION));
+            orientationBox = new HBox();
+            shiftedButton= createButton(Translator.getTranslation(SHIFTED), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(final ActionEvent event) {
+                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.SHIFTED_HORIZONTAL);
+                    unloadPallet.recalculateLayout();
+                    unloadPallet.notifyLayoutChanged();
+                }
+            });
+            shiftedButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
+            typeBox.getChildren().add(shiftedButton);
+            notShiftedButton = createButton(Translator.getTranslation(NOT_SHIFTED), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(final ActionEvent event) {
+                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.NOT_SHIFTED_HORIZONTAL);
+                    unloadPallet.recalculateLayout();
+                    unloadPallet.notifyLayoutChanged();
+                }
+            });
+            typeBox.getChildren().add(notShiftedButton);
+            
+            horizontalButton = createButton(Translator.getTranslation(HORIZONTAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(final ActionEvent event) {
+                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.SHIFTED_HORIZONTAL);
+                    unloadPallet.recalculateLayout();
+                    unloadPallet.notifyLayoutChanged();
+                }
+            });
+            horizontalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
             orientationBox.getChildren().add(horizontalButton);
             verticalButton = createButton(Translator.getTranslation(VERTICAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent event) {
-                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.VERTICAL);
-                    getPresenter().layoutChanged();
+                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.SHIFTED_VERTICAL);
+                    unloadPallet.recalculateLayout();
+                    unloadPallet.notifyLayoutChanged();
                 }
             });
+            horizontalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
             orientationBox.getChildren().add(verticalButton);
-        }
-        if(unloadPallet.getFinishedWorkPiece().getShape() == WorkPieceShape.CYLINDRICAL) {
-            shiftedButton= createButton(Translator.getTranslation(SHIFTED), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(final ActionEvent event) {
-                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.SHIFTED);
-                    getPresenter().layoutChanged();
-                }
-            });
-            shiftedButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
-            orientationBox.getChildren().add(shiftedButton);
-            notShiftedButton = createButton(Translator.getTranslation(NOT_SHIFTED), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(final ActionEvent event) {
-                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.VERTICAL);
-                    getPresenter().layoutChanged();
-                }
-            });
-            orientationBox.getChildren().add(notShiftedButton);
+            verticalButton.setMaxWidth(2 * BTN_WIDTH);
+            typeBox.setAlignment(Pos.CENTER);
         }
         
-        orientationBox.setMaxWidth(3 * BTN_WIDTH);
-        orientationBox.setAlignment(Pos.CENTER);
+        typeBox.setMaxWidth(3 * BTN_WIDTH);
+        typeBox.setAlignment(Pos.CENTER);
     }
     
+    /**
+     * Set the values of the buttons indicating the layout type of the unload pallet.
+     */
     private void setLayoutTypeButtonValues() {
+        verticalButton.setDisable(false);
+        horizontalButton.setDisable(false);
         if(unloadPallet.getFinishedWorkPiece().getShape() == WorkPieceShape.CUBIC) {
             optimalButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
             horizontalButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
@@ -238,11 +311,11 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                 if(!optimalButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
                     optimalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
                 }
-            } else if(unloadPallet.getLayout().getLayoutType() == PalletLayoutType.HORIZONTAL) {
+            } else if(unloadPallet.getLayout().getLayoutType() == PalletLayoutType.NOT_SHIFTED_HORIZONTAL) {
                 if(!horizontalButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
                     horizontalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
                 }
-            } else if(unloadPallet.getLayout().getLayoutType() == PalletLayoutType.VERTICAL){
+            } else if(unloadPallet.getLayout().getLayoutType() == PalletLayoutType.NOT_SHIFTED_VERTICAL){
                 if(!verticalButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
                     verticalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
                 }
@@ -255,16 +328,34 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                 if(!optimalButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
                     optimalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
                 }
-            } else if(unloadPallet.getLayout().getLayoutType() == PalletLayoutType.SHIFTED) {
+                verticalButton.setDisable(true);
+                horizontalButton.setDisable(true);
+            } else if(unloadPallet.getLayout().getLayoutType() == PalletLayoutType.SHIFTED_HORIZONTAL) {
                 if(!shiftedButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
                     shiftedButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
                 }
-            } else if(unloadPallet.getLayout().getLayoutType() == PalletLayoutType.VERTICAL || unloadPallet.getLayout().getLayoutType() == PalletLayoutType.HORIZONTAL){
+                if(!horizontalButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
+                    horizontalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                }
+            } else if(unloadPallet.getLayout().getLayoutType() == PalletLayoutType.SHIFTED_VERTICAL) {
+                if(!shiftedButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
+                    shiftedButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                }
+                if(!verticalButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
+                    verticalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                }
+            } else if(unloadPallet.getLayout().getLayoutType() == PalletLayoutType.NOT_SHIFTED_VERTICAL || unloadPallet.getLayout().getLayoutType() == PalletLayoutType.NOT_SHIFTED_HORIZONTAL){
                 if(!notShiftedButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
                     notShiftedButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
                 }
+                verticalButton.setDisable(true);
+                horizontalButton.setDisable(true);
             }
         }
+    }
+    
+    public void setControlsHidden(final boolean controlsHidden) {
+        this.controlsHidden = controlsHidden;
     }
     
 

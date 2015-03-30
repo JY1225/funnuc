@@ -28,43 +28,67 @@ public class UnloadPalletMenuPresenter extends AbstractStackingDeviceMenuPresent
         }
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void configureDevice() {
         getView().setConfigureDeviceActive();
         getParent().setBottomRightView(basicStackPlateConfigurePresenter.getView());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void configureWorkPiece() {
         //No WP configuration 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void configurePick() {
         //No pick
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void configurePut() {
         getView().setConfigurePutActive();
         getParent().setBottomRightView(configurePutPresenter.getView());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void showLayout() {
         getView().setViewLayoutActive();
-        getParent().setBottomRightViewNoRefresh(unloadPalletLayoutPresenter.getView());
+        getParent().setBottomRightView(unloadPalletLayoutPresenter.getView());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isConfigured() {
         return basicStackPlateConfigurePresenter.isConfigured() && unloadPalletLayoutPresenter.isConfigured();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setBlocked(boolean blocked) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setTextFieldListener(TextInputControlListener listener) {
         basicStackPlateConfigurePresenter.setTextFieldListener(listener);
@@ -74,6 +98,9 @@ public class UnloadPalletMenuPresenter extends AbstractStackingDeviceMenuPresent
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void unregisterListeners() {
        unloadPalletLayoutPresenter.unregister();

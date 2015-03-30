@@ -5,39 +5,85 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.strategy.AbstractPalletUnloadStrategy;
 import eu.robojob.millassist.external.device.stacking.pallet.strategy.CubicPiecePalletUnloadStrategy;
 import eu.robojob.millassist.external.device.stacking.pallet.strategy.RoundPiecePalletUnloadStrategy;
+import eu.robojob.millassist.external.device.stacking.stackplate.StackPlateStackingPosition;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 import eu.robojob.millassist.workpiece.RoundDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.Type;
 import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 
 public class PalletLayout {
-    
+    private static Logger logger = LogManager.getLogger(PalletLayout.class.getName());
+    /**
+     * Enumeration determining the type of the pallet layout.
+     */
     public enum PalletLayoutType {
-        SHIFTED, HORIZONTAL, VERTICAL, OPTIMAL
+        SHIFTED_HORIZONTAL, SHIFTED_VERTICAL, OPTIMAL, NOT_SHIFTED_HORIZONTAL, NOT_SHIFTED_VERTICAL
     }
     
-    private List<StackingPosition> stackingPositions = new ArrayList<StackingPosition>();
+    /**
+     * List of positions on which the work pieces can be stacked on this pallet layout.
+     */
+    private List<PalletStackingPosition> stackingPositions = new ArrayList<PalletStackingPosition>();
     
+    /**
+     * Width of this pallet layout (Y-axis).
+     */
     private float palletWidth;
+    /**
+     * Length of this pallet layout (X-axis).
+     */
     private float palletLength;
+    /**
+     * Minimal distance between the work pieces and the side of this pallet layout.
+     */
     private float palletFreeBorder;
+    /**
+     * Minimal distance between two work pieces on the X-axis.
+     */
     private float minXGap;
+    /**
+     * Minimal distance between two work pieces on the Y-axis.
+     */
     private float minYGap;
+    /**
+     * Minimal distance between two work pieces in all directions.
+     */
     private float minInterferenceDistance;
+    /**
+     * Type of the layout.
+     */
     private PalletLayoutType layoutType;
-    
+    /**
+     * Indicate if the work piece must be rotated 90° or not.
+     */
     private boolean rotate90 = false;
-    
+    /**
+     * Number of pieces in the horizontal direction.
+     */
     private int numberOfHorizontalPieces;
+    /**
+     * Number of pieces in the vertical direction.
+     */
     private int numberOfVerticalPieces;
-    
+    /**
+     * Reference to the current work piece that will be stacked in this layout.
+     */
     private WorkPiece currentWorkPiece;
+    /**
+     * Map containing the strategies to determine the positions in this layout.
+     */
     private Map<WorkPieceShape, AbstractPalletUnloadStrategy<? extends IWorkPieceDimensions>> strategyMap;
+    
+    private int layers;
     
     public PalletLayout(final float palletWidth, final float palletLength, final float palletFreeBorder, final float minXGap, final float minYGap, final float minInterferenceDistance) {
         this.palletWidth = palletWidth;
@@ -50,9 +96,15 @@ public class PalletLayout {
         this.strategyMap = new HashMap<WorkPieceShape, AbstractPalletUnloadStrategy<? extends IWorkPieceDimensions>>();
         strategyMap.put(WorkPieceShape.CYLINDRICAL, new RoundPiecePalletUnloadStrategy(this));
         strategyMap.put(WorkPieceShape.CUBIC, new CubicPiecePalletUnloadStrategy(this));
+        this.layers = 1;
     }
     
-    public List<StackingPosition> calculateLayoutForWorkPiece(WorkPiece workPiece) {
+    /**
+     * Calculates the positions for this pallet layout for the given work piece.
+     * @param workPiece That will be stacked on this pallet layout
+     * @return List of positions where the work pieces can be stacked on this pallet layout
+     */
+    public List<PalletStackingPosition> calculateLayoutForWorkPiece(WorkPiece workPiece) {
         this.currentWorkPiece = workPiece;
         stackingPositions.clear();
         if (currentWorkPiece.getShape().equals(WorkPieceShape.CYLINDRICAL)) {
@@ -66,13 +118,17 @@ public class PalletLayout {
         return this.stackingPositions;
     }
     
+    /**
+     * Sets a work piece for each position on this pallet layout.
+     * @param finishedWorkPiece The work piece that will be set for each position
+     */
     public void initFinishedWorkPieces(WorkPiece finishedWorkPiece) {
         for(StackingPosition position: this.stackingPositions) {
             position.setWorkPiece(finishedWorkPiece);
         }
     }
 
-    public List<StackingPosition> getStackingPositions() {
+    public List<PalletStackingPosition> getStackingPositions() {
         return stackingPositions;
     }
 
@@ -116,7 +172,7 @@ public class PalletLayout {
         this.minYGap = minYGap;
     }
 
-    public void setStackingPositions(List<StackingPosition> stackingPositions) {
+    public void setStackingPositions(List<PalletStackingPosition> stackingPositions) {
         this.stackingPositions = stackingPositions;
     }
 
@@ -160,12 +216,159 @@ public class PalletLayout {
         this.minInterferenceDistance = minInterferenceDistance;
     }
 
+    /**
+     * The width of the pallet that can be used to put work pieces on.
+     * @return Width of the pallet - 2 * Minimal distance between the work pieces and the side of this pallet layout (palletFreeBorder)
+     */
     public float getUsableWidth() {
         return this.palletWidth - 2* this.palletFreeBorder;
     }
     
+    /**
+     * The length of the pallet that can be used to put work pieces on.
+     * @return Length of the pallet - 2 * Minimal distance between the work pieces and the side of this pallet layout (palletFreeBorder)
+     */
     public float getUsableLength() {
         return this.palletLength - 2* this.palletFreeBorder;
+    }
+    
+    public void placeFinishedWorkPieces(final WorkPiece finishedWorkPiece, final int amount, boolean resetFirst, boolean isAddOperation) {
+        logger.debug("Adding finished workpieces: [" + amount + "].");
+        int placedAmount = 0;
+        int stackingPos = 0;
+        //For any number of layers, we only put 1 workPiece on the first position. This ensures that the robot
+        //places finished products always at the same position
+        if(amount > 0 && placeFirstPiece(finishedWorkPiece, resetFirst)) {
+            placedAmount++;
+        }
+        stackingPos++;
+        PalletStackingPosition stPos = getStackingPositions().get(0);
+        while (placedAmount < amount && stackingPos < getStackingPositions().size()) {
+            stPos = getStackingPositions().get(stackingPos);
+            while(placedAmount < amount && addOneWorkPiece(finishedWorkPiece, stPos,getLayers(), false) ) {
+                placedAmount++;
+            }
+            stackingPos++;
+        }
+        if (isAddOperation) {
+            transferFirstToLast(stackingPos-1);
+        }
+    }
+    
+    private void transferFirstToLast(int lastPosition) {
+        //If the final stack of pieces (in case of multiple layers) does not hold the maximum, try to move pieces from the 
+        //first raw stack to the last raw stack (min of first stack is always 1)
+        if (getLayers() > 1) {
+            PalletStackingPosition lastStackingPosition = getStackingPositions().get(lastPosition);
+            PalletStackingPosition firstStackingPosition = null;
+            if (lastStackingPosition.getAmount() < getLayers()) {
+                int amountToTransfer1 = getLayers() - lastStackingPosition.getAmount();
+                int amountToTransfer2 = 0;
+                for (PalletStackingPosition stPlatePosition: getStackingPositions()) {
+                    //Find the first stacking position that has raw workpieces
+                    if (stPlatePosition.getWorkPiece() != null && stPlatePosition.getWorkPiece().getType().equals(Type.RAW)) {
+                        firstStackingPosition = stPlatePosition;
+                        amountToTransfer2 = stPlatePosition.getAmount() - 1;
+                        break;
+                    }
+                }
+                int amountToTransfer = Math.min(amountToTransfer1, amountToTransfer2);
+                if (firstStackingPosition != null && !firstStackingPosition.equals(getStackingPositions().get(0))) {
+                    lastStackingPosition.setAmount(lastStackingPosition.getAmount() + amountToTransfer);
+                    firstStackingPosition.setAmount(lastStackingPosition.getAmount() - amountToTransfer);
+                }
+            }
+        } 
+    }
+    
+    private boolean placeFirstPiece(final WorkPiece workPiece, boolean isEmptyPiece) {
+        if(isEmptyPiece) {
+            resetWorkPieceAt(0);
+            return false;
+        } else {
+            return addOneWorkPiece(workPiece, getStackingPositions().get(0),1, false);
+        }
+    }
+    
+    public void resetWorkPieceAt(int positionIndex) {
+        getStackingPositions().get(positionIndex).setWorkPiece(null);
+        getStackingPositions().get(positionIndex).setAmount(0); 
+    }
+    
+    private boolean addOneWorkPiece(final WorkPiece workPiece, PalletStackingPosition position, int maxNbOfPieces, boolean overwrite) {
+        if(position.hasWorkPiece()) {
+            if(position.getWorkPiece().getType().equals(workPiece.getType())) {
+                if(position.getAmount() < maxNbOfPieces) {
+                    position.incrementAmount();
+                    return true;
+                }
+                return false;
+            }
+            if(overwrite) {
+                position.setWorkPiece(workPiece);
+                position.setAmount(1);
+                return true;
+            }
+            return false;
+        }
+        else {
+            position.setWorkPiece(workPiece);
+            position.setAmount(1);
+            return true;
+        }
+    }
+
+    public int getLayers() {
+        return layers;
+    }
+
+    public void setLayers(int layers) {
+        this.layers = layers;
+    }
+    
+    public int getMaxPiecesPossibleAmount() {
+        return  getLayers() * stackingPositions.size();
+    }
+    
+    public int getWorkPieceAmount(WorkPiece.Type type) {
+        if(type == WorkPiece.Type.FINISHED) {
+            int result = 0;
+            for(PalletStackingPosition position: getStackingPositions()) {
+                result += position.getAmount();
+            }
+            return result;
+        }
+        return 0;
+    }
+    
+    public void removeFinishedWorkPieces(final int amount) {
+        logger.debug("Removing finished workpieces: [" + amount + "].");
+        int removedAmount = 0;
+        int stackingPos = 0;
+        
+        PalletStackingPosition stPos = getStackingPositions().get(0);
+        while (removedAmount < amount && stackingPos < getStackingPositions().size()) {
+            stPos = getStackingPositions().get(stackingPos);
+            while(removedAmount < amount && removeOneWorkPiece(stPos)) {
+                removedAmount++;
+            }
+            stackingPos++;
+        }
+    }
+    
+    private boolean removeOneWorkPiece(PalletStackingPosition position) {
+        if(position.hasWorkPiece()) {
+            if(position.getAmount() > 0) {
+                position.decrementAmount();
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
     }
 
 }

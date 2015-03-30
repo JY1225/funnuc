@@ -5,8 +5,11 @@ import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
+import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.StackPlateStackingPosition;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
@@ -105,4 +108,29 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
 		return null;
 	}
 	
+	/*
+	 * UNLOAD PALLET
+	 */
+	public Coordinates getLocation(UnloadPallet unloadPallet, SimpleWorkArea workArea, Type type, ClampingManner clampType) {
+        for (StackingPosition stackingPos : unloadPallet.getLayout().getStackingPositions()) {
+            if ((stackingPos.getWorkPiece() == null) && (stackingPos.getWorkPiece().getType() == type)) {
+                Coordinates c = new Coordinates(stackingPos.getPosition());
+                c.offset(workArea.getDefaultClamping().getRelativePosition());
+                return c;
+            }
+        }
+        return null;
+    }
+	
+	public Coordinates getPutLocation(UnloadPallet unloadPallet, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType) {
+        for (PalletStackingPosition stackingPos : unloadPallet.getLayout().getStackingPositions()) {
+            if (stackingPos.getWorkPiece() != null && stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED) && stackingPos.getAmount() == 0) {
+                unloadPallet.setCurrentPutLocation(stackingPos);
+                Coordinates c = new Coordinates(stackingPos.getPutPosition());
+                c.offset(workArea.getDefaultClamping().getRelativePosition());
+                return c;
+            }
+        }
+        return null;
+    }
 }

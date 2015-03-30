@@ -1,9 +1,8 @@
 package eu.robojob.millassist.external.device.stacking.pallet.strategy;
 
-import javafx.geometry.Orientation;
-import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public class CubicPiecePalletUnloadStrategy extends
@@ -14,17 +13,20 @@ public class CubicPiecePalletUnloadStrategy extends
         super(layout);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void configureFinishedPieces(RectangularDimensions workPieceDimensions) {
         PalletLayoutType layoutType = this.layout.getLayoutType();
         Integer[] dimensions = new Integer[2];
-        if(layoutType == PalletLayoutType.OPTIMAL || layoutType == PalletLayoutType.SHIFTED) {
+        if(layoutType == PalletLayoutType.OPTIMAL || layoutType == PalletLayoutType.SHIFTED_HORIZONTAL || layoutType == PalletLayoutType.SHIFTED_VERTICAL) {
             dimensions = determineOptimalNumberOfPieces(workPieceDimensions);
         }
-        else if(layoutType == PalletLayoutType.HORIZONTAL) {
+        else if(layoutType == PalletLayoutType.NOT_SHIFTED_HORIZONTAL) {
             dimensions = determineHorizontalOrientationNumberOfPieces(workPieceDimensions);
         }
-        else if(layoutType == PalletLayoutType.VERTICAL){
+        else if(layoutType == PalletLayoutType.NOT_SHIFTED_VERTICAL){
             dimensions = determineVerticalOrientationNumberOfPieces(workPieceDimensions);
         }
         
@@ -46,7 +48,7 @@ public class CubicPiecePalletUnloadStrategy extends
         float currentY = layout.getPalletFreeBorder() + unitY;
         for(int i = 0; i < layout.getNumberOfVerticalPieces(); ++i) {
             for(int j = 0; j < layout.getNumberOfHorizontalPieces(); ++j) {
-                this.layout.getStackingPositions().add(new StackingPosition(currentX - offsetX, currentY - offsetY, 0, null));
+                this.layout.getStackingPositions().add(new PalletStackingPosition(currentX - offsetX, currentY - offsetY, 0, null));
                 currentX += unitX;
             }
             currentY+= unitY;
@@ -55,6 +57,11 @@ public class CubicPiecePalletUnloadStrategy extends
         
     }
     
+    /**
+     * Determine the number of work pieces if they will be stacked horizontally (longest side parallel with x-axis).
+     * @param workPieceDimensions Dimensions of the work piece that will be stacked
+     * @return A set containing the number of work pieces on the x-axis (horizontal) and on the y-axis (vertical)
+     */
     private Integer[] determineHorizontalOrientationNumberOfPieces(RectangularDimensions workPieceDimensions) {
         Integer[] result = new Integer[2];
         
@@ -70,6 +77,11 @@ public class CubicPiecePalletUnloadStrategy extends
         return result;
     }
     
+    /**
+     * Determine the number of work pieces if they will be stacked vertically (longest side parallel with y-axis).
+     * @param workPieceDimensions Dimensions of the work piece that will be stacked
+     * @return A set containing the number of work pieces on the x-axis (horizontal) and on the y-axis (vertical)
+     */
     private Integer[] determineVerticalOrientationNumberOfPieces(RectangularDimensions workPieceDimensions) {
         Integer[] result = new Integer[2];
         
@@ -84,6 +96,11 @@ public class CubicPiecePalletUnloadStrategy extends
         return result;
     }
     
+    /**
+     * Determine the optimal number of work pieces to be stacked on the pallet.
+     * @param workPieceDimensions Dimensions of the work piece that will be stacked
+     * @return A set containing the number of work pieces on the x-axis (horizontal) and on the y-axis (vertical)
+     */
     private Integer[] determineOptimalNumberOfPieces(RectangularDimensions workPieceDimensions) {
         Integer[] result;
         
