@@ -1,25 +1,25 @@
-package eu.robojob.millassist.ui.configure.device.stacking.pallet;
+package eu.robojob.millassist.ui.automate.device.stacking.pallet;
 
 import javafx.application.Platform;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletListener;
-import eu.robojob.millassist.process.PutStep;
+import eu.robojob.millassist.ui.configure.device.stacking.pallet.UnloadPalletMenuPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.device.stacking.pallet.UnloadPalletLayoutView;
 
-public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPalletLayoutView<UnloadPalletLayoutPresenter>, UnloadPalletMenuPresenter> implements UnloadPalletListener{
+public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPalletLayoutView<UnloadPalletLayoutPresenter>, UnloadPalletMenuPresenter> 
+implements UnloadPalletListener{
 
     private UnloadPallet unloadPallet;
-    private PutStep putStep;
-    
-    public UnloadPalletLayoutPresenter(UnloadPalletLayoutView<UnloadPalletLayoutPresenter> view, final UnloadPallet unloadPallet, final PutStep putStep) {
+    public UnloadPalletLayoutPresenter(UnloadPalletLayoutView<UnloadPalletLayoutPresenter> view, UnloadPallet unloadPallet) {
         super(view);
-        this.unloadPallet = unloadPallet;
-        this.unloadPallet.addListener(this);
-        this.putStep = putStep;
-        unloadPallet.recalculateLayout();
-        getView().build();
         getView().setUnloadPallet(unloadPallet);
+        this.unloadPallet = unloadPallet;
+        unloadPallet.getLayout().calculateLayoutForWorkPiece(unloadPallet.getFinishedWorkPiece());
+        unloadPallet.getLayout().initFinishedWorkPieces(unloadPallet.getFinishedWorkPiece());
+        this.unloadPallet.addListener(this);
+        getView().setControlsHidden(true);
+        getView().build();
     }
     
     /**
@@ -58,4 +58,5 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
     public void unregister() {
         unloadPallet.removeListener(this);
     }
+
 }

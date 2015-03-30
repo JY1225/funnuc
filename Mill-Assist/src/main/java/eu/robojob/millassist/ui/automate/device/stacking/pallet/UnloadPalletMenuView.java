@@ -1,0 +1,39 @@
+package eu.robojob.millassist.ui.automate.device.stacking.pallet;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import eu.robojob.millassist.ui.general.AbstractMenuView;
+import eu.robojob.millassist.util.Translator;
+
+public class UnloadPalletMenuView extends AbstractMenuView<UnloadPalletMenuPresenter>{
+
+    private static final String LAYOUT_ICON = "m 4.3125,0.12499999 c -1.9028305,0 -3.5,1.56110911 -3.5,3.50000001 0,1.938891 1.5971695,3.5 3.5,3.5 1.9028305,0 3.46875,-1.561109 3.46875,-3.5 0,-1.9388909 -1.5659195,-3.50000001 -3.46875,-3.50000001 z m 12.125,0 c -1.90283,0 -3.46875,1.56110911 -3.46875,3.50000001 0,1.938891 1.56592,3.5 3.46875,3.5 1.902831,0 3.5,-1.561109 3.5,-3.5 0,-1.9388909 -1.597169,-3.50000001 -3.5,-3.50000001 z M 4.3125,1.3125 c 1.309224,0 2.3125,1.0393364 2.3125,2.3125 0,1.273164 -1.003276,2.3125 -2.3125,2.3125 -1.309224,0 -2.34375,-1.039336 -2.34375,-2.3125 0,-1.2731636 1.034526,-2.3125 2.34375,-2.3125 z m 12.125,0 c 1.309224,0 2.34375,1.0393364 2.34375,2.3125 0,1.273164 -1.034526,2.3125 -2.34375,2.3125 -1.309224,0 -2.34375,-1.039336 -2.34375,-2.3125 0,-1.2731636 1.034526,-2.3125 2.34375,-2.3125 z m -12.125,9.03125 c -2.4090408,0 -4.375,1.965959 -4.375,4.375 0,2.409041 1.9659592,4.34375 4.375,4.34375 2.4090408,0 4.34375,-1.934709 4.34375,-4.34375 0,-2.409041 -1.9347092,-4.375 -4.34375,-4.375 z m 12.125,0.875 c -1.90283,0 -3.46875,1.561109 -3.46875,3.5 0,1.938891 1.56592,3.46875 3.46875,3.46875 1.902831,0 3.5,-1.529859 3.5,-3.46875 0,-1.938891 -1.597169,-3.5 -3.5,-3.5 z m 0,1.15625 c 1.309224,0 2.34375,1.070586 2.34375,2.34375 0,1.273164 -1.034526,2.3125 -2.34375,2.3125 -1.309224,0 -2.34375,-1.039336 -2.34375,-2.3125 0,-1.273164 1.034526,-2.34375 2.34375,-2.34375 z";
+    private static final String ADD_ICON = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 8.75 5 L 11.25 5 L 11.25 8.75 L 15 8.75 L 15 11.25 L 11.25 11.25 L 11.25 15 L 8.75 15 L 8.75 11.25 L 5 11.25 L 5 8.75 L 8.75 8.75 L 8.75 5 z";
+    private static final String VIEW_LAYOUT = "StackingDeviceMenuView.viewLayout";
+    private static final String ADD_PIECES = "UnloadPalletMenuView.addRemoveWorkpieces";
+    
+    @Override
+    protected void build() {
+        addMenuItem(0, LAYOUT_ICON, Translator.getTranslation(VIEW_LAYOUT), true, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent event) {
+                getPresenter().showLayout();
+            }
+        });
+        addMenuItem(1, ADD_ICON, Translator.getTranslation(ADD_PIECES), true, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent event) {
+                getPresenter().showAddRemove();
+            }
+        });
+    }
+    
+    public void setLayoutActive() {
+        setMenuItemSelected(0);
+    }
+    
+   public void setAddRemoveActive() {
+        setMenuItemSelected(1);
+    }
+
+}

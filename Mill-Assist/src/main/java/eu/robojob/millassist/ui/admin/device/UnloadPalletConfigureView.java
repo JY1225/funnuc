@@ -69,6 +69,9 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         userFrameNames = FXCollections.observableArrayList();
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void build() {
         getContents().setVgap(5);
@@ -145,6 +148,9 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         GridPane.setMargin(btnSave, new Insets(10, 0, 0, 0));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setTextFieldListener(TextInputControlListener listener) {
         nameTextField.setFocusListener(listener);
@@ -156,6 +162,9 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         minInterferenceTextField.setFocusListener(listener);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void refresh() {
         getPresenter().updateUserFrames();
