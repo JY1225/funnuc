@@ -71,11 +71,11 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
         try{    
             if(amount > getMaxPiecesToAdd())
                 throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
-            int nbInFlow = processFlow.getTotalAmount() - processFlow.getFinishedAmount();
+            int finishedAmount = processFlow.getFinishedAmount();
             
             //Add new pieces 
             addWorkPieces(amount, processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
-            processFlow.setFinishedAmount(unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
+            processFlow.setFinishedAmount(finishedAmount + amount);
         } catch(IncorrectWorkPieceDataException e) {
             getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
         }
@@ -87,7 +87,7 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
     }
     
     public int getMaxPiecesToAdd() {
-        int amount = processFlow.getTotalAmount() - unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
+        int amount = processFlow.getTotalAmount() - processFlow.getFinishedAmount();
         return amount;
     }
     
@@ -96,10 +96,14 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
             if(amount > unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED)) {
                 throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
             }
-            int nbInFlow = processFlow.getTotalAmount() - processFlow.getFinishedAmount();
+            int finishedAmount = processFlow.getFinishedAmount();
             unloadPallet.removeWorkPieces(amount);
             getView().hideNotification();
-            processFlow.setFinishedAmount(unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
+            int newFinishedAmount = finishedAmount - amount;
+            if(newFinishedAmount < 0) {
+                newFinishedAmount = 0;
+            }
+            processFlow.setFinishedAmount(newFinishedAmount);
         } catch (IncorrectWorkPieceDataException e) {
             getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
         }
