@@ -79,7 +79,7 @@ public class RoundPiecePalletUnloadStrategy extends
         float currentY = layout.getPalletFreeBorder() + unitY;
         for(int i = 0; i < layout.getNumberOfVerticalPieces(); ++i) {
             for(int j = 0; j < layout.getNumberOfHorizontalPieces(); ++j) {
-                this.layout.getStackingPositions().add(new PalletStackingPosition(currentX - offsetX, currentY - offsetY, 0, null));
+                this.layout.getStackingPositions().add(new PalletStackingPosition(currentX - offsetX, currentY - offsetY, layout.getHorizontalR(), null));
                 currentX += unitX;
             }
             currentY += unitY;
@@ -129,14 +129,14 @@ public class RoundPiecePalletUnloadStrategy extends
         for(int i = 0; i < dimensions[1]; ++i) {
             if((i % 2) == 1) {
                 for(int j = 0; j < dimensions[0]-1; ++j) {
-                    this.layout.getStackingPositions().add(new PalletStackingPosition(currentX - offsetX, currentY, 0, null));
+                    this.layout.getStackingPositions().add(new PalletStackingPosition(currentX - offsetX, currentY, layout.getHorizontalR(), null));
                     currentX += unitX;
                 }
                 currentX = layout.getPalletFreeBorder() + unitX;
             }
             else {
                 for(int j = 0; j < dimensions[0]; ++j) {
-                    this.layout.getStackingPositions().add(new PalletStackingPosition(currentX - offsetX, currentY, 0, null));
+                    this.layout.getStackingPositions().add(new PalletStackingPosition(currentX - offsetX, currentY, layout.getHorizontalR(), null));
                     currentX += unitX;
                 }
                 currentX = layout.getPalletFreeBorder() + unitX + (spaceBetween/2 + workPieceDimensions.getDiameter()/2);
@@ -175,14 +175,14 @@ public class RoundPiecePalletUnloadStrategy extends
         for(int i = 0; i < dimensions[0]; ++i) {
             if((i % 2) == 1) {
                 for(int j = 0; j < dimensions[1]-1; ++j) {
-                    this.layout.getStackingPositions().add(new PalletStackingPosition(currentX, currentY - offsetY, 0, null));
+                    this.layout.getStackingPositions().add(new PalletStackingPosition(currentX, currentY - offsetY, layout.getHorizontalR(), null));
                     currentY += unitY;
                 }
                 currentY = layout.getPalletFreeBorder() + unitY;
             }
             else {
                 for(int j = 0; j < dimensions[1]; ++j) {
-                    this.layout.getStackingPositions().add(new PalletStackingPosition(currentX, currentY - offsetY, 0, null));
+                    this.layout.getStackingPositions().add(new PalletStackingPosition(currentX, currentY - offsetY,layout.getHorizontalR(), null));
                     currentY += unitY;
                 }
                 currentY = layout.getPalletFreeBorder() + unitY + (spaceBetween/2 + workPieceDimensions.getDiameter()/2);

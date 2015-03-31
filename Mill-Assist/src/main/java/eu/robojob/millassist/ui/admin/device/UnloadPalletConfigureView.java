@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.ui.controls.FullTextField;
@@ -52,6 +53,14 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
     private Label minInterferenceLabel;
     private NumericTextField minInterferenceTextField;
     
+    private Label horizontalRLabel;
+    private Button zeroButton;
+    private Button oneEightyButton;
+    
+    private Label verticalRLabel;
+    private Button minusButton;
+    private Button plusButton;
+    
     private Button btnSave;
 
     private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
@@ -64,6 +73,11 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
     private static final String XOFFSET = "UnloadPallet.xoffset";
     private static final String YOFFSET = "UnloadPallet.yoffset";
     private static final String MIN_INT = "UnloadPallet.minint";
+    private static final String HOR_R = "UnloadPallet.horizontalR";
+    private static final String VER_R = "UnloadPallet.verticalR";
+    
+    private float horizontalRValue;
+    private float verticalRValue;
 
     public UnloadPalletConfigureView() {
         userFrameNames = FXCollections.observableArrayList();
@@ -108,11 +122,70 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         
         minInterferenceLabel = new Label(Translator.getTranslation(MIN_INT));
         minInterferenceTextField = new NumericTextField(4);
+        
+        horizontalRLabel = new Label(Translator.getTranslation(HOR_R));
+//        horizontalRTextField = new NumericTextField(4);
+        HBox horizontalRBox = new HBox();
+        zeroButton = createButton("0°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                horizontalRValue = 0;
+                oneEightyButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                if(!zeroButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
+                    zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                }
+            }
+        });
+        zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
+        horizontalRBox.getChildren().add(zeroButton);
+        
+        oneEightyButton = createButton("+180°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT,new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                horizontalRValue = 180;
+                zeroButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                if(!oneEightyButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
+                    oneEightyButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                }
+            }
+        });
+        oneEightyButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+        horizontalRBox.getChildren().add(oneEightyButton);
+        
+        
+        HBox verticalRBox = new HBox();
+        minusButton = createButton("-90°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                verticalRValue = -90;
+                plusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                if(!minusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
+                    minusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                }
+            }
+        });
+        minusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
+        verticalRBox.getChildren().add(minusButton);
+        
+        plusButton = createButton("+90°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT,new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                verticalRValue = 90;
+                minusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                if(!plusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
+                    plusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                }
+            }
+        });
+        plusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+        verticalRBox.getChildren().add(plusButton);
+        
+        verticalRLabel = new Label(Translator.getTranslation(VER_R));
 
         btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                getPresenter().saveData(nameTextField.getText(), userFramesComboBox.valueProperty().get(),Float.parseFloat(widthNumbericTextField.getText()),Float.parseFloat(lengthNumbericTextField.getText()),Float.parseFloat(borderNumbericTextField.getText()),Float.parseFloat(xOffsetNumbericTextField.getText()),Float.parseFloat(yOffsetNumbericTextField.getText()), Float.parseFloat(minInterferenceTextField.getText()));
+                getPresenter().saveData(nameTextField.getText(), userFramesComboBox.valueProperty().get(),Float.parseFloat(widthNumbericTextField.getText()),Float.parseFloat(lengthNumbericTextField.getText()),Float.parseFloat(borderNumbericTextField.getText()),Float.parseFloat(xOffsetNumbericTextField.getText()),Float.parseFloat(yOffsetNumbericTextField.getText()), Float.parseFloat(minInterferenceTextField.getText()), horizontalRValue, verticalRValue);
             }
         });
 
@@ -141,6 +214,12 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         column = 0; row++;
         getContents().add(minInterferenceLabel, column++, row);
         getContents().add(minInterferenceTextField, column++, row, 3, 1);
+        column = 0; row++;
+        getContents().add(horizontalRLabel, column++, row);
+        getContents().add(horizontalRBox, column++, row, 3, 1);
+        column = 0; row++;
+        getContents().add(verticalRLabel, column++, row);
+        getContents().add(verticalRBox, column++, row, 3, 1);
         column = 0; row++;
 
         getContents().add(btnSave, column++, row, 5, 1);
@@ -177,6 +256,29 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
             yOffsetNumbericTextField.setText(unloadPallet.getLayout().getMinYGap()+"");
             minInterferenceTextField.setText(unloadPallet.getLayout().getMinInterferenceDistance()+"");
             userFramesComboBox.valueProperty().set(unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName());
+            if(unloadPallet.getLayout().getHorizontalR() == 0) {
+                if(!zeroButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
+                    zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                    oneEightyButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                }
+            } else {
+                if(!oneEightyButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
+                    oneEightyButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                    zeroButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                }
+            }
+            
+            if(unloadPallet.getLayout().getHorizontalR() == -90) {
+                if(!minusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
+                    minusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                    plusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                }
+            } else {
+                if(!plusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
+                    plusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                    minusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+                }
+            }
         }
     }
 

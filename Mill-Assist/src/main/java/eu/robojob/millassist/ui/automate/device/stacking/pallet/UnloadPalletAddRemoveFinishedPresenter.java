@@ -76,7 +76,6 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
             //Add new pieces 
             addWorkPieces(amount, processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
             processFlow.setFinishedAmount(unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
-            processFlow.setTotalAmount(unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);
         } catch(IncorrectWorkPieceDataException e) {
             getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
         }
@@ -88,7 +87,7 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
     }
     
     public int getMaxPiecesToAdd() {
-        int amount = unloadPallet.getLayout().getMaxPiecesPossibleAmount() - unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
+        int amount = processFlow.getTotalAmount() - unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
         return amount;
     }
     
@@ -101,7 +100,6 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
             unloadPallet.removeWorkPieces(amount);
             getView().hideNotification();
             processFlow.setFinishedAmount(unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
-            processFlow.setTotalAmount(nbInFlow - unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
         } catch (IncorrectWorkPieceDataException e) {
             getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
         }

@@ -262,6 +262,10 @@
 	-fx-fill: #6fc955;
 }
 
+.finished.placeholder {
+     -fx-fill: #ccc;
+}
+
 .root {
 	-fx-fill: null;
 }
@@ -661,6 +665,10 @@
 	-fx-text-alignment: center;
 	-fx-font-family: "Open Sans Semibold";
 	-fx-font-size: 20px;
+}
+
+.amount-text.placeholder {
+    -fx-fill: black;
 }
 
 .conveyor-eaton-bg {

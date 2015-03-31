@@ -12,6 +12,7 @@ public class CubicPiecePalletUnloadStrategy extends
     public CubicPiecePalletUnloadStrategy(PalletLayout layout) {
         super(layout);
     }
+    
 
     /**
      * {@inheritDoc}
@@ -20,6 +21,7 @@ public class CubicPiecePalletUnloadStrategy extends
     public void configureFinishedPieces(RectangularDimensions workPieceDimensions) {
         PalletLayoutType layoutType = this.layout.getLayoutType();
         Integer[] dimensions = new Integer[2];
+        
         if(layoutType == PalletLayoutType.OPTIMAL || layoutType == PalletLayoutType.SHIFTED_HORIZONTAL || layoutType == PalletLayoutType.SHIFTED_VERTICAL) {
             dimensions = determineOptimalNumberOfPieces(workPieceDimensions);
         }
@@ -48,7 +50,11 @@ public class CubicPiecePalletUnloadStrategy extends
         float currentY = layout.getPalletFreeBorder() + unitY;
         for(int i = 0; i < layout.getNumberOfVerticalPieces(); ++i) {
             for(int j = 0; j < layout.getNumberOfHorizontalPieces(); ++j) {
-                this.layout.getStackingPositions().add(new PalletStackingPosition(currentX - offsetX, currentY - offsetY, 0, null));
+                if(layout.isRotate90()) {
+                    this.layout.getStackingPositions().add(new PalletStackingPosition(currentX - offsetX, currentY - offsetY, layout.getVerticalR(), null));
+                } else {
+                    this.layout.getStackingPositions().add(new PalletStackingPosition(currentX - offsetX, currentY - offsetY, layout.getHorizontalR(), null));
+                }
                 currentX += unitX;
             }
             currentY+= unitY;
