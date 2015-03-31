@@ -27,6 +27,7 @@ import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisit
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
@@ -104,8 +105,8 @@ public class UnloadPallet extends AbstractStackingDevice{
     public boolean canPut(DevicePutSettings putSettings)
             throws AbstractCommunicationException, DeviceActionException,
             InterruptedException {
-        for (StackingPosition stackingPos : getLayout().getStackingPositions()) {
-            if (stackingPos.getWorkPiece() == null) {
+        for (PalletStackingPosition stackingPos : getLayout().getStackingPositions()) {
+            if (stackingPos.getAmount() < getLayout().getLayers()) {
                 return true;
             }
         }
@@ -243,12 +244,10 @@ public class UnloadPallet extends AbstractStackingDevice{
         if (deviceSettings instanceof UnloadPalletDeviceSettings) {
             UnloadPalletDeviceSettings settings = (UnloadPalletDeviceSettings) deviceSettings;
             setFinishedWorkPiece(settings.getFinishedWorkPiece());
-//            getLayout().calculateLayoutForWorkPiece(getFinishedWorkPiece());
-//            getLayout().initFinishedWorkPieces(getFinishedWorkPiece());
+            getLayout().setLayoutType(settings.getLayoutType());
         } else {
             throw new IllegalArgumentException("Unknown device settings");
         }
-//        notifyLayoutChanged();
     }
 
     /**
@@ -256,7 +255,7 @@ public class UnloadPallet extends AbstractStackingDevice{
      */
     @Override
     public UnloadPalletDeviceSettings getDeviceSettings() {
-        return new UnloadPalletDeviceSettings(getFinishedWorkPiece());
+        return new UnloadPalletDeviceSettings(getFinishedWorkPiece(), getLayout().getLayoutType());
     }
 
     /**
@@ -311,8 +310,6 @@ public class UnloadPallet extends AbstractStackingDevice{
         return layout;
     }
     
-    
-    
     public void notifyLayoutChanged() {
         for (UnloadPalletListener listener : getListeners()) {
             listener.layoutChanged();
@@ -357,5 +354,4 @@ public class UnloadPallet extends AbstractStackingDevice{
         getLayout().removeFinishedWorkPieces(amount);
         notifyLayoutChanged();
     }
-
 }

@@ -12,7 +12,6 @@ import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.strategy.AbstractPalletUnloadStrategy;
 import eu.robojob.millassist.external.device.stacking.pallet.strategy.CubicPiecePalletUnloadStrategy;
 import eu.robojob.millassist.external.device.stacking.pallet.strategy.RoundPiecePalletUnloadStrategy;
-import eu.robojob.millassist.external.device.stacking.stackplate.StackPlateStackingPosition;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 import eu.robojob.millassist.workpiece.RoundDimensions;
@@ -26,7 +25,25 @@ public class PalletLayout {
      * Enumeration determining the type of the pallet layout.
      */
     public enum PalletLayoutType {
-        SHIFTED_HORIZONTAL, SHIFTED_VERTICAL, OPTIMAL, NOT_SHIFTED_HORIZONTAL, NOT_SHIFTED_VERTICAL
+        SHIFTED_HORIZONTAL(1), SHIFTED_VERTICAL(2), OPTIMAL(3), NOT_SHIFTED_HORIZONTAL(4), NOT_SHIFTED_VERTICAL(5);
+        
+        private int id;
+        private PalletLayoutType(int id) {
+            this.id = id;
+        }
+        
+        public int getId() {
+            return this.id;
+        }
+        
+        public static PalletLayoutType getTypeById(int id) {
+            for (PalletLayoutType type: values()) {
+                if (type.getId() == id) {
+                    return type;
+                }
+            }
+            throw new IllegalArgumentException("Unknown device type " + id);
+        }
     }
     
     /**
@@ -83,20 +100,25 @@ public class PalletLayout {
      */
     private Map<WorkPieceShape, AbstractPalletUnloadStrategy<? extends IWorkPieceDimensions>> strategyMap;
     
+    
+    private float horizontalR;
+    private float verticalR;
+    
     private int layers;
     
-    public PalletLayout(final float palletWidth, final float palletLength, final float palletFreeBorder, final float minXGap, final float minYGap, final float minInterferenceDistance) {
+    public PalletLayout(final float palletWidth, final float palletLength, final float palletFreeBorder, final float minXGap, final float minYGap, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
         this.palletWidth = palletWidth;
         this.palletLength = palletLength;
         this.palletFreeBorder = palletFreeBorder;
         this.minXGap = minXGap;
         this.minYGap = minYGap;
         this.minInterferenceDistance = minInterferenceDistance;
-        this.layoutType = PalletLayoutType.OPTIMAL;
         this.strategyMap = new HashMap<WorkPieceShape, AbstractPalletUnloadStrategy<? extends IWorkPieceDimensions>>();
         strategyMap.put(WorkPieceShape.CYLINDRICAL, new RoundPiecePalletUnloadStrategy(this));
         strategyMap.put(WorkPieceShape.CUBIC, new CubicPiecePalletUnloadStrategy(this));
-        this.layers = 1;
+        this.layers = 2;
+        this.horizontalR = horizontalR;
+        this.verticalR = verticalR;
     }
     
     /**
@@ -238,10 +260,6 @@ public class PalletLayout {
         int stackingPos = 0;
         //For any number of layers, we only put 1 workPiece on the first position. This ensures that the robot
         //places finished products always at the same position
-        if(amount > 0 && placeFirstPiece(finishedWorkPiece, resetFirst)) {
-            placedAmount++;
-        }
-        stackingPos++;
         PalletStackingPosition stPos = getStackingPositions().get(0);
         while (placedAmount < amount && stackingPos < getStackingPositions().size()) {
             stPos = getStackingPositions().get(stackingPos);
@@ -281,14 +299,7 @@ public class PalletLayout {
         } 
     }
     
-    private boolean placeFirstPiece(final WorkPiece workPiece, boolean isEmptyPiece) {
-        if(isEmptyPiece) {
-            resetWorkPieceAt(0);
-            return false;
-        } else {
-            return addOneWorkPiece(workPiece, getStackingPositions().get(0),1, false);
-        }
-    }
+    
     
     public void resetWorkPieceAt(int positionIndex) {
         getStackingPositions().get(positionIndex).setWorkPiece(null);
@@ -298,7 +309,7 @@ public class PalletLayout {
     private boolean addOneWorkPiece(final WorkPiece workPiece, PalletStackingPosition position, int maxNbOfPieces, boolean overwrite) {
         if(position.hasWorkPiece()) {
             if(position.getWorkPiece().getType().equals(workPiece.getType())) {
-                if(position.getAmount() < maxNbOfPieces) {
+                if(getWorkPieceAmount(WorkPiece.Type.FINISHED) >= position.getAmount() * getMaxPiecesPersLayoutAmount()){
                     position.incrementAmount();
                     return true;
                 }
@@ -328,6 +339,10 @@ public class PalletLayout {
     
     public int getMaxPiecesPossibleAmount() {
         return  getLayers() * stackingPositions.size();
+    }
+    
+    public int getMaxPiecesPersLayoutAmount() {
+        return stackingPositions.size();
     }
     
     public int getWorkPieceAmount(WorkPiece.Type type) {
@@ -369,6 +384,22 @@ public class PalletLayout {
         else {
             return false;
         }
+    }
+
+    public float getHorizontalR() {
+        return horizontalR;
+    }
+
+    public void setHorizontalR(float horizontalR) {
+        this.horizontalR = horizontalR;
+    }
+
+    public float getVerticalR() {
+        return verticalR;
+    }
+
+    public void setVerticalR(float verticalR) {
+        this.verticalR = verticalR;
     }
 
 }

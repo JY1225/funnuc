@@ -34,6 +34,7 @@ import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
@@ -525,9 +526,10 @@ public class ProcessFlowMapper {
 			stmt4.executeUpdate();
 		} else if (deviceSettings instanceof UnloadPalletDeviceSettings) {
 		    UnloadPalletDeviceSettings uSettings = (UnloadPalletDeviceSettings) deviceSettings;
-            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO UNLOADPALLETSETTINGS (ID, FINISHEDWORKPIECE) VALUES (?, ?)");
+            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO UNLOADPALLETSETTINGS (ID, FINISHEDWORKPIECE, LAYOUT_TYPE) VALUES (?, ?, ?)");
             stmt4.setInt(1, uSettings.getId());
             stmt4.setInt(2, uSettings.getFinishedWorkPiece().getId());
+            stmt4.setInt(3, uSettings.getLayoutType().getId());
             stmt4.executeUpdate();
         }
 	}
@@ -802,8 +804,9 @@ public class ProcessFlowMapper {
         UnloadPalletDeviceSettings unloadPalletSettings = null;
         if (results.next()) {
             int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
+            int layoutType = results.getInt("LAYOUT_TYPE");
             WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
-            unloadPalletSettings = new UnloadPalletDeviceSettings(finishedWorkPiece);
+            unloadPalletSettings = new UnloadPalletDeviceSettings(finishedWorkPiece, PalletLayoutType.getTypeById(layoutType));
         }
         return unloadPalletSettings;
 	}

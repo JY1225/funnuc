@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
@@ -20,6 +21,8 @@ import javafx.scene.transform.Scale;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.stackplate.StackPlateStackingPosition;
+import eu.robojob.millassist.ui.configure.device.stacking.pallet.UnloadPalletLayoutPresenter;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormView;
@@ -166,6 +169,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
     @Override
     public void refresh() {
         //The whole screen is refreshed!
+        unloadPallet.recalculateLayout();
         unloadPallet.notifyLayoutChanged();
     }
 
@@ -187,9 +191,18 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
             if (stackingPosition.getWorkPiece() != null) {
                 IDrawableObject workPieceRepre = stackingPosition.getWorkPiece().getRepresentation();
                 Shape workPiece = workPieceRepre.createShape();
+                if(stackingPosition.getAmount() == 0) {
+                    workPiece.setStroke(Color.RED);
+                    workPiece.setStrokeWidth(2);
+                    workPiece.getStrokeDashArray().addAll(20.0,10.0,20.0,10.0);
+                    workPiece.getStyleClass().add("placeholder");
+                }
                 Group group2 = new Group();
                 group2.getChildren().add(workPiece);
-                
+                if (workPieceRepre.needsMarkers()) {
+                    Rectangle marker = createMarker(workPieceRepre);
+                    group2.getChildren().add(marker);
+                }
                 //LayoutX - the origin of the piece (left bottom corner)
                 group2.setLayoutX(stackingPosition.getPosition().getX() - workPieceRepre.getXCorrection());
                 //LayoutY - the origin of the piece (left bottom corner)
@@ -200,12 +213,36 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                 }
                 Text txtAmount = new Text(stackingPosition.getAmount() + "");
                 txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);
+                if(stackingPosition.getAmount() == 0) {
+                    txtAmount.getStyleClass().add("placeholder");
+                }
                 txtAmount.setX(stackingPosition.getPosition().getX() - txtAmount.getBoundsInParent().getWidth()/2);
                 txtAmount.setY(width - stackingPosition.getPosition().getY() + txtAmount.getBoundsInParent().getHeight()/2);
                 group.getChildren().add(txtAmount);
             }
         }
     }
+    
+    private Rectangle createMarker(IDrawableObject workPieceRepre) {
+        Rectangle marker = workPieceRepre.createMarker(false);
+        if(unloadPallet.getLayout().isRotate90()) {
+            if(unloadPallet.getLayout().getVerticalR() == -90) {
+                marker.setTranslateX(workPieceRepre.getXTranslationMarker() - 10);
+            }
+            else {
+                marker.setTranslateX(10);
+            }
+        } else {
+            if(unloadPallet.getLayout().getHorizontalR() == 180) {
+                marker.setTranslateX(workPieceRepre.getXTranslationMarker() - 10);
+            }
+            else {
+                marker.setTranslateX(10);
+            }
+        }
+        return marker;
+    }
+    
     
     /**
      * Create the buttons to determine the layout type of the unload pallet.
@@ -218,9 +255,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
         optimalButton = createButton(Translator.getTranslation(OPTIMAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent event) {
-                unloadPallet.getLayout().setLayoutType(PalletLayoutType.OPTIMAL);
-                unloadPallet.recalculateLayout();
-                unloadPallet.notifyLayoutChanged();
+                ((UnloadPalletLayoutPresenter)getPresenter()).updateLayoutType(PalletLayoutType.OPTIMAL);
             }
         });
         optimalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
@@ -229,9 +264,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
             horizontalButton = createButton(Translator.getTranslation(HORIZONTAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent event) {
-                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.NOT_SHIFTED_HORIZONTAL);
-                    unloadPallet.recalculateLayout();
-                    unloadPallet.notifyLayoutChanged();
+                    ((UnloadPalletLayoutPresenter)getPresenter()).updateLayoutType(PalletLayoutType.NOT_SHIFTED_HORIZONTAL);
                 }
             });
             horizontalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
@@ -239,9 +272,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
             verticalButton = createButton(Translator.getTranslation(VERTICAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent event) {
-                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.NOT_SHIFTED_VERTICAL);
-                    unloadPallet.recalculateLayout();
-                    unloadPallet.notifyLayoutChanged();
+                    ((UnloadPalletLayoutPresenter)getPresenter()).updateLayoutType(PalletLayoutType.NOT_SHIFTED_VERTICAL);
                 }
             });
             typeBox.getChildren().add(verticalButton);
@@ -252,9 +283,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
             shiftedButton= createButton(Translator.getTranslation(SHIFTED), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent event) {
-                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.SHIFTED_HORIZONTAL);
-                    unloadPallet.recalculateLayout();
-                    unloadPallet.notifyLayoutChanged();
+                    ((UnloadPalletLayoutPresenter)getPresenter()).updateLayoutType(PalletLayoutType.SHIFTED_HORIZONTAL);
                 }
             });
             shiftedButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
@@ -262,9 +291,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
             notShiftedButton = createButton(Translator.getTranslation(NOT_SHIFTED), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent event) {
-                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.NOT_SHIFTED_HORIZONTAL);
-                    unloadPallet.recalculateLayout();
-                    unloadPallet.notifyLayoutChanged();
+                    ((UnloadPalletLayoutPresenter)getPresenter()).updateLayoutType(PalletLayoutType.NOT_SHIFTED_HORIZONTAL);
                 }
             });
             typeBox.getChildren().add(notShiftedButton);
@@ -272,9 +299,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
             horizontalButton = createButton(Translator.getTranslation(HORIZONTAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent event) {
-                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.SHIFTED_HORIZONTAL);
-                    unloadPallet.recalculateLayout();
-                    unloadPallet.notifyLayoutChanged();
+                    ((UnloadPalletLayoutPresenter)getPresenter()).updateLayoutType(PalletLayoutType.SHIFTED_HORIZONTAL);
                 }
             });
             horizontalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
@@ -282,9 +307,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
             verticalButton = createButton(Translator.getTranslation(VERTICAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent event) {
-                    unloadPallet.getLayout().setLayoutType(PalletLayoutType.SHIFTED_VERTICAL);
-                    unloadPallet.recalculateLayout();
-                    unloadPallet.notifyLayoutChanged();
+                    ((UnloadPalletLayoutPresenter)getPresenter()).updateLayoutType(PalletLayoutType.SHIFTED_VERTICAL);
                 }
             });
             horizontalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
@@ -307,7 +330,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
             optimalButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
             horizontalButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
             verticalButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-            if(unloadPallet.getLayout().getLayoutType() == PalletLayoutType.OPTIMAL) {
+            if(unloadPallet.getLayout().getLayoutType() == PalletLayoutType.OPTIMAL || unloadPallet.getLayout().getLayoutType() == PalletLayoutType.SHIFTED_HORIZONTAL || unloadPallet.getLayout().getLayoutType() == PalletLayoutType.SHIFTED_VERTICAL) {
                 if(!optimalButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
                     optimalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
                 }

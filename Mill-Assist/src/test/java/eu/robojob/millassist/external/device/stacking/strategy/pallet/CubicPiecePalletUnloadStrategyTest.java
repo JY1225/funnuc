@@ -26,7 +26,7 @@ public class CubicPiecePalletUnloadStrategyTest extends TestCase {
     
     @Before
     public void setUp() throws Exception {
-        palletLayout = new PalletLayout(1200.0f, 800.0f, 20.0f, 20.0f, 20.0f, 20.0f);
+        palletLayout = new PalletLayout(1200.0f, 800.0f, 20.0f, 20.0f, 20.0f, 20.0f,0,0);
         pallet = new UnloadPallet("test Pallet", palletLayout);
         workPieceDimensions = new RectangularDimensions(50, 50, 50);
         workPiece = new WorkPiece(Type.FINISHED, workPieceDimensions, Material.AL, 3);

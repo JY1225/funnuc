@@ -1,9 +1,12 @@
 package eu.robojob.millassist.ui.configure.device.stacking.pallet;
 
 import javafx.application.Platform;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletListener;
 import eu.robojob.millassist.process.PutStep;
+import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.device.stacking.pallet.UnloadPalletLayoutView;
 
@@ -57,5 +60,13 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
     @Override
     public void unregister() {
         unloadPallet.removeListener(this);
+    }
+    
+    public void updateLayoutType(PalletLayoutType layoutType) {
+        unloadPallet.getLayout().setLayoutType(layoutType);
+        unloadPallet.recalculateLayout();
+        ((UnloadPalletDeviceSettings) putStep.getProcessFlow().getDeviceSettings().get(unloadPallet)).setLayoutType(unloadPallet.getLayout().getLayoutType());
+        unloadPallet.notifyLayoutChanged();
+        this.putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.putStep.getProcessFlow(), this.putStep, true));
     }
 }

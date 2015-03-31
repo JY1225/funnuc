@@ -19,13 +19,13 @@ import eu.robojob.millassist.db.GeneralMapper;
 import eu.robojob.millassist.db.external.util.ConnectionMapper;
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.AbstractDevice.DeviceType;
 import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.Clamping.Type;
 import eu.robojob.millassist.external.device.EFixtureType;
 import eu.robojob.millassist.external.device.SimpleWorkArea;
-import eu.robojob.millassist.external.device.AbstractDevice.DeviceType;
-import eu.robojob.millassist.external.device.Clamping.Type;
-import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.WorkAreaBoundary;
+import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
@@ -46,8 +46,8 @@ import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlateLayout;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridHole;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
-import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
 
@@ -129,14 +129,16 @@ public class DeviceMapper {
             float minXGap=results.getFloat("OFFSET_X");
             float minYGap=results.getFloat("OFFSET_Y");
             float minInterferenceDistance = results.getFloat("MIN_INTERFERENCE");
-            PalletLayout layout = new PalletLayout(palletWidth, palletLength, palletFreeBorder, minXGap, minYGap, minInterferenceDistance);
+            float horizontalR = results.getFloat("HORIZONTAL_R");
+            float verticalR = results.getFloat("VERTICAL_R");
+            PalletLayout layout = new PalletLayout(palletWidth, palletLength, palletFreeBorder, minXGap, minYGap, minInterferenceDistance, horizontalR, verticalR);
             pallet = new UnloadPallet(name, zones, layout);
             pallet.setId(id);
         }
         return pallet;
 	}
 	
-	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float width, final float length, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance) throws SQLException {
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float width, final float length, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws SQLException {
 	    
 	    ConnectionManager.getConnection().setAutoCommit(false);
 	    if ((!unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
@@ -151,14 +153,16 @@ public class DeviceMapper {
         stmt.execute();
         
         PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE PALLET "+
-                "SET WIDTH = ?, LENGTH = ?, BORDER = ?, OFFSET_X = ?, OFFSET_Y = ?, MIN_INTERFERENCE = ? WHERE ID = ?");
+                "SET WIDTH = ?, LENGTH = ?, BORDER = ?, OFFSET_X = ?, OFFSET_Y = ?, MIN_INTERFERENCE = ?, HORIZONTAL_R = ?, VERTICAL_R = ? WHERE ID = ?");
         stmt2.setFloat(1, width);
         stmt2.setFloat(2, length);
         stmt2.setFloat(3, border);
         stmt2.setFloat(4, xOffset);
         stmt2.setFloat(5, yOffset);
         stmt2.setFloat(6, minInterferenceDistance);
-        stmt2.setInt(7, unloadPallet.getId());
+        stmt2.setFloat(7, horizontalR);
+        stmt2.setFloat(8, verticalR);
+        stmt2.setInt(9, unloadPallet.getId());
         stmt2.execute();
         unloadPallet.getLayout().setPalletWidth(width);
         unloadPallet.getLayout().setPalletLength(length);
@@ -166,6 +170,8 @@ public class DeviceMapper {
         unloadPallet.getLayout().setMinXGap(xOffset);
         unloadPallet.getLayout().setMinYGap(yOffset);
         unloadPallet.getLayout().setMinInterferenceDistance(minInterferenceDistance);
+        unloadPallet.getLayout().setHorizontalR(horizontalR);
+        unloadPallet.getLayout().setVerticalR(verticalR);
         unloadPallet.setName(name);
         ConnectionManager.getConnection().commit();
         ConnectionManager.getConnection().setAutoCommit(true);

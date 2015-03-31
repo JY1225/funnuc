@@ -124,7 +124,7 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
 	
 	public Coordinates getPutLocation(UnloadPallet unloadPallet, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType) {
         for (PalletStackingPosition stackingPos : unloadPallet.getLayout().getStackingPositions()) {
-            if (stackingPos.getWorkPiece() != null && stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED) && stackingPos.getAmount() == 0) {
+            if(stackingPos.getWorkPiece() != null && stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED) && stackingPos.getAmount() < unloadPallet.getLayout().getLayers() && unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) >= stackingPos.getAmount() * unloadPallet.getLayout().getMaxPiecesPersLayoutAmount()) {
                 unloadPallet.setCurrentPutLocation(stackingPos);
                 Coordinates c = new Coordinates(stackingPos.getPutPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
