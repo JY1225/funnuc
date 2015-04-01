@@ -27,6 +27,9 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
         getView().build();
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void modeChanged(ModeChangedEvent e) {
         if (!e.getMode().equals(Mode.AUTO)) {
@@ -34,6 +37,9 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void statusChanged(StatusChangedEvent e) {
         if (unloadPallet.getCurrentPutLocation() == null) {
@@ -43,30 +49,52 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dataChanged(DataChangedEvent e) {}
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void exceptionOccured(ExceptionOccuredEvent e) {}
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void unregister() {
         processFlow.removeListener(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setPresenter() {
         getView().setPresenter(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isConfigured() {
         return false;
     }
     
+    /**
+     * Add a number of work pieces to the current active process flow. This will update the finished amount and the pallet.
+     * @param amount The amount of work pieces that will be added
+     */
     public void addWorkpieces(final int amount) {
         try{    
             if(amount > getMaxPiecesToAdd())
@@ -74,23 +102,36 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
             int finishedAmount = processFlow.getFinishedAmount();
             
             //Add new pieces 
-            addWorkPieces(amount, processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
+            addWorkPieces(amount);
             processFlow.setFinishedAmount(finishedAmount + amount);
         } catch(IncorrectWorkPieceDataException e) {
             getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
         }
     }
     
-    private void addWorkPieces(int amount, boolean resetFirst) throws IncorrectWorkPieceDataException { 
-        unloadPallet.addWorkPieces(amount, resetFirst);
+    /**
+     * Adds work pieces to the pallet.
+     * @param amount The amount of work pieces that will be added
+     * @throws IncorrectWorkPieceDataException If the work piece that is added is not valid
+     */
+    private void addWorkPieces(int amount) throws IncorrectWorkPieceDataException { 
+        unloadPallet.addWorkPieces(amount);
         getView().hideNotification();
     }
     
+    /**
+     * Maximum pieces to add = total amount of the process flow - the finished amount of the process flow
+     * @return The maximum number of pieces that can be added
+     */
     public int getMaxPiecesToAdd() {
         int amount = processFlow.getTotalAmount() - processFlow.getFinishedAmount();
         return amount;
     }
     
+    /**
+     * Removes an amount of work pieces from the current process flow. This will update the finished amount and the pallet.
+     * @param amount The amount of work pieces that will be removed
+     */
     public void removeWorkPieces(final int amount) {
         try {
             if(amount > unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED)) {
@@ -109,6 +150,10 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
         }
     }
     
+    /**
+     * Maximum pieces to remove = number of finished work pieces on the pallet.
+     * @return The maximum number of pieces that can be removed
+     */
     public int getMaxPiecesToRemove() {
         return unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
     }

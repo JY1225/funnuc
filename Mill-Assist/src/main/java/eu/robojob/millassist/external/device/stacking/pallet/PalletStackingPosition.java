@@ -6,6 +6,9 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class PalletStackingPosition extends StackingPosition {
 
+    /**
+     * The current amount of work pieces on this stacking position.
+     */
     private int amount;
     
     public PalletStackingPosition(Coordinates position, WorkPiece workPiece, final int amount) {
@@ -44,8 +47,11 @@ public class PalletStackingPosition extends StackingPosition {
         }
     }
     
+    /**
+     * Determines the Z value of the put position and then returns the updated put position.
+     * @return The put position
+     */
     public Coordinates getPutPosition() {
-        // for pick the top workpiece shouldn't be used!
         Coordinates position = new Coordinates(super.getPosition());
         if (amount > 0) {
             position.setZ(amount * getWorkPiece().getDimensions().getZSafe());

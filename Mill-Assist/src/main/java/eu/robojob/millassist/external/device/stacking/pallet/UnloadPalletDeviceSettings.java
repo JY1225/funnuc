@@ -6,6 +6,13 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class UnloadPalletDeviceSettings extends DeviceSettings {
     
+    /**
+     * The finished work piece that will be put in this position.
+     */
+    private WorkPiece finishedWorkPiece;
+    /**
+     * The layout type of the unload pallet.
+     */
     private PalletLayoutType layoutType;
     
     public UnloadPalletDeviceSettings(final WorkPiece finishedWorkPiece, final PalletLayoutType layoutType) {
@@ -13,8 +20,6 @@ public class UnloadPalletDeviceSettings extends DeviceSettings {
         this.finishedWorkPiece = finishedWorkPiece;
         this.layoutType = layoutType;
     }
-    
-    private WorkPiece finishedWorkPiece;
 
     public WorkPiece getFinishedWorkPiece() {
         return finishedWorkPiece;

@@ -62,6 +62,10 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
         unloadPallet.removeListener(this);
     }
     
+    /**
+     * Update the layout type of the pallet. This updates the device settings and the unload pallet itself.
+     * @param layoutType The new layout type of the pallet
+     */
     public void updateLayoutType(PalletLayoutType layoutType) {
         unloadPallet.getLayout().setLayoutType(layoutType);
         unloadPallet.recalculateLayout();

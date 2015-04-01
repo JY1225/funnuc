@@ -99,12 +99,18 @@ public class UnloadPalletAddRemoveFinishedView extends AbstractFormView<UnloadPa
         
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setTextFieldListener(TextInputControlListener listener) {
         itfAmount.setFocusListener(listener);
         itfAmountRemove.setFocusListener(listener);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void refresh() {
         refreshMax();
@@ -117,6 +123,9 @@ public class UnloadPalletAddRemoveFinishedView extends AbstractFormView<UnloadPa
         btnRemove.setDisable(!enabled);
     }
     
+    /**
+     * Resets the max amount of pieces to add.
+     */
     private void refreshMax() {
         itfAmount.setText("" + getPresenter().getMaxPiecesToAdd());
         if(Integer.parseInt(itfAmount.getText()) <0) {
@@ -124,6 +133,10 @@ public class UnloadPalletAddRemoveFinishedView extends AbstractFormView<UnloadPa
         }
     }
     
+    
+    /**
+     * Rests the max amount of pieces to remove.
+     */
     private void refreshMaxRemove() {
         itfAmountRemove.setText("" + getPresenter().getMaxPiecesToRemove());
         if(Integer.parseInt(itfAmountRemove.getText()) <0) {

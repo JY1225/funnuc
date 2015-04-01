@@ -105,5 +105,13 @@ public class UnloadPalletMenuPresenter extends AbstractStackingDeviceMenuPresent
     public void unregisterListeners() {
        unloadPalletLayoutPresenter.unregister();
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void openFirst() {
+        showLayout();
+    }
 
 }
