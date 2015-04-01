@@ -22,12 +22,10 @@ import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
-import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
@@ -340,16 +338,29 @@ public class UnloadPallet extends AbstractStackingDevice{
         this.currentPutLocation = currentPutLocation;
     }
     
+    /**
+     * Recalculate the positions on this UnloadPallet.
+     */
     public void recalculateLayout() {
         getLayout().calculateLayoutForWorkPiece(getFinishedWorkPiece());
         getLayout().initFinishedWorkPieces(getFinishedWorkPiece());
     }
     
-    public synchronized void addWorkPieces(final int amount, boolean reset) throws IncorrectWorkPieceDataException {
-        getLayout().placeFinishedWorkPieces(getFinishedWorkPiece(), amount, reset, true);
+    /**
+     * Add an amount of work pieces to this UnloadPallet.
+     * @param amount The amount of work pieces to add
+     * @throws IncorrectWorkPieceDataException If a wrong work piece is added
+     */
+    public synchronized void addWorkPieces(final int amount) throws IncorrectWorkPieceDataException {
+        getLayout().placeFinishedWorkPieces(getFinishedWorkPiece(), amount, true);
         notifyLayoutChanged();
     }
     
+    /**
+     * Remove an amount of work pieces from this UnloadPallet.
+     * @param amount The amount of work pieces to remove
+     * @throws IncorrectWorkPieceDataException If a wrong work piece is removed
+     */
     public synchronized void removeWorkPieces(final int amount) throws IncorrectWorkPieceDataException {
         getLayout().removeFinishedWorkPieces(amount);
         notifyLayoutChanged();

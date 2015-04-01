@@ -10,6 +10,7 @@ import org.junit.Test;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
 import eu.robojob.millassist.workpiece.RoundDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
@@ -36,11 +37,42 @@ public class RoundPiecePalletUnloadStrategyTest {
     }
     
     @Test
-    public void test_configuration() {
+    public void test_configuration_round_optimal() {
+        palletLayout.setLayoutType(PalletLayoutType.OPTIMAL);
+        List<PalletStackingPosition> positions = palletLayout.calculateLayoutForWorkPiece(workPiece);
+        assertEquals(233, positions.size());
+        
+        List<PalletStackingPosition> positions2 = palletLayout.calculateLayoutForWorkPiece(workPiece2);
+        assertEquals(33, positions2.size());
+    }
+    
+    @Test
+    public void test_configuration_round_shifted_horizontal() {
+        palletLayout.setLayoutType(PalletLayoutType.SHIFTED_HORIZONTAL);
+        List<PalletStackingPosition> positions = palletLayout.calculateLayoutForWorkPiece(workPiece);
+        assertEquals(219, positions.size());
+        
+        List<PalletStackingPosition> positions2 = palletLayout.calculateLayoutForWorkPiece(workPiece2);
+        assertEquals(32, positions2.size());
+    }
+    
+    @Test
+    public void test_configuration_round_shifted_vertical() {
+        palletLayout.setLayoutType(PalletLayoutType.SHIFTED_VERTICAL);
+        List<PalletStackingPosition> positions = palletLayout.calculateLayoutForWorkPiece(workPiece);
+        assertEquals(233, positions.size());
+        
+        List<PalletStackingPosition> positions2 = palletLayout.calculateLayoutForWorkPiece(workPiece2);
+        assertEquals(33, positions2.size());
+    }
+    
+    @Test
+    public void test_configuration_round_not_shifted() {
+        palletLayout.setLayoutType(PalletLayoutType.NOT_SHIFTED_HORIZONTAL);
         List<PalletStackingPosition> positions = palletLayout.calculateLayoutForWorkPiece(workPiece);
         assertEquals(160, positions.size());
-//        
-//        List<StackingPosition> positions2 = palletLayout.calculateLayoutForWorkPiece(workPiece2);
-//        assertEquals(24, positions2.size());
+        
+        List<PalletStackingPosition> positions2 = palletLayout.calculateLayoutForWorkPiece(workPiece2);
+        assertEquals(24, positions2.size());
     }
 }

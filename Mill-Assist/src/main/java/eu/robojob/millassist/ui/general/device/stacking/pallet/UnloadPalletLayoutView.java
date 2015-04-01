@@ -21,7 +21,6 @@ import javafx.scene.transform.Scale;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
-import eu.robojob.millassist.external.device.stacking.stackplate.StackPlateStackingPosition;
 import eu.robojob.millassist.ui.configure.device.stacking.pallet.UnloadPalletLayoutPresenter;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -223,6 +222,11 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
         }
     }
     
+    /**
+     * Create and position the marker on the work piece representation.
+     * @param workPieceRepre The work piece representation on which a marker is added
+     * @return Rectangle The marker to add
+     */
     private Rectangle createMarker(IDrawableObject workPieceRepre) {
         Rectangle marker = workPieceRepre.createMarker(false);
         if(unloadPallet.getLayout().isRotate90()) {
@@ -377,6 +381,10 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
         }
     }
     
+    /**
+     * Show/Hide the controls to edit the pallet layout. Hide is done by the automate step by default.
+     * @param controlsHidden Boolean indicating whether to hide the controls or not
+     */
     public void setControlsHidden(final boolean controlsHidden) {
         this.controlsHidden = controlsHidden;
     }

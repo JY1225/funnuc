@@ -1,6 +1,5 @@
 package eu.robojob.millassist.external.device.stacking.pallet.strategy;
 
-import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
 import eu.robojob.millassist.workpiece.RoundDimensions;

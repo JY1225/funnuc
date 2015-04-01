@@ -100,10 +100,18 @@ public class PalletLayout {
      */
     private Map<WorkPieceShape, AbstractPalletUnloadStrategy<? extends IWorkPieceDimensions>> strategyMap;
     
-    
+    /**
+     * Horizontal work piece orientation R correction.
+     */
     private float horizontalR;
+    /**
+     * Vertical work piece orientation R correction.
+     */
     private float verticalR;
     
+    /**
+     * Number of allowed layers on the pallet
+     */
     private int layers;
     
     public PalletLayout(final float palletWidth, final float palletLength, final float palletFreeBorder, final float minXGap, final float minYGap, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
@@ -116,6 +124,7 @@ public class PalletLayout {
         this.strategyMap = new HashMap<WorkPieceShape, AbstractPalletUnloadStrategy<? extends IWorkPieceDimensions>>();
         strategyMap.put(WorkPieceShape.CYLINDRICAL, new RoundPiecePalletUnloadStrategy(this));
         strategyMap.put(WorkPieceShape.CUBIC, new CubicPiecePalletUnloadStrategy(this));
+        //FIXME not hard coded
         this.layers = 2;
         this.horizontalR = horizontalR;
         this.verticalR = verticalR;
@@ -254,7 +263,13 @@ public class PalletLayout {
         return this.palletLength - 2* this.palletFreeBorder;
     }
     
-    public void placeFinishedWorkPieces(final WorkPiece finishedWorkPiece, final int amount, boolean resetFirst, boolean isAddOperation) {
+    /**
+     * Manually add finished work pieces to the pallet.
+     * @param finishedWorkPiece The finished work piece that will be added
+     * @param amount The amount of finished work pieces that will be added
+     * @param isAddOperation Boolean indicating whether this is an add operation
+     */
+    public void placeFinishedWorkPieces(final WorkPiece finishedWorkPiece, final int amount, boolean isAddOperation) {
         logger.debug("Adding finished workpieces: [" + amount + "].");
         int placedAmount = 0;
         int stackingPos = 0;
@@ -263,7 +278,7 @@ public class PalletLayout {
         PalletStackingPosition stPos = getStackingPositions().get(0);
         while (placedAmount < amount && stackingPos < getStackingPositions().size()) {
             stPos = getStackingPositions().get(stackingPos);
-            while(placedAmount < amount && addOneWorkPiece(finishedWorkPiece, stPos,getLayers(), false) ) {
+            while(placedAmount < amount && addOneWorkPiece(finishedWorkPiece, stPos) ) {
                 placedAmount++;
             }
             stackingPos++;
@@ -273,6 +288,10 @@ public class PalletLayout {
         }
     }
     
+    /**
+     * Transfer the work piece in the first position to the last position if possible.
+     * @param lastPosition Index of the last position to which the first work piece will be transfered
+     */
     private void transferFirstToLast(int lastPosition) {
         //If the final stack of pieces (in case of multiple layers) does not hold the maximum, try to move pieces from the 
         //first raw stack to the last raw stack (min of first stack is always 1)
@@ -299,26 +318,21 @@ public class PalletLayout {
         } 
     }
     
-    
-    
-    public void resetWorkPieceAt(int positionIndex) {
-        getStackingPositions().get(positionIndex).setWorkPiece(null);
-        getStackingPositions().get(positionIndex).setAmount(0); 
-    }
-    
-    private boolean addOneWorkPiece(final WorkPiece workPiece, PalletStackingPosition position, int maxNbOfPieces, boolean overwrite) {
+    /**
+     * Add one work piece to the pallet.
+     * @param workPiece The work piece that will be added
+     * @param position The position on which the work piece will be added
+     * @param maxNbOfPieces The maximum number of work pieces 
+     * @return Boolean indicating that the work piece is added to the PalletStackingPosition
+     */
+    private boolean addOneWorkPiece(final WorkPiece workPiece, PalletStackingPosition position) {
         if(position.hasWorkPiece()) {
             if(position.getWorkPiece().getType().equals(workPiece.getType())) {
-                if(getWorkPieceAmount(WorkPiece.Type.FINISHED) >= position.getAmount() * getMaxPiecesPersLayoutAmount()){
+                if(getWorkPieceAmount(WorkPiece.Type.FINISHED) >= position.getAmount() * getMaxPiecesPerLayerAmount()){
                     position.incrementAmount();
                     return true;
                 }
                 return false;
-            }
-            if(overwrite) {
-                position.setWorkPiece(workPiece);
-                position.setAmount(1);
-                return true;
             }
             return false;
         }
@@ -341,10 +355,15 @@ public class PalletLayout {
         return  getLayers() * stackingPositions.size();
     }
     
-    public int getMaxPiecesPersLayoutAmount() {
+    public int getMaxPiecesPerLayerAmount() {
         return stackingPositions.size();
     }
     
+    /**
+     * Get the number of work pieces for the given type
+     * @param type The type of work piece from which the amount is requested
+     * @return The number of work pieces of the given type on the pallet
+     */
     public int getWorkPieceAmount(WorkPiece.Type type) {
         if(type == WorkPiece.Type.FINISHED) {
             int result = 0;
@@ -356,6 +375,10 @@ public class PalletLayout {
         return 0;
     }
     
+    /**
+     * Removes the given number of finished work pieces from the pallet.
+     * @param amount The amount of finished work pieces that will be removed from the pallet
+     */
     public void removeFinishedWorkPieces(final int amount) {
         logger.debug("Removing finished workpieces: [" + amount + "].");
         int removedAmount = 0;
@@ -371,6 +394,11 @@ public class PalletLayout {
         }
     }
     
+    /**
+     * Removes a single work piece from the pallet.
+     * @param position The position from which a work piece will be removed
+     * @return A boolean indicating if the work piece is removed from that position on the pallet
+     */
     private boolean removeOneWorkPiece(PalletStackingPosition position) {
         if(position.hasWorkPiece()) {
             if(position.getAmount() > 0) {
