@@ -188,9 +188,9 @@ public class CNCMillingMachinePickPresenter extends AbstractFormPresenter<CNCMil
 				Coordinates lowerLeftCorner = Coordinates.add(clampingAir.getBottomCoord(), clamping.getRelativePosition());
 				Coordinates upperRightCorner = Coordinates.add(clampingAir.getTopCoord(), clamping.getRelativePosition());
 				upperRightCorner.setZ(lowerLeftCorner.getZ());
-				if (!lowerLeftCorner.isInsideSquare(square) || !upperRightCorner.isInsideSquare(square)) {
-					return false;
-				}
+				if (!square.isCoordinateInsideArea(lowerLeftCorner) || !square.isCoordinateInsideArea(upperRightCorner)) {
+                    return false;
+                }
 			}
 			return true;
 		}

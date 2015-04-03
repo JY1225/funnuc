@@ -177,15 +177,17 @@ public class ReversalUnitPutView extends AbstractFormView<ReversalUnitPutPresent
 		ntxtSmoothZ.setFocusListener(listener);
 		ntxtConfigWidth.setFocusListener(listener);
 	}
-	
+
 	private void refreshOrigin(final boolean isShifted) {
-		if (isShifted) {
-			btnHome.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-			btnHomeExtraX.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		} else {
-			btnHome.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-			btnHomeExtraX.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
-		}
+	    btnHome.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+	    btnHomeExtraX.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+	    if (isShifted) {
+	        btnHome.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+	        btnHomeExtraX.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+	    } else {
+	        btnHome.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+	        btnHomeExtraX.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+	    }
 	}
 
 	@Override

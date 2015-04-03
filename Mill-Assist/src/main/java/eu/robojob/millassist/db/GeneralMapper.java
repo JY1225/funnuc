@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import eu.robojob.millassist.positioning.Config;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
 import eu.robojob.millassist.workpiece.RoundDimensions;
@@ -147,15 +148,60 @@ public class GeneralMapper {
 			stmt.executeUpdate();
 		}
 	}
+
+	public void saveConfig(final Config config) throws SQLException {
+	    if (config.getId() <= 0) {
+	        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO CONFIG (FLIP, UP, FRONT, TURN1, TURN2, TURN3) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+	        stmt.setInt(1, config.getCfgFlip());
+	        stmt.setInt(2, config.getCfgUp());
+	        stmt.setInt(3, config.getCfgFront());
+	        stmt.setInt(4, config.getCfgTurn1());
+	        stmt.setInt(5, config.getCfgTurn2());
+	        stmt.setInt(6, config.getCfgTurn3());
+	        stmt.executeUpdate();
+	        ResultSet keys = stmt.getGeneratedKeys();
+	        if ((keys != null) && (keys.next())) {
+	            config.setId(keys.getInt(1));
+	        }
+	    } else {
+	        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE CONFIG SET FLIP = ?, UP = ?, FRONT = ?, TURN1 = ?, TURN2 = ?, TURN3 = ? WHERE ID = ?");
+	        stmt.setInt(1, config.getCfgFlip());
+	        stmt.setInt(2, config.getCfgUp());
+	        stmt.setInt(3, config.getCfgFront());
+	        stmt.setInt(4, config.getCfgTurn1());
+	        stmt.setInt(5, config.getCfgTurn2());
+	        stmt.setInt(6, config.getCfgTurn3());
+	        stmt.setInt(7, config.getId());
+	        stmt.executeUpdate();
+	    }
+	}
 	
+	public Config getConfigById(final int id) throws SQLException {
+	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM CONFIG WHERE ID = ?");
+	    stmt.setInt(1, id);
+	    ResultSet results = stmt.executeQuery();
+	    Config config = null;
+	    if (results.next()) {
+	        int cfg1 = results.getInt("FLIP");
+	        int cfg2 = results.getInt("UP");
+	        int cfg3 = results.getInt("FRONT");
+	        int cfg4 = results.getInt("TURN1");
+	        int cfg5 = results.getInt("TURN2");
+	        int cfg6 = results.getInt("TURN3");
+	        config = new Config(cfg1, cfg2, cfg3, cfg4, cfg5, cfg6);
+	        config.setId(id);
+	    }
+	    return config;
+	}
+
 	public WorkPiece getWorkPieceById(final int processFlowId, final int workPieceId) throws SQLException {
-		WorkPiece workPiece = null;
-		if (processFlowId != 0) {
-			Map<Integer, WorkPiece> buffer = workPieceBuffer.get(processFlowId);
-			if (buffer != null) {
-				workPiece = buffer.get(workPieceId);
-				if (workPiece != null) {
-					return workPiece;
+	    WorkPiece workPiece = null;
+	    if (processFlowId != 0) {
+	        Map<Integer, WorkPiece> buffer = workPieceBuffer.get(processFlowId);
+	        if (buffer != null) {
+	            workPiece = buffer.get(workPieceId);
+	            if (workPiece != null) {
+	                return workPiece;
 				}
 			} else {
 				Map<Integer, WorkPiece> newBuffer = new HashMap<Integer, WorkPiece>();

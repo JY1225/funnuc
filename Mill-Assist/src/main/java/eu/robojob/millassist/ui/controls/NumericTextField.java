@@ -9,16 +9,16 @@ public class NumericTextField extends AbstractTextField<Float> {
 
 	private static final String CSS_CLASS_NUMERIC_TEXTFIELD = "numeric-textfield";
 	
-	private static final String DECIMAL_FORMAT = "#0.00";
+	private static final String DECIMAL_FORMAT = "#0.000";
 	private static final String EMPTY_VALUE = "0.00";
 	private static final char DECIMAL_SEPERATOR = '.';
 	
 	public NumericTextField(final int maxLength) {
-		super(maxLength);	// 
-		setPrefWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
-		setMinWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
-		setMaxWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
-		this.getStyleClass().add(CSS_CLASS_NUMERIC_TEXTFIELD);
+        super(maxLength);   // 
+        setPrefWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
+        setMinWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
+        setMaxWidth(UIConstants.TEXT_FIELD_HEIGHT * 2);
+        this.getStyleClass().add(CSS_CLASS_NUMERIC_TEXTFIELD);
 	}
 
 	@Override

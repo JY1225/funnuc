@@ -218,6 +218,8 @@ public class ReversalUnitPickView extends AbstractFormView<ReversalUnitPickPrese
 	}
 	
 	private void refreshOrigin(final boolean isShifted) {
+	    btnHome.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
+        btnHomeExtraX.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 		if (isShifted) {
 			btnHome.getStyleClass().remove(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);
 			btnHomeExtraX.getStyleClass().add(AbstractFormView.CSS_CLASS_FORM_BUTTON_ACTIVE);

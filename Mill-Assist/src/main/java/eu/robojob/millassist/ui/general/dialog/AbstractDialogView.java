@@ -20,7 +20,7 @@ public abstract class AbstractDialogView<T extends AbstractDialogPresenter<?, ?>
 	private Label lblTitle;
 	private String title;
 	private Node contents;
-	
+	private double height;
 	
 	private static final String CSS_CLASS_OVERLAY = "overlay";
 	private static final String CSS_CLASS_DIALOG = "dialog";
@@ -30,7 +30,8 @@ public abstract class AbstractDialogView<T extends AbstractDialogPresenter<?, ?>
 	private static final int PADDING = 10;
 	protected static final int TITLE_HEIGHT = 40;
 	
-	public AbstractDialogView(String title) {
+	public AbstractDialogView(String title, double height) {
+	    this.height = height;
 		this.title = title;
 		build();
 	}
@@ -58,12 +59,12 @@ public abstract class AbstractDialogView<T extends AbstractDialogPresenter<?, ?>
 			HBox.setHgrow(lblTitle, Priority.ALWAYS);
 			vBoxDialog.getChildren().add(hBoxTitle);
 			// Contents
-			contents = getContents();
+			contents = getContents(height);
 			vBoxDialog.getStyleClass().add(CSS_CLASS_DIALOG);
 			vBoxDialog.getChildren().add(contents);
 		} else {
 			// Contents
-			contents = getContents();
+			contents = getContents(height);
 			vBoxDialog.getChildren().add(contents);
 			vBoxDialog.setAlignment(Pos.CENTER);
 		}
@@ -77,7 +78,7 @@ public abstract class AbstractDialogView<T extends AbstractDialogPresenter<?, ?>
 		setAlignment(Pos.CENTER);
 	}
 	
-	protected abstract Node getContents();
+	protected abstract Node getContents(double height);
 	
 	public T getPresenter() {
 		return presenter;

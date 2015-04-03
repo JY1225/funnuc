@@ -720,3 +720,13 @@
 	-fx-stroke-linejoin:round;
 	-fx-stroke-opacity:1;
 }
+
+.robotIPC-svg {
+	-fx-fill-opacity:1;
+	-fx-stroke-width:0.2;
+}
+
+.robotposition-name {
+	-fx-font-weight: bold;
+}
+

@@ -26,11 +26,18 @@ import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.external.robot.RobotAlarm;
 import eu.robojob.millassist.external.robot.RobotConstants;
+import eu.robojob.millassist.external.robot.RobotDataManager;
 import eu.robojob.millassist.external.robot.RobotMonitoringThread;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.external.robot.RobotPutSettings;
 import eu.robojob.millassist.external.robot.RobotSocketCommunication;
+import eu.robojob.millassist.positioning.Config;
 import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
+import eu.robojob.millassist.positioning.RobotPosition;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
@@ -63,12 +70,13 @@ public class FanucRobot extends AbstractRobot {
 		
 	private static Logger logger = LogManager.getLogger(FanucRobot.class.getName());
 	
-	public FanucRobot(final String name, final Set<GripperBody> gripperBodies, final GripperBody gripperBody, final float payload, final SocketConnection socketConnection) {
-		super(name, gripperBodies, gripperBody, payload);
+	public FanucRobot(final String name, final Set<GripperBody> gripperBodies, final GripperBody gripperBody, final float payload, 
+	        final SocketConnection socketConnection, final boolean acceptData) {
+		super(name, gripperBodies, gripperBody, payload, acceptData);
 		this.fanucRobotCommunication = new RobotSocketCommunication(socketConnection, this);
 		RobotMonitoringThread monitoringThread = new RobotMonitoringThread(this);
 		ThreadManager.submit(monitoringThread);
-		df = new DecimalFormat("#.##");
+		df = new DecimalFormat("#.###");
 		df2 = new DecimalFormat("#");
 		df.setDecimalSeparatorAlwaysShown(false);
 		DecimalFormatSymbols custom = new DecimalFormatSymbols();
@@ -76,8 +84,8 @@ public class FanucRobot extends AbstractRobot {
 		df.setDecimalFormatSymbols(custom);
 	}
 	
-	public FanucRobot(final String name, final float payload, final SocketConnection socketConnection) {
-		this(name, null, null, payload, socketConnection);
+	public FanucRobot(final String name, final float payload, final SocketConnection socketConnection, final boolean acceptData) {
+		this(name, null, null, payload, socketConnection, acceptData);
 	}
 
 	@Override
@@ -789,12 +797,177 @@ public class FanucRobot extends AbstractRobot {
 	}
 
 	public RobotSocketCommunication getRobotSocketCommunication() {
-		return this.fanucRobotCommunication;
+	    return this.fanucRobotCommunication;
 	}
 
 	@Override
 	public void moveToCustomPosition() throws AbstractCommunicationException, RobotActionException, InterruptedException {
-		fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_TO_CUSTOM_POS, RobotConstants.RESPONSE_TO_CUSTOM_POS, WRITE_VALUES_TIMEOUT);
+	    fanucRobotCommunication.writeCommand(RobotConstants.COMMAND_TO_CUSTOM_POS, RobotConstants.RESPONSE_TO_CUSTOM_POS, WRITE_VALUES_TIMEOUT);
 	}
-	
+
+	private List<String> getPositionValues(Coordinates coord, Config config) {
+	    List<String> values = new ArrayList<String>();
+	    values.add(df.format(coord.getX()));
+	    values.add(df.format(coord.getY()));
+	    values.add(df.format(coord.getZ()));
+	    values.add(df.format(coord.getW()));
+	    values.add(df.format(coord.getP()));
+	    values.add(df.format(coord.getR()));
+	    values.add(df.format(config.getCfgFlip()));
+	    values.add(df.format(config.getCfgUp()));
+	    values.add(df.format(config.getCfgFront()));
+	    values.add(df.format(config.getCfgTurn1()));
+	    values.add(df.format(config.getCfgTurn2()));
+	    values.add(df.format(config.getCfgTurn3()));
+	    return values;
+	}
+
+	@Override
+	public void writeUserFrame(RobotUserFrame userframe, final RobotPosition position) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+        List<String> values = new ArrayList<String>();
+        values.add("" + userframe.getUfNr());
+        // Position
+        Coordinates coord = position.getPosition();
+        Config config = position.getConfiguration();
+        values.addAll(getPositionValues(coord, config));
+        fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_USERFRAME, RobotConstants.RESPONSE_WRITE_USERFRAME, WRITE_VALUES_TIMEOUT, values);
+	}
+
+	@Override
+	public void readUserFrame(RobotUserFrame userframe) throws AbstractCommunicationException,
+			RobotActionException, InterruptedException {
+        List<String> values = new ArrayList<String>();
+        values.add("" + userframe.getUfNr());
+        List<String> result = fanucRobotCommunication.readValues(RobotConstants.COMMAND_READ_USERFRAME, RobotConstants.RESPONSE_READ_USERFRAME, ASK_POSITION_TIMEOUT, values);
+        // index 0 is responseId, index 1 is userframeID
+        float x = Float.parseFloat(result.get(2));
+        float y = Float.parseFloat(result.get(3));
+        float z = Float.parseFloat(result.get(4));
+        float w = Float.parseFloat(result.get(5));
+        float p = Float.parseFloat(result.get(6));
+        float r = Float.parseFloat(result.get(7));
+        Coordinates coord = new Coordinates(x,y,z,w,p,r);
+        int cfg1 = Integer.parseInt(result.get(8));
+        int cfg2 = Integer.parseInt(result.get(9));
+        int cfg3 = Integer.parseInt(result.get(10));
+        int cfg4 = Integer.parseInt(result.get(11));
+        int cfg5 = Integer.parseInt(result.get(12));
+        int cfg6 = Integer.parseInt(result.get(13));
+        Config config = new Config(cfg1, cfg2, cfg3, cfg4, cfg5, cfg6);
+        RobotDataManager.addUserframe(userframe, new RobotPosition(coord, config));
+        logger.debug("read " + userframe.toString());
+	}
+
+    @Override
+    public void writeIPPoint(RobotIPPoint ipPoint, final RobotPosition position) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+        List<String> values = new ArrayList<String>();
+        values.add("" + ipPoint.getUfNr());
+        values.add("" + ipPoint.getTfNr());
+        values.add("" + ipPoint.getPosType().getId());
+        // Position
+        Coordinates coord = position.getPosition();
+        Config config = position.getConfiguration();
+        values.addAll(getPositionValues(coord, config));
+        fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_IP_POINT, RobotConstants.RESPONSE_WRITE_IP_POINT, WRITE_VALUES_TIMEOUT, values);
+    }
+
+    @Override
+    public void readIPPoint(RobotIPPoint ipPoint) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+        List<String> values = new ArrayList<String>();
+        values.add("" + ipPoint.getUfNr());
+        values.add("" + ipPoint.getTfNr());
+        values.add("" + ipPoint.getPosType().getId());
+        List<String> result = fanucRobotCommunication.readValues(RobotConstants.COMMAND_READ_IP_POINT, RobotConstants.RESPONSE_READ_IP_POINT, ASK_POSITION_TIMEOUT, values);
+        // index 0 is responseId, index 1 is ufNr, index 2 is tfNr, index 3 is ApproachType
+        float x = Float.parseFloat(result.get(4));
+        float y = Float.parseFloat(result.get(5));
+        float z = Float.parseFloat(result.get(6));
+        float w = Float.parseFloat(result.get(7));
+        float p = Float.parseFloat(result.get(8));
+        float r = Float.parseFloat(result.get(9));
+        Coordinates coord = new Coordinates(x,y,z,w,p,r);
+        int cfg1 = Integer.parseInt(result.get(10));
+        int cfg2 = Integer.parseInt(result.get(11));
+        int cfg3 = Integer.parseInt(result.get(12));
+        int cfg4 = Integer.parseInt(result.get(13));
+        int cfg5 = Integer.parseInt(result.get(14));
+        int cfg6 = Integer.parseInt(result.get(15));
+        Config config = new Config(cfg1, cfg2, cfg3, cfg4, cfg5, cfg6);
+        RobotDataManager.addIPPoint(ipPoint, new RobotPosition(coord, config));
+        logger.debug("read " + ipPoint.toString());
+    }
+
+    @Override
+    public void writeRPPoint(RobotRefPoint rpPoint, final RobotPosition position) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+        List<String> values = new ArrayList<String>();
+        values.add("" + rpPoint.getUfNr());
+        values.add("" + rpPoint.getTfNr());
+        values.add("" + rpPoint.getOriginalTfNr());
+        // Position
+        Coordinates coord = position.getPosition();
+        Config config = position.getConfiguration();
+        values.addAll(getPositionValues(coord, config));
+        fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_REF_POINT, RobotConstants.RESPONSE_WRITE_REF_POINT, WRITE_VALUES_TIMEOUT, values);
+    }
+
+    @Override
+    public void readRPPoint(RobotRefPoint rpPoint) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+        List<String> values = new ArrayList<String>();
+        values.add("" + rpPoint.getUfNr());
+        values.add("" + rpPoint.getTfNr());
+        values.add("" + rpPoint.getOriginalTfNr());
+        List<String> result = fanucRobotCommunication.readValues(RobotConstants.COMMAND_READ_REF_POINT, RobotConstants.RESPONSE_READ_REF_POINT, ASK_POSITION_TIMEOUT, values);
+        // index 0 is responseId, index 1 is ufNr, index 2 is tfNr, index 3 is originalTfNr
+        float x = Float.parseFloat(result.get(4));
+        float y = Float.parseFloat(result.get(5));
+        float z = Float.parseFloat(result.get(6));
+        float w = Float.parseFloat(result.get(7));
+        float p = Float.parseFloat(result.get(8));
+        float r = Float.parseFloat(result.get(9));
+        Coordinates coord = new Coordinates(x,y,z,w,p,r);
+        int cfg1 = Integer.parseInt(result.get(10));
+        int cfg2 = Integer.parseInt(result.get(11));
+        int cfg3 = Integer.parseInt(result.get(12));
+        int cfg4 = Integer.parseInt(result.get(13));
+        int cfg5 = Integer.parseInt(result.get(14));
+        int cfg6 = Integer.parseInt(result.get(15));
+        Config config = new Config(cfg1, cfg2, cfg3, cfg4, cfg5, cfg6);
+        RobotDataManager.addRPPoint(rpPoint, new RobotPosition(coord, config));
+        logger.debug("read " + rpPoint.toString());
+    }
+
+    @Override
+    public void writeSpecialPoint(RobotSpecialPoint specialPoint, final RobotPosition position) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+        List<String> values = new ArrayList<String>();
+        values.add("" + specialPoint.getId());
+        // Position
+        Coordinates coord = position.getPosition();
+        Config config = position.getConfiguration();
+        values.addAll(getPositionValues(coord, config));
+        fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_SPECIAL_POINT, RobotConstants.RESPONSE_WRITE_SPECIAL_POINT, WRITE_VALUES_TIMEOUT, values);
+    }
+
+    @Override
+    public void readSpecialPoint(RobotSpecialPoint specialPoint) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+        List<String> values = new ArrayList<String>();
+        values.add("" + specialPoint.getId());
+        List<String> result = fanucRobotCommunication.readValues(RobotConstants.COMMAND_READ_SPECIAL_POINT, RobotConstants.RESPONSE_READ_SPECIAL_POINT, ASK_POSITION_TIMEOUT, values);
+        // index 0 is responseId, index 1 is specialId
+        float x = Float.parseFloat(result.get(2));
+        float y = Float.parseFloat(result.get(3));
+        float z = Float.parseFloat(result.get(4));
+        float w = Float.parseFloat(result.get(5));
+        float p = Float.parseFloat(result.get(6));
+        float r = Float.parseFloat(result.get(7));
+        Coordinates coord = new Coordinates(x,y,z,w,p,r);
+        int cfg1 = Integer.parseInt(result.get(8));
+        int cfg2 = Integer.parseInt(result.get(9));
+        int cfg3 = Integer.parseInt(result.get(10));
+        int cfg4 = Integer.parseInt(result.get(11));
+        int cfg5 = Integer.parseInt(result.get(12));
+        int cfg6 = Integer.parseInt(result.get(13));
+        Config config = new Config(cfg1, cfg2, cfg3, cfg4, cfg5, cfg6);
+        RobotDataManager.addSpecialPoint(specialPoint, new RobotPosition(coord, config));
+        logger.debug("read " + specialPoint.toString());
+    }	
 }

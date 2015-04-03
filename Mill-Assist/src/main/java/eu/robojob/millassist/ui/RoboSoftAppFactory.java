@@ -35,6 +35,8 @@ import eu.robojob.millassist.ui.admin.general.GeneralAdminView;
 import eu.robojob.millassist.ui.admin.robot.RobotAdminPresenter;
 import eu.robojob.millassist.ui.admin.robot.RobotConfigurePresenter;
 import eu.robojob.millassist.ui.admin.robot.RobotConfigureView;
+import eu.robojob.millassist.ui.admin.robot.RobotDataPresenter;
+import eu.robojob.millassist.ui.admin.robot.RobotDataView;
 import eu.robojob.millassist.ui.admin.robot.RobotGripperPresenter;
 import eu.robojob.millassist.ui.admin.robot.RobotGripperView;
 import eu.robojob.millassist.ui.admin.robot.RobotMenuPresenter;
@@ -105,6 +107,7 @@ public final class RoboSoftAppFactory {
 	private static RobotAdminPresenter robotAdminPresenter;
 	private static RobotConfigurePresenter robotConfigurePresenter;
 	private static RobotGripperPresenter robotGripperPresenter;
+	private static RobotDataPresenter robotDataPresenter;
 	private static DeviceAdminPresenter deviceAdminPresenter;
 	private static UserFramesConfigurePresenter userFramesConfigurePresenter;
 	private static BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
@@ -452,14 +455,13 @@ public final class RoboSoftAppFactory {
 		if (robotAdminPresenter == null) {
 			SubMenuAdminView view = new SubMenuAdminView();
 			RobotMenuView menuView = new RobotMenuView();
-			RobotMenuPresenter robotMenuPresenter = new RobotMenuPresenter(menuView, getRobotConfigurePresenter(), getRobotGripperPresenter());
+			RobotMenuPresenter robotMenuPresenter = new RobotMenuPresenter(menuView, getRobotConfigurePresenter(), getRobotGripperPresenter(),
+			        getRobotDataPresenter());
 			robotAdminPresenter = new RobotAdminPresenter(view, robotMenuPresenter);
 		}
 		return robotAdminPresenter;
 	}
 
-
-	
 	private static RobotConfigurePresenter getRobotConfigurePresenter() {
 		if (robotConfigurePresenter == null) {
 			RobotConfigureView view = new RobotConfigureView();
@@ -474,5 +476,13 @@ public final class RoboSoftAppFactory {
 			robotGripperPresenter = new RobotGripperPresenter(view, robotManager);
 		}
 		return robotGripperPresenter;
+	}
+	
+	private static RobotDataPresenter getRobotDataPresenter() {
+	    if (robotDataPresenter == null) {
+	        RobotDataView view = new RobotDataView();
+	        robotDataPresenter = new RobotDataPresenter(view, robotManager);
+	    }
+	    return robotDataPresenter;
 	}
 }

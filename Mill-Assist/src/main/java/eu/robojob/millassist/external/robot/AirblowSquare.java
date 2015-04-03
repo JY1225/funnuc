@@ -40,5 +40,21 @@ public class AirblowSquare {
 	public void setTopCoord(Coordinates topCoord) {
 		this.topCoord = topCoord;
 	}
+	
+	public boolean isCoordinateInsideArea(Coordinates coord) {
+	    if (coord.getX() < getBottomCoord().getX())
+	        return false;
+	    if (coord.getY() < getBottomCoord().getY())
+	        return false;
+	    if (coord.getX() > getTopCoord().getX())
+	        return false;
+	    if (coord.getY() > getTopCoord().getY())
+	        return false;
+	    if (coord.getZ() < getBottomCoord().getZ())
+	        return false;
+	    if (coord.getZ() > getTopCoord().getZ())
+	        return false;
+	    return true;
+	}
 
 }

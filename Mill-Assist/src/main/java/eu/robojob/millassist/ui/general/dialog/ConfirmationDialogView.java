@@ -35,14 +35,14 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
 	private static final double HEIGHT = 200;
 	
 	public ConfirmationDialogView(String title, String message) {
-		super(title);
+		super(title, HEIGHT);
 		setId("confirmationDialog");
 		this.message = message;
 		lblMessage.setText(message);
 	}
 
 	@Override
-	protected Node getContents() {
+	protected Node getContents(double height) {
 		vboxContents = new VBox();
 		vboxContents.setPrefWidth(WIDTH);
 		StackPane spMessage = new StackPane();
@@ -58,7 +58,7 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
 		spMessage.getChildren().add(lblMessage);
 		spMessage.setAlignment(Pos.CENTER);
 		spMessage.setPrefWidth(WIDTH);
-		spMessage.setPrefHeight(HEIGHT - UIConstants.BUTTON_HEIGHT - TITLE_HEIGHT);
+		spMessage.setPrefHeight(height - UIConstants.BUTTON_HEIGHT - TITLE_HEIGHT);
 		hboxButtons = new HBox();
 		btnCancel = new Button();
 		btnCancel.setId("btnCancel");
@@ -91,7 +91,7 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
 		HBox.setHgrow(btnOk, Priority.ALWAYS);
 		vboxContents.getChildren().addAll(spMessage, hboxButtons);
 		VBox.setVgrow(spMessage, Priority.ALWAYS);
-		setDialogSize(WIDTH, HEIGHT);
+		setDialogSize(WIDTH, height);
 		return vboxContents;
 	}
 

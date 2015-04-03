@@ -40,7 +40,6 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public class Conveyor extends eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor {

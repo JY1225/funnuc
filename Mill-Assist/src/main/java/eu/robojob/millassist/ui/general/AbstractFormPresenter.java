@@ -33,17 +33,21 @@ public abstract class AbstractFormPresenter<T extends AbstractFormView<?>, S ext
 	public abstract void setPresenter();
 	
 	public abstract boolean isConfigured();
-	
+
 	public boolean askConfirmation(final String title, final String message) {
-		return RoboSoftAppFactory.getMainPresenter().askConfirmation(title, message);
+	    return RoboSoftAppFactory.getMainPresenter().askConfirmation(title, message);
 	}
-	
+
 	public void showNotificationOverlay(final String title, final String message) {
-		RoboSoftAppFactory.getMainPresenter().showNotificationOverlay(title, message);
+	    RoboSoftAppFactory.getMainPresenter().showNotificationOverlay(title, message);
 	}
-	
+
+	public void showNotificationOverlay(final String title, final String message, double height) {
+	    RoboSoftAppFactory.getMainPresenter().showNotificationOverlay(title, message, height);
+	}
+
 	public void showOverlayNode(final Node node) {
-		RoboSoftAppFactory.getMainPresenter().showOverlayNode(node);
+	    RoboSoftAppFactory.getMainPresenter().showOverlayNode(node);
 	}
-	
+
 }

@@ -15,6 +15,11 @@ import eu.robojob.millassist.external.AbstractServiceProvider;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
+import eu.robojob.millassist.positioning.RobotPosition;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {
 	
@@ -22,6 +27,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	private Set<GripperBody> possibleGripperBodies;
 	private int speed;
 	private float payload;
+	private boolean acceptData;
 	
 	private Set<RobotListener> listeners;
 	private boolean stopAction;
@@ -40,7 +46,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	private AbstractRobotActionSettings<?> currentActionSettings;
 
 	public AbstractRobot(final String name, final Set<GripperBody> possibleGripperBodies, final GripperBody activeGripperBody, 
-			final float payload) {
+			final float payload, final boolean acceptData) {
 		super(name);
 		this.speed = 10;
 		this.listeners = new HashSet<RobotListener>();
@@ -54,6 +60,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		this.xrest = -1;
 		this.yrest = -1;
 		this.zrest = -1;
+		this.acceptData = acceptData;
 		if (possibleGripperBodies != null) {
 			this.possibleGripperBodies = possibleGripperBodies;
 			this.activeGripperBody = possibleGripperBodies.iterator().next();
@@ -65,8 +72,16 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 		}
 	}
 	
-	public AbstractRobot(final String name, final float payload) {
-		this(name, null, null, payload);
+	public boolean acceptsData() {
+	    return acceptData;
+	}
+	
+	public void setAcceptData(boolean acceptData) {
+	    this.acceptData = acceptData;
+	}
+	
+	public AbstractRobot(final String name, final float payload, final boolean acceptData) {
+		this(name, null, null, payload, acceptData);
 	}
 	
 	public void addListener(final RobotListener listener) {
@@ -335,6 +350,15 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void continueMoveWithPieceTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continueMoveWithoutPieceTillIPPoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void finalizeMovePiece() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	
+	public abstract void writeUserFrame(final RobotUserFrame userframe, final RobotPosition position) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void readUserFrame(final RobotUserFrame userframe) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void writeIPPoint(final RobotIPPoint ipPoint, final RobotPosition position) throws  AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void readIPPoint(final RobotIPPoint ipPoint) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void writeRPPoint(final RobotRefPoint rpPoint, final RobotPosition position) throws  AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void readRPPoint(final RobotRefPoint rpPoint) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void writeSpecialPoint(final RobotSpecialPoint specialPoint, final RobotPosition position) throws  AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void readSpecialPoint(final RobotSpecialPoint specialPoint) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
 	public String toString() {
 		return "Robot: " + getName();

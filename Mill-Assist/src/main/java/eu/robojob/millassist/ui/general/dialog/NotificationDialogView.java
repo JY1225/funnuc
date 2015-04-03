@@ -30,15 +30,19 @@ public class NotificationDialogView extends AbstractDialogView<NotificationDialo
 	
 	private static final double WIDTH = 420;
 	private static final double HEIGHT = 170;
-	
+
+	public NotificationDialogView(String title, String message, double height) {
+	    super(title, height);
+	    this.message = message;
+	    lblMessage.setText(message);
+	}
+
 	public NotificationDialogView(String title, String message) {
-		super(title);
-		this.message = message;
-		lblMessage.setText(message);
+	    this(title, message, HEIGHT);
 	}
 
 	@Override
-	protected Node getContents() {
+	protected Node getContents(double height) {
 		vboxContents = new VBox();
 		vboxContents.setPrefWidth(WIDTH);
 		StackPane spMessage = new StackPane();
@@ -54,7 +58,7 @@ public class NotificationDialogView extends AbstractDialogView<NotificationDialo
 		spMessage.getChildren().add(lblMessage);
 		spMessage.setAlignment(Pos.CENTER);
 		spMessage.setPrefWidth(WIDTH);
-		spMessage.setPrefHeight(HEIGHT - UIConstants.BUTTON_HEIGHT - TITLE_HEIGHT);
+		spMessage.setPrefHeight(height - UIConstants.BUTTON_HEIGHT - TITLE_HEIGHT);
 		hboxButtons = new HBox();
 		btnOk = new Button();
 		btnOk.setGraphic(new Text(Translator.getTranslation(OK)));
@@ -73,7 +77,7 @@ public class NotificationDialogView extends AbstractDialogView<NotificationDialo
 		HBox.setHgrow(btnOk, Priority.ALWAYS);
 		vboxContents.getChildren().addAll(spMessage, hboxButtons);
 		VBox.setVgrow(spMessage, Priority.ALWAYS);
-		setDialogSize(WIDTH, HEIGHT);
+		setDialogSize(WIDTH, height);
 		return vboxContents;
 	}
 

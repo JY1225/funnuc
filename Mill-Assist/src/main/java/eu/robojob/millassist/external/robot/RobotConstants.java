@@ -94,6 +94,15 @@ public final class RobotConstants {
 	public static final int COMMAND_WRITE_SERVICE_HANDLING		=	76;
 	public static final int COMMAND_WRITE_SERVICE_POINT			=	77;
 	
+	public static final int COMMAND_READ_USERFRAME				=	80;
+	public static final int COMMAND_WRITE_IP_POINT				= 	90;
+	public static final int COMMAND_READ_IP_POINT				= 	91;
+	public static final int COMMAND_WRITE_REF_POINT				= 	92;
+	public static final int COMMAND_READ_REF_POINT				= 	93;
+	public static final int COMMAND_WRITE_SPECIAL_POINT			= 	94;
+	public static final int COMMAND_READ_SPECIAL_POINT			= 	95;
+	
+	
 	// RESPONSE IDS
 //	public static final int RESPONSE_ASK_STATUS					=	120;
 	public static final int RESPONSE_ASK_STATUS					=	122;
@@ -121,6 +130,14 @@ public final class RobotConstants {
 	public static final int RESPONSE_WRITE_SERVICE_GRIPPER		=	175; 
 	public static final int RESPONSE_WRITE_SERVICE_HANDLING		=	176; 
 	public static final int RESPONSE_WRITE_SERVICE_POINT		=	177;
+	
+	public static final int RESPONSE_READ_USERFRAME				=	180;
+	public static final int RESPONSE_WRITE_IP_POINT				= 	190;
+	public static final int RESPONSE_READ_IP_POINT				= 	191;
+	public static final int RESPONSE_WRITE_REF_POINT			= 	192;
+	public static final int RESPONSE_READ_REF_POINT				= 	193;
+	public static final int RESPONSE_WRITE_SPECIAL_POINT		= 	194;
+	public static final int RESPONSE_READ_SPECIAL_POINT			= 	195;
 	
 	// SERVICE GRIPPER
 	public static final int SERVICE_GRIPPER_SERVICE_TYPE_TOOL_CHANGE = 1;

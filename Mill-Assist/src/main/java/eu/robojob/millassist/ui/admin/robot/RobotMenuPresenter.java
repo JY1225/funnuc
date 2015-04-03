@@ -7,17 +7,21 @@ public class RobotMenuPresenter extends AbstractSubMenuPresenter<RobotMenuView, 
 
 	private RobotConfigurePresenter configurePresenter;
 	private RobotGripperPresenter gripperPresenter;
+	private RobotDataPresenter dataPresenter;
 	
-	public RobotMenuPresenter(final RobotMenuView view, final RobotConfigurePresenter configurePresenter, final RobotGripperPresenter gripperPresenter) {
+	public RobotMenuPresenter(final RobotMenuView view, final RobotConfigurePresenter configurePresenter, 
+	        final RobotGripperPresenter gripperPresenter, final RobotDataPresenter dataPresenter) {
 		super(view);
 		this.configurePresenter = configurePresenter;
 		this.gripperPresenter = gripperPresenter;
+		this.dataPresenter = dataPresenter;
 	}
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
 		configurePresenter.setTextFieldListener(listener);
 		gripperPresenter.setTextFieldListener(listener);
+		dataPresenter.setTextFieldListener(listener);
 	}
 	
 	public void configureGeneral() {
@@ -28,6 +32,11 @@ public class RobotMenuPresenter extends AbstractSubMenuPresenter<RobotMenuView, 
 	public void configureGrippers() {
 		getView().setConfigureGrippersActive();
 		getParent().setContentView(gripperPresenter.getView());
+	}
+	
+	public void configureData() {
+	    getView().setConfigureDataActive();
+	    getParent().setContentView(dataPresenter.getView());
 	}
 
 	@Override

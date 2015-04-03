@@ -41,7 +41,7 @@ public class DialogInputStringView extends AbstractDialogView<DialogInputStringP
 	private static final double HEIGHT = 190;
 
 	public DialogInputStringView(String title, String message, String inputLabelText) {
-		super(title);
+		super(title, HEIGHT);
 		this.message = message;
 		lblMessage.setText(message);
 		this.inputLabelText = inputLabelText;
@@ -50,7 +50,7 @@ public class DialogInputStringView extends AbstractDialogView<DialogInputStringP
 	}
 
 	@Override
-	protected Node getContents() {
+	protected Node getContents(double height) {
 		vboxContents = new VBox();
 		vboxContents.setPrefWidth(WIDTH);
 		StackPane spMessage = new StackPane();
@@ -66,7 +66,7 @@ public class DialogInputStringView extends AbstractDialogView<DialogInputStringP
 		spMessage.getChildren().add(lblMessage);
 		spMessage.setAlignment(Pos.CENTER);
 		spMessage.setPrefWidth(WIDTH);
-		spMessage.setPrefHeight(HEIGHT - UIConstants.BUTTON_HEIGHT - TITLE_HEIGHT);
+		spMessage.setPrefHeight(height - UIConstants.BUTTON_HEIGHT - TITLE_HEIGHT);
 		lblInput = new Label(inputLabelText);
 		fullTxtInput = new FullTextField(100);
 		fullTxtInput.setPrefWidth(280);
@@ -120,7 +120,7 @@ public class DialogInputStringView extends AbstractDialogView<DialogInputStringP
 		HBox.setHgrow(fullTxtInput, Priority.ALWAYS);	
 		vboxContents.getChildren().addAll(spMessage, hboxInputConfirmation, hboxButtons);
 		VBox.setVgrow(spMessage, Priority.ALWAYS);
-		setDialogSize(WIDTH, HEIGHT);
+		setDialogSize(WIDTH, height);
 		keyboardPane = new StackPane();
 		keyboardPane.setMaxHeight(300);
 		StackPane.setAlignment(keyboardPane, Pos.BOTTOM_LEFT);

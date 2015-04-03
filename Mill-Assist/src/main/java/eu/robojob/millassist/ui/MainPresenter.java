@@ -267,8 +267,8 @@ public class MainPresenter implements ProcessFlowListener {
 	}
 
 	
-	public void showNotificationOverlay(final String title, final String message) {
-		final NotificationDialogView view = new NotificationDialogView(title, message);
+	public void showNotificationOverlay(final String title, final String message, double height) {
+		final NotificationDialogView view = new NotificationDialogView(title, message, height);
 		NotificationDialogPresenter confirmationDialogPresenter = new NotificationDialogPresenter(view);
 		Platform.runLater(new Thread() {
 			@Override
@@ -285,9 +285,32 @@ public class MainPresenter implements ProcessFlowListener {
 		Platform.runLater(new Thread() {
 			@Override
 			public void run() {
-				getView().hideDialog();
+			    getView().hideDialog();
 			}
 		});
+	}
+
+	public void showNotificationOverlay(final String title, final String message) {
+	    final NotificationDialogView view = new NotificationDialogView(title, message);
+	    NotificationDialogPresenter confirmationDialogPresenter = new NotificationDialogPresenter(view);
+	    Platform.runLater(new Thread() {
+	        @Override
+	        public void run() {
+	            getView().showDialog(view);
+	        }
+	    });
+	    try {
+	        confirmationDialogPresenter.getResult();
+	    } catch (InterruptedException e) {
+	        logger.error(e);
+	        e.printStackTrace();
+	    }
+	    Platform.runLater(new Thread() {
+	        @Override
+	        public void run() {
+	            getView().hideDialog();
+	        }
+	    });
 	}
 	
 	public String askInputString(final String title, final String message, final String inputLabel) {

@@ -9,6 +9,7 @@ public class RobotMenuView extends AbstractMenuView<RobotMenuPresenter> {
 
 	private static final String GENERAL = "RobotMenuView.general";
 	private static final String GRIPPERS = "RobotMenuView.grippers";
+	private static final String DATA = "RobotMenuView.data";
 
 	public RobotMenuView() {
 		build();
@@ -32,13 +33,23 @@ public class RobotMenuView extends AbstractMenuView<RobotMenuPresenter> {
 				getPresenter().configureGrippers();
 			}
 		});
+		addTextMenuItem(2, Translator.getTranslation(DATA), true, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent arg0) {
+                getPresenter().configureData();
+            }
+        });
 	}
 
 	public void setConfigureGeneralActive() {
-		setMenuItemSelected(0);
+	    setMenuItemSelected(0);
 	}
-	
+
 	public void setConfigureGrippersActive() {
-		setMenuItemSelected(1);
+	    setMenuItemSelected(1);
+	}
+
+	public void setConfigureDataActive() {
+	    setMenuItemSelected(2);
 	}
 }

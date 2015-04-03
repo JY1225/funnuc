@@ -10,14 +10,22 @@ import java.util.Map;
 import java.util.Set;
 
 import eu.robojob.millassist.db.ConnectionManager;
+import eu.robojob.millassist.db.GeneralMapper;
 import eu.robojob.millassist.db.external.util.ConnectionMapper;
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.robot.AbstractRobot;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.external.robot.Gripper;
+import eu.robojob.millassist.external.robot.RobotDataManager;
 import eu.robojob.millassist.external.robot.Gripper.Type;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
+import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
+import eu.robojob.millassist.positioning.RobotPosition;
 
 public class RobotMapper {
 
@@ -25,12 +33,14 @@ public class RobotMapper {
 	private static final int GRIPPER_TYPE_TWOPOINT = 1;
 	private static final int GRIPPER_TYPE_VACUUM = 2;
 	private ConnectionMapper connectionMapper;
+	private GeneralMapper generalMapper;
 	private Map<Integer, GripperBody> gripperBodiesBuffer;
 	private Map<Integer, GripperHead> gripperHeadsBuffer;
 	private Map<Integer, Gripper> grippersBuffer;
 	
-	public RobotMapper(final ConnectionMapper connectionMapper) {
+	public RobotMapper(final GeneralMapper generalMapper, final ConnectionMapper connectionMapper) {
 		this.connectionMapper = connectionMapper;
+		this.generalMapper = generalMapper;
 		gripperBodiesBuffer = new HashMap<Integer, GripperBody>();
 		gripperHeadsBuffer = new HashMap<Integer, GripperHead>();
 		grippersBuffer = new HashMap<Integer, Gripper>();
@@ -51,10 +61,11 @@ public class RobotMapper {
 			String name = results.getString("NAME");
 			int type = results.getInt("TYPE");
 			float payload = results.getFloat("PAYLOAD");
+			boolean acceptData = results.getBoolean("ACCEPT_DATA");
 			Set<GripperBody> gripperBodies = getAllGripperBodiesByRobotId(id);
 			switch (type) {
 				case ROBOT_TYPE_FANUC:
-					FanucRobot fanucRobot = getFanucRobot(id, name, gripperBodies, payload);
+					FanucRobot fanucRobot = getFanucRobot(id, name, gripperBodies, payload, acceptData);
 					robots.add(fanucRobot);
 					break;
 				default:
@@ -64,7 +75,7 @@ public class RobotMapper {
 		return robots;
 	}
 	
-	private FanucRobot getFanucRobot(final int id, final String name, final Set<GripperBody> gripperBodies, final float payload) throws SQLException {
+	private FanucRobot getFanucRobot(final int id, final String name, final Set<GripperBody> gripperBodies, final float payload, boolean acceptData) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM FANUCROBOT WHERE ID = ?");
 		stmt.setInt(1, id);
 		ResultSet results = stmt.executeQuery();
@@ -72,7 +83,7 @@ public class RobotMapper {
 		if (results.next()) {
 			int socketConnectionId = results.getInt("SOCKETCONNECTION");
 			SocketConnection socketConnection = connectionMapper.getSocketConnectionById(socketConnectionId);
-			fanucRobot = new FanucRobot(name, gripperBodies, null, payload, socketConnection);
+			fanucRobot = new FanucRobot(name, gripperBodies, null, payload, socketConnection, acceptData);
 			fanucRobot.setId(id);
 		}
 		return fanucRobot;
@@ -207,6 +218,22 @@ public class RobotMapper {
 		// TODO updating of gripper heads
 	}
 	
+	public static void updateRobotAcceptDataFlag(final FanucRobot robot, final boolean acceptsData) throws SQLException {
+	    ConnectionManager.getConnection().setAutoCommit(false);
+	    try {
+	        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE ROBOT SET ACCEPT_DATA = ? WHERE ID = ?");
+	        stmt.setBoolean(1, acceptsData);
+	        stmt.setInt(2, robot.getId());
+	        stmt.executeUpdate();
+	        robot.setAcceptData(acceptsData);
+	        ConnectionManager.getConnection().commit();
+	    } catch (SQLException e) {
+	        ConnectionManager.getConnection().rollback();
+	    } finally {
+	        ConnectionManager.getConnection().setAutoCommit(true);
+	    }
+	}
+	
 	public void updateGripperData(final Gripper gripper, final String name, final Gripper.Type type, final String imgUrl, final float height, final boolean fixedHeight, 
 			final boolean headA, final boolean headB, final boolean headC, final boolean headD) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
@@ -223,7 +250,7 @@ public class RobotMapper {
 			} else if (type == Type.VACUUM) {
 				gripperTypeId = GRIPPER_TYPE_VACUUM;
 			} else {
-				throw new IllegalArgumentException("Unkwon gripper type: " + type);
+				throw new IllegalArgumentException("Unknown gripper type: " + type);
 			}
 			stmt.setInt(5, gripperTypeId);
 			stmt.setInt(6, gripper.getId());
@@ -290,5 +317,177 @@ public class RobotMapper {
 		} finally {
 			ConnectionManager.getConnection().setAutoCommit(true);
 		}
+	}
+	
+	/**
+	 * Overwrite the robot points that are currently stored in the database by the ones read from the robot.
+	 * 
+	 * @throws SQLException
+	 */
+	public void saveRobotData() throws SQLException {
+	    // delete all information from database IPPoints, RPPoints, SpecialPoints
+	    ConnectionManager.getConnection().setAutoCommit(false);
+	    try {
+	        deleteRobotPoints();
+	        saveIPPoints(RobotDataManager.getIpPoints());
+	        saveRPPoints(RobotDataManager.getRpPoints());
+	        saveSpecialPoints(RobotDataManager.getSpecialPoints());
+	        saveUserframes(RobotDataManager.getUserframes());
+	    } catch (SQLException e) {
+	        ConnectionManager.getConnection().rollback();
+	    } finally {
+	        ConnectionManager.getConnection().setAutoCommit(true);
+	    }
+	}
+
+	private void saveIPPoints(final Map<RobotIPPoint, RobotPosition> ipPoints) throws SQLException {
+	    try {
+	        PreparedStatement stmtIP = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROB_IP_POINT(UF_NR, TF_NR, POS_TYPE, LOCATION, CONFIG) VALUES (?,?,?,?,?)");
+	        //Re-use stmt for all IP points + do not forget to save CONFIG
+	        for (RobotIPPoint ipPoint: ipPoints.keySet()) {
+	            stmtIP.setInt(1, ipPoint.getUfNr());
+	            stmtIP.setInt(2, ipPoint.getTfNr());
+	            stmtIP.setInt(3, ipPoint.getPosType().getId());
+	            generalMapper.saveCoordinates(ipPoints.get(ipPoint).getPosition());
+	            stmtIP.setInt(4, ipPoints.get(ipPoint).getPosition().getId());
+	            generalMapper.saveConfig(ipPoints.get(ipPoint).getConfiguration());
+	            stmtIP.setInt(5, ipPoints.get(ipPoint).getConfiguration().getId());
+	            stmtIP.executeUpdate();
+	        }
+	        ConnectionManager.getConnection().commit();
+	    } catch (SQLException e) {
+	        ConnectionManager.getConnection().rollback();
+	    }
+	}
+
+	private void saveRPPoints(final Map<RobotRefPoint, RobotPosition> rpPoints) throws SQLException {
+        try {
+            PreparedStatement stmtRP = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROB_RP_POINT(UF_NR, TF_NR, ORIGINAL_TF_NR, LOCATION, CONFIG) VALUES (?,?,?,?,?)");
+            //Re-use stmt for all RP points
+            for (RobotRefPoint rpPoint: rpPoints.keySet()) {
+                stmtRP.setInt(1, rpPoint.getUfNr());
+                stmtRP.setInt(2, rpPoint.getTfNr());
+                stmtRP.setInt(3, rpPoint.getOriginalTfNr());
+                generalMapper.saveCoordinates(rpPoints.get(rpPoint).getPosition());
+                stmtRP.setInt(4, rpPoints.get(rpPoint).getPosition().getId());
+                generalMapper.saveConfig(rpPoints.get(rpPoint).getConfiguration());
+                stmtRP.setInt(5, rpPoints.get(rpPoint).getConfiguration().getId());
+                stmtRP.executeUpdate();
+            }
+            ConnectionManager.getConnection().commit();
+        } catch (SQLException e) {
+            ConnectionManager.getConnection().rollback();
+        }
+	}
+
+	private void saveSpecialPoints(final Map<RobotSpecialPoint, RobotPosition> specialPoints) throws SQLException {
+        try {
+            PreparedStatement stmtSpecial = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROB_SPECIAL_POINT(SPEC_ID, LOCATION, CONFIG) VALUES (?,?,?)");
+            //Re-use stmt for all IP points
+            for (RobotSpecialPoint specialPoint: specialPoints.keySet()) {
+                stmtSpecial.setInt(1, specialPoint.getId());
+                generalMapper.saveCoordinates(specialPoints.get(specialPoint).getPosition());
+                stmtSpecial.setInt(2, specialPoints.get(specialPoint).getPosition().getId());
+                generalMapper.saveConfig(specialPoints.get(specialPoint).getConfiguration());
+                stmtSpecial.setInt(3, specialPoints.get(specialPoint).getConfiguration().getId());
+                stmtSpecial.executeUpdate();
+            }
+            ConnectionManager.getConnection().commit();
+        } catch (SQLException e) {
+            ConnectionManager.getConnection().rollback();
+        }
+	}
+
+	private void saveUserframes(final Map<RobotUserFrame, RobotPosition> userframes) throws SQLException {
+	    try {
+	        PreparedStatement stmtUf = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROB_USERFRAME(UF_NR, LOCATION, CONFIG) VALUES (?,?,?)");
+	        //Re-use stmt for all userframes
+	        for (RobotUserFrame userframe: userframes.keySet()) {
+	            stmtUf.setInt(1, userframe.getUfNr());
+	            generalMapper.saveCoordinates(userframes.get(userframe).getPosition());
+	            stmtUf.setInt(2, userframes.get(userframe).getPosition().getId());
+	            generalMapper.saveConfig(userframes.get(userframe).getConfiguration());
+	            stmtUf.setInt(3, userframes.get(userframe).getConfiguration().getId());
+	            stmtUf.executeUpdate();
+	        }
+	        ConnectionManager.getConnection().commit();
+	    } catch (SQLException e) {
+	        ConnectionManager.getConnection().rollback();
+	    }
+	}
+
+	private void deleteRobotPoints() throws SQLException {
+	    ConnectionManager.getConnection().setAutoCommit(false);
+	    try {
+	        PreparedStatement stmtRP = ConnectionManager.getConnection().prepareStatement("DELETE FROM ROB_IP_POINT");
+	        PreparedStatement stmtIP = ConnectionManager.getConnection().prepareStatement("DELETE FROM ROB_RP_POINT");
+	        PreparedStatement stmtSpecial = ConnectionManager.getConnection().prepareStatement("DELETE FROM ROB_SPECIAL_POINT");
+	        PreparedStatement stmtUserframe = ConnectionManager.getConnection().prepareStatement("DELETE FROM ROB_USERFRAME");
+	        stmtRP.executeUpdate();
+	        stmtIP.executeUpdate();
+	        stmtSpecial.executeUpdate();
+	        stmtUserframe.executeUpdate();
+	        ConnectionManager.getConnection().commit();
+	        ConnectionManager.getConnection().setAutoCommit(true);
+	    } catch (SQLException e) {
+	        ConnectionManager.getConnection().rollback();
+	    } 
+	}
+	
+	public void readRobotData() throws SQLException {
+	    readIPPoints();
+	    readRPPoints();
+	    readSpecialPoints();
+	    readUserframes();
+	}
+
+	private void readIPPoints() throws SQLException {
+	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ROB_IP_POINT");
+	    ResultSet results = stmt.executeQuery();
+	    while (results.next()) {
+	        int ufNr = results.getInt("UF_NR");
+	        int tfNr = results.getInt("TF_NR");
+	        ApproachType posType = ApproachType.getById(results.getInt("POS_TYPE"));
+	        RobotPosition position = new RobotPosition(generalMapper.getCoordinatesById(0, results.getInt("LOCATION")),
+	                generalMapper.getConfigById(results.getInt("CONFIG")));
+	        RobotIPPoint ippoint = RobotIPPoint.getIPPoint(ufNr, tfNr, posType);
+	        RobotDataManager.addIPPoint(ippoint, position);
+	    }
+	}
+
+	private void readRPPoints() throws SQLException {
+	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ROB_RP_POINT");
+	    ResultSet results = stmt.executeQuery();
+	    while (results.next()) {
+	        int ufNr = results.getInt("UF_NR");
+	        int tfNr = results.getInt("TF_NR");
+	        int originalTfNr = results.getInt("ORIGINAL_TF_NR");
+	        RobotPosition position = new RobotPosition(generalMapper.getCoordinatesById(0, results.getInt("LOCATION")),
+	                generalMapper.getConfigById(results.getInt("CONFIG")));
+	        RobotRefPoint rppoint = RobotRefPoint.getRPPoint(ufNr, tfNr, originalTfNr);
+	        RobotDataManager.addRPPoint(rppoint, position);
+	    }
+	}
+
+	private void readSpecialPoints() throws SQLException {
+	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ROB_SPECIAL_POINT");
+	    ResultSet results = stmt.executeQuery();
+	    while (results.next()) {
+	        RobotSpecialPoint specialPoint = RobotSpecialPoint.getById(results.getInt("SPEC_ID"));
+	        RobotPosition position = new RobotPosition(generalMapper.getCoordinatesById(0, results.getInt("LOCATION")),
+	                generalMapper.getConfigById(results.getInt("CONFIG")));
+	        RobotDataManager.addSpecialPoint(specialPoint, position);
+	    }
+	}
+
+	private void readUserframes() throws SQLException {
+	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ROB_USERFRAME");
+	    ResultSet results = stmt.executeQuery();
+	    while (results.next()) {
+	        RobotUserFrame userframe = RobotUserFrame.getByUserFrameNr(results.getInt("UF_NR"));
+	        RobotPosition position = new RobotPosition(generalMapper.getCoordinatesById(0, results.getInt("LOCATION")),
+	                generalMapper.getConfigById(results.getInt("CONFIG")));
+	        RobotDataManager.addUserframe(userframe, position);
+	    }
 	}
 }
