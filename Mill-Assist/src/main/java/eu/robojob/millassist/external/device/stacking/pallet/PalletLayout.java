@@ -1,6 +1,7 @@
 package eu.robojob.millassist.external.device.stacking.pallet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,21 @@ import eu.robojob.millassist.workpiece.WorkPiece.Type;
 import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 
 public class PalletLayout {
+    
+    public static final float EUR_WIDTH = 800.0f;
+    public static final float EUR_HEIGHT = 1200.0f;
+    
+    public static final float EUR2_WIDTH = 1200.0f;
+    public static final float EUR2_HEIGHT = 1000.0f;
+    
+    public static final float EUR3_WIDTH = 1000.0f;
+    public static final float EUR3_HEIGHT = 1200.0f;
+    
+    public static final float EUR6_WIDTH = 800.0f;
+    public static final float EUR6_HEIGHT = 600.0f;
+    
+    public static final float STANDARD_HEIGHT = 144.0f;
+    
     private static Logger logger = LogManager.getLogger(PalletLayout.class.getName());
     /**
      * Enumeration determining the type of the pallet layout.
@@ -44,6 +60,60 @@ public class PalletLayout {
             }
             throw new IllegalArgumentException("Unknown device type " + id);
         }
+    }
+    
+    public enum PalletType {
+        EUR(1, EUR_WIDTH, STANDARD_HEIGHT, EUR_HEIGHT),EUR2(2, EUR2_WIDTH, STANDARD_HEIGHT, EUR2_HEIGHT), EUR3(3, EUR3_WIDTH, STANDARD_HEIGHT, EUR3_HEIGHT), EUR6(4, EUR6_WIDTH, STANDARD_HEIGHT,EUR6_HEIGHT), CUSTOM(5,0.0f,0.0f,0.0f);
+        
+        private int id;
+        private float width;
+        private float height;
+        private float length;
+        private PalletType(int id, final float width, final float height, final float length) {
+            this.id = id;
+            this.width = width;
+            this.length = length;
+            this.height = height;
+        }
+        
+        public int getId() {
+            return this.id;
+        }
+        
+        public static PalletType getTypeById(int id) {
+            for (PalletType type: values()) {
+                if (type.getId() == id) {
+                    return type;
+                }
+            }
+            throw new IllegalArgumentException("Unknown device type " + id);
+        }
+        
+        public static List<PalletType> getPalletTypes() {
+            return Arrays.asList(values());
+        }
+        
+        public static PalletType getPalletTypeForLayout(PalletLayout layout) {
+            for (PalletType type: values()) {
+                if(type.width == layout.getPalletWidth() && type.height == layout.getPalletHeight() && type.length == layout.getPalletLength()) {
+                    return type;
+                }
+            }
+            return CUSTOM;
+        }
+        
+        public float getWidth() {
+            return this.width;
+        }
+        
+        public float getLength() {
+            return this.length;
+        }
+        
+        public float getHeight() {
+            return this.height;
+        }
+        
     }
     
     /**
@@ -114,9 +184,12 @@ public class PalletLayout {
      */
     private int layers;
     
-    public PalletLayout(final float palletWidth, final float palletLength, final float palletFreeBorder, final float minXGap, final float minYGap, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
+    private float palletHeight;
+    
+    public PalletLayout(final float palletWidth, final float palletLength, final float palletHeight, final float palletFreeBorder, final float minXGap, final float minYGap, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
         this.palletWidth = palletWidth;
         this.palletLength = palletLength;
+        this.palletHeight = palletHeight;
         this.palletFreeBorder = palletFreeBorder;
         this.minXGap = minXGap;
         this.minYGap = minYGap;
@@ -428,6 +501,14 @@ public class PalletLayout {
 
     public void setVerticalR(float verticalR) {
         this.verticalR = verticalR;
+    }
+
+    public float getPalletHeight() {
+        return palletHeight;
+    }
+
+    public void setPalletHeight(float palletHeight) {
+        this.palletHeight = palletHeight;
     }
 
 }

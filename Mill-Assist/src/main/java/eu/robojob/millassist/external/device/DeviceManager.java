@@ -260,9 +260,9 @@ public class DeviceManager {
 		}		
 	}
 	
-	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float width, final float length, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
 	    try {
-            deviceMapper.updateUnloadPallet(unloadPallet, name, userFrameName, width, length, border, xOffset, yOffset, minInterferenceDistance, horizontalR, verticalR);
+            deviceMapper.updateUnloadPallet(unloadPallet, name, userFrameName, width, length, height, border, xOffset, yOffset, minInterferenceDistance, horizontalR, verticalR);
             unloadPallet.loadDeviceSettings(unloadPallet.getDeviceSettings());
 	    } catch (SQLException e) {
             logger.error(e);

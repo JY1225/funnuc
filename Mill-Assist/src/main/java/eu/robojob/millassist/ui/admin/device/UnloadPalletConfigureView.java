@@ -2,6 +2,8 @@ package eu.robojob.millassist.ui.admin.device;
 
 import java.util.List;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletType;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.NumericTextField;
@@ -27,6 +30,7 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
 
     private UnloadPallet unloadPallet;
     private ObservableList<String> userFrameNames;
+    private ObservableList<PalletType> stdPalletTypes;
     private Region spacer;
 
     private Label nameLabel;
@@ -34,12 +38,18 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
 
     private Label userFrameLabel;
     private ComboBox<String> userFramesComboBox;
+    
+    private Label stdPalletTypeLabel;
+    private ComboBox<PalletType> stdPalletTypeComboBox;
 
     private Label widthLabel;
     private NumericTextField widthNumbericTextField;
 
     private Label lengthLabel;
     private NumericTextField lengthNumbericTextField;
+    
+    private Label heightLabel;
+    private NumericTextField heightNumbericTextField;
 
     private Label borderLabel;
     private NumericTextField borderNumbericTextField;
@@ -69,18 +79,21 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
     private static final String USERFRAME = "UnloadPallet.userframe";
     private static final String WIDTH = "UnloadPallet.width";
     private static final String LENGTH = "UnloadPallet.length";
+    private static final String HEIGHT = "UnloadPallet.height";
     private static final String BORDER = "UnloadPallet.border";
     private static final String XOFFSET = "UnloadPallet.xoffset";
     private static final String YOFFSET = "UnloadPallet.yoffset";
     private static final String MIN_INT = "UnloadPallet.minint";
     private static final String HOR_R = "UnloadPallet.horizontalR";
     private static final String VER_R = "UnloadPallet.verticalR";
+    private static final String STD_PALLET = "UnloadPallet.StandardPallet";
     
     private float horizontalRValue;
     private float verticalRValue;
 
     public UnloadPalletConfigureView() {
         userFrameNames = FXCollections.observableArrayList();
+        stdPalletTypes = FXCollections.observableArrayList();
     }
     
     /**
@@ -105,11 +118,28 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         userFramesComboBox.setMaxSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
         userFramesComboBox.setItems(userFrameNames);
 
+        stdPalletTypeLabel = new Label(Translator.getTranslation(STD_PALLET));
+        stdPalletTypeComboBox = new ComboBox<PalletType>();
+        stdPalletTypeComboBox.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
+        stdPalletTypeComboBox.setMinSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
+        stdPalletTypeComboBox.setMaxSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
+        stdPalletTypeComboBox.setItems(getStdPalletTypes());
+        stdPalletTypeComboBox.valueProperty().addListener(new ChangeListener<PalletType>() {
+            @Override
+            public void changed(ObservableValue<? extends PalletType> observable,
+                    PalletType oldValue, PalletType newValue) {
+                setPredefinedPalletType(newValue);
+            }
+        });
+        
         widthLabel = new Label(Translator.getTranslation(WIDTH));
         widthNumbericTextField = new NumericTextField(6);
 
         lengthLabel = new Label(Translator.getTranslation(LENGTH));
         lengthNumbericTextField = new NumericTextField(6);
+        
+        heightLabel = new Label(Translator.getTranslation(HEIGHT));
+        heightNumbericTextField = new NumericTextField(6);
 
         borderLabel = new Label(Translator.getTranslation(BORDER));
         borderNumbericTextField = new NumericTextField(4);
@@ -185,7 +215,7 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                getPresenter().saveData(nameTextField.getText(), userFramesComboBox.valueProperty().get(),Float.parseFloat(widthNumbericTextField.getText()),Float.parseFloat(lengthNumbericTextField.getText()),Float.parseFloat(borderNumbericTextField.getText()),Float.parseFloat(xOffsetNumbericTextField.getText()),Float.parseFloat(yOffsetNumbericTextField.getText()), Float.parseFloat(minInterferenceTextField.getText()), horizontalRValue, verticalRValue);
+                getPresenter().saveData(nameTextField.getText(), userFramesComboBox.valueProperty().get(),Float.parseFloat(widthNumbericTextField.getText()),Float.parseFloat(lengthNumbericTextField.getText()), Float.parseFloat(heightNumbericTextField.getText()),Float.parseFloat(borderNumbericTextField.getText()),Float.parseFloat(xOffsetNumbericTextField.getText()),Float.parseFloat(yOffsetNumbericTextField.getText()), Float.parseFloat(minInterferenceTextField.getText()), horizontalRValue, verticalRValue);
             }
         });
 
@@ -197,11 +227,17 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         getContents().add(userFrameLabel, column++, row);
         getContents().add(userFramesComboBox, column++, row, 3, 1);
         column = 0; row++;
+        getContents().add(stdPalletTypeLabel, column++, row);
+        getContents().add(stdPalletTypeComboBox, column++, row, 3, 1);
+        column = 0; row++;
         getContents().add(widthLabel, column++, row);
         getContents().add(widthNumbericTextField, column++, row, 3, 1);
         column = 0; row++;
         getContents().add(lengthLabel, column++, row);
         getContents().add(lengthNumbericTextField, column++, row, 3, 1);
+        column = 0; row++;
+        getContents().add(heightLabel, column++, row);
+        getContents().add(heightNumbericTextField, column++, row, 3, 1);
         column = 0; row++;
         getContents().add(borderLabel, column++, row);
         getContents().add(borderNumbericTextField, column++, row, 3, 1);
@@ -235,6 +271,7 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         nameTextField.setFocusListener(listener);
         widthNumbericTextField.setFocusListener(listener);
         lengthNumbericTextField.setFocusListener(listener);
+        heightNumbericTextField.setFocusListener(listener);
         borderNumbericTextField.setFocusListener(listener);
         xOffsetNumbericTextField.setFocusListener(listener);
         yOffsetNumbericTextField.setFocusListener(listener);
@@ -251,11 +288,13 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
             nameTextField.setText(unloadPallet.getName());
             widthNumbericTextField.setText(unloadPallet.getLayout().getPalletWidth()+"");
             lengthNumbericTextField.setText(unloadPallet.getLayout().getPalletLength()+"");
+            heightNumbericTextField.setText(unloadPallet.getLayout().getPalletHeight()+"");
             borderNumbericTextField.setText(unloadPallet.getLayout().getPalletFreeBorder()+"");
             xOffsetNumbericTextField.setText(unloadPallet.getLayout().getMinXGap()+"");
             yOffsetNumbericTextField.setText(unloadPallet.getLayout().getMinYGap()+"");
             minInterferenceTextField.setText(unloadPallet.getLayout().getMinInterferenceDistance()+"");
             userFramesComboBox.valueProperty().set(unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName());
+            stdPalletTypeComboBox.valueProperty().set(PalletType.getPalletTypeForLayout(unloadPallet.getLayout()));
             if(unloadPallet.getLayout().getHorizontalR() == 0) {
                 if(!zeroButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
                     zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
@@ -293,6 +332,31 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
     public void setUserFrames(final List<String> userFrames) {
         userFrameNames.clear();
         userFrameNames.addAll(userFrames);
+    }
+    
+    private void setPredefinedPalletType(PalletType type) {
+        widthNumbericTextField.setDisable(true);
+        lengthNumbericTextField.setDisable(true);
+        heightNumbericTextField.setDisable(true);
+        float width = type.getWidth();
+        float height =type.getHeight();
+        float length = type.getLength();
+        
+        if(type == PalletType.CUSTOM) {
+            widthNumbericTextField.setDisable(false);
+            lengthNumbericTextField.setDisable(false);
+            heightNumbericTextField.setDisable(false);
+        }
+        widthNumbericTextField.setText(width+"");
+        lengthNumbericTextField.setText(length+"");
+        heightNumbericTextField.setText(height+"");
+        
+    }
+    
+    private ObservableList<PalletType> getStdPalletTypes() {
+        List<PalletType> types = PalletType.getPalletTypes();
+        stdPalletTypes.addAll(types);
+        return stdPalletTypes;
     }
 
 }

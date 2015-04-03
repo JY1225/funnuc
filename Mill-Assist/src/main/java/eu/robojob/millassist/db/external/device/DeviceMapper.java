@@ -125,20 +125,21 @@ public class DeviceMapper {
         if(results.next()) {
             float palletWidth=results.getFloat("WIDTH");
             float palletLength=results.getFloat("LENGTH");
+            float palletHeight=results.getFloat("HEIGHT");
             float palletFreeBorder=results.getFloat("BORDER");
             float minXGap=results.getFloat("OFFSET_X");
             float minYGap=results.getFloat("OFFSET_Y");
             float minInterferenceDistance = results.getFloat("MIN_INTERFERENCE");
             float horizontalR = results.getFloat("HORIZONTAL_R");
             float verticalR = results.getFloat("VERTICAL_R");
-            PalletLayout layout = new PalletLayout(palletWidth, palletLength, palletFreeBorder, minXGap, minYGap, minInterferenceDistance, horizontalR, verticalR);
+            PalletLayout layout = new PalletLayout(palletWidth, palletLength, palletHeight, palletFreeBorder, minXGap, minYGap, minInterferenceDistance, horizontalR, verticalR);
             pallet = new UnloadPallet(name, zones, layout);
             pallet.setId(id);
         }
         return pallet;
 	}
 	
-	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float width, final float length, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws SQLException {
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws SQLException {
 	    
 	    ConnectionManager.getConnection().setAutoCommit(false);
 	    if ((!unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
@@ -153,19 +154,21 @@ public class DeviceMapper {
         stmt.execute();
         
         PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE PALLET "+
-                "SET WIDTH = ?, LENGTH = ?, BORDER = ?, OFFSET_X = ?, OFFSET_Y = ?, MIN_INTERFERENCE = ?, HORIZONTAL_R = ?, VERTICAL_R = ? WHERE ID = ?");
+                "SET WIDTH = ?, LENGTH = ?, HEIGHT = ?, BORDER = ?, OFFSET_X = ?, OFFSET_Y = ?, MIN_INTERFERENCE = ?, HORIZONTAL_R = ?, VERTICAL_R = ? WHERE ID = ?");
         stmt2.setFloat(1, width);
         stmt2.setFloat(2, length);
-        stmt2.setFloat(3, border);
-        stmt2.setFloat(4, xOffset);
-        stmt2.setFloat(5, yOffset);
-        stmt2.setFloat(6, minInterferenceDistance);
-        stmt2.setFloat(7, horizontalR);
-        stmt2.setFloat(8, verticalR);
-        stmt2.setInt(9, unloadPallet.getId());
+        stmt2.setFloat(3, height);
+        stmt2.setFloat(4, border);
+        stmt2.setFloat(5, xOffset);
+        stmt2.setFloat(6, yOffset);
+        stmt2.setFloat(7, minInterferenceDistance);
+        stmt2.setFloat(8, horizontalR);
+        stmt2.setFloat(9, verticalR);
+        stmt2.setInt(10, unloadPallet.getId());
         stmt2.execute();
         unloadPallet.getLayout().setPalletWidth(width);
         unloadPallet.getLayout().setPalletLength(length);
+        unloadPallet.getLayout().setPalletHeight(height);
         unloadPallet.getLayout().setPalletFreeBorder(border);
         unloadPallet.getLayout().setMinXGap(xOffset);
         unloadPallet.getLayout().setMinYGap(yOffset);
