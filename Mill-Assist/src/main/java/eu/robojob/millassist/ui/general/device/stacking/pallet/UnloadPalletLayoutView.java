@@ -72,6 +72,9 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
     private static final double BTN_WIDTH = 80;
     private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
     
+    private final float LAYOUT_VIEWPORT_WIDTH = 500.0f;
+    private final float LAYOUT_VIEWPORT_HEIGHT = 320.0f;
+    
     /**
      * {@inheritDoc}
      */
@@ -113,8 +116,15 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                 unloadPalletRect.getStyleClass().add(CSS_CLASS_UNLOAD_PALLET);
                 group.getChildren().add(unloadPalletRect);
                 configureWorkPieces();
-                Scale s = new Scale(450 / group.getBoundsInParent().getWidth(), 300 / group.getBoundsInParent().getHeight());
-                group.getTransforms().add(s);
+                if(LAYOUT_VIEWPORT_WIDTH / unloadPallet.getLayout().getPalletLength() < LAYOUT_VIEWPORT_HEIGHT /unloadPallet.getLayout().getPalletWidth()) {
+                    Scale s = new Scale(LAYOUT_VIEWPORT_WIDTH / group.getBoundsInParent().getWidth(), LAYOUT_VIEWPORT_WIDTH / unloadPallet.getLayout().getPalletLength() *unloadPallet.getLayout().getPalletWidth() / group.getBoundsInParent().getHeight());
+                    group.getTransforms().add(s);
+                }
+                else {
+                    Scale s = new Scale(LAYOUT_VIEWPORT_HEIGHT /unloadPallet.getLayout().getPalletWidth() * unloadPallet.getLayout().getPalletLength() / group.getBoundsInParent().getWidth(), LAYOUT_VIEWPORT_HEIGHT/ group.getBoundsInParent().getHeight());
+                    group.getTransforms().add(s);
+                }
+                
                 
                 root = new Pane();
                 root.setPrefSize(600, 350);

@@ -63,8 +63,8 @@ public class UnloadPalletConfigurePresenter  extends AbstractFormPresenter<Unloa
      * @param yOffset Minimal distance between two work pieces on the y-axis
      * @param minInterferenceDistance Minimal distance between two work pieces in all directions
      */
-    public void saveData(final String name, final String userFrameName, final float width, final float length, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
-        deviceManager.updateUnloadPallet(unloadPallet, name, userFrameName, width, length, border, xOffset, yOffset, minInterferenceDistance, horizontalR, verticalR);
+    public void saveData(final String name, final String userFrameName, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
+        deviceManager.updateUnloadPallet(unloadPallet, name, userFrameName, width, length, height, border, xOffset, yOffset, minInterferenceDistance, horizontalR, verticalR);
     }
 
 }
