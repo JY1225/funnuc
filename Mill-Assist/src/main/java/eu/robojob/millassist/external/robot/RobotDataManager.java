@@ -19,7 +19,6 @@ import eu.robojob.millassist.positioning.RobotPosition;
 
 public final class RobotDataManager {
     
-    //FIXME - add flag to send the data to the robot
     private static FanucRobot robot;
     private static RobotMapper robotMapper;
     private static Map<RobotIPPoint, RobotPosition> ipPoints;
