@@ -13,6 +13,7 @@ import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
 import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotToolFrame;
 import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
 import eu.robojob.millassist.positioning.RobotPosition;
 
@@ -25,6 +26,7 @@ public final class RobotDataManager {
     private static Map<RobotRefPoint, RobotPosition> rpPoints;
     private static Map<RobotSpecialPoint, RobotPosition> specialPoints;
     private static Map<RobotUserFrame, RobotPosition> userframes;
+    private static Map<RobotToolFrame, RobotPosition> toolframes;
     
     private static Logger logger = LogManager.getLogger(RobotDataManager.class.getName());
     
@@ -39,6 +41,7 @@ public final class RobotDataManager {
         createRPPoints();
         createSpecialPoints();
         createUserframes();
+        createToolframes();
     }
     
     public static void exportDataToRobot() {
@@ -93,6 +96,13 @@ public final class RobotDataManager {
         }
     }
     
+    private static void createToolframes() {
+        toolframes = new HashMap<RobotToolFrame, RobotPosition>();
+        for (RobotToolFrame toolFrame: RobotToolFrame.values()) {
+            toolframes.put(toolFrame, new RobotPosition());
+        }
+    }
+    
     private static void readIPPoints() {
         for (RobotIPPoint ipPoint: ipPoints.keySet()) {
             try {
@@ -127,6 +137,16 @@ public final class RobotDataManager {
         for (RobotUserFrame userframe: userframes.keySet()) {
             try {
                 robot.readUserFrame(userframe);
+            } catch (AbstractCommunicationException | RobotActionException| InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private static void readToolframes() {
+        for (RobotToolFrame toolFrame: toolframes.keySet()) {
+            try {
+                robot.readToolFrame(toolFrame);
             } catch (AbstractCommunicationException | RobotActionException| InterruptedException e) {
                 e.printStackTrace();
             }
@@ -177,11 +197,23 @@ public final class RobotDataManager {
         }
     }
     
+    private static void writeToolframes() {
+        for (RobotToolFrame toolFrame: toolframes.keySet()) {
+            try {
+                logger.debug("Writing " + toolFrame + " to robot");
+                robot.writeToolFrame(toolFrame, toolframes.get(toolFrame));
+            } catch (AbstractCommunicationException | RobotActionException| InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
     private static void readInformationFromRobot() {
         readIPPoints();
         readRPPoints();
         readSpecialPoints();
         readUserframes();
+        readToolframes();
     }
     
     private static void writeInformationToDatabase() {
@@ -206,6 +238,7 @@ public final class RobotDataManager {
             writeRPPoints();
             writeSpecialPoints();
             writeUserframes();
+            writeToolframes();
         }
     }
 
@@ -241,6 +274,14 @@ public final class RobotDataManager {
         RobotDataManager.userframes.put(userframe, position);
     }
     
+    public static Map<RobotToolFrame, RobotPosition> getToolframes() {
+        return toolframes;
+    }
+    
+    public static void addToolFrame(RobotToolFrame toolFrame, RobotPosition position) {
+        RobotDataManager.toolframes.put(toolFrame, position);
+    }
+    
     public static RobotPosition getPosition(String robotDataStringId) {
         for (RobotUserFrame userframe: userframes.keySet()) {
             if (userframe.toString().equals(robotDataStringId)) {
@@ -260,6 +301,11 @@ public final class RobotDataManager {
         for (RobotSpecialPoint specialPoint: specialPoints.keySet()) {
             if (specialPoint.toString().equals(robotDataStringId)) {
                 return specialPoints.get(specialPoint);
+            }
+        }
+        for (RobotToolFrame toolFrame: toolframes.keySet()) {
+            if (toolFrame.toString().equals(robotDataStringId)) {
+                return toolframes.get(toolFrame);
             }
         }
         return null;

@@ -101,7 +101,8 @@ public final class RobotConstants {
 	public static final int COMMAND_READ_REF_POINT				= 	93;
 	public static final int COMMAND_WRITE_SPECIAL_POINT			= 	94;
 	public static final int COMMAND_READ_SPECIAL_POINT			= 	95;
-	
+	public static final int COMMAND_WRITE_TOOLFRAME             =   96;
+	public static final int COMMAND_READ_TOOLFRAME              =   97;
 	
 	// RESPONSE IDS
 //	public static final int RESPONSE_ASK_STATUS					=	120;
@@ -138,7 +139,9 @@ public final class RobotConstants {
 	public static final int RESPONSE_READ_REF_POINT				= 	193;
 	public static final int RESPONSE_WRITE_SPECIAL_POINT		= 	194;
 	public static final int RESPONSE_READ_SPECIAL_POINT			= 	195;
-	
+	public static final int RESPONSE_WRITE_TOOLFRAME            =   196;
+	public static final int RESPONSE_READ_TOOLFRAME             =   197;
+	    
 	// SERVICE GRIPPER
 	public static final int SERVICE_GRIPPER_SERVICE_TYPE_TOOL_CHANGE = 1;
 	public static final int SERVICE_GRIPPER_SERVICE_TYPE_PICK = 12;

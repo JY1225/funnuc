@@ -14,6 +14,7 @@ import eu.robojob.millassist.external.robot.RobotDataManager;
 import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotToolFrame;
 import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.ui.controls.RobotPositionNode;
@@ -46,6 +47,9 @@ public class RobotDataView extends AbstractFormView<RobotDataPresenter> {
 	    positionNodes = new ArrayList<RobotPositionNode>();
 	    for (RobotUserFrame userframe: RobotUserFrame.values()) {
 	        positionNodes.add(new RobotPositionNode(userframe.toString(), RobotDataManager.getUserframes().get(userframe)));
+	    }
+	    for (RobotToolFrame toolFrame: RobotToolFrame.values()) {
+	        positionNodes.add(new RobotPositionNode(toolFrame.toString(), RobotDataManager.getToolframes().get(toolFrame)));
 	    }
 	    for (RobotIPPoint ipPoint: RobotIPPoint.values()) {
 	        positionNodes.add(new RobotPositionNode(ipPoint.toString(), RobotDataManager.getIpPoints().get(ipPoint)));

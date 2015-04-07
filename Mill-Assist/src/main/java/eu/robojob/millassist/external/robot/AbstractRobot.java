@@ -18,6 +18,7 @@ import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotToolFrame;
 import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
 import eu.robojob.millassist.positioning.RobotPosition;
 
@@ -359,6 +360,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void readRPPoint(final RobotRefPoint rpPoint) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void writeSpecialPoint(final RobotSpecialPoint specialPoint, final RobotPosition position) throws  AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void readSpecialPoint(final RobotSpecialPoint specialPoint) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void writeToolFrame(final RobotToolFrame toolFrame, final RobotPosition position) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+    public abstract void readToolFrame(final RobotToolFrame toolFrame) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
 	public String toString() {
 		return "Robot: " + getName();

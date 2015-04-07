@@ -127,5 +127,30 @@ public final class RobotData {
             }
             return null;
          } 
-    }    
+    }
+    
+    public enum RobotToolFrame {
+        TF2_SUB_A(2), 
+        TF3_SUB_B(3), 
+        TF4_SUB_C(4), 
+        TF10_AIRBLOW(10);
+        
+        private int tfNr;
+        
+        private RobotToolFrame(int toolFrameNr) {
+            this.tfNr = toolFrameNr;
+        }
+        
+        public int getTfNr() {
+            return this.tfNr;
+        }
+        
+        public static RobotToolFrame getByToolFrameNr(int tfNr) {
+            for (RobotToolFrame type: values()) {
+                if (type.getTfNr() == tfNr)
+                    return type;
+            }
+            return null;
+        }
+    }
 }

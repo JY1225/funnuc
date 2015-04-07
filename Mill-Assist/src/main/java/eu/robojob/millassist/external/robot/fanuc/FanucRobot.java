@@ -36,6 +36,7 @@ import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotToolFrame;
 import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
 import eu.robojob.millassist.positioning.RobotPosition;
 import eu.robojob.millassist.threading.ThreadManager;
@@ -858,7 +859,43 @@ public class FanucRobot extends AbstractRobot {
         logger.debug("read " + userframe.toString());
 	}
 
-    @Override
+	@Override
+	public void writeToolFrame(RobotToolFrame toolFrame, final RobotPosition position) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+	    List<String> values = new ArrayList<String>();
+	    values.add("" + toolFrame.getTfNr());
+	    // Position
+	    Coordinates coord = position.getPosition();
+	    Config config = position.getConfiguration();
+	    values.addAll(getPositionValues(coord, config));
+	    fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_TOOLFRAME, RobotConstants.RESPONSE_WRITE_TOOLFRAME, WRITE_VALUES_TIMEOUT, values);
+	}
+
+	@Override
+	public void readToolFrame(RobotToolFrame toolFrame) throws AbstractCommunicationException,
+	RobotActionException, InterruptedException {
+	    List<String> values = new ArrayList<String>();
+	    values.add("" + toolFrame.getTfNr());
+	    List<String> result = fanucRobotCommunication.readValues(RobotConstants.COMMAND_READ_TOOLFRAME, RobotConstants.RESPONSE_READ_TOOLFRAME, ASK_POSITION_TIMEOUT, values);
+	    // index 0 is responseId, index 1 is toolframeID
+	    float x = Float.parseFloat(result.get(2));
+	    float y = Float.parseFloat(result.get(3));
+	    float z = Float.parseFloat(result.get(4));
+	    float w = Float.parseFloat(result.get(5));
+	    float p = Float.parseFloat(result.get(6));
+	    float r = Float.parseFloat(result.get(7));
+	    Coordinates coord = new Coordinates(x,y,z,w,p,r);
+	    int cfg1 = Integer.parseInt(result.get(8));
+	    int cfg2 = Integer.parseInt(result.get(9));
+	    int cfg3 = Integer.parseInt(result.get(10));
+	    int cfg4 = Integer.parseInt(result.get(11));
+	    int cfg5 = Integer.parseInt(result.get(12));
+	    int cfg6 = Integer.parseInt(result.get(13));
+	    Config config = new Config(cfg1, cfg2, cfg3, cfg4, cfg5, cfg6);
+	    RobotDataManager.addToolFrame(toolFrame, new RobotPosition(coord, config));
+	    logger.debug("read " + toolFrame.toString());
+	}
+
+	@Override
     public void writeIPPoint(RobotIPPoint ipPoint, final RobotPosition position) throws AbstractCommunicationException, RobotActionException, InterruptedException {
         List<String> values = new ArrayList<String>();
         values.add("" + ipPoint.getUfNr());
