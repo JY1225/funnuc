@@ -20,9 +20,10 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 	private GridPlateConfigurePresenter gridPlateConfigurePresenter;
 	private ReversalUnitConfigurePresenter reversalUnitConfigurePresenter;
 	private UnloadPalletConfigurePresenter unloadPalletConfigurePresenter;
+	private PalletLayoutConfigurePresenter palletLayoutConfigurePresenter;
 	
 	public DeviceMenuPresenter(final DeviceMenuView view, final UserFramesConfigurePresenter userFramesConfigurePresenter,
-			final BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter, final UnloadPalletConfigurePresenter unloadPalletConfigurePresenter, final CNCMachineConfigurePresenter cncMachineConfigurePresenter,
+			final BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter, final UnloadPalletConfigurePresenter unloadPalletConfigurePresenter, final PalletLayoutConfigurePresenter palletLayoutConfigurePresenter, final CNCMachineConfigurePresenter cncMachineConfigurePresenter,
 				final CNCMachineClampingsPresenter cncMachineClamingsPresenter, final PrageDeviceConfigurePresenter prageDeviceConfigurePresenter,
 					final OutputBinConfigurePresenter outputBinConfigurePresenter, final GridPlateConfigurePresenter
 					gridPlateConfigurePresenter, final ReversalUnitConfigurePresenter reversalUnitConfigurePresenter, 
@@ -44,6 +45,7 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		gridPlateConfigurePresenter.setMenuPresenter(this);
 		this.reversalUnitConfigurePresenter = reversalUnitConfigurePresenter;
 		this.unloadPalletConfigurePresenter = unloadPalletConfigurePresenter;
+		this.palletLayoutConfigurePresenter = palletLayoutConfigurePresenter;
 		reversalUnitConfigurePresenter.setMenuPresenter(this);
 		if (deviceManager.getPreProcessingDevices().size() == 0) {
 			//TODO review if other pre process devices are available!
@@ -92,6 +94,7 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		gridPlateConfigurePresenter.setTextFieldListener(listener);
 		reversalUnitConfigurePresenter.setTextFieldListener(listener);
 		unloadPalletConfigurePresenter.setTextFieldListener(listener);
+		palletLayoutConfigurePresenter.setTextFieldListener(listener);
 	}
 
 	@Override
@@ -151,6 +154,11 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 	    getView().setConfigureUnloadPalletActive();
 	    getParent().setContentView(unloadPalletConfigurePresenter.getView());
 	}
+	
+	public void configurePalletLayout() {
+        getView().setConfigurePalletLayout();
+        getParent().setContentView(palletLayoutConfigurePresenter.getView());
+    }
 	
 	
 	@Override

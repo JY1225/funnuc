@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -43,7 +45,7 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 		getView().setPresenter(this);
 	}
 	
-	public void changedDevice(final String deviceName, final String gridPlateName) {
+	public void changedDevice(final String deviceName, final String gridPlateName, final String palletLayoutName) {
 		AbstractDevice device = getDeviceByName(deviceName);
 		AbstractDevice prevDevice = deviceInfo.getDevice();
 		if ((prevDevice instanceof AbstractStackingDevice) && (device instanceof AbstractStackingDevice)) {
@@ -56,6 +58,14 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			if((prevDevice instanceof BasicStackPlate) && (device instanceof BasicStackPlate)) {
 				logger.debug("Gridplate " + gridPlateName + " added.");
 				((BasicStackPlate) device).setGridPlate(deviceManager.getGridPlateByName(gridPlateName));
+			}
+			if(prevDevice instanceof UnloadPallet) {
+			    ((UnloadPallet) prevDevice).setLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
+			    int interventionStepIndex = deviceInfo.getPutStep().getProcessFlow().getStepIndex(deviceInfo.getPutStep())+1;
+			    deviceInfo.getPutStep().getProcessFlow().removeStep(deviceInfo.getPutStep().getProcessFlow().getStep(interventionStepIndex));
+			}
+			if(device instanceof UnloadPallet) {
+			    ((UnloadPallet) device).setLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
 			}
 		}
 		if (deviceInfo.hasPickStep()) {
@@ -114,6 +124,23 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 	
 	public void updateGridPlates() {
 		getView().setGridPlates(deviceManager.getAllGridPlateNames());
+	}
+	
+	public void updatePalletLayouts() {
+	    getView().setPalletLayouts(deviceManager.getAllPalletLayoutNames());
+	}
+	
+	public String getPalletLayoutName() {
+	    try {
+            UnloadPalletDeviceSettings devSettings = (UnloadPalletDeviceSettings) deviceInfo.getDeviceSettings();
+            if (devSettings.getLayout() != null) {
+                return devSettings.getLayout().getName();
+            } else {
+                return ((UnloadPallet)deviceInfo.getDevice()).getDefaultLayout().getName();
+            }
+        } catch (ClassCastException e) {
+            return null;
+        }
 	}
 	
 }

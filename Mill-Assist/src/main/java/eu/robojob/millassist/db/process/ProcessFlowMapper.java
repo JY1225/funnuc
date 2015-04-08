@@ -32,6 +32,7 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
@@ -526,10 +527,12 @@ public class ProcessFlowMapper {
 			stmt4.executeUpdate();
 		} else if (deviceSettings instanceof UnloadPalletDeviceSettings) {
 		    UnloadPalletDeviceSettings uSettings = (UnloadPalletDeviceSettings) deviceSettings;
-            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO UNLOADPALLETSETTINGS (ID, FINISHEDWORKPIECE, LAYOUT_TYPE) VALUES (?, ?, ?)");
+            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO UNLOADPALLETSETTINGS (ID, FINISHEDWORKPIECE, LAYOUT_TYPE, LAYERS_CARDBOARD, PALLET_LAYOUT) VALUES (?, ?, ?, ?, ?)");
             stmt4.setInt(1, uSettings.getId());
             stmt4.setInt(2, uSettings.getFinishedWorkPiece().getId());
             stmt4.setInt(3, uSettings.getLayoutType().getId());
+            stmt4.setInt(4, uSettings.getLayersBeforeCardBoard());
+            stmt4.setInt(5, uSettings.getLayout().getId());
             stmt4.executeUpdate();
         }
 	}
@@ -805,11 +808,14 @@ public class ProcessFlowMapper {
         if (results.next()) {
             int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
             int layoutType = results.getInt("LAYOUT_TYPE");
+            int layersBeforeCardBoard = results.getInt("LAYERS_CARDBOARD");
+            int palletLayoutId = results.getInt("PALLET_LAYOUT");
             WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
-            unloadPalletSettings = new UnloadPalletDeviceSettings(finishedWorkPiece, PalletLayoutType.getTypeById(layoutType));
+            unloadPalletSettings = new UnloadPalletDeviceSettings(finishedWorkPiece, PalletLayoutType.getTypeById(layoutType), layersBeforeCardBoard, deviceManager.getPalletLayoutById(palletLayoutId));
         }
         return unloadPalletSettings;
 	}
+	
 	
 	public List<AbstractProcessStep> getProcessSteps(final int processId) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM STEP WHERE PROCESSFLOW = ? ORDER BY INDEX ASC");

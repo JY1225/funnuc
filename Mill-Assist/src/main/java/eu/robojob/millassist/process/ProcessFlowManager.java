@@ -20,6 +20,9 @@ import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
@@ -116,12 +119,19 @@ public class ProcessFlowManager {
 			((AbstractStackingDevice) stackingToDevice).clearDeviceSettings();
 		}
 		deviceSettings.put(stackingFromDevice, stackingFromDevice.getDeviceSettings());
+		if (!stackingToDevice.equals(stackingFromDevice)) {
+            deviceSettings.put(stackingToDevice, stackingToDevice.getDeviceSettings());
+        }
 		if (stackingFromDevice instanceof BasicStackPlate) {
 			((AbstractStackPlateDeviceSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);
 		}
 		if (stackingToDevice instanceof BasicStackPlate) {
 			((AbstractStackPlateDeviceSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
+		
+		if (stackingToDevice instanceof UnloadPallet) {
+            ((UnloadPalletDeviceSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
+        }
 		// always assign both raw and finished work piece to conveyor!
 		if (stackingFromDevice instanceof Conveyor) {
 			((ConveyorSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);
@@ -140,9 +150,7 @@ public class ProcessFlowManager {
 			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
 		deviceSettings.put(cncMachine, cncMachine.getDeviceSettings());
-		if (!stackingToDevice.equals(stackingFromDevice)) {
-			deviceSettings.put(stackingToDevice, stackingToDevice.getDeviceSettings());
-		}
+		
 		Map<AbstractRobot, RobotSettings> robotSettings = new HashMap<AbstractRobot, RobotSettings>();
 		robotSettings.put(robot, robot.getRobotSettings());
 		for (AbstractProcessStep step : processSteps) {

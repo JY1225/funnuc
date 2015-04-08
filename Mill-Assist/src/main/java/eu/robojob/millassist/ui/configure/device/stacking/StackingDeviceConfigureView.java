@@ -13,6 +13,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import eu.robojob.millassist.external.device.EDeviceGroup;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
@@ -30,6 +33,8 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 	private Label lblGridPlate;
 	private CheckBox cbGridPlate;
 	private ComboBox<String> cbbGridPlates;
+	private Label lblPalletLayout;
+	private ComboBox<String> cbbPalletLayouts;
 
 	private static final int HGAP = 15;
 	private static final int VGAP = 15;
@@ -39,6 +44,7 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 	private static final String STACKER = "StackingDeviceConfigureView.stacker";
 	private static final String CHANGE = "StackingDeviceConfigureView.change";
 	private static final String GRIDPLATE = "StackingDeviceConfigureView.gridplate";
+    private static final String PALLETLAYOUT = "StackingDeviceConfigureView.palletLayout";
 	
 	private static final String CHANGE_ICON = "M 11.5,0 C 10.123545,0 9,1.1240475 9,2.5 9,3.8754503 10.123545,5 11.5,5 12.311762,5 13.063476,4.5758969 13.53125,3.90625 L 13.625,3.8125 13.75,3.84375 c 3.37485,0.993046 5.71875,4.1438049 5.71875,7.65625 0,1.222539 -0.289352,2.412159 -0.84375,3.53125 l -0.125,0.25 -0.15625,-0.21875 -1.15625,-1.40625 -1.8125,6 6.21875,-0.5625 -1.625,-2 -0.09375,-0.125 0.09375,-0.09375 c 1.023678,-1.612727 1.5625,-3.474277 1.5625,-5.375 0,-4.5765484 -3.117772,-8.5505816 -7.5625,-9.6875 L 13.875,1.78125 13.84375,1.6875 C 13.49474,0.68240188 12.554813,0 11.5,0 z M 6.21875,3.34375 0,3.90625 l 1.625,2 0.09375,0.125 -0.0625,0.09375 c -1.02418067,1.6112202 -1.5625,3.4740263 -1.5625,5.375 0,4.5768 3.0862707,8.550582 7.53125,9.6875 L 7.71875,21.21875 7.75,21.3125 C 8.099512,22.317598 9.0391879,23 10.09375,23 c 1.376455,0 2.5,-1.123545 2.5,-2.5 0,-1.37545 -1.123545,-2.5 -2.5,-2.5 -0.8122639,0 -1.5634764,0.424103 -2.03125,1.09375 L 8,19.1875 7.875,19.15625 C 4.5004013,18.163957 2.125,15.013449 2.125,11.5 c 0,-1.222037 0.2898538,-2.4114055 0.84375,-3.53125 l 0.125,-0.25 0.1875,0.21875 1.125,1.40625 1.8125,-6 z";
 	
@@ -83,6 +89,21 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 							cbGridPlate.setDisable(true);
 							selectGridPlate(false);
 						}
+						if(getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.UNLOAD_PALLET) {
+						    cbbPalletLayouts.setVisible(true);
+                            lblPalletLayout.setVisible(true);
+                            cbGridPlate.setVisible(false);
+                            cbbGridPlates.setVisible(false);
+                            lblGridPlate.setVisible(false);
+                            
+						}
+						else {
+						    cbbPalletLayouts.setVisible(false);
+                            lblPalletLayout.setVisible(false);
+                            cbGridPlate.setVisible(true);
+                            cbbGridPlates.setVisible(true);
+                            lblGridPlate.setVisible(true);
+						}
 					}
 				}
 			}
@@ -96,6 +117,9 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 			}
 			
 		});
+		
+		
+		
 		lblGridPlate = new Label(Translator.getTranslation(GRIDPLATE));
 		cbbGridPlates = new ComboBox<String>();
 		cbbGridPlates.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
@@ -115,10 +139,31 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 		getContents().add(cbGridPlate, column, ++row);
 		getContents().add(lblGridPlate, ++column, row);
 		getContents().add(cbbGridPlates, ++column, row);
+		
+		lblPalletLayout = new Label(Translator.getTranslation(PALLETLAYOUT));
+        cbbPalletLayouts = new ComboBox<String>();
+        cbbPalletLayouts.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
+        cbbPalletLayouts.setMinSize(COMBO_WIDTH, COMBO_HEIGHT);
+        cbbPalletLayouts.setMaxSize(COMBO_WIDTH, COMBO_HEIGHT);
+        cbbPalletLayouts.valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> observableValue, final String oldValue, final String newValue) {
+                setPalletLayout(cbbPalletLayouts.getSelectionModel().getSelectedItem());
+                if(isNewPalletLayoutSelected())
+                    btnChange.setDisable(false);
+                else 
+                    btnChange.setDisable(true);
+            }
+        });
+		row++;
+        column = 1;
+        getContents().add(lblPalletLayout, column, row);
+        getContents().add(cbbPalletLayouts, ++column, row);
+        
 		btnChange = createButton(CHANGE_ICON, "", Translator.getTranslation(CHANGE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
-				getPresenter().changedDevice(cbbStacker.getValue(), cbbGridPlates.getSelectionModel().getSelectedItem());
+				getPresenter().changedDevice(cbbStacker.getValue(), cbbGridPlates.getSelectionModel().getSelectedItem(), cbbPalletLayouts.getSelectionModel().getSelectedItem());
 			}
 		});
 		btnChange.setDisable(true);
@@ -132,6 +177,7 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 	public void refresh() {
 		refreshStackers();
 		resetGridPlates();
+		resetPalletLayouts();
 	}
 	
 	private boolean isNewGridPlateSelected() {
@@ -144,6 +190,17 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 			return false;
 		}
 	}
+	
+	private boolean isNewPalletLayoutSelected() {
+        if(cbbPalletLayouts.getValue() != null) {
+            if(cbbPalletLayouts.getValue().equals(getPresenter().getPalletLayoutName())) {
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 	
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
@@ -164,7 +221,7 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 			lblStacker.setDisable(true);
 		} else if (deviceInfo.getDevice() != null) {
 			cbbStacker.setValue(deviceInfo.getDevice().getName());
-		}		
+		}
 	}
 	
 	/**
@@ -202,14 +259,37 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 		}
 	}
 	
-	private void setGridPlate(String gridplateName) {
-		cbbGridPlates.setValue(gridplateName);
-		cbbGridPlates.setPromptText(cbbGridPlates.getConverter().toString(cbbGridPlates.getValue()));
+	private void setPalletLayout(String layoutName) {
+	    cbbPalletLayouts.setValue(layoutName);
+	    cbbPalletLayouts.setPromptText(cbbGridPlates.getConverter().toString(cbbGridPlates.getValue()));
+//	    ((UnloadPallet)deviceInfo.getDevice()).setLayout();
 	}
 	
-	public void setGridPlates(final Set<String> gridPlates) {
-		cbbGridPlates.getItems().clear();
-		cbbGridPlates.getItems().addAll(gridPlates);
+	public void setPalletLayouts(final Set<String> palletLayouts) {
+		cbbPalletLayouts.getItems().clear();
+		cbbPalletLayouts.getItems().addAll(palletLayouts);
 	}
+    
+    private void resetPalletLayouts() {
+        cbbPalletLayouts.setValue(null);
+        cbbPalletLayouts.getSelectionModel().clearSelection();
+        cbbPalletLayouts.getItems().clear();
+        getPresenter().updatePalletLayouts();
+        String layoutName = getPresenter().getPalletLayoutName();
+        if(layoutName != null) {
+            setPalletLayout(layoutName);
+        } else {
+        }
+    }
+    
+    private void setGridPlate(String gridplateName) {
+        cbbGridPlates.setValue(gridplateName);
+        cbbGridPlates.setPromptText(cbbGridPlates.getConverter().toString(cbbGridPlates.getValue()));
+    }
+    
+    public void setGridPlates(final Set<String> gridPlates) {
+        cbbGridPlates.getItems().clear();
+        cbbGridPlates.getItems().addAll(gridPlates);
+    }
 	
 }
