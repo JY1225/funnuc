@@ -1,6 +1,8 @@
 package eu.robojob.millassist.ui.general.device.stacking.pallet;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -22,10 +24,12 @@ import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.Pallet
 import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.ui.configure.device.stacking.pallet.UnloadPalletLayoutPresenter;
+import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.ui.shape.IDrawableObject;
+import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
 import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
@@ -54,6 +58,10 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
     private Button shiftedButton;
     private Button notShiftedButton;
     
+    private HBox nbLayersBox;
+    private Label nbLayersCardboardLabel;
+    private NumericTextField nbLayersField= new NumericTextField(2);
+    
     private boolean controlsHidden = false;
     
     private float width;
@@ -69,21 +77,22 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
     private static final String OPTIMAL = "UnloadPalletLayoutView.Optimal";
     private static final String SHIFTED = "UnloadPalletLayoutView.Shifted";
     private static final String NOT_SHIFTED = "UnloadPalletLayoutView.NotShifted";
+    private static final String NBLAYERS_CARDBOARD = "UnloadPalletLayoutView.NbLayersCardboard";
+    private static final String NB_PIECES = "UnloadPalletLayoutView.NbPieces";
     private static final double BTN_WIDTH = 80;
     private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
     
-    private final float LAYOUT_VIEWPORT_WIDTH = 500.0f;
-    private final float LAYOUT_VIEWPORT_HEIGHT = 320.0f;
+    private static final int PADDING = 15;
+    
+    private float LAYOUT_VIEWPORT_WIDTH = 500.0f;
+    private float LAYOUT_VIEWPORT_HEIGHT = SizeManager.HEIGHT_BOTTOM*0.5f;
     
     /**
      * {@inheritDoc}
      */
     @Override
     public void build() {
-        nbOfPieces = new Label("Number of pieces:");
-        nbOfPiecesValue = new Label();
-        contentBox = new VBox();
-        controls = new GridPane();
+        
         Platform.runLater(new Thread() {
             @Override
             public void run() {
@@ -133,11 +142,36 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                 
                 group.setLayoutX(0 - group.getBoundsInParent().getMinX());
                 group.setLayoutY(0 - group.getBoundsInParent().getMinY());
-                nbOfPiecesValue.setText(unloadPallet.getLayout().getStackingPositions().size()+"");
-                
                 int row = 0;
                 int column = 0;
+                if(contentBox != null) {
+                    contentBox.getChildren().clear();
+                }
+                contentBox = new VBox();
                 if(!controlsHidden) {
+                    if(controls != null) {
+                        controls.getChildren().clear();
+                    }
+                    
+                    controls = null;
+                    
+                    
+                    nbOfPieces = new Label(Translator.getTranslation(NB_PIECES));
+                    nbOfPiecesValue = new Label();
+                    nbLayersCardboardLabel = new Label(Translator.getTranslation(NBLAYERS_CARDBOARD));
+                    nbLayersField.setOnChange(new ChangeListener<Float>() {
+                        
+                        @Override
+                        public void changed(ObservableValue<? extends Float> observable,
+                                Float oldValue, Float newValue) {
+                            ((UnloadPalletLayoutPresenter)getPresenter()).updateLayersBeforeCardboard(newValue.intValue());
+                        }
+                    });
+                    nbLayersBox = new HBox(15);
+                    nbLayersBox.getChildren().addAll(nbLayersCardboardLabel, nbLayersField);
+                   
+                    controls = new GridPane();
+                    
                     controls.add(typeLabel, column, row);
                     controls.add(typeBox, column+1, row);
                     row++;
@@ -146,8 +180,12 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                         controls.add(orientationBox, column+1, row);
                         row++;
                     }
+                    nbOfPiecesValue.setText(unloadPallet.getLayout().getStackingPositions().size()+"");
+                    nbLayersField.setText(unloadPallet.getLayout().getLayersBeforeCardBoard()+"");
+                    
                     controls.add(nbOfPieces,column, row);
                     controls.add(nbOfPiecesValue,column+1, row);
+                    controls.add(nbLayersBox, column+2, row);
                     row++;
                     controls.setVgap(10);
                     controls.setHgap(10);
@@ -156,6 +194,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                 
                 contentBox.getChildren().add(root);
                 contentBox.setSpacing(20);
+                setPadding(new Insets(PADDING));
                 getContents().add(contentBox, 0, 0);
                 if(!controlsHidden) {
                     setLayoutTypeButtonValues();
@@ -169,7 +208,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
      */
     @Override
     public void setTextFieldListener(TextInputControlListener listener) {
-        //No textfields on this screen
+        nbLayersField.setFocusListener(listener);
     }
 
     /**
@@ -289,6 +328,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                     ((UnloadPalletLayoutPresenter)getPresenter()).updateLayoutType(PalletLayoutType.NOT_SHIFTED_VERTICAL);
                 }
             });
+            verticalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
             typeBox.getChildren().add(verticalButton);
         }
         if(unloadPallet.getFinishedWorkPiece().getShape() == WorkPieceShape.CYLINDRICAL) {
@@ -308,6 +348,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                     ((UnloadPalletLayoutPresenter)getPresenter()).updateLayoutType(PalletLayoutType.NOT_SHIFTED_HORIZONTAL);
                 }
             });
+            notShiftedButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
             typeBox.getChildren().add(notShiftedButton);
             
             horizontalButton = createButton(Translator.getTranslation(HORIZONTAL), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
@@ -324,7 +365,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                     ((UnloadPalletLayoutPresenter)getPresenter()).updateLayoutType(PalletLayoutType.SHIFTED_VERTICAL);
                 }
             });
-            horizontalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
+            verticalButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
             orientationBox.getChildren().add(verticalButton);
             verticalButton.setMaxWidth(2 * BTN_WIDTH);
             typeBox.setAlignment(Pos.CENTER);
@@ -332,6 +373,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
         
         typeBox.setMaxWidth(3 * BTN_WIDTH);
         typeBox.setAlignment(Pos.CENTER);
+        
     }
     
     /**
@@ -397,6 +439,13 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
      */
     public void setControlsHidden(final boolean controlsHidden) {
         this.controlsHidden = controlsHidden;
+        if(controlsHidden) {
+            LAYOUT_VIEWPORT_HEIGHT = SizeManager.HEIGHT_BOTTOM*0.9f;
+        }
+        else {
+            LAYOUT_VIEWPORT_HEIGHT = SizeManager.HEIGHT_BOTTOM*0.5f;
+        }
+        
     }
     
 

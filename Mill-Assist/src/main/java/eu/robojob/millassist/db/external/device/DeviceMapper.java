@@ -121,25 +121,18 @@ public class DeviceMapper {
 	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PALLET WHERE ID = ?");
         stmt.setInt(1, id);
         ResultSet results = stmt.executeQuery();
-        UnloadPallet pallet = null;
-        if(results.next()) {
-            float palletWidth=results.getFloat("WIDTH");
-            float palletLength=results.getFloat("LENGTH");
-            float palletHeight=results.getFloat("HEIGHT");
-            float palletFreeBorder=results.getFloat("BORDER");
-            float minXGap=results.getFloat("OFFSET_X");
-            float minYGap=results.getFloat("OFFSET_Y");
-            float minInterferenceDistance = results.getFloat("MIN_INTERFERENCE");
-            float horizontalR = results.getFloat("HORIZONTAL_R");
-            float verticalR = results.getFloat("VERTICAL_R");
-            PalletLayout layout = new PalletLayout(palletWidth, palletLength, palletHeight, palletFreeBorder, minXGap, minYGap, minInterferenceDistance, horizontalR, verticalR);
-            pallet = new UnloadPallet(name, zones, layout);
-            pallet.setId(id);
+        UnloadPallet pallet = new UnloadPallet(name, zones);
+        pallet.setId(id);
+        if (results.next()) {
+            float maxHeight = results.getFloat("MAX_HEIGHT");
+            int defaultLayout = results.getInt("DEFAULT_LAYOUT");
+            pallet.setMaxHeight(maxHeight);
+            pallet.setDefaultLayout(getPalletLayoutById(defaultLayout));
         }
         return pallet;
 	}
 	
-	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws SQLException {
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName ) throws SQLException {
 	    
 	    ConnectionManager.getConnection().setAutoCommit(false);
 	    if ((!unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
@@ -151,10 +144,16 @@ public class DeviceMapper {
 	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
         stmt.setString(1, name);
         stmt.setInt(2, unloadPallet.getId());
-        stmt.execute();
-        
-        PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE PALLET "+
-                "SET WIDTH = ?, LENGTH = ?, HEIGHT = ?, BORDER = ?, OFFSET_X = ?, OFFSET_Y = ?, MIN_INTERFERENCE = ?, HORIZONTAL_R = ?, VERTICAL_R = ? WHERE ID = ?");
+        stmt.executeUpdate();
+        unloadPallet.setName(name);
+
+        ConnectionManager.getConnection().commit();
+        ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void updatePalletLayout(final PalletLayout layout, final String name,  final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws SQLException {
+	    PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE PALLETLAYOUT "+
+                "SET WIDTH = ?, LENGTH = ?, HEIGHT = ?, BORDER = ?, OFFSET_X = ?, OFFSET_Y = ?, MIN_INTERFERENCE = ?, HORIZONTAL_R = ?, VERTICAL_R = ?, NAME = ? WHERE ID = ?");
         stmt2.setFloat(1, width);
         stmt2.setFloat(2, length);
         stmt2.setFloat(3, height);
@@ -164,21 +163,45 @@ public class DeviceMapper {
         stmt2.setFloat(7, minInterferenceDistance);
         stmt2.setFloat(8, horizontalR);
         stmt2.setFloat(9, verticalR);
-        stmt2.setInt(10, unloadPallet.getId());
+        stmt2.setInt(10, layout.getId());
         stmt2.execute();
-        unloadPallet.getLayout().setPalletWidth(width);
-        unloadPallet.getLayout().setPalletLength(length);
-        unloadPallet.getLayout().setPalletHeight(height);
-        unloadPallet.getLayout().setPalletFreeBorder(border);
-        unloadPallet.getLayout().setMinXGap(xOffset);
-        unloadPallet.getLayout().setMinYGap(yOffset);
-        unloadPallet.getLayout().setMinInterferenceDistance(minInterferenceDistance);
-        unloadPallet.getLayout().setHorizontalR(horizontalR);
-        unloadPallet.getLayout().setVerticalR(verticalR);
-        unloadPallet.setName(name);
+        layout.setPalletWidth(width);
+        layout.setPalletLength(length);
+        layout.setPalletHeight(height);
+        layout.setPalletFreeBorder(border);
+        layout.setMinXGap(xOffset);
+        layout.setMinYGap(yOffset);
+        layout.setMinInterferenceDistance(minInterferenceDistance);
+        layout.setHorizontalR(horizontalR);
+        layout.setVerticalR(verticalR);
+        layout.setName(name);
         ConnectionManager.getConnection().commit();
         ConnectionManager.getConnection().setAutoCommit(true);
 	}
+	
+	public void savePalletLayout(PalletLayout layout) throws SQLException {
+        ConnectionManager.getConnection().setAutoCommit(false);
+        PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO PALLETLAYOUT (WIDTH, LENGTH, HEIGHT, BORDER, OFFSET_X, OFFSET_Y, MIN_INTERFERENCE, HORIZONTAL_R, VERTICAL_R, NAME) VALUES"+
+                "(?, ?, ?, ?, ?, ?, ?,  ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+        stmt2.setFloat(1, layout.getPalletWidth());
+        stmt2.setFloat(2, layout.getPalletLength());
+        stmt2.setFloat(3, layout.getPalletHeight());
+        stmt2.setFloat(4, layout.getPalletFreeBorder());
+        stmt2.setFloat(5, layout.getMinXGap());
+        stmt2.setFloat(6, layout.getMinYGap());
+        stmt2.setFloat(7, layout.getMinInterferenceDistance());
+        stmt2.setFloat(8, layout.getHorizontalR());
+        stmt2.setFloat(9, layout.getVerticalR());
+        stmt2.setString(10, layout.getName());
+        stmt2.executeUpdate();
+        ResultSet resultSet = stmt2.getGeneratedKeys();
+        if (resultSet.next()) {
+            int id = resultSet.getInt(1);
+            layout.setId(id);
+           ConnectionManager.getConnection().commit();
+           ConnectionManager.getConnection().setAutoCommit(true);
+        }
+    }
 	
 	private OutputBin getOutputBin(final int id, final String name, final Set<Zone> zones) throws SQLException {
 		OutputBin bin = new OutputBin(name, zones);
@@ -610,6 +633,38 @@ public class DeviceMapper {
 		return gridPlates;
 	}
 	
+	public Set<PalletLayout> getAllPalletLayouts() throws SQLException {
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PALLETLAYOUT");
+        ResultSet results = stmt.executeQuery();
+        Set<PalletLayout> layouts = new HashSet<PalletLayout>();
+        while (results.next()) {
+            int id = results.getInt("ID");
+            layouts.add(getPalletLayoutById(id));
+        }
+        return layouts;
+    }
+	
+	public PalletLayout getPalletLayoutById(final int id) throws SQLException {
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PALLETLAYOUT WHERE ID = ?");
+        stmt.setInt(1, id);
+        ResultSet results = stmt.executeQuery();
+        PalletLayout layout = null;
+        if(results.next()) {
+            float palletWidth=results.getFloat("WIDTH");
+            float palletLength=results.getFloat("LENGTH");
+            float palletHeight=results.getFloat("HEIGHT");
+            float palletFreeBorder=results.getFloat("BORDER");
+            float minXGap=results.getFloat("OFFSET_X");
+            float minYGap=results.getFloat("OFFSET_Y");
+            float minInterferenceDistance = results.getFloat("MIN_INTERFERENCE");
+            float horizontalR = results.getFloat("HORIZONTAL_R");
+            float verticalR = results.getFloat("VERTICAL_R");
+            String layoutName = results.getString("NAME");
+            layout = new PalletLayout(layoutName,palletWidth, palletLength, palletHeight, palletFreeBorder, minXGap, minYGap, minInterferenceDistance, horizontalR, verticalR);
+            layout.setId(id);
+        }
+        return layout;
+    }
 
 	private GridPlate getGridPlateByID(int gridPlateId) throws SQLException {
 		GridPlate gridplate = null;

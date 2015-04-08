@@ -15,8 +15,6 @@ implements UnloadPalletListener{
         super(view);
         getView().setUnloadPallet(unloadPallet);
         this.unloadPallet = unloadPallet;
-        unloadPallet.getLayout().calculateLayoutForWorkPiece(unloadPallet.getFinishedWorkPiece());
-        unloadPallet.getLayout().initFinishedWorkPieces(unloadPallet.getFinishedWorkPiece());
         this.unloadPallet.addListener(this);
         getView().setControlsHidden(true);
         getView().build();

@@ -15,10 +15,16 @@ public class UnloadPalletDeviceSettings extends DeviceSettings {
      */
     private PalletLayoutType layoutType;
     
-    public UnloadPalletDeviceSettings(final WorkPiece finishedWorkPiece, final PalletLayoutType layoutType) {
+    private int layersBeforeCardBoard;
+    
+    private PalletLayout layout;
+    
+    public UnloadPalletDeviceSettings(final WorkPiece finishedWorkPiece, final PalletLayoutType layoutType, final int layersBeforeCardBoard, final PalletLayout layout) {
         super();
         this.finishedWorkPiece = finishedWorkPiece;
         this.layoutType = layoutType;
+        this.layersBeforeCardBoard = layersBeforeCardBoard;
+        this.layout = layout;
     }
 
     public WorkPiece getFinishedWorkPiece() {
@@ -36,5 +42,20 @@ public class UnloadPalletDeviceSettings extends DeviceSettings {
     public void setLayoutType(PalletLayoutType layoutType) {
         this.layoutType = layoutType;
     }
-    
+
+    public int getLayersBeforeCardBoard() {
+        return layersBeforeCardBoard;
+    }
+
+    public void setLayersBeforeCardBoard(int layersBeforeCardBoard) {
+        this.layersBeforeCardBoard = layersBeforeCardBoard;
+    }
+
+    public PalletLayout getLayout() {
+        return layout;
+    }
+
+    public void setLayout(PalletLayout layout) {
+        this.layout = layout;
+    }
 }

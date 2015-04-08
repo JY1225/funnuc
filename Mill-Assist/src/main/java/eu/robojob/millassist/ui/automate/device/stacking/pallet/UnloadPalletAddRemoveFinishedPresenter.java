@@ -59,7 +59,9 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
      * {@inheritDoc}
      */
     @Override
-    public void finishedAmountChanged(FinishedAmountChangedEvent e) {}
+    public void finishedAmountChanged(FinishedAmountChangedEvent e) {
+        
+    }
 
     /**
      * {@inheritDoc}
@@ -125,6 +127,9 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
      */
     public int getMaxPiecesToAdd() {
         int amount = processFlow.getTotalAmount() - processFlow.getFinishedAmount();
+        if(amount > (unloadPallet.getMaxPiecesPerLayerAmount() * unloadPallet.getLayers()- processFlow.getFinishedAmount())) {
+            return unloadPallet.getMaxPiecesPerLayerAmount() * unloadPallet.getLayers()- processFlow.getFinishedAmount();
+        }
         return amount;
     }
     
@@ -134,7 +139,7 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
      */
     public void removeWorkPieces(final int amount) {
         try {
-            if(amount > unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED)) {
+            if(amount > unloadPallet.getWorkPieceAmount(WorkPiece.Type.FINISHED)) {
                 throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
             }
             int finishedAmount = processFlow.getFinishedAmount();
@@ -155,7 +160,7 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
      * @return The maximum number of pieces that can be removed
      */
     public int getMaxPiecesToRemove() {
-        return unloadPallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
+        return unloadPallet.getWorkPieceAmount(WorkPiece.Type.FINISHED);
     }
 
 }

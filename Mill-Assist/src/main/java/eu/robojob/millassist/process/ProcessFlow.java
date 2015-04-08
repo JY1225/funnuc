@@ -601,6 +601,17 @@ public class ProcessFlow {
 		return false;
 	}
 	
+	public boolean hasUnloadPalletForFinishedPieces() {
+	    for(AbstractProcessStep processStep: processSteps) {
+            if(processStep instanceof PutStep) {
+                if(((PutStep) processStep).getDevice().getType().equals(EDeviceGroup.UNLOAD_PALLET)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+	}
+	
 	//TODO - optimize 
 	public boolean hasReversalUnit() {
 		for(AbstractProcessStep processStep: processSteps) {

@@ -30,7 +30,6 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
 
     private UnloadPallet unloadPallet;
     private ObservableList<String> userFrameNames;
-    private ObservableList<PalletType> stdPalletTypes;
     private Region spacer;
 
     private Label nameLabel;
@@ -39,37 +38,8 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
     private Label userFrameLabel;
     private ComboBox<String> userFramesComboBox;
     
-    private Label stdPalletTypeLabel;
-    private ComboBox<PalletType> stdPalletTypeComboBox;
-
-    private Label widthLabel;
-    private NumericTextField widthNumbericTextField;
-
-    private Label lengthLabel;
-    private NumericTextField lengthNumbericTextField;
-    
-    private Label heightLabel;
-    private NumericTextField heightNumbericTextField;
-
-    private Label borderLabel;
-    private NumericTextField borderNumbericTextField;
-
-    private Label xOffsetLabel;
-    private NumericTextField xOffsetNumbericTextField;
-
-    private Label yOffsetLabel;
-    private NumericTextField yOffsetNumbericTextField;
-
-    private Label minInterferenceLabel;
-    private NumericTextField minInterferenceTextField;
-    
-    private Label horizontalRLabel;
-    private Button zeroButton;
-    private Button oneEightyButton;
-    
-    private Label verticalRLabel;
-    private Button minusButton;
-    private Button plusButton;
+    private Label maxHeightLabel;
+    private NumericTextField maxHeightNumbericTextField;
     
     private Button btnSave;
 
@@ -77,23 +47,10 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
     private static final String SAVE = "UnloadPallet.save";
     private static final String NAME = "UnloadPallet.name";
     private static final String USERFRAME = "UnloadPallet.userframe";
-    private static final String WIDTH = "UnloadPallet.width";
-    private static final String LENGTH = "UnloadPallet.length";
     private static final String HEIGHT = "UnloadPallet.height";
-    private static final String BORDER = "UnloadPallet.border";
-    private static final String XOFFSET = "UnloadPallet.xoffset";
-    private static final String YOFFSET = "UnloadPallet.yoffset";
-    private static final String MIN_INT = "UnloadPallet.minint";
-    private static final String HOR_R = "UnloadPallet.horizontalR";
-    private static final String VER_R = "UnloadPallet.verticalR";
-    private static final String STD_PALLET = "UnloadPallet.StandardPallet";
     
-    private float horizontalRValue;
-    private float verticalRValue;
-
     public UnloadPalletConfigureView() {
         userFrameNames = FXCollections.observableArrayList();
-        stdPalletTypes = FXCollections.observableArrayList();
     }
     
     /**
@@ -117,105 +74,14 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         userFramesComboBox.setMinSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
         userFramesComboBox.setMaxSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
         userFramesComboBox.setItems(userFrameNames);
-
-        stdPalletTypeLabel = new Label(Translator.getTranslation(STD_PALLET));
-        stdPalletTypeComboBox = new ComboBox<PalletType>();
-        stdPalletTypeComboBox.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
-        stdPalletTypeComboBox.setMinSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
-        stdPalletTypeComboBox.setMaxSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
-        stdPalletTypeComboBox.setItems(getStdPalletTypes());
-        stdPalletTypeComboBox.valueProperty().addListener(new ChangeListener<PalletType>() {
-            @Override
-            public void changed(ObservableValue<? extends PalletType> observable,
-                    PalletType oldValue, PalletType newValue) {
-                setPredefinedPalletType(newValue);
-            }
-        });
         
-        widthLabel = new Label(Translator.getTranslation(WIDTH));
-        widthNumbericTextField = new NumericTextField(6);
-
-        lengthLabel = new Label(Translator.getTranslation(LENGTH));
-        lengthNumbericTextField = new NumericTextField(6);
+        maxHeightLabel = new Label(Translator.getTranslation(HEIGHT));
+        maxHeightNumbericTextField = new NumericTextField(6);
         
-        heightLabel = new Label(Translator.getTranslation(HEIGHT));
-        heightNumbericTextField = new NumericTextField(6);
-
-        borderLabel = new Label(Translator.getTranslation(BORDER));
-        borderNumbericTextField = new NumericTextField(4);
-
-        xOffsetLabel = new Label(Translator.getTranslation(XOFFSET));
-        xOffsetNumbericTextField = new NumericTextField(4);
-
-        yOffsetLabel = new Label(Translator.getTranslation(YOFFSET));
-        yOffsetNumbericTextField = new NumericTextField(4);
-        
-        minInterferenceLabel = new Label(Translator.getTranslation(MIN_INT));
-        minInterferenceTextField = new NumericTextField(4);
-        
-        horizontalRLabel = new Label(Translator.getTranslation(HOR_R));
-//        horizontalRTextField = new NumericTextField(4);
-        HBox horizontalRBox = new HBox();
-        zeroButton = createButton("0°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                horizontalRValue = 0;
-                oneEightyButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                if(!zeroButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
-                    zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            }
-        });
-        zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-        horizontalRBox.getChildren().add(zeroButton);
-        
-        oneEightyButton = createButton("+180°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT,new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                horizontalRValue = 180;
-                zeroButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                if(!oneEightyButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
-                    oneEightyButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            }
-        });
-        oneEightyButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-        horizontalRBox.getChildren().add(oneEightyButton);
-        
-        
-        HBox verticalRBox = new HBox();
-        minusButton = createButton("-90°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                verticalRValue = -90;
-                plusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                if(!minusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
-                    minusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            }
-        });
-        minusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-        verticalRBox.getChildren().add(minusButton);
-        
-        plusButton = createButton("+90°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT,new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                verticalRValue = 90;
-                minusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                if(!plusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
-                    plusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            }
-        });
-        plusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-        verticalRBox.getChildren().add(plusButton);
-        
-        verticalRLabel = new Label(Translator.getTranslation(VER_R));
-
         btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                getPresenter().saveData(nameTextField.getText(), userFramesComboBox.valueProperty().get(),Float.parseFloat(widthNumbericTextField.getText()),Float.parseFloat(lengthNumbericTextField.getText()), Float.parseFloat(heightNumbericTextField.getText()),Float.parseFloat(borderNumbericTextField.getText()),Float.parseFloat(xOffsetNumbericTextField.getText()),Float.parseFloat(yOffsetNumbericTextField.getText()), Float.parseFloat(minInterferenceTextField.getText()), horizontalRValue, verticalRValue);
+                getPresenter().saveData(nameTextField.getText(), userFramesComboBox.valueProperty().get());
             }
         });
 
@@ -227,35 +93,8 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         getContents().add(userFrameLabel, column++, row);
         getContents().add(userFramesComboBox, column++, row, 3, 1);
         column = 0; row++;
-        getContents().add(stdPalletTypeLabel, column++, row);
-        getContents().add(stdPalletTypeComboBox, column++, row, 3, 1);
-        column = 0; row++;
-        getContents().add(widthLabel, column++, row);
-        getContents().add(widthNumbericTextField, column++, row, 3, 1);
-        column = 0; row++;
-        getContents().add(lengthLabel, column++, row);
-        getContents().add(lengthNumbericTextField, column++, row, 3, 1);
-        column = 0; row++;
-        getContents().add(heightLabel, column++, row);
-        getContents().add(heightNumbericTextField, column++, row, 3, 1);
-        column = 0; row++;
-        getContents().add(borderLabel, column++, row);
-        getContents().add(borderNumbericTextField, column++, row, 3, 1);
-        column = 0; row++;
-        getContents().add(xOffsetLabel, column++, row);
-        getContents().add(xOffsetNumbericTextField, column++, row, 3, 1);
-        column = 0; row++;
-        getContents().add(yOffsetLabel, column++, row);
-        getContents().add(yOffsetNumbericTextField, column++, row, 3, 1);
-        column = 0; row++;
-        getContents().add(minInterferenceLabel, column++, row);
-        getContents().add(minInterferenceTextField, column++, row, 3, 1);
-        column = 0; row++;
-        getContents().add(horizontalRLabel, column++, row);
-        getContents().add(horizontalRBox, column++, row, 3, 1);
-        column = 0; row++;
-        getContents().add(verticalRLabel, column++, row);
-        getContents().add(verticalRBox, column++, row, 3, 1);
+        getContents().add(maxHeightLabel, column++, row);
+        getContents().add(maxHeightNumbericTextField, column++, row, 3, 1);
         column = 0; row++;
 
         getContents().add(btnSave, column++, row, 5, 1);
@@ -269,13 +108,7 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
     @Override
     public void setTextFieldListener(TextInputControlListener listener) {
         nameTextField.setFocusListener(listener);
-        widthNumbericTextField.setFocusListener(listener);
-        lengthNumbericTextField.setFocusListener(listener);
-        heightNumbericTextField.setFocusListener(listener);
-        borderNumbericTextField.setFocusListener(listener);
-        xOffsetNumbericTextField.setFocusListener(listener);
-        yOffsetNumbericTextField.setFocusListener(listener);
-        minInterferenceTextField.setFocusListener(listener);
+        maxHeightNumbericTextField.setFocusListener(listener);
     }
 
     /**
@@ -286,38 +119,8 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         getPresenter().updateUserFrames();
         if(unloadPallet != null) {
             nameTextField.setText(unloadPallet.getName());
-            widthNumbericTextField.setText(unloadPallet.getLayout().getPalletWidth()+"");
-            lengthNumbericTextField.setText(unloadPallet.getLayout().getPalletLength()+"");
-            heightNumbericTextField.setText(unloadPallet.getLayout().getPalletHeight()+"");
-            borderNumbericTextField.setText(unloadPallet.getLayout().getPalletFreeBorder()+"");
-            xOffsetNumbericTextField.setText(unloadPallet.getLayout().getMinXGap()+"");
-            yOffsetNumbericTextField.setText(unloadPallet.getLayout().getMinYGap()+"");
-            minInterferenceTextField.setText(unloadPallet.getLayout().getMinInterferenceDistance()+"");
             userFramesComboBox.valueProperty().set(unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName());
-            stdPalletTypeComboBox.valueProperty().set(PalletType.getPalletTypeForLayout(unloadPallet.getLayout()));
-            if(unloadPallet.getLayout().getHorizontalR() == 0) {
-                if(!zeroButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
-                    zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                    oneEightyButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            } else {
-                if(!oneEightyButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
-                    oneEightyButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                    zeroButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            }
-            
-            if(unloadPallet.getLayout().getHorizontalR() == -90) {
-                if(!minusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
-                    minusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                    plusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            } else {
-                if(!plusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
-                    plusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                    minusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            }
+            maxHeightNumbericTextField.setText(unloadPallet.getMaxHeight()+"");
         }
     }
 
@@ -332,31 +135,6 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
     public void setUserFrames(final List<String> userFrames) {
         userFrameNames.clear();
         userFrameNames.addAll(userFrames);
-    }
-    
-    private void setPredefinedPalletType(PalletType type) {
-        widthNumbericTextField.setDisable(true);
-        lengthNumbericTextField.setDisable(true);
-        heightNumbericTextField.setDisable(true);
-        float width = type.getWidth();
-        float height =type.getHeight();
-        float length = type.getLength();
-        
-        if(type == PalletType.CUSTOM) {
-            widthNumbericTextField.setDisable(false);
-            lengthNumbericTextField.setDisable(false);
-            heightNumbericTextField.setDisable(false);
-        }
-        widthNumbericTextField.setText(width+"");
-        lengthNumbericTextField.setText(length+"");
-        heightNumbericTextField.setText(height+"");
-        
-    }
-    
-    private ObservableList<PalletType> getStdPalletTypes() {
-        List<PalletType> types = PalletType.getPalletTypes();
-        stdPalletTypes.addAll(types);
-        return stdPalletTypes;
     }
 
 }

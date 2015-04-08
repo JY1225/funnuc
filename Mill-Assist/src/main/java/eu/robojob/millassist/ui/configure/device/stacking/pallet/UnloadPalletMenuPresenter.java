@@ -113,5 +113,9 @@ public class UnloadPalletMenuPresenter extends AbstractStackingDeviceMenuPresent
     public void openFirst() {
         showLayout();
     }
+    
+    public void processFlowUpdated() {
+        getParent().updateProcessFlow();
+    }
 
 }
