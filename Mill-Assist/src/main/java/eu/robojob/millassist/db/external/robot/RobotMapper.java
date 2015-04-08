@@ -18,15 +18,15 @@ import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.Approach
 import eu.robojob.millassist.external.robot.Gripper;
 import eu.robojob.millassist.external.robot.RobotDataManager;
 import eu.robojob.millassist.external.robot.Gripper.Type;
+import eu.robojob.millassist.external.robot.RobotData.RobotIPPoint;
+import eu.robojob.millassist.external.robot.RobotData.RobotRefPoint;
+import eu.robojob.millassist.external.robot.RobotData.RobotRegister;
+import eu.robojob.millassist.external.robot.RobotData.RobotSpecialPoint;
+import eu.robojob.millassist.external.robot.RobotData.RobotToolFrame;
+import eu.robojob.millassist.external.robot.RobotData.RobotUserFrame;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
-import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
-import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
-import eu.robojob.millassist.positioning.RobotData.RobotRegister;
-import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
-import eu.robojob.millassist.positioning.RobotData.RobotToolFrame;
-import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
 import eu.robojob.millassist.positioning.RobotPosition;
 
 public class RobotMapper {

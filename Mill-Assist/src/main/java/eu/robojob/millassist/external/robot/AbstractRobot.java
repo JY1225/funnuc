@@ -14,13 +14,13 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.AbstractServiceProvider;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.robot.RobotData.RobotIPPoint;
+import eu.robojob.millassist.external.robot.RobotData.RobotRefPoint;
+import eu.robojob.millassist.external.robot.RobotData.RobotRegister;
+import eu.robojob.millassist.external.robot.RobotData.RobotSpecialPoint;
+import eu.robojob.millassist.external.robot.RobotData.RobotToolFrame;
+import eu.robojob.millassist.external.robot.RobotData.RobotUserFrame;
 import eu.robojob.millassist.positioning.Coordinates;
-import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
-import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
-import eu.robojob.millassist.positioning.RobotData.RobotRegister;
-import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
-import eu.robojob.millassist.positioning.RobotData.RobotToolFrame;
-import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
 import eu.robojob.millassist.positioning.RobotPosition;
 
 public abstract class AbstractRobot extends AbstractServiceProvider {

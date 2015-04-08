@@ -1,6 +1,7 @@
-package eu.robojob.millassist.positioning;
+package eu.robojob.millassist.external.robot;
 
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
+
 
 public final class RobotData {
     
