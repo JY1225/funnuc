@@ -25,6 +25,12 @@ import eu.robojob.millassist.positioning.RobotPosition;
 
 public final class RobotDataManager {
     
+    /**
+     * This flag is used to check whether the IPC has already sent data to the robot in the current session. The flag
+     * will thus prevent the IPC from sending data in case the connection was lost for a few seconds. The flag can also
+     * be used in case the connection of the robot comes after starting the IPC.
+     */
+    private static boolean alreadySentThisSession = false;
     private static FanucRobot robot;
     private static RobotMapper robotMapper;
     private static Map<RobotIPPoint, RobotPosition> ipPoints;
@@ -40,6 +46,10 @@ public final class RobotDataManager {
         //Do nothing
     }
     
+    private static void setAlreadySentDataToRobot(boolean flag) {
+        RobotDataManager.alreadySentThisSession = flag;
+    }
+    
     public static void initialize(RobotMapper robotMapper, FanucRobot robot) {
         RobotDataManager.robot = robot;
         RobotDataManager.robotMapper = robotMapper;
@@ -53,8 +63,8 @@ public final class RobotDataManager {
     
     public static void exportDataToRobot() {
         readInformationFromDatabase();
-        if (robot.isConnected()) {
-            logger.debug("Writing information to robot if allowed");
+        if (robot.isConnected() && robot.acceptsData() && !alreadySentThisSession) {
+            logger.debug("Writing information to robot");
             writeInformationToRobot();
         }
     }
@@ -249,20 +259,18 @@ public final class RobotDataManager {
     }
     
     private static void writeInformationToRobot() {
-        if (robot.acceptsData()) {
-            logger.debug("Writing information to robot");
-            try {
-                writeIPPoints();
-                writeRPPoints();
-                writeSpecialPoints();
-                writeUserframes();
-                writeToolframes();
-                writeRegisters();
-            } catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
-                logger.info("Exception received when sending data to robot - closing IPC");
-                e.printStackTrace();
-                Platform.exit();
-            }
+        try {
+            writeIPPoints();
+            writeRPPoints();
+            writeSpecialPoints();
+            writeUserframes();
+            writeToolframes();
+            writeRegisters();
+            RobotDataManager.setAlreadySentDataToRobot(true);
+        } catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+            logger.info("Exception received when sending data to robot - closing IPC");
+            e.printStackTrace();
+            Platform.exit();
         }
     }
 

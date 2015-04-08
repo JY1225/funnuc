@@ -2,8 +2,13 @@ package eu.robojob.millassist.ui.admin.robot;
 
 import java.sql.SQLException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javafx.application.Platform;
 import eu.robojob.millassist.db.external.robot.RobotMapper;
 import eu.robojob.millassist.external.robot.RobotAlarmsOccuredEvent;
+import eu.robojob.millassist.external.robot.RobotDataManager;
 import eu.robojob.millassist.external.robot.RobotEvent;
 import eu.robojob.millassist.external.robot.RobotListener;
 import eu.robojob.millassist.external.robot.RobotManager;
@@ -13,6 +18,7 @@ import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 public class RobotDataPresenter extends AbstractFormPresenter<RobotDataView, RobotMenuPresenter> implements RobotListener {
 	
 	private FanucRobot robot;
+    private static Logger logger = LogManager.getLogger(RobotDataPresenter.class.getName());
 
 	public RobotDataPresenter(final RobotDataView view, final RobotManager robotManager) {
 		super(view);
@@ -38,6 +44,12 @@ public class RobotDataPresenter extends AbstractFormPresenter<RobotDataView, Rob
 	@Override
 	public void robotConnected(final RobotEvent event) {
 		getView().disableImportButton(false);
+		Platform.runLater(new Runnable() {
+		    @Override public void run() {
+		        logger.debug("Connection with robot made - exporting data to robot if needed");
+		        RobotDataManager.exportDataToRobot();
+		    }
+		});
 	}
 
 	@Override
