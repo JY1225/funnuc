@@ -29,8 +29,6 @@ public class RobotDataPresenter extends AbstractFormPresenter<RobotDataView, Rob
 	boolean isConnected() {
 	    return robot.isConnected();
 	}
-	
-	
 
 	@Override
 	public boolean isConfigured() {

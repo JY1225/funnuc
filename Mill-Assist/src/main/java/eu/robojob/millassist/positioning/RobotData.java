@@ -4,6 +4,36 @@ import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.Approach
 
 public final class RobotData {
     
+    public enum RobotRegister {
+        MACHINE_ID(15);
+        
+        private int id;
+        
+        private RobotRegister(int id) {
+            this.id = id;
+        }
+        
+        public int getId() {
+            return this.id;
+        }
+        
+        public static RobotRegister getById(int id) {
+            for (RobotRegister register: values()) {
+                if (register.getId() == id)
+                    return register;
+            }
+            return null;
+        }
+        
+        public static RobotRegister getByString(String name) {
+            for (RobotRegister register: values()) {
+                if (register.toString().equals(name))
+                    return register;
+            }
+            return null;
+        }
+    }
+    
     public enum RobotUserFrame {
         UF1_STACKER(1), 
         UF3_MCH_WA1(3), 

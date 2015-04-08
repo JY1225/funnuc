@@ -17,6 +17,7 @@ import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotRegister;
 import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotToolFrame;
 import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
@@ -320,7 +321,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void reset() throws AbstractCommunicationException, InterruptedException;
 	public abstract Coordinates getPosition() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void sendSpeed(int speedPercentage) throws AbstractCommunicationException, InterruptedException;
-	public abstract void writeRegister(int registerNr, String value) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void writeRegister(int registerNr, int value) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continueProgram() throws AbstractCommunicationException, InterruptedException;
 	public abstract void abort() throws AbstractCommunicationException, InterruptedException;
 	public abstract void recalculateTCPs() throws AbstractCommunicationException, InterruptedException;	
@@ -362,6 +363,8 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void readSpecialPoint(final RobotSpecialPoint specialPoint) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void writeToolFrame(final RobotToolFrame toolFrame, final RobotPosition position) throws AbstractCommunicationException, RobotActionException, InterruptedException;
     public abstract void readToolFrame(final RobotToolFrame toolFrame) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+    public abstract void readRegister(final RobotRegister register) throws AbstractCommunicationException, RobotActionException, InterruptedException;
+
 	
 	public String toString() {
 		return "Robot: " + getName();

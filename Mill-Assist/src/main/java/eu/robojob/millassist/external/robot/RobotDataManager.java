@@ -4,14 +4,20 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javafx.application.Platform;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.db.external.robot.RobotMapper;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
+import eu.robojob.millassist.external.communication.socket.SocketDisconnectedException;
+import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOutException;
+import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
 import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotRegister;
 import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotToolFrame;
 import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
@@ -26,6 +32,7 @@ public final class RobotDataManager {
     private static Map<RobotSpecialPoint, RobotPosition> specialPoints;
     private static Map<RobotUserFrame, RobotPosition> userframes;
     private static Map<RobotToolFrame, RobotPosition> toolframes;
+    private static Map<RobotRegister, Integer> registers;
     
     private static Logger logger = LogManager.getLogger(RobotDataManager.class.getName());
     
@@ -41,12 +48,13 @@ public final class RobotDataManager {
         createSpecialPoints();
         createUserframes();
         createToolframes();
+        createRegisters();
     }
     
     public static void exportDataToRobot() {
         readInformationFromDatabase();
         if (robot.isConnected()) {
-            logger.debug("Writing information to robot");
+            logger.debug("Writing information to robot if allowed");
             writeInformationToRobot();
         }
     }
@@ -102,6 +110,17 @@ public final class RobotDataManager {
         }
     }
     
+    /**
+     * Create default register with default value -1.
+     */
+    private static void createRegisters() {
+        registers = new HashMap<RobotRegister, Integer>();
+        for (RobotRegister register: RobotRegister.values()) {
+            //UNINIT
+            registers.put(register, -1);
+        }
+    }
+    
     private static void readIPPoints() {
         for (RobotIPPoint ipPoint: ipPoints.keySet()) {
             try {
@@ -152,58 +171,55 @@ public final class RobotDataManager {
         }
     }
     
-    private static void writeIPPoints() {
+    private static void readRegisters() {
+        for (RobotRegister register: registers.keySet()) {
+            try {
+                robot.readRegister(register);
+            } catch (AbstractCommunicationException | RobotActionException| InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private static void writeIPPoints() throws AbstractCommunicationException, RobotActionException, InterruptedException {
         for (RobotIPPoint ipPoint: ipPoints.keySet()) {
-            try {
-                logger.debug("Writing " + ipPoint + " to robot");
-                robot.writeIPPoint(ipPoint, ipPoints.get(ipPoint));
-            } catch (AbstractCommunicationException | RobotActionException| InterruptedException e) {
-                e.printStackTrace();
-            }
+            logger.debug("Writing " + ipPoint + " to robot");
+            robot.writeIPPoint(ipPoint, ipPoints.get(ipPoint));
         }
     }
     
-    private static void writeRPPoints() {
+    private static void writeRPPoints() throws AbstractCommunicationException, RobotActionException, InterruptedException {
         for (RobotRefPoint rpPoint: rpPoints.keySet()) {
-            try {
-                logger.debug("Writing " + rpPoint + " to robot");
-                robot.writeRPPoint(rpPoint, rpPoints.get(rpPoint));
-            } catch (AbstractCommunicationException | RobotActionException| InterruptedException e) {
-                e.printStackTrace();
-            }
+            logger.debug("Writing " + rpPoint + " to robot");
+            robot.writeRPPoint(rpPoint, rpPoints.get(rpPoint));
         }
     }
     
-    private static void writeSpecialPoints() {
+    private static void writeSpecialPoints() throws AbstractCommunicationException, RobotActionException, InterruptedException {
         for (RobotSpecialPoint specialPoint: specialPoints.keySet()) {
-            try {
-                logger.debug("Writing " + specialPoint + " to robot");
-                robot.writeSpecialPoint(specialPoint, specialPoints.get(specialPoint));
-            } catch (AbstractCommunicationException | RobotActionException| InterruptedException e) {
-                e.printStackTrace();
-            }
+            logger.debug("Writing " + specialPoint + " to robot");
+            robot.writeSpecialPoint(specialPoint, specialPoints.get(specialPoint));
         }
     }
     
-    private static void writeUserframes() {
+    private static void writeUserframes() throws AbstractCommunicationException, RobotActionException, InterruptedException {
         for (RobotUserFrame userframe: userframes.keySet()) {
-            try {
-                logger.debug("Writing " + userframe + " to robot");
-                robot.writeUserFrame(userframe, userframes.get(userframe));
-            } catch (AbstractCommunicationException | RobotActionException| InterruptedException e) {
-                e.printStackTrace();
-            }
+            logger.debug("Writing " + userframe + " to robot");
+            robot.writeUserFrame(userframe, userframes.get(userframe));
+        }
+    }
+
+    private static void writeToolframes() throws AbstractCommunicationException, RobotActionException, InterruptedException {
+        for (RobotToolFrame toolFrame: toolframes.keySet()) {
+            logger.debug("Writing " + toolFrame + " to robot");
+            robot.writeToolFrame(toolFrame, toolframes.get(toolFrame));
         }
     }
     
-    private static void writeToolframes() {
-        for (RobotToolFrame toolFrame: toolframes.keySet()) {
-            try {
-                logger.debug("Writing " + toolFrame + " to robot");
-                robot.writeToolFrame(toolFrame, toolframes.get(toolFrame));
-            } catch (AbstractCommunicationException | RobotActionException| InterruptedException e) {
-                e.printStackTrace();
-            }
+    private static void writeRegisters() throws SocketDisconnectedException, SocketResponseTimedOutException, SocketWrongResponseException, RobotActionException, InterruptedException {
+        for (RobotRegister register: registers.keySet()) {
+            logger.debug("Writing " + register + " to robot");
+            robot.writeRegister(register.getId(), registers.get(register));
         }
     }
     
@@ -213,6 +229,7 @@ public final class RobotDataManager {
         readSpecialPoints();
         readUserframes();
         readToolframes();
+        readRegisters();
     }
     
     private static void writeInformationToDatabase() {
@@ -233,11 +250,19 @@ public final class RobotDataManager {
     
     private static void writeInformationToRobot() {
         if (robot.acceptsData()) {
-            writeIPPoints();
-            writeRPPoints();
-            writeSpecialPoints();
-            writeUserframes();
-            writeToolframes();
+            logger.debug("Writing information to robot");
+            try {
+                writeIPPoints();
+                writeRPPoints();
+                writeSpecialPoints();
+                writeUserframes();
+                writeToolframes();
+                writeRegisters();
+            } catch (AbstractCommunicationException | RobotActionException | InterruptedException e) {
+                logger.info("Exception received when sending data to robot - closing IPC");
+                e.printStackTrace();
+                Platform.exit();
+            }
         }
     }
 
@@ -281,6 +306,14 @@ public final class RobotDataManager {
         RobotDataManager.toolframes.put(toolFrame, position);
     }
     
+    public static Map<RobotRegister, Integer> getRegisters() {
+        return registers;
+    }
+    
+    public static void addRegisterValue(RobotRegister register, int value) {
+        RobotDataManager.registers.put(register, value);
+    }
+    
     public static RobotPosition getPosition(String robotDataStringId) {
         for (RobotUserFrame userframe: userframes.keySet()) {
             if (userframe.toString().equals(robotDataStringId)) {
@@ -309,4 +342,5 @@ public final class RobotDataManager {
         }
         return null;
     }
+
 }

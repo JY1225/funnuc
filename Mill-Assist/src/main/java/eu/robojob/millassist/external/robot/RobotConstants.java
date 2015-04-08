@@ -95,6 +95,7 @@ public final class RobotConstants {
 	public static final int COMMAND_WRITE_SERVICE_POINT			=	77;
 	
 	public static final int COMMAND_READ_USERFRAME				=	80;
+	public static final int COMMAND_READ_REGISTER               =   82;
 	public static final int COMMAND_WRITE_IP_POINT				= 	90;
 	public static final int COMMAND_READ_IP_POINT				= 	91;
 	public static final int COMMAND_WRITE_REF_POINT				= 	92;
@@ -133,6 +134,7 @@ public final class RobotConstants {
 	public static final int RESPONSE_WRITE_SERVICE_POINT		=	177;
 	
 	public static final int RESPONSE_READ_USERFRAME				=	180;
+	public static final int RESPONSE_READ_REGISTER              =   182;
 	public static final int RESPONSE_WRITE_IP_POINT				= 	190;
 	public static final int RESPONSE_READ_IP_POINT				= 	191;
 	public static final int RESPONSE_WRITE_REF_POINT			= 	192;

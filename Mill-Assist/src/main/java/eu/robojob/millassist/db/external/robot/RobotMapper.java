@@ -23,6 +23,7 @@ import eu.robojob.millassist.external.robot.GripperHead;
 import eu.robojob.millassist.external.robot.fanuc.FanucRobot;
 import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotRegister;
 import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotToolFrame;
 import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
@@ -335,6 +336,7 @@ public class RobotMapper {
 	        saveSpecialPoints(RobotDataManager.getSpecialPoints());
 	        saveUserframes(RobotDataManager.getUserframes());
 	        saveToolFrames(RobotDataManager.getToolframes());
+	        saveRegisters(RobotDataManager.getRegisters());
 	    } catch (SQLException e) {
 	        ConnectionManager.getConnection().rollback();
 	    } finally {
@@ -436,6 +438,21 @@ public class RobotMapper {
 	    }
 	}
 
+	private void saveRegisters(final Map<RobotRegister, Integer> registers) throws SQLException {
+	    try {
+	        PreparedStatement stmtReg = ConnectionManager.getConnection().prepareStatement("INSERT INTO ROB_REGISTER(REG_ID, VALUE) VALUES (?,?)");
+	        //Re-use stmt for all userframes
+	        for (RobotRegister register: registers.keySet()) {
+	            stmtReg.setInt(1, register.getId());
+	            stmtReg.setInt(2, registers.get(register));
+	            stmtReg.executeUpdate();
+	        }
+	        ConnectionManager.getConnection().commit();
+	    } catch (SQLException e) {
+	        ConnectionManager.getConnection().rollback();
+	    }
+	}
+
 	private void deleteRobotPoints() throws SQLException {
 	    ConnectionManager.getConnection().setAutoCommit(false);
 	    try {
@@ -444,11 +461,13 @@ public class RobotMapper {
 	        PreparedStatement stmtSpecial = ConnectionManager.getConnection().prepareStatement("DELETE FROM ROB_SPECIAL_POINT");
 	        PreparedStatement stmtUserframe = ConnectionManager.getConnection().prepareStatement("DELETE FROM ROB_USERFRAME");
 	        PreparedStatement stmtToolframe = ConnectionManager.getConnection().prepareStatement("DELETE FROM ROB_TOOLFRAME");
+	        PreparedStatement stmtRegister = ConnectionManager.getConnection().prepareStatement("DELETE FROM ROB_REGISTER");
 	        stmtRP.executeUpdate();
 	        stmtIP.executeUpdate();
 	        stmtSpecial.executeUpdate();
 	        stmtUserframe.executeUpdate();
 	        stmtToolframe.executeUpdate();
+	        stmtRegister.executeUpdate();
 	        ConnectionManager.getConnection().commit();
 	        ConnectionManager.getConnection().setAutoCommit(true);
 	    } catch (SQLException e) {
@@ -462,6 +481,7 @@ public class RobotMapper {
 	    readSpecialPoints();
 	    readUserframes();
 	    readToolframes();
+	    readRegisters();
 	}
 
 	private void readIPPoints() throws SQLException {
@@ -522,6 +542,16 @@ public class RobotMapper {
 	        RobotPosition position = new RobotPosition(generalMapper.getCoordinatesById(0, results.getInt("LOCATION")),
 	                generalMapper.getConfigById(results.getInt("CONFIG")));
 	        RobotDataManager.addToolFrame(toolFrame, position);
+	    }
+	}
+
+	private void readRegisters() throws SQLException {
+	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM ROB_REGISTER");
+	    ResultSet results = stmt.executeQuery();
+	    while (results.next()) {
+	        RobotRegister register = RobotRegister.getById(results.getInt("REG_ID"));
+	        int value = results.getInt("VALUE");
+	        RobotDataManager.addRegisterValue(register, value);
 	    }
 	}
 }

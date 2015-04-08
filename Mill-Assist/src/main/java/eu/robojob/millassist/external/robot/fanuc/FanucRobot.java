@@ -35,6 +35,7 @@ import eu.robojob.millassist.positioning.Config;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.RobotData.RobotIPPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotRefPoint;
+import eu.robojob.millassist.positioning.RobotData.RobotRegister;
 import eu.robojob.millassist.positioning.RobotData.RobotSpecialPoint;
 import eu.robojob.millassist.positioning.RobotData.RobotToolFrame;
 import eu.robojob.millassist.positioning.RobotData.RobotUserFrame;
@@ -144,8 +145,11 @@ public class FanucRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void writeRegister(final int registerNr, final String value) throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException, SocketWrongResponseException {
-		fanucRobotCommunication.writeValue(RobotConstants.COMMAND_WRITE_REGISTER, RobotConstants.RESPONSE_WRITE_REGISTER, WRITE_REGISTER_TIMEOUT, "" + registerNr);
+	public void writeRegister(final int registerNr, final int value) throws SocketDisconnectedException, SocketResponseTimedOutException, RobotActionException, InterruptedException, SocketWrongResponseException {
+	    List<String> values = new ArrayList<String>();
+	    values.add(registerNr + "");
+	    values.add(value + "");
+		fanucRobotCommunication.writeValues(RobotConstants.COMMAND_WRITE_REGISTER, RobotConstants.RESPONSE_WRITE_REGISTER, WRITE_REGISTER_TIMEOUT, values);
 	}
 	
 	public void openGripperA() throws SocketDisconnectedException, SocketResponseTimedOutException, InterruptedException, SocketWrongResponseException {
@@ -1007,4 +1011,15 @@ public class FanucRobot extends AbstractRobot {
         RobotDataManager.addSpecialPoint(specialPoint, new RobotPosition(coord, config));
         logger.debug("read " + specialPoint.toString());
     }	
+    
+    @Override
+    public void readRegister(RobotRegister register) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+        List<String> values = new ArrayList<String>();
+        values.add("" + register.getId());
+        List<String> result = fanucRobotCommunication.readValues(RobotConstants.COMMAND_READ_REGISTER, RobotConstants.RESPONSE_READ_REGISTER, ASK_POSITION_TIMEOUT, values);
+        // index 0 is responseId, index 1 is registerId
+        int value = Integer.parseInt(result.get(2));
+        RobotDataManager.addRegisterValue(register, value);
+        logger.debug("read " + register.toString());
+    }
 }
