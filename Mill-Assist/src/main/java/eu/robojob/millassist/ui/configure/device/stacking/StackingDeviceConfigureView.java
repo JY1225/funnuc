@@ -12,6 +12,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate;
@@ -29,6 +30,9 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 	private DeviceInformation deviceInfo;
 	private Set<String> stackingDeviceIds;
 	private Button btnChange;
+	
+	private HBox stackSettingsLblBox;
+	private HBox stackSettingsFldBox;
 	
 	private Label lblGridPlate;
 	private CheckBox cbGridPlate;
@@ -79,30 +83,19 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 						} else {
 							btnChange.setDisable(false);
 						}
+						boolean showGrid= false;
 						//Disable the selection of gridplates when device is not a basic stack plate
 						if(getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.BASIC_STACK_PLATE) {
-							cbGridPlate.setDisable(false);
-							cbGridPlate.setSelected(false);
-							cbbGridPlates.setDisable(true);
+						    showGrid = true;
 							//TODO - setManaged
 						} else {
-							cbGridPlate.setDisable(true);
-							selectGridPlate(false);
+						    showGrid = false;
 						}
 						if(getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.UNLOAD_PALLET) {
-						    cbbPalletLayouts.setVisible(true);
-                            lblPalletLayout.setVisible(true);
-                            cbGridPlate.setVisible(false);
-                            cbbGridPlates.setVisible(false);
-                            lblGridPlate.setVisible(false);
-                            
+						    setStackSettings(showGrid, true);
 						}
 						else {
-						    cbbPalletLayouts.setVisible(false);
-                            lblPalletLayout.setVisible(false);
-                            cbGridPlate.setVisible(true);
-                            cbbGridPlates.setVisible(true);
-                            lblGridPlate.setVisible(true);
+						    setStackSettings(showGrid,false);
 						}
 					}
 				}
@@ -119,7 +112,13 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 		});
 		
 		
-		
+		stackSettingsLblBox = new HBox(15);
+		stackSettingsFldBox = new HBox(15);
+		row++;
+        column = 0;
+        getContents().add(stackSettingsLblBox, ++column, row);
+        getContents().add(stackSettingsFldBox, ++column, row);
+        
 		lblGridPlate = new Label(Translator.getTranslation(GRIDPLATE));
 		cbbGridPlates = new ComboBox<String>();
 		cbbGridPlates.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
@@ -135,11 +134,7 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 					btnChange.setDisable(true);
 			}
 		});
-		column = 0;
-		getContents().add(cbGridPlate, column, ++row);
-		getContents().add(lblGridPlate, ++column, row);
-		getContents().add(cbbGridPlates, ++column, row);
-		
+				
 		lblPalletLayout = new Label(Translator.getTranslation(PALLETLAYOUT));
         cbbPalletLayouts = new ComboBox<String>();
         cbbPalletLayouts.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
@@ -155,10 +150,6 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
                     btnChange.setDisable(true);
             }
         });
-		row++;
-        column = 1;
-        getContents().add(lblPalletLayout, column, row);
-        getContents().add(cbbPalletLayouts, ++column, row);
         
 		btnChange = createButton(CHANGE_ICON, "", Translator.getTranslation(CHANGE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
@@ -262,7 +253,6 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 	private void setPalletLayout(String layoutName) {
 	    cbbPalletLayouts.setValue(layoutName);
 	    cbbPalletLayouts.setPromptText(cbbGridPlates.getConverter().toString(cbbGridPlates.getValue()));
-//	    ((UnloadPallet)deviceInfo.getDevice()).setLayout();
 	}
 	
 	public void setPalletLayouts(final Set<String> palletLayouts) {
@@ -279,6 +269,7 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
         if(layoutName != null) {
             setPalletLayout(layoutName);
         } else {
+            cbbPalletLayouts.getSelectionModel().select(0);
         }
     }
     
@@ -290,6 +281,19 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
     public void setGridPlates(final Set<String> gridPlates) {
         cbbGridPlates.getItems().clear();
         cbbGridPlates.getItems().addAll(gridPlates);
+    }
+    
+    private void setStackSettings(final boolean showGrid, final boolean showPalletLayout) {
+        stackSettingsFldBox.getChildren().clear();
+        stackSettingsLblBox.getChildren().clear();
+        if(showGrid) {
+            stackSettingsLblBox.getChildren().addAll(cbGridPlate, lblGridPlate);
+            stackSettingsFldBox.getChildren().add(cbbGridPlates);
+        }
+        if(showPalletLayout) {
+            stackSettingsLblBox.getChildren().addAll(lblPalletLayout);
+            stackSettingsFldBox.getChildren().add(cbbPalletLayouts);
+        }
     }
 	
 }

@@ -81,6 +81,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
     private static final String NB_PIECES = "UnloadPalletLayoutView.NbPieces";
     private static final double BTN_WIDTH = 80;
     private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
+    private static final double FIELD_HEIGHT = 25;
     
     private static final int PADDING = 15;
     
@@ -159,6 +160,9 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                     nbOfPieces = new Label(Translator.getTranslation(NB_PIECES));
                     nbOfPiecesValue = new Label();
                     nbLayersCardboardLabel = new Label(Translator.getTranslation(NBLAYERS_CARDBOARD));
+                    nbLayersField.setNotifyEveryChange(true);
+                    nbLayersField.setPrefHeight(FIELD_HEIGHT);
+                    nbLayersField.setMinHeight(FIELD_HEIGHT);
                     nbLayersField.setOnChange(new ChangeListener<Float>() {
                         
                         @Override
@@ -168,6 +172,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                         }
                     });
                     nbLayersBox = new HBox(15);
+                    nbLayersBox.setPrefHeight(FIELD_HEIGHT);
                     nbLayersBox.getChildren().addAll(nbLayersCardboardLabel, nbLayersField);
                    
                     controls = new GridPane();
@@ -180,9 +185,9 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                         controls.add(orientationBox, column+1, row);
                         row++;
                     }
+                    
                     nbOfPiecesValue.setText(unloadPallet.getLayout().getStackingPositions().size()+"");
                     nbLayersField.setText(unloadPallet.getLayout().getLayersBeforeCardBoard()+"");
-                    
                     controls.add(nbOfPieces,column, row);
                     controls.add(nbOfPiecesValue,column+1, row);
                     controls.add(nbLayersBox, column+2, row);

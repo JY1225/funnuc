@@ -231,6 +231,7 @@ public class DeviceMenuFactory {
 	    UnloadPalletLayoutView<UnloadPalletLayoutPresenter> view = new UnloadPalletLayoutView<>();
 	    if(deviceInfo.hasPutStep()){
 	        UnloadPalletLayoutPresenter unloadPalletLayoutPresenter = new UnloadPalletLayoutPresenter(view, (UnloadPallet)deviceInfo.getDevice(), deviceInfo.getPutStep());
+	        
 	        return unloadPalletLayoutPresenter;
 	    }
 	    return null;

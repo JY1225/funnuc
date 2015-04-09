@@ -79,9 +79,11 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
     private Button plusButton;
     
     private Button btnSave;
+    private Button btnRemove;
 
     private static final String EDIT_PATH = "M 15.71875,0 3.28125,12.53125 0,20 7.46875,16.71875 20,4.28125 C 20,4.28105 19.7362,2.486 18.625,1.375 17.5134,0.2634 15.71875,0 15.71875,0 z M 3.53125,12.78125 c 0,0 0.3421,-0.0195 1.0625,0.3125 C 4.85495,13.21295 5.1112,13.41 5.375,13.625 l 0.96875,0.96875 c 0.2258,0.2728 0.4471,0.5395 0.5625,0.8125 C 7.01625,15.66565 7.25,16.5 7.25,16.5 L 3,18.34375 C 2.5602,17.44355 2.55565,17.44 1.65625,17 l 1.875,-4.21875 z";
     private static final String ADD_PATH = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 8.75 5 L 11.25 5 L 11.25 8.75 L 15 8.75 L 15 11.25 L 11.25 11.25 L 11.25 15 L 8.75 15 L 8.75 11.25 L 5 11.25 L 5 8.75 L 8.75 8.75 L 8.75 5 z";
+    private static final String DELETE_ICON_PATH = "M 10 0 C 4.4775 0 0 4.4775 0 10 C 0 15.5225 4.4775 20 10 20 C 15.5225 20 20 15.5225 20 10 C 20 4.4775 15.5225 0 10 0 z M 5 8.75 L 15 8.75 L 15 11.25 L 5 11.25 L 5 8.75 z"; 
     
     private static final String SAVE_PATH = "M 5.40625 0 L 5.40625 7.25 L 0 7.25 L 7.1875 14.40625 L 14.3125 7.25 L 9 7.25 L 9 0 L 5.40625 0 z M 7.1875 14.40625 L 0 14.40625 L 0 18 L 14.3125 18 L 14.3125 14.40625 L 7.1875 14.40625 z";
     private static final String SAVE = "UnloadPallet.save";
@@ -96,6 +98,7 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
     private static final String HOR_R = "UnloadPallet.horizontalR";
     private static final String VER_R = "UnloadPallet.verticalR";
     private static final String STD_PALLET = "UnloadPallet.StandardPallet";
+    private static final String DELETE = "UnloadPallet.Delete";
     
     private static final String EDIT = "RobotGripperView.edit";
     private static final String NEW = "RobotGripperView.new";
@@ -233,8 +236,19 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
                 getPresenter().saveData(nameTextField.getText(),Float.parseFloat(widthNumbericTextField.getText()),Float.parseFloat(lengthNumbericTextField.getText()), Float.parseFloat(heightNumbericTextField.getText()),Float.parseFloat(borderNumbericTextField.getText()),Float.parseFloat(xOffsetNumbericTextField.getText()),Float.parseFloat(yOffsetNumbericTextField.getText()), Float.parseFloat(minInterferenceTextField.getText()), horizontalRValue, verticalRValue);
             }
         });
+        
+        btnRemove = createButton(DELETE_ICON_PATH, "", Translator.getTranslation(DELETE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                getPresenter().removePalletLayout();
+            }
+        });
+        btnRemove.getStyleClass().add("delete-btn");
 
         fieldsPane = new GridPane();
+        fieldsPane.setVgap(5);
+        fieldsPane.setHgap(15);
+        fieldsPane.setPadding(new Insets(15, 0, 0, 0));
         int row = 0;
         int column = 0;
         fieldsPane.add(nameLabel, column++, row);
@@ -272,7 +286,7 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
         column = 0; row++;
         
         form = new VBox();
-        form.getChildren().addAll(fieldsPane,btnSave);
+        form.getChildren().addAll(fieldsPane,new HBox(10, btnSave, btnRemove));
         
         GridPane.setHalignment(btnSave, HPos.CENTER);
         GridPane.setMargin(btnSave, new Insets(10, 0, 0, 0));
@@ -341,6 +355,8 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
      */
     @Override
     public void refresh() {
+        hideNotification();
+        getPresenter().setEditMode(false);
         reset();
         getPresenter().updatePalletLayouts();
         cbbPalletLayouts.getSelectionModel().select(0);
@@ -395,10 +411,12 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
     
     public void showFormEdit() {
         form.setVisible(true);
+        btnRemove.setVisible(true);
         btnCreateNew.setDisable(true);
         cbbPalletLayouts.setDisable(true);
         btnEdit.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
         if(layout != null) {
+            stdPalletTypeComboBox.valueProperty().set(PalletType.getPalletTypeForLayout(layout));
             nameTextField.setText(layout.getName());
             widthNumbericTextField.setText(layout.getPalletWidth()+"");
             lengthNumbericTextField.setText(layout.getPalletLength()+"");
@@ -408,7 +426,7 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
             yOffsetNumbericTextField.setText(layout.getMinYGap()+"");
             minInterferenceTextField.setText(layout.getMinInterferenceDistance()+"");
             
-            stdPalletTypeComboBox.valueProperty().set(PalletType.getPalletTypeForLayout(layout));
+            
             if(layout.getHorizontalR() == 0) {
                 if(!zeroButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
                     zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
@@ -438,6 +456,7 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
     public void showFormNew() {
         form.setVisible(true);
         btnEdit.setDisable(true);
+        btnRemove.setVisible(false);
         cbbPalletLayouts.setDisable(true);
         btnCreateNew.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
         

@@ -3,6 +3,7 @@ package eu.robojob.millassist.ui.admin.device;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.NotificationBox.Type;
 
 
 public class PalletLayoutConfigurePresenter extends AbstractFormPresenter<PalletLayoutConfigureView, DeviceMenuPresenter> {
@@ -40,11 +41,35 @@ public class PalletLayoutConfigurePresenter extends AbstractFormPresenter<Pallet
      * @param minInterferenceDistance Minimal distance between two work pieces in all directions
      */
     public void saveData(final String name, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
-        deviceManager.savePalletLayout(name, width, length, height, border, xOffset, yOffset, minInterferenceDistance, horizontalR, verticalR);
+        try {
+            if (this.selectedPalletLayout != null) {
+                deviceManager.updatePalletLayout(selectedPalletLayout, name,
+                        width, length, height, border, xOffset, yOffset,
+                        minInterferenceDistance, horizontalR, verticalR);
+            } else {
+                deviceManager.savePalletLayout(name, width, length, height,
+                        border, xOffset, yOffset, minInterferenceDistance,
+                        horizontalR, verticalR);
+            }
+            editMode = false;
+            getView().refresh();
+        } catch (IllegalArgumentException e) {
+            getView().showNotification("Name already in use", Type.WARNING);
+        }
     }
     
-    public void updateData(PalletLayout layout, final String name, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
-        deviceManager.updatePalletLayout(layout, name, width, length, height, border, xOffset, yOffset, minInterferenceDistance, horizontalR, verticalR);
+    public void removePalletLayout() {
+        try {
+            deviceManager.deletePalletLayout(selectedPalletLayout);
+            editMode = false;
+            getView().refresh();
+        } catch (IllegalArgumentException e) {
+            getView().showNotification(e.getMessage(), Type.WARNING);
+        }
+    }
+    
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
     }
     
     public void setSelectedLayout(PalletLayout layout) {

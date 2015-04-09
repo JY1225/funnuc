@@ -11,6 +11,7 @@ import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceS
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.event.ProcessChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
@@ -61,8 +62,10 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			}
 			if(prevDevice instanceof UnloadPallet) {
 			    ((UnloadPallet) prevDevice).setLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
-			    int interventionStepIndex = deviceInfo.getPutStep().getProcessFlow().getStepIndex(deviceInfo.getPutStep())+1;
-			    deviceInfo.getPutStep().getProcessFlow().removeStep(deviceInfo.getPutStep().getProcessFlow().getStep(interventionStepIndex));
+			    
+			    if(deviceInfo.getPutStep().getProcessFlow().getProcessSteps().get(0) instanceof InterventionStep){
+			        deviceInfo.getPutStep().getProcessFlow().removeStep(deviceInfo.getPutStep().getProcessFlow().getProcessSteps().get(0));
+			    }
 			}
 			if(device instanceof UnloadPallet) {
 			    ((UnloadPallet) device).setLayout(deviceManager.getPalletLayoutByName(palletLayoutName));

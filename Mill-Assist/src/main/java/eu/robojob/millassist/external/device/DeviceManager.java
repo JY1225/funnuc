@@ -270,36 +270,71 @@ public class DeviceManager {
 		}		
 	}
 	
-	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName) {
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final String stdPalletLayoutName) {
 	    try {
-            deviceMapper.updateUnloadPallet(unloadPallet, name, userFrameName);
+            deviceMapper.updateUnloadPallet(unloadPallet, name, userFrameName, getPalletLayoutByName(stdPalletLayoutName));
+            refresh();
 	    } catch (SQLException e) {
             logger.error(e);
             e.printStackTrace();
         }
 	}
 	
-	public void savePalletLayout(final String name, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
+	public void savePalletLayout(final String name, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws IllegalArgumentException{
 	    PalletLayout layout = new PalletLayout(name, width, length, height, border, xOffset, yOffset, minInterferenceDistance, horizontalR, verticalR);
 	    try {
-            deviceMapper.savePalletLayout(layout);
-            palletLayoutsById.put(layout.getId(), layout);
-            palletLayoutsByName.put(layout.getName(), layout);
-            System.out.println(palletLayoutsByName);
+	        if(!palletLayoutsByName.containsKey(name)) {
+	            deviceMapper.savePalletLayout(layout);
+	            palletLayoutsById.put(layout.getId(), layout);
+	            palletLayoutsByName.put(layout.getName(), layout);
+	            refresh();
+	        } else {
+                logger.error("Pallet Layout name already exists");
+                throw new IllegalArgumentException("Pallet Layout name already exists: " + name);
+            }
         } catch (SQLException e) {
             logger.error(e);
             e.printStackTrace();
         }
 	}
 	
-	public void updatePalletLayout(final PalletLayout layout, final String name, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
+	public void updatePalletLayout(final PalletLayout layout, final String name, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws IllegalArgumentException{
+	    if(!layout.getName().equals(name)) {
+	        if(!palletLayoutsByName.containsKey(name)) {
+                palletLayoutsByName.remove(layout.getName());
+                palletLayoutsByName.put(name, layout);
+            } else {
+                logger.error("Pallet Layout name already exists");
+                throw new IllegalArgumentException("Pallet Layout name already exists: " + name);
+            }
+	    }
         try {
-            deviceMapper.updatePalletLayout(layout, name, width, length, height, border, xOffset, yOffset, minInterferenceDistance, horizontalR, verticalR);
+            deviceMapper.updatePalletLayout(layout, name, width, length,
+                    height, border, xOffset, yOffset, minInterferenceDistance,
+                    horizontalR, verticalR);
+            refresh();
         } catch (SQLException e) {
             logger.error(e);
             e.printStackTrace();
         }
     }
+	
+	public void deletePalletLayout(final PalletLayout layout) {
+	    try{
+	        List<Integer> defaultLayouts = deviceMapper.getDefaultPalletLayouts();
+	        if(defaultLayouts.contains(layout.getId())){
+	            throw new IllegalArgumentException("Cannot delete this layout, it is the default layout for the pallet");
+	        }
+	        else {
+	            deviceMapper.deletePalletLayout(layout);
+	            palletLayoutsByName.remove(layout.getName());
+	            palletLayoutsById.remove(layout.getId());
+	        }
+        } catch (SQLException e) {
+            logger.error(e);
+            e.printStackTrace();
+        }
+	}
 	
 	public Collection<PalletLayout> getAllPalletLayouts() {
 	    return palletLayoutsById.values();
@@ -330,9 +365,8 @@ public class DeviceManager {
 			if(!gridPlatesByName.containsKey(name)) {
 				deviceMapper.saveGridPlate(gridPlate);
 				gridPlatesByName.put(name, gridPlate);
-				System.out.println(gridPlatesByName);
 				gridPlatesById.put(gridPlate.getId(), gridPlate);
-				refresh();	
+				refresh();
 			} else {
 				logger.error("Plate name already exists");
 				throw new IllegalArgumentException("Plate name already exists: " + name);

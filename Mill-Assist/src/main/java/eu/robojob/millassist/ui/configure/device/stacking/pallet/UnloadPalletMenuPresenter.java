@@ -69,6 +69,7 @@ public class UnloadPalletMenuPresenter extends AbstractStackingDeviceMenuPresent
     public void showLayout() {
         getView().setViewLayoutActive();
         getParent().setBottomRightView(unloadPalletLayoutPresenter.getView());
+        unloadPalletLayoutPresenter.refresh();
     }
 
     /**
