@@ -123,7 +123,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		pickStep.setRelativeTeachedOffset(null);
 		recalculate();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
-		pickStep.getProcessFlow().recalculateStackingPos();
+        pickStep.getProcessFlow().recalculateStackingPos();
 	}
 	
 	public void resetLength() {
@@ -137,6 +137,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 		//pickStep.setRelativeTeachedOffset(null);
 		recalculate();
 		pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, false));
+        pickStep.getProcessFlow().recalculateStackingPos();
 	}
 	
 	public void resetHeight() {
@@ -207,6 +208,7 @@ public class CNCMillingMachineWorkPiecePresenter extends AbstractFormPresenter<C
 					}
 					this.pickStep.getProcessFlow().revisitProcessFlowWorkPieces();
 					this.pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.pickStep.getProcessFlow(), this.pickStep, reteach));
+					this.pickStep.getProcessFlow().recalculateStackingPos();
 				}
 				this.pickStep.getRobotSettings().getWorkPiece().setMaterial(pickStep.getRobotSettings().getWorkPiece().getMaterial());
 				this.pickStep.getRobotSettings().getWorkPiece().setWeight(pickStep.getRobotSettings().getWorkPiece().getWeight());

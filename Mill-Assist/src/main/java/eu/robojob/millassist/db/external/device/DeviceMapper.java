@@ -132,7 +132,7 @@ public class DeviceMapper {
         return pallet;
 	}
 	
-	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName ) throws SQLException {
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final PalletLayout stdLayout) throws SQLException {
 	    
 	    ConnectionManager.getConnection().setAutoCommit(false);
 	    if ((!unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
@@ -146,6 +146,12 @@ public class DeviceMapper {
         stmt.setInt(2, unloadPallet.getId());
         stmt.executeUpdate();
         unloadPallet.setName(name);
+        
+        PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE PALLET SET DEFAULT_LAYOUT = ? WHERE ID = ?");
+        stmt2.setInt(1, stdLayout.getId());
+        stmt2.setInt(2, unloadPallet.getId());
+        stmt2.executeUpdate();
+        unloadPallet.setDefaultLayout(stdLayout);
 
         ConnectionManager.getConnection().commit();
         ConnectionManager.getConnection().setAutoCommit(true);
@@ -163,7 +169,8 @@ public class DeviceMapper {
         stmt2.setFloat(7, minInterferenceDistance);
         stmt2.setFloat(8, horizontalR);
         stmt2.setFloat(9, verticalR);
-        stmt2.setInt(10, layout.getId());
+        stmt2.setString(10, name);
+        stmt2.setInt(11, layout.getId());
         stmt2.execute();
         layout.setPalletWidth(width);
         layout.setPalletLength(length);
@@ -1077,6 +1084,25 @@ public class DeviceMapper {
 		stmt.executeUpdate();
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void deletePalletLayout(PalletLayout layout) throws SQLException {
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM PALLETLAYOUT WHERE ID = ?");
+        stmt.setInt(1, layout.getId());
+        stmt.executeUpdate();
+        ConnectionManager.getConnection().commit();
+        ConnectionManager.getConnection().setAutoCommit(true);
+    }
+	
+	public List<Integer> getDefaultPalletLayouts() throws SQLException{
+	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT DEFAULT_LAYOUT FROM PALLET");
+        ResultSet results = stmt.executeQuery();
+        List<Integer> result = new ArrayList<Integer>();
+        if (results.next()) {
+            Integer id = results.getInt("DEFAULT_LAYOUT");
+            result.add(id);
+        }
+        return result;
 	}
 	
 	public void updateGridPlate(final GridPlate gridPlate, final String name, final float width, final float height, final float depth, 
