@@ -24,6 +24,7 @@ import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.Pallet
 import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.ui.configure.device.stacking.pallet.UnloadPalletLayoutPresenter;
+import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -60,7 +61,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
     
     private HBox nbLayersBox;
     private Label nbLayersCardboardLabel;
-    private NumericTextField nbLayersField= new NumericTextField(2);
+    private IntegerTextField nbLayersField= new IntegerTextField(2);
     
     private boolean controlsHidden = false;
     
@@ -163,12 +164,12 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                     nbLayersField.setNotifyEveryChange(true);
                     nbLayersField.setPrefHeight(FIELD_HEIGHT);
                     nbLayersField.setMinHeight(FIELD_HEIGHT);
-                    nbLayersField.setOnChange(new ChangeListener<Float>() {
+                    nbLayersField.setOnChange(new ChangeListener<Integer>() {
                         
                         @Override
-                        public void changed(ObservableValue<? extends Float> observable,
-                                Float oldValue, Float newValue) {
-                            ((UnloadPalletLayoutPresenter)getPresenter()).updateLayersBeforeCardboard(newValue.intValue());
+                        public void changed(ObservableValue<? extends Integer> observable,
+                                Integer oldValue, Integer newValue) {
+                            ((UnloadPalletLayoutPresenter)getPresenter()).updateLayersBeforeCardboard(newValue);
                         }
                     });
                     nbLayersBox = new HBox(15);
