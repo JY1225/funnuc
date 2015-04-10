@@ -13,6 +13,7 @@ import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.workpiece.WorkPiece;
+import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 
 public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresenter<UnloadPalletAddRemoveFinishedView, UnloadPalletMenuPresenter> implements ProcessFlowListener{
 
@@ -122,11 +123,7 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
      * @return The maximum number of pieces that can be added
      */
     public int getMaxPiecesToAdd() {
-        int amount = processFlow.getTotalAmount() - processFlow.getFinishedAmount();
-        if(amount > (unloadPallet.getMaxPiecesPerLayerAmount() * unloadPallet.getLayers()- processFlow.getFinishedAmount())) {
-            return unloadPallet.getMaxPiecesPerLayerAmount() * unloadPallet.getLayers()- processFlow.getFinishedAmount();
-        }
-        return amount;
+        return unloadPallet.getMaxPiecesPerLayerAmount() * unloadPallet.getLayers() - unloadPallet.getWorkPieceAmount(WorkPiece.Type.FINISHED);
     }
     
     /**

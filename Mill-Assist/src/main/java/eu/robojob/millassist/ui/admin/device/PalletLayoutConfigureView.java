@@ -439,7 +439,7 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
                 }
             }
             
-            if(layout.getHorizontalR() == -90) {
+            if(layout.getVerticalR() == -90) {
                 if(!minusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
                     minusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
                     plusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
@@ -469,11 +469,15 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
         yOffsetNumbericTextField.clear();
         minInterferenceTextField.clear();
         oneEightyButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-        zeroButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-        minusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
         plusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+        if(!zeroButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
+            zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+        }
+        if(!minusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
+            minusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
+        }
         horizontalRValue = 0;
-        verticalRValue = 0;
+        verticalRValue = -90;
         stdPalletTypeComboBox.getSelectionModel().clearSelection();
     }
 
