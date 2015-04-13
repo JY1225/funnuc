@@ -286,7 +286,10 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
         column = 0; row++;
         
         form = new VBox();
-        form.getChildren().addAll(fieldsPane,new HBox(10, btnSave, btnRemove));
+        HBox tempHBox = new HBox();
+        tempHBox.getChildren().addAll(btnSave, btnRemove);
+        tempHBox.setSpacing(10);
+        form.getChildren().addAll(fieldsPane,tempHBox);
         
         GridPane.setHalignment(btnSave, HPos.CENTER);
         GridPane.setMargin(btnSave, new Insets(10, 0, 0, 0));
