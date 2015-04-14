@@ -7,9 +7,9 @@ import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletListener;
 import eu.robojob.millassist.process.InterventionStep;
-import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.DataChangedEvent;
+import eu.robojob.millassist.process.event.ProcessChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.ui.general.device.stacking.pallet.UnloadPalletLayoutView;
@@ -82,9 +82,9 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
         unloadPallet.getLayout().setLayoutType(layoutType);
         unloadPallet.recalculateLayout();
         ((UnloadPalletDeviceSettings) putStep.getProcessFlow().getDeviceSettings().get(unloadPallet)).setLayoutType(unloadPallet.getLayout().getLayoutType());
-        unloadPallet.notifyLayoutChanged();
         this.putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.putStep.getProcessFlow(), this.putStep, true));
-        updateIntervention();
+//        unloadPallet.notifyLayoutChanged();
+        layoutChanged();
     }
     
     public void updateLayersBeforeCardboard(int nbOfLayersBeforeCardboard) {
@@ -94,10 +94,22 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
             ((UnloadPalletDeviceSettings) putStep.getProcessFlow().getDeviceSettings().get(unloadPallet)).setLayersBeforeCardBoard(nbOfLayersBeforeCardboard);
             this.putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.putStep.getProcessFlow(), this.putStep, false));
             updateIntervention();
+            if(nbOfLayersBeforeCardboard != 0) {
+                getView().showCardboardThickness(true);
+            }
+            else {
+                getView().showCardboardThickness(false);
+            }
         } else {
             unloadPallet.getLayout().setLayersBeforeCardBoard(nbOfLayersBeforeCardboard);
             getView().showNotification(Translator.getTranslation(NOT_ENOUGH_LAYERS), Type.WARNING);
         }
+    }
+    
+    public void updateCardBoardThickness(final float thickness) {
+        unloadPallet.getLayout().setCardBoardThickness(thickness);
+        ((UnloadPalletDeviceSettings) putStep.getProcessFlow().getDeviceSettings().get(unloadPallet)).setCardBoardThickness(thickness);
+        this.putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.putStep.getProcessFlow(), this.putStep, false));
     }
     
     public void updateIntervention() {
@@ -123,10 +135,9 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
     
     private void addInterventionStep(final int frequency) {
         if(unloadPallet.getLayout().getLayersBeforeCardBoard()*unloadPallet.getMaxPiecesPerLayerAmount() != 0) {
-            PickStep firstStep = ((PickStep)this.putStep.getProcessFlow().getStep(0));
-            interventionStep = new InterventionStep(new DeviceInterventionSettings(firstStep.getDevice(), firstStep.getDevice().getWorkAreas().get(0)), frequency);
+            interventionStep = new InterventionStep(new DeviceInterventionSettings(unloadPallet, unloadPallet.getWorkAreas().get(0)), frequency);
             this.putStep.getProcessFlow().addStepBefore(this.putStep.getProcessFlow().getStep(0), interventionStep);
-            getMenuPresenter().processFlowUpdated();
+            this.putStep.getProcessFlow().processProcessFlowEvent(new ProcessChangedEvent(this.putStep.getProcessFlow()));
         }
     }
     
@@ -138,7 +149,7 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
                 this.putStep.getProcessFlow().removeStep(interventionStep);
                 interventionStep = null;
             }
-            getMenuPresenter().processFlowUpdated();
+            this.putStep.getProcessFlow().processProcessFlowEvent(new ProcessChangedEvent(this.putStep.getProcessFlow()));
         }
     }
 }

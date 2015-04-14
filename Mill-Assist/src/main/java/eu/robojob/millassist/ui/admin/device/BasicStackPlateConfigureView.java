@@ -277,6 +277,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	}
 	
 	public void setUserFrames(final List<String> userFrames) {
+	    cbbUserFrames.valueProperty().set(null);
 		userFrameNames.clear();
 		userFrameNames.addAll(userFrames);
 	}

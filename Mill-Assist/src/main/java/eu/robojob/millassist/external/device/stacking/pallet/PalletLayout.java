@@ -9,7 +9,6 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.strategy.AbstractPalletUnloadStrategy;
 import eu.robojob.millassist.external.device.stacking.pallet.strategy.CubicPiecePalletUnloadStrategy;
 import eu.robojob.millassist.external.device.stacking.pallet.strategy.RoundPiecePalletUnloadStrategy;
@@ -17,7 +16,6 @@ import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 import eu.robojob.millassist.workpiece.RoundDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
-import eu.robojob.millassist.workpiece.WorkPiece.Type;
 import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 
 public class PalletLayout {
@@ -203,6 +201,8 @@ public class PalletLayout {
     
     private int layersBeforeCardBoard;
     
+    private float cardBoardThickness;
+    
     private String name;
     
     private int id;
@@ -222,6 +222,7 @@ public class PalletLayout {
         this.verticalR = verticalR;
         this.name = name;
         this.layoutType = PalletLayoutType.OPTIMAL;
+        this.cardBoardThickness = 0;
     }
     
     /**
@@ -404,6 +405,14 @@ public class PalletLayout {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public float getCardBoardThickness() {
+        return this.cardBoardThickness;
+    }
+
+    public void setCardBoardThickness(float cardBoardThickness) {
+        this.cardBoardThickness = cardBoardThickness;
     }
 
 }

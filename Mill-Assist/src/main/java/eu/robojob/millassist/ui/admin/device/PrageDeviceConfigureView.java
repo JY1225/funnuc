@@ -260,6 +260,7 @@ public class PrageDeviceConfigureView extends AbstractFormView<PrageDeviceConfig
 	}
 	
 	public void setUserFrameNames(final Set<String> userFrameNames) {
+	    cbbUserFrame.valueProperty().set(null);
 		this.userFrameNames.clear();
 		this.userFrameNames.addAll(userFrameNames);
 	}

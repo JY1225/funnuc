@@ -128,6 +128,12 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
                 unloadPallet.setCurrentPutLocation(stackingPos);
                 Coordinates c = new Coordinates(stackingPos.getPutPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
+                if(unloadPallet.getLayout().getLayersBeforeCardBoard()!= 0) {
+                    c.offset(new Coordinates(0, 0, unloadPallet.getLayout().getPalletHeight() + unloadPallet.getLayout().getCardBoardThickness()*(float)Math.floor(stackingPos.getAmount()/unloadPallet.getLayout().getLayersBeforeCardBoard()), 0, 0, 0));    
+                }
+                else {
+                    c.offset(new Coordinates(0, 0, unloadPallet.getLayout().getPalletHeight(), 0, 0, 0));
+                }
                 return c;
             }
         }

@@ -134,9 +134,9 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         getPresenter().updatePalletLayouts();
         if(unloadPallet != null) {
             nameTextField.setText(unloadPallet.getName());
-            userFramesComboBox.valueProperty().set(unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName());
+            userFramesComboBox.setValue(unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName());
             maxHeightNumbericTextField.setText(unloadPallet.getMaxHeight()+"");
-            cbbPalletLayouts.valueProperty().set(unloadPallet.getDefaultLayout().getName());
+            cbbPalletLayouts.setValue(unloadPallet.getDefaultLayout().getName());
         }
     }
 
@@ -149,11 +149,13 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
     }
 
     public void setUserFrames(final List<String> userFrames) {
+        userFramesComboBox.valueProperty().set(null);
         userFrameNames.clear();
         userFrameNames.addAll(userFrames);
     }
     
     public void setPalletLayouts(Set<String> layoutsList) {
+        cbbPalletLayouts.valueProperty().set(null);
         layouts.clear();
         layouts.addAll(layoutsList);
     }

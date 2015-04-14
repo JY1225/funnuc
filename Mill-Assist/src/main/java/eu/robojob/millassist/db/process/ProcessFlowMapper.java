@@ -480,13 +480,19 @@ public class ProcessFlowMapper {
 		if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
 			AbstractStackPlateDeviceSettings bspSettings = (AbstractStackPlateDeviceSettings) deviceSettings;
 			generalMapper.saveWorkPiece(bspSettings.getRawWorkPiece());
-			generalMapper.saveWorkPiece(bspSettings.getFinishedWorkPiece());
+			if(bspSettings.getFinishedWorkPiece() != null) {
+			    generalMapper.saveWorkPiece(bspSettings.getFinishedWorkPiece());
+			}
 			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO STACKPLATESETTINGS (ID, AMOUNT, ORIENTATION, RAWWORKPIECE, FINISHEDWORKPIECE, LAYERS, STUDHEIGHT) VALUES (?, ?, ?, ?, ?, ?, ?)");
 			stmt4.setInt(1, bspSettings.getId());
 			stmt4.setInt(2, bspSettings.getAmount());
 			stmt4.setFloat(3, bspSettings.getOrientation());
 			stmt4.setInt(4, bspSettings.getRawWorkPiece().getId());
-			stmt4.setInt(5, bspSettings.getFinishedWorkPiece().getId());
+			if(bspSettings.getFinishedWorkPiece() != null) {
+			    stmt4.setInt(5, bspSettings.getFinishedWorkPiece().getId());
+			} else {
+			    stmt4.setInt(5, bspSettings.getRawWorkPiece().getId());
+			}
 			stmt4.setInt(6,  bspSettings.getLayers());
 			stmt4.setFloat(7,  bspSettings.getStudHeight());
 			stmt4.executeUpdate();
@@ -527,12 +533,13 @@ public class ProcessFlowMapper {
 			stmt4.executeUpdate();
 		} else if (deviceSettings instanceof UnloadPalletDeviceSettings) {
 		    UnloadPalletDeviceSettings uSettings = (UnloadPalletDeviceSettings) deviceSettings;
-            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO UNLOADPALLETSETTINGS (ID, FINISHEDWORKPIECE, LAYOUT_TYPE, LAYERS_CARDBOARD, PALLET_LAYOUT) VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO UNLOADPALLETSETTINGS (ID, FINISHEDWORKPIECE, LAYOUT_TYPE, LAYERS_CARDBOARD, PALLET_LAYOUT, CARDBOARD_THICKNESS) VALUES (?, ?, ?, ?, ?, ?)");
             stmt4.setInt(1, uSettings.getId());
             stmt4.setInt(2, uSettings.getFinishedWorkPiece().getId());
             stmt4.setInt(3, uSettings.getLayoutType().getId());
             stmt4.setInt(4, uSettings.getLayersBeforeCardBoard());
             stmt4.setInt(5, uSettings.getLayout().getId());
+            stmt4.setFloat(6, uSettings.getCardBoardThickness());
             stmt4.executeUpdate();
         }
 	}
@@ -810,8 +817,9 @@ public class ProcessFlowMapper {
             int layoutType = results.getInt("LAYOUT_TYPE");
             int layersBeforeCardBoard = results.getInt("LAYERS_CARDBOARD");
             int palletLayoutId = results.getInt("PALLET_LAYOUT");
+            float carBoardThickness = results.getFloat("CARDBOARD_THICKNESS");
             WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
-            unloadPalletSettings = new UnloadPalletDeviceSettings(finishedWorkPiece, PalletLayoutType.getTypeById(layoutType), layersBeforeCardBoard, deviceManager.getPalletLayoutById(palletLayoutId));
+            unloadPalletSettings = new UnloadPalletDeviceSettings(finishedWorkPiece, PalletLayoutType.getTypeById(layoutType), layersBeforeCardBoard, deviceManager.getPalletLayoutById(palletLayoutId), carBoardThickness);
         }
         return unloadPalletSettings;
 	}

@@ -125,9 +125,10 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractFormPresenter<
 		if (diameter != workPiece.getDimensions().getDimension(Dimensions.DIAMETER)) {
 			logger.info("Set diameter [" + diameter + "].");
 			workPiece.getDimensions().setDimension(Dimensions.DIAMETER, diameter);
+			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
 			recalculate();
 			clearTeachedOffsets();
-			pickStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(pickStep.getProcessFlow(), pickStep, true));
+			
 			setMaxAmount();
 		}	
 	}
