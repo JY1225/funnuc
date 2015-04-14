@@ -5,6 +5,8 @@ import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.SimpleWorkArea;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
@@ -281,6 +283,8 @@ public class ProcessFlowAdapter {
 			((eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings) deviceSettingsLastWP).setFinishedWorkPiece(finishedWorkPiece);
 		} else if (deviceSettingsLastWP instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) {
 			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettingsLastWP).setFinishedWorkPiece(finishedWorkPiece);
+		} else if (deviceSettingsLastWP instanceof UnloadPalletDeviceSettings) {
+		    ((UnloadPalletDeviceSettings) deviceSettingsLastWP).setFinishedWorkPiece(finishedWorkPiece);
 		}
 	}
 	

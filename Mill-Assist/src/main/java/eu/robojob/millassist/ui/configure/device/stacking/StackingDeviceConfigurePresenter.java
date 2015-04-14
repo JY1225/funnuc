@@ -69,6 +69,12 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			}
 			if(device instanceof UnloadPallet) {
 			    ((UnloadPallet) device).setLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
+			    if(prevDevice instanceof BasicStackPlate) {
+			        if(deviceInfo.hasPutStep()) {
+			            ((BasicStackPlate) prevDevice).setFinishedWorkPiece(null);
+			            ((AbstractStackPlateDeviceSettings)deviceInfo.getPutStep().getProcessFlow().getDeviceSettings(prevDevice)).setFinishedWorkPiece(null);
+			        }
+			    }
 			}
 		}
 		if (deviceInfo.hasPickStep()) {

@@ -362,7 +362,6 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
         getPresenter().setEditMode(false);
         reset();
         getPresenter().updatePalletLayouts();
-        cbbPalletLayouts.getSelectionModel().select(0);
     }
 
     public PalletLayout getPalletLayout() {
@@ -399,8 +398,10 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
     }
 
     public void setPalletLayouts(Set<String> layoutsList) {
+        cbbPalletLayouts.valueProperty().set(null);
         layouts.clear();
         layouts.addAll(layoutsList);
+        cbbPalletLayouts.getSelectionModel().select(0);
     }
     
     public void reset() {
@@ -419,7 +420,7 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
         cbbPalletLayouts.setDisable(true);
         btnEdit.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
         if(layout != null) {
-            stdPalletTypeComboBox.valueProperty().set(PalletType.getPalletTypeForLayout(layout));
+            stdPalletTypeComboBox.setValue(PalletType.getPalletTypeForLayout(layout));
             nameTextField.setText(layout.getName());
             widthNumbericTextField.setText(layout.getPalletWidth()+"");
             lengthNumbericTextField.setText(layout.getPalletLength()+"");

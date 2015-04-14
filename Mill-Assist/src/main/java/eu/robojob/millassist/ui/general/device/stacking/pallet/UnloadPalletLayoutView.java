@@ -59,9 +59,11 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
     private Button shiftedButton;
     private Button notShiftedButton;
     
-    private HBox nbLayersBox;
     private Label nbLayersCardboardLabel;
     private IntegerTextField nbLayersField= new IntegerTextField(2);
+    
+    private Label cardboardThicknessLabel;
+    private NumericTextField cardboardThicknessField= new NumericTextField(4);
     
     private boolean controlsHidden = false;
     
@@ -80,6 +82,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
     private static final String NOT_SHIFTED = "UnloadPalletLayoutView.NotShifted";
     private static final String NBLAYERS_CARDBOARD = "UnloadPalletLayoutView.NbLayersCardboard";
     private static final String NB_PIECES = "UnloadPalletLayoutView.NbPieces";
+    private static final String CARDBOARD_THICKNESS = "UnloadPalletLayoutView.CardboardThickness";
     private static final double BTN_WIDTH = 80;
     private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
     private static final double FIELD_HEIGHT = 25;
@@ -94,7 +97,6 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
      */
     @Override
     public void build() {
-        
         Platform.runLater(new Thread() {
             @Override
             public void run() {
@@ -103,7 +105,6 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                 if (group != null) {
                     group.getChildren().clear();
                 }
-                group = null;
                 
                 if (root != null) {
                     root.getChildren().clear();
@@ -113,11 +114,10 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                 root = null;
                 getContents().getChildren().clear();
                 
+                
+                group = null;
                 group = new Group();
                 group.setCache(true);
-                if(!controlsHidden) {
-                    buildShapeBox();
-                }
                 
                 SVGPath palletBkg = new SVGPath();
                 palletBkg.setContent(BACKGROUND_PALLET);
@@ -136,14 +136,17 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                     group.getTransforms().add(s);
                 }
                 
-                
                 root = new Pane();
                 root.setPrefSize(600, 350);
                 root.getChildren().clear();
                 root.getChildren().add(group);
-                
                 group.setLayoutX(0 - group.getBoundsInParent().getMinX());
                 group.setLayoutY(0 - group.getBoundsInParent().getMinY());
+                
+                if(!controlsHidden) {
+                    buildShapeBox();
+                }
+                
                 int row = 0;
                 int column = 0;
                 if(contentBox != null) {
@@ -172,39 +175,59 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                             ((UnloadPalletLayoutPresenter)getPresenter()).updateLayersBeforeCardboard(newValue);
                         }
                     });
-                    nbLayersBox = new HBox(15);
-                    nbLayersBox.setPrefHeight(FIELD_HEIGHT);
-                    nbLayersBox.getChildren().addAll(nbLayersCardboardLabel, nbLayersField);
-                   
+                    
+                    cardboardThicknessLabel = new Label(Translator.getTranslation(CARDBOARD_THICKNESS));
+                    cardboardThicknessLabel.setAlignment(Pos.CENTER_LEFT);
+                    cardboardThicknessField.setOnChange(new ChangeListener<Float>() {
+                        
+                        @Override
+                        public void changed(ObservableValue<? extends Float> observable,
+                                Float oldValue, Float newValue) {
+                            ((UnloadPalletLayoutPresenter)getPresenter()).updateCardBoardThickness(newValue);
+                        }
+                    });
+                    
                     controls = new GridPane();
                     
                     controls.add(typeLabel, column, row);
                     controls.add(typeBox, column+1, row);
+                    controls.add(nbLayersCardboardLabel, column+2, row);
+                    controls.add(nbLayersField, column+3, row);
                     row++;
                     if(unloadPallet.getFinishedWorkPiece().getShape() == WorkPieceShape.CYLINDRICAL) {
                         controls.add(orientationLabel, column, row);
                         controls.add(orientationBox, column+1, row);
+                        controls.add(cardboardThicknessLabel, column+2, row);
+                        controls.add(cardboardThicknessField, column+3, row);
                         row++;
+                    }
+                    else {
+                        controls.add(cardboardThicknessLabel, column+2, row);
+                        controls.add(cardboardThicknessField, column+3, row);
                     }
                     
                     nbOfPiecesValue.setText(unloadPallet.getLayout().getStackingPositions().size()+"");
                     nbLayersField.setText(unloadPallet.getLayout().getLayersBeforeCardBoard()+"");
+                    cardboardThicknessField.setText(unloadPallet.getLayout().getCardBoardThickness()+"");
+                    if(unloadPallet.getLayout().getLayersBeforeCardBoard() == 0) {
+                        showCardboardThickness(false);
+                    }
+                    
                     controls.add(nbOfPieces,column, row);
                     controls.add(nbOfPiecesValue,column+1, row);
-                    controls.add(nbLayersBox, column+2, row);
+                    
                     row++;
                     controls.setVgap(10);
                     controls.setHgap(10);
                     contentBox.getChildren().add(controls);
+
+                    setLayoutTypeButtonValues();
                 }
                 
                 contentBox.getChildren().add(root);
                 contentBox.setSpacing(20);
                 setPadding(new Insets(PADDING));
                 getContents().add(contentBox, 0, 0);
-                if(!controlsHidden) {
-                    setLayoutTypeButtonValues();
-                }
             }
         });
     }
@@ -215,6 +238,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
     @Override
     public void setTextFieldListener(TextInputControlListener listener) {
         nbLayersField.setFocusListener(listener);
+        cardboardThicknessField.setFocusListener(listener);
     }
 
     /**
@@ -452,6 +476,11 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
             LAYOUT_VIEWPORT_HEIGHT = SizeManager.HEIGHT_BOTTOM*0.5f;
         }
         
+    }
+    
+    public void showCardboardThickness(final boolean visible) {
+        cardboardThicknessLabel.setVisible(visible);
+        cardboardThicknessField.setVisible(visible);
     }
     
 

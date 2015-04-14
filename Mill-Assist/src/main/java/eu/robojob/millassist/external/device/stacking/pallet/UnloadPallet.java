@@ -252,6 +252,7 @@ public class UnloadPallet extends AbstractStackingDevice{
                 getLayout().setLayersBeforeCardBoard(settings.getLayersBeforeCardBoard());
                 getLayout().calculateLayoutForWorkPiece(getFinishedWorkPiece());
                 getLayout().initFinishedWorkPieces(getFinishedWorkPiece());
+                getLayout().setCardBoardThickness(settings.getCardBoardThickness());
                 notifyLayoutChanged();
             } else {
                 getDefaultLayout().setLayoutType(PalletLayoutType.OPTIMAL);
@@ -270,9 +271,9 @@ public class UnloadPallet extends AbstractStackingDevice{
         if(getLayout() == null) {
             getDefaultLayout().setLayoutType(PalletLayoutType.OPTIMAL);
             setLayout(getDefaultLayout());
-            return new UnloadPalletDeviceSettings(getFinishedWorkPiece(), PalletLayoutType.OPTIMAL, 1, getDefaultLayout());
+            return new UnloadPalletDeviceSettings(getFinishedWorkPiece(), PalletLayoutType.OPTIMAL, 0, getDefaultLayout(), 0);
         }
-        return new UnloadPalletDeviceSettings(getFinishedWorkPiece(), getLayout().getLayoutType(), getLayout().getLayersBeforeCardBoard(), getLayout());
+        return new UnloadPalletDeviceSettings(getFinishedWorkPiece(), getLayout().getLayoutType(), getLayout().getLayersBeforeCardBoard(), getLayout(), getLayout().getCardBoardThickness());
     }
 
     /**
@@ -493,7 +494,7 @@ public class UnloadPallet extends AbstractStackingDevice{
     }
 
     public int getLayers() {
-        return (int)Math.floor(maxHeight/getFinishedWorkPiece().getDimensions().getZSafe());
+        return (int)Math.floor((maxHeight - getLayout().getPalletHeight())/getFinishedWorkPiece().getDimensions().getZSafe());
     }
     
     public int getMaxPiecesPossibleAmount() {

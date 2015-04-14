@@ -9,10 +9,12 @@ import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.process.execution.ProcessExecutor;
+import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
 public class InterventionStep extends AbstractProcessStep implements DeviceStep {
 
@@ -93,6 +95,9 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 		}
 		if (currentStepIndex < getProcessFlow().getCurrentIndex(ProcessFlow.WORKPIECE_1_ID)) {
 			finishedAmount++;
+		}
+		if(getDeviceSettings().getDevice() instanceof UnloadPallet) {
+		    finishedAmount += ((UnloadPallet)getDeviceSettings().getDevice()).getWorkPieceAmount(Type.FINISHED) - finAmount;
 		}
 		return ((finishedAmount > 0) && (finishedAmount % frequency == 0));
 	}
