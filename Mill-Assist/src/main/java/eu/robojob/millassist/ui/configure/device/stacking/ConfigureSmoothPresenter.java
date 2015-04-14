@@ -45,19 +45,19 @@ public class ConfigureSmoothPresenter<T extends AbstractStackingDeviceMenuPresen
 	
 	public void changedSmoothX(final float x) {
 		smoothPoint.setX(x);
-		step.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(step.getProcessFlow(), step, true));
+		step.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(step.getProcessFlow(), step, false));
 		getView().refresh();
 	}
 	
 	public void changedSmoothY(final float y) {
 		smoothPoint.setY(y);
-		step.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(step.getProcessFlow(), step, true));
+		step.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(step.getProcessFlow(), step, false));
 		getView().refresh();
 	}
 	
 	public void changedSmoothZ(final float z) {
 		smoothPoint.setZ(z);
-		step.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(step.getProcessFlow(), step, true));
+		step.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(step.getProcessFlow(), step, false));
 		getView().refresh();
 	}
 	
