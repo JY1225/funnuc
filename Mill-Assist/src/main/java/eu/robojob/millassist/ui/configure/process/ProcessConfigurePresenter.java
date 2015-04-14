@@ -81,14 +81,6 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 	public void setSingleCycle(boolean isSingleCycle) {
 		if (processFlow.isSingleCycle() != isSingleCycle) {
 			this.processFlow.setSingleCycle(isSingleCycle);
-			AbstractProcessStep step = this.processFlow.getStep(0);
-            if(step instanceof InterventionStep) {
-                if(isSingleCycle) {
-                    ((InterventionStep) step).setFrequency(((InterventionStep) step).getFrequency()-1);
-                } else {
-                    ((InterventionStep) step).setFrequency(((InterventionStep) step).getFrequency()+1);
-                }
-            }
 			this.processFlow.processProcessFlowEvent(new DataChangedEvent(processFlow, null, false));
 		}
 	}
