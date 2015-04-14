@@ -85,7 +85,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
     private static final String CARDBOARD_THICKNESS = "UnloadPalletLayoutView.CardboardThickness";
     private static final double BTN_WIDTH = 80;
     private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
-    private static final double FIELD_HEIGHT = 25;
+    private static final double FIELD_HEIGHT = UIConstants.TEXT_FIELD_HEIGHT;
     
     private static final int PADDING = 15;
     
@@ -178,6 +178,8 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                     
                     cardboardThicknessLabel = new Label(Translator.getTranslation(CARDBOARD_THICKNESS));
                     cardboardThicknessLabel.setAlignment(Pos.CENTER_LEFT);
+                    cardboardThicknessField.setMinHeight(FIELD_HEIGHT);
+                    cardboardThicknessField.setPrefHeight(FIELD_HEIGHT);
                     cardboardThicknessField.setOnChange(new ChangeListener<Float>() {
                         
                         @Override
