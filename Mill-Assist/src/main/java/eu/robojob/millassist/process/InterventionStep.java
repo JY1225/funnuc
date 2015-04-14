@@ -89,6 +89,10 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 	public boolean isInterventionNeeded(final int finAmount) {
 		int currentStepIndex = getProcessFlow().getStepIndex(this);
 		int finishedAmount = finAmount;
+		if(getDeviceSettings().getDevice() instanceof UnloadPallet) {
+            finishedAmount += ((UnloadPallet)getDeviceSettings().getDevice()).getWorkPieceAmount(Type.FINISHED) - finAmount;
+            return ((finishedAmount > 0) && (finishedAmount % frequency == 0));
+        }
 		finishedAmount++;
 		if (currentStepIndex < getProcessFlow().getCurrentIndex(ProcessFlow.WORKPIECE_0_ID)) {
 			finishedAmount++;
@@ -96,9 +100,7 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 		if (currentStepIndex < getProcessFlow().getCurrentIndex(ProcessFlow.WORKPIECE_1_ID)) {
 			finishedAmount++;
 		}
-		if(getDeviceSettings().getDevice() instanceof UnloadPallet) {
-		    finishedAmount += ((UnloadPallet)getDeviceSettings().getDevice()).getWorkPieceAmount(Type.FINISHED) - finAmount;
-		}
+		
 		return ((finishedAmount > 0) && (finishedAmount % frequency == 0));
 	}
 

@@ -188,7 +188,9 @@ public class ProcessFlowMapper {
 		for (DeviceSettings deviceSettings : processFlow.getDeviceSettings().values()) {
 			deviceSettings.setId(0);
 			if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
-				((AbstractStackPlateDeviceSettings) deviceSettings).getFinishedWorkPiece().setId(0);
+			    if(((AbstractStackPlateDeviceSettings) deviceSettings).getFinishedWorkPiece()!=null) {
+			        ((AbstractStackPlateDeviceSettings) deviceSettings).getFinishedWorkPiece().setId(0);
+			    }
 				((AbstractStackPlateDeviceSettings) deviceSettings).getRawWorkPiece().setId(0);
 			}
 		}

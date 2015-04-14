@@ -494,7 +494,16 @@ public class UnloadPallet extends AbstractStackingDevice{
     }
 
     public int getLayers() {
-        return (int)Math.floor((maxHeight - getLayout().getPalletHeight())/getFinishedWorkPiece().getDimensions().getZSafe());
+        int maxLayers = (int)Math.floor((maxHeight - getLayout().getPalletHeight())/getFinishedWorkPiece().getDimensions().getZSafe());
+        if(getLayout().getLayersBeforeCardBoard() == 0) {
+            return maxLayers;
+        }
+        float cardboardHeight = (float) (Math.floor(maxLayers/getLayout().getLayersBeforeCardBoard())* getLayout().getCardBoardThickness());
+        while(getFinishedWorkPiece().getDimensions().getZSafe()*maxLayers + cardboardHeight+getLayout().getPalletHeight() > maxHeight) {
+            maxLayers --;
+            cardboardHeight = (float) (Math.floor(maxLayers/getLayout().getLayersBeforeCardBoard())* getLayout().getCardBoardThickness());
+        }
+        return maxLayers;
     }
     
     public int getMaxPiecesPossibleAmount() {

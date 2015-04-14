@@ -88,9 +88,9 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
     }
     
     public void updateLayersBeforeCardboard(int nbOfLayersBeforeCardboard) {
+        unloadPallet.getLayout().setLayersBeforeCardBoard(nbOfLayersBeforeCardboard);
         if(nbOfLayersBeforeCardboard < unloadPallet.getLayers()) {
             getView().hideNotification();
-            unloadPallet.getLayout().setLayersBeforeCardBoard(nbOfLayersBeforeCardboard);
             ((UnloadPalletDeviceSettings) putStep.getProcessFlow().getDeviceSettings().get(unloadPallet)).setLayersBeforeCardBoard(nbOfLayersBeforeCardboard);
             this.putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.putStep.getProcessFlow(), this.putStep, false));
             updateIntervention();
@@ -108,16 +108,18 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
     
     public void updateCardBoardThickness(final float thickness) {
         unloadPallet.getLayout().setCardBoardThickness(thickness);
+        if(unloadPallet.getLayout().getLayersBeforeCardBoard() > unloadPallet.getLayers()) {
+            getView().showNotification(Translator.getTranslation(NOT_ENOUGH_LAYERS), Type.WARNING);
+        } else {
+            getView().hideNotification();
+        }
         ((UnloadPalletDeviceSettings) putStep.getProcessFlow().getDeviceSettings().get(unloadPallet)).setCardBoardThickness(thickness);
         this.putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.putStep.getProcessFlow(), this.putStep, false));
     }
     
     public void updateIntervention() {
         if(unloadPallet.getLayout().getLayersBeforeCardBoard() < unloadPallet.getLayers()) {
-            int frequency = unloadPallet.getLayout().getLayersBeforeCardBoard()*unloadPallet.getMaxPiecesPerLayerAmount()+1;
-            if(!this.putStep.getProcessFlow().isSingleCycle()) {
-                frequency++;
-            }
+            int frequency = unloadPallet.getLayout().getLayersBeforeCardBoard()*unloadPallet.getMaxPiecesPerLayerAmount();
             if(interventionStep == null) {
                 if(this.putStep.getProcessFlow().getStep(0) instanceof InterventionStep) {
                     interventionStep = (InterventionStep)this.putStep.getProcessFlow().getStep(0);
