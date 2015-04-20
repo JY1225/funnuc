@@ -103,9 +103,11 @@ public final class RobotData {
     
     public enum RobotRefPoint {
         RP_UF3_A(RobotUserFrame.UF3_MCH_WA1.getUfNr(),2,2),
+        RP_UF3_B(RobotUserFrame.UF3_MCH_WA1.getUfNr(),3,3),
         RP_UF3_AIR_A(RobotUserFrame.UF3_MCH_WA1.getUfNr(),10,2),
         RP_UF3_AIR_B(RobotUserFrame.UF3_MCH_WA1.getUfNr(),10,3),
         RP_UF4_A(RobotUserFrame.UF4_MCH_WA2.getUfNr(),2,2),
+        RP_UF4_B(RobotUserFrame.UF4_MCH_WA2.getUfNr(),3,3),
         RP_UF4_AIR_A(RobotUserFrame.UF4_MCH_WA2.getUfNr(),10,2),
         RP_UF4_AIR_B(RobotUserFrame.UF4_MCH_WA2.getUfNr(),10,3);
         
