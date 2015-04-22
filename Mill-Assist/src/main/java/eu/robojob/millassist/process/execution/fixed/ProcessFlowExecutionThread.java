@@ -123,7 +123,7 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 				if (currentStep instanceof InterventionStep) {
 					executeInterventionStep((InterventionStep) currentStep);
 				} 
-				if (currentStep instanceof PickStep && (((PickStep) currentStep).getDevice() instanceof ReversalUnit)) {
+				else if (currentStep instanceof PickStep && (((PickStep) currentStep).getDevice() instanceof ReversalUnit)) {
 					if (processFlow.getNbCNCInFlow() - 1 == nbCNCPassed) {
 						needsReversal = false;
 					} else {
