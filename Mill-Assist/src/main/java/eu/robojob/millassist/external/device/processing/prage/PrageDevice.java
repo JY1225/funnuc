@@ -167,7 +167,7 @@ public class PrageDevice extends AbstractProcessingDevice {
 	public <T extends IWorkPieceDimensions> Coordinates getPickLocation(
 			AbstractPiecePlacementVisitor<T> visitor, SimpleWorkArea workArea,
 			T dimensions, ClampingManner clampType, ApproachType approachType) {
-		return visitor.getPutLocation(this, workArea, dimensions, clampType, approachType);
+		return visitor.getPickLocation(this, workArea, dimensions, clampType, approachType);
 	}
 
 }
