@@ -59,6 +59,7 @@ public class CNCMillingMachineMenuPresenter extends AbstractDeviceMenuPresenter 
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
+	    cncMillingMachineConfigurePresenter.setTextFieldListener(listener);
 		cncMillingMachinePickPresenter.setTextFieldListener(listener);
 		cncMillingMachinePutPresenter.setTextFieldListener(listener);
 		cncMillingMachineWorkPiecePresenter.setTextFieldListener(listener);

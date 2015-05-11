@@ -17,6 +17,7 @@ import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyclusSettings;
+import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.external.robot.RobotPutSettings;
 import eu.robojob.millassist.process.AbstractProcessStep;
@@ -307,6 +308,7 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 				&& (putSettings.getWorkArea().getDefaultClamping() != null)
 				&& (deviceSettings.getDefaultClamping(putSettings.getWorkArea()).equals(putSettings.getWorkArea().getDefaultClamping()))
 				&& (correctNbOfActiveClampingsChoosen())		
+				&& (isWorkNumberConfigured())
 			)  {
 			return true;
 		}
@@ -329,6 +331,23 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	
 	boolean isCylindricMode() {
 		return deviceInfo.getPickStep().getRobotSettings().getWorkPiece().getShape().equals(WorkPieceShape.CYLINDRICAL);
+	}
+	
+	boolean isWorkNumberConfigured() {
+	    if (((AbstractCNCMachine) deviceInfo.getProcessingStep().getDevice()).hasWorkNumberSearch()) {
+	        if (deviceInfo.getProcessingStep().getDeviceSettings().getWorkNumber() > 0) {
+	            return true;
+	        }
+	        return false;
+	    }
+	    return true;
+	}
+
+	void changedWorkNumberSearch(int workNumber) {
+	    if (deviceInfo.getProcessingStep().getDeviceSettings() != null) {
+	        deviceInfo.getProcessingStep().getDeviceSettings().setWorkNumber(workNumber);
+	        deviceInfo.getProcessingStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getProcessingStep().getProcessFlow(), null, false));
+	    }
 	}
 	
 }

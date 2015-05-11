@@ -357,7 +357,7 @@ public class ProcessFlowMapper {
 	}
 	
 	private void saveDeviceActionSettings(final DeviceStep deviceStep) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICEACTIONSETTINGS (DEVICE, WORKAREA, STEP, MACHINE_AIRBLOW) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICEACTIONSETTINGS (DEVICE, WORKAREA, STEP, MACHINE_AIRBLOW, WORKNUMBER_SEARCH) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, deviceStep.getDevice().getId());
 		stmt.setInt(2, deviceStep.getDeviceSettings().getWorkArea().getId());
 		stmt.setInt(3, ((AbstractProcessStep) deviceStep).getId());
@@ -367,6 +367,11 @@ public class ProcessFlowMapper {
 			stmt.setBoolean(4, ((DevicePickSettings) deviceStep.getDeviceSettings()).getMachineAirblow()); 
 		} else {
 			stmt.setBoolean(4, false);
+		}
+		if (deviceStep.getDeviceSettings() instanceof ProcessingDeviceStartCyclusSettings) {
+		    stmt.setInt(5, ((ProcessingDeviceStartCyclusSettings) deviceStep.getDeviceSettings()).getWorkNumber());
+		} else {
+		    stmt.setInt(5, -1);
 		}
 		stmt.executeUpdate();
 		ResultSet keys = stmt.getGeneratedKeys();
@@ -944,10 +949,14 @@ public class ProcessFlowMapper {
 			int id = results.getInt("ID");
 			int deviceId = results.getInt("DEVICE");
 			int workAreaId = results.getInt("WORKAREA");
+			int workNumber = results.getInt("WORKNUMBER_SEARCH");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			SimpleWorkArea workArea = device.getWorkAreaById(workAreaId);
 			processingDeviceStartCyclusSettings = new ProcessingDeviceStartCyclusSettings((AbstractProcessingDevice) device, workArea);
 			processingDeviceStartCyclusSettings.setId(id);
+			if (workNumber > 0) {
+			    processingDeviceStartCyclusSettings.setWorkNumber(workNumber);
+			}
 		}
 		return processingDeviceStartCyclusSettings;
 	}
