@@ -43,6 +43,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private boolean timAllowed;
 	private boolean machineAirblow;
 	private float rRoundPieces;
+	private boolean workNumberSearch;
 	
 	private static Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());
 	
@@ -414,6 +415,14 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	
 	public void setMachineAirblow(boolean machineAirblow) {
 		this.machineAirblow = machineAirblow;
+	}
+	
+	public boolean hasWorkNumberSearch() {
+	    return this.workNumberSearch;
+	}
+	
+	public void setWorkNumberSearch(boolean workNumberSearch) {
+	    this.workNumberSearch = workNumberSearch;
 	}
 	
 	/**

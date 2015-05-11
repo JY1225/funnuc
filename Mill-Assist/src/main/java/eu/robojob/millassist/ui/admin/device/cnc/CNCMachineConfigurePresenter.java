@@ -73,6 +73,7 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 		float rRoundPieces = getView().getRRoundPieces();
 		boolean timAllowed = getView().getTIMAllowed();
 		boolean machineAirblow = getView().getMachineAirblow();
+		boolean workNumberSearch = getView().hasWorkNumberSearch();
 		EWayOfOperating wayOfOperating = getView().getWayOfOperating();
 		List<String> robotServiceInputNames = getView().getRobotServiceInputNames();
 		List<String> robotServiceOutputNames = getView().getRobotServiceOutputNames();
@@ -82,7 +83,7 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 				clampingWidthR, newDevInt, nbFixtures, rRoundPieces, timAllowed, machineAirblow, boundaries,
 				robotServiceInputNames, robotServiceOutputNames, 
 					getView().getMCodeNames(), getView().getMCodeRobotServiceInputs(), 
-						getView().getMCodeRobotServiceOutputs());
+						getView().getMCodeRobotServiceOutputs(), workNumberSearch);
 		getView().refresh();
 		getView().showNotificationDialog();
 	}

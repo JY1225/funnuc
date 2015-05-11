@@ -23,6 +23,7 @@ import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.ui.controls.IconFlowSelector;
+import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
@@ -53,6 +54,8 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	private SVGPath svgPathIconLength;
 	private SVGPath svgPathIconWidth;
 	private HBox clampBox;
+	private Label lblWorkNumberSearch;
+	private IntegerTextField itxtWorkNumberSearch;
 	
 	private static final int HGAP = 10;
 	private static final int VGAP = 10;
@@ -68,8 +71,13 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	private static final String CLAMPING_TYPE = "CNCMillingMachineConfigureView.clampingType";
 	private static final String LENGTH = "CNCMillingMachineConfigureView.length";
 	private static final String WIDTH = "CNCMillingMachineConfigureView.width";
+	private static final String WORKNUMBER_SEARCH = "CNCMillingMachineConfigureView.workNumberSearch";
 	
 	private static final String CSS_CLASS_BUTTON_CLAMPING = "btn-clamping";
+	
+	public CNCMillingMachineConfigureView() {
+	    super();
+	}
 	
 	public void setDeviceInfo(final DeviceInformation deviceInfo) {
 		this.deviceInfo = deviceInfo;
@@ -85,9 +93,22 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		getContents().setHgap(HGAP);
 		getContents().getChildren().clear();
 		
-		lblMachine = new Label(Translator.getTranslation(DEVICE));
 		int column = 0;
 		int row = 0;
+		lblWorkNumberSearch = new Label(Translator.getTranslation(WORKNUMBER_SEARCH));
+		itxtWorkNumberSearch = new IntegerTextField(4);
+		itxtWorkNumberSearch.setOnChange(new ChangeListener<Integer>() {
+            @Override
+            public void changed(final ObservableValue<? extends Integer> observable, final Integer oldValue, final Integer newValue) {
+                if (newValue != oldValue) {
+                    getPresenter().changedWorkNumberSearch(newValue);
+                }
+            }    
+        });
+		getContents().add(lblWorkNumberSearch, column++, row);
+		getContents().add(itxtWorkNumberSearch, column, row);
+		column = 0; row++;
+		lblMachine = new Label(Translator.getTranslation(DEVICE));
 		getContents().add(lblMachine, column++, row);
 		cbbMachine = new ComboBox<String>();
 		cbbMachine.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
@@ -191,7 +212,20 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 			lblMachine.setDisable(true);
 			cbbMachine.setDisable(true);
 		} else if (deviceInfo.getDevice() != null) {
-			cbbMachine.setValue(deviceInfo.getDevice().getName());
+		    cbbMachine.setValue(deviceInfo.getDevice().getName());
+		}
+		if (((AbstractCNCMachine) deviceInfo.getDevice()).hasWorkNumberSearch()) {
+		    lblWorkNumberSearch.setVisible(true);
+		    lblWorkNumberSearch.setManaged(true);
+		    itxtWorkNumberSearch.setVisible(true);
+		    itxtWorkNumberSearch.setManaged(true);
+		    itxtWorkNumberSearch.setText("" + deviceInfo.getProcessingStep().getDeviceSettings().getWorkNumber());
+		} else {
+		    lblWorkNumberSearch.setVisible(false);
+		    lblWorkNumberSearch.setManaged(false);
+		    itxtWorkNumberSearch.setVisible(false);
+		    itxtWorkNumberSearch.setManaged(false);
+		    itxtWorkNumberSearch.setText("");
 		}
 	}
 	
@@ -324,8 +358,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
+	    itxtWorkNumberSearch.setFocusListener(listener);
 	}
 	
-
-
 }

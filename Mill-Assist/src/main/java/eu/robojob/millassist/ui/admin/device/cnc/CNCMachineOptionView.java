@@ -25,8 +25,8 @@ import eu.robojob.millassist.util.PropertyManager.Setting;
 
 public class CNCMachineOptionView extends GridPane {
 	
-	private Label lblAirblow, lblTIM, lblMachineAirblow, lblRRound;
-	private CheckBox cbTIMAllowed, cbMachineAirblow;
+	private Label lblAirblow, lblTIM, lblMachineAirblow, lblRRound, lblWorkNumberSearch;
+	private CheckBox cbTIMAllowed, cbMachineAirblow, cbWorkNumberSearch;
 	private CoordinateBox bottomCoord, topCoord;
 	private ComboBox<WorkAreaBoundary> cbbWaBound;
 	private NumericTextField ntxtRRound;
@@ -42,6 +42,7 @@ public class CNCMachineOptionView extends GridPane {
 	private static final String TIM_ALLOWED = "CNCMachineGeneralView.TIMAllowed";
 	private static final String MACHINE_AIRBLOW = "CNCMachineOptionView.machineAirblow";
 	private static final String AIRBLOW_BOUND = "CNCMachineOptionView.airblowBound";
+	private static final String WORKNUMBER_SEARCH = "CNCMachineOptionView.workNumberSearch";
 	private static final String MAX_FIX = "CNCMachineGeneralView.maxFix";
 	private static final String R_ROUND = "CNCMachineOptionView.rRound";
 
@@ -89,6 +90,11 @@ public class CNCMachineOptionView extends GridPane {
 		HBox.setMargin(cbTIMAllowed, new Insets(0,15,0,0));
 		add(TIMBox, column, row, 2, 1);
 		column = 0; row++;
+		HBox workNumberSearchBox = new HBox();
+		workNumberSearchBox.getChildren().addAll(cbWorkNumberSearch, lblWorkNumberSearch);
+		HBox.setMargin(cbWorkNumberSearch, new Insets(0,15,0,0));
+		add(workNumberSearchBox, column, row);
+		column = 0; row++;
 		add(lblNbFixtures, column++, row);
 		add(itxtNbFix, column, row);
 		column = 0; row++;
@@ -111,6 +117,8 @@ public class CNCMachineOptionView extends GridPane {
 		itxtNbFix = new IntegerTextField(1);
 		cbbWaBound = new ComboBox<WorkAreaBoundary>();
 		cbbWaBound.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
+		cbWorkNumberSearch = new CheckBox();
+		lblWorkNumberSearch = new Label(Translator.getTranslation(WORKNUMBER_SEARCH));
 	}
 	
 	private void addActionListeners() {
@@ -146,11 +154,18 @@ public class CNCMachineOptionView extends GridPane {
 				}
 			}	
 		});
+		cbWorkNumberSearch.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+		        cbWorkNumberSearch.setSelected(newValue);
+		    }
+        });
 	}
 	
 	public void refresh(final AbstractCNCMachine cncMachine) {
 		cbTIMAllowed.setSelected(cncMachine.getTIMAllowed());
 		cbMachineAirblow.setSelected(cncMachine.getMachineAirblow());
+		cbWorkNumberSearch.setSelected(cncMachine.hasWorkNumberSearch());
 		itxtNbFix.setText("" + cncMachine.getNbFixtures());
 		ntxtRRound.setText("" + cncMachine.getRRoundPieces());
 		fillBoundBox();
@@ -197,6 +212,10 @@ public class CNCMachineOptionView extends GridPane {
 	
 	public boolean getMachineAirblow() {
 		return cbMachineAirblow.isSelected();
+	}
+	
+	public boolean hasWorkNumberSearch() {
+	    return cbWorkNumberSearch.isSelected();
 	}
 	
 	public int getNbFixtures() {

@@ -336,11 +336,11 @@ public class DeviceManager {
 			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final float rRoundPieces,
 			final boolean timAllowed, final boolean machineAirblow, final List<WorkAreaBoundary> airblowBounds, final List<String> robotServiceInputNames, 
 			final List<String> robotServiceOutputNames, final List<String> mCodeNames,	final List<Set<Integer>> mCodeRobotServiceInputs, 
-			final List<Set<Integer>> mCodeRobotServiceOutputs) {
+			final List<Set<Integer>> mCodeRobotServiceOutputs, final boolean workNumberSearch) {
 		try {
 			deviceMapper.updateCNCMachine(cncMachine, name, wayOfOperating, ipAddress, port, clampingWidthR, 
 					newDevInt, nbFixtures, rRoundPieces, timAllowed, machineAirblow, airblowBounds, robotServiceInputNames, 
-					robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs, mCodeRobotServiceOutputs);
+					robotServiceOutputNames, mCodeNames, mCodeRobotServiceInputs, mCodeRobotServiceOutputs, workNumberSearch);
 			refresh();
 		} catch (SQLException e) {
 			logger.error(e);

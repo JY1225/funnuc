@@ -269,6 +269,10 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 		return cncMachineOptionView.getMachineAirblow();
 	}
 	
+	public boolean hasWorkNumberSearch() {
+	    return cncMachineOptionView.hasWorkNumberSearch();
+	}
+	
 	public List<WorkAreaBoundary> getAirblowBounds() {
 		return cncMachineOptionView.getAirblowBounds();
 	}
