@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
@@ -37,15 +38,13 @@ public class DeviceButton extends VBox {
 	private static final String CSS_CLASS_BTN_POSTPROCESS = "btn-post";
 	private static final String CSS_CLASS_BUTTON_SHAPE = "button-shape";
 	private static final String CSS_CLASS_DEVICE_BUTTON = "device-button";
-	private static final String CSS_CLASS_DEVICE_INFO_LABEL = "device-info-label";
 	private static final String CSS_CLASS_DEVICE_LABEL = "device-label";
 	private static final String CSS_CLASS_DEVICE_BUTTON_WRAPPER = "device-button-wrapper";
 	private static final String CSS_CLASS_UNCLICKABLE = "unclickable";
 	private static final String CSS_CLASS_UNCLICKABLE_NAME = "label-unclickable";
-	private static final String CSS_CLASS_UNCLICKABLE_INFO = "label-info-unclickable";
 	
-    //Label for extra info, like GMC active
-    protected Label lblExtraInfo;
+    //Labels for extra info, like GMC & pId
+    protected HBox extraInfoBox;
     protected Button mainButton;
 	protected SVGPath imagePath;
 	private Label deviceName;
@@ -73,14 +72,11 @@ public class DeviceButton extends VBox {
 	}
 	
 	private void build() {
-		lblExtraInfo = new Label("");
-		//lblExtraInfo.setPrefWidth(LABEL_WIDTH);
-		lblExtraInfo.setPrefHeight(20);
-		lblExtraInfo.setWrapText(true);
-		lblExtraInfo.setAlignment(Pos.TOP_CENTER);
-		lblExtraInfo.setTextAlignment(TextAlignment.CENTER);
-		lblExtraInfo.getStyleClass().add(CSS_CLASS_DEVICE_INFO_LABEL);
-		VBox.setMargin(lblExtraInfo, new Insets(0, 0, 8, 0));
+	    extraInfoBox = new HBox();
+	    extraInfoBox.setPrefHeight(20);
+	    extraInfoBox.setAlignment(Pos.CENTER);
+	    extraInfoBox.setSpacing(5);
+		VBox.setMargin(extraInfoBox, new Insets(0, 0, 8, 0));
 		
 		imagePath = new SVGPath();
 		imagePath.getStyleClass().add(CSS_CLASS_BUTTON_SHAPE);
@@ -99,8 +95,8 @@ public class DeviceButton extends VBox {
 		deviceName.getStyleClass().add(CSS_CLASS_DEVICE_LABEL);
 		VBox.setMargin(deviceName, new Insets(5, 0, 0, 0));
 		
-		this.getChildren().add(lblExtraInfo);
-		lblExtraInfo.setVisible(false);
+		this.getChildren().add(extraInfoBox);
+		extraInfoBox.setVisible(false);
 		this.getChildren().add(mainButton);
 		this.getChildren().add(deviceName);
 		this.setPadding(new Insets(-8, -(LABEL_WIDTH - BUTTON_WIDTH) / 2, 0, -(LABEL_WIDTH - BUTTON_WIDTH) / 2));
@@ -185,12 +181,19 @@ public class DeviceButton extends VBox {
 		this.getStyleClass().remove(CSS_CLASS_UNCLICKABLE);
 		mainButton.getStyleClass().remove(CSS_CLASS_UNCLICKABLE);
 		deviceName.getStyleClass().remove(CSS_CLASS_UNCLICKABLE_NAME);
-		lblExtraInfo.getStyleClass().remove(CSS_CLASS_UNCLICKABLE_INFO);
 		if (!clickable) {
 			this.getStyleClass().add(CSS_CLASS_UNCLICKABLE);
 			mainButton.getStyleClass().add(CSS_CLASS_UNCLICKABLE);
 			deviceName.getStyleClass().add(CSS_CLASS_UNCLICKABLE_NAME);
-			lblExtraInfo.getStyleClass().add(CSS_CLASS_UNCLICKABLE_INFO);
 		}
+	}
+	
+	protected void addLabelToBox(Label[] labels) {
+	    for (Label lbl: labels) {
+	        if (lbl != null) {
+	            extraInfoBox.getChildren().add(lbl);
+	            extraInfoBox.setVisible(true);
+	        }
+	    }
 	}
 }

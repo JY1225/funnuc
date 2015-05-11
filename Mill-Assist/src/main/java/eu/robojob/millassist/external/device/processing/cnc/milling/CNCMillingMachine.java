@@ -630,7 +630,12 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 	
 	// these are not taken into account by the machine for now...
 	@Override public void interventionFinished(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException { }
-	@Override public void prepareForStartCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException { }
+	@Override public void prepareForStartCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException {
+	    if (startCylusSettings.getWorkNumber() > 0) {
+	        logger.debug("Prepare for process program id " + startCylusSettings.getWorkNumber());
+	        // TODO - add worknumber search command
+	    }
+	}
 
 	@Override
 	public Coordinates getLocationOrientation(final SimpleWorkArea workArea, final ClampingManner clampType) {

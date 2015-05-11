@@ -98,12 +98,10 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		lblWorkNumberSearch = new Label(Translator.getTranslation(WORKNUMBER_SEARCH));
 		itxtWorkNumberSearch = new IntegerTextField(4);
 		itxtWorkNumberSearch.setOnChange(new ChangeListener<Integer>() {
-            @Override
-            public void changed(final ObservableValue<? extends Integer> observable, final Integer oldValue, final Integer newValue) {
-                if (newValue != oldValue) {
-                    getPresenter().changedWorkNumberSearch(newValue);
-                }
-            }    
+		    @Override
+		    public void changed(final ObservableValue<? extends Integer> observable, final Integer oldValue, final Integer newValue) {
+		        getPresenter().changedWorkNumberSearch(newValue);
+		    }    
         });
 		getContents().add(lblWorkNumberSearch, column++, row);
 		getContents().add(itxtWorkNumberSearch, column, row);
