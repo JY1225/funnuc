@@ -21,6 +21,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.ui.general.model.DeviceInformation;
 import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
 import eu.robojob.millassist.util.SizeManager;
 
@@ -149,7 +150,13 @@ public class ProcessFlowView extends StackPane {
 	
 	private void setupDevice(final int index, final int column, final int row) {
 		// device
-		DeviceButton device = new DeviceButton(processFlowAdapter.getDeviceInformation(index));
+		DeviceButton device;
+		DeviceInformation info = processFlowAdapter.getDeviceInformation(index);
+		if (info.getDevice().getType().equals(EDeviceGroup.CNC_MACHINE)) {
+		    device = new CNCMachineButton(info);
+		} else {
+	          device = new DeviceButton(info);
+		}
 		device.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(final ActionEvent arg0) {
