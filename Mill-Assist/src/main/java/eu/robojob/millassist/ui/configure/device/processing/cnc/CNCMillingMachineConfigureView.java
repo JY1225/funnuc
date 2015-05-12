@@ -26,6 +26,7 @@ import eu.robojob.millassist.ui.controls.IconFlowSelector;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.ui.general.NotificationBox;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.Translator;
@@ -72,6 +73,7 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 	private static final String LENGTH = "CNCMillingMachineConfigureView.length";
 	private static final String WIDTH = "CNCMillingMachineConfigureView.width";
 	private static final String WORKNUMBER_SEARCH = "CNCMillingMachineConfigureView.workNumberSearch";
+	private static final String PROGRAM_ID_EMPTY = "CNCMillingMachineConfigureView.programIdEmpty";
 	
 	private static final String CSS_CLASS_BUTTON_CLAMPING = "btn-clamping";
 	
@@ -218,6 +220,9 @@ public class CNCMillingMachineConfigureView extends AbstractFormView<CNCMillingM
 		    itxtWorkNumberSearch.setVisible(true);
 		    itxtWorkNumberSearch.setManaged(true);
 		    itxtWorkNumberSearch.setText("" + deviceInfo.getProcessingStep().getDeviceSettings().getWorkNumber());
+		    if (!getPresenter().isWorkNumberConfigured()) {
+		        showNotification(Translator.getTranslation(PROGRAM_ID_EMPTY), NotificationBox.Type.WARNING);
+		    }
 		} else {
 		    lblWorkNumberSearch.setVisible(false);
 		    lblWorkNumberSearch.setManaged(false);

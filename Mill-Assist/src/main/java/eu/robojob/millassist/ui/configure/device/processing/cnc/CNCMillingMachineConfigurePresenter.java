@@ -347,6 +347,9 @@ public class CNCMillingMachineConfigurePresenter extends AbstractFormPresenter<C
 	    if (deviceInfo.getProcessingStep().getDeviceSettings() != null) {
 	        deviceInfo.getProcessingStep().getDeviceSettings().setWorkNumber(workNumber);
 	        deviceInfo.getProcessingStep().getProcessFlow().processProcessFlowEvent(new DataChangedEvent(deviceInfo.getProcessingStep().getProcessFlow(), null, false));
+	        if (isWorkNumberConfigured()) {
+	            getView().hideNotification();
+	        }
 	    }
 	}
 	
