@@ -26,7 +26,7 @@ public abstract class AbstractProcessingDevice extends AbstractDevice {
 	}
 	
 	public abstract void startCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings, int processId) throws AbstractCommunicationException, DeviceActionException, InterruptedException;	
-	public abstract void prepareForStartCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException;
+	public abstract void prepareForStartCyclus(ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException;
 		
 	public String toString() {
 		return "ProcessingDevice: " + getName();

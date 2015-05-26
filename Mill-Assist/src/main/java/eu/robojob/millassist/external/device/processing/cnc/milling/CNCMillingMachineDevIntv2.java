@@ -480,10 +480,27 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	
 	// these are not taken into account by the machine for now...
 	@Override public void interventionFinished(final DeviceInterventionSettings interventionSettings) throws AbstractCommunicationException { }
-	@Override public void prepareForStartCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException {
+	@Override public void prepareForStartCyclus(final ProcessingDeviceStartCyclusSettings startCylusSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
 	    if (startCylusSettings.getWorkNumber() > 0) {
 	        logger.debug("Prepare for process program id " + startCylusSettings.getWorkNumber());
-	        // TODO - add worknumber search command
+	        int command = startCylusSettings.getWorkNumber();
+	        int[] registers = {command};
+	        cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.PAR_MACHINE_WORKNUMBER, registers);
+	        resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_WORKNB_OK);
+	        
+	        int wkNbSearchCmd = 0;
+	        wkNbSearchCmd = wkNbSearchCmd | CNCMachineConstantsDevIntv2.IPC_WORKNB_CMD;
+	        int[] registerValue = {wkNbSearchCmd};
+	        cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.IPC_COMMAND, registerValue);
+	        
+	        boolean wkNbReady = waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_WORKNB_OK, START_CYCLE_TIMEOUT);
+	        if(!wkNbReady) {
+	            // TODO
+	            setCncMachineTimeout(new CNCMachineAlarm(CNCMachineAlarm.UNCLAMP_TIMEOUT));
+	            
+	            waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_WORKNB_OK);
+	            setCncMachineTimeout(null);
+	        }
 	    }
 	}
 

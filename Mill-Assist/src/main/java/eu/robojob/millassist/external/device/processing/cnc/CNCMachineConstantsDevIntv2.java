@@ -217,7 +217,8 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int IPC_START_CNC_CMD				= 	BIT4;
 	public static final int IPC_NC_RESET_CMD				= 	BIT5;
 	public static final int IPC_MC_FINISH_CMD				= 	BIT6;
-	// BITS 7-9 UNUSED	
+    // BITS 7-8 UNUSED
+    public static final int IPC_WORKNB_CMD                  =   BIT9;
 	public static final int IPC_RESET_CMD					= 	BIT10;
 	public static final int IPC_ABORT_CMD					= 	BIT11;	
 	public static final int IPC_ROBOT_OUT_MACHINE_CMD		= 	BIT12;	
@@ -233,7 +234,9 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int IPC_START_CNC_BUSY			= 	BIT4;
 	public static final int IPC_NC_RESET_BUSY			= 	BIT5;
 	public static final int IPC_MC_FINISH_BUSY			= 	BIT6;
-	// BITS 7-15 UNUSED
+    // BITS 7-8 UNUSED
+    public static final int IPC_WORKNB_BUSY             =   BIT9;
+    // BITS 10 - 15 UNUSED
 	
 	public static final int IPC_ERROR = 21;
 	public static final int IPC_PREPARE_FOR_PUT_ERR		= 	BIT0;
@@ -243,7 +246,9 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int IPC_START_CNC_ERR			= 	BIT4;
 	public static final int IPC_NC_RESET_ERR			= 	BIT5;
 	public static final int IPC_MC_FINISH_ERR			= 	BIT6;
-	// BITS 7-15 UNUSED
+    // BITS 7-8 UNUSED
+    public static final int IPC_WORKNB_ERR              =   BIT9;
+    // BITS 10 - 15 UNUSED
 	
 	public static final int IPC_OK = 22;
 	public static final int IPC_PREPARE_FOR_PUT_OK		= 	BIT0;
@@ -253,8 +258,9 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int IPC_START_CNC_OK			= 	BIT4;
 	public static final int IPC_NC_RESET_OK				= 	BIT5;
 	public static final int IPC_MC_FINISH_OK			= 	BIT6;
-	// BITS 7-15 UNUSED
-	
+    // BITS 7-8 UNUSED
+    public static final int IPC_WORKNB_OK               =   BIT9;
+    // BITS 10 - 15 UNUSED
 	
 	// CNC ERRORS & ALARMS
 	
@@ -526,7 +532,7 @@ public final class CNCMachineConstantsDevIntv2 {
 	
 
 	// CONFIGURATION - MACHINE PARAMETERS
-	
+	public static final int PAR_MACHINE_WORKNUMBER              = 23;
 	public static final int PAR_MACHINE_MAX_PUT_PREPARE_TIME 	= 50;
 	public static final int PAR_MACHINE_MAX_PICK_PREPARE_TIME 	= 51;
 	public static final int PAR_MACHINE_MAX_START_CNC_TIME   	= 52;
