@@ -1,3 +1,4 @@
 Mill-Assist/logs/xml/logFile.xml
 *.log
 Mill-Assist/.pmd
+Mill-Assist/.settings/org.eclipse.jdt.ui.prefs
