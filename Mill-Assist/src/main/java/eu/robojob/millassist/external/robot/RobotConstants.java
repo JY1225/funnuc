@@ -104,6 +104,7 @@ public final class RobotConstants {
 	public static final int COMMAND_READ_SPECIAL_POINT			= 	95;
 	public static final int COMMAND_WRITE_TOOLFRAME             =   96;
 	public static final int COMMAND_READ_TOOLFRAME              =   97;
+	public static final int COMMAND_MOTION_ENABLE               =   98;
 	
 	// RESPONSE IDS
 //	public static final int RESPONSE_ASK_STATUS					=	120;
@@ -143,6 +144,8 @@ public final class RobotConstants {
 	public static final int RESPONSE_READ_SPECIAL_POINT			= 	195;
 	public static final int RESPONSE_WRITE_TOOLFRAME            =   196;
 	public static final int RESPONSE_READ_TOOLFRAME             =   197;
+	public static final int RESPONSE_MOTION_ENABLE              =   198;
+
 	    
 	// SERVICE GRIPPER
 	public static final int SERVICE_GRIPPER_SERVICE_TYPE_TOOL_CHANGE = 1;
@@ -207,6 +210,7 @@ public final class RobotConstants {
 	public static final int E_WORKPIECE_NOT_GRIPPED							=	40;
 	public static final int E_ROBOT_NOT_IN_START_POSITION					=	45;
 	public static final int E_ROBOT_NOT_IN_IP								= 	46;
+	public static final int E_MOTION_ENB                                    =   50;
 	
 	// CONTROLLER VALUES
 	public static final int CV_FAULT_LED									=	BIT0;

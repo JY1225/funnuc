@@ -467,5 +467,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 			T dimensions, ClampingManner clampType, ApproachType approachType) {
 		return visitor.getPickLocation(this, workArea, dimensions, clampType, approachType);
 	}
+	
+	 public abstract void stopMonitoringMotionEnablingThreads();
 
 }

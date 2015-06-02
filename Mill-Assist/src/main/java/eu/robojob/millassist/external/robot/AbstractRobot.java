@@ -330,6 +330,7 @@ public abstract class AbstractRobot extends AbstractServiceProvider {
 	public abstract void moveToHome() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void moveToChangePoint() throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void moveToCustomPosition() throws AbstractCommunicationException, RobotActionException, InterruptedException;
+	public abstract void enableMovement(boolean flag) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	
 	public abstract void initiatePut(RobotPutSettings putSettings, Clamping clamping) throws AbstractCommunicationException, RobotActionException, InterruptedException;
 	public abstract void continuePutTillAtLocation() throws AbstractCommunicationException, RobotActionException, InterruptedException;

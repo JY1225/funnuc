@@ -353,7 +353,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		} else {
 			throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
 		}
-		
 	}
 
 	@Override
@@ -418,7 +417,7 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 			} 
 		} else {
 			throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
-		}		
+		}	
 	}
 
 	@Override
@@ -479,7 +478,6 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		} else {
 			throw new IllegalArgumentException("Unknown userframe number: " + ufNr);
 		}	
-		
 	}
 
 	@Override
@@ -779,6 +777,11 @@ public class CNCMillingMachine extends AbstractCNCMachine {
 		}
 		return result;
 	}
+
+    @Override
+    public void stopMonitoringMotionEnablingThreads() {
+ 
+    }
 
 }
 

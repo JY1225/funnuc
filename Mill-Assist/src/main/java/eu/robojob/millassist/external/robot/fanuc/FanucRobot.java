@@ -1022,4 +1022,17 @@ public class FanucRobot extends AbstractRobot {
         RobotDataManager.addRegisterValue(register, value);
         logger.debug("read " + register.toString());
     }
+    
+    @Override
+    public void enableMovement(boolean flag) throws AbstractCommunicationException, RobotActionException, InterruptedException {
+        List<String> values = new ArrayList<String>();
+        if (flag) {
+            values.add("" + 1);
+            logger.debug("start robot movement");
+        } else {
+            values.add("" + 0);
+            logger.debug("stop robot movement");
+        }
+        fanucRobotCommunication.readValues(RobotConstants.COMMAND_MOTION_ENABLE, RobotConstants.RESPONSE_MOTION_ENABLE, WRITE_VALUES_TIMEOUT, values);
+    }
 }

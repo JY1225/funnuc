@@ -27,6 +27,7 @@ public class RobotAlarm {
 	public static final int WORKPIECE_NOT_GRIPPED							=	40;
 	public static final int ROBOT_NOT_IN_START_POSITION						=	45;
 	public static final int ROBOT_NOT_IN_IP									= 	46;
+	public static final int ROBOT_MOTION_ENABLED                            =   50;
 	
 	public static final int IOACTION_TIMEOUT = 101;
 	public static final int MOVE_TO_PICK_POSITION_TIMEOUT = 102;
@@ -153,6 +154,9 @@ public class RobotAlarm {
 				case RobotConstants.E_ROBOT_NOT_IN_IP:
 					alarms.add(new RobotAlarm(RobotAlarm.ROBOT_NOT_IN_IP));
 					break;
+				case RobotConstants.E_MOTION_ENB:
+				    alarms.add(new RobotAlarm(RobotAlarm.ROBOT_MOTION_ENABLED));
+				    break;
 				default:
 					throw new IllegalArgumentException("Unknown alarm type");
 			}

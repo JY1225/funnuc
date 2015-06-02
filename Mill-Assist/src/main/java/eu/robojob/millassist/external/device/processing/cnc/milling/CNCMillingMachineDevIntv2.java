@@ -27,6 +27,7 @@ import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyc
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarm;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineConstantsDevIntv2;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMotionEnableMonitorThread;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMonitoringThreadDevIntv2;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
 import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
@@ -40,6 +41,7 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 	
 	private CNCMachineSocketCommunication cncMachineCommunication;
+	private CNCMachineMotionEnableMonitorThread monitorPutThread, monitorPickThread;
 
 	private static final int PREPARE_PUT_TIMEOUT = 2 * 60 * 1000;
 	private static final int PREPARE_PICK_TIMEOUT = 2 * 60 * 1000;
@@ -59,6 +61,10 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		CNCMachineMonitoringThreadDevIntv2 cncMachineMonitoringThread = new CNCMachineMonitoringThreadDevIntv2(this);
 		// start monitoring thread at creation of this object
 		ThreadManager.submit(cncMachineMonitoringThread);
+		monitorPutThread = new CNCMachineMotionEnableMonitorThread(this, CNCMachineMotionEnableMonitorThread.PUT_ACTION);
+		monitorPickThread = new CNCMachineMotionEnableMonitorThread(this, CNCMachineMotionEnableMonitorThread.PICK_ACTION);
+        ThreadManager.submit(monitorPutThread);
+        ThreadManager.submit(monitorPickThread);
 	}
 	
 	@Override
@@ -303,7 +309,7 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK);
 			setCncMachineTimeout(null);
 		}
-		
+		monitorPickThread.startExecution(pickSettings.getStep().getRobot());
 	}
 
 	@Override
@@ -348,11 +354,13 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_OK);
 			setCncMachineTimeout(null);
 		}
+		monitorPutThread.startExecution(putSettings.getStep().getRobot());
 	}
 
 	@Override
 	public void releasePiece(final DevicePickSettings pickSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
-		// check a valid workarea is selected 
+        monitorPickThread.stopMonitoring();
+	    // check a valid workarea is selected 
 		if (!getWorkAreaNames().contains(pickSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + pickSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
@@ -376,7 +384,8 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 
 	@Override
 	public void grabPiece(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
-		// check a valid workarea is selected 
+	      monitorPutThread.stopMonitoring();
+	    // check a valid workarea is selected 
 		if (!getWorkAreaNames().contains(putSettings.getWorkArea().getName())) {
 			throw new IllegalArgumentException("Unknown workarea: " + putSettings.getWorkArea().getName() + " valid workareas are: " + getWorkAreaNames());
 		}
@@ -759,4 +768,10 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		}
 		return result;
 	}
+	
+    @Override
+    public void stopMonitoringMotionEnablingThreads() {
+        monitorPickThread.stopMonitoring();
+        monitorPutThread.stopMonitoring();
+    }
 }
