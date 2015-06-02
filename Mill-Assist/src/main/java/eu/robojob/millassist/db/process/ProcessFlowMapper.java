@@ -486,7 +486,17 @@ public class ProcessFlowMapper {
 				}
 			}
 		}
-		if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
+		if(deviceSettings instanceof PalletDeviceSettings) {
+            PalletDeviceSettings uSettings = (PalletDeviceSettings) deviceSettings;
+            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO PALLETSETTINGS (ID, RAWWORKPIECE, FINISHEDWORKPIECE, GRID_ID, LAYERS, AMOUNT) VALUES (?, ?, ?, ?, ?, ?)");
+            stmt4.setInt(1, uSettings.getId());
+            stmt4.setInt(2, uSettings.getRawWorkPiece().getId());
+            stmt4.setInt(3, uSettings.getFinishedWorkPiece().getId());
+            stmt4.setInt(4, uSettings.getGridPlate().getId());
+            stmt4.setInt(5, uSettings.getLayers());
+            stmt4.setInt(6, uSettings.getAmount());
+            stmt4.executeUpdate();
+        }else if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
 			AbstractStackPlateDeviceSettings bspSettings = (AbstractStackPlateDeviceSettings) deviceSettings;
 			generalMapper.saveWorkPiece(bspSettings.getRawWorkPiece());
 			if(bspSettings.getFinishedWorkPiece() != null) {
@@ -549,14 +559,6 @@ public class ProcessFlowMapper {
             stmt4.setInt(4, uSettings.getLayersBeforeCardBoard());
             stmt4.setInt(5, uSettings.getLayout().getId());
             stmt4.setFloat(6, uSettings.getCardBoardThickness());
-            stmt4.executeUpdate();
-        } else if(deviceSettings instanceof PalletDeviceSettings) {
-            PalletDeviceSettings uSettings = (PalletDeviceSettings) deviceSettings;
-            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO PALLETSETTINGS (ID, RAWWORKPIECE, FINISHEDWORKPIECE, GRID_ID) VALUES (?, ?, ?, ?)");
-            stmt4.setInt(1, uSettings.getId());
-            stmt4.setInt(2, uSettings.getRawWorkPiece().getId());
-            stmt4.setInt(3, uSettings.getFinishedWorkPiece().getId());
-            stmt4.setInt(4, uSettings.getGridPlate().getId());
             stmt4.executeUpdate();
         }
 	}
@@ -844,19 +846,20 @@ public class ProcessFlowMapper {
         return unloadPalletSettings;
 	}
 	
-	private AbstractStackPlateDeviceSettings getPalletSettings(final int processFlowId, final int deviceSettingsId, final AbstractPallet unloadPallet) throws SQLException {
+	private PalletDeviceSettings getPalletSettings(final int processFlowId, final int deviceSettingsId, final AbstractPallet unloadPallet) throws SQLException {
         PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PALLETSETTINGS WHERE ID = ?");
         stmt.setInt(1, deviceSettingsId);
         ResultSet results = stmt.executeQuery();
-        AbstractStackPlateDeviceSettings palletSettings = null;
+        PalletDeviceSettings palletSettings = null;
         if (results.next()) {
             int rawWorkPieceId = results.getInt("RAWWORKPIECE");
             int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
             int gridId = results.getInt("GRID_ID");
+            int layers =results.getInt("LAYERS");
+            int amount = results.getInt("AMOUNT");
             WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
             WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(processFlowId, rawWorkPieceId);
-            //TODO 0000
-            palletSettings = new AbstractStackPlateDeviceSettings(rawWorkPiece, finishedWorkPiece,0,0,0,0, gridId);
+            palletSettings = new PalletDeviceSettings(rawWorkPiece, finishedWorkPiece,deviceManager.getGridPlateByID(gridId), amount, layers);
         }
         return palletSettings;
     }

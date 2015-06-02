@@ -7,13 +7,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
 import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 /**
  * This class is the main class to represent a stackplate. A stackplate is defined as a plate which holds positions where 
@@ -30,6 +31,7 @@ public abstract class AbstractStackPlateLayout{
 	private float plateLength;
 	private boolean alignRight;
 	private AbstractStackPlate stackPlate;
+	private Pallet pallet;
 	
 	private List<StackPlateStackingPosition> rawStackingPositions, finishedStackingPositions;
 	// Actual stackingPositions used for workPiece placement
@@ -386,5 +388,13 @@ public abstract class AbstractStackPlateLayout{
 	public void setStackPlate(AbstractStackPlate stackPlate) {
 		this.stackPlate = stackPlate;
 	}
+
+    public Pallet getPallet() {
+        return this.pallet;
+    }
+
+    public void setPallet(Pallet pallet) {
+        this.pallet = pallet;
+    }
 	
 }

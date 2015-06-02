@@ -16,8 +16,6 @@ import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
-import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlateLayout;
 import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
@@ -29,12 +27,16 @@ import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
 public class Pallet extends AbstractPallet {
 
-    private static Logger logger = LogManager.getLogger(Pallet.class.getName());   
+    private static Logger logger = LogManager.getLogger(Pallet.class.getName());
     private GridPlate gridPlate;
     private GridPlate defaultGridPlate;
-    
+
+    private float horizontalR;
+    private float tiltedR;
+    private int layers;
+
     private GridPlateLayout layout;
-    
+
     public Pallet(String name, Set<Zone> zones) {
         super(name, zones);
     }
@@ -48,7 +50,7 @@ public class Pallet extends AbstractPallet {
         // TODO Auto-generated method stub
 
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -80,13 +82,16 @@ public class Pallet extends AbstractPallet {
             PalletDeviceSettings settings = (PalletDeviceSettings) deviceSettings;
             setFinishedWorkPiece(settings.getFinishedWorkPiece());
             setRawWorkPiece(settings.getRawWorkPiece());
+            setLayers(settings.getLayers());
+            setGridPlate(settings.getGridPlate());
             try {
-                getLayout().configureStackingPositions(settings.getRawWorkPiece(), settings.getFinishedWorkPiece(), settings.getOrientation(), settings.getLayers());
+                getLayout().configureStackingPositions(settings.getRawWorkPiece(), settings.getFinishedWorkPiece(),
+                        settings.getOrientation(), settings.getLayers());
                 getLayout().initRawWorkPieces(getRawWorkPiece(), settings.getAmount());
             } catch (IncorrectWorkPieceDataException exception) {
                 logger.error(exception);
             }
-            
+
         } else {
             throw new IllegalArgumentException("Unknown device settings");
         }
@@ -95,9 +100,10 @@ public class Pallet extends AbstractPallet {
     @Override
     public PalletDeviceSettings getDeviceSettings() {
         if (getGridPlate() == null) {
-            return new PalletDeviceSettings(getRawWorkPiece(), getFinishedWorkPiece(), getDefaultGridPlate());
+            return new PalletDeviceSettings(getRawWorkPiece(), getFinishedWorkPiece(), getDefaultGridPlate(), 0,
+                    getLayers());
         }
-        return new PalletDeviceSettings(getRawWorkPiece(), getFinishedWorkPiece(), getGridPlate());
+        return new PalletDeviceSettings(getRawWorkPiece(), getFinishedWorkPiece(), getGridPlate(), 0, getLayers());
     }
 
     @Override
@@ -109,7 +115,7 @@ public class Pallet extends AbstractPallet {
     @Override
     public <T extends IWorkPieceDimensions> Coordinates getPutLocation(AbstractPiecePlacementVisitor<T> visitor,
             SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType) {
-//        return visitor.getPut
+        // return visitor.getPut
         return null;
     }
 
@@ -119,32 +125,30 @@ public class Pallet extends AbstractPallet {
 
     public void setGridPlate(GridPlate gridPlate) {
         PalletDeviceSettings deviceSettings = getDeviceSettings();
-        if(gridPlate != null) {
+        if (gridPlate != null) {
             logger.debug("Adding gridplate [" + gridPlate.getName() + "] to pallet.");
             deviceSettings.setGridId(gridPlate.getId());
             deviceSettings.setStudHeight(gridPlate.getDepth());
             setLayout(new GridPlateLayout(gridPlate));
             this.gridPlate = gridPlate;
-            loadDeviceSettings(deviceSettings);
         } else {
-            logger.debug("Default grid plate added ["+getDefaultGridPlate().getName()+"] to pallet");
+            logger.debug("Default grid plate added [" + getDefaultGridPlate().getName() + "] to pallet");
             deviceSettings.setGridId(getDefaultGridPlate().getId());
             deviceSettings.setStudHeight(getDefaultGridPlate().getDepth());
             setLayout(new GridPlateLayout(getDefaultGridPlate()));
-            this.gridPlate =getDefaultGridPlate();
-            loadDeviceSettings(deviceSettings);
+            this.gridPlate = getDefaultGridPlate();
         }
     }
 
     @Override
     public void setDefaultLayout(PalletLayout layout) {
-        //NOOP
+        // NOOP
     }
 
     @Override
     public void setDefaultGrid(GridPlate gridPlate) {
         this.defaultGridPlate = gridPlate;
-        
+
     }
 
     public GridPlate getDefaultGridPlate() {
@@ -157,6 +161,49 @@ public class Pallet extends AbstractPallet {
 
     public void setLayout(GridPlateLayout layout) {
         this.layout = layout;
+        layout.setPallet(this);
+    }
+
+    public float getR(float orientation) {
+        float deltaR = getTiltedR() - getHorizontalR();
+        if (orientation >= 90) {
+            orientation = orientation - 90;
+            if (deltaR > 0) {
+                return getHorizontalR() + (float) orientation;
+            } else {
+                return getHorizontalR() - (float) orientation;
+            }
+        } else {
+            if (deltaR > 0) {
+                return getHorizontalR() + (float) orientation;
+            } else {
+                return getHorizontalR() - (float) orientation;
+            }
+        }
+    }
+
+    public float getHorizontalR() {
+        return this.horizontalR;
+    }
+
+    public void setHorizontalR(float horizontalR) {
+        this.horizontalR = horizontalR;
+    }
+
+    public float getTiltedR() {
+        return this.tiltedR;
+    }
+
+    public void setTiltedR(float tiltedR) {
+        this.tiltedR = tiltedR;
+    }
+
+    public int getLayers() {
+        return this.layers;
+    }
+
+    public void setLayers(int layers) {
+        this.layers = layers;
     }
 
 }

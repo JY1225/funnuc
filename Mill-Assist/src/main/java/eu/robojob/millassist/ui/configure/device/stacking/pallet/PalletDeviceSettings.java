@@ -7,8 +7,8 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 public class PalletDeviceSettings extends AbstractStackPlateDeviceSettings {
 
     private GridPlate gridPlate;
-    public PalletDeviceSettings(WorkPiece workPiece, WorkPiece finishedWorkPiece, GridPlate gridPlate) {
-        super(workPiece,finishedWorkPiece,0, 1, 0);
+    public PalletDeviceSettings(WorkPiece workPiece, WorkPiece finishedWorkPiece, GridPlate gridPlate, int amount, int layers) {
+        super(workPiece,finishedWorkPiece,0, layers, amount);
         this.gridPlate = gridPlate;
         setGridId(gridPlate.getId());
     }
