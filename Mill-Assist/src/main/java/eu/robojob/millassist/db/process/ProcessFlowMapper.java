@@ -32,19 +32,20 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
-import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
+import eu.robojob.millassist.external.device.stacking.pallet.AbstractPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
-import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.external.robot.Gripper;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
-import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.external.robot.RobotManager;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.external.robot.RobotProcessingWhileWaitingSettings;
@@ -66,6 +67,7 @@ import eu.robojob.millassist.process.ProcessingWhileWaitingStep;
 import eu.robojob.millassist.process.PutAndWaitStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.RobotStep;
+import eu.robojob.millassist.ui.configure.device.stacking.pallet.PalletDeviceSettings;
 import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class ProcessFlowMapper {
@@ -548,6 +550,14 @@ public class ProcessFlowMapper {
             stmt4.setInt(5, uSettings.getLayout().getId());
             stmt4.setFloat(6, uSettings.getCardBoardThickness());
             stmt4.executeUpdate();
+        } else if(deviceSettings instanceof PalletDeviceSettings) {
+            PalletDeviceSettings uSettings = (PalletDeviceSettings) deviceSettings;
+            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO PALLETSETTINGS (ID, RAWWORKPIECE, FINISHEDWORKPIECE, GRID_ID) VALUES (?, ?, ?, ?)");
+            stmt4.setInt(1, uSettings.getId());
+            stmt4.setInt(2, uSettings.getRawWorkPiece().getId());
+            stmt4.setInt(3, uSettings.getFinishedWorkPiece().getId());
+            stmt4.setInt(4, uSettings.getGridPlate().getId());
+            stmt4.executeUpdate();
         }
 	}
 	
@@ -681,6 +691,9 @@ public class ProcessFlowMapper {
 			} else if (device instanceof UnloadPallet) {
 			    UnloadPalletDeviceSettings unloadPalletSettings = getUnloadPalletSettings(processId, id, (UnloadPallet)device);
 			    settings.put(device, unloadPalletSettings);
+			} else if(device instanceof Pallet) {
+			    AbstractStackPlateDeviceSettings palletDeviceSettings = getPalletSettings(processId, id, (Pallet) device);
+			    settings.put(device, palletDeviceSettings);
 			} else {
 				DeviceSettings deviceSettings = new DeviceSettings(clampings);
 				deviceSettings.setId(id);
@@ -814,7 +827,7 @@ public class ProcessFlowMapper {
 		return basicStackPlateSettings;
 	}
 	
-	private UnloadPalletDeviceSettings getUnloadPalletSettings(final int processFlowId, final int deviceSettingsId, final UnloadPallet unloadPallet) throws SQLException {
+	private UnloadPalletDeviceSettings getUnloadPalletSettings(final int processFlowId, final int deviceSettingsId, final AbstractPallet unloadPallet) throws SQLException {
 	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM UNLOADPALLETSETTINGS WHERE ID = ?");
         stmt.setInt(1, deviceSettingsId);
         ResultSet results = stmt.executeQuery();
@@ -830,6 +843,23 @@ public class ProcessFlowMapper {
         }
         return unloadPalletSettings;
 	}
+	
+	private AbstractStackPlateDeviceSettings getPalletSettings(final int processFlowId, final int deviceSettingsId, final AbstractPallet unloadPallet) throws SQLException {
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PALLETSETTINGS WHERE ID = ?");
+        stmt.setInt(1, deviceSettingsId);
+        ResultSet results = stmt.executeQuery();
+        AbstractStackPlateDeviceSettings palletSettings = null;
+        if (results.next()) {
+            int rawWorkPieceId = results.getInt("RAWWORKPIECE");
+            int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
+            int gridId = results.getInt("GRID_ID");
+            WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
+            WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(processFlowId, rawWorkPieceId);
+            //TODO 0000
+            palletSettings = new AbstractStackPlateDeviceSettings(rawWorkPiece, finishedWorkPiece,0,0,0,0, gridId);
+        }
+        return palletSettings;
+    }
 	
 	
 	public List<AbstractProcessStep> getProcessSteps(final int processId) throws SQLException {

@@ -21,6 +21,7 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
+import eu.robojob.millassist.external.device.stacking.pallet.AbstractPallet;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
@@ -270,7 +271,7 @@ public class DeviceManager {
 		}		
 	}
 	
-	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final String stdPalletLayoutName) {
+	public void updateUnloadPallet(final AbstractPallet unloadPallet, final String name, final String userFrameName, final String stdPalletLayoutName) {
 	    try {
             deviceMapper.updateUnloadPallet(unloadPallet, name, userFrameName, getPalletLayoutByName(stdPalletLayoutName));
             refresh();

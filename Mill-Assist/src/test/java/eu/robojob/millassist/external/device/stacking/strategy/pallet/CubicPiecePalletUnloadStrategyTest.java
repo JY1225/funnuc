@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.robojob.millassist.external.device.stacking.pallet.AbstractPallet;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
@@ -17,7 +18,7 @@ import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
 public class CubicPiecePalletUnloadStrategyTest extends TestCase {
-    private UnloadPallet pallet;
+    private AbstractPallet pallet;
     private PalletLayout palletLayout;
     private RectangularDimensions workPieceDimensions;
     private WorkPiece workPiece;

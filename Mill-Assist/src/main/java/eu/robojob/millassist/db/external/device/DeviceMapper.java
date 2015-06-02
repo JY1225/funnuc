@@ -40,6 +40,8 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLayout;
+import eu.robojob.millassist.external.device.stacking.pallet.AbstractPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
@@ -106,8 +108,12 @@ public class DeviceMapper {
 					ReversalUnit reversalUnit = getReversalUnit(id, name, zones);
 					devices.add(reversalUnit);
 					break;
+				case DEVICE_TYPE_UNLOAD_PALLET:
+				    AbstractPallet unloadPallet = (AbstractPallet)getPallet(id, name, zones);
+				    devices.add(unloadPallet);
+				    break;
 				case DEVICE_TYPE_PALLET:
-				    UnloadPallet pallet = getPallet(id, name, zones);
+				    Pallet pallet = (Pallet)getPallet(id,name,zones);
 				    devices.add(pallet);
 				    break;
 				default:
@@ -117,22 +123,30 @@ public class DeviceMapper {
 		return devices;
 	}
 	
-	private UnloadPallet getPallet(final int id, final String name, final Set<Zone> zones) throws SQLException {
+	private AbstractPallet getPallet(final int id, final String name, final Set<Zone> zones) throws SQLException {
 	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PALLET WHERE ID = ?");
         stmt.setInt(1, id);
         ResultSet results = stmt.executeQuery();
-        UnloadPallet pallet = new UnloadPallet(name, zones);
+        AbstractPallet pallet = null;
+        if(id == DeviceType.DEVICE_TYPE_UNLOAD_PALLET.getId()) {
+            pallet = new UnloadPallet(name, zones);
+        }
+        if(id== DeviceType.DEVICE_TYPE_PALLET.getId()) {
+            pallet = new Pallet(name,zones);
+        }
         pallet.setId(id);
         if (results.next()) {
             float maxHeight = results.getFloat("MAX_HEIGHT");
             int defaultLayout = results.getInt("DEFAULT_LAYOUT");
+            int defaultGrid = results.getInt("DEFAULT_GRID");
             pallet.setMaxHeight(maxHeight);
             pallet.setDefaultLayout(getPalletLayoutById(defaultLayout));
+            pallet.setDefaultGrid(getGridPlateByID(defaultGrid));
         }
         return pallet;
 	}
 	
-	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final PalletLayout stdLayout) throws SQLException {
+	public void updateUnloadPallet(final AbstractPallet unloadPallet, final String name, final String userFrameName, final PalletLayout stdLayout) throws SQLException {
 	    
 	    ConnectionManager.getConnection().setAutoCommit(false);
 	    if ((!unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {

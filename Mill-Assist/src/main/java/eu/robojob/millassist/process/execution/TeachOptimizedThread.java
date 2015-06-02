@@ -11,6 +11,7 @@ import eu.robojob.millassist.external.device.processing.prage.PrageDevice;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
+import eu.robojob.millassist.external.device.stacking.pallet.AbstractPallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
@@ -194,7 +195,7 @@ public class TeachOptimizedThread extends TeachThread {
 			// FIXME implement
 			throw new IllegalStateException("Not yet implemented!");
 		} else if (stackingDevice instanceof UnloadPallet) {
-		    ((UnloadPallet) stackingDevice).getLayout().getStackingPositions().get(0).setWorkPiece(((UnloadPallet)stackingDevice).getFinishedWorkPiece());
+		    ((UnloadPallet) stackingDevice).getLayout().getStackingPositions().get(0).setWorkPiece(((AbstractPallet)stackingDevice).getFinishedWorkPiece());
 		}
 		getProcessFlow().setFinishedAmount(1);
 		Coordinates originalCoordinates = stackingDevice.getLocation(

@@ -162,6 +162,11 @@ public class DeviceButton extends VBox {
                 imagePath.getStyleClass().add(CSS_CLASS_POSTPROCESS);
                 mainButton.getStyleClass().add(CSS_CLASS_BTN_POSTPROCESS);
                 break;
+			case PALLET:
+			    imagePath.setContent(preStackingPath);
+                imagePath.getStyleClass().add(CSS_CLASS_PREPROCESS);
+                mainButton.getStyleClass().add(CSS_CLASS_BTN_PREPROCESS);
+                break;
 			default:
 				throw new IllegalArgumentException("Unknown Device type [" + deviceInfo.getType() + "].");
 		}

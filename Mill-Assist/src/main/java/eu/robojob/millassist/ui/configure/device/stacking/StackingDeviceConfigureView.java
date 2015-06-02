@@ -82,7 +82,7 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 						}
 						boolean showGrid= false;
 						//Disable the selection of gridplates when device is not a basic stack plate
-						if(getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.BASIC_STACK_PLATE) {
+						if(getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.BASIC_STACK_PLATE || getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.PALLET) {
 						    showGrid = true;
 							//TODO - setManaged
 						} else {
@@ -237,6 +237,9 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 		String plateName = getPresenter().getGridPlateName();
 		if(plateName != null) {
 			cbGridPlate.setSelected(true);
+			if(deviceInfo.getType() == EDeviceGroup.PALLET) {
+			    cbGridPlate.setDisable(true);
+			}
 			setGridPlate(plateName);
 			lblGridPlate.setDisable(false);
 			cbbGridPlates.setDisable(false);

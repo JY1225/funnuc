@@ -3,6 +3,7 @@ package eu.robojob.millassist.ui.configure.device.stacking;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.ui.general.AbstractMenuView;
@@ -113,6 +114,13 @@ public class StackingDeviceMenuView extends AbstractMenuView<AbstractStackingDev
 				}
 			});
 		} else if (deviceInfo.getDevice() instanceof UnloadPallet){
+            addMenuItem(index, LAYOUT_ICON, Translator.getTranslation(VIEW_LAYOUT), true, new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(final ActionEvent event) {
+                    getPresenter().showLayout();
+                }
+            });
+        } else if (deviceInfo.getDevice() instanceof Pallet){
             addMenuItem(index, LAYOUT_ICON, Translator.getTranslation(VIEW_LAYOUT), true, new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(final ActionEvent event) {

@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
@@ -59,6 +60,10 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			if((prevDevice instanceof BasicStackPlate) && (device instanceof BasicStackPlate)) {
 				logger.debug("Gridplate " + gridPlateName + " added.");
 				((BasicStackPlate) device).setGridPlate(deviceManager.getGridPlateByName(gridPlateName));
+			}
+			if(device instanceof Pallet) {
+			    logger.debug("Gridplate " + gridPlateName + " added.");
+                ((Pallet) device).setGridPlate(deviceManager.getGridPlateByName(gridPlateName));
 			}
 			if(prevDevice instanceof UnloadPallet) {
 			    ((UnloadPallet) prevDevice).setLayout(deviceManager.getPalletLayoutByName(palletLayoutName));

@@ -9,6 +9,7 @@ import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
@@ -45,6 +46,9 @@ import eu.robojob.millassist.ui.configure.device.stacking.conveyor.normal.Convey
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.normal.ConveyorMenuPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.normal.ConveyorRawWorkPiecePresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.conveyor.normal.ConveyorRawWorkPieceView;
+import eu.robojob.millassist.ui.configure.device.stacking.pallet.PalletLayoutPresenter;
+import eu.robojob.millassist.ui.configure.device.stacking.pallet.PalletMenuPresenter;
+import eu.robojob.millassist.ui.configure.device.stacking.pallet.PalletRawWorkPiecePresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.pallet.UnloadPalletLayoutPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.pallet.UnloadPalletMenuPresenter;
 import eu.robojob.millassist.ui.configure.device.stacking.stackplate.BasicStackPlateLayoutPresenter;
@@ -97,6 +101,9 @@ public class DeviceMenuFactory {
 					break;
 				case UNLOAD_PALLET:
 				    menuPresenter = getUnloadPalletMenuPresenter(deviceInfo);
+				    break;
+				case PALLET:
+				    menuPresenter = getPalletMenuPresenter(deviceInfo);
 				    break;
 				default:
 					menuPresenter = null;
@@ -227,6 +234,16 @@ public class DeviceMenuFactory {
 		}
 	}
 	
+	public AbstractFormPresenter<?, PalletMenuPresenter> getPalletWorkPiecePresenter(final DeviceInformation deviceInfo) {
+        if (deviceInfo.getPickStep() != null) {
+            BasicStackPlateRawWorkPieceView view = new BasicStackPlateRawWorkPieceView();
+            PalletRawWorkPiecePresenter basicStackPlateWorkPiecePresenter = new PalletRawWorkPiecePresenter(view, deviceInfo.getPickStep(), (AbstractStackPlateDeviceSettings) deviceInfo.getDeviceSettings());
+            return basicStackPlateWorkPiecePresenter;
+        } else {
+            return null;
+        }
+    }
+	
 	public UnloadPalletLayoutPresenter getUnloadPalletLayoutPresenter(final DeviceInformation deviceInfo) {
 	    UnloadPalletLayoutView<UnloadPalletLayoutPresenter> view = new UnloadPalletLayoutView<>();
 	    if(deviceInfo.hasPutStep()){
@@ -236,6 +253,16 @@ public class DeviceMenuFactory {
 	    }
 	    return null;
 	}
+	
+	public PalletLayoutPresenter getPalletLayoutPresenter(final DeviceInformation deviceInfo) {
+        UnloadPalletLayoutView<PalletLayoutPresenter> view = new UnloadPalletLayoutView<>();
+        if(deviceInfo.hasPickStep()){
+            PalletLayoutPresenter palletLayoutPresenter = new PalletLayoutPresenter(view, (Pallet)deviceInfo.getDevice(), deviceInfo.getPutStep());
+            
+            return palletLayoutPresenter;
+        }
+        return null;
+    }
 	
 	public StackingDeviceConfigurePresenter getUnloadPalletConfigurePresenter(final DeviceInformation deviceInfo) {
         StackingDeviceConfigureView view = new StackingDeviceConfigureView();
@@ -253,12 +280,38 @@ public class DeviceMenuFactory {
             if (deviceInfo.hasPutStep()) {
                 smoothPutPresenter = new ConfigureSmoothPresenter<UnloadPalletMenuPresenter>(smoothView, deviceInfo.getPutStep().getRobotSettings(), deviceInfo.getPutStep());
             } else {
-                throw new IllegalStateException("No pick or put step for basic stack plate");
+                throw new IllegalStateException("No pick or put step for unload pallet");
             }
     	    UnloadPalletMenuPresenter unloadPalletMenuPresenter = new UnloadPalletMenuPresenter(stackingDeviceMenuView,deviceInfo, getUnloadPalletConfigurePresenter(deviceInfo), getUnloadPalletLayoutPresenter(deviceInfo), smoothPutPresenter);
     	    return unloadPalletMenuPresenter;
 	    }
 	}
+	
+	public PalletMenuPresenter getPalletMenuPresenter(final DeviceInformation deviceInfo) {
+        if(presentersBuffer.containsKey(deviceInfo.getIndex())){
+            return (PalletMenuPresenter) presentersBuffer.get(deviceInfo.getIndex());
+        } else {
+            StackingDeviceMenuView stackingDeviceMenuView = new StackingDeviceMenuView();
+            ConfigureSmoothView smoothView = new ConfigureSmoothView();
+            ConfigureSmoothPresenter<PalletMenuPresenter> smoothPutPresenter = null;
+            ConfigureSmoothPresenter<PalletMenuPresenter> smoothPickPresenter = null;
+            if (deviceInfo.hasPickStep()) {
+                smoothPickPresenter = new ConfigureSmoothPresenter<PalletMenuPresenter>(smoothView, deviceInfo.getPickStep().getRobotSettings(), deviceInfo.getPickStep());
+            } else if (deviceInfo.hasPutStep()) {
+                smoothPutPresenter = new ConfigureSmoothPresenter<PalletMenuPresenter>(smoothView, deviceInfo.getPutStep().getRobotSettings(), deviceInfo.getPutStep());
+            } else {
+                throw new IllegalStateException("No pick or put step for basic stack plate");
+            }
+            PalletMenuPresenter unloadPalletMenuPresenter = new PalletMenuPresenter(stackingDeviceMenuView,deviceInfo, getPalletConfigurePresenter(deviceInfo), getPalletLayoutPresenter(deviceInfo), getPalletWorkPiecePresenter(deviceInfo), smoothPickPresenter, smoothPutPresenter);
+            return unloadPalletMenuPresenter;
+        }
+    }
+	
+	public StackingDeviceConfigurePresenter getPalletConfigurePresenter(final DeviceInformation deviceInfo) {
+        StackingDeviceConfigureView view = new StackingDeviceConfigureView();
+        StackingDeviceConfigurePresenter loadPalletConfigurePresenter = new StackingDeviceConfigurePresenter(view, deviceInfo, deviceManager);
+        return loadPalletConfigurePresenter;
+    }
 	
 	public BasicStackPlateLayoutPresenter getBasicStackPlateLayoutPresenter(final DeviceInformation deviceInfo) {
 		BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter> view = new BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter>();

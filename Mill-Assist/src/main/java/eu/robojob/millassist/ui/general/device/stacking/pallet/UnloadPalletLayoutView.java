@@ -20,6 +20,7 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
+import eu.robojob.millassist.external.device.stacking.pallet.AbstractPallet;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
@@ -253,7 +254,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
         unloadPallet.notifyLayoutChanged();
     }
 
-    public UnloadPallet getUnloadPallet() {
+    public AbstractPallet getUnloadPallet() {
         return unloadPallet;
     }
 

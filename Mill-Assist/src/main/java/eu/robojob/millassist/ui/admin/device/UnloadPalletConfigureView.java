@@ -15,6 +15,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import eu.robojob.millassist.external.device.stacking.pallet.AbstractPallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.NumericTextField;
@@ -140,7 +141,7 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         }
     }
 
-    public UnloadPallet getUnloadPallet() {
+    public AbstractPallet getUnloadPallet() {
         return unloadPallet;
     }
 
