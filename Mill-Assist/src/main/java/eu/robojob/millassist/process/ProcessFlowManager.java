@@ -133,7 +133,6 @@ public class ProcessFlowManager {
 		if (stackingToDevice instanceof UnloadPallet) {
             ((UnloadPalletDeviceSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
         }
-		
 		if (stackingToDevice instanceof Pallet) {
             ((PalletDeviceSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
         }
@@ -141,7 +140,6 @@ public class ProcessFlowManager {
 		if (stackingFromDevice instanceof Pallet) {
             ((PalletDeviceSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(finishedWorkPiece);
         }
-		
 		// always assign both raw and finished work piece to conveyor!
 		if (stackingFromDevice instanceof Conveyor) {
 			((ConveyorSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);

@@ -164,6 +164,7 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 	    } else {
 	        return null;
 	    }
+
 	}
 	
 }

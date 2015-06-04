@@ -127,6 +127,7 @@ public class StackingDeviceMenuView extends AbstractMenuView<AbstractStackingDev
                     getPresenter().showLayout();
                 }
             });
+
         }
 		
 	}

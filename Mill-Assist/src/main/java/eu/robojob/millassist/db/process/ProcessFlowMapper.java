@@ -830,7 +830,7 @@ public class ProcessFlowMapper {
 		return basicStackPlateSettings;
 	}
 	
-	private UnloadPalletDeviceSettings getUnloadPalletSettings(final int processFlowId, final int deviceSettingsId, final AbstractPallet unloadPallet) throws SQLException {
+	private UnloadPalletDeviceSettings getUnloadPalletSettings(final int processFlowId, final int deviceSettingsId, final UnloadPallet unloadPallet) throws SQLException {
 	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM UNLOADPALLETSETTINGS WHERE ID = ?");
         stmt.setInt(1, deviceSettingsId);
         ResultSet results = stmt.executeQuery();
@@ -846,7 +846,7 @@ public class ProcessFlowMapper {
         }
         return unloadPalletSettings;
 	}
-	
+
 	private PalletDeviceSettings getPalletSettings(final int processFlowId, final int deviceSettingsId, final AbstractPallet unloadPallet) throws SQLException {
         PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PALLETSETTINGS WHERE ID = ?");
         stmt.setInt(1, deviceSettingsId);
@@ -865,7 +865,6 @@ public class ProcessFlowMapper {
         }
         return palletSettings;
     }
-	
 	
 	public List<AbstractProcessStep> getProcessSteps(final int processId) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM STEP WHERE PROCESSFLOW = ? ORDER BY INDEX ASC");

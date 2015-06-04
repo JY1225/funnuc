@@ -124,7 +124,7 @@ public class DeviceMapper {
 	}
 	
 	private AbstractPallet getPallet(final int id, final String name, final Set<Zone> zones) throws SQLException {
-	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PALLET WHERE ID = ?");
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PALLET WHERE ID = ?");
         stmt.setInt(1, id);
         ResultSet results = stmt.executeQuery();
         AbstractPallet pallet = null;
@@ -144,7 +144,7 @@ public class DeviceMapper {
             pallet.setDefaultGrid(getGridPlateByID(defaultGrid));
         }
         return pallet;
-	}
+    }
 	
 	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final PalletLayout stdLayout) throws SQLException {
 	    

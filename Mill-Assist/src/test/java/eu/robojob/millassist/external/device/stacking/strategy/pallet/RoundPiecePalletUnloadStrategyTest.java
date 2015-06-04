@@ -7,18 +7,18 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.robojob.millassist.external.device.stacking.pallet.AbstractPallet;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
-import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
 import eu.robojob.millassist.workpiece.RoundDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
 public class RoundPiecePalletUnloadStrategyTest {
-    private AbstractPallet pallet;
+
+    private UnloadPallet pallet;
     private PalletLayout palletLayout;
     private RoundDimensions workPieceDimensions;
     private WorkPiece workPiece;

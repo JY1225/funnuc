@@ -290,7 +290,7 @@ public class DeviceManager {
             e.printStackTrace();
         }
     }
-	
+
 	public void savePalletLayout(final String name, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws IllegalArgumentException{
 	    PalletLayout layout = new PalletLayout(name, width, length, height, border, xOffset, yOffset, minInterferenceDistance, horizontalR, verticalR);
 	    try {

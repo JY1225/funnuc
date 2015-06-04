@@ -65,7 +65,6 @@ import eu.robojob.millassist.ui.general.device.stacking.stackplate.BasicStackPla
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
 public class DeviceMenuFactory {
-
     private DeviceManager deviceManager;
 
     private Map<Integer, AbstractMenuPresenter<?>> presentersBuffer;

@@ -1,8 +1,9 @@
 package eu.robojob.millassist.external.device.stacking.pallet;
 
+
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

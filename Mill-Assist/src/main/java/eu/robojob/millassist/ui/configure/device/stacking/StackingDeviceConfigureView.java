@@ -30,10 +30,11 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 	
 	private HBox stackSettingsLblBox;
 	private HBox stackSettingsFldBox;
-	
+
 	private HBox palletSettingsLblBox;
     private HBox palletSettingsFldBox;
 	
+
 	private Label lblGridPlate;
 	private CheckBox cbGridPlate;
 	private ComboBox<String> cbbGridPlates;
@@ -86,12 +87,14 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 						boolean showGrid= false;
 						//Disable the selection of gridplates when device is not a basic stack plate
 						if(getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.BASIC_STACK_PLATE || getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.PALLET) {
+
 						    showGrid = true;
 							//TODO - setManaged
 						} else {
 						    showGrid = false;
 						}
 						if(getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.UNLOAD_PALLET || getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.PALLET) {
+
 						    setStackSettings(showGrid, true);
 						}
 						else {
@@ -114,19 +117,19 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 		
 		stackSettingsLblBox = new HBox(15);
 		stackSettingsFldBox = new HBox(15);
-		
+
 		row++;
         column = 0;
         getContents().add(stackSettingsLblBox, ++column, row);
         getContents().add(stackSettingsFldBox, ++column, row);
-        
+
 		palletSettingsLblBox = new HBox(15);
         palletSettingsFldBox = new HBox(15);
 		row++;
         column = 0;
         getContents().add(palletSettingsLblBox, ++column, row);
-        getContents().add(palletSettingsFldBox, ++column, row);
-        
+        getContents().add(palletSettingsFldBox, ++column, row);   
+
 		lblGridPlate = new Label(Translator.getTranslation(GRIDPLATE));
 		cbbGridPlates = new ComboBox<String>();
 		cbbGridPlates.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
@@ -319,7 +322,7 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
                 stackSettingsFldBox.getChildren().add(cbbPalletLayouts);
             }
         }
-        
+
     }
 	
 }
