@@ -14,6 +14,7 @@ import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.event.ProcessChangedEvent;
+import eu.robojob.millassist.ui.configure.device.stacking.pallet.PalletDeviceSettings;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
@@ -63,6 +64,7 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			}
 			if(device instanceof Pallet) {
 			    logger.debug("Gridplate " + gridPlateName + " added.");
+                ((Pallet) device).setPalletLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
                 ((Pallet) device).setGridPlate(deviceManager.getGridPlateByName(gridPlateName));
 			}
 			if(prevDevice instanceof UnloadPallet) {
@@ -145,16 +147,23 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 	}
 	
 	public String getPalletLayoutName() {
-	    try {
-            UnloadPalletDeviceSettings devSettings = (UnloadPalletDeviceSettings) deviceInfo.getDeviceSettings();
+	    if(deviceInfo.getDeviceSettings() instanceof UnloadPalletDeviceSettings) {
+	        UnloadPalletDeviceSettings devSettings = (UnloadPalletDeviceSettings) deviceInfo.getDeviceSettings();
             if (devSettings.getLayout() != null) {
                 return devSettings.getLayout().getName();
             } else {
                 return ((UnloadPallet)deviceInfo.getDevice()).getDefaultLayout().getName();
             }
-        } catch (ClassCastException e) {
-            return null;
-        }
+	    } else if(deviceInfo.getDeviceSettings() instanceof PalletDeviceSettings) {
+	        PalletDeviceSettings devSettings = (PalletDeviceSettings) deviceInfo.getDeviceSettings();
+            if (devSettings.getPalletLayout() != null) {
+                return devSettings.getPalletLayout().getName();
+            } else {
+                return ((UnloadPallet)deviceInfo.getDevice()).getDefaultLayout().getName();
+            }
+	    } else {
+	        return null;
+	    }
 	}
 	
 }

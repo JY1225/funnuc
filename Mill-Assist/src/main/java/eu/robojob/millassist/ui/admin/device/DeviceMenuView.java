@@ -17,6 +17,7 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 	private static final String REVERSALUNIT = "DeviceMenuView.reversalUnit";
     private static final String UNLOADPALLET = "DeviceMenuView.unloadPallet";
     private static final String PALLETLAYOUT = "DeviceMenuView.palletLayout";
+    private static final String PALLET = "DeviceMenuView.pallet";
 	
 	public DeviceMenuView() {
 		build();
@@ -87,6 +88,13 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
                 getPresenter().configurePalletLayout();
             }
         });
+		
+		addTextMenuItem(index++, Translator.getTranslation(PALLET), true, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent arg0) {
+                getPresenter().configurePallet();
+            }
+        });
 	}
 	
 	public void disablePrageMenuItem() {
@@ -115,9 +123,14 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 	}
 	
 	public void disableUnloadPalletMenuItem() {
-	    getMenuItem(8).setVisible(false);
-	    getMenuItem(8).setManaged(false);
+	    getMenuItem(9).setVisible(false);
+	    getMenuItem(9).setManaged(false);
 	}
+	
+	public void disablePalletMenuItem() {
+        getMenuItem(10).setVisible(false);
+        getMenuItem(10).setManaged(false);
+    }
 	
 	public void setConfigureUserFramesActive() {
 		setMenuItemSelected(0);
@@ -158,5 +171,9 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
 	public void setConfigurePalletLayout() {
 	    setMenuItemSelected(9);
 	}
+	
+	public void setConfigurePallet() {
+        setMenuItemSelected(10);
+    }
 
 }

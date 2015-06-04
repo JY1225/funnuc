@@ -13,7 +13,6 @@ import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.workpiece.WorkPiece;
-import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 
 public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresenter<UnloadPalletAddRemoveFinishedView, UnloadPalletMenuPresenter> implements ProcessFlowListener{
 

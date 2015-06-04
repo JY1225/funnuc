@@ -118,4 +118,13 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	    }
 	    return 0;
 	}
+	
+    public float getRRound() {
+	    if(getStackPlate() != null) {
+	        return getStackPlate().getRRound();
+	    }else if(getPallet() != null) {
+            return getPallet().getHorizontalR();
+        }
+	    return 0;
+    }
 }

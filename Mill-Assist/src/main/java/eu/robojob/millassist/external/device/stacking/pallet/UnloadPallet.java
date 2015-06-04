@@ -11,6 +11,7 @@ import eu.robojob.millassist.external.communication.AbstractCommunicationExcepti
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
@@ -35,7 +36,8 @@ public class UnloadPallet extends AbstractPallet {
      * Layout of this pallet.
      */
     private PalletLayout layout;
-
+    private PalletStackingPosition currentPutLocation;
+    
     private PalletLayout defaultLayout;
 
     public UnloadPallet(String name, final Set<Zone> zones) {
@@ -387,5 +389,56 @@ public class UnloadPallet extends AbstractPallet {
     public void setDefaultGrid(GridPlate gridPlate) {
         // NOOP
         
+    }
+    
+    public PalletStackingPosition getCurrentPutLocation() {
+        return currentPutLocation;
+    }
+
+    public void setCurrentPutLocation(PalletStackingPosition currentPutLocation) {
+        this.currentPutLocation = currentPutLocation;
+    }
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void pickFinished(DevicePickSettings pickSettings, int processId) throws AbstractCommunicationException,
+            DeviceActionException, InterruptedException {
+        // Cannot pick
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void putFinished(DevicePutSettings putSettings) throws AbstractCommunicationException,
+            DeviceActionException, InterruptedException {
+        currentPutLocation.setWorkPiece(getFinishedWorkPiece());
+        currentPutLocation.incrementAmount();
+        currentPutLocation = null;
+        notifyLayoutChanged();
+        logger.info("put finished!");
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T extends IWorkPieceDimensions> Coordinates getPickLocation(AbstractPiecePlacementVisitor<T> visitor,
+            SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean canPick(DevicePickSettings pickSettings) throws AbstractCommunicationException,
+            DeviceActionException {
+        return false;
     }
 }

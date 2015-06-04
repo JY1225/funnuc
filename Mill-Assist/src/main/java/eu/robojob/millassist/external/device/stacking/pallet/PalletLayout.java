@@ -207,6 +207,10 @@ public class PalletLayout {
     
     private int id;
     
+    public PalletLayout(final String name, final float palletWidth, final float palletLength, final float palletHeight) {
+        this(name, palletWidth, palletLength, palletHeight,0,0,0,0,0,0);
+    }
+    
     public PalletLayout(final String name, final float palletWidth, final float palletLength, final float palletHeight, final float palletFreeBorder, final float minXGap, final float minYGap, final float minInterferenceDistance, final float horizontalR, final float verticalR) {
         this.palletWidth = palletWidth;
         this.palletLength = palletLength;

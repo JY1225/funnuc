@@ -8,6 +8,7 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.StackingPosition;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletStackingPosition;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate;
@@ -134,6 +135,52 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
                 else {
                     c.offset(new Coordinates(0, 0, unloadPallet.getLayout().getPalletHeight(), 0, 0, 0));
                 }
+                return c;
+            }
+        }
+        return null;
+    }
+	
+	public Coordinates getLocation(Pallet pallet, SimpleWorkArea workArea, Type type, ClampingManner clampType) {
+	    for (StackPlateStackingPosition stackingPos : pallet.getLayout().getStackingPositions()) {
+            if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == type) && 
+                    (stackingPos.getAmount() > 0)) {
+                Coordinates c = new Coordinates(stackingPos.getPickPosition());
+                c.offset(workArea.getDefaultClamping().getRelativePosition());
+                return c;
+            }
+        }
+        return null;
+	}
+	
+	public Coordinates getPutLocation(Pallet pallet, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType) {
+        for (StackPlateStackingPosition stackingPos : pallet.getLayout().getStackingPositions()) {
+            if (stackingPos.getWorkPiece() == null) {
+                int index = pallet.getLayout().getStackingPositions().indexOf(stackingPos);
+                pallet.getLayout().getStackingPositions().set(index, pallet.getLayout().getFinishedStackingPositions().get(index));
+                stackingPos = pallet.getLayout().getStackingPositions().get(index);
+                pallet.setCurrentPutLocation(stackingPos);
+                Coordinates c = new Coordinates(stackingPos.getPutPosition());
+                c.offset(workArea.getDefaultClamping().getRelativePosition());
+                return c;
+            } else if (stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED) && (stackingPos.getAmount() < pallet.getLayout().getLayers())) {
+                pallet.setCurrentPutLocation(stackingPos);
+                Coordinates c = new Coordinates(stackingPos.getPutPosition());
+                c.offset(workArea.getDefaultClamping().getRelativePosition());
+                return c;
+            }
+        }
+        return null;
+    }
+    
+    public Coordinates getPickLocation(Pallet pallet, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType) {
+        for (StackPlateStackingPosition stackingPos : pallet.getLayout().getStackingPositions()) {
+            if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.RAW)) && 
+                    (stackingPos.getAmount() > 0)) {
+                //Pick location is correct
+                pallet.setCurrentPickLocation(stackingPos);
+                Coordinates c = new Coordinates(stackingPos.getPickPosition());
+                c.offset(workArea.getDefaultClamping().getRelativePosition());
                 return c;
             }
         }

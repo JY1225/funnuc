@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.process.ProcessFlow;
@@ -12,6 +13,11 @@ import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.Conveyo
 import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.ConveyorAmountsView;
 import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.ConveyorMenuPresenter;
 import eu.robojob.millassist.ui.automate.device.stacking.conveyor.normal.ConveyorMenuView;
+import eu.robojob.millassist.ui.automate.device.stacking.pallet.PalletAddRemoveFinishedPresenter;
+import eu.robojob.millassist.ui.automate.device.stacking.pallet.PalletAddRemoveFinishedView;
+import eu.robojob.millassist.ui.automate.device.stacking.pallet.PalletLayoutPresenter;
+import eu.robojob.millassist.ui.automate.device.stacking.pallet.PalletMenuPresenter;
+import eu.robojob.millassist.ui.automate.device.stacking.pallet.PalletMenuView;
 import eu.robojob.millassist.ui.automate.device.stacking.pallet.UnloadPalletAddRemoveFinishedPresenter;
 import eu.robojob.millassist.ui.automate.device.stacking.pallet.UnloadPalletAddRemoveFinishedView;
 import eu.robojob.millassist.ui.automate.device.stacking.pallet.UnloadPalletLayoutPresenter;
@@ -28,6 +34,7 @@ import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.Conveyor
 import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.ConveyorFinishedWorkPieceLayoutView;
 import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.ConveyorRawWorkPieceLayoutPresenter;
 import eu.robojob.millassist.ui.general.device.stacking.conveyor.normal.ConveyorRawWorkPieceLayoutView;
+import eu.robojob.millassist.ui.general.device.stacking.pallet.PalletLayoutView;
 import eu.robojob.millassist.ui.general.device.stacking.pallet.UnloadPalletLayoutView;
 import eu.robojob.millassist.ui.general.device.stacking.stackplate.BasicStackPlateLayoutView;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
@@ -55,6 +62,8 @@ public class DeviceMenuFactory {
 				return true;
 			case UNLOAD_PALLET:
 			    return true;
+			case PALLET:
+			    return true;
 			default:
 				return false;
 		}
@@ -75,6 +84,9 @@ public class DeviceMenuFactory {
 					break;
 				case UNLOAD_PALLET:
 				    menuPresenter = getUnloadPalletMenuPresenter(deviceInfo);
+				    break;
+				case PALLET:
+				    menuPresenter = getPalletMenuPresenter(deviceInfo);
 				    break;
 				default:
 					menuPresenter = null;
@@ -189,6 +201,25 @@ public class DeviceMenuFactory {
 	    UnloadPalletAddRemoveFinishedPresenter unloadPalletAddRemovePresenter = new UnloadPalletAddRemoveFinishedPresenter(view, (UnloadPallet)deviceInfo.getDevice(), processFlow);
 	    return unloadPalletAddRemovePresenter;
 	}
+	
+	
+	public PalletMenuPresenter getPalletMenuPresenter(final DeviceInformation deviceInfo) {
+        PalletMenuView view = new PalletMenuView();
+        PalletMenuPresenter palletMenuPresenter = new PalletMenuPresenter(view, getPalletLayoutPresenter(deviceInfo), getPalletAddRemoveFinishedPresenter(deviceInfo));
+        return palletMenuPresenter;
+    }
+    
+    public PalletLayoutPresenter getPalletLayoutPresenter(final DeviceInformation deviceInfo) {
+        PalletLayoutView<PalletLayoutPresenter> view = new PalletLayoutView<>();
+        PalletLayoutPresenter palletLayoutPresenter = new PalletLayoutPresenter(view, (Pallet)deviceInfo.getDevice());
+        return palletLayoutPresenter;
+    }
+    
+    public PalletAddRemoveFinishedPresenter getPalletAddRemoveFinishedPresenter(final DeviceInformation deviceInfo) {
+        PalletAddRemoveFinishedView view = new PalletAddRemoveFinishedView();
+        PalletAddRemoveFinishedPresenter palletAddRemovePresenter = new PalletAddRemoveFinishedPresenter(view, (Pallet)deviceInfo.getDevice(), processFlow);
+        return palletAddRemovePresenter;
+    }
 	
 	public void clearBuffer() {
 		for (AbstractMenuPresenter<?> presenter : presentersBuffer.values()) {

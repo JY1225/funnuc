@@ -488,13 +488,14 @@ public class ProcessFlowMapper {
 		}
 		if(deviceSettings instanceof PalletDeviceSettings) {
             PalletDeviceSettings uSettings = (PalletDeviceSettings) deviceSettings;
-            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO PALLETSETTINGS (ID, RAWWORKPIECE, FINISHEDWORKPIECE, GRID_ID, LAYERS, AMOUNT) VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO PALLETSETTINGS (ID, RAWWORKPIECE, FINISHEDWORKPIECE, GRID_ID, LAYERS, AMOUNT, PALLET_LAYOUT_ID) VALUES (?, ?, ?, ?, ?, ?, ?)");
             stmt4.setInt(1, uSettings.getId());
             stmt4.setInt(2, uSettings.getRawWorkPiece().getId());
             stmt4.setInt(3, uSettings.getFinishedWorkPiece().getId());
             stmt4.setInt(4, uSettings.getGridPlate().getId());
             stmt4.setInt(5, uSettings.getLayers());
             stmt4.setInt(6, uSettings.getAmount());
+            stmt4.setInt(7, uSettings.getPalletLayout().getId());
             stmt4.executeUpdate();
         }else if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
 			AbstractStackPlateDeviceSettings bspSettings = (AbstractStackPlateDeviceSettings) deviceSettings;
@@ -857,9 +858,10 @@ public class ProcessFlowMapper {
             int gridId = results.getInt("GRID_ID");
             int layers =results.getInt("LAYERS");
             int amount = results.getInt("AMOUNT");
+            int palletLayoutId = results.getInt("PALLET_LAYOUT_ID");
             WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
             WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(processFlowId, rawWorkPieceId);
-            palletSettings = new PalletDeviceSettings(rawWorkPiece, finishedWorkPiece,deviceManager.getGridPlateByID(gridId), amount, layers);
+            palletSettings = new PalletDeviceSettings(rawWorkPiece, finishedWorkPiece,deviceManager.getGridPlateByID(gridId), amount, layers, deviceManager.getPalletLayoutById(palletLayoutId));
         }
         return palletSettings;
     }

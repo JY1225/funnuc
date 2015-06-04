@@ -163,9 +163,19 @@ public class DeviceButton extends VBox {
                 mainButton.getStyleClass().add(CSS_CLASS_BTN_POSTPROCESS);
                 break;
 			case PALLET:
-			    imagePath.setContent(preStackingPath);
-                imagePath.getStyleClass().add(CSS_CLASS_PREPROCESS);
-                mainButton.getStyleClass().add(CSS_CLASS_BTN_PREPROCESS);
+			    if (deviceInfo.getPutStep() == null) {
+                    imagePath.setContent(preStackingPath);
+                    imagePath.getStyleClass().add(CSS_CLASS_PREPROCESS);
+                    mainButton.getStyleClass().add(CSS_CLASS_BTN_PREPROCESS);
+                } else {
+                    if (deviceInfo.getPickStep() == null) {
+                        imagePath.setContent(postStackingPath);
+                        imagePath.getStyleClass().add(CSS_CLASS_POSTPROCESS);
+                        mainButton.getStyleClass().add(CSS_CLASS_BTN_POSTPROCESS);
+                    } else {
+                        throw new IllegalStateException("Unknown stacking-device type [" + deviceInfo.getType() + "].");
+                    }
+                }
                 break;
 			default:
 				throw new IllegalArgumentException("Unknown Device type [" + deviceInfo.getType() + "].");

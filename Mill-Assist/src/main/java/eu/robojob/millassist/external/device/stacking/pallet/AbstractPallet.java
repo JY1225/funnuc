@@ -28,7 +28,6 @@ import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 public abstract class AbstractPallet extends AbstractStackingDevice {
 
     private static Logger logger = LogManager.getLogger(AbstractPallet.class.getName());
-    private PalletStackingPosition currentPutLocation;
     /**
      * List of listeners
      */
@@ -52,14 +51,6 @@ public abstract class AbstractPallet extends AbstractStackingDevice {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean canPick(DevicePickSettings pickSettings) throws AbstractCommunicationException,
-            DeviceActionException {
-        return false;
-    }
 
     /**
      * {@inheritDoc}
@@ -106,28 +97,6 @@ public abstract class AbstractPallet extends AbstractStackingDevice {
             throws AbstractCommunicationException, DeviceActionException, InterruptedException {
         // TODO Auto-generated method stub
 
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void pickFinished(DevicePickSettings pickSettings, int processId) throws AbstractCommunicationException,
-            DeviceActionException, InterruptedException {
-        // Cannot pick
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void putFinished(DevicePutSettings putSettings) throws AbstractCommunicationException,
-            DeviceActionException, InterruptedException {
-        currentPutLocation.setWorkPiece(getFinishedWorkPiece());
-        currentPutLocation.incrementAmount();
-        currentPutLocation = null;
-        notifyLayoutChanged();
-        logger.info("put finished!");
     }
 
     public void notifyLayoutChanged() {
@@ -192,16 +161,6 @@ public abstract class AbstractPallet extends AbstractStackingDevice {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <T extends IWorkPieceDimensions> Coordinates getPickLocation(AbstractPiecePlacementVisitor<T> visitor,
-            SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public List<UnloadPalletListener> getListeners() {
         return listeners;
     }
@@ -218,15 +177,8 @@ public abstract class AbstractPallet extends AbstractStackingDevice {
         this.listeners.clear();
     }
 
-    public PalletStackingPosition getCurrentPutLocation() {
-        return currentPutLocation;
-    }
-
-    public void setCurrentPutLocation(PalletStackingPosition currentPutLocation) {
-        this.currentPutLocation = currentPutLocation;
-    }
-    
     public abstract void setDefaultLayout(PalletLayout layout);
+
     public abstract void setDefaultGrid(GridPlate gridPlate);
 
     public float getMaxHeight() {

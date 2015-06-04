@@ -10,37 +10,41 @@ import eu.robojob.millassist.ui.general.model.DeviceInformation;
 
 public class PalletMenuPresenter extends AbstractStackingDeviceMenuPresenter {
 
-
     private StackingDeviceConfigurePresenter deviceConfigurePresenter;
     private ConfigureSmoothPresenter<PalletMenuPresenter> configurePutPresenter;
     private ConfigureSmoothPresenter<PalletMenuPresenter> configurePickPresenter;
-    private PalletLayoutPresenter loadPalletLayoutPresenter;
+    private PalletLayoutPresenter palletLayoutPresenter;
     private AbstractFormPresenter<?, PalletMenuPresenter> workPieceConfigurePresenter;
-    
-    public PalletMenuPresenter(final StackingDeviceMenuView view, final DeviceInformation deviceInfo, final StackingDeviceConfigurePresenter deviceConfigurePresenter, final PalletLayoutPresenter loadPalletLayoutPresenter, AbstractFormPresenter<?, PalletMenuPresenter> workPieceConfigurePresenter, final ConfigureSmoothPresenter<PalletMenuPresenter> configurePickPresenter, final ConfigureSmoothPresenter<PalletMenuPresenter> configurePutPresenter) {
+
+    public PalletMenuPresenter(final StackingDeviceMenuView view, final DeviceInformation deviceInfo,
+            final StackingDeviceConfigurePresenter deviceConfigurePresenter,
+            final PalletLayoutPresenter palletLayoutPresenter,
+            AbstractFormPresenter<?, PalletMenuPresenter> workPieceConfigurePresenter,
+            final ConfigureSmoothPresenter<PalletMenuPresenter> configurePickPresenter,
+            final ConfigureSmoothPresenter<PalletMenuPresenter> configurePutPresenter) {
         super(view, deviceInfo);
         this.deviceConfigurePresenter = deviceConfigurePresenter;
         deviceConfigurePresenter.setMenuPresenter(this);
-        if(loadPalletLayoutPresenter != null) {
-            this.loadPalletLayoutPresenter = loadPalletLayoutPresenter;
-            this.loadPalletLayoutPresenter.setMenuPresenter(this);
+        if (palletLayoutPresenter != null) {
+            this.palletLayoutPresenter = palletLayoutPresenter;
+            this.palletLayoutPresenter.setMenuPresenter(this);
         }
-        
-        if(configurePutPresenter != null) {
+
+        if (configurePutPresenter != null) {
             this.configurePutPresenter = configurePutPresenter;
             this.configurePutPresenter.setMenuPresenter(this);
         }
-        
-        if(configurePickPresenter != null) {
+
+        if (configurePickPresenter != null) {
             this.configurePickPresenter = configurePickPresenter;
             this.configurePickPresenter.setMenuPresenter(this);
         }
-        
-        if(workPieceConfigurePresenter != null) {
+
+        if (workPieceConfigurePresenter != null) {
             this.workPieceConfigurePresenter = workPieceConfigurePresenter;
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -82,9 +86,8 @@ public class PalletMenuPresenter extends AbstractStackingDeviceMenuPresenter {
      */
     @Override
     public void showLayout() {
-//        getView().setViewLayoutActive();
-//        getParent().setBottomRightView(loadPalletLayoutPresenter.getView());
-//        loadPalletLayoutPresenter.refresh();
+        getView().setViewLayoutActive();
+        getParent().setBottomRightView(palletLayoutPresenter.getView());
     }
 
     /**
@@ -92,7 +95,11 @@ public class PalletMenuPresenter extends AbstractStackingDeviceMenuPresenter {
      */
     @Override
     public boolean isConfigured() {
-        return deviceConfigurePresenter.isConfigured() && workPieceConfigurePresenter.isConfigured();
+        if (workPieceConfigurePresenter != null) {
+            return deviceConfigurePresenter.isConfigured() && workPieceConfigurePresenter.isConfigured();
+        } else {
+            return deviceConfigurePresenter.isConfigured();
+        }
     }
 
     /**
@@ -108,10 +115,15 @@ public class PalletMenuPresenter extends AbstractStackingDeviceMenuPresenter {
     @Override
     public void setTextFieldListener(TextInputControlListener listener) {
         deviceConfigurePresenter.setTextFieldListener(listener);
-        loadPalletLayoutPresenter.setTextFieldListener(listener);
-        workPieceConfigurePresenter.setTextFieldListener(listener);
+        palletLayoutPresenter.setTextFieldListener(listener);
+        if (workPieceConfigurePresenter != null) {
+            workPieceConfigurePresenter.setTextFieldListener(listener);
+        }
         if (configurePutPresenter != null) {
             configurePutPresenter.setTextFieldListener(listener);
+        }
+        if (configurePickPresenter != null) {
+            configurePickPresenter.setTextFieldListener(listener);
         }
     }
 
@@ -120,9 +132,9 @@ public class PalletMenuPresenter extends AbstractStackingDeviceMenuPresenter {
      */
     @Override
     public void unregisterListeners() {
-        loadPalletLayoutPresenter.unregister();
+        palletLayoutPresenter.unregister();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -130,7 +142,7 @@ public class PalletMenuPresenter extends AbstractStackingDeviceMenuPresenter {
     public void openFirst() {
         configureDevice();
     }
-    
+
     public void processFlowUpdated() {
         getParent().updateProcessFlow();
     }

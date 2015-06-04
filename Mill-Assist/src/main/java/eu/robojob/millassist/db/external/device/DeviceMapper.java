@@ -146,7 +146,7 @@ public class DeviceMapper {
         return pallet;
 	}
 	
-	public void updateUnloadPallet(final AbstractPallet unloadPallet, final String name, final String userFrameName, final PalletLayout stdLayout) throws SQLException {
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final PalletLayout stdLayout) throws SQLException {
 	    
 	    ConnectionManager.getConnection().setAutoCommit(false);
 	    if ((!unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
@@ -170,6 +170,25 @@ public class DeviceMapper {
         ConnectionManager.getConnection().commit();
         ConnectionManager.getConnection().setAutoCommit(true);
 	}
+	
+	public void updatePallet(final Pallet pallet, final String name, final String userFrameName) throws SQLException {
+        
+        ConnectionManager.getConnection().setAutoCommit(false);
+        if ((!pallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
+            UserFrame newUserFrame = getUserFrameByName(userFrameName);
+            pallet.getWorkAreaManagers().get(0).setUserFrame(newUserFrame);
+            updateWorkArea(pallet.getWorkAreaManagers().get(0));
+        }
+        
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
+        stmt.setString(1, name);
+        stmt.setInt(2, pallet.getId());
+        stmt.executeUpdate();
+        pallet.setName(name);
+
+        ConnectionManager.getConnection().commit();
+        ConnectionManager.getConnection().setAutoCommit(true);
+    }
 	
 	public void updatePalletLayout(final PalletLayout layout, final String name,  final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws SQLException {
 	    PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE PALLETLAYOUT "+

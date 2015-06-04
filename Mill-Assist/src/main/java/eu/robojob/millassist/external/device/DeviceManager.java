@@ -21,7 +21,7 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
-import eu.robojob.millassist.external.device.stacking.pallet.AbstractPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
@@ -271,7 +271,7 @@ public class DeviceManager {
 		}		
 	}
 	
-	public void updateUnloadPallet(final AbstractPallet unloadPallet, final String name, final String userFrameName, final String stdPalletLayoutName) {
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final String stdPalletLayoutName) {
 	    try {
             deviceMapper.updateUnloadPallet(unloadPallet, name, userFrameName, getPalletLayoutByName(stdPalletLayoutName));
             refresh();
@@ -280,6 +280,16 @@ public class DeviceManager {
             e.printStackTrace();
         }
 	}
+	
+	public void updatePallet(final Pallet pallet, final String name, final String userFrameName) {
+        try {
+            deviceMapper.updatePallet(pallet, name, userFrameName);
+            refresh();
+        } catch (SQLException e) {
+            logger.error(e);
+            e.printStackTrace();
+        }
+    }
 	
 	public void savePalletLayout(final String name, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws IllegalArgumentException{
 	    PalletLayout layout = new PalletLayout(name, width, length, height, border, xOffset, yOffset, minInterferenceDistance, horizontalR, verticalR);

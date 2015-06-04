@@ -3,6 +3,7 @@ package eu.robojob.millassist.ui.admin.device;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.ui.admin.AbstractSubMenuPresenter;
@@ -21,12 +22,13 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 	private ReversalUnitConfigurePresenter reversalUnitConfigurePresenter;
 	private UnloadPalletConfigurePresenter unloadPalletConfigurePresenter;
 	private PalletLayoutConfigurePresenter palletLayoutConfigurePresenter;
+	private PalletConfigurePresenter palletConfigurePresenter;
 	
 	public DeviceMenuPresenter(final DeviceMenuView view, final UserFramesConfigurePresenter userFramesConfigurePresenter,
 			final BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter, final UnloadPalletConfigurePresenter unloadPalletConfigurePresenter, final PalletLayoutConfigurePresenter palletLayoutConfigurePresenter, final CNCMachineConfigurePresenter cncMachineConfigurePresenter,
 				final CNCMachineClampingsPresenter cncMachineClamingsPresenter, final PrageDeviceConfigurePresenter prageDeviceConfigurePresenter,
 					final OutputBinConfigurePresenter outputBinConfigurePresenter, final GridPlateConfigurePresenter
-					gridPlateConfigurePresenter, final ReversalUnitConfigurePresenter reversalUnitConfigurePresenter, 
+					gridPlateConfigurePresenter, final ReversalUnitConfigurePresenter reversalUnitConfigurePresenter, final PalletConfigurePresenter palletConfigurePresenter,
 					final DeviceManager deviceManager) {
 		super(view);
 		this.userFramesConfigurePresenter = userFramesConfigurePresenter;
@@ -46,6 +48,7 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		this.reversalUnitConfigurePresenter = reversalUnitConfigurePresenter;
 		this.unloadPalletConfigurePresenter = unloadPalletConfigurePresenter;
 		this.palletLayoutConfigurePresenter = palletLayoutConfigurePresenter;
+		this.palletConfigurePresenter = palletConfigurePresenter;
 		reversalUnitConfigurePresenter.setMenuPresenter(this);
 		if (deviceManager.getPreProcessingDevices().size() == 0) {
 			//TODO review if other pre process devices are available!
@@ -58,9 +61,13 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		boolean stackPlatePresent = false;
 		boolean binPresent = false;
 		boolean unloadPalletPresent = false;
+		boolean palletPresent = false;
 		for (AbstractStackingDevice stackingDevice : deviceManager.getStackingFromDevices()) {
 			if (stackingDevice instanceof BasicStackPlate) {
 				stackPlatePresent = true;
+			}
+			if(stackingDevice instanceof Pallet) {
+			    palletPresent = true;
 			}
 		}
 		for (AbstractStackingDevice stackingDevice : deviceManager.getStackingToDevices()) {
@@ -81,6 +88,9 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		if (!unloadPalletPresent) {
             getView().disableUnloadPalletMenuItem();
         }
+		if(!palletPresent) {
+		    getView().disablePalletMenuItem();
+		}
 	}
 
 	@Override
@@ -95,6 +105,7 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
 		reversalUnitConfigurePresenter.setTextFieldListener(listener);
 		unloadPalletConfigurePresenter.setTextFieldListener(listener);
 		palletLayoutConfigurePresenter.setTextFieldListener(listener);
+		palletConfigurePresenter.setTextFieldListener(listener);
 	}
 
 	@Override
@@ -159,6 +170,11 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
         getView().setConfigurePalletLayout();
         getParent().setContentView(palletLayoutConfigurePresenter.getView());
     }
+	
+	public void configurePallet() {
+	    getView().setConfigurePallet();
+	    getParent().setContentView(palletConfigurePresenter.getView());
+	}
 	
 	
 	@Override

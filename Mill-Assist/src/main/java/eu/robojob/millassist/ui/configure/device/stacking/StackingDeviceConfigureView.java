@@ -31,6 +31,9 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 	private HBox stackSettingsLblBox;
 	private HBox stackSettingsFldBox;
 	
+	private HBox palletSettingsLblBox;
+    private HBox palletSettingsFldBox;
+	
 	private Label lblGridPlate;
 	private CheckBox cbGridPlate;
 	private ComboBox<String> cbbGridPlates;
@@ -88,7 +91,7 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 						} else {
 						    showGrid = false;
 						}
-						if(getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.UNLOAD_PALLET) {
+						if(getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.UNLOAD_PALLET || getPresenter().getDeviceByName(newValue).getType() == EDeviceGroup.PALLET) {
 						    setStackSettings(showGrid, true);
 						}
 						else {
@@ -111,10 +114,18 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 		
 		stackSettingsLblBox = new HBox(15);
 		stackSettingsFldBox = new HBox(15);
+		
 		row++;
         column = 0;
         getContents().add(stackSettingsLblBox, ++column, row);
         getContents().add(stackSettingsFldBox, ++column, row);
+        
+		palletSettingsLblBox = new HBox(15);
+        palletSettingsFldBox = new HBox(15);
+		row++;
+        column = 0;
+        getContents().add(palletSettingsLblBox, ++column, row);
+        getContents().add(palletSettingsFldBox, ++column, row);
         
 		lblGridPlate = new Label(Translator.getTranslation(GRIDPLATE));
 		cbbGridPlates = new ComboBox<String>();
@@ -286,14 +297,29 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
     private void setStackSettings(final boolean showGrid, final boolean showPalletLayout) {
         stackSettingsFldBox.getChildren().clear();
         stackSettingsLblBox.getChildren().clear();
+        palletSettingsLblBox.getChildren().clear();
+        palletSettingsFldBox.getChildren().clear();
         if(showGrid) {
             stackSettingsLblBox.getChildren().addAll(cbGridPlate, lblGridPlate);
             stackSettingsFldBox.getChildren().add(cbbGridPlates);
+            if(showPalletLayout) {
+                palletSettingsLblBox.setManaged(true);
+                palletSettingsFldBox.setManaged(true);
+                palletSettingsLblBox.getChildren().addAll(lblPalletLayout);
+                palletSettingsFldBox.getChildren().add(cbbPalletLayouts);
+            } else {
+                palletSettingsLblBox.setManaged(false);
+                palletSettingsFldBox.setManaged(false);
+            }
+        } else {
+            if(showPalletLayout) {
+                palletSettingsLblBox.setManaged(true);
+                palletSettingsFldBox.setManaged(true);
+                stackSettingsLblBox.getChildren().addAll(lblPalletLayout);
+                stackSettingsFldBox.getChildren().add(cbbPalletLayouts);
+            }
         }
-        if(showPalletLayout) {
-            stackSettingsLblBox.getChildren().addAll(lblPalletLayout);
-            stackSettingsFldBox.getChildren().add(cbbPalletLayouts);
-        }
+        
     }
 	
 }
