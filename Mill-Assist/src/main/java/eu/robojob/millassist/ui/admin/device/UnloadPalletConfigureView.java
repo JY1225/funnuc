@@ -1,7 +1,6 @@
 package eu.robojob.millassist.ui.admin.device;
 
 import java.util.List;
-import java.util.Set;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,7 +26,6 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
 
     private UnloadPallet unloadPallet;
     private ObservableList<String> userFrameNames;
-    private ObservableList<String> layouts;
 
     private Region spacer;
 
@@ -36,9 +34,6 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
 
     private Label userFrameLabel;
     private ComboBox<String> userFramesComboBox;
-
-    private Label stdPalletLayoutLabel;
-    private ComboBox<String> cbbPalletLayouts;
 
     private Label maxHeightLabel;
     private NumericTextField maxHeightNumbericTextField;
@@ -50,11 +45,9 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
     private static final String NAME = "UnloadPallet.name";
     private static final String USERFRAME = "UnloadPallet.userframe";
     private static final String HEIGHT = "UnloadPallet.height";
-    private static final String STANDARD_LAYOUT = "UnloadPallet.standardLayout";
 
     public UnloadPalletConfigureView() {
         userFrameNames = FXCollections.observableArrayList();
-        layouts = FXCollections.observableArrayList();
     }
 
     /**
@@ -79,13 +72,6 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         userFramesComboBox.setMaxSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
         userFramesComboBox.setItems(userFrameNames);
 
-        stdPalletLayoutLabel = new Label(Translator.getTranslation(STANDARD_LAYOUT));
-        cbbPalletLayouts = new ComboBox<String>();
-        cbbPalletLayouts.setPrefSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
-        cbbPalletLayouts.setMinSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
-        cbbPalletLayouts.setMaxSize(UIConstants.COMBO_WIDTH, UIConstants.COMBO_HEIGHT);
-        cbbPalletLayouts.setItems(layouts);
-
         maxHeightLabel = new Label(Translator.getTranslation(HEIGHT));
         maxHeightNumbericTextField = new NumericTextField(6);
 
@@ -93,8 +79,7 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
                 UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        getPresenter().saveData(nameTextField.getText(), userFramesComboBox.valueProperty().get(),
-                                cbbPalletLayouts.valueProperty().get());
+                        getPresenter().saveData(nameTextField.getText(), userFramesComboBox.valueProperty().get());
                     }
                 });
 
@@ -110,10 +95,6 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         row++;
         getContents().add(maxHeightLabel, column++, row);
         getContents().add(maxHeightNumbericTextField, column++, row, 3, 1);
-        column = 0;
-        row++;
-        getContents().add(stdPalletLayoutLabel, column++, row);
-        getContents().add(cbbPalletLayouts, column++, row, 3, 1);
         column = 0;
         row++;
 
@@ -137,12 +118,10 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
     @Override
     public void refresh() {
         getPresenter().updateUserFrames();
-        getPresenter().updatePalletLayouts();
         if (unloadPallet != null) {
             nameTextField.setText(unloadPallet.getName());
             userFramesComboBox.setValue(unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName());
             maxHeightNumbericTextField.setText(unloadPallet.getMaxHeight() + "");
-            cbbPalletLayouts.setValue(unloadPallet.getDefaultLayout().getName());
         }
     }
 
@@ -158,12 +137,6 @@ public class UnloadPalletConfigureView extends AbstractFormView<UnloadPalletConf
         userFramesComboBox.valueProperty().set(null);
         userFrameNames.clear();
         userFrameNames.addAll(userFrames);
-    }
-
-    public void setPalletLayouts(Set<String> layoutsList) {
-        cbbPalletLayouts.valueProperty().set(null);
-        layouts.clear();
-        layouts.addAll(layoutsList);
     }
 
 }

@@ -19,8 +19,6 @@ import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
-import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
-import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
 import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -39,8 +37,6 @@ public class UnloadPallet extends AbstractPallet {
     private PalletLayout layout;
     private PalletStackingPosition currentPutLocation;
     
-    private PalletLayout defaultLayout;
-
     public UnloadPallet(String name, final Set<Zone> zones) {
         super(name, zones);
     }
@@ -86,15 +82,7 @@ public class UnloadPallet extends AbstractPallet {
     public void setLayout(PalletLayout layout) {
         this.layout = layout;
     }
-
-    public PalletLayout getDefaultLayout() {
-        return defaultLayout;
-    }
-
-    public void setDefaultLayout(PalletLayout defaultLayout) {
-        this.defaultLayout = defaultLayout;
-    }
-
+    
     /**
      * Manually add finished work pieces to the pallet.
      * 
@@ -167,12 +155,6 @@ public class UnloadPallet extends AbstractPallet {
      */
     @Override
     public UnloadPalletDeviceSettings getDeviceSettings() {
-        if (getLayout() == null) {
-            getDefaultLayout().setLayoutType(PalletLayoutType.OPTIMAL);
-            setLayout(getDefaultLayout());
-            return new UnloadPalletDeviceSettings(getFinishedWorkPiece(), PalletLayoutType.OPTIMAL, 0,
-                    getDefaultLayout(), 0);
-        }
         return new UnloadPalletDeviceSettings(getFinishedWorkPiece(), getLayout().getLayoutType(), getLayout()
                 .getLayersBeforeCardBoard(), getLayout(), getLayout().getCardBoardThickness());
     }
@@ -247,10 +229,7 @@ public class UnloadPallet extends AbstractPallet {
                 getLayout().initFinishedWorkPieces(getFinishedWorkPiece());
                 getLayout().setCardBoardThickness(settings.getCardBoardThickness());
                 notifyLayoutChanged();
-            } else {
-                getDefaultLayout().setLayoutType(PalletLayoutType.OPTIMAL);
-                setLayout(getDefaultLayout());
-            }
+            }  
         } else {
             throw new IllegalArgumentException("Unknown device settings");
         }
@@ -384,12 +363,6 @@ public class UnloadPallet extends AbstractPallet {
 
     public PalletLayout getLayout() {
         return layout;
-    }
-
-    @Override
-    public void setDefaultGrid(GridPlate gridPlate) {
-        // NOOP
-        
     }
     
     public PalletStackingPosition getCurrentPutLocation() {

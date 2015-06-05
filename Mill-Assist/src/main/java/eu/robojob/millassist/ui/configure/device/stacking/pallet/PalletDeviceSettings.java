@@ -9,10 +9,13 @@ public class PalletDeviceSettings extends AbstractStackPlateDeviceSettings {
 
     private GridPlate gridPlate;
     private PalletLayout palletLayout;
+    
     public PalletDeviceSettings(WorkPiece workPiece, WorkPiece finishedWorkPiece, GridPlate gridPlate, int amount, int layers, PalletLayout palletLayout) {
         super(workPiece,finishedWorkPiece,0, layers, amount);
-        this.gridPlate = gridPlate;
-        setGridId(gridPlate.getId());
+        if (gridPlate != null) {
+            this.gridPlate = gridPlate;
+            setGridId(gridPlate.getId());
+        }
         this.palletLayout = palletLayout;
     }
 

@@ -32,14 +32,12 @@ public class Pallet extends AbstractPallet {
 
     private static Logger logger = LogManager.getLogger(Pallet.class.getName());
     private GridPlate gridPlate;
-    private GridPlate defaultGridPlate;
 
     private float horizontalR;
     private float tiltedR;
     private int layers;
     private PalletLayout palletLayout;
     
-
     private StackPlateStackingPosition currentPickLocation;
     private StackPlateStackingPosition currentPutLocation;
 
@@ -126,10 +124,6 @@ public class Pallet extends AbstractPallet {
 
     @Override
     public PalletDeviceSettings getDeviceSettings() {
-        if (getGridPlate() == null) {
-            return new PalletDeviceSettings(getRawWorkPiece(), getFinishedWorkPiece(), getDefaultGridPlate(), 0,
-                    getLayers(), getPalletLayout());
-        }
         return new PalletDeviceSettings(getRawWorkPiece(), getFinishedWorkPiece(), getGridPlate(), 0, getLayers(), getPalletLayout());
     }
 
@@ -170,28 +164,7 @@ public class Pallet extends AbstractPallet {
             deviceSettings.setStudHeight(gridPlate.getDepth());
             setLayout(new GridPlateLayout(gridPlate));
             this.gridPlate = gridPlate;
-        } else {
-            logger.debug("Default grid plate added [" + getDefaultGridPlate().getName() + "] to pallet");
-            deviceSettings.setGridId(getDefaultGridPlate().getId());
-            deviceSettings.setStudHeight(getDefaultGridPlate().getDepth());
-            setLayout(new GridPlateLayout(getDefaultGridPlate()));
-            this.gridPlate = getDefaultGridPlate();
-        }
-    }
-
-    @Override
-    public void setDefaultLayout(PalletLayout layout) {
-        // NOOP
-    }
-
-    @Override
-    public void setDefaultGrid(GridPlate gridPlate) {
-        this.defaultGridPlate = gridPlate;
-
-    }
-
-    public GridPlate getDefaultGridPlate() {
-        return this.defaultGridPlate;
+        } 
     }
 
     public GridPlateLayout getLayout() {

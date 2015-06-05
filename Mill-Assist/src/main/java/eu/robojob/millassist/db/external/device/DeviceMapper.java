@@ -137,16 +137,12 @@ public class DeviceMapper {
         pallet.setId(id);
         if (results.next()) {
             float maxHeight = results.getFloat("MAX_HEIGHT");
-            int defaultLayout = results.getInt("DEFAULT_LAYOUT");
-            int defaultGrid = results.getInt("DEFAULT_GRID");
             pallet.setMaxHeight(maxHeight);
-            pallet.setDefaultLayout(getPalletLayoutById(defaultLayout));
-            pallet.setDefaultGrid(getGridPlateByID(defaultGrid));
         }
         return pallet;
     }
 	
-	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final PalletLayout stdLayout) throws SQLException {
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName) throws SQLException {
 	    
 	    ConnectionManager.getConnection().setAutoCommit(false);
 	    if ((!unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
@@ -160,12 +156,6 @@ public class DeviceMapper {
         stmt.setInt(2, unloadPallet.getId());
         stmt.executeUpdate();
         unloadPallet.setName(name);
-        
-        PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE PALLET SET DEFAULT_LAYOUT = ? WHERE ID = ?");
-        stmt2.setInt(1, stdLayout.getId());
-        stmt2.setInt(2, unloadPallet.getId());
-        stmt2.executeUpdate();
-        unloadPallet.setDefaultLayout(stdLayout);
 
         ConnectionManager.getConnection().commit();
         ConnectionManager.getConnection().setAutoCommit(true);
@@ -1126,17 +1116,6 @@ public class DeviceMapper {
         ConnectionManager.getConnection().commit();
         ConnectionManager.getConnection().setAutoCommit(true);
     }
-	
-	public List<Integer> getDefaultPalletLayouts() throws SQLException{
-	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT DEFAULT_LAYOUT FROM PALLET");
-        ResultSet results = stmt.executeQuery();
-        List<Integer> result = new ArrayList<Integer>();
-        if (results.next()) {
-            Integer id = results.getInt("DEFAULT_LAYOUT");
-            result.add(id);
-        }
-        return result;
-	}
 	
 	public void updateGridPlate(final GridPlate gridPlate, final String name, final float width, final float height, final float depth, 
 			final float offsetX, final float offsetY, final float holeLength, final float holeWidth, final SortedSet<GridHole> gridholes) throws SQLException {

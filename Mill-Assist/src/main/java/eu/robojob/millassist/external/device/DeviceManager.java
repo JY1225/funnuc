@@ -271,9 +271,9 @@ public class DeviceManager {
 		}		
 	}
 	
-	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final String stdPalletLayoutName) {
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName) {
 	    try {
-            deviceMapper.updateUnloadPallet(unloadPallet, name, userFrameName, getPalletLayoutByName(stdPalletLayoutName));
+            deviceMapper.updateUnloadPallet(unloadPallet, name, userFrameName);
             refresh();
 	    } catch (SQLException e) {
             logger.error(e);
@@ -332,19 +332,13 @@ public class DeviceManager {
 	
 	public void deletePalletLayout(final PalletLayout layout) {
 	    try{
-	        List<Integer> defaultLayouts = deviceMapper.getDefaultPalletLayouts();
-	        if(defaultLayouts.contains(layout.getId())){
-	            throw new IllegalArgumentException("Cannot delete this layout, it is the default layout for the pallet");
-	        }
-	        else {
-	            deviceMapper.deletePalletLayout(layout);
-	            palletLayoutsByName.remove(layout.getName());
-	            palletLayoutsById.remove(layout.getId());
-	        }
-        } catch (SQLException e) {
-            logger.error(e);
-            e.printStackTrace();
-        }
+	        deviceMapper.deletePalletLayout(layout);
+	        palletLayoutsByName.remove(layout.getName());
+	        palletLayoutsById.remove(layout.getId());
+	    } catch (SQLException e) {
+	        logger.error(e);
+	        e.printStackTrace();
+	    }
 	}
 	
 	public Collection<PalletLayout> getAllPalletLayouts() {

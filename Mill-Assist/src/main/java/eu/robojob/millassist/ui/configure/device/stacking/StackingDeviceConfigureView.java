@@ -34,7 +34,6 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 	private HBox palletSettingsLblBox;
     private HBox palletSettingsFldBox;
 	
-
 	private Label lblGridPlate;
 	private CheckBox cbGridPlate;
 	private ComboBox<String> cbbGridPlates;
@@ -139,10 +138,6 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 			@Override
 			public void changed(final ObservableValue<? extends String> observableValue, final String oldValue, final String newValue) {
 				setGridPlate(cbbGridPlates.getSelectionModel().getSelectedItem());
-				if(isNewGridPlateSelected())
-					btnChange.setDisable(false);
-				else 
-					btnChange.setDisable(true);
 			}
 		});
 				
@@ -180,17 +175,6 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 		refreshStackers();
 		resetGridPlates();
 		resetPalletLayouts();
-	}
-	
-	private boolean isNewGridPlateSelected() {
-		if(cbGridPlate.isSelected() && cbbGridPlates.getValue() != null) {
-			if(cbbGridPlates.getValue().equals(getPresenter().getGridPlateName())) {
-				return false;
-			}
-			return true;
-		} else {
-			return false;
-		}
 	}
 	
 	private boolean isNewPalletLayoutSelected() {

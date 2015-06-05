@@ -9,21 +9,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
-import eu.robojob.millassist.external.device.ClampingManner;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
-import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
-import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
-import eu.robojob.millassist.external.device.visitor.AbstractPiecePlacementVisitor;
-import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
-import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.ProcessFlow;
-import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 
 public abstract class AbstractPallet extends AbstractStackingDevice {
 
@@ -176,10 +169,6 @@ public abstract class AbstractPallet extends AbstractStackingDevice {
     public void clearListeners() {
         this.listeners.clear();
     }
-
-    public abstract void setDefaultLayout(PalletLayout layout);
-
-    public abstract void setDefaultGrid(GridPlate gridPlate);
 
     public float getMaxHeight() {
         return maxHeight;
