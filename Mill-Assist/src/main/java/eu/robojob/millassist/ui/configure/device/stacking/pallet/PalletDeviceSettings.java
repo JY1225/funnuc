@@ -17,6 +17,9 @@ public class PalletDeviceSettings extends AbstractStackPlateDeviceSettings {
             setGridId(gridPlate.getId());
         }
         this.palletLayout = palletLayout;
+        if (layers == 0) {
+            setLayers(1);
+        }
     }
 
     public GridPlate getGridPlate() {
