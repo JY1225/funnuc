@@ -79,14 +79,14 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
                 }
 			}
 			if(prevDevice instanceof UnloadPallet) {
-			    ((UnloadPallet) prevDevice).setLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
+			    ((UnloadPallet) prevDevice).setPalletLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
 			    
 			    if(deviceInfo.getPutStep().getProcessFlow().getProcessSteps().get(0) instanceof InterventionStep){
 			        deviceInfo.getPutStep().getProcessFlow().removeStep(deviceInfo.getPutStep().getProcessFlow().getProcessSteps().get(0));
 			    }
 			}
 			if(device instanceof UnloadPallet) {
-			    ((UnloadPallet) device).setLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
+			    ((UnloadPallet) device).setPalletLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
 			    if(prevDevice instanceof BasicStackPlate) {
 			        if(deviceInfo.hasPutStep()) {
 			            ((BasicStackPlate) prevDevice).setFinishedWorkPiece(null);

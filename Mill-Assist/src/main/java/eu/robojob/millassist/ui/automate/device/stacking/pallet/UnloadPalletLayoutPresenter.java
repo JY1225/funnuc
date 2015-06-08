@@ -33,7 +33,7 @@ implements UnloadPalletListener{
      */
     @Override
     public boolean isConfigured() {
-       return (unloadPallet.getLayout().getStackingPositions().size() > 0);
+       return (unloadPallet.getPalletLayout().getStackingPositions().size() > 0);
     }
 
     /**

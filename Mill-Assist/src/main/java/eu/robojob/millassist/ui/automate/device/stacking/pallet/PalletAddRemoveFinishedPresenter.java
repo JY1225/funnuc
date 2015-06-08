@@ -101,17 +101,17 @@ public class PalletAddRemoveFinishedPresenter extends
         try {
             if (amount > getMaxPiecesToAdd(replaceFinishedPieces))
                 throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
-            int nbInFlow = processFlow.getTotalAmount() - pallet.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+            int nbInFlow = processFlow.getTotalAmount() - pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
                     - processFlow.getFinishedAmount();
             // Replace finished workpieces by raw ones
             if (replaceFinishedPieces) {
-                pallet.getLayout().removeFinishedFromTable();
+                pallet.getGridLayout().removeFinishedFromTable();
             }
             // Add new pieces
             addWorkPieces(amount, processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
-            processFlow.setFinishedAmount(pallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
-            processFlow.setTotalAmount(pallet.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
-                    + pallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);
+            processFlow.setFinishedAmount(pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
+            processFlow.setTotalAmount(pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                    + pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);
         } catch (IncorrectWorkPieceDataException e) {
             getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
         }
@@ -135,12 +135,12 @@ public class PalletAddRemoveFinishedPresenter extends
     }
     
     public int getMaxFinishedToReplaceAmount() {
-        return pallet.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
+        return pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
     }
     
     public int getMaxAddAmount() {
-        int amount = pallet.getLayout().getMaxPiecesPossibleAmount() - getMaxFinishedToReplaceAmount() - pallet.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
-        int nbInFlow = processFlow.getTotalAmount() - pallet.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW) - processFlow.getFinishedAmount();
+        int amount = pallet.getGridLayout().getMaxPiecesPossibleAmount() - getMaxFinishedToReplaceAmount() - pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
+        int nbInFlow = processFlow.getTotalAmount() - pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW) - processFlow.getFinishedAmount();
         if(!processFlow.hasBinForFinishedPieces()) {
             amount -= nbInFlow;
         } 
@@ -172,7 +172,7 @@ public class PalletAddRemoveFinishedPresenter extends
 //      if(processFlow.hasBinForFinishedPieces()) {
 //          return 0;
 //      }
-        return pallet.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
+        return pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
     }
     
     public int getFinishedAmount() {

@@ -194,7 +194,7 @@ public class TeachOptimizedThread extends TeachThread {
 			// FIXME implement
 			throw new IllegalStateException("Not yet implemented!");
 		} else if (stackingDevice instanceof UnloadPallet) {
-		    ((UnloadPallet) stackingDevice).getLayout().getStackingPositions().get(0).setWorkPiece(((UnloadPallet)stackingDevice).getFinishedWorkPiece());
+		    ((UnloadPallet) stackingDevice).getPalletLayout().getStackingPositions().get(0).setWorkPiece(((UnloadPallet)stackingDevice).getFinishedWorkPiece());
 		}
 		getProcessFlow().setFinishedAmount(1);
 		Coordinates originalCoordinates = stackingDevice.getLocation(

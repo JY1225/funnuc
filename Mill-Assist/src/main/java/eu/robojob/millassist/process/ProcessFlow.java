@@ -409,8 +409,8 @@ public class ProcessFlow {
 		if (unloadPallet != null) {
 		    UnloadPalletDeviceSettings devSettings = (UnloadPalletDeviceSettings) getDeviceSettings(unloadPallet);
 		    setFinishedAmount(0);
-		    unloadPallet.getLayout().calculateLayoutForWorkPiece(devSettings.getFinishedWorkPiece());
-		    unloadPallet.getLayout().initFinishedWorkPieces(devSettings.getFinishedWorkPiece());
+		    unloadPallet.getPalletLayout().calculateLayoutForWorkPiece(devSettings.getFinishedWorkPiece());
+		    unloadPallet.getPalletLayout().initFinishedWorkPieces(devSettings.getFinishedWorkPiece());
 		    unloadPallet.notifyLayoutChanged();
 		}
 	}

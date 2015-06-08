@@ -45,7 +45,7 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
      */
     @Override
     public boolean isConfigured() {
-       return (unloadPallet.getLayout().getStackingPositions().size() > 0) && (unloadPallet.getLayout().getLayersBeforeCardBoard() < unloadPallet.getLayers());
+       return (unloadPallet.getPalletLayout().getStackingPositions().size() > 0) && (unloadPallet.getPalletLayout().getLayersBeforeCardBoard() < unloadPallet.getLayers());
     }
 
     /**
@@ -79,16 +79,16 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
      * @param layoutType The new layout type of the pallet
      */
     public void updateLayoutType(PalletLayoutType layoutType) {
-        unloadPallet.getLayout().setLayoutType(layoutType);
+        unloadPallet.getPalletLayout().setLayoutType(layoutType);
         unloadPallet.recalculateLayout();
-        ((UnloadPalletDeviceSettings) putStep.getProcessFlow().getDeviceSettings().get(unloadPallet)).setLayoutType(unloadPallet.getLayout().getLayoutType());
+        ((UnloadPalletDeviceSettings) putStep.getProcessFlow().getDeviceSettings().get(unloadPallet)).setLayoutType(unloadPallet.getPalletLayout().getLayoutType());
         this.putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(this.putStep.getProcessFlow(), this.putStep, true));
 //        unloadPallet.notifyLayoutChanged();
         layoutChanged();
     }
     
     public void updateLayersBeforeCardboard(int nbOfLayersBeforeCardboard) {
-        unloadPallet.getLayout().setLayersBeforeCardBoard(nbOfLayersBeforeCardboard);
+        unloadPallet.getPalletLayout().setLayersBeforeCardBoard(nbOfLayersBeforeCardboard);
         if(nbOfLayersBeforeCardboard < unloadPallet.getLayers()) {
             getView().hideNotification();
             ((UnloadPalletDeviceSettings) putStep.getProcessFlow().getDeviceSettings().get(unloadPallet)).setLayersBeforeCardBoard(nbOfLayersBeforeCardboard);
@@ -101,14 +101,14 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
                 getView().showCardboardThickness(false);
             }
         } else {
-            unloadPallet.getLayout().setLayersBeforeCardBoard(nbOfLayersBeforeCardboard);
+            unloadPallet.getPalletLayout().setLayersBeforeCardBoard(nbOfLayersBeforeCardboard);
             getView().showNotification(Translator.getTranslation(NOT_ENOUGH_LAYERS), Type.WARNING);
         }
     }
     
     public void updateCardBoardThickness(final float thickness) {
-        unloadPallet.getLayout().setCardBoardThickness(thickness);
-        if(unloadPallet.getLayout().getLayersBeforeCardBoard() > unloadPallet.getLayers()) {
+        unloadPallet.getPalletLayout().setCardBoardThickness(thickness);
+        if(unloadPallet.getPalletLayout().getLayersBeforeCardBoard() > unloadPallet.getLayers()) {
             getView().showNotification(Translator.getTranslation(NOT_ENOUGH_LAYERS), Type.WARNING);
         } else {
             getView().hideNotification();
@@ -118,8 +118,8 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
     }
     
     public void updateIntervention() {
-        if(unloadPallet.getLayout().getLayersBeforeCardBoard() < unloadPallet.getLayers()) {
-            int frequency = unloadPallet.getLayout().getLayersBeforeCardBoard()*unloadPallet.getMaxPiecesPerLayerAmount();
+        if(unloadPallet.getPalletLayout().getLayersBeforeCardBoard() < unloadPallet.getLayers()) {
+            int frequency = unloadPallet.getPalletLayout().getLayersBeforeCardBoard()*unloadPallet.getMaxPiecesPerLayerAmount();
             if(interventionStep == null) {
                 if(this.putStep.getProcessFlow().getStep(0) instanceof InterventionStep) {
                     interventionStep = (InterventionStep)this.putStep.getProcessFlow().getStep(0);
@@ -136,7 +136,7 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
     }
     
     private void addInterventionStep(final int frequency) {
-        if(unloadPallet.getLayout().getLayersBeforeCardBoard()*unloadPallet.getMaxPiecesPerLayerAmount() != 0) {
+        if(unloadPallet.getPalletLayout().getLayersBeforeCardBoard()*unloadPallet.getMaxPiecesPerLayerAmount() != 0) {
             interventionStep = new InterventionStep(new DeviceInterventionSettings(unloadPallet, unloadPallet.getWorkAreas().get(0)), frequency);
             this.putStep.getProcessFlow().addStepBefore(this.putStep.getProcessFlow().getStep(0), interventionStep);
             this.putStep.getProcessFlow().processProcessFlowEvent(new ProcessChangedEvent(this.putStep.getProcessFlow()));
@@ -145,7 +145,7 @@ public class UnloadPalletLayoutPresenter extends AbstractFormPresenter<UnloadPal
     
     private void updateInterventionStep(final int frequency) {
         if(interventionStep.getFrequency() != frequency) {
-            if(unloadPallet.getLayout().getLayersBeforeCardBoard()*unloadPallet.getMaxPiecesPerLayerAmount() != 0) {
+            if(unloadPallet.getPalletLayout().getLayersBeforeCardBoard()*unloadPallet.getMaxPiecesPerLayerAmount() != 0) {
                 interventionStep.setFrequency(frequency);
             } else {
                 this.putStep.getProcessFlow().removeStep(interventionStep);

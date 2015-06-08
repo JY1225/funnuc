@@ -31,7 +31,7 @@ implements UnloadPalletListener{
      */
     @Override
     public boolean isConfigured() {
-       return (pallet.getLayout().getStackingPositions().size() > 0);
+       return (pallet.getGridLayout().getStackingPositions().size() > 0);
     }
 
     /**

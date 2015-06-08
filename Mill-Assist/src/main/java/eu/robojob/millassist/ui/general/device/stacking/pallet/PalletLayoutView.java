@@ -75,8 +75,8 @@ public class PalletLayoutView<T extends AbstractFormPresenter<?, ?>> extends Abs
                 group.getChildren().add(unloadPalletRect);
 
                 // ADD grid
-                if (pallet.getLayout().getStackingPositions().size() > 0) {
-                    GridPlateLayout layout = (GridPlateLayout) pallet.getLayout();
+                if (pallet.getGridLayout().getStackingPositions().size() > 0) {
+                    GridPlateLayout layout = (GridPlateLayout) pallet.getGridLayout();
                     group.getChildren().add(getGridPlateView(layout.getGridPlate()));
                     configureWorkPieces();
                 }
@@ -111,7 +111,7 @@ public class PalletLayoutView<T extends AbstractFormPresenter<?, ?>> extends Abs
     }
 
     private synchronized void configureWorkPieces() {
-        for (StackPlateStackingPosition stackingPosition : pallet.getLayout().getStackingPositions()) {
+        for (StackPlateStackingPosition stackingPosition : pallet.getGridLayout().getStackingPositions()) {
             if (stackingPosition.getWorkPiece() != null) {
                 IDrawableObject workPieceRepre = stackingPosition.getWorkPiece().getRepresentation();
                 Shape workPiece = workPieceRepre.createShape();

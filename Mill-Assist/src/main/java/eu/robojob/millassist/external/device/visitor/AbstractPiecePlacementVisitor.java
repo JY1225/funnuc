@@ -113,7 +113,7 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
 	 * UNLOAD PALLET
 	 */
 	public Coordinates getLocation(UnloadPallet unloadPallet, SimpleWorkArea workArea, Type type, ClampingManner clampType) {
-        for (StackingPosition stackingPos : unloadPallet.getLayout().getStackingPositions()) {
+        for (StackingPosition stackingPos : unloadPallet.getPalletLayout().getStackingPositions()) {
             if ((stackingPos.getWorkPiece() == null) && (stackingPos.getWorkPiece().getType() == type)) {
                 Coordinates c = new Coordinates(stackingPos.getPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
@@ -124,16 +124,16 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
     }
 	
 	public Coordinates getPutLocation(UnloadPallet unloadPallet, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType) {
-        for (PalletStackingPosition stackingPos : unloadPallet.getLayout().getStackingPositions()) {
+        for (PalletStackingPosition stackingPos : unloadPallet.getPalletLayout().getStackingPositions()) {
             if(stackingPos.getWorkPiece() != null && stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED) && stackingPos.getAmount() < unloadPallet.getLayers() && unloadPallet.getWorkPieceAmount(WorkPiece.Type.FINISHED) >= stackingPos.getAmount() * unloadPallet.getMaxPiecesPerLayerAmount()) {
                 unloadPallet.setCurrentPutLocation(stackingPos);
                 Coordinates c = new Coordinates(stackingPos.getPutPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
-                if(unloadPallet.getLayout().getLayersBeforeCardBoard()!= 0) {
-                    c.offset(new Coordinates(0, 0, unloadPallet.getLayout().getPalletHeight() + unloadPallet.getLayout().getCardBoardThickness()*(float)Math.floor(stackingPos.getAmount()/unloadPallet.getLayout().getLayersBeforeCardBoard()), 0, 0, 0));    
+                if(unloadPallet.getPalletLayout().getLayersBeforeCardBoard()!= 0) {
+                    c.offset(new Coordinates(0, 0, unloadPallet.getPalletLayout().getPalletHeight() + unloadPallet.getPalletLayout().getCardBoardThickness()*(float)Math.floor(stackingPos.getAmount()/unloadPallet.getPalletLayout().getLayersBeforeCardBoard()), 0, 0, 0));    
                 }
                 else {
-                    c.offset(new Coordinates(0, 0, unloadPallet.getLayout().getPalletHeight(), 0, 0, 0));
+                    c.offset(new Coordinates(0, 0, unloadPallet.getPalletLayout().getPalletHeight(), 0, 0, 0));
                 }
                 return c;
             }
@@ -142,7 +142,7 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
     }
 	
 	public Coordinates getLocation(Pallet pallet, SimpleWorkArea workArea, Type type, ClampingManner clampType) {
-	    for (StackPlateStackingPosition stackingPos : pallet.getLayout().getStackingPositions()) {
+	    for (StackPlateStackingPosition stackingPos : pallet.getGridLayout().getStackingPositions()) {
             if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == type) && 
                     (stackingPos.getAmount() > 0)) {
                 Coordinates c = new Coordinates(stackingPos.getPickPosition());
@@ -154,16 +154,16 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
 	}
 	
 	public Coordinates getPutLocation(Pallet pallet, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType) {
-        for (StackPlateStackingPosition stackingPos : pallet.getLayout().getStackingPositions()) {
+        for (StackPlateStackingPosition stackingPos : pallet.getGridLayout().getStackingPositions()) {
             if (stackingPos.getWorkPiece() == null) {
-                int index = pallet.getLayout().getStackingPositions().indexOf(stackingPos);
-                pallet.getLayout().getStackingPositions().set(index, pallet.getLayout().getFinishedStackingPositions().get(index));
-                stackingPos = pallet.getLayout().getStackingPositions().get(index);
+                int index = pallet.getGridLayout().getStackingPositions().indexOf(stackingPos);
+                pallet.getGridLayout().getStackingPositions().set(index, pallet.getGridLayout().getFinishedStackingPositions().get(index));
+                stackingPos = pallet.getGridLayout().getStackingPositions().get(index);
                 pallet.setCurrentPutLocation(stackingPos);
                 Coordinates c = new Coordinates(stackingPos.getPutPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
                 return c;
-            } else if (stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED) && (stackingPos.getAmount() < pallet.getLayout().getLayers())) {
+            } else if (stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED) && (stackingPos.getAmount() < pallet.getGridLayout().getLayers())) {
                 pallet.setCurrentPutLocation(stackingPos);
                 Coordinates c = new Coordinates(stackingPos.getPutPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
@@ -174,7 +174,7 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
     }
     
     public Coordinates getPickLocation(Pallet pallet, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType) {
-        for (StackPlateStackingPosition stackingPos : pallet.getLayout().getStackingPositions()) {
+        for (StackPlateStackingPosition stackingPos : pallet.getGridLayout().getStackingPositions()) {
             if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.RAW)) && 
                     (stackingPos.getAmount() > 0)) {
                 //Pick location is correct

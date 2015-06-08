@@ -55,7 +55,7 @@ public class PalletRawWorkPiecePresenter extends AbstractRawWorkPiecePresenter<P
     public void setMaxAmount() {
         Pallet plate = getPallet();
         plate.loadDeviceSettings(deviceSettings);
-        deviceSettings.setAmount(plate.getLayout().getMaxPiecesPossibleAmount());
+        deviceSettings.setAmount(plate.getGridLayout().getMaxPiecesPossibleAmount());
         recalculate();
         getView().refresh();
         pickStep.getProcessFlow().processProcessFlowEvent(
@@ -72,8 +72,8 @@ public class PalletRawWorkPiecePresenter extends AbstractRawWorkPiecePresenter<P
     @Override
     public boolean isConfigured() {
         Pallet plate = getPallet();
-        if ((workPiece.getDimensions() != null) && (plate.getLayout().getRawStackingPositions() != null)
-                && (plate.getLayout().getRawStackingPositions().size() > 0) && (workPiece.getWeight() > 0)
+        if ((workPiece.getDimensions() != null) && (plate.getGridLayout().getRawStackingPositions() != null)
+                && (plate.getGridLayout().getRawStackingPositions().size() > 0) && (workPiece.getWeight() > 0)
                 && (isAmountOk()) && isGridPlateOK()) {
             return true;
         }
@@ -82,7 +82,7 @@ public class PalletRawWorkPiecePresenter extends AbstractRawWorkPiecePresenter<P
 
     @Override
     public AbstractStackPlateLayout getLayout() {
-        return getPallet().getLayout();
+        return getPallet().getGridLayout();
     }
     
     public Pallet getPallet() {

@@ -31,10 +31,6 @@ import eu.robojob.millassist.workpiece.WorkPiece.Type;
 public class UnloadPallet extends AbstractPallet {
 
     private static Logger logger = LogManager.getLogger(UnloadPallet.class.getName());
-    /**
-     * Layout of this pallet.
-     */
-    private PalletLayout layout;
     private PalletStackingPosition currentPutLocation;
     
     public UnloadPallet(String name, final Set<Zone> zones) {
@@ -49,8 +45,8 @@ public class UnloadPallet extends AbstractPallet {
      * Recalculate the positions on this UnloadPallet.
      */
     public void recalculateLayout() {
-        getLayout().calculateLayoutForWorkPiece(getFinishedWorkPiece());
-        getLayout().initFinishedWorkPieces(getFinishedWorkPiece());
+        getPalletLayout().calculateLayoutForWorkPiece(getFinishedWorkPiece());
+        getPalletLayout().initFinishedWorkPieces(getFinishedWorkPiece());
     }
 
     /**
@@ -78,10 +74,6 @@ public class UnloadPallet extends AbstractPallet {
         removeFinishedWorkPieces(amount);
         notifyLayoutChanged();
     }
-
-    public void setLayout(PalletLayout layout) {
-        this.layout = layout;
-    }
     
     /**
      * Manually add finished work pieces to the pallet.
@@ -99,12 +91,12 @@ public class UnloadPallet extends AbstractPallet {
         int stackingPos = 0;
         // For any number of layers, we only put 1 workPiece on the first position. This ensures that the robot
         // places finished products always at the same position
-        PalletStackingPosition stPos = getLayout().getStackingPositions().get(0);
+        PalletStackingPosition stPos = getPalletLayout().getStackingPositions().get(0);
         while (placedAmount < amount) {
-            if (stackingPos == getLayout().getStackingPositions().size()) {
+            if (stackingPos == getPalletLayout().getStackingPositions().size()) {
                 stackingPos = 0;
             }
-            stPos = getLayout().getStackingPositions().get(stackingPos);
+            stPos = getPalletLayout().getStackingPositions().get(stackingPos);
             while (placedAmount < amount && addOneWorkPiece(finishedWorkPiece, stPos)) {
                 placedAmount++;
             }
@@ -126,12 +118,12 @@ public class UnloadPallet extends AbstractPallet {
         // the
         // first raw stack to the last raw stack (min of first stack is always 1)
         if (getLayers() > 1) {
-            PalletStackingPosition lastStackingPosition = getLayout().getStackingPositions().get(lastPosition);
+            PalletStackingPosition lastStackingPosition = getPalletLayout().getStackingPositions().get(lastPosition);
             PalletStackingPosition firstStackingPosition = null;
             if (lastStackingPosition.getAmount() < getLayers()) {
                 int amountToTransfer1 = getLayers() - lastStackingPosition.getAmount();
                 int amountToTransfer2 = 0;
-                for (PalletStackingPosition stPlatePosition : getLayout().getStackingPositions()) {
+                for (PalletStackingPosition stPlatePosition : getPalletLayout().getStackingPositions()) {
                     // Find the first stacking position that has raw workpieces
                     if (stPlatePosition.getWorkPiece() != null
                             && stPlatePosition.getWorkPiece().getType().equals(Type.RAW)) {
@@ -142,7 +134,7 @@ public class UnloadPallet extends AbstractPallet {
                 }
                 int amountToTransfer = Math.min(amountToTransfer1, amountToTransfer2);
                 if (firstStackingPosition != null
-                        && !firstStackingPosition.equals(getLayout().getStackingPositions().get(0))) {
+                        && !firstStackingPosition.equals(getPalletLayout().getStackingPositions().get(0))) {
                     lastStackingPosition.setAmount(lastStackingPosition.getAmount() + amountToTransfer);
                     firstStackingPosition.setAmount(lastStackingPosition.getAmount() - amountToTransfer);
                 }
@@ -155,8 +147,8 @@ public class UnloadPallet extends AbstractPallet {
      */
     @Override
     public UnloadPalletDeviceSettings getDeviceSettings() {
-        return new UnloadPalletDeviceSettings(getFinishedWorkPiece(), getLayout().getLayoutType(), getLayout()
-                .getLayersBeforeCardBoard(), getLayout(), getLayout().getCardBoardThickness());
+        return new UnloadPalletDeviceSettings(getFinishedWorkPiece(), getPalletLayout().getLayoutType(), getPalletLayout()
+                .getLayersBeforeCardBoard(), getPalletLayout(), getPalletLayout().getCardBoardThickness());
     }
 
     /**
@@ -164,7 +156,7 @@ public class UnloadPallet extends AbstractPallet {
      */
     @Override
     public Coordinates getLocationOrientation(SimpleWorkArea workArea, ClampingManner clampType) {
-        Coordinates c = new Coordinates(getLayout().getStackingPositions().get(0).getPosition());
+        Coordinates c = new Coordinates(getPalletLayout().getStackingPositions().get(0).getPosition());
         c.offset(workArea.getDefaultClamping().getRelativePosition());
         c.setX(0);
         c.setY(0);
@@ -188,7 +180,7 @@ public class UnloadPallet extends AbstractPallet {
         setRawWorkPiece(new WorkPiece(WorkPiece.Type.RAW, new RectangularDimensions(), Material.OTHER, 0.0f));
         setFinishedWorkPiece(new WorkPiece(WorkPiece.Type.FINISHED, new RectangularDimensions(), Material.OTHER, 0.0f));
         getWorkAreas().get(0).getDefaultClamping().resetHeightToDefault();
-        getLayout().calculateLayoutForWorkPiece(getFinishedWorkPiece());
+        getPalletLayout().calculateLayoutForWorkPiece(getFinishedWorkPiece());
     }
     
     /**
@@ -221,13 +213,13 @@ public class UnloadPallet extends AbstractPallet {
         if (deviceSettings instanceof UnloadPalletDeviceSettings) {
             UnloadPalletDeviceSettings settings = (UnloadPalletDeviceSettings) deviceSettings;
             setFinishedWorkPiece(settings.getFinishedWorkPiece());
-            setLayout(settings.getLayout());
-            if (getLayout() != null) {
-                getLayout().setLayoutType(settings.getLayoutType());
-                getLayout().setLayersBeforeCardBoard(settings.getLayersBeforeCardBoard());
-                getLayout().calculateLayoutForWorkPiece(getFinishedWorkPiece());
-                getLayout().initFinishedWorkPieces(getFinishedWorkPiece());
-                getLayout().setCardBoardThickness(settings.getCardBoardThickness());
+            setPalletLayout(settings.getLayout());
+            if (getPalletLayout() != null) {
+                getPalletLayout().setLayoutType(settings.getLayoutType());
+                getPalletLayout().setLayersBeforeCardBoard(settings.getLayersBeforeCardBoard());
+                getPalletLayout().calculateLayoutForWorkPiece(getFinishedWorkPiece());
+                getPalletLayout().initFinishedWorkPieces(getFinishedWorkPiece());
+                getPalletLayout().setCardBoardThickness(settings.getCardBoardThickness());
                 notifyLayoutChanged();
             }  
         } else {
@@ -241,7 +233,7 @@ public class UnloadPallet extends AbstractPallet {
     @Override
     public boolean canPut(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException,
             InterruptedException {
-        for (PalletStackingPosition stackingPos : getLayout().getStackingPositions()) {
+        for (PalletStackingPosition stackingPos : getPalletLayout().getStackingPositions()) {
             if (stackingPos.getAmount() < getLayers()) {
                 return true;
             }
@@ -278,28 +270,28 @@ public class UnloadPallet extends AbstractPallet {
     }
 
     public int getLayers() {
-        int maxLayers = (int) Math.floor((maxHeight - getLayout().getPalletHeight())
+        int maxLayers = (int) Math.floor((maxHeight - getPalletLayout().getPalletHeight())
                 / getFinishedWorkPiece().getDimensions().getZSafe());
-        if (getLayout().getLayersBeforeCardBoard() == 0) {
+        if (getPalletLayout().getLayersBeforeCardBoard() == 0) {
             return maxLayers;
         }
-        float cardboardHeight = (float) (Math.floor(maxLayers / getLayout().getLayersBeforeCardBoard()) * getLayout()
+        float cardboardHeight = (float) (Math.floor(maxLayers / getPalletLayout().getLayersBeforeCardBoard()) * getPalletLayout()
                 .getCardBoardThickness());
         while (getFinishedWorkPiece().getDimensions().getZSafe() * maxLayers + cardboardHeight
-                + getLayout().getPalletHeight() > maxHeight) {
+                + getPalletLayout().getPalletHeight() > maxHeight) {
             maxLayers--;
-            cardboardHeight = (float) (Math.floor(maxLayers / getLayout().getLayersBeforeCardBoard()) * getLayout()
+            cardboardHeight = (float) (Math.floor(maxLayers / getPalletLayout().getLayersBeforeCardBoard()) * getPalletLayout()
                     .getCardBoardThickness());
         }
         return maxLayers;
     }
 
     public int getMaxPiecesPossibleAmount() {
-        return getLayers() * getLayout().getStackingPositions().size();
+        return getLayers() * getPalletLayout().getStackingPositions().size();
     }
 
     public int getMaxPiecesPerLayerAmount() {
-        return getLayout().getStackingPositions().size();
+        return getPalletLayout().getStackingPositions().size();
     }
 
     /**
@@ -312,7 +304,7 @@ public class UnloadPallet extends AbstractPallet {
     public int getWorkPieceAmount(WorkPiece.Type type) {
         if (type == WorkPiece.Type.FINISHED) {
             int result = 0;
-            for (PalletStackingPosition position : getLayout().getStackingPositions()) {
+            for (PalletStackingPosition position : getPalletLayout().getStackingPositions()) {
                 result += position.getAmount();
             }
             return result;
@@ -331,9 +323,9 @@ public class UnloadPallet extends AbstractPallet {
         int removedAmount = 0;
         int stackingPos = 0;
 
-        PalletStackingPosition stPos = getLayout().getStackingPositions().get(0);
-        while (removedAmount < amount && stackingPos < getLayout().getStackingPositions().size()) {
-            stPos = getLayout().getStackingPositions().get(stackingPos);
+        PalletStackingPosition stPos = getPalletLayout().getStackingPositions().get(0);
+        while (removedAmount < amount && stackingPos < getPalletLayout().getStackingPositions().size()) {
+            stPos = getPalletLayout().getStackingPositions().get(stackingPos);
             while (removedAmount < amount && removeOneWorkPiece(stPos)) {
                 removedAmount++;
             }
@@ -359,10 +351,6 @@ public class UnloadPallet extends AbstractPallet {
         } else {
             return false;
         }
-    }
-
-    public PalletLayout getLayout() {
-        return layout;
     }
     
     public PalletStackingPosition getCurrentPutLocation() {

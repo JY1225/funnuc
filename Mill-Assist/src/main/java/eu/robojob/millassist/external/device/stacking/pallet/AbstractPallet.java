@@ -5,22 +5,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePickSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
+import eu.robojob.millassist.external.device.SimpleWorkArea;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
 import eu.robojob.millassist.process.ProcessFlow;
+import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 
 public abstract class AbstractPallet extends AbstractStackingDevice {
 
-    private static Logger logger = LogManager.getLogger(AbstractPallet.class.getName());
+    private PalletLayout palletLayout;
+//    private static Logger logger = LogManager.getLogger(AbstractPallet.class.getName());
     /**
      * List of listeners
      */
@@ -33,6 +34,14 @@ public abstract class AbstractPallet extends AbstractStackingDevice {
 
     public AbstractPallet(String name) {
         this(name, new HashSet<Zone>());
+    }
+    
+    public void setPalletLayout(PalletLayout layout) {
+        this.palletLayout = layout;
+    }
+    
+    public PalletLayout getPalletLayout() {
+        return palletLayout;
     }
 
     /**
@@ -178,4 +187,17 @@ public abstract class AbstractPallet extends AbstractStackingDevice {
         this.maxHeight = maxHeight;
     }
 
+    @Override
+    public float getZSafePlane(final IWorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+        float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
+        float wpHeight = dimensions.getZSafe(); 
+        zSafePlane += palletLayout.getPalletHeight();
+        if (wpHeight > workArea.getDefaultClamping().getHeight()) {
+            zSafePlane += wpHeight;
+        } else {
+            zSafePlane += workArea.getDefaultClamping().getHeight();
+        }
+        return zSafePlane;
+    }
+    
 }

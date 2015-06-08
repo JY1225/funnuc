@@ -34,11 +34,13 @@ public class Pallet extends AbstractPallet {
     private GridPlate gridPlate;
 
     private int layers;
-    private PalletLayout palletLayout;
     
     private StackPlateStackingPosition currentPickLocation;
     private StackPlateStackingPosition currentPutLocation;
 
+    /**
+     * Layout of this pallet.
+     */
     private GridPlateLayout layout;
 
     public Pallet(String name, Set<Zone> zones) {
@@ -72,7 +74,7 @@ public class Pallet extends AbstractPallet {
     @Override
     public boolean canPut(DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException,
             InterruptedException {
-        for (StackPlateStackingPosition stackingPos : getLayout().getStackingPositions()) {
+        for (StackPlateStackingPosition stackingPos : getGridLayout().getStackingPositions()) {
             if (stackingPos.getWorkPiece() == null) {
                 return true;
             }
@@ -87,7 +89,7 @@ public class Pallet extends AbstractPallet {
     @Override
     public boolean canPick(DevicePickSettings pickSettings) throws AbstractCommunicationException,
             DeviceActionException {
-        for (StackPlateStackingPosition stackingPos : getLayout().getStackingPositions()) {
+        for (StackPlateStackingPosition stackingPos : getGridLayout().getStackingPositions()) {
             if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == Type.RAW)) {
                 return true;
             }
@@ -108,9 +110,9 @@ public class Pallet extends AbstractPallet {
             setGridPlate(settings.getGridPlate());
             setPalletLayout(settings.getPalletLayout());
             try {
-                getLayout().configureStackingPositions(settings.getRawWorkPiece(), settings.getFinishedWorkPiece(),
+                getGridLayout().configureStackingPositions(settings.getRawWorkPiece(), settings.getFinishedWorkPiece(),
                         settings.getOrientation(), settings.getLayers());
-                getLayout().initRawWorkPieces(getRawWorkPiece(), settings.getAmount());
+                getGridLayout().initRawWorkPieces(getRawWorkPiece(), settings.getAmount());
             } catch (IncorrectWorkPieceDataException exception) {
                 logger.error(exception);
             }
@@ -127,7 +129,7 @@ public class Pallet extends AbstractPallet {
 
     @Override
     public Coordinates getLocationOrientation(SimpleWorkArea workArea, ClampingManner clampType) {
-        Coordinates c = new Coordinates(getLayout().getStackingPositions().get(0).getPosition());
+        Coordinates c = new Coordinates(getGridLayout().getStackingPositions().get(0).getPosition());
         c.offset(workArea.getDefaultClamping().getRelativePosition());
         c.setX(0);
         c.setY(0);
@@ -160,16 +162,16 @@ public class Pallet extends AbstractPallet {
             logger.debug("Adding gridplate [" + gridPlate.getName() + "] to pallet.");
             deviceSettings.setGridId(gridPlate.getId());
             deviceSettings.setStudHeight(gridPlate.getDepth());
-            setLayout(new GridPlateLayout(gridPlate));
+            setGridLayout(new GridPlateLayout(gridPlate));
             this.gridPlate = gridPlate;
         } 
     }
 
-    public GridPlateLayout getLayout() {
+    public GridPlateLayout getGridLayout() {
         return this.layout;
     }
 
-    public void setLayout(GridPlateLayout layout) {
+    public void setGridLayout(GridPlateLayout layout) {
         this.layout = layout;
         layout.setPallet(this);
     }
@@ -193,11 +195,11 @@ public class Pallet extends AbstractPallet {
     }
 
     public float getHorizontalR() {
-        return this.palletLayout.getHorizontalR();
+        return getPalletLayout().getHorizontalR();
     }
 
     public float getTiltedR() {
-        return this.palletLayout.getVerticalR();
+        return getPalletLayout().getVerticalR();
     }
 
     public int getLayers() {
@@ -206,14 +208,6 @@ public class Pallet extends AbstractPallet {
 
     public void setLayers(int layers) {
         this.layers = layers;
-    }
-
-    public PalletLayout getPalletLayout() {
-        return this.palletLayout;
-    }
-
-    public void setPalletLayout(PalletLayout palletLayout) {
-        this.palletLayout = palletLayout;
     }
 
     public StackPlateStackingPosition getCurrentPickLocation() {
@@ -255,23 +249,23 @@ public class Pallet extends AbstractPallet {
     }
     
     public void addWorkPieces(int amount, boolean reset) {
-        getLayout().placeRawWorkPieces(getRawWorkPiece(), amount, reset, true);
+        getGridLayout().placeRawWorkPieces(getRawWorkPiece(), amount, reset, true);
         notifyLayoutChanged();
     }
     
     public void placeFinishedWorkPieces(final int finishedAmount, final boolean hasBinForFinished) {
         int placedAmount = 0;
-        int nbLayers = getLayout().getLayers();
+        int nbLayers = getGridLayout().getLayers();
         int position = 0;
         int replacedAmount = 0;
         while(placedAmount < finishedAmount) {
-            StackPlateStackingPosition stPos = getLayout().getStackingPositions().get(position);
+            StackPlateStackingPosition stPos = getGridLayout().getStackingPositions().get(position);
             if(!stPos.hasWorkPiece()) {
                 if (hasBinForFinished) {
                     stPos.setWorkPiece(null);
                 } else {
-                    getLayout().getStackingPositions().set(position, getLayout().getFinishedStackingPositions().get(position));
-                    stPos = getLayout().getStackingPositions().get(position);
+                    getGridLayout().getStackingPositions().set(position, getGridLayout().getFinishedStackingPositions().get(position));
+                    stPos = getGridLayout().getStackingPositions().get(position);
                     stPos.setWorkPiece(getFinishedWorkPiece());
                 }
                 while(stPos.getAmount() < nbLayers && placedAmount < finishedAmount) {
@@ -283,8 +277,8 @@ public class Pallet extends AbstractPallet {
                 if (hasBinForFinished) {
                     stPos.setWorkPiece(null);
                 } else {
-                    getLayout().getStackingPositions().set(position, getLayout().getFinishedStackingPositions().get(position));
-                    stPos = getLayout().getStackingPositions().get(position);
+                    getGridLayout().getStackingPositions().set(position, getGridLayout().getFinishedStackingPositions().get(position));
+                    stPos = getGridLayout().getStackingPositions().get(position);
                     stPos.setWorkPiece(getFinishedWorkPiece());
                 }
                 stPos.setAmount(0);
@@ -305,9 +299,9 @@ public class Pallet extends AbstractPallet {
     }
     
     private void decreaseAmountOfFirstRawPieces(final int amount) {
-        int position = getLayout().getFirstRawPosition();
+        int position = getGridLayout().getFirstRawPosition();
         if(position >= 0) {
-            getLayout().getStackingPositions().get(position).decrementAmountBy(amount);
+            getGridLayout().getStackingPositions().get(position).decrementAmountBy(amount);
         }
     }
 
