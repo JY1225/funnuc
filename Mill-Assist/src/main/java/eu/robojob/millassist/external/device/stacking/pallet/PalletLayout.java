@@ -190,11 +190,6 @@ public class PalletLayout {
     private float verticalR;
     
     /**
-     * Number of allowed layers on the pallet
-     */
-    private int layers;
-    
-    /**
      * Height of the pallet.
      */
     private float palletHeight;

@@ -304,5 +304,18 @@ public class Pallet extends AbstractPallet {
             getGridLayout().getStackingPositions().get(position).decrementAmountBy(amount);
         }
     }
+    
+    @Override
+    public float getZSafePlane(final IWorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
+        float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
+        float wpHeight = dimensions.getZSafe() * getGridLayout().getLayers();
+        zSafePlane += getPalletLayout().getPalletHeight();
+        if (wpHeight > workArea.getDefaultClamping().getHeight()) {
+            zSafePlane += wpHeight;
+        } else {
+            zSafePlane += workArea.getDefaultClamping().getHeight();
+        }
+        return zSafePlane;
+    }
 
 }
