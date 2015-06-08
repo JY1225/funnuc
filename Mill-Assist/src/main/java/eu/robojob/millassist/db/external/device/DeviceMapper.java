@@ -142,7 +142,8 @@ public class DeviceMapper {
         return pallet;
     }
 	
-	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName) throws SQLException {
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float x, final float y,
+            final float z, final float w, final float p, final float r) throws SQLException {
 	    
 	    ConnectionManager.getConnection().setAutoCommit(false);
 	    if ((!unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
@@ -156,12 +157,22 @@ public class DeviceMapper {
         stmt.setInt(2, unloadPallet.getId());
         stmt.executeUpdate();
         unloadPallet.setName(name);
+        
+        Coordinates c = unloadPallet.getWorkAreas().get(0).getDefaultClamping().getRelativePosition();
+        c.setX(x);
+        c.setY(y);
+        c.setZ(z);
+        c.setW(w);
+        c.setP(p);
+        c.setR(r);
+        generalMapper.saveCoordinates(c);
 
         ConnectionManager.getConnection().commit();
         ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
-	public void updatePallet(final Pallet pallet, final String name, final String userFrameName) throws SQLException {
+	public void updatePallet(final Pallet pallet, final String name, final String userFrameName, final float x, final float y,
+            final float z, final float w, final float p, final float r) throws SQLException {
         
         ConnectionManager.getConnection().setAutoCommit(false);
         if ((!pallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
@@ -175,6 +186,15 @@ public class DeviceMapper {
         stmt.setInt(2, pallet.getId());
         stmt.executeUpdate();
         pallet.setName(name);
+        
+        Coordinates c = pallet.getWorkAreas().get(0).getDefaultClamping().getRelativePosition();
+        c.setX(x);
+        c.setY(y);
+        c.setZ(z);
+        c.setW(w);
+        c.setP(p);
+        c.setR(r);
+        generalMapper.saveCoordinates(c);
 
         ConnectionManager.getConnection().commit();
         ConnectionManager.getConnection().setAutoCommit(true);

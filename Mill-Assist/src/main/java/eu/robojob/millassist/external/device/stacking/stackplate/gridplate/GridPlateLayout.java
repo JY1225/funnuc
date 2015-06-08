@@ -115,7 +115,7 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	        return getStackPlate().getR(orientation);
 	    } else if(getPallet() != null) {
 	        return getPallet().getR(orientation);
-	    }
+	    } 
 	    return 0;
 	}
 	

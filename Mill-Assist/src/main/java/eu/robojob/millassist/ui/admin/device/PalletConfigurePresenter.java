@@ -62,7 +62,8 @@ public class PalletConfigurePresenter extends AbstractFormPresenter<PalletConfig
      * @param yOffset Minimal distance between two work pieces on the y-axis
      * @param minInterferenceDistance Minimal distance between two work pieces in all directions
      */
-    public void saveData(final String name, final String userFrameName) {
-        deviceManager.updatePallet(pallet, name, userFrameName);
+    public void saveData(final String name, final String userFrameName, final float x, final float y,
+            final float z, final float w, final float p, final float r) {
+        deviceManager.updatePallet(pallet, name, userFrameName, x, y, z, w, p, r);
     }
 }

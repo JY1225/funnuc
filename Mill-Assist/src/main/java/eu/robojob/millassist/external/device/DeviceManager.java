@@ -271,9 +271,10 @@ public class DeviceManager {
 		}		
 	}
 	
-	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName) {
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float x, final float y,
+            final float z, final float w, final float p, final float r) {
 	    try {
-            deviceMapper.updateUnloadPallet(unloadPallet, name, userFrameName);
+            deviceMapper.updateUnloadPallet(unloadPallet, name, userFrameName, x, y, z, w, p, r);
             refresh();
 	    } catch (SQLException e) {
             logger.error(e);
@@ -281,9 +282,10 @@ public class DeviceManager {
         }
 	}
 	
-	public void updatePallet(final Pallet pallet, final String name, final String userFrameName) {
+	public void updatePallet(final Pallet pallet, final String name, final String userFrameName, final float x, 
+            final float y, final float z, final float w, final float p, final float r) {
         try {
-            deviceMapper.updatePallet(pallet, name, userFrameName);
+            deviceMapper.updatePallet(pallet, name, userFrameName, x, y, z, w, p, r);
             refresh();
         } catch (SQLException e) {
             logger.error(e);

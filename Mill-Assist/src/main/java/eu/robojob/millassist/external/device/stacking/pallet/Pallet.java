@@ -33,8 +33,6 @@ public class Pallet extends AbstractPallet {
     private static Logger logger = LogManager.getLogger(Pallet.class.getName());
     private GridPlate gridPlate;
 
-    private float horizontalR;
-    private float tiltedR;
     private int layers;
     private PalletLayout palletLayout;
     
@@ -195,19 +193,11 @@ public class Pallet extends AbstractPallet {
     }
 
     public float getHorizontalR() {
-        return this.horizontalR;
-    }
-
-    public void setHorizontalR(float horizontalR) {
-        this.horizontalR = horizontalR;
+        return this.palletLayout.getHorizontalR();
     }
 
     public float getTiltedR() {
-        return this.tiltedR;
-    }
-
-    public void setTiltedR(float tiltedR) {
-        this.tiltedR = tiltedR;
+        return this.palletLayout.getVerticalR();
     }
 
     public int getLayers() {

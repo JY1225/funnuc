@@ -22,9 +22,9 @@ import eu.robojob.millassist.workpiece.WorkPiece.Type;
 //TODO - toekenning van visitor zit in processFlow
 public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensions> {
 
-	public abstract Coordinates getPutLocation(PrageDevice device, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType);
 	public abstract Coordinates getPutLocation(ReversalUnit reversal, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType);
-	public abstract Coordinates getPutLocation(AbstractCNCMachine cncMachine, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType);
+	public abstract Coordinates getPutLocation(PrageDevice device, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType);
+    public abstract Coordinates getPutLocation(AbstractCNCMachine cncMachine, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType);
 	public abstract Coordinates getPutLocation(Conveyor conveyor, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType);
 	public abstract Coordinates getPutLocation(eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton conveyor, SimpleWorkArea workArea, T dimensions, ClampingManner clampType, ApproachType approachType);
 	
