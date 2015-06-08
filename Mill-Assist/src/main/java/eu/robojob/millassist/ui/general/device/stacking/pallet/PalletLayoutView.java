@@ -125,11 +125,7 @@ public class PalletLayoutView<T extends AbstractFormPresenter<?, ?>> extends Abs
                 group2.setLayoutX(stackingPosition.getPosition().getX() - workPieceRepre.getXCorrection());
                 // LayoutY - the origin of the piece (left bottom corner)
                 group2.setLayoutY(pallet.getPalletLayout().getPalletWidth() - stackingPosition.getPosition().getY() - workPieceRepre.getYCorrection());
-                if (stackingPosition.getOrientation() == 45) {
-                    group2.setRotate(stackingPosition.getOrientation());
-                } else {
-                    group2.setRotate(stackingPosition.getOrientation() * -1);
-                }
+                group2.setRotate(stackingPosition.getOrientation() * -1);
                 group.getChildren().add(group2);
                 Text txtAmount = new Text(stackingPosition.getAmount() + "");
                 txtAmount.getStyleClass().add(CSS_CLASS_AMOUNT);

@@ -138,6 +138,7 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 			@Override
 			public void changed(final ObservableValue<? extends String> observableValue, final String oldValue, final String newValue) {
 				setGridPlate(cbbGridPlates.getSelectionModel().getSelectedItem());
+                btnChange.setDisable(false);
 			}
 		});
 				

@@ -90,7 +90,7 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
     private static final String NAME = "UnloadPallet.name";
     private static final String WIDTH = "UnloadPallet.width";
     private static final String LENGTH = "UnloadPallet.length";
-    private static final String HEIGHT = "UnloadPallet.height";
+    private static final String HEIGHT = "PalletLayout.height";
     private static final String BORDER = "UnloadPallet.border";
     private static final String XOFFSET = "UnloadPallet.xoffset";
     private static final String YOFFSET = "UnloadPallet.yoffset";
