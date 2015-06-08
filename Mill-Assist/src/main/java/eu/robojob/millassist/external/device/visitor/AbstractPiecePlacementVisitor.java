@@ -162,11 +162,13 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
                 pallet.setCurrentPutLocation(stackingPos);
                 Coordinates c = new Coordinates(stackingPos.getPutPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
+                c.offset(new Coordinates(0, 0, pallet.getPalletLayout().getPalletHeight(), 0, 0, 0));
                 return c;
             } else if (stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED) && (stackingPos.getAmount() < pallet.getGridLayout().getLayers())) {
                 pallet.setCurrentPutLocation(stackingPos);
                 Coordinates c = new Coordinates(stackingPos.getPutPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
+                c.offset(new Coordinates(0, 0, pallet.getPalletLayout().getPalletHeight(), 0, 0, 0));
                 return c;
             }
         }
@@ -181,9 +183,11 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
                 pallet.setCurrentPickLocation(stackingPos);
                 Coordinates c = new Coordinates(stackingPos.getPickPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
+                c.offset(new Coordinates(0, 0, pallet.getPalletLayout().getPalletHeight(), 0, 0, 0));
                 return c;
             }
         }
         return null;
     }
+    
 }
