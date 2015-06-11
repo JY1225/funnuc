@@ -485,6 +485,7 @@ public class ConfigurePresenter implements TextInputControlListener, MainContent
 		transportMenuFactory.clearBuffer();
 		refresh();
 		processFlowAdapter.revisitWorkPieces();
+		logger.info("Device " + device.toString() + " added at index " + index);
 	}
 	
 	public void removeDevice(final int index) {
