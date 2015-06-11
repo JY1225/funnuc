@@ -487,10 +487,6 @@ public class ProcessFlow {
 		return deviceSettings.get(device);
 	}
 	
-	public void removeDeviceSettings(final AbstractDevice device) {
-	    deviceSettings.remove(device);
-	}
-	
 	public RobotSettings getRobotSettings(final AbstractRobot robot) {
 		return robotSettings.get(robot);
 	}
