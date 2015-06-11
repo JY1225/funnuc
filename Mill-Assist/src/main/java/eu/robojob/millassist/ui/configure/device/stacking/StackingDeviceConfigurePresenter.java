@@ -78,7 +78,7 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
                     ((Pallet) device).setGridPlate(deviceManager.getGridPlateByName(gridPlateName));
                 }
 			}
-			if(prevDevice instanceof UnloadPallet) {
+			if(prevDevice instanceof UnloadPallet && (device instanceof UnloadPallet)) {
 			    ((UnloadPallet) prevDevice).setPalletLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
 			    
 			    if(deviceInfo.getPutStep().getProcessFlow().getProcessSteps().get(0) instanceof InterventionStep){
@@ -96,25 +96,33 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			}
 		}
 		if (deviceInfo.hasPickStep()) {
-			// TODO remove device settings currently present, only if this was only step with this device!
-			// change device for pick
-			deviceInfo.getPickStep().getProcessFlow().setDeviceSettings(device, device.getDeviceSettings());
-			device.loadDeviceSettings(deviceInfo.getPickStep().getProcessFlow().getDeviceSettings(device));
+		    // change device for pick
+		    deviceInfo.getPickStep().getProcessFlow().setDeviceSettings(device, device.getDeviceSettings());
+		    device.loadDeviceSettings(deviceInfo.getPickStep().getProcessFlow().getDeviceSettings(device));
 			deviceInfo.getPickStep().setDeviceSettings(device.getDefaultPickSettings(1));
 			deviceInfo.getPickStep().getRobotSettings().setWorkArea(deviceInfo.getPickStep().getDeviceSettings().getWorkArea());
 			deviceInfo.getPickStep().getRobotSettings().setSmoothPoint(new Coordinates(device.getDefaultPickSettings(1).getWorkArea().getDefaultClamping().getSmoothFromPoint()));
 			//deviceInfo.getPickStep().setRelativeTeachedOffset(null);
 			deviceInfo.getPickStep().getProcessFlow().initialize();
+	        // Devices differ from type, so deviceSettings must be deleted from the process
+            // TODO remove device settings for prevDevice currently present, only if this was only step with this device!
+			if (!device.getType().equals(prevDevice.getType())) {
+                deviceInfo.getPickStep().getProcessFlow().removeDeviceSettings(prevDevice);
+            }
 			deviceInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new ProcessChangedEvent(deviceInfo.getPickStep().getProcessFlow()));
 		} else if (deviceInfo.hasPutStep()) {
 			// change device for put
-			deviceInfo.getPutStep().getProcessFlow().setDeviceSettings(device, device.getDeviceSettings());
-			device.loadDeviceSettings(deviceInfo.getPutStep().getProcessFlow().getDeviceSettings(device));
+		    // device already does not exist yet in flow
+		    deviceInfo.getPutStep().getProcessFlow().setDeviceSettings(device, device.getDeviceSettings());
+		    device.loadDeviceSettings(deviceInfo.getPutStep().getProcessFlow().getDeviceSettings(device));
 			deviceInfo.getPutStep().setDeviceSettings(device.getDefaultPutSettings(1));
 			deviceInfo.getPutStep().getRobotSettings().setWorkArea(deviceInfo.getPutStep().getDeviceSettings().getWorkArea());
 			deviceInfo.getPutStep().getRobotSettings().setSmoothPoint(new Coordinates(device.getDefaultPutSettings(1).getWorkArea().getDefaultClamping().getSmoothToPoint()));
 			//deviceInfo.getPutStep().setRelativeTeachedOffset(null);
 			deviceInfo.getPutStep().getProcessFlow().initialize();
+            if (!device.getType().equals(prevDevice.getType())) {
+                deviceInfo.getPutStep().getProcessFlow().removeDeviceSettings(prevDevice);
+            }
 			deviceInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new ProcessChangedEvent(deviceInfo.getPutStep().getProcessFlow()));
 		} else {
 			throw new IllegalStateException("No pick or put step.");
@@ -122,6 +130,7 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 		deviceInfo.setDevice(device);
 		getMenuPresenter().refreshClearCache();
 		getMenuPresenter().getParent().configureDevice(deviceInfo.getIndex());
+		logger.info("Device " + prevDevice + " replaced by " + device);
 	}
 
 	public AbstractDevice getDeviceByName(String name) {

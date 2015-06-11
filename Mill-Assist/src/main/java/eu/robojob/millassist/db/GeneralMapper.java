@@ -254,7 +254,6 @@ public class GeneralMapper {
 	}
 	 
 	public void saveWorkPiece(final WorkPiece workPiece) throws SQLException {
-		ConnectionManager.getConnection().setAutoCommit(false);
 		int type = workPiece.getType().getTypeId();
 		int shape = workPiece.getShape().getShapeId();
 		int material = workPiece.getMaterial().getId();
@@ -290,8 +289,6 @@ public class GeneralMapper {
 				ConnectionManager.getConnection().rollback();
 			}
 		}
-		ConnectionManager.getConnection().commit();
-		ConnectionManager.getConnection().setAutoCommit(true);
 	}
 	
 	private void saveDimensions(final WorkPiece workPiece) throws SQLException {
