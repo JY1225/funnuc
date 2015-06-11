@@ -225,6 +225,10 @@ public class ProcessFlow {
 		return deviceSettings;
 	}
 	
+	public void removeDeviceSettings(AbstractDevice device) {
+	    deviceSettings.remove(device);
+	}
+	
 	public Map<AbstractRobot, RobotSettings> getRobotSettings() {
 		return robotSettings;
 	}
