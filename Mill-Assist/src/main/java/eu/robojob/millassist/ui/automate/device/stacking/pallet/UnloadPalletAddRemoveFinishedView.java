@@ -2,8 +2,8 @@ package eu.robojob.millassist.ui.automate.device.stacking.pallet;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -15,19 +15,14 @@ import eu.robojob.millassist.util.UIConstants;
 
 public class UnloadPalletAddRemoveFinishedView extends AbstractFormView<UnloadPalletAddRemoveFinishedPresenter>{
 
-    private Label lblAmount;
-    private IntegerTextField itfAmount;
-    private Button btnMax;
-    private Button btnAdd;
+    private Label lblNumberFinished;
+    private IntegerTextField itfNumberFinished;
+    private Button btnMaxFinished;
     
-    private Label lblAmountRemove;
-    private IntegerTextField itfAmountRemove;
-    private Button btnMaxRemove;
-    private Button btnRemove;
-    private static final String AMOUNT = "BasicStackPlateAddView.amount";
+    private Button btnChange;
     private static final String MAX = "BasicStackPlateAddView.max";
-    private static final String ADD = "BasicStackPlateAddView.add";
-    private static final String REMOVE = "UnloadPalletAddRemoveFinishedView.remove";
+    private static final String FINISHED = "BasicStackPlateAddView.finished";
+    private static final String CHANGE = "StackingDeviceConfigureView.change";
     
     public UnloadPalletAddRemoveFinishedView() {
        build();
@@ -38,63 +33,35 @@ public class UnloadPalletAddRemoveFinishedView extends AbstractFormView<UnloadPa
         getContents().setVgap(15);
         getContents().setHgap(15);
         
-        lblAmount = new Label(Translator.getTranslation(AMOUNT));
-        lblAmount.getStyleClass().add(CSS_CLASS_FORM_LABEL);
-        itfAmount = new IntegerTextField(4);
         
-        btnMax = createButton(Translator.getTranslation(MAX), UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+        lblNumberFinished = new Label("#"+Translator.getTranslation(FINISHED));
+        lblNumberFinished.getStyleClass().add(CSS_CLASS_FORM_LABEL);
+        itfNumberFinished = new IntegerTextField(4);
+        lblNumberFinished.setAlignment(Pos.CENTER);
+        
+        btnMaxFinished = createButton(Translator.getTranslation(MAX), UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent arg0) {
-                refreshMaxRemove();
-            }
-        });
-        btnAdd = createButton(Translator.getTranslation(ADD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(final ActionEvent arg0) {
-                getPresenter().addWorkpieces(Integer.parseInt(itfAmount.getText()));
-                refreshMax();
-                refreshMaxRemove();
+                refreshMaxFinished();
             }
         });
         
-        lblAmountRemove = new Label(Translator.getTranslation(AMOUNT));
-        lblAmountRemove.getStyleClass().add(CSS_CLASS_FORM_LABEL);
-        itfAmountRemove = new IntegerTextField(4);
-        
-        btnMaxRemove = createButton(Translator.getTranslation(MAX), UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+        btnChange = createButton(Translator.getTranslation(CHANGE), UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent arg0) {
-                refreshMaxRemove();
+                changeAmounts();
             }
         });
-        btnRemove = createButton(Translator.getTranslation(REMOVE), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(final ActionEvent arg0) {
-                getPresenter().removeWorkPieces(Integer.parseInt(itfAmountRemove.getText()));
-                refreshMax();
-                refreshMaxRemove();
-            }
-        });
+
         
         int row = 0; int column = 0;
-        getContents().add(lblAmount, column++, row);
-        GridPane.setMargin(lblAmount, new Insets(0, 0, 0, 0));
-        getContents().add(itfAmount, column++, row);
-        getContents().add(btnMax, column++, row);
-        getContents().add(btnAdd, column++, row);
-        GridPane.setMargin(btnAdd, new Insets(0, 0, 0, 20));
-        GridPane.setHalignment(btnAdd, HPos.CENTER);
-        
-        row++; column = 0;
-        getContents().add(lblAmountRemove, column++, row);
-        GridPane.setMargin(lblAmountRemove, new Insets(0, 0, 0, 0));
-        getContents().add(itfAmountRemove, column++, row);
-        getContents().add(btnMaxRemove, column++, row);
-
-        getContents().add(btnRemove, column++, row);
-        GridPane.setMargin(btnRemove, new Insets(0, 0, 0, 20));
-        GridPane.setHalignment(btnRemove, HPos.CENTER);
-        
+        getContents().add(lblNumberFinished, column++, row);
+        GridPane.setMargin(lblNumberFinished, new Insets(0, 0, 0, 0));
+        getContents().add(itfNumberFinished, column++, row);
+        getContents().add(btnMaxFinished, column++, row);
+        row++; column = 1;
+        getContents().add(btnChange, column ++, row);
+                
         hideNotification();
         
     }
@@ -104,8 +71,7 @@ public class UnloadPalletAddRemoveFinishedView extends AbstractFormView<UnloadPa
      */
     @Override
     public void setTextFieldListener(TextInputControlListener listener) {
-        itfAmount.setFocusListener(listener);
-        itfAmountRemove.setFocusListener(listener);
+        itfNumberFinished.setFocusListener(listener);
     }
 
     /**
@@ -113,34 +79,40 @@ public class UnloadPalletAddRemoveFinishedView extends AbstractFormView<UnloadPa
      */
     @Override
     public void refresh() {
-        refreshMax();
-        refreshMaxRemove();
+        refreshFinished();
         hideNotification();
     }
     
     public void setButtonEnabled(final boolean enabled) {
-        btnAdd.setDisable(!enabled);
-        btnRemove.setDisable(!enabled);
+        btnChange.setDisable(!enabled);
     }
-    
-    /**
-     * Resets the max amount of pieces to add.
-     */
-    private void refreshMax() {
-        itfAmount.setText("" + getPresenter().getMaxPiecesToAdd());
-        if(Integer.parseInt(itfAmount.getText()) <0) {
-            itfAmount.setText("0");
-        }
-    }
+
     
     
     /**
      * Rests the max amount of pieces to remove.
      */
-    private void refreshMaxRemove() {
-        itfAmountRemove.setText("" + getPresenter().getMaxPiecesToRemove());
-        if(Integer.parseInt(itfAmountRemove.getText()) <0) {
-            itfAmountRemove.setText("0");
+    private void refreshMaxFinished() {
+        itfNumberFinished.setText("" + getPresenter().getMaxFinishedPieces());
+        if(Integer.parseInt(itfNumberFinished.getText()) <0) {
+            itfNumberFinished.setText("0");
+        }
+    }
+    
+    private void changeAmounts() {
+        int newAmount = Integer.parseInt(itfNumberFinished.getText());
+        if(newAmount > getPresenter().getCurrentFinishedPieces()) {
+            getPresenter().addFinishedWorkPieces(newAmount-getPresenter().getCurrentFinishedPieces());
+        } else if (newAmount < getPresenter().getCurrentFinishedPieces()) {
+            getPresenter().removeFinishedWorkPieces(getPresenter().getCurrentFinishedPieces()- newAmount);
+        }
+    }
+    
+    
+    private void refreshFinished() {
+        itfNumberFinished.setText("" + getPresenter().getCurrentFinishedPieces());
+        if(Integer.parseInt(itfNumberFinished.getText()) <0) {
+            itfNumberFinished.setText("0");
         }
     }
 

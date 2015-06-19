@@ -36,6 +36,9 @@ public class PalletRawWorkPiecePresenter extends AbstractRawWorkPiecePresenter<P
             } else {
                 pickStep.getProcessFlow().getClampingType().setChanged(false);
             }
+//            if(pickStep.getProcessFlow().hasBasicStackPlateForFinishedPieces()) {
+//                pickStep.getProcessFlow().setFinishedAmount(getPallet().getGridLayout().getMaxPiecesPossibleAmount());
+//            }
             getView().hideNotification();
             if (!isWeightOk()) {
                 getView().showNotification(Translator.getTranslation(WEIGHT_ZERO), Type.WARNING);

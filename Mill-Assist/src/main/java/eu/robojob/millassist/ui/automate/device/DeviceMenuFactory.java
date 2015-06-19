@@ -188,8 +188,7 @@ public class DeviceMenuFactory {
     public BasicStackPlateMenuPresenter getBasicStackPlateMenuPresenter(final DeviceInformation deviceInfo) {
         BasicStackPlateMenuView stackingDeviceMenuView = new BasicStackPlateMenuView();
         BasicStackPlateMenuPresenter basicStackPlateMenuPresenter = new BasicStackPlateMenuPresenter(
-                stackingDeviceMenuView, getBasicStackPlateLayoutPresenter(deviceInfo),
-                getBasicStackPlateRefillPresenter(deviceInfo), getBasicStackPlateAddPresenter(deviceInfo));
+                stackingDeviceMenuView, getBasicStackPlateLayoutPresenter(deviceInfo), getBasicStackPlateAddPresenter(deviceInfo));
         return basicStackPlateMenuPresenter;
     }
 

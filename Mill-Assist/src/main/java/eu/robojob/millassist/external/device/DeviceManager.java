@@ -173,6 +173,19 @@ public class DeviceManager {
 		return stackingToDevicesByName.keySet();
 	}
 	
+	public Set<String> getStackingToDeviceNamesForStrackingFromDevice(AbstractDevice stackingFromDevice) {
+	    Set<String> result = new HashSet<String>();
+	    result.addAll(getStackingToDeviceNames());
+	    if(stackingFromDevice instanceof Pallet) {
+	        for (AbstractDevice device : devicesById.values()) {
+	            if(device instanceof BasicStackPlate) {
+	                result.remove(device.getName());
+	            }
+	        }
+	    }
+	    return result;
+	}
+	
 	public Set<String> getStackingDeviceNames() {
 		Set<String> ids =  new HashSet<String>(getStackingFromDeviceNames());
 		Set<String> toIds = new HashSet<String>(getStackingToDeviceNames());

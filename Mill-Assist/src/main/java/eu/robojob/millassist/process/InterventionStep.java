@@ -20,6 +20,7 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 
 	private int frequency;
 	private DeviceInterventionSettings interventionSettings;
+	private String customMessage="";
 	
 	private static Logger logger = LogManager.getLogger(InterventionStep.class.getName());
 		
@@ -32,6 +33,11 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 	public InterventionStep(final DeviceInterventionSettings interventionSettings, final int frequency) {
 		this(null, interventionSettings, frequency);
 	}
+	
+	public InterventionStep(final ProcessFlow processFlow, final DeviceInterventionSettings interventionSettings, final int frequency, final String customMessage) {
+        this(processFlow, interventionSettings, frequency);
+        this.customMessage = customMessage;
+    }
 	
 	//TODO check implementation intervention step!!
 	@Override
@@ -58,8 +64,10 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 						}
 					}
 					logger.debug("Device: [" + getDevice() + "] prepared for intervention.");
+					
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.INTERVENTION_READY, workPieceId));
 					getProcessFlow().setMode(Mode.PAUSED);
+					
 				}
 			} catch(AbstractCommunicationException | DeviceActionException | InterruptedException e) {
 				throw e;
@@ -138,5 +146,9 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 	public AbstractDevice getDevice() {
 		return interventionSettings.getDevice();
 	}
+
+    public String getCustomMessage() {
+        return this.customMessage;
+    }
 
 }

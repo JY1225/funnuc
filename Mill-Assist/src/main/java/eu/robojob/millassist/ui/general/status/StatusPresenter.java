@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javafx.application.Platform;
 import eu.robojob.millassist.process.DeviceStep;
+import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.PutStep;
@@ -85,7 +86,16 @@ public class StatusPresenter implements ProcessFlowListener {
 							}
 							break;
 						case StatusChangedEvent.INTERVENTION_READY:
-							view.setInfoMessage(Translator.getTranslation(INTERVENTION_READY));
+						    if(e.getActiveStep() instanceof InterventionStep) {
+						        String message = ((InterventionStep)e.getActiveStep()).getCustomMessage();
+						        if(message.equals("")){
+						            view.setInfoMessage(Translator.getTranslation(INTERVENTION_READY));
+						        } else {
+						            view.setInfoMessage(Translator.getTranslation(message));
+						        }
+						    } else {
+						        view.setInfoMessage(Translator.getTranslation(INTERVENTION_READY));
+						    }
 							break;
 						case StatusChangedEvent.PROCESSING_STARTED:
 							view.setInfoMessage(((DeviceStep) e.getActiveStep()).getDevice().getName() + " " + Translator.getTranslation(PROCESSING));
@@ -125,7 +135,7 @@ public class StatusPresenter implements ProcessFlowListener {
 					view.setInfoMessage(Translator.getTranslation(PROCESS_TEACH_FINISHED));
 				} else if (e.getMode() == Mode.PAUSED) {
 					isPaused = true;
-					view.setInfoMessage(Translator.getTranslation(INTERVENTION_READY));
+//					view.setInfoMessage(Translator.getTranslation(INTERVENTION_READY));
 				} else if (e.getMode() == Mode.AUTO) {
 					isPaused = false;
 				}

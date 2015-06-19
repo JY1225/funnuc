@@ -248,8 +248,23 @@ public class Pallet extends AbstractPallet {
         logger.info("put finished!");
     }
     
-    public void addWorkPieces(int amount, boolean reset) {
+    public void addRawWorkPieces(int amount, boolean reset) {
         getGridLayout().placeRawWorkPieces(getRawWorkPiece(), amount, reset, true);
+        notifyLayoutChanged();
+    }
+    
+    public void removeRawWorkPieces(int amount) {
+        getGridLayout().removeRawWorkPieces(amount, getRawWorkPiece());
+        notifyLayoutChanged();
+    }
+    
+    public void removeFinishedWorkPieces(int amount) {
+        getGridLayout().removeFinishedWorkPieces(amount, getFinishedWorkPiece());
+        notifyLayoutChanged();
+    }
+    
+    public void addFinishedWorkPieces(int amount, boolean reset) {
+        getGridLayout().placeFinishedWorkPieces(getFinishedWorkPiece(), amount, reset, false);
         notifyLayoutChanged();
     }
     
@@ -304,6 +319,7 @@ public class Pallet extends AbstractPallet {
             getGridLayout().getStackingPositions().get(position).decrementAmountBy(amount);
         }
     }
+    
     
     @Override
     public float getZSafePlane(final IWorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {

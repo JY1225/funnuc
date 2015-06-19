@@ -13,7 +13,9 @@ import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPl
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
 import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
+import eu.robojob.millassist.process.PickStep;
 import eu.robojob.millassist.process.event.ProcessChangedEvent;
 import eu.robojob.millassist.ui.configure.device.stacking.pallet.PalletDeviceSettings;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -94,6 +96,7 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			        }
 			    }
 			}
+
 		}
 		if (deviceInfo.hasPickStep()) {
 			// change device for pick
@@ -174,6 +177,15 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 	        return null;
 	    }
 
+	}
+	
+	public void updateStackingDevices() {
+	    if(deviceInfo.hasPutStep()) {
+	        AbstractProcessStep firstStep = deviceInfo.getPutStep().getProcessFlow().getStep(0);
+	        if(firstStep != null && firstStep instanceof PickStep) {
+	            getView().setStackingDeviceIds(deviceManager.getStackingToDeviceNamesForStrackingFromDevice(((PickStep)firstStep).getDevice()));
+	        }
+	    }
 	}
 	
 }

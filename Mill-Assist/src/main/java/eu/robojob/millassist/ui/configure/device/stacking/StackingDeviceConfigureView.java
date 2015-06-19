@@ -197,6 +197,7 @@ public class StackingDeviceConfigureView extends AbstractFormView<StackingDevice
 		cbbStacker.setValue(null);
 		cbbStacker.getSelectionModel().clearSelection();
 		cbbStacker.getItems().clear();
+		getPresenter().updateStackingDevices();
 		cbbStacker.getItems().addAll(stackingDeviceIds);
 		cbbStacker.getSelectionModel().clearSelection();
 		lblStacker.setDisable(false);

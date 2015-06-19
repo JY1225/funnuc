@@ -97,54 +97,56 @@ public class PalletAddRemoveFinishedPresenter extends
      * @throws IncorrectWorkPieceDataException
      *             If the work piece that is added is not valid
      */
-    public void addWorkpieces(final int amount, boolean replaceFinishedPieces) {
-        try {
-            if (amount > getMaxPiecesToAdd(replaceFinishedPieces))
-                throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
+    public void addRawWorkPieces(final int amount) {
             int nbInFlow = processFlow.getTotalAmount() - pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
                     - processFlow.getFinishedAmount();
-            // Replace finished workpieces by raw ones
-            if (replaceFinishedPieces) {
-                pallet.getGridLayout().removeFinishedFromTable();
-            }
+
             // Add new pieces
-            addWorkPieces(amount, processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
+            pallet.addRawWorkPieces(amount, processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
             processFlow.setFinishedAmount(pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
             processFlow.setTotalAmount(pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
                     + pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);
-        } catch (IncorrectWorkPieceDataException e) {
-            getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
-        }
     }
 
-    /**
-     * Maximum pieces to add = total amount of the process flow - the finished amount of the process flow
-     * 
-     * @return The maximum number of pieces that can be added
-     */
-    public int getMaxPiecesToAdd(boolean replaceFinished) {
-        if (replaceFinished)
-            return getMaxAddAmount() + getMaxFinishedToReplaceAmount();
-        else
-            return getMaxAddAmount();
+    public void removeRawWorkPieces(final int amount) {
+            int nbInFlow = processFlow.getTotalAmount() - pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                    - processFlow.getFinishedAmount();
+
+            // Add new pieces
+            pallet.removeRawWorkPieces(amount);
+            processFlow.setFinishedAmount(pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
+            processFlow.setTotalAmount(pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                    + pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);
     }
-    
-    private void addWorkPieces(int amount, boolean resetFirst) throws IncorrectWorkPieceDataException { 
-        pallet.addWorkPieces(amount, resetFirst);   
-        getView().hideNotification();
+
+    public void addFinishedWorkPieces(final int amount) {
+        int nbInFlow = processFlow.getTotalAmount() - pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                - processFlow.getFinishedAmount();
+
+        // Add new pieces
+        pallet.addFinishedWorkPieces(amount, processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
+        processFlow.setFinishedAmount(pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
+        processFlow.setTotalAmount(pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                + pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);
     }
-    
-    public int getMaxFinishedToReplaceAmount() {
-        return pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
+
+    public void removeFinishedWorkPieces(final int amount) {
+        int nbInFlow = processFlow.getTotalAmount() - pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                - processFlow.getFinishedAmount();
+
+        // Add new pieces
+        pallet.removeFinishedWorkPieces(amount);
+        processFlow.setFinishedAmount(pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
+        processFlow.setTotalAmount(pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                + pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);
     }
-    
-    public int getMaxAddAmount() {
-        int amount = pallet.getGridLayout().getMaxPiecesPossibleAmount() - getMaxFinishedToReplaceAmount() - pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
-        int nbInFlow = processFlow.getTotalAmount() - pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW) - processFlow.getFinishedAmount();
-        if(!processFlow.hasBinForFinishedPieces()) {
-            amount -= nbInFlow;
-        } 
-        return amount;
+
+    public int getFinishedAmount() {
+        return processFlow.getFinishedAmount();
+    }
+
+    boolean isAutoMode() {
+        return processFlow.getMode().equals(Mode.AUTO);
     }
 
     /**
@@ -152,34 +154,68 @@ public class PalletAddRemoveFinishedPresenter extends
      * 
      * @return The maximum number of pieces that can be removed
      */
-    public void replaceRawByFinished(final int amount) {
-        if(amount > 0) {
-            try {
-                if(amount > getNbRawWorkPiecesToReplace()) {
-                    throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
-                } else {
-                    processFlow.setFinishedAmount(amount + processFlow.getFinishedAmount());
-                    pallet.placeFinishedWorkPieces(amount, processFlow.hasBinForFinishedPieces() || processFlow.hasUnloadPalletForFinishedPieces());
-                }
-            } catch (IncorrectWorkPieceDataException e) {
-                getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
+    public int getMaxRawPieces(int currentFinishedAmount) {
+        int result = pallet.getGridLayout().getMaxPiecesPossibleAmount() - currentFinishedAmount;
+        if(currentFinishedAmount > 0) {
+            int correction = (int)Math.ceil((double)(currentFinishedAmount - 1)/(double)pallet.getGridLayout().getLayers())+1;
+            correction = pallet.getGridLayout().getStackingPositions().size() - correction;
+            if(correction > 0 ){
+                result = correction * pallet.getGridLayout().getLayers();
             }
-        } 
+        }
+        return result;
     }
 
-    public int getNbRawWorkPiecesToReplace() {
-        // In case we put our finished pieces into a bin, we do not have to replace raw pieces by finished ones since the finished ones do not go onto the stacker
-//      if(processFlow.hasBinForFinishedPieces()) {
-//          return 0;
-//      }
+    public int getCurrentRawPieces() {
         return pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
     }
-    
-    public int getFinishedAmount() {
-        return processFlow.getFinishedAmount();
+
+    public int getCurrentFinishedPieces() {
+        return pallet.getGridLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
     }
-    
-    boolean isAutoMode() {
-        return processFlow.getMode().equals(Mode.AUTO);
+
+    public void changeAmounts(final int newRawAmount, final int newFinishedAmount) {
+        try {
+            if (newFinishedAmount + newRawAmount > pallet.getGridLayout().getMaxPiecesPossibleAmount()) {
+                throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
+            }
+            
+            if(getMaxRawPieces(newFinishedAmount) < newRawAmount) {
+                throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
+            }
+            
+            if (newFinishedAmount > getCurrentFinishedPieces()) {
+                if(newRawAmount < getCurrentRawPieces()) {
+                    removeRawWorkPieces(getCurrentRawPieces() - newRawAmount);
+                    addFinishedWorkPieces(newFinishedAmount - getCurrentFinishedPieces());
+                } else if(newRawAmount > getCurrentRawPieces()) {
+                    addFinishedWorkPieces(newFinishedAmount - getCurrentFinishedPieces());
+                    addRawWorkPieces(newRawAmount - getCurrentRawPieces());
+                } else {
+                    addFinishedWorkPieces(newFinishedAmount - getCurrentFinishedPieces());
+                }
+            } else {
+                if (newFinishedAmount < getCurrentFinishedPieces()) {
+                    removeFinishedWorkPieces(getCurrentFinishedPieces() - newFinishedAmount);
+                }
+                if (newRawAmount > getCurrentRawPieces()) {
+                    addRawWorkPieces(newRawAmount - getCurrentRawPieces());
+                } else if (newRawAmount < getCurrentRawPieces()) {
+                    removeRawWorkPieces(getCurrentRawPieces() - newRawAmount);
+                }
+            }
+            getView().hideNotification();
+        } catch (IncorrectWorkPieceDataException exception) {
+            getView().showNotification(exception.getLocalizedMessage(), Type.WARNING);
+        }
+
+    }
+
+    public ProcessFlow getProcessFlow() {
+        return this.processFlow;
+    }
+
+    public void setProcessFlow(ProcessFlow processFlow) {
+        this.processFlow = processFlow;
     }
 }

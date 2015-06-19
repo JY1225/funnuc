@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.communication.AbstractCommunicationException;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceActionException;
+import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DevicePutSettings;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.robot.AbstractRobot;
@@ -22,6 +23,8 @@ public class PutStep extends AbstractTransportStep {
 
 	private DevicePutSettings devicePutSettings;
 	private RobotPutSettings robotPutSettings;
+    private InterventionStep removeFinishedInterventionStep;
+    private static final String INTERVENTION_REMOVE_FINISHED = "Status.removeFinished";
 	
 	private static Logger logger = LogManager.getLogger(PutStep.class.getName());
 	
@@ -58,13 +61,14 @@ public class PutStep extends AbstractTransportStep {
 				try {
 					checkProcessExecutorStatus(executor);
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.STARTED, processId));
+	                
 					@SuppressWarnings("unchecked")
 					Coordinates originalPosition = new Coordinates(getDevice().getPutLocation(
-							getProcessFlow().getPiecePlacementVisitor(getRobotSettings().getGripperHead().getGripper().getWorkPiece().getShape()),
-							getDeviceSettings().getWorkArea(), 
-							getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions(), 
-							getProcessFlow().getClampingType(), 
-							getRobotSettings().getApproachType()));
+                            getProcessFlow().getPiecePlacementVisitor(getRobotSettings().getGripperHead().getGripper().getWorkPiece().getShape()),
+                            getDeviceSettings().getWorkArea(), 
+                            getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions(), 
+                            getProcessFlow().getClampingType(), 
+                            getRobotSettings().getApproachType()));
 					if (needsTeaching()) {
 						Coordinates position = new Coordinates(originalPosition);
 						logger.debug("Original coordinates: " + position + ".");
@@ -178,6 +182,24 @@ public class PutStep extends AbstractTransportStep {
 			getRobot().release();
 			logger.debug("Finalized put.");
 		}
+	}
+	
+	public InterventionStep getInterventionStep() {
+	    if(removeFinishedInterventionStep == null) {
+	        removeFinishedInterventionStep = new InterventionStep(getProcessFlow(), new DeviceInterventionSettings(getDevice(), getDeviceSettings().getWorkArea()), 1, INTERVENTION_REMOVE_FINISHED);
+	    }
+	    return removeFinishedInterventionStep;
+	}
+	
+	public boolean mustExecuteInterventionStep() {
+	    @SuppressWarnings("unchecked")
+	    Coordinates putLocation = getDevice().getPutLocation(
+                getProcessFlow().getPiecePlacementVisitor(getRobotSettings().getGripperHead().getGripper().getWorkPiece().getShape()),
+                getDeviceSettings().getWorkArea(), 
+                getRobotSettings().getGripperHead().getGripper().getWorkPiece().getDimensions(), 
+                getProcessFlow().getClampingType(), 
+                getRobotSettings().getApproachType());
+        return putLocation == null;
 	}
 
 	@Override

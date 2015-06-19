@@ -624,6 +624,50 @@ public class ProcessFlow {
         return false;
 	}
 	
+	public boolean hasBasicStackPlateForFinishedPieces() {
+        for(AbstractProcessStep processStep: processSteps) {
+            if(processStep instanceof PutStep) {
+                if(((PutStep) processStep).getDevice().getType().equals(EDeviceGroup.BASIC_STACK_PLATE)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+	
+	public boolean hasBasicStackPlateForRawPieces() {
+        for(AbstractProcessStep processStep: processSteps) {
+            if(processStep instanceof PickStep) {
+                if(((PickStep) processStep).getDevice().getType().equals(EDeviceGroup.BASIC_STACK_PLATE)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+	
+	public boolean hasPalletForFinishedPieces() {
+        for(AbstractProcessStep processStep: processSteps) {
+            if(processStep instanceof PutStep) {
+                if(((PutStep) processStep).getDevice().getType().equals(EDeviceGroup.PALLET)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+	
+	public boolean hasPalletForRawPieces() {
+        for(AbstractProcessStep processStep: processSteps) {
+            if(processStep instanceof PickStep) {
+                if(((PickStep) processStep).getDevice().getType().equals(EDeviceGroup.PALLET)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+	
 	//TODO - optimize 
 	public boolean hasReversalUnit() {
 		for(AbstractProcessStep processStep: processSteps) {

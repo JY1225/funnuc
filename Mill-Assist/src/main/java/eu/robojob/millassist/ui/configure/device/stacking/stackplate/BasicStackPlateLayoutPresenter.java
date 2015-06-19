@@ -7,46 +7,48 @@ import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.device.stacking.stackplate.BasicStackPlateLayoutView;
 
-public class BasicStackPlateLayoutPresenter extends AbstractFormPresenter<BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter>, BasicStackPlateMenuPresenter> 
-	implements BasicStackPlateListener {
+public class BasicStackPlateLayoutPresenter extends
+        AbstractFormPresenter<BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter>, BasicStackPlateMenuPresenter>
+        implements BasicStackPlateListener {
 
-	private BasicStackPlate basicStackPlate;
-	
-	public BasicStackPlateLayoutPresenter(final BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter> view, final BasicStackPlate basicStackPlate, final ClampingManner clampingType) {
-		super(view);
-		try {
-			this.basicStackPlate = basicStackPlate;
-			basicStackPlate.addListener(this);
-			view.setBasicStackPlate(basicStackPlate);
-			view.setClampingType(clampingType);
-			view.build(); 
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
+    private BasicStackPlate basicStackPlate;
 
-	@Override
-	public void setPresenter() {
-		getView().setPresenter(this);
-	}
+    public BasicStackPlateLayoutPresenter(final BasicStackPlateLayoutView<BasicStackPlateLayoutPresenter> view,
+            final BasicStackPlate basicStackPlate, final ClampingManner clampingType) {
+        super(view);
+        try {
+            this.basicStackPlate = basicStackPlate;
+            basicStackPlate.addListener(this);
+            view.setBasicStackPlate(basicStackPlate);
+            view.setClampingType(clampingType);
+            view.build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public boolean isConfigured() {
-		return (basicStackPlate.getLayout().getRawStackingPositions().size() > 0);
-	}
-	
-	@Override
-	public void layoutChanged() {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				getView().build();
-			}
-		});
-	}
+    @Override
+    public void setPresenter() {
+        getView().setPresenter(this);
+    }
 
-	@Override
-	public void unregister() {
-		basicStackPlate.removeListener(this);
-	}
+    @Override
+    public boolean isConfigured() {
+        return (basicStackPlate.getLayout().getRawStackingPositions().size() > 0);
+    }
+
+    @Override
+    public void layoutChanged() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                getView().build();
+            }
+        });
+    }
+
+    @Override
+    public void unregister() {
+        basicStackPlate.removeListener(this);
+    }
 }

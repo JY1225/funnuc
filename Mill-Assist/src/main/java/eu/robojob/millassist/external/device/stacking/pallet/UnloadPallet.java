@@ -321,15 +321,15 @@ public class UnloadPallet extends AbstractPallet {
     public void removeFinishedWorkPieces(final int amount) {
         logger.debug("Removing finished workpieces: [" + amount + "].");
         int removedAmount = 0;
-        int stackingPos = 0;
+        int stackingPos = getPalletLayout().getStackingPositions().size() -1;
 
-        PalletStackingPosition stPos = getPalletLayout().getStackingPositions().get(0);
-        while (removedAmount < amount && stackingPos < getPalletLayout().getStackingPositions().size()) {
+        PalletStackingPosition stPos = getPalletLayout().getStackingPositions().get(stackingPos);
+        while (removedAmount < amount && stackingPos > -1) {
             stPos = getPalletLayout().getStackingPositions().get(stackingPos);
             while (removedAmount < amount && removeOneWorkPiece(stPos)) {
                 removedAmount++;
             }
-            stackingPos++;
+            stackingPos--;
         }
     }
 

@@ -98,9 +98,9 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
      * Add a number of work pieces to the current active process flow. This will update the finished amount and the pallet.
      * @param amount The amount of work pieces that will be added
      */
-    public void addWorkpieces(final int amount) {
+    public void addFinishedWorkPieces(final int amount) {
         try{    
-            if(amount > getMaxPiecesToAdd())
+            if(amount + getCurrentFinishedPieces() > getMaxFinishedPieces())
                 throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
             addWorkPieces(amount);
         } catch(IncorrectWorkPieceDataException e) {
@@ -119,18 +119,10 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
     }
     
     /**
-     * Maximum pieces to add = total amount of the process flow - the finished amount of the process flow
-     * @return The maximum number of pieces that can be added
-     */
-    public int getMaxPiecesToAdd() {
-        return unloadPallet.getMaxPiecesPerLayerAmount() * unloadPallet.getLayers() - unloadPallet.getWorkPieceAmount(WorkPiece.Type.FINISHED);
-    }
-    
-    /**
      * Removes an amount of work pieces from the current process flow. This will update the finished amount and the pallet.
      * @param amount The amount of work pieces that will be removed
      */
-    public void removeWorkPieces(final int amount) {
+    public void removeFinishedWorkPieces(final int amount) {
         try {
             if(amount > unloadPallet.getWorkPieceAmount(WorkPiece.Type.FINISHED)) {
                 throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
@@ -146,7 +138,11 @@ public class UnloadPalletAddRemoveFinishedPresenter extends AbstractFormPresente
      * Maximum pieces to remove = number of finished work pieces on the pallet.
      * @return The maximum number of pieces that can be removed
      */
-    public int getMaxPiecesToRemove() {
+    public int getMaxFinishedPieces() {
+        return unloadPallet.getMaxPiecesPerLayerAmount() * unloadPallet.getLayers() - unloadPallet.getWorkPieceAmount(WorkPiece.Type.RAW);
+    }
+    
+    public int getCurrentFinishedPieces() {
         return unloadPallet.getWorkPieceAmount(WorkPiece.Type.FINISHED);
     }
 
