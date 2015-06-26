@@ -159,9 +159,10 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int R_MACHINE_ERROR				= 	BIT0;
 	public static final int R_MACHINE_READY_FOR_START	=	BIT1;
 	public static final int R_MACHINE_IPC_CONNECTION_OK	=	BIT2;
-	// BITS 3-4 UNUSED
-	public static final int R_MACHINE_ZONE1_PROCESSING	=	BIT5;
-	public static final int R_MACHINE_ZONE2_PROCESSING	=	BIT6;
+	public static final int R_MACHINE_ZONE1_PROCESSING	=	BIT3;
+	public static final int R_MACHINE_ZONE2_PROCESSING	=	BIT4;
+	public static final int R_MACHINE_ZONE1_CYCLE_FIN   =   BIT5;
+    public static final int R_MACHINE_ZONE2_CYCLE_FIN   =   BIT6;
 	public static final int R_DOOR_1_OPEN				= 	BIT7;
 	public static final int R_DOOR_1_CLOSED				= 	BIT8;
 	public static final int R_DOOR_2_OPEN				=	BIT9;
@@ -443,9 +444,9 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int CFG_MACHINE_MC_FINISH_DOOR_CLOSED	= 	BIT6;	
 	public static final int CFG_MACHINE_USE_ZONE_FREE			= 	BIT7;
 	public static final int CFG_MACHINE_USE_CYCLE_FINISHED		= 	BIT8;	
-	public static final int CFG_MACHINE_NEGATIVE_MACHINE_ALARM	= 	BIT9;
-	public static final int CFG_MACHINE_SIMULATED				= 	BIT10;
-	// BITS 11 UNUSED
+    public static final int CFG_MACHINE_USE_IN_CYCLE            =   BIT9;
+	public static final int CFG_MACHINE_NEGATIVE_MACHINE_ALARM	= 	BIT10;
+	public static final int CFG_MACHINE_SIMULATED				= 	BIT11;
 	public static final int CFG_DOORS_1_USE_TIMERS				= 	BIT12;	
 	public static final int CFG_DOORS_1_USE_UNLOCK				= 	BIT13;	
 	public static final int CFG_DOORS_2_USE_TIMERS				= 	BIT14;	
@@ -546,10 +547,12 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int PAR_DOORS_1_TIME_DOOR_OPEN 		= 65;
 	public static final int PAR_DOORS_1_TIME_DOOR_CLOSE 	= 66;
 	public static final int PAR_DOORS_1_TIME_BUFFER			= 67;
+    public static final int PAR_DOORS_1_TIME_CLOSE_BEFORE_OPEN_BUFFER = 68;
 
 	public static final int PAR_DOORS_2_TIME_DOOR_OPEN 		= 70;
 	public static final int PAR_DOORS_2_TIME_DOOR_CLOSE 	= 71;
 	public static final int PAR_DOORS_2_TIME_BUFFER			= 72;
+    public static final int PAR_DOORS_2_TIME_CLOSE_BEFORE_OPEN_BUFFER = 73;
 	
 	// CONFIGURATION - FIXTURE PARAMETERS
 	

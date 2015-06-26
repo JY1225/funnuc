@@ -209,10 +209,10 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 			}
 			if(startCyclusSettings.getWorkArea().getWorkAreaManager().getZone().getZoneNr() == 1) {	
 				waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, CNCMachineConstantsDevIntv2.R_MACHINE_ZONE1_PROCESSING);
-				waitForStatusGoneDevIntv2(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, CNCMachineConstantsDevIntv2.R_MACHINE_ZONE1_PROCESSING);
+				waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, CNCMachineConstantsDevIntv2.R_MACHINE_ZONE1_CYCLE_FIN);
 			} else if(startCyclusSettings.getWorkArea().getWorkAreaManager().getZone().getZoneNr() == 2) {
 				waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, CNCMachineConstantsDevIntv2.R_MACHINE_ZONE2_PROCESSING);
-				waitForStatusGoneDevIntv2(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, CNCMachineConstantsDevIntv2.R_MACHINE_ZONE2_PROCESSING);
+				waitForStatusDevIntv2(CNCMachineConstantsDevIntv2.STATUS_SLOT_1, CNCMachineConstantsDevIntv2.R_MACHINE_ZONE2_CYCLE_FIN);
 			} else {
 				throw new IllegalArgumentException("Unknown zone number: " + startCyclusSettings.getWorkArea().getWorkAreaManager().getZone().getZoneNr());
 			}	
