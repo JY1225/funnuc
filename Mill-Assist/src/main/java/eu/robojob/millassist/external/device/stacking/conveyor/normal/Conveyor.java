@@ -36,11 +36,11 @@ import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public class Conveyor extends eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor {
 	
@@ -304,7 +304,8 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	
 	@Override
 	public void prepareForProcess(final ProcessFlow process) throws AbstractCommunicationException, InterruptedException {
-		clearIndications();
+		lastFinishedWorkPieceIndex = 0;
+	    clearIndications();
 		writeRawWorkPieceLength();
 		writeFinishedWorkPieceLength();
 	}
