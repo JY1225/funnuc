@@ -75,7 +75,7 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
         stackPlate.addFinishedWorkPieces(amount, processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
         processFlow.setFinishedAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
         processFlow.setTotalAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
-                + stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);
+                + stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + processFlow.getFinishedAmount() + nbInFlow);
     }
 
     public void removeFinishedWorkPieces(final int amount) {

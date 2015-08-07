@@ -177,21 +177,7 @@ public class Pallet extends AbstractPallet {
     }
 
     public float getR(float orientation) {
-        float deltaR = getTiltedR() - getHorizontalR();
-        if (orientation >= 90) {
-            orientation = orientation - 90;
-            if (deltaR > 0) {
-                return getHorizontalR() + (float) orientation;
-            } else {
-                return getHorizontalR() - (float) orientation;
-            }
-        } else {
-            if (deltaR > 0) {
-                return getHorizontalR() + (float) orientation;
-            } else {
-                return getHorizontalR() - (float) orientation;
-            }
-        }
+        return 90;
     }
 
     public float getHorizontalR() {

@@ -144,7 +144,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                 group.setLayoutY(0 - group.getBoundsInParent().getMinY());
                 
                 if(!controlsHidden) {
-                    buildShapeBox();
+//                    buildShapeBox();
                 }
                 
                 int row = 0;
@@ -191,16 +191,16 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                     
                     controls = new GridPane();
                     
-                    controls.add(typeLabel, column, row);
-                    controls.add(typeBox, column+1, row);
-                    controls.add(nbLayersCardboardLabel, column+2, row);
-                    controls.add(nbLayersField, column+3, row);
+//                    controls.add(typeLabel, column, row);
+//                    controls.add(typeBox, column+1, row);
+                    controls.add(nbLayersCardboardLabel, column, row);
+                    controls.add(nbLayersField, column+1, row);
                     row++;
                     if(unloadPallet.getFinishedWorkPiece().getShape() == WorkPieceShape.CYLINDRICAL) {
-                        controls.add(orientationLabel, column, row);
-                        controls.add(orientationBox, column+1, row);
-                        controls.add(cardboardThicknessLabel, column+2, row);
-                        controls.add(cardboardThicknessField, column+3, row);
+//                        controls.add(orientationLabel, column, row);
+//                        controls.add(orientationBox, column+1, row);
+                        controls.add(cardboardThicknessLabel, column, row);
+                        controls.add(cardboardThicknessField, column+1, row);
                         row++;
                     }
                     else {
@@ -223,7 +223,7 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
                     controls.setHgap(10);
                     contentBox.getChildren().add(controls);
 
-                    setLayoutTypeButtonValues();
+//                    setLayoutTypeButtonValues();
                 }
                 
                 contentBox.getChildren().add(root);
@@ -310,22 +310,15 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
      * @return Rectangle The marker to add
      */
     private Rectangle createMarker(IDrawableObject workPieceRepre) {
-        Rectangle marker = workPieceRepre.createMarker(false);
-        if(unloadPallet.getPalletLayout().isRotate90()) {
-            if(unloadPallet.getPalletLayout().getVerticalR() == -90) {
-                marker.setTranslateX(workPieceRepre.getXTranslationMarker() - 10);
+        Rectangle marker = null;
+            if(unloadPallet.getPalletLayout().getLayoutType() == PalletLayoutType.NOT_SHIFTED_HORIZONTAL) {
+                marker = workPieceRepre.createMarker(true);
+                marker.setTranslateY(10);
+            } else {
+                marker = workPieceRepre.createMarker(false);
+                marker.setTranslateX(workPieceRepre.getXTranslationMarker() -10);
             }
-            else {
-                marker.setTranslateX(10);
-            }
-        } else {
-            if(unloadPallet.getPalletLayout().getHorizontalR() == 180) {
-                marker.setTranslateX(workPieceRepre.getXTranslationMarker() - 10);
-            }
-            else {
-                marker.setTranslateX(10);
-            }
-        }
+
         return marker;
     }
     

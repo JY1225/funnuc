@@ -220,7 +220,7 @@ public class PalletLayout {
         this.horizontalR = horizontalR;
         this.verticalR = verticalR;
         this.name = name;
-        this.layoutType = PalletLayoutType.OPTIMAL;
+        this.layoutType = PalletLayoutType.NOT_SHIFTED_VERTICAL;
         this.cardBoardThickness = 0;
     }
     

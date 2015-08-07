@@ -16,6 +16,7 @@ import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.event.ProcessChangedEvent;
 import eu.robojob.millassist.ui.configure.device.stacking.pallet.PalletDeviceSettings;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -29,6 +30,7 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 	private DeviceManager deviceManager;
 	
     private static final String NO_GRID_SELECTED = "StackingDeviceConfigurePresenter.noGridSelected";
+    private static final String INCORRECT_GRID_SELECTED = "StackingDeviceConfigurePresenter.incorrectGridSelected";
 	
 	private static Logger logger = LogManager.getLogger(StackingDeviceConfigurePresenter.class.getName());
 	
@@ -77,7 +79,11 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
                     getView().showNotification(Translator.getTranslation(NO_GRID_SELECTED), Type.WARNING);
                     return;
                 } else {
-                    ((Pallet) device).setGridPlate(deviceManager.getGridPlateByName(gridPlateName));
+                    if(!(grid.getGridHoles().first().getAngle() == 90 || grid.getGridHoles().first().getAngle() == 0)) {
+                        getView().showNotification(Translator.getTranslation(INCORRECT_GRID_SELECTED), Type.WARNING);
+                        return;
+                    }
+                    ((Pallet) device).setGridPlate(grid);
                 }
 			}
 			if(prevDevice instanceof UnloadPallet) {
@@ -89,6 +95,7 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			}
 			if(device instanceof UnloadPallet) {
 			    ((UnloadPallet) device).setPalletLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
+//			    ((UnloadPallet) device).getPalletLayout().setLayoutType(layoutType);
 			    if(prevDevice instanceof BasicStackPlate) {
 			        if(deviceInfo.hasPutStep()) {
 			            ((BasicStackPlate) prevDevice).setFinishedWorkPiece(null);

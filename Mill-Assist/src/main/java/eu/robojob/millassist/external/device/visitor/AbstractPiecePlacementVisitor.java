@@ -63,7 +63,6 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
                     && (stackingPos.getAmount() > 0)) {
                 Coordinates c = new Coordinates(stackingPos.getPickPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
-                c.setR(getOptimalAngle(stackPlate, c.getR()));
                 return c;
             }
         }
@@ -114,14 +113,12 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
                 stackPlate.setCurrentPutLocation(stackingPos);
                 Coordinates c = new Coordinates(stackingPos.getPutPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
-                c.setW(getOptimalAngle(stackPlate, c.getW()));
                 return c;
             } else if (stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)
                     && (stackingPos.getAmount() < stackPlate.getLayout().getLayers())) {
                 stackPlate.setCurrentPutLocation(stackingPos);
                 Coordinates c = new Coordinates(stackingPos.getPutPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
-                c.setR(getOptimalAngle(stackPlate, c.getR()));
                 return c;
             }
         }
@@ -138,7 +135,6 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
                 stackPlate.setCurrentPickLocation(stackingPos);
                 Coordinates c = new Coordinates(stackingPos.getPickPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
-                c.setR(getOptimalAngle(stackPlate, c.getR()));
                 return c;
             }
         }
@@ -154,7 +150,6 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
             if ((stackingPos.getWorkPiece() == null) && (stackingPos.getWorkPiece().getType() == type)) {
                 Coordinates c = new Coordinates(stackingPos.getPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
-                c.setR(getOptimalAngle(unloadPallet, c.getR()));
                 return c;
             }
         }
@@ -180,7 +175,9 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
                 } else {
                     c.offset(new Coordinates(0, 0, unloadPallet.getPalletLayout().getPalletHeight(), 0, 0, 0));
                 }
-                c.setR(getOptimalAngle(unloadPallet, c.getR()));
+                if(clampType.isChanged()) {
+                    c.setR(c.getR() + workArea.getWorkAreaManager().getUserFrame().getLocation().getR());
+                }
                 return c;
             }
         }
@@ -193,7 +190,9 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
                     && (stackingPos.getAmount() > 0)) {
                 Coordinates c = new Coordinates(stackingPos.getPickPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
-                c.setR(getOptimalAngle(pallet, c.getR()));
+                if(c.getR() == 180) {
+                    c.setR(0);
+                }
                 return c;
             }
         }
@@ -212,7 +211,9 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
                 Coordinates c = new Coordinates(stackingPos.getPutPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
                 c.offset(new Coordinates(0, 0, pallet.getPalletLayout().getPalletHeight(), 0, 0, 0));
-                c.setR(getOptimalAngle(pallet, c.getR()));
+                if(c.getR() == 180) {
+                    c.setR(0);
+                }
                 return c;
             } else if (stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)
                     && (stackingPos.getAmount() < pallet.getGridLayout().getLayers())) {
@@ -220,8 +221,10 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
                 Coordinates c = new Coordinates(stackingPos.getPutPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
                 c.offset(new Coordinates(0, 0, pallet.getPalletLayout().getPalletHeight(), 0, 0, 0));
-                c.setR(getOptimalAngle(pallet, c.getR()));
-                return c;
+                if(c.getR() == 180) {
+                    c.setR(0);
+                }
+               return c;
             }
         }
         return null;
@@ -238,23 +241,13 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
                 Coordinates c = new Coordinates(stackingPos.getPickPosition());
                 c.offset(workArea.getDefaultClamping().getRelativePosition());
                 c.offset(new Coordinates(0, 0, pallet.getPalletLayout().getPalletHeight(), 0, 0, 0));
-                c.setR(getOptimalAngle(pallet, c.getR()));
+                if(c.getR() == 180) {
+                    c.setR(0);
+                }
                 return c;
             }
         }
         return null;
-    }
-
-    public float getOptimalAngle(AbstractStackingDevice device, float angle) {
-        System.out.println(angle);
-        if (angle <= 45) {
-            return angle;
-        } else if (angle <= 135) {
-            return angle - 90;
-        } else if (angle <= 180) {
-            return angle - 180;
-        }
-        return angle;
     }
 
 }

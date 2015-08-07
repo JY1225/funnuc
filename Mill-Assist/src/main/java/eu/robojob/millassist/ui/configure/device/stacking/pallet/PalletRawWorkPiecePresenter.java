@@ -29,16 +29,21 @@ public class PalletRawWorkPiecePresenter extends AbstractRawWorkPiecePresenter<P
             getLayout().configureStackingPositions(deviceSettings.getRawWorkPiece(),
                     deviceSettings.getFinishedWorkPiece(), deviceSettings.getOrientation(), deviceSettings.getLayers());
             getLayout().initRawWorkPieces(deviceSettings.getRawWorkPiece(), deviceSettings.getAmount());
-            if ((deviceSettings.getOrientation() == 90)
-                    || ((deviceSettings.getOrientation() == 45) && (getPallet().getTiltedR() < getPallet().getHorizontalR() ))
-                    || ((deviceSettings.getOrientation() == 45) && (getPallet().getTiltedR() > getPallet().getHorizontalR() ))) {
-                pickStep.getProcessFlow().getClampingType().setChanged(true);
-            } else {
-                pickStep.getProcessFlow().getClampingType().setChanged(false);
-            }
-//            if(pickStep.getProcessFlow().hasBasicStackPlateForFinishedPieces()) {
-//                pickStep.getProcessFlow().setFinishedAmount(getPallet().getGridLayout().getMaxPiecesPossibleAmount());
+//            if ((deviceSettings.getOrientation() == 90)
+//                    || ((deviceSettings.getOrientation() == 45) && (getPallet().getTiltedR() < getPallet().getHorizontalR() ))
+//                    || ((deviceSettings.getOrientation() == 45) && (getPallet().getTiltedR() > getPallet().getHorizontalR() ))) {
+//                pickStep.getProcessFlow().getClampingType().setChanged(true);
+//            } else {
+//                pickStep.getProcessFlow().getClampingType().setChanged(false);
 //            }
+            if(getPallet().getGridPlate().getGridHoles().first().getAngle() == 90) {
+                pickStep.getProcessFlow().getClampingType().setChanged(false);
+            } else if (getPallet().getGridPlate().getGridHoles().first().getAngle() == 0) {
+                pickStep.getProcessFlow().getClampingType().setChanged(true);
+            }
+            if(pickStep.getProcessFlow().hasBasicStackPlateForFinishedPieces()) {
+                pickStep.getProcessFlow().setFinishedAmount(getPallet().getGridLayout().getMaxPiecesPossibleAmount());
+            }
             getView().hideNotification();
             if (!isWeightOk()) {
                 getView().showNotification(Translator.getTranslation(WEIGHT_ZERO), Type.WARNING);
