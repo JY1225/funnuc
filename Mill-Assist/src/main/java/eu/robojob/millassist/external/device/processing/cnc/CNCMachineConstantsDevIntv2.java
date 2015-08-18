@@ -407,7 +407,8 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int ERR_MC_FINISH_NOT_IN_MODE_MC		=	BIT3;
 	public static final int ERR_MC_FINISH_TIMEOUT_DOOR_CLOSED	=	BIT4;
 	public static final int ERR_MC_FINISH_ERROR_OCCURED			=	BIT5;
-	// BITS 6-10 UNUSED
+	// BITS 6-9 UNUSED
+	public static final int ERR_CFG_IN_CYCLE_CYCLE_FIN          =   BIT10;
 	public static final int ERR_PROBU_COMM_ERROR				=	BIT11;
 	public static final int ERR_PROBU_ALARM						=	BIT12;
 	public static final int ERR_PROBU_ANYBU_ALARM				=	BIT13;
@@ -419,6 +420,7 @@ public final class CNCMachineConstantsDevIntv2 {
 		ERR_MC_FINISH_NOT_IN_MODE_MC,
 		ERR_MC_FINISH_TIMEOUT_DOOR_CLOSED,
 		ERR_MC_FINISH_ERROR_OCCURED,
+		ERR_CFG_IN_CYCLE_CYCLE_FIN,
 		ERR_PROBU_COMM_ERROR,
 		ERR_PROBU_ALARM,
 		ERR_PROBU_ANYBU_ALARM};
