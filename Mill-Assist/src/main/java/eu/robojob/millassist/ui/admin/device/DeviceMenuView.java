@@ -124,6 +124,11 @@ public class DeviceMenuView extends AbstractMenuView<DeviceMenuPresenter> {
     }
 
     public void disableUnloadPalletMenuItem() {
+        getMenuItem(8).setVisible(false);
+        getMenuItem(8).setManaged(false);
+    }
+    
+    public void disablePalletLayoutMenuItem() {
         getMenuItem(9).setVisible(false);
         getMenuItem(9).setManaged(false);
     }

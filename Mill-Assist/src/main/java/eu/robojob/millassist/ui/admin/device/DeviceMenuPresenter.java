@@ -99,6 +99,9 @@ public class DeviceMenuPresenter extends AbstractSubMenuPresenter<DeviceMenuView
         if (!palletPresent) {
             getView().disablePalletMenuItem();
         }
+        if (!unloadPalletPresent && !palletPresent) {
+            getView().disablePalletLayoutMenuItem();
+        }
 
     }
 
