@@ -32,15 +32,20 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.processing.reversal.ReversalUnitSettings;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
+import eu.robojob.millassist.external.device.stacking.pallet.AbstractPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.external.robot.Gripper;
 import eu.robojob.millassist.external.robot.GripperBody;
 import eu.robojob.millassist.external.robot.GripperHead;
-import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.external.robot.RobotManager;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
 import eu.robojob.millassist.external.robot.RobotProcessingWhileWaitingSettings;
@@ -62,6 +67,7 @@ import eu.robojob.millassist.process.ProcessingWhileWaitingStep;
 import eu.robojob.millassist.process.PutAndWaitStep;
 import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.RobotStep;
+import eu.robojob.millassist.ui.configure.device.stacking.pallet.PalletDeviceSettings;
 import eu.robojob.millassist.workpiece.WorkPiece;
 
 public class ProcessFlowMapper {
@@ -184,7 +190,9 @@ public class ProcessFlowMapper {
 		for (DeviceSettings deviceSettings : processFlow.getDeviceSettings().values()) {
 			deviceSettings.setId(0);
 			if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
-				((AbstractStackPlateDeviceSettings) deviceSettings).getFinishedWorkPiece().setId(0);
+			    if(((AbstractStackPlateDeviceSettings) deviceSettings).getFinishedWorkPiece()!=null) {
+			        ((AbstractStackPlateDeviceSettings) deviceSettings).getFinishedWorkPiece().setId(0);
+			    }
 				((AbstractStackPlateDeviceSettings) deviceSettings).getRawWorkPiece().setId(0);
 			}
 		}
@@ -478,16 +486,33 @@ public class ProcessFlowMapper {
 				}
 			}
 		}
-		if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
+		if(deviceSettings instanceof PalletDeviceSettings) {
+            PalletDeviceSettings uSettings = (PalletDeviceSettings) deviceSettings;
+            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO PALLETSETTINGS (ID, RAWWORKPIECE, FINISHEDWORKPIECE, GRID_ID, LAYERS, AMOUNT, PALLET_LAYOUT_ID) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            stmt4.setInt(1, uSettings.getId());
+            stmt4.setInt(2, uSettings.getRawWorkPiece().getId());
+            stmt4.setInt(3, uSettings.getFinishedWorkPiece().getId());
+            stmt4.setInt(4, uSettings.getGridPlate().getId());
+            stmt4.setInt(5, uSettings.getLayers());
+            stmt4.setInt(6, uSettings.getAmount());
+            stmt4.setInt(7, uSettings.getPalletLayout().getId());
+            stmt4.executeUpdate();
+        }else if (deviceSettings instanceof AbstractStackPlateDeviceSettings) {
 			AbstractStackPlateDeviceSettings bspSettings = (AbstractStackPlateDeviceSettings) deviceSettings;
 			generalMapper.saveWorkPiece(bspSettings.getRawWorkPiece());
-			generalMapper.saveWorkPiece(bspSettings.getFinishedWorkPiece());
+			if(bspSettings.getFinishedWorkPiece() != null) {
+			    generalMapper.saveWorkPiece(bspSettings.getFinishedWorkPiece());
+			}
 			PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO STACKPLATESETTINGS (ID, AMOUNT, ORIENTATION, RAWWORKPIECE, FINISHEDWORKPIECE, LAYERS, STUDHEIGHT) VALUES (?, ?, ?, ?, ?, ?, ?)");
 			stmt4.setInt(1, bspSettings.getId());
 			stmt4.setInt(2, bspSettings.getAmount());
 			stmt4.setFloat(3, bspSettings.getOrientation());
 			stmt4.setInt(4, bspSettings.getRawWorkPiece().getId());
-			stmt4.setInt(5, bspSettings.getFinishedWorkPiece().getId());
+			if(bspSettings.getFinishedWorkPiece() != null) {
+			    stmt4.setInt(5, bspSettings.getFinishedWorkPiece().getId());
+			} else {
+			    stmt4.setInt(5, bspSettings.getRawWorkPiece().getId());
+			}
 			stmt4.setInt(6,  bspSettings.getLayers());
 			stmt4.setFloat(7,  bspSettings.getStudHeight());
 			stmt4.executeUpdate();
@@ -526,7 +551,17 @@ public class ProcessFlowMapper {
 			stmt4.setFloat(2, rSettings.getConfigWidth());
 			stmt4.setBoolean(3, rSettings.isShiftedOrigin());
 			stmt4.executeUpdate();
-		}
+		} else if (deviceSettings instanceof UnloadPalletDeviceSettings) {
+		    UnloadPalletDeviceSettings uSettings = (UnloadPalletDeviceSettings) deviceSettings;
+            PreparedStatement stmt4 = ConnectionManager.getConnection().prepareStatement("INSERT INTO UNLOADPALLETSETTINGS (ID, FINISHEDWORKPIECE, LAYOUT_TYPE, LAYERS_CARDBOARD, PALLET_LAYOUT, CARDBOARD_THICKNESS) VALUES (?, ?, ?, ?, ?, ?)");
+            stmt4.setInt(1, uSettings.getId());
+            stmt4.setInt(2, uSettings.getFinishedWorkPiece().getId());
+            stmt4.setInt(3, uSettings.getLayoutType().getId());
+            stmt4.setInt(4, uSettings.getLayersBeforeCardBoard());
+            stmt4.setInt(5, uSettings.getLayout().getId());
+            stmt4.setFloat(6, uSettings.getCardBoardThickness());
+            stmt4.executeUpdate();
+        }
 	}
 	
 	private void saveRobotSettings(final int processFlowId, final AbstractRobot robot, final RobotSettings robotSettings) throws SQLException {
@@ -656,6 +691,12 @@ public class ProcessFlowMapper {
 			} else if (device instanceof ReversalUnit) {
 				ReversalUnitSettings reversalSettings = getReversalUnitSettings(id, clampings);
 				settings.put(device, reversalSettings);
+			} else if (device instanceof UnloadPallet) {
+			    UnloadPalletDeviceSettings unloadPalletSettings = getUnloadPalletSettings(processId, id, (UnloadPallet)device);
+			    settings.put(device, unloadPalletSettings);
+			} else if(device instanceof Pallet) {
+			    AbstractStackPlateDeviceSettings palletDeviceSettings = getPalletSettings(processId, id, (Pallet) device);
+			    settings.put(device, palletDeviceSettings);
 			} else {
 				DeviceSettings deviceSettings = new DeviceSettings(clampings);
 				deviceSettings.setId(id);
@@ -788,6 +829,42 @@ public class ProcessFlowMapper {
 		}
 		return basicStackPlateSettings;
 	}
+	
+	private UnloadPalletDeviceSettings getUnloadPalletSettings(final int processFlowId, final int deviceSettingsId, final UnloadPallet unloadPallet) throws SQLException {
+	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM UNLOADPALLETSETTINGS WHERE ID = ?");
+        stmt.setInt(1, deviceSettingsId);
+        ResultSet results = stmt.executeQuery();
+        UnloadPalletDeviceSettings unloadPalletSettings = null;
+        if (results.next()) {
+            int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
+            int layoutType = results.getInt("LAYOUT_TYPE");
+            int layersBeforeCardBoard = results.getInt("LAYERS_CARDBOARD");
+            int palletLayoutId = results.getInt("PALLET_LAYOUT");
+            float carBoardThickness = results.getFloat("CARDBOARD_THICKNESS");
+            WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
+            unloadPalletSettings = new UnloadPalletDeviceSettings(finishedWorkPiece, PalletLayoutType.getTypeById(layoutType), layersBeforeCardBoard, deviceManager.getPalletLayoutById(palletLayoutId), carBoardThickness);
+        }
+        return unloadPalletSettings;
+	}
+
+	private PalletDeviceSettings getPalletSettings(final int processFlowId, final int deviceSettingsId, final AbstractPallet unloadPallet) throws SQLException {
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PALLETSETTINGS WHERE ID = ?");
+        stmt.setInt(1, deviceSettingsId);
+        ResultSet results = stmt.executeQuery();
+        PalletDeviceSettings palletSettings = null;
+        if (results.next()) {
+            int rawWorkPieceId = results.getInt("RAWWORKPIECE");
+            int finishedWorkPieceId = results.getInt("FINISHEDWORKPIECE");
+            int gridId = results.getInt("GRID_ID");
+            int layers =results.getInt("LAYERS");
+            int amount = results.getInt("AMOUNT");
+            int palletLayoutId = results.getInt("PALLET_LAYOUT_ID");
+            WorkPiece finishedWorkPiece = generalMapper.getWorkPieceById(processFlowId, finishedWorkPieceId);
+            WorkPiece rawWorkPiece = generalMapper.getWorkPieceById(processFlowId, rawWorkPieceId);
+            palletSettings = new PalletDeviceSettings(rawWorkPiece, finishedWorkPiece,deviceManager.getGridPlateByID(gridId), amount, layers, deviceManager.getPalletLayoutById(palletLayoutId));
+        }
+        return palletSettings;
+    }
 	
 	public List<AbstractProcessStep> getProcessSteps(final int processId) throws SQLException {
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM STEP WHERE PROCESSFLOW = ? ORDER BY INDEX ASC");

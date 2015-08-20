@@ -276,6 +276,7 @@ public class ReversalUnitConfigureView extends AbstractFormView<ReversalUnitConf
 	}
 	
 	public void setUserFrames(final List<String> userFrames) {
+	    cbbUserFrame.valueProperty().set(null);
 		userFrameNames.clear();
 		userFrameNames.addAll(userFrames);
 	}

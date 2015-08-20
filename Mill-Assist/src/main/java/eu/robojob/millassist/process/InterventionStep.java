@@ -9,15 +9,18 @@ import eu.robojob.millassist.external.device.DeviceActionException;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.robot.RobotActionException;
 import eu.robojob.millassist.process.ProcessFlow.Mode;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.process.execution.ProcessExecutor;
+import eu.robojob.millassist.workpiece.WorkPiece.Type;
 
 public class InterventionStep extends AbstractProcessStep implements DeviceStep {
 
 	private int frequency;
 	private DeviceInterventionSettings interventionSettings;
+	private String customMessage="";
 	
 	private static Logger logger = LogManager.getLogger(InterventionStep.class.getName());
 		
@@ -30,6 +33,11 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 	public InterventionStep(final DeviceInterventionSettings interventionSettings, final int frequency) {
 		this(null, interventionSettings, frequency);
 	}
+	
+	public InterventionStep(final ProcessFlow processFlow, final DeviceInterventionSettings interventionSettings, final int frequency, final String customMessage) {
+        this(processFlow, interventionSettings, frequency);
+        this.customMessage = customMessage;
+    }
 	
 	//TODO check implementation intervention step!!
 	@Override
@@ -56,8 +64,10 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 						}
 					}
 					logger.debug("Device: [" + getDevice() + "] prepared for intervention.");
+					
 					getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(getProcessFlow(), this, StatusChangedEvent.INTERVENTION_READY, workPieceId));
 					getProcessFlow().setMode(Mode.PAUSED);
+					
 				}
 			} catch(AbstractCommunicationException | DeviceActionException | InterruptedException e) {
 				throw e;
@@ -87,6 +97,10 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 	public boolean isInterventionNeeded(final int finAmount) {
 		int currentStepIndex = getProcessFlow().getStepIndex(this);
 		int finishedAmount = finAmount;
+		if(getDeviceSettings().getDevice() instanceof UnloadPallet) {
+            finishedAmount += ((UnloadPallet)getDeviceSettings().getDevice()).getWorkPieceAmount(Type.FINISHED) - finAmount;
+            return ((finishedAmount > 0) && (finishedAmount % frequency == 0));
+        }
 		finishedAmount++;
 		if (currentStepIndex < getProcessFlow().getCurrentIndex(ProcessFlow.WORKPIECE_0_ID)) {
 			finishedAmount++;
@@ -94,6 +108,7 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 		if (currentStepIndex < getProcessFlow().getCurrentIndex(ProcessFlow.WORKPIECE_1_ID)) {
 			finishedAmount++;
 		}
+		
 		return ((finishedAmount > 0) && (finishedAmount % frequency == 0));
 	}
 
@@ -131,5 +146,9 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 	public AbstractDevice getDevice() {
 		return interventionSettings.getDevice();
 	}
+
+    public String getCustomMessage() {
+        return this.customMessage;
+    }
 
 }

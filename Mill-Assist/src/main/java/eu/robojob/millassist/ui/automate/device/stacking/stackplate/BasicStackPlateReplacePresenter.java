@@ -44,7 +44,7 @@ public class BasicStackPlateReplacePresenter extends AbstractFormPresenter<Basic
 					throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
 				} else {
 					processFlow.setFinishedAmount(amount + processFlow.getFinishedAmount());
-					stackPlate.placeFinishedWorkPieces(amount, processFlow.hasBinForFinishedPieces());
+					stackPlate.placeFinishedWorkPieces(amount, processFlow.hasBinForFinishedPieces() || processFlow.hasUnloadPalletForFinishedPieces());
 				}
 			} catch (IncorrectWorkPieceDataException e) {
 				getView().showNotification(e.getLocalizedMessage(), Type.WARNING);

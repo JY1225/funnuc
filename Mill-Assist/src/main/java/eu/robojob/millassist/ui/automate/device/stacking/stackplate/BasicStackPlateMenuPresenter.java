@@ -6,21 +6,18 @@ import eu.robojob.millassist.ui.controls.TextInputControlListener;
 public class BasicStackPlateMenuPresenter extends AbstractMenuPresenter<BasicStackPlateMenuView> {
 
 	private BasicStackPlateLayoutPresenter layoutPresenter;
-	private BasicStackPlateReplacePresenter refillPresenter;
 	private BasicStackPlateAddPresenter addPresenter;
 	
 	public BasicStackPlateMenuPresenter(final BasicStackPlateMenuView view, final BasicStackPlateLayoutPresenter layoutPresenter,
-			final BasicStackPlateReplacePresenter refillPresenter, final BasicStackPlateAddPresenter addPresenter) {
+			final BasicStackPlateAddPresenter addPresenter) {
 		super(view);
 		view.build();
 		this.layoutPresenter = layoutPresenter;
-		this.refillPresenter = refillPresenter;
 		this.addPresenter = addPresenter;
 	}
 
 	@Override
 	public void setTextFieldListener(final TextInputControlListener listener) {
-		refillPresenter.setTextFieldListener(listener);
 		addPresenter.setTextFieldListener(listener);
 	}
 
@@ -37,12 +34,6 @@ public class BasicStackPlateMenuPresenter extends AbstractMenuPresenter<BasicSta
 	public void showLayout() {
 		getView().setLayoutActive();
 		getParent().setBottomRight(layoutPresenter.getView());
-	}
-	
-	public void showRefill() {
-		getView().setRefillActive();
-		refillPresenter.getView().refresh();
-		getParent().setBottomRight(refillPresenter.getView());
 	}
 	
 	public void showAdd() {

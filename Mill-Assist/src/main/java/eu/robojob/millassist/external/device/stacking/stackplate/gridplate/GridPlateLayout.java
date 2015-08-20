@@ -52,7 +52,7 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 				double theta = hole.getAngle() * Math.PI / 180;
 				float extraX = (float) (side * Math.cos(alpha + theta));
 				float extraY = (float) (side * Math.sin(alpha + theta));
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(hole.getX() + extraX + gridPlate.getOffsetX(), hole.getY() + extraY + gridPlate.getOffsetY(), getStackPlate().getR(hole.getAngle()), null, 0, hole.getAngle());
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(hole.getX() + extraX + gridPlate.getOffsetX(), hole.getY() + extraY + gridPlate.getOffsetY(), getR(hole.getAngle()), null, 0, hole.getAngle());
 				getRawStackingPositions().add(stPos);
 			} else {
 				double tangens = (double) dimensions.getLength()/2 / ((double) gridPlate.getHoleWidth() - dimensions.getWidth()/2);
@@ -62,7 +62,7 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 				theta = Math.PI/2 - (Math.PI/2 - (theta - Math.PI/2) + alpha);
 				float extraX = Math.abs((float) (side * Math.cos(theta)));
 				float extraY = (float) (side * Math.sin(theta));
-				StackPlateStackingPosition stPos = new StackPlateStackingPosition(hole.getX() - extraX + gridPlate.getOffsetX(), hole.getY() - extraY + gridPlate.getOffsetY(), getStackPlate().getR(hole.getAngle()), null, 0, hole.getAngle());
+				StackPlateStackingPosition stPos = new StackPlateStackingPosition(hole.getX() - extraX + gridPlate.getOffsetX(), hole.getY() - extraY + gridPlate.getOffsetY(), getR(hole.getAngle()), null, 0, hole.getAngle());
 				getRawStackingPositions().add(stPos);
 			}
 		}	
@@ -109,4 +109,22 @@ public class GridPlateLayout extends AbstractStackPlateLayout {
 	public void setGridPlate(GridPlate gridPlate) {
 		this.gridPlate = gridPlate;
 	}
+	
+	private float getR(float orientation) {
+	    if(getStackPlate() != null) {
+	        return getStackPlate().getR(orientation);
+	    } else if(getPallet() != null) {
+	        return getPallet().getR(orientation);
+	    } 
+	    return 0;
+	}
+	
+    public float getRRound() {
+	    if(getStackPlate() != null) {
+	        return getStackPlate().getRRound();
+	    }else if(getPallet() != null) {
+            return getPallet().getHorizontalR();
+        }
+	    return 0;
+    }
 }

@@ -6,17 +6,31 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceManager;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
+import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
 import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.InterventionStep;
+import eu.robojob.millassist.process.PickStep;
+import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.event.ProcessChangedEvent;
+import eu.robojob.millassist.ui.configure.device.stacking.pallet.PalletDeviceSettings;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
+import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.util.Translator;
 
 public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<StackingDeviceConfigureView, AbstractStackingDeviceMenuPresenter> {
 
 	private DeviceInformation deviceInfo;
 	private DeviceManager deviceManager;
+	
+    private static final String NO_GRID_SELECTED = "StackingDeviceConfigurePresenter.noGridSelected";
+    private static final String INCORRECT_GRID_SELECTED = "StackingDeviceConfigurePresenter.incorrectGridSelected";
 	
 	private static Logger logger = LogManager.getLogger(StackingDeviceConfigurePresenter.class.getName());
 	
@@ -43,7 +57,7 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 		getView().setPresenter(this);
 	}
 	
-	public void changedDevice(final String deviceName, final String gridPlateName) {
+	public void changedDevice(final String deviceName, final String gridPlateName, final String palletLayoutName) {
 		AbstractDevice device = getDeviceByName(deviceName);
 		AbstractDevice prevDevice = deviceInfo.getDevice();
 		if ((prevDevice instanceof AbstractStackingDevice) && (device instanceof AbstractStackingDevice)) {
@@ -57,9 +71,41 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 				logger.debug("Gridplate " + gridPlateName + " added.");
 				((BasicStackPlate) device).setGridPlate(deviceManager.getGridPlateByName(gridPlateName));
 			}
+			if(device instanceof Pallet) {
+			    logger.debug("Gridplate " + gridPlateName + " added.");
+                ((Pallet) device).setPalletLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
+                GridPlate grid = deviceManager.getGridPlateByName(gridPlateName);
+                if (grid == null) {
+                    getView().showNotification(Translator.getTranslation(NO_GRID_SELECTED), Type.WARNING);
+                    return;
+                } else {
+                    if(!(grid.getGridHoles().first().getAngle() == 90 || grid.getGridHoles().first().getAngle() == 0)) {
+                        getView().showNotification(Translator.getTranslation(INCORRECT_GRID_SELECTED), Type.WARNING);
+                        return;
+                    }
+                    ((Pallet) device).setGridPlate(grid);
+                }
+			}
+			if(prevDevice instanceof UnloadPallet) {
+			    ((UnloadPallet) prevDevice).setPalletLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
+			    
+			    if(deviceInfo.getPutStep().getProcessFlow().getProcessSteps().get(0) instanceof InterventionStep){
+			        deviceInfo.getPutStep().getProcessFlow().removeStep(deviceInfo.getPutStep().getProcessFlow().getProcessSteps().get(0));
+			    }
+			}
+			if(device instanceof UnloadPallet) {
+			    ((UnloadPallet) device).setPalletLayout(deviceManager.getPalletLayoutByName(palletLayoutName));
+//			    ((UnloadPallet) device).getPalletLayout().setLayoutType(layoutType);
+			    if(prevDevice instanceof BasicStackPlate) {
+			        if(deviceInfo.hasPutStep()) {
+			            ((BasicStackPlate) prevDevice).setFinishedWorkPiece(null);
+			            ((AbstractStackPlateDeviceSettings)deviceInfo.getPutStep().getProcessFlow().getDeviceSettings(prevDevice)).setFinishedWorkPiece(null);
+			        }
+			    }
+			}
+
 		}
 		if (deviceInfo.hasPickStep()) {
-			// TODO remove device settings currently present, only if this was only step with this device!
 			// change device for pick
 			deviceInfo.getPickStep().getProcessFlow().setDeviceSettings(device, device.getDeviceSettings());
 			device.loadDeviceSettings(deviceInfo.getPickStep().getProcessFlow().getDeviceSettings(device));
@@ -69,6 +115,10 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			//deviceInfo.getPickStep().setRelativeTeachedOffset(null);
 			deviceInfo.getPickStep().getProcessFlow().initialize();
 			deviceInfo.getPickStep().getProcessFlow().processProcessFlowEvent(new ProcessChangedEvent(deviceInfo.getPickStep().getProcessFlow()));
+			// TODO remove device settings currently present, only if this was only step with this device!
+			if (!deviceInfo.getPickStep().getProcessFlow().getDevices().contains(prevDevice)) {
+			    deviceInfo.getPickStep().getProcessFlow().removeDeviceSettings(prevDevice);
+			}
 		} else if (deviceInfo.hasPutStep()) {
 			// change device for put
 			deviceInfo.getPutStep().getProcessFlow().setDeviceSettings(device, device.getDeviceSettings());
@@ -79,6 +129,9 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 			//deviceInfo.getPutStep().setRelativeTeachedOffset(null);
 			deviceInfo.getPutStep().getProcessFlow().initialize();
 			deviceInfo.getPutStep().getProcessFlow().processProcessFlowEvent(new ProcessChangedEvent(deviceInfo.getPutStep().getProcessFlow()));
+			if (!deviceInfo.getPutStep().getProcessFlow().getDevices().contains(prevDevice)) {
+                deviceInfo.getPutStep().getProcessFlow().removeDeviceSettings(prevDevice);
+			}
 		} else {
 			throw new IllegalStateException("No pick or put step.");
 		}
@@ -114,6 +167,32 @@ public class StackingDeviceConfigurePresenter extends AbstractFormPresenter<Stac
 	
 	public void updateGridPlates() {
 		getView().setGridPlates(deviceManager.getAllGridPlateNames());
+	}
+	
+	public void updatePalletLayouts() {
+	    getView().setPalletLayouts(deviceManager.getAllPalletLayoutNames());
+	}
+	
+	public String getPalletLayoutName() {
+	    if(deviceInfo.getDeviceSettings() instanceof UnloadPalletDeviceSettings) {
+	        UnloadPalletDeviceSettings devSettings = (UnloadPalletDeviceSettings) deviceInfo.getDeviceSettings();
+            return devSettings.getLayout().getName();
+	    } else if(deviceInfo.getDeviceSettings() instanceof PalletDeviceSettings) {
+	        PalletDeviceSettings devSettings = (PalletDeviceSettings) deviceInfo.getDeviceSettings();
+            return devSettings.getPalletLayout().getName();
+	    } else {
+	        return null;
+	    }
+
+	}
+	
+	public void updateStackingDevices() {
+	    if(deviceInfo.hasPutStep()) {
+	        AbstractProcessStep firstStep = deviceInfo.getPutStep().getProcessFlow().getStep(0);
+	        if(firstStep != null && firstStep instanceof PickStep) {
+	            getView().setStackingDeviceIds(deviceManager.getStackingToDeviceNamesForStrackingFromDevice(((PickStep)firstStep).getDevice()));
+	        }
+	    }
 	}
 	
 }

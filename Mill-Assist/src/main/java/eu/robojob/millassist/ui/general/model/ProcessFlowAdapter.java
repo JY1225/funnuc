@@ -1,10 +1,14 @@
 package eu.robojob.millassist.ui.general.model;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.robojob.millassist.external.device.AbstractDevice;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.EDeviceGroup;
 import eu.robojob.millassist.external.device.SimpleWorkArea;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.InterventionStep;
@@ -27,6 +31,7 @@ public class ProcessFlowAdapter {
 	//private static final int MAX_DEVICE_AMOUNT = 6;
 	private static final int MAX_DEVICE_AMOUNT = 100;
 	private boolean needsRevisitWP = false;
+	private static Logger logger = LogManager.getLogger(ProcessFlowAdapter.class.getName());
 	
 	private ProcessFlow processFlow;
 	
@@ -164,6 +169,7 @@ public class ProcessFlowAdapter {
 	public void removeDeviceSteps(final int deviceIndex) {
 		DeviceInformation deviceInfo = getDeviceInformation(deviceIndex);
 		processFlow.removeSteps(deviceInfo.getSteps());
+	    logger.info("Device " + deviceInfo.getDevice().toString() + " removed from device index " + deviceIndex);
 	}
 	
 	//TODO could be optimized - review if both first and lastCNC methods are needed
@@ -281,6 +287,8 @@ public class ProcessFlowAdapter {
 			((eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings) deviceSettingsLastWP).setFinishedWorkPiece(finishedWorkPiece);
 		} else if (deviceSettingsLastWP instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) {
 			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettingsLastWP).setFinishedWorkPiece(finishedWorkPiece);
+		} else if (deviceSettingsLastWP instanceof UnloadPalletDeviceSettings) {
+		    ((UnloadPalletDeviceSettings) deviceSettingsLastWP).setFinishedWorkPiece(finishedWorkPiece);
 		}
 	}
 	

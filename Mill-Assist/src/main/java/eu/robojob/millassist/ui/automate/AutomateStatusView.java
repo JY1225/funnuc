@@ -22,7 +22,6 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
-import eu.robojob.millassist.RoboSoft;
 import eu.robojob.millassist.ui.general.status.StatusView;
 import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.Translator;

@@ -14,7 +14,6 @@ import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.ui.controls.FullTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
-import eu.robojob.millassist.ui.general.MainContentView;
 import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.ui.general.model.ProcessFlowAdapter;
 import eu.robojob.millassist.util.Translator;

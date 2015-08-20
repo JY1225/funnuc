@@ -1,6 +1,8 @@
 package eu.robojob.millassist.ui.configure.process;
 
 import eu.robojob.millassist.external.device.DeviceManager;
+import eu.robojob.millassist.process.AbstractProcessStep;
+import eu.robojob.millassist.process.InterventionStep;
 import eu.robojob.millassist.process.ProcessFlow;
 import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
@@ -79,7 +81,7 @@ public class ProcessConfigurePresenter extends AbstractFormPresenter<ProcessConf
 	public void setSingleCycle(boolean isSingleCycle) {
 		if (processFlow.isSingleCycle() != isSingleCycle) {
 			this.processFlow.setSingleCycle(isSingleCycle);
-			processFlow.processProcessFlowEvent(new DataChangedEvent(processFlow, null, false));
+			this.processFlow.processProcessFlowEvent(new DataChangedEvent(processFlow, null, false));
 		}
 	}
 

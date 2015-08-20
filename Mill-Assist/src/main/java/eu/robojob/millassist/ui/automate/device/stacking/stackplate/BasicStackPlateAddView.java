@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -18,16 +19,17 @@ import eu.robojob.millassist.util.UIConstants;
 
 public class BasicStackPlateAddView extends AbstractFormView<BasicStackPlateAddPresenter> {
 
-	private Label lblAmount;
-	private IntegerTextField itfAmount;
-	private Button btnMax;
-	private Button btnAdd;
-	private CheckBox cbReplaceFinishedPieces;
-	
-	private static final String AMOUNT = "BasicStackPlateAddView.amount";
-	private static final String MAX = "BasicStackPlateAddView.max";
-	private static final String ADD = "BasicStackPlateAddView.add";
-	private static final String REPLACE_FINISHED = "BasicStackPlateAddView.replaceFinished";
+    private Label lblNumberRaw;
+    private IntegerTextField itfNumberRaw;
+    private Button btnMaxRaw;
+
+    private Label lblNumberFinished;
+    private IntegerTextField itfNumberFinished;
+    private Button btnChange;
+    private static final String MAX = "BasicStackPlateAddView.max";
+    private static final String FINISHED = "BasicStackPlateAddView.finished";
+    private static final String RAW = "BasicStackPlateAddView.raw";
+    private static final String CHANGE = "StackingDeviceConfigureView.change";
 	
 	public BasicStackPlateAddView() {
 		build();
@@ -35,79 +37,108 @@ public class BasicStackPlateAddView extends AbstractFormView<BasicStackPlateAddP
 	
 	@Override
 	protected void build() {
-		getContents().setVgap(15);
-		getContents().setHgap(15);
-		
-		lblAmount = new Label(Translator.getTranslation(AMOUNT));
-		lblAmount.getStyleClass().add(CSS_CLASS_FORM_LABEL);
-		itfAmount = new IntegerTextField(4);
-		cbReplaceFinishedPieces = new CheckBox(Translator.getTranslation(REPLACE_FINISHED));
-		cbReplaceFinishedPieces.setSelected(true);
-		btnMax = createButton(Translator.getTranslation(MAX), UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent arg0) {
-				refreshMax();
-			}
-		});
-		btnAdd = createButton(Translator.getTranslation(ADD), UIConstants.BUTTON_HEIGHT*3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(final ActionEvent arg0) {
-				getPresenter().addWorkpieces(Integer.parseInt(itfAmount.getText()), cbReplaceFinishedPieces.isSelected());
-			}
-		});
-		cbReplaceFinishedPieces.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> arg0,
-					Boolean arg1, Boolean arg2) {
-				refreshMax();
-			}	
-		}
-		);
-		int row = 0; int column = 0;
-		getContents().add(lblAmount, column++, row);
-		GridPane.setMargin(lblAmount, new Insets(0, 0, 0, 0));
-		getContents().add(itfAmount, column++, row);
-		getContents().add(btnMax, column++, row);
-		row++; column = 0;
-		getContents().add(cbReplaceFinishedPieces, column, row,3,1);
-		GridPane.setMargin(cbReplaceFinishedPieces, new Insets(0, 0, 0, 0));
-		row++; column = 0;
-		getContents().add(btnAdd, column++, row, 3, 1);
-		GridPane.setMargin(btnAdd, new Insets(0, 0, 0, 20));
-		GridPane.setHalignment(btnAdd, HPos.CENTER);
-		GridPane.setHalignment(cbReplaceFinishedPieces, HPos.LEFT);
-		
-		hideNotification();
+	    getContents().setVgap(15);
+        getContents().setHgap(15);
+        
+        lblNumberRaw = new Label("# "+Translator.getTranslation(RAW));
+        lblNumberRaw.getStyleClass().add(CSS_CLASS_FORM_LABEL);
+        itfNumberRaw = new IntegerTextField(4);
+        lblNumberRaw.setAlignment(Pos.CENTER);
+
+        lblNumberFinished = new Label("# "+Translator.getTranslation(FINISHED));
+        lblNumberFinished.getStyleClass().add(CSS_CLASS_FORM_LABEL);
+        itfNumberFinished = new IntegerTextField(4);
+        lblNumberFinished.setAlignment(Pos.CENTER);
+
+        btnMaxRaw = createButton(Translator.getTranslation(MAX), UIConstants.BUTTON_HEIGHT * 2, UIConstants.BUTTON_HEIGHT,
+                new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(final ActionEvent arg0) {
+                        refreshMaxRaw();
+                    }
+                });
+
+        btnChange = createButton(Translator.getTranslation(CHANGE), UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent arg0) {
+                changeAmounts();
+            }
+        });
+
+        int row = 0;
+        int column = 0;
+        getContents().add(lblNumberRaw, column++, row);
+        GridPane.setMargin(lblNumberRaw, new Insets(0, 0, 0, 0));
+        getContents().add(itfNumberRaw, column++, row);
+        GridPane.setHalignment(itfNumberRaw, HPos.CENTER);
+        getContents().add(btnMaxRaw, column++, row);
+        row++; column = 0;
+        
+        getContents().add(lblNumberFinished, column++, row);
+        GridPane.setMargin(lblNumberFinished, new Insets(0, 0, 0, 0));
+        getContents().add(itfNumberFinished, column++, row);
+        GridPane.setHalignment(itfNumberFinished, HPos.CENTER);
+//        getContents().add(btnMaxFinished, column++, row);
+        row++; column = 1;
+        getContents().add(btnChange, column ++, row);
+        hideNotification();
 	}
 
-	@Override
-	public void setTextFieldListener(final TextInputControlListener listener) {
-		itfAmount.setFocusListener(listener);
-	}
-	
-	public void setButtonEnabled(final boolean enabled) {
-		btnAdd.setDisable(!enabled);
-	}
-	
-	public void disableReplaceFinishedBox() {
-		cbReplaceFinishedPieces.setSelected(false);
-		cbReplaceFinishedPieces.setDisable(true);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setTextFieldListener(TextInputControlListener listener) {
+        itfNumberRaw.setFocusListener(listener);
+        itfNumberFinished.setFocusListener(listener);
+    }
 
-	@Override
-	public void refresh() {
-		refreshMax();
-		hideNotification();
-	}
-	
-	private void refreshMax() {
-		if(cbReplaceFinishedPieces.isSelected()) {
-			itfAmount.setText("" + (getPresenter().getMaxFinishedToReplaceAmount() + getPresenter().getMaxAddAmount()));
-		} else {
-			itfAmount.setText("" + getPresenter().getMaxAddAmount());
-		}
-		if(Integer.parseInt(itfAmount.getText()) <0) {
-			itfAmount.setText("0");
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void refresh() {
+        refreshRaw();
+        refreshFinished();
+        setFinishedEditable(getPresenter().getProcessFlow().hasBasicStackPlateForFinishedPieces());
+        hideNotification();
+    }
+
+    public void setButtonEnabled(final boolean enabled) {
+        btnChange.setDisable(!enabled);
+    }
+    
+    /**
+     * Rests the max amount of pieces to remove.
+     */
+    private void refreshMaxRaw() {
+        itfNumberRaw.setText("" + getPresenter().getMaxRawPieces(Integer.parseInt(itfNumberFinished.getText())));
+        if(Integer.parseInt(itfNumberRaw.getText()) <0) {
+            itfNumberRaw.setText("0");
+        }
+    }
+    
+    private void changeAmounts() {
+        getPresenter().changeAmounts(Integer.parseInt(itfNumberRaw.getText()), Integer.parseInt(itfNumberFinished.getText()));
+    }
+    
+    
+    private void refreshFinished() {
+        itfNumberFinished.setText("" + getPresenter().getCurrentFinishedPieces());
+        if(Integer.parseInt(itfNumberFinished.getText()) <0) {
+            itfNumberFinished.setText("0");
+        }
+    }
+    
+    private void refreshRaw() {
+        itfNumberRaw.setText("" + getPresenter().getCurrentRawPieces());
+        if(Integer.parseInt(itfNumberRaw.getText()) <0) {
+            itfNumberRaw.setText("0");
+        }
+    }
+    
+    public void setFinishedEditable(boolean editable) {
+        itfNumberFinished.setManaged(editable);
+        lblNumberFinished.setManaged(editable);
+    }
 }

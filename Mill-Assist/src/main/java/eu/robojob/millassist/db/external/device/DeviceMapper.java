@@ -19,13 +19,13 @@ import eu.robojob.millassist.db.GeneralMapper;
 import eu.robojob.millassist.db.external.util.ConnectionMapper;
 import eu.robojob.millassist.external.communication.socket.SocketConnection;
 import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.AbstractDevice.DeviceType;
 import eu.robojob.millassist.external.device.Clamping;
+import eu.robojob.millassist.external.device.Clamping.Type;
 import eu.robojob.millassist.external.device.EFixtureType;
 import eu.robojob.millassist.external.device.SimpleWorkArea;
-import eu.robojob.millassist.external.device.AbstractDevice.DeviceType;
-import eu.robojob.millassist.external.device.Clamping.Type;
-import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.WorkAreaBoundary;
+import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.Zone;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
@@ -40,12 +40,16 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorLayout;
+import eu.robojob.millassist.external.device.stacking.pallet.AbstractPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlateLayout;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridHole;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
-import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
+import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
 
@@ -104,12 +108,150 @@ public class DeviceMapper {
 					ReversalUnit reversalUnit = getReversalUnit(id, name, zones);
 					devices.add(reversalUnit);
 					break;
+				case DEVICE_TYPE_UNLOAD_PALLET:
+				    AbstractPallet unloadPallet = (AbstractPallet)getPallet(id, name, zones);
+				    devices.add(unloadPallet);
+				    break;
+				case DEVICE_TYPE_PALLET:
+				    Pallet pallet = (Pallet)getPallet(id,name,zones);
+				    devices.add(pallet);
+				    break;
 				default:
 					throw new IllegalStateException("Unknown device type: [" + type + "].");
 			}
 		}
 		return devices;
 	}
+	
+	private AbstractPallet getPallet(final int id, final String name, final Set<Zone> zones) throws SQLException {
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PALLET WHERE ID = ?");
+        stmt.setInt(1, id);
+        ResultSet results = stmt.executeQuery();
+        AbstractPallet pallet = null;
+        if(id == DeviceType.DEVICE_TYPE_UNLOAD_PALLET.getId()) {
+            pallet = new UnloadPallet(name, zones);
+        }
+        if(id== DeviceType.DEVICE_TYPE_PALLET.getId()) {
+            pallet = new Pallet(name,zones);
+        }
+        pallet.setId(id);
+        if (results.next()) {
+            float maxHeight = results.getFloat("MAX_HEIGHT");
+            pallet.setMaxHeight(maxHeight);
+        }
+        return pallet;
+    }
+	
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float x, final float y,
+            final float z, final float w, final float p, final float r) throws SQLException {
+	    
+	    ConnectionManager.getConnection().setAutoCommit(false);
+	    if ((!unloadPallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
+            UserFrame newUserFrame = getUserFrameByName(userFrameName);
+            unloadPallet.getWorkAreaManagers().get(0).setUserFrame(newUserFrame);
+            updateWorkArea(unloadPallet.getWorkAreaManagers().get(0));
+        }
+	    
+	    PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
+        stmt.setString(1, name);
+        stmt.setInt(2, unloadPallet.getId());
+        stmt.executeUpdate();
+        unloadPallet.setName(name);
+        
+        Coordinates c = unloadPallet.getWorkAreas().get(0).getDefaultClamping().getRelativePosition();
+        c.setX(x);
+        c.setY(y);
+        c.setZ(z);
+        c.setW(w);
+        c.setP(p);
+        c.setR(r);
+        generalMapper.saveCoordinates(c);
+
+        ConnectionManager.getConnection().commit();
+        ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void updatePallet(final Pallet pallet, final String name, final String userFrameName, final float x, final float y,
+            final float z, final float w, final float p, final float r) throws SQLException {
+        
+        ConnectionManager.getConnection().setAutoCommit(false);
+        if ((!pallet.getWorkAreaManagers().get(0).getUserFrame().getName().equals(userFrameName))) {
+            UserFrame newUserFrame = getUserFrameByName(userFrameName);
+            pallet.getWorkAreaManagers().get(0).setUserFrame(newUserFrame);
+            updateWorkArea(pallet.getWorkAreaManagers().get(0));
+        }
+        
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE DEVICE SET NAME = ? WHERE ID = ?");
+        stmt.setString(1, name);
+        stmt.setInt(2, pallet.getId());
+        stmt.executeUpdate();
+        pallet.setName(name);
+        
+        Coordinates c = pallet.getWorkAreas().get(0).getDefaultClamping().getRelativePosition();
+        c.setX(x);
+        c.setY(y);
+        c.setZ(z);
+        c.setW(w);
+        c.setP(p);
+        c.setR(r);
+        generalMapper.saveCoordinates(c);
+
+        ConnectionManager.getConnection().commit();
+        ConnectionManager.getConnection().setAutoCommit(true);
+    }
+	
+	public void updatePalletLayout(final PalletLayout layout, final String name,  final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws SQLException {
+	    PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("UPDATE PALLETLAYOUT "+
+                "SET WIDTH = ?, LENGTH = ?, HEIGHT = ?, BORDER = ?, OFFSET_X = ?, OFFSET_Y = ?, MIN_INTERFERENCE = ?, HORIZONTAL_R = ?, VERTICAL_R = ?, NAME = ? WHERE ID = ?");
+        stmt2.setFloat(1, width);
+        stmt2.setFloat(2, length);
+        stmt2.setFloat(3, height);
+        stmt2.setFloat(4, border);
+        stmt2.setFloat(5, xOffset);
+        stmt2.setFloat(6, yOffset);
+        stmt2.setFloat(7, minInterferenceDistance);
+        stmt2.setFloat(8, horizontalR);
+        stmt2.setFloat(9, verticalR);
+        stmt2.setString(10, name);
+        stmt2.setInt(11, layout.getId());
+        stmt2.execute();
+        layout.setPalletWidth(width);
+        layout.setPalletLength(length);
+        layout.setPalletHeight(height);
+        layout.setPalletFreeBorder(border);
+        layout.setMinXGap(xOffset);
+        layout.setMinYGap(yOffset);
+        layout.setMinInterferenceDistance(minInterferenceDistance);
+        layout.setHorizontalR(horizontalR);
+        layout.setVerticalR(verticalR);
+        layout.setName(name);
+        ConnectionManager.getConnection().commit();
+        ConnectionManager.getConnection().setAutoCommit(true);
+	}
+	
+	public void savePalletLayout(PalletLayout layout) throws SQLException {
+        ConnectionManager.getConnection().setAutoCommit(false);
+        PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("INSERT INTO PALLETLAYOUT (WIDTH, LENGTH, HEIGHT, BORDER, OFFSET_X, OFFSET_Y, MIN_INTERFERENCE, HORIZONTAL_R, VERTICAL_R, NAME) VALUES"+
+                "(?, ?, ?, ?, ?, ?, ?,  ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+        stmt2.setFloat(1, layout.getPalletWidth());
+        stmt2.setFloat(2, layout.getPalletLength());
+        stmt2.setFloat(3, layout.getPalletHeight());
+        stmt2.setFloat(4, layout.getPalletFreeBorder());
+        stmt2.setFloat(5, layout.getMinXGap());
+        stmt2.setFloat(6, layout.getMinYGap());
+        stmt2.setFloat(7, layout.getMinInterferenceDistance());
+        stmt2.setFloat(8, layout.getHorizontalR());
+        stmt2.setFloat(9, layout.getVerticalR());
+        stmt2.setString(10, layout.getName());
+        stmt2.executeUpdate();
+        ResultSet resultSet = stmt2.getGeneratedKeys();
+        if (resultSet.next()) {
+            int id = resultSet.getInt(1);
+            layout.setId(id);
+           ConnectionManager.getConnection().commit();
+           ConnectionManager.getConnection().setAutoCommit(true);
+        }
+    }
 	
 	private OutputBin getOutputBin(final int id, final String name, final Set<Zone> zones) throws SQLException {
 		OutputBin bin = new OutputBin(name, zones);
@@ -541,6 +683,38 @@ public class DeviceMapper {
 		return gridPlates;
 	}
 	
+	public Set<PalletLayout> getAllPalletLayouts() throws SQLException {
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT ID FROM PALLETLAYOUT");
+        ResultSet results = stmt.executeQuery();
+        Set<PalletLayout> layouts = new HashSet<PalletLayout>();
+        while (results.next()) {
+            int id = results.getInt("ID");
+            layouts.add(getPalletLayoutById(id));
+        }
+        return layouts;
+    }
+	
+	public PalletLayout getPalletLayoutById(final int id) throws SQLException {
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM PALLETLAYOUT WHERE ID = ?");
+        stmt.setInt(1, id);
+        ResultSet results = stmt.executeQuery();
+        PalletLayout layout = null;
+        if(results.next()) {
+            float palletWidth=results.getFloat("WIDTH");
+            float palletLength=results.getFloat("LENGTH");
+            float palletHeight=results.getFloat("HEIGHT");
+            float palletFreeBorder=results.getFloat("BORDER");
+            float minXGap=results.getFloat("OFFSET_X");
+            float minYGap=results.getFloat("OFFSET_Y");
+            float minInterferenceDistance = results.getFloat("MIN_INTERFERENCE");
+            float horizontalR = results.getFloat("HORIZONTAL_R");
+            float verticalR = results.getFloat("VERTICAL_R");
+            String layoutName = results.getString("NAME");
+            layout = new PalletLayout(layoutName,palletWidth, palletLength, palletHeight, palletFreeBorder, minXGap, minYGap, minInterferenceDistance, horizontalR, verticalR);
+            layout.setId(id);
+        }
+        return layout;
+    }
 
 	private GridPlate getGridPlateByID(int gridPlateId) throws SQLException {
 		GridPlate gridplate = null;
@@ -954,6 +1128,14 @@ public class DeviceMapper {
 		ConnectionManager.getConnection().commit();
 		ConnectionManager.getConnection().setAutoCommit(true);
 	}
+	
+	public void deletePalletLayout(PalletLayout layout) throws SQLException {
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM PALLETLAYOUT WHERE ID = ?");
+        stmt.setInt(1, layout.getId());
+        stmt.executeUpdate();
+        ConnectionManager.getConnection().commit();
+        ConnectionManager.getConnection().setAutoCommit(true);
+    }
 	
 	public void updateGridPlate(final GridPlate gridPlate, final String name, final float width, final float height, final float depth, 
 			final float offsetX, final float offsetY, final float holeLength, final float holeWidth, final SortedSet<GridHole> gridholes) throws SQLException {

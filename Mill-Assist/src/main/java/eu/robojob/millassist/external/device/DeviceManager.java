@@ -21,6 +21,9 @@ import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridHole;
 import eu.robojob.millassist.external.device.stacking.stackplate.gridplate.GridPlate;
@@ -40,6 +43,8 @@ public class DeviceManager {
 	private Map<String, AbstractStackingDevice> stackingToDevicesByName;
 	private Map<String, GridPlate> gridPlatesByName;
 	private Map<Integer, GridPlate> gridPlatesById;
+    private Map<Integer, PalletLayout> palletLayoutsById;
+    private Map<String, PalletLayout> palletLayoutsByName;
 	
 	private static Logger logger = LogManager.getLogger(DeviceManager.class.getName());
 	private DeviceMapper deviceMapper;
@@ -55,6 +60,8 @@ public class DeviceManager {
 		this.stackingToDevicesByName = new HashMap<String, AbstractStackingDevice>();
 		this.gridPlatesByName = new HashMap<String, GridPlate>();
 		this.gridPlatesById = new HashMap<Integer, GridPlate>();
+		this.palletLayoutsById = new HashMap<Integer, PalletLayout>();
+		this.palletLayoutsByName = new HashMap<String, PalletLayout>();
 		initialize();
 	}
 	
@@ -72,7 +79,7 @@ public class DeviceManager {
 				} else if (device.getType().equals(EDeviceGroup.POST_PROCESSING)) {
 					postProcessingDevicesByName.put(device.getName(), (AbstractProcessingDevice) device);
 				} else if (device instanceof AbstractStackingDevice) {
-					if (!(device instanceof OutputBin)) {
+					if (!(device instanceof OutputBin) && !(device instanceof UnloadPallet)) {
 						stackingFromDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
 					}
 					stackingToDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
@@ -83,6 +90,11 @@ public class DeviceManager {
 				gridPlatesByName.put(gridPlate.getName(), gridPlate);	
 				gridPlatesById.put(gridPlate.getId(), gridPlate);
 			}
+			Set<PalletLayout> allPalletLayouts = deviceMapper.getAllPalletLayouts();
+            for(PalletLayout layout: allPalletLayouts) {   
+                palletLayoutsById.put(layout.getId(), layout);
+                palletLayoutsByName.put(layout.getName(), layout);
+            }
 		} catch (SQLException e) {
 			logger.error(e);
 			e.printStackTrace();
@@ -111,7 +123,7 @@ public class DeviceManager {
 			} else if (device.getType().equals(EDeviceGroup.POST_PROCESSING)) {
 				postProcessingDevicesByName.put(device.getName(), (AbstractProcessingDevice) device);
 			} else if (device instanceof AbstractStackingDevice) {
-				if (!(device instanceof OutputBin)) {
+				if (!(device instanceof OutputBin) && !(device instanceof UnloadPallet)) {
 					stackingFromDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
 				}
 				stackingToDevicesByName.put(device.getName(), (AbstractStackingDevice) device);
@@ -159,6 +171,19 @@ public class DeviceManager {
 	
 	public Set<String> getStackingToDeviceNames() {
 		return stackingToDevicesByName.keySet();
+	}
+	
+	public Set<String> getStackingToDeviceNamesForStrackingFromDevice(AbstractDevice stackingFromDevice) {
+	    Set<String> result = new HashSet<String>();
+	    result.addAll(getStackingToDeviceNames());
+	    if(stackingFromDevice instanceof Pallet) {
+	        for (AbstractDevice device : devicesById.values()) {
+	            if(device instanceof BasicStackPlate) {
+	                result.remove(device.getName());
+	            }
+	        }
+	    }
+	    return result;
 	}
 	
 	public Set<String> getStackingDeviceNames() {
@@ -259,6 +284,95 @@ public class DeviceManager {
 		}		
 	}
 	
+	public void updateUnloadPallet(final UnloadPallet unloadPallet, final String name, final String userFrameName, final float x, final float y,
+            final float z, final float w, final float p, final float r) {
+	    try {
+            deviceMapper.updateUnloadPallet(unloadPallet, name, userFrameName, x, y, z, w, p, r);
+            refresh();
+	    } catch (SQLException e) {
+            logger.error(e);
+            e.printStackTrace();
+        }
+	}
+	
+	public void updatePallet(final Pallet pallet, final String name, final String userFrameName, final float x, 
+            final float y, final float z, final float w, final float p, final float r) {
+        try {
+            deviceMapper.updatePallet(pallet, name, userFrameName, x, y, z, w, p, r);
+            refresh();
+        } catch (SQLException e) {
+            logger.error(e);
+            e.printStackTrace();
+        }
+    }
+
+	public void savePalletLayout(final String name, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws IllegalArgumentException{
+	    PalletLayout layout = new PalletLayout(name, width, length, height, border, xOffset, yOffset, minInterferenceDistance, horizontalR, verticalR);
+	    try {
+	        if(!palletLayoutsByName.containsKey(name)) {
+	            deviceMapper.savePalletLayout(layout);
+	            palletLayoutsById.put(layout.getId(), layout);
+	            palletLayoutsByName.put(layout.getName(), layout);
+	            refresh();
+	        } else {
+                logger.error("Pallet Layout name already exists");
+                throw new IllegalArgumentException("Pallet Layout name already exists: " + name);
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            e.printStackTrace();
+        }
+	}
+	
+	public void updatePalletLayout(final PalletLayout layout, final String name, final float width, final float length, final float height, final float border, final float xOffset, final float yOffset, final float minInterferenceDistance, final float horizontalR, final float verticalR) throws IllegalArgumentException{
+	    if(!layout.getName().equals(name)) {
+	        if(!palletLayoutsByName.containsKey(name)) {
+                palletLayoutsByName.remove(layout.getName());
+                palletLayoutsByName.put(name, layout);
+            } else {
+                logger.error("Pallet Layout name already exists");
+                throw new IllegalArgumentException("Pallet Layout name already exists: " + name);
+            }
+	    }
+        try {
+            deviceMapper.updatePalletLayout(layout, name, width, length,
+                    height, border, xOffset, yOffset, minInterferenceDistance,
+                    horizontalR, verticalR);
+            refresh();
+        } catch (SQLException e) {
+            logger.error(e);
+            e.printStackTrace();
+        }
+    }
+	
+	public void deletePalletLayout(final PalletLayout layout) {
+	    try{
+	        deviceMapper.deletePalletLayout(layout);
+	        palletLayoutsByName.remove(layout.getName());
+	        palletLayoutsById.remove(layout.getId());
+	    } catch (SQLException e) {
+	        logger.error(e);
+	        e.printStackTrace();
+	    }
+	}
+	
+	public Collection<PalletLayout> getAllPalletLayouts() {
+	    return palletLayoutsById.values();
+	}
+	
+	public PalletLayout getPalletLayoutById(final int id) {
+	    return palletLayoutsById.get(id);
+	}
+	
+	public PalletLayout getPalletLayoutByName(final String name) {
+        return palletLayoutsByName.get(name);
+    }
+	
+	public Set<String> getAllPalletLayoutNames() {
+	    Set<String> result = palletLayoutsByName.keySet();
+	    return result;
+	}
+	
 	public void saveGridPlate(final String name, final float width, final float height, final float depth, final float offsetX, final float offsetY, 
 			final float holeLength, final float holeWidth, final SortedSet<GridHole> gridholes) {
 		GridPlate gridPlate = new GridPlate(name, width, height, gridholes);
@@ -272,7 +386,7 @@ public class DeviceManager {
 				deviceMapper.saveGridPlate(gridPlate);
 				gridPlatesByName.put(name, gridPlate);
 				gridPlatesById.put(gridPlate.getId(), gridPlate);
-				refresh();	
+				refresh();
 			} else {
 				logger.error("Plate name already exists");
 				throw new IllegalArgumentException("Plate name already exists: " + name);

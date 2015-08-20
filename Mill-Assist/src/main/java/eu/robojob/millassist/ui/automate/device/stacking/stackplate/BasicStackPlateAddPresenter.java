@@ -24,9 +24,6 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 		super(view);
 		this.stackPlate = basicStackPlate;
 		this.processFlow = processFlow;
-		if(processFlow.hasBinForFinishedPieces()) {
-			view.disableReplaceFinishedBox();
-		}
 		processFlow.addListener(this);
 	}
 
@@ -39,62 +36,129 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 	public boolean isConfigured() {
 		return false;
 	}
+
+    /**
+     * Adds work pieces to the pallet.
+     * 
+     * @param amount
+     *            The amount of work pieces that will be added
+     * @throws IncorrectWorkPieceDataException
+     *             If the work piece that is added is not valid
+     */
+    public void addRawWorkPieces(final int amount) {
+            int nbInFlow = processFlow.getTotalAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                    - processFlow.getFinishedAmount();
+
+            // Add new pieces
+            stackPlate.addRawWorkPieces(amount, processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
+            processFlow.setFinishedAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
+            processFlow.setTotalAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                    + stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);
+    }
+
+    public void removeRawWorkPieces(final int amount) {
+            int nbInFlow = processFlow.getTotalAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                    - processFlow.getFinishedAmount();
+
+            // Add new pieces
+            stackPlate.removeRawWorkPieces(amount);
+            processFlow.setFinishedAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
+            processFlow.setTotalAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                    + stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);
+    }
+
+    public void addFinishedWorkPieces(final int amount) {
+        int nbInFlow = processFlow.getTotalAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                - processFlow.getFinishedAmount();
+
+        // Add new pieces
+        stackPlate.addFinishedWorkPieces(amount, processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
+        processFlow.setFinishedAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
+        processFlow.setTotalAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                + stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + processFlow.getFinishedAmount() + nbInFlow);
+    }
+
+    public void removeFinishedWorkPieces(final int amount) {
+        int nbInFlow = processFlow.getTotalAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                - processFlow.getFinishedAmount();
+
+        // Add new pieces
+        stackPlate.removeFinishedWorkPieces(amount);
+        processFlow.setFinishedAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
+        processFlow.setTotalAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW)
+                + stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);
+    }
+
+    public int getFinishedAmount() {
+        return processFlow.getFinishedAmount();
+    }
+
+    boolean isAutoMode() {
+        return processFlow.getMode().equals(Mode.AUTO);
+    }
+
+    /**
+     * Maximum pieces to remove = number of finished work pieces on the pallet.
+     * 
+     * @return The maximum number of pieces that can be removed
+     */
+    public int getMaxRawPieces(int currentFinishedAmount) {
+        int result = stackPlate.getLayout().getMaxPiecesPossibleAmount() - currentFinishedAmount;
+        if(currentFinishedAmount > 0) {
+            int correction = (int)Math.ceil((double)(currentFinishedAmount - 1)/(double)stackPlate.getLayout().getLayers())+1;
+            correction = stackPlate.getLayout().getStackingPositions().size() - correction;
+            if(correction > 0 ){
+                result = correction * stackPlate.getLayout().getLayers();
+            }
+        }
+        return result;
+    }
+
+    public int getCurrentRawPieces() {
+        return stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
+    }
+
+    public int getCurrentFinishedPieces() {
+        return stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
+    }
+
+    public void changeAmounts(final int newRawAmount, final int newFinishedAmount) {
+        try {
+            if (newFinishedAmount + newRawAmount > stackPlate.getLayout().getMaxPiecesPossibleAmount()) {
+                throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
+            }
+            
+            if(getMaxRawPieces(newFinishedAmount) < newRawAmount) {
+                throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
+            }
+            
+            if (newFinishedAmount > getCurrentFinishedPieces()) {
+                if(newRawAmount < getCurrentRawPieces()) {
+                    removeRawWorkPieces(getCurrentRawPieces() - newRawAmount);
+                    addFinishedWorkPieces(newFinishedAmount - getCurrentFinishedPieces());
+                } else if(newRawAmount > getCurrentRawPieces()) {
+                    addFinishedWorkPieces(newFinishedAmount - getCurrentFinishedPieces());
+                    addRawWorkPieces(newRawAmount - getCurrentRawPieces());
+                } else {
+                    addFinishedWorkPieces(newFinishedAmount - getCurrentFinishedPieces());
+                }
+            } else {
+                if (newFinishedAmount < getCurrentFinishedPieces()) {
+                    removeFinishedWorkPieces(getCurrentFinishedPieces() - newFinishedAmount);
+                }
+                if (newRawAmount > getCurrentRawPieces()) {
+                    addRawWorkPieces(newRawAmount - getCurrentRawPieces());
+                } else if (newRawAmount < getCurrentRawPieces()) {
+                    removeRawWorkPieces(getCurrentRawPieces() - newRawAmount);
+                }
+            }
+            getView().hideNotification();
+        } catch (IncorrectWorkPieceDataException exception) {
+            getView().showNotification(exception.getLocalizedMessage(), Type.WARNING);
+        }
+
+    }
 	
-	/**
-	 * Add a number of raw workpieces to the stacker. 
-	 * 
-	 * @param amount of raw workpieces to add
-	 * @param replaceFinishedPieces indicates whether the finished pieces that are currently located on the stacker can be removed or not (all finished pieces)
-	 */
-	public void addWorkpieces(final int amount, boolean replaceFinishedPieces) {
-		try{	
-			if(amount > getMaxPiecesToAdd(replaceFinishedPieces))
-				throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_AMOUNT);
-			int nbInFlow = processFlow.getTotalAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW) - processFlow.getFinishedAmount();
-			//Replace finished workpieces by raw ones
-			if(replaceFinishedPieces) {
-				stackPlate.getLayout().removeFinishedFromTable();
-			}
-			//Add new pieces 
-			addWorkPieces(amount, processFlow.getMode().equals(ProcessFlow.Mode.AUTO));
-			processFlow.setFinishedAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED));
-			processFlow.setTotalAmount(stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW) + stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED) + nbInFlow);	
-		} catch(IncorrectWorkPieceDataException e) {
-			getView().showNotification(e.getLocalizedMessage(), Type.WARNING);
-		}
-	}
-	
-	private int getMaxPiecesToAdd(boolean replaceFinished) {
-		if(replaceFinished)
-			return getMaxAddAmount() + getMaxFinishedToReplaceAmount();
-		else
-			return getMaxAddAmount();
-	}
-	
-	/**
-	 * Add workpieces to the stacker.
-	 * 
-	 * @param 	amount to place
-	 * @param 	resetFirst indicates whether the first stacking position needs to be reset (no workpiece) or not
-	 * @throws 	IncorrectWorkPieceDataException
-	 */
-	private void addWorkPieces(int amount, boolean resetFirst) throws IncorrectWorkPieceDataException { 
-		stackPlate.addWorkPieces(amount, resetFirst);	
-		getView().hideNotification();
-	}
-	
-	public int getMaxFinishedToReplaceAmount() {
-		return stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.FINISHED);
-	}
-	
-	public int getMaxAddAmount() {
-		int amount = stackPlate.getLayout().getMaxPiecesPossibleAmount() - getMaxFinishedToReplaceAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW);
-		int nbInFlow = processFlow.getTotalAmount() - stackPlate.getLayout().getWorkPieceAmount(WorkPiece.Type.RAW) - processFlow.getFinishedAmount();
-		if(!processFlow.hasBinForFinishedPieces()) {
-			amount -= nbInFlow;
-		} 
-		return amount;
-	}
 
 	@Override
 	public void modeChanged(final ModeChangedEvent e) {
@@ -122,8 +186,12 @@ public class BasicStackPlateAddPresenter extends AbstractFormPresenter<BasicStac
 	public void unregister() {
 		processFlow.removeListener(this);
 	}
-	
-	public int getFinishedAmount() {
-		return processFlow.getFinishedAmount();
-	}
+
+    public ProcessFlow getProcessFlow() {
+        return this.processFlow;
+    }
+
+    public void setProcessFlow(ProcessFlow processFlow) {
+        this.processFlow = processFlow;
+    }
 }

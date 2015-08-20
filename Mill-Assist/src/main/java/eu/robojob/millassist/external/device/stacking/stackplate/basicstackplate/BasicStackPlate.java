@@ -151,4 +151,24 @@ public class BasicStackPlate extends AbstractStackPlate {
 	public float getRRound() {
 		return basicLayout.getHorizontalR();
 	}
+	
+    public void addRawWorkPieces(int amount, boolean reset) {
+        getLayout().placeRawWorkPieces(getRawWorkPiece(), amount, reset, true);
+        notifyLayoutChanged();
+    }
+    
+    public void removeRawWorkPieces(int amount) {
+        getLayout().removeRawWorkPieces(amount, getRawWorkPiece());
+        notifyLayoutChanged();
+    }
+    
+    public void removeFinishedWorkPieces(int amount) {
+        getLayout().removeFinishedWorkPieces(amount, getFinishedWorkPiece());
+        notifyLayoutChanged();
+    }
+    
+    public void addFinishedWorkPieces(int amount, boolean reset) {
+        getLayout().placeFinishedWorkPieces(getFinishedWorkPiece(), amount, reset, false);
+        notifyLayoutChanged();
+    }
 }

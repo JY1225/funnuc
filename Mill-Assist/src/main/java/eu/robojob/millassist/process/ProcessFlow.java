@@ -24,6 +24,9 @@ import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlate;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
@@ -41,6 +44,7 @@ import eu.robojob.millassist.process.event.ProcessChangedEvent;
 import eu.robojob.millassist.process.event.ProcessFlowEvent;
 import eu.robojob.millassist.process.event.ProcessFlowListener;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
+import eu.robojob.millassist.ui.configure.device.stacking.pallet.PalletDeviceSettings;
 import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
@@ -221,6 +225,10 @@ public class ProcessFlow {
 		return deviceSettings;
 	}
 	
+	public void removeDeviceSettings(AbstractDevice device) {
+	    deviceSettings.remove(device);
+	}
+	
 	public Map<AbstractRobot, RobotSettings> getRobotSettings() {
 		return robotSettings;
 	}
@@ -281,6 +289,9 @@ public class ProcessFlow {
 		} else if (stackingDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton) {
 			eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = (eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingDevice);
 			return conveyorSettings.getAmount();
+		} else if (stackingDevice instanceof Pallet) {
+		    PalletDeviceSettings palletDeviceSettings = (PalletDeviceSettings) deviceSettings.get(stackingDevice);
+            return palletDeviceSettings.getAmount();
 		}
 		return 0;
 	}
@@ -305,6 +316,9 @@ public class ProcessFlow {
 		} else if (stackingDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton) {
 			eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings conveyorSettings = (eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingDevice);
 			conveyorSettings.setAmount(amount);
+		} else if (stackingDevice instanceof Pallet) {
+		    PalletDeviceSettings palletDeviceSettings = (PalletDeviceSettings) deviceSettings.get(stackingDevice);
+		    palletDeviceSettings.setAmount(amount);
 		}
 		processProcessFlowEvent(new FinishedAmountChangedEvent(this, this.finishedAmount, amount));
 	}
@@ -378,10 +392,12 @@ public class ProcessFlow {
 	
 	public void recalculateStackingPos() {
 		AbstractStackPlate stackplate = null;
+		UnloadPallet unloadPallet = null;
 		for (AbstractDevice device: getDevices()) {
 			if (device instanceof AbstractStackPlate) {
 				stackplate = (AbstractStackPlate) device;
-				break;
+			} else if (device instanceof UnloadPallet) {
+			    unloadPallet = (UnloadPallet) device;
 			}
 		}
 		if (stackplate != null) {
@@ -393,6 +409,13 @@ public class ProcessFlow {
 				stackplate.notifyLayoutChanged();
 			} catch (IncorrectWorkPieceDataException e) {
 			}
+		}
+		if (unloadPallet != null) {
+		    UnloadPalletDeviceSettings devSettings = (UnloadPalletDeviceSettings) getDeviceSettings(unloadPallet);
+		    setFinishedAmount(0);
+		    unloadPallet.getPalletLayout().calculateLayoutForWorkPiece(devSettings.getFinishedWorkPiece());
+		    unloadPallet.getPalletLayout().initFinishedWorkPieces(devSettings.getFinishedWorkPiece());
+		    unloadPallet.notifyLayoutChanged();
 		}
 	}
 	
@@ -589,6 +612,61 @@ public class ProcessFlow {
 		}
 		return false;
 	}
+	
+	public boolean hasUnloadPalletForFinishedPieces() {
+	    for(AbstractProcessStep processStep: processSteps) {
+            if(processStep instanceof PutStep) {
+                if(((PutStep) processStep).getDevice().getType().equals(EDeviceGroup.UNLOAD_PALLET)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+	}
+	
+	public boolean hasBasicStackPlateForFinishedPieces() {
+        for(AbstractProcessStep processStep: processSteps) {
+            if(processStep instanceof PutStep) {
+                if(((PutStep) processStep).getDevice().getType().equals(EDeviceGroup.BASIC_STACK_PLATE)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+	
+	public boolean hasBasicStackPlateForRawPieces() {
+        for(AbstractProcessStep processStep: processSteps) {
+            if(processStep instanceof PickStep) {
+                if(((PickStep) processStep).getDevice().getType().equals(EDeviceGroup.BASIC_STACK_PLATE)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+	
+	public boolean hasPalletForFinishedPieces() {
+        for(AbstractProcessStep processStep: processSteps) {
+            if(processStep instanceof PutStep) {
+                if(((PutStep) processStep).getDevice().getType().equals(EDeviceGroup.PALLET)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+	
+	public boolean hasPalletForRawPieces() {
+        for(AbstractProcessStep processStep: processSteps) {
+            if(processStep instanceof PickStep) {
+                if(((PickStep) processStep).getDevice().getType().equals(EDeviceGroup.PALLET)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 	
 	//TODO - optimize 
 	public boolean hasReversalUnit() {

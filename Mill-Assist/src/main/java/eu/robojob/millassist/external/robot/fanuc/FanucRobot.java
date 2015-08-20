@@ -62,7 +62,7 @@ public class FanucRobot extends AbstractRobot {
 	private static final int WRITE_REGISTER_TIMEOUT = 2 * 5000;
 	private static final int IOACTION_TIMEOUT = 2 * 60 * 1000;
 	
-	private static final List<Integer> VALID_USERFRAMES = Arrays.asList(1, 3, 4, 6, 11, 12, 13, 14);
+	private static final List<Integer> VALID_USERFRAMES = Arrays.asList(1, 3, 4, 6, 8, 11, 12, 13, 14, 15);
 	
 	private static final String HEAD_A_ID = "A";
 	private static final String HEAD_B_ID = "B";

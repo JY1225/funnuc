@@ -20,6 +20,9 @@ import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.ConveyorSettings;
+import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPalletDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
 import eu.robojob.millassist.external.robot.AbstractRobot;
@@ -27,10 +30,11 @@ import eu.robojob.millassist.external.robot.GripperHead;
 import eu.robojob.millassist.external.robot.RobotManager;
 import eu.robojob.millassist.external.robot.RobotSettings;
 import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.ui.configure.device.stacking.pallet.PalletDeviceSettings;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.Type;
-import eu.robojob.millassist.workpiece.RectangularDimensions;
 
 public class ProcessFlowManager {
 
@@ -116,12 +120,26 @@ public class ProcessFlowManager {
 			((AbstractStackingDevice) stackingToDevice).clearDeviceSettings();
 		}
 		deviceSettings.put(stackingFromDevice, stackingFromDevice.getDeviceSettings());
+		if (!stackingToDevice.equals(stackingFromDevice)) {
+            deviceSettings.put(stackingToDevice, stackingToDevice.getDeviceSettings());
+        }
 		if (stackingFromDevice instanceof BasicStackPlate) {
 			((AbstractStackPlateDeviceSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);
 		}
 		if (stackingToDevice instanceof BasicStackPlate) {
 			((AbstractStackPlateDeviceSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
+		
+		if (stackingToDevice instanceof UnloadPallet) {
+            ((UnloadPalletDeviceSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
+        }
+		if (stackingToDevice instanceof Pallet) {
+            ((PalletDeviceSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
+        }
+		
+		if (stackingFromDevice instanceof Pallet) {
+            ((PalletDeviceSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(finishedWorkPiece);
+        }
 		// always assign both raw and finished work piece to conveyor!
 		if (stackingFromDevice instanceof Conveyor) {
 			((ConveyorSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);
@@ -131,6 +149,7 @@ public class ProcessFlowManager {
 			((ConveyorSettings) deviceSettings.get(stackingToDevice)).setRawWorkPiece(rawWorkPiece);
 			((ConveyorSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
+		
 		if (stackingFromDevice instanceof eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorEaton) {
 			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingFromDevice)).setRawWorkPiece(rawWorkPiece);
 			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingFromDevice)).setFinishedWorkPiece(finishedWorkPiece);
@@ -140,9 +159,7 @@ public class ProcessFlowManager {
 			((eu.robojob.millassist.external.device.stacking.conveyor.eaton.ConveyorSettings) deviceSettings.get(stackingToDevice)).setFinishedWorkPiece(finishedWorkPiece);
 		}
 		deviceSettings.put(cncMachine, cncMachine.getDeviceSettings());
-		if (!stackingToDevice.equals(stackingFromDevice)) {
-			deviceSettings.put(stackingToDevice, stackingToDevice.getDeviceSettings());
-		}
+		
 		Map<AbstractRobot, RobotSettings> robotSettings = new HashMap<AbstractRobot, RobotSettings>();
 		robotSettings.put(robot, robot.getRobotSettings());
 		for (AbstractProcessStep step : processSteps) {

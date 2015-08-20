@@ -173,6 +173,9 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					if ((currentStep instanceof PutStep) && (((PutStep) currentStep).getDevice() instanceof AbstractStackingDevice)) {
 						// check if after this step no more pick is needed, so we can return to home, only do this if the process is not continuous
 						//TODO - review for multiple fixtures
+					    if(((PutStep)currentStep).mustExecuteInterventionStep()) {
+					        executeInterventionStep(((PutStep)currentStep).getInterventionStep());
+					    }
 						if ((processFlow.getType() == Type.FIXED_AMOUNT) && ((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 1) || 
 								((processFlow.getFinishedAmount() == processFlow.getTotalAmount() - 2)) && controllingThread.isConcurrentExecutionPossible())) {
 							((PutStep) currentStep).getRobotSettings().setFreeAfter(true);

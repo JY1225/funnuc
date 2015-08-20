@@ -13,7 +13,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import eu.robojob.millassist.external.device.AbstractDevice;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
+import eu.robojob.millassist.external.device.stacking.bin.OutputBin;
 import eu.robojob.millassist.external.device.stacking.conveyor.AbstractConveyor;
+import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
 import eu.robojob.millassist.process.AbstractProcessStep;
 import eu.robojob.millassist.process.PickAfterWaitStep;
 import eu.robojob.millassist.process.PickStep;
@@ -164,11 +167,6 @@ public class GeneralInfoView extends GridPane {
 		lblInfoMessageOptimal.setManaged(visible);
 		lblInfoMessageOptimalTitle.setManaged(visible);
 		btnStartOptimal.setManaged(visible);
-		if (processFlow.hasBinForFinishedPieces() || processFlow.hasReversalUnit()) {
-			btnStartOptimal.setDisable(true);
-		} else {
-			btnStartOptimal.setDisable(false);
-		}
 		
 		if (processFlow.getId() <= 0) {
 			btnSaveAll.setDisable(true);
@@ -181,7 +179,13 @@ public class GeneralInfoView extends GridPane {
 		for (AbstractDevice device : processFlow.getDevices()) {
 			if (device instanceof AbstractConveyor) {
 				return false;
-			}
+			} else if (device instanceof OutputBin) {
+			    return false;
+			} else if (device instanceof ReversalUnit) { 
+			    return false;
+			} else if (device instanceof UnloadPallet) {
+			    return false;
+			} 
 		}
 		IWorkPieceDimensions firstPickStepDimensions = null;
 		IWorkPieceDimensions lastPickStepDimensions = null;
