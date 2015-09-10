@@ -49,7 +49,7 @@ public class TeachThread implements Runnable, ProcessExecutor {
 		logger.debug("Started execution, processflow [" + getProcessFlow() + "].");
 		setRunning(true);
 		try {
-			getProcessFlow().initialize();
+//			getProcessFlow().initialize();
 			getProcessFlow().setMode(Mode.TEACH);
 			//resetOffsets();
 			try {
