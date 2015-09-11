@@ -507,8 +507,18 @@ public class ProcessFlow {
 		for (Entry<AbstractDevice, DeviceSettings> settings : deviceSettings.entrySet()) {
 			settings.getKey().loadDeviceSettings(settings.getValue());
 			if (settings.getValue() instanceof AbstractStackPlateDeviceSettings) {
-				if (((AbstractStackPlateDeviceSettings) settings.getValue()).getOrientation() == 90) {
+			    AbstractStackPlateDeviceSettings spSettings = (AbstractStackPlateDeviceSettings) settings.getValue();
+				if ((spSettings).getOrientation() == 90) {
 					getClampingType().setChanged(true);
+				}
+				if (settings.getKey() instanceof BasicStackPlate) {
+				    BasicStackPlate stackPlate = (BasicStackPlate) settings.getKey();
+				    if ((spSettings.getOrientation() == 45) && (stackPlate.getBasicLayout().getTiltedR() < stackPlate.
+				            getBasicLayout().getHorizontalR() && (!stackPlate.getBasicLayout().isRightAligned()))
+				            || (spSettings.getOrientation() == 45) && (stackPlate.getBasicLayout().getTiltedR() > stackPlate.
+		                            getBasicLayout().getHorizontalR() && (stackPlate.getBasicLayout().isRightAligned()))) {
+		                            getClampingType().setChanged(true);
+				    }
 				}
 			}
 		}

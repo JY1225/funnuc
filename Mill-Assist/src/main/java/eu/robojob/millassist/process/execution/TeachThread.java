@@ -19,8 +19,8 @@ import eu.robojob.millassist.process.PutStep;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.util.PropertyManager;
-import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.PropertyManager.Setting;
+import eu.robojob.millassist.util.Translator;
 
 public class TeachThread implements Runnable, ProcessExecutor {
 
@@ -49,7 +49,7 @@ public class TeachThread implements Runnable, ProcessExecutor {
 		logger.debug("Started execution, processflow [" + getProcessFlow() + "].");
 		setRunning(true);
 		try {
-//			getProcessFlow().initialize();
+			getProcessFlow().initialize();
 			getProcessFlow().setMode(Mode.TEACH);
 			//resetOffsets();
 			try {
