@@ -63,14 +63,14 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int IN_FIX1_IS_CLOSED			= 	BIT2;
 	public static final int IN_FIX1_IS_CLAMPED			= 	BIT3;
 	// BIT 4 UNUSED
-	public static final int IN_FIX2_SWITCH_SELECTED		= 	BIT5;
-	public static final int IN_FIX2_IS_OPEN				= 	BIT6;
-	public static final int IN_FIX2_IS_CLOSED			= 	BIT7;
-	public static final int IN_FIX2_IS_CLAMPED			= 	BIT8;
-	// BIT 9 UNUSED
-	public static final int IN_SWITCH_FIXTURE_OPEN		=	BIT10;
-	public static final int IN_SWITCH_FIXTURE_CLOSED	=	BIT11;
-	public static final int MODULE_3_OK					= 	BIT12;
+	public static final int IN_FIX2_SWITCH_SELECTED	           = 	BIT5;
+	public static final int IN_FIX2_IS_OPEN				       = 	BIT6;
+	public static final int IN_FIX2_IS_CLOSED			       = 	BIT7;
+	public static final int IN_FIX2_IS_CLAMPED			       = 	BIT8;
+	public static final int IN_BTN_TOGGLE_FIXTURE_PRESSURE     =    BIT9;
+	public static final int IN_SWITCH_FIXTURE_OPEN		       =	BIT10;
+	public static final int IN_SWITCH_FIXTURE_CLOSED	       =	BIT11;
+	public static final int MODULE_3_OK					       = 	BIT12;
 	// BITS 13-15 UNUSED
 	
 	// Y: OUTPUTS
@@ -118,7 +118,9 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int OUT_FIX2_CLOSE	 			=	BIT6;
 	public static final int OUT_FIX2_LED				= 	BIT7;
 	public static final int OUT_FIX2_AIRBLOW			=	BIT8;
-	// BIT 9-11 UNUSED 
+	// BIT 9 UNUSED 
+	public static final int OUT_HIGH_FIXTURE_PRESSURE   =   BIT10;
+	public static final int OUT_LOW_FIXTURE_PRESSURE    =   BIT11;
 	public static final int MODULE_6_OK					= 	BIT12;
 	// BITS 13-15 UNUSED
 	
@@ -193,6 +195,9 @@ public final class CNCMachineConstantsDevIntv2 {
 	// BIT 15 UNUSED
 	
 	
+	public static final int STATUS_PRESSURE_LEVEL = 17;
+	
+	
 	// SELECTION REGISTER (ZONE/WORKAREA/FIXTURE)
 	
 	public static final int ZONE_WA_FIX_SELECT = 18;
@@ -259,6 +264,12 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int IPC_MC_FINISH_OK			= 	BIT6;
     public static final int IPC_WORKNB_OK               =   BIT7;
     // BITS 8 - 15 UNUSED
+    
+    public static final int WORKNUMBER_SELECT = 23;
+    public static final int PRESSURE_LEVEL_SELECT = 24;
+    public static final int PRESSURE_LEVEL_SELECT_DEFAULT = 0;
+    public static final int PRESSURE_LEVEL_SELECT_LOW = 1;
+    public static final int PRESSURE_LEVEL_SELECT_HIGH = 2;
 	
 	// CNC ERRORS & ALARMS
 	
@@ -305,6 +316,7 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int ERR_PREP_PUT_TIMEOUT_DOOR_CLOSED	=	BIT2;
 	public static final int ERR_PREP_PUT_TIMEOUT_DOOR_OPEN		=	BIT3;
 	public static final int ERR_PREP_PUT_ERROR_OCCURED			=   BIT4;
+	public static final int ERR_PREP_PUT_INVALID_PRESSURE_LEVEL =   BIT5;
 	public static final int ERR_PREP_PICK_MACHINE_NOT_READY		=	BIT9;
 	public static final int ERR_PREP_PICK_OTHER_CMD_BUSY		= 	BIT10;
 	public static final int ERR_PREP_PICK_TIMEOUT				=	BIT11;
@@ -391,7 +403,12 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int ERR_NC_RESET_OTHER_CMD_BUSY			=	BIT7;
 	public static final int ERR_NC_RESET_TIMEOUT			 	=	BIT8;
 	public static final int ERR_NC_RESET_ERROR_OCCURED		 	=	BIT9;
-	// BITS 10-15 UNUSED
+	// BIT 10 UNUSED
+	public static final int ERR_WORKNUMBER_SEARCH_MACHINE_NOT_READY    = BIT11;
+	public static final int ERR_WORKNUMBER_SEARCH_OTHER_CMD_BUSY       = BIT12;
+	public static final int ERR_WORKNUMBER_SEARCH_TIMEOUT              = BIT13;
+	public static final int ERR_WORKNUMBER_SEARCH_ERROR_OCCURED        = BIT14;
+	// BITS 11-15 UNUSED
 	
 	public static final int[] ERROR_REG_5_ARRAY = new int[]{
 		ERR_START_ERROR_OCCURED,
@@ -423,7 +440,16 @@ public final class CNCMachineConstantsDevIntv2 {
 		ERR_CFG_IN_CYCLE_CYCLE_FIN,
 		ERR_PROBU_COMM_ERROR,
 		ERR_PROBU_ALARM,
-		ERR_PROBU_ANYBU_ALARM};
+		ERR_PROBU_ANYBU_ALARM
+	};
+	
+	public static final int[] ERROR_REG_7_ARRAY = new int[]{
+	    ERR_PREP_PUT_INVALID_PRESSURE_LEVEL,
+	    ERR_WORKNUMBER_SEARCH_MACHINE_NOT_READY,
+	    ERR_WORKNUMBER_SEARCH_OTHER_CMD_BUSY,
+	    ERR_WORKNUMBER_SEARCH_TIMEOUT,
+	    ERR_WORKNUMBER_SEARCH_ERROR_OCCURED
+	};
 	
 	public static final int[][] ERROR_REGS_ARRAY = new int[][]{
 		ERROR_REG_1_ARRAY,
@@ -498,6 +524,7 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int CFG_FIX_1_AIRBLOW_PUT_DOOR_CLOSED	= 	BIT4;
 	public static final int CFG_FIX_1_AIRBLOW_PICK				= 	BIT5;
 	public static final int CFG_FIX_1_AIRBLOW_PICK_DOOR_CLOSED	= 	BIT6;
+	public static final int CFG_SELECTABLE_PRESSURE_LEVEL       =   BIT15;
 	// BITS 7-15 UNUSED
 	
 	public static final int CONFIG_5 = 39;
@@ -543,6 +570,10 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int PAR_MACHINE_NC_RESET_TIMER			= 57;
 	public static final int PAR_MACHINE_BLUE_LAMP 				= 58;
 	public static final int PAR_MACHINE_SIMUALTED_CYCLE_TIME	= 59;
+	public static final int PROFIBUS_ID                         = 60;
+	public static final int PAR_SELECT_PRESSURE_TIME            = 61;
+	public static final int PAR_WORKNUMBER_SEARCH_MODE          = 62;
+	public static final int PAR_MAX_WORKNUMBER_SEARCH_TIME      = 63;
 
 	// CONFIGURATION - DOOR PARAMETERS
 	

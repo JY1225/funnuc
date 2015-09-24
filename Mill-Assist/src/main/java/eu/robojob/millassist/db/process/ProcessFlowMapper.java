@@ -365,7 +365,7 @@ public class ProcessFlowMapper {
 	}
 	
 	private void saveDeviceActionSettings(final DeviceStep deviceStep) throws SQLException {
-		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICEACTIONSETTINGS (DEVICE, WORKAREA, STEP, MACHINE_AIRBLOW, WORKNUMBER_SEARCH) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO DEVICEACTIONSETTINGS (DEVICE, WORKAREA, STEP, MACHINE_AIRBLOW, WORKNUMBER_SEARCH, CLAMPING_PRESSURE_LOW) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, deviceStep.getDevice().getId());
 		stmt.setInt(2, deviceStep.getDeviceSettings().getWorkArea().getId());
 		stmt.setInt(3, ((AbstractProcessStep) deviceStep).getId());
@@ -380,6 +380,11 @@ public class ProcessFlowMapper {
 		    stmt.setInt(5, ((ProcessingDeviceStartCyclusSettings) deviceStep.getDeviceSettings()).getWorkNumber());
 		} else {
 		    stmt.setInt(5, -1);
+		}
+		if (deviceStep.getDeviceSettings() instanceof DevicePutSettings) {
+		    stmt.setBoolean(6, ((DevicePutSettings) deviceStep.getDeviceSettings()).isClampingPressureLow());
+		} else {
+		    stmt.setBoolean(6, false);
 		}
 		stmt.executeUpdate();
 		ResultSet keys = stmt.getGeneratedKeys();
@@ -1068,11 +1073,13 @@ public class ProcessFlowMapper {
 			// simpleWorkArea
 			int workAreaId = results.getInt("WORKAREA");
 			boolean machineAirblow = results.getBoolean("MACHINE_AIRBLOW");
+			boolean clampingPressureLow = results.getBoolean("CLAMPING_PRESSURE_LOW");
 			AbstractDevice device = deviceManager.getDeviceById(deviceId);
 			SimpleWorkArea workArea = device.getWorkAreaById(workAreaId);
 			devicePutSettings = new DevicePutSettings(device, workArea);
 			devicePutSettings.setId(id);
 			devicePutSettings.setIsMachineAirblow(machineAirblow);
+			devicePutSettings.setClampingPressureLow(clampingPressureLow);
 		}
 		return devicePutSettings;
 	}

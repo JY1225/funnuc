@@ -447,6 +447,9 @@ public class DeviceMapper {
 				if (cncOptions.get(ECNCOption.WORKNUMBER_SEARCH) != null) {
 				    cncMillingMachine.setWorkNumberSearch(cncOptions.get(ECNCOption.WORKNUMBER_SEARCH));
 				}
+				if (cncOptions.get(ECNCOption.CLAMPING_PRESSURE_SELECTABLE) != null) {
+				    cncMillingMachine.setClampingPressureSelectable(cncOptions.get(ECNCOption.CLAMPING_PRESSURE_SELECTABLE));
+				}
 				cncMillingMachine.setId(id);
 			}
 		}
@@ -929,7 +932,8 @@ public class DeviceMapper {
 			final String ipAddress, final int port, final int clampingWidthR, final boolean newDevInt, final int nbFixtures, final float rRoundPieces, final boolean timAllowed,
 			final boolean machineAirblow, final List<WorkAreaBoundary> airblowBounds, final List<String> robotServiceInputNames, 
 			final List<String> robotServiceOutputNames, final List<String> mCodeNames, 
-			final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs, final boolean workNumberSearch) throws SQLException {
+			final List<Set<Integer>> mCodeRobotServiceInputs, final List<Set<Integer>> mCodeRobotServiceOutputs, final boolean workNumberSearch,
+			final boolean clampingPressureSelectable) throws SQLException {
 		ConnectionManager.getConnection().setAutoCommit(false);
 		PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE SOCKETCONNECTION " +
 				"SET IPADDRESS = ?, PORTNR = ?, NAME = ? WHERE ID = ?");
@@ -955,6 +959,7 @@ public class DeviceMapper {
 		updateCNCOption(ECNCOption.TIM_ALLOWED, timAllowed, cncMachine.getId());
 		updateCNCOption(ECNCOption.MACHINE_AIRBLOW, machineAirblow, cncMachine.getId());
 		updateCNCOption(ECNCOption.WORKNUMBER_SEARCH, workNumberSearch, cncMachine.getId());
+		updateCNCOption(ECNCOption.CLAMPING_PRESSURE_SELECTABLE, clampingPressureSelectable, cncMachine.getId());
 //		if (cncMachine.getMCodeAdapter() != null) {
 //			deleteMCodeAdapter(cncMachine.getMCodeAdapter().getI);
 //			updateMCodeAdapter(cncMachine.getId(), cncMachine.getMCodeAdapter(), robotServiceInputNames, 
@@ -974,6 +979,7 @@ public class DeviceMapper {
 		cncMachine.setTIMAllowed(timAllowed);
 		cncMachine.setMachineAirblow(machineAirblow);
 		cncMachine.setWorkNumberSearch(workNumberSearch);
+		cncMachine.setClampingPressureSelectable(clampingPressureSelectable);
 		saveAirblowBound(cncMachine, airblowBounds);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setIpAddress(ipAddress);
 		cncSocketComm.getExternalCommunicationThread().getSocketConnection().setPortNumber(port);

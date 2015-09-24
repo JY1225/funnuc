@@ -83,7 +83,7 @@ public class CNCMachineConfigurePresenter extends AbstractFormPresenter<CNCMachi
 				clampingWidthR, newDevInt, nbFixtures, rRoundPieces, timAllowed, machineAirblow, boundaries,
 				robotServiceInputNames, robotServiceOutputNames, 
 					getView().getMCodeNames(), getView().getMCodeRobotServiceInputs(), 
-						getView().getMCodeRobotServiceOutputs(), workNumberSearch);
+						getView().getMCodeRobotServiceOutputs(), workNumberSearch, getView().isClampingPressureSelectable());
 		getView().refresh();
 		getView().showNotificationDialog();
 	}

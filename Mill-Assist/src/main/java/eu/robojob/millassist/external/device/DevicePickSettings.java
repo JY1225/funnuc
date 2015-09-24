@@ -5,6 +5,7 @@ import eu.robojob.millassist.process.PickStep;
 
 public class DevicePickSettings extends AbstractDeviceActionSettings<PickStep> {
 	
+    //TODO These settings should be kept in subclass - CNCMachinePutSettings
 	private boolean isMachineAirblow = false;
 	
 	public DevicePickSettings(final AbstractDevice device, final SimpleWorkArea workArea) {

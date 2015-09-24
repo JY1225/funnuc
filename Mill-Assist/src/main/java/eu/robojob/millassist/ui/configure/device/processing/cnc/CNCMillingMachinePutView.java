@@ -12,7 +12,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-
 import eu.robojob.millassist.external.device.DeviceSettings;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.positioning.Coordinates;
@@ -22,9 +21,9 @@ import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
 import eu.robojob.millassist.util.PropertyManager;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
-import eu.robojob.millassist.util.PropertyManager.Setting;
 
 public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachinePutPresenter> {
 
@@ -63,6 +62,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	private CheckBox cbAirblow;
 	private CheckBox cbTIM;
 	private CheckBox cbMachineAirblow;
+	private CheckBox cbClampingPressureLow;
 	
 	private static final String SMOOTH_PUT_INFO = "CNCMillingMachinePutView.smoothPickInfo";
 	private static final String SMOOTH_X = "CNCMillingMachinePutView.smoothX";
@@ -75,6 +75,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 	private static final String BEFORE_CLAMP = "CNCMillingMachinePutView.beforeClamp";
 	private static final String TIM = "CNCMillingMachinePickView.tim";
 	private static final String MACHINE_AIRBLOW = "CNCMillingMachinePickView.machineAirblow";
+	private static final String LOW_CLAMPING_PRESSURE = "CNCMillingMachinePutView.lowClampingPressure";
 	
 	private static final String CSS_CLASS_CENTER_TEXT = "center-text";
 		
@@ -203,6 +204,14 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 			}
 		});
 		
+		cbClampingPressureLow = new CheckBox(Translator.getTranslation(LOW_CLAMPING_PRESSURE));
+		cbClampingPressureLow.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(final ObservableValue<? extends Boolean> observableValue, final Boolean oldValue, final Boolean newValue) {
+                getPresenter().changedClampingPressureLow(newValue);
+            }
+		});
+		
 		cbbClamping = new ComboBox<String>();
 		cbbClamping.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		cbbClamping.valueProperty().addListener(new ChangeListener<String>() {
@@ -270,6 +279,10 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		getContents().add(cbMachineAirblow, column++, row);
 		
 		column = 0;
+        row++;
+        getContents().add(cbClampingPressureLow, column++, row);
+		
+		column = 0;
 		row++;
 		getContents().add(cbTIM, column++, row);
 		
@@ -301,6 +314,12 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		cbMachineAirblow.setVisible(((AbstractCNCMachine)putStep.getDevice()).getMachineAirblow());
 		cbMachineAirblow.setManaged(((AbstractCNCMachine)putStep.getDevice()).getMachineAirblow());
 		cbMachineAirblow.setSelected(putStep.getDeviceSettings().getMachineAirblow());
+	}
+	
+	private void showClampingPressureLow() {
+	    cbClampingPressureLow.setVisible(((AbstractCNCMachine) putStep.getDevice()).isClampingPressureSelectable());
+	    cbClampingPressureLow.setManaged(((AbstractCNCMachine) putStep.getDevice()).isClampingPressureSelectable());
+	    cbClampingPressureLow.setSelected(putStep.getDeviceSettings().isClampingPressureLow());
 	}
 	
 	private void showAirblow() {
@@ -356,6 +375,7 @@ public class CNCMillingMachinePutView extends AbstractFormView<CNCMillingMachine
 		showTurnInMachine();
 		showMachineAirblow();
 		showAirblow();
+		showClampingPressureLow();
 		getPresenter().isConfigured();
 	}
 	

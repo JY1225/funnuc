@@ -304,10 +304,16 @@ public class Conveyor extends eu.robojob.millassist.external.device.stacking.con
 	
 	@Override
 	public void prepareForProcess(final ProcessFlow process) throws AbstractCommunicationException, InterruptedException {
-		lastFinishedWorkPieceIndex = 0;
 	    clearIndications();
 		writeRawWorkPieceLength();
 		writeFinishedWorkPieceLength();
+		int command2 = 0;
+        command2 = command2 | ConveyorConstants.SHIFT_FINISHED_WP;
+        int[] commandReg2 = {command2};
+        logger.info("Writing shift command: " + command2);
+        getSocketCommunication().writeRegisters(ConveyorConstants.COMMAND_REG, commandReg2);
+        lastFinishedWorkPieceIndex = 0;
+        layout.shiftFinishedWorkPieces();
 	}
 	
 	public void writeRawWorkPieceLength() throws SocketResponseTimedOutException, SocketDisconnectedException, InterruptedException, SocketWrongResponseException {

@@ -27,8 +27,8 @@ import eu.robojob.millassist.external.device.processing.ProcessingDeviceStartCyc
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineAlarm;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineConstantsDevIntv2;
-import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMotionEnableMonitorThread;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMonitoringThreadDevIntv2;
+import eu.robojob.millassist.external.device.processing.cnc.CNCMachineMotionEnableMonitorThread;
 import eu.robojob.millassist.external.device.processing.cnc.CNCMachineSocketCommunication;
 import eu.robojob.millassist.external.device.processing.cnc.EWayOfOperating;
 import eu.robojob.millassist.external.device.processing.cnc.mcode.MCodeAdapter;
@@ -339,6 +339,20 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		}
 		
 		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_OK);
+		
+		// Set pressure selection value
+		int clampingPressure = CNCMachineConstantsDevIntv2.PRESSURE_LEVEL_SELECT_DEFAULT;
+		if (isClampingPressureSelectable()) {
+		    if (putSettings.isClampingPressureLow()) {
+		        clampingPressure = CNCMachineConstantsDevIntv2.PRESSURE_LEVEL_SELECT_LOW;
+		    } else {
+		        clampingPressure = CNCMachineConstantsDevIntv2.PRESSURE_LEVEL_SELECT_HIGH;
+		    }
+		}
+		int[] pressureValue = {clampingPressure};
+	    cncMachineCommunication.writeRegisters(CNCMachineConstantsDevIntv2.PRESSURE_LEVEL_SELECT, pressureValue);
+
+		
 		// Create prepare for put command
 		int fixSelectCommand = 0;
 		fixSelectCommand = fixSelectCommand | selectZone(putSettings);

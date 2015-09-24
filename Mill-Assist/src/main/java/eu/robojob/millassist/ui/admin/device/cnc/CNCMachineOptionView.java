@@ -11,8 +11,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.WorkAreaBoundary;
+import eu.robojob.millassist.external.device.WorkAreaManager;
 import eu.robojob.millassist.external.device.processing.cnc.AbstractCNCMachine;
 import eu.robojob.millassist.external.robot.AirblowSquare;
 import eu.robojob.millassist.ui.controls.CoordinateBox;
@@ -20,13 +20,13 @@ import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.NumericTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.util.PropertyManager;
-import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.PropertyManager.Setting;
+import eu.robojob.millassist.util.Translator;
 
 public class CNCMachineOptionView extends GridPane {
 	
-	private Label lblAirblow, lblTIM, lblMachineAirblow, lblRRound, lblWorkNumberSearch;
-	private CheckBox cbTIMAllowed, cbMachineAirblow, cbWorkNumberSearch;
+	private Label lblAirblow, lblTIM, lblMachineAirblow, lblRRound, lblWorkNumberSearch, lblClampingPressureSelectable;
+	private CheckBox cbTIMAllowed, cbMachineAirblow, cbWorkNumberSearch, cbClampingPressureSelectable;
 	private CoordinateBox bottomCoord, topCoord;
 	private ComboBox<WorkAreaBoundary> cbbWaBound;
 	private NumericTextField ntxtRRound;
@@ -45,6 +45,7 @@ public class CNCMachineOptionView extends GridPane {
 	private static final String WORKNUMBER_SEARCH = "CNCMachineOptionView.workNumberSearch";
 	private static final String MAX_FIX = "CNCMachineGeneralView.maxFix";
 	private static final String R_ROUND = "CNCMachineOptionView.rRound";
+	private static final String CLAMPING_PRESSURE_SELECTABLE = "CNCMachineOptionView.clampingPressureSelectable";
 
 	protected static final String CSS_CLASS_FORM_BUTTON_BAR_LEFT = "form-button-bar-left";
 	protected static final String CSS_CLASS_FORM_BUTTON_BAR_RIGHT = "form-button-bar-right";
@@ -95,6 +96,11 @@ public class CNCMachineOptionView extends GridPane {
 		HBox.setMargin(cbWorkNumberSearch, new Insets(0,15,0,0));
 		add(workNumberSearchBox, column, row);
 		column = 0; row++;
+		HBox clampingPressureSelectableBox = new HBox();
+		clampingPressureSelectableBox.getChildren().addAll(cbClampingPressureSelectable, lblClampingPressureSelectable);
+        HBox.setMargin(cbClampingPressureSelectable, new Insets(0,15,0,0));
+        add(clampingPressureSelectableBox, column, row);
+        column = 0; row++;
 		add(lblNbFixtures, column++, row);
 		add(itxtNbFix, column, row);
 		column = 0; row++;
@@ -119,6 +125,8 @@ public class CNCMachineOptionView extends GridPane {
 		cbbWaBound.setPrefSize(COMBO_WIDTH, COMBO_HEIGHT);
 		cbWorkNumberSearch = new CheckBox();
 		lblWorkNumberSearch = new Label(Translator.getTranslation(WORKNUMBER_SEARCH));
+		cbClampingPressureSelectable = new CheckBox();
+		lblClampingPressureSelectable = new Label(Translator.getTranslation(CLAMPING_PRESSURE_SELECTABLE));
 	}
 	
 	private void addActionListeners() {
@@ -160,12 +168,19 @@ public class CNCMachineOptionView extends GridPane {
 		        cbWorkNumberSearch.setSelected(newValue);
 		    }
         });
+		cbClampingPressureSelectable.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+                cbClampingPressureSelectable.setSelected(newValue);
+            }
+        });
 	}
 	
 	public void refresh(final AbstractCNCMachine cncMachine) {
 		cbTIMAllowed.setSelected(cncMachine.getTIMAllowed());
 		cbMachineAirblow.setSelected(cncMachine.getMachineAirblow());
 		cbWorkNumberSearch.setSelected(cncMachine.hasWorkNumberSearch());
+		cbClampingPressureSelectable.setSelected(cncMachine.isClampingPressureSelectable());
 		itxtNbFix.setText("" + cncMachine.getNbFixtures());
 		ntxtRRound.setText("" + cncMachine.getRRoundPieces());
 		fillBoundBox();
@@ -216,6 +231,10 @@ public class CNCMachineOptionView extends GridPane {
 	
 	public boolean hasWorkNumberSearch() {
 	    return cbWorkNumberSearch.isSelected();
+	}
+	
+	public boolean isClampingPressureSelectable() {
+	    return cbClampingPressureSelectable.isSelected();
 	}
 	
 	public int getNbFixtures() {

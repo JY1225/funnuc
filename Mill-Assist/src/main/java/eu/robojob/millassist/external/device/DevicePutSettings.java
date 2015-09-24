@@ -5,8 +5,9 @@ import eu.robojob.millassist.process.PutStep;
 
 public class DevicePutSettings extends AbstractDeviceActionSettings<PutStep> {
 	
-	//value from CNC configure
-	private boolean isMachineAirblow = false;
+	//TODO These settings should be kept in subclass - CNCMachinePutSettings
+    private boolean isMachineAirblow = false;
+	private boolean clampingPressureLow = false;
 	
 	public DevicePutSettings(final AbstractDevice device, final SimpleWorkArea workArea) {
 		super(device, workArea);
@@ -22,5 +23,16 @@ public class DevicePutSettings extends AbstractDeviceActionSettings<PutStep> {
 	public void setIsMachineAirblow(final boolean isMachineAirblow) {
 		this.isMachineAirblow = isMachineAirblow;
 	}
+
+    public boolean isClampingPressureLow() {
+        if (getDevice() instanceof AbstractCNCMachine) {
+            return (((AbstractCNCMachine) getDevice()).isClampingPressureSelectable() && this.clampingPressureLow);
+        }
+        return false;
+    }
+
+    public void setClampingPressureLow(boolean clampingPressureLow) {
+        this.clampingPressureLow = clampingPressureLow;
+    }
 	
 }

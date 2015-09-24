@@ -132,9 +132,9 @@ public class ProcessFlowView extends StackPane {
 		this.getChildren().add(scrollPane);
 		this.getChildren().add(lblProcessName);
 		scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-		scrollPane.setHbarPolicy(ScrollBarPolicy.ALWAYS);
+		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		scrollPane.setFitToHeight(false);
-		scrollPane.setFitToWidth(false);
+		scrollPane.setFitToWidth(true);
 		scrollPane.setPannable(false);
 		this.setPrefWidth(SizeManager.WIDTH);
 		this.setPrefHeight(SizeManager.HEIGHT_TOP);

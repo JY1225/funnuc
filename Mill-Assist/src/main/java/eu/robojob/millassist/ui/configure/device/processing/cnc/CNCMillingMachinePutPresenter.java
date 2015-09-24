@@ -208,4 +208,11 @@ public class CNCMillingMachinePutPresenter extends AbstractFormPresenter<CNCMill
 			putStep.getDeviceSettings().setIsMachineAirblow(newValue);
 		}
 	}
+	
+	public void changedClampingPressureLow(final boolean newValue) {
+	    if (putStep.getDeviceSettings().isClampingPressureLow() != newValue) {
+	        putStep.getDeviceSettings().setClampingPressureLow(newValue);
+	        putStep.getProcessFlow().processProcessFlowEvent(new DataChangedEvent(putStep.getProcessFlow(), putStep, false));
+	    }
+	}
 }

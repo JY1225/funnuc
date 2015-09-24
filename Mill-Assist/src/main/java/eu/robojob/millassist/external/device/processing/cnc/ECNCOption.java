@@ -5,7 +5,8 @@ public enum ECNCOption {
 	//Turn in Machine
 	TIM_ALLOWED(1),
 	MACHINE_AIRBLOW(2),
-	WORKNUMBER_SEARCH(3);
+	WORKNUMBER_SEARCH(3),
+	CLAMPING_PRESSURE_SELECTABLE(4);
 	
 	private int id;
 	

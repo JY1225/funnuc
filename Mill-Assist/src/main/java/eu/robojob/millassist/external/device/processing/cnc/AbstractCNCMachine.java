@@ -44,6 +44,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	private boolean machineAirblow;
 	private float rRoundPieces;
 	private boolean workNumberSearch;
+	private boolean clampingPressureSelectable;
 	
 	private static Logger logger = LogManager.getLogger(AbstractCNCMachine.class.getName());
 	
@@ -67,6 +68,7 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 		//default values
 		this.timAllowed = false;
 		this.machineAirblow = false;
+		this.clampingPressureSelectable = false;
 		this.statusMap = new HashMap<Integer, Integer>();
 	}
 	
@@ -424,8 +426,16 @@ public abstract class AbstractCNCMachine extends AbstractProcessingDevice {
 	public void setWorkNumberSearch(boolean workNumberSearch) {
 	    this.workNumberSearch = workNumberSearch;
 	}
-	
-	/**
+
+    public boolean isClampingPressureSelectable() {
+        return clampingPressureSelectable;
+    }
+
+    public void setClampingPressureSelectable(boolean clampingPressureSelectable) {
+        this.clampingPressureSelectable = clampingPressureSelectable;
+    }
+
+    /**
 	 * Get the index of the mcode to check based on the workarea and the type of action.
 	 * 
 	 * @param 	workarea to use for the action (get the priority)

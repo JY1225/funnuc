@@ -273,6 +273,10 @@ public class CNCMachineConfigureView extends AbstractFormView<CNCMachineConfigur
 	    return cncMachineOptionView.hasWorkNumberSearch();
 	}
 	
+	public boolean isClampingPressureSelectable() {
+	    return cncMachineOptionView.isClampingPressureSelectable();
+	}
+	
 	public List<WorkAreaBoundary> getAirblowBounds() {
 		return cncMachineOptionView.getAirblowBounds();
 	}
