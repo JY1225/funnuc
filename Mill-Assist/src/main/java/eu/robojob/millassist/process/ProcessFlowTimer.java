@@ -11,6 +11,7 @@ import eu.robojob.millassist.process.event.DataChangedEvent;
 import eu.robojob.millassist.process.event.ExceptionOccuredEvent;
 import eu.robojob.millassist.process.event.FinishedAmountChangedEvent;
 import eu.robojob.millassist.process.event.ModeChangedEvent;
+import eu.robojob.millassist.process.event.ProcessChangedEvent;
 import eu.robojob.millassist.process.event.ProcessFlowListener;
 import eu.robojob.millassist.process.event.StatusChangedEvent;
 
@@ -49,7 +50,7 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 	}
 	
 	private synchronized void reset() {
-		logger.debug("Timer of [" + processFlow + "] reset.");
+		logger.info("Timer of [" + processFlow + "] reset.");
 		startingTimeCurrentSteps = new ConcurrentHashMap<Integer, Long>();
 		startingTimePauseAfterSteps = new ConcurrentHashMap<Integer, Long>();
 		otherTimeCurrentSteps = new ConcurrentHashMap<Integer, Long>();
@@ -313,7 +314,20 @@ public class ProcessFlowTimer implements ProcessFlowListener {
 		return processFlow;
 	}
 	
-	@Override public void dataChanged(final DataChangedEvent e) { }
+	@Override public void dataChanged(final DataChangedEvent e) { 
+	    if (e instanceof ProcessChangedEvent) {
+	        logger.info("Process changed");
+	        waitingTimeAfterStepDurations = new ConcurrentHashMap<AbstractProcessStep, Long>();
+	        stepDurations = new ConcurrentHashMap<AbstractProcessStep, Long>();
+	        for (AbstractProcessStep step : e.getSource().getProcessSteps()) {
+	            if (step instanceof InterventionStep) {
+	                stepDurations.put(step, 0l);
+	            }
+	        }
+	        timeWon = 0;
+	    }
+	}
+	
 	@Override public void finishedAmountChanged(final FinishedAmountChangedEvent e) { }
 	@Override public void exceptionOccured(final ExceptionOccuredEvent e) {	 }
 
