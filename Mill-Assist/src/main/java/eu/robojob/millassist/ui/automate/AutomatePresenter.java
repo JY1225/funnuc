@@ -160,16 +160,20 @@ public class AutomatePresenter extends ExecutionPresenter implements TextInputCo
 	}
 
 	public boolean showDeviceMenu(final int deviceIndex) {
-		activeMenu = deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(deviceIndex));
-		if (activeMenu != null) {
-			activeMenu.setParent(this);
-			activeMenu.setTextFieldListener(this);
-			activeMenu.openFirst();
-			view.showBottomHBox();
-			view.setBottomLeft(activeMenu.getView());
-			return true;
-		} else {
-			return false;
+		try {
+		    activeMenu = deviceMenuFactory.getDeviceMenu(processFlowAdapter.getDeviceInformation(deviceIndex));
+		    if (activeMenu != null) {
+		        activeMenu.setParent(this);
+		        activeMenu.setTextFieldListener(this);
+		        activeMenu.openFirst();
+		        view.showBottomHBox();
+		        view.setBottomLeft(activeMenu.getView());
+		        return true;
+		    } else {
+		        return false;
+		    }
+		} catch (IllegalArgumentException e) {
+		    return false;
 		}
 	}
 	

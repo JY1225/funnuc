@@ -3,6 +3,10 @@ package eu.robojob.millassist.ui.automate.device;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import sun.tools.tree.ThisExpression;
 import eu.robojob.millassist.external.device.stacking.conveyor.normal.Conveyor;
 import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
 import eu.robojob.millassist.external.device.stacking.pallet.UnloadPallet;
@@ -45,7 +49,7 @@ public class DeviceMenuFactory {
 
     private Map<Integer, AbstractMenuPresenter<?>> presentersBuffer;
 
-    // private static Logger logger = LogManager.getLogger(DeviceMenuFactory.class.getName());
+    private static Logger logger = LogManager.getLogger(DeviceMenuFactory.class.getName());
 
     public DeviceMenuFactory(final ProcessFlow processFlow) {
         this.processFlow = processFlow;
@@ -69,7 +73,7 @@ public class DeviceMenuFactory {
         }
     }
 
-    public synchronized AbstractMenuPresenter<?> getDeviceMenu(final DeviceInformation deviceInfo) {
+    public synchronized AbstractMenuPresenter<?> getDeviceMenu(final DeviceInformation deviceInfo) throws IllegalArgumentException {
         AbstractMenuPresenter<?> menuPresenter = presentersBuffer.get(deviceInfo.getIndex());
         if (menuPresenter == null) {
             switch (deviceInfo.getType()) {
@@ -89,7 +93,8 @@ public class DeviceMenuFactory {
                 menuPresenter = getPalletMenuPresenter(deviceInfo);
                 break;
             default:
-                menuPresenter = null;
+                logger.error("Cannot create device menu for group " + deviceInfo.getType());
+                throw new IllegalArgumentException("Cannot create device menu for group " + deviceInfo.getType());
             }
             presentersBuffer.put(deviceInfo.getIndex(), menuPresenter);
         }
