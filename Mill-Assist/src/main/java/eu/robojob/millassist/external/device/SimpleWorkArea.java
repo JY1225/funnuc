@@ -157,8 +157,10 @@ public class SimpleWorkArea {
 	 */
 	public Set<Clamping> getAllActiveClampings() {
 		Set<Clamping> resultSet = new HashSet<Clamping>();
-		resultSet.add(getDefaultClamping());
-		resultSet.addAll(getDefaultClamping().getRelatedClampings());
+		if (getDefaultClamping() != null) {
+		    resultSet.add(getDefaultClamping());
+		    resultSet.addAll(getDefaultClamping().getRelatedClampings());
+		}
 		return resultSet;
 	}
 	
