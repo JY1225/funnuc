@@ -891,7 +891,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 				int firstStudPosY = amountOfStudsVertical * i;
 				StudPosition studPos = null;
 				if (cornerLength || cornerWidth) {
-					studPos = new StudPosition(firstStudPosX, firstStudPosY, studPositions[firstStudPosY][firstStudPosX].getCenterPosition(), StudType.TILTED_CORNER);
+					studPos = new StudPosition(firstStudPosX, firstStudPosY, studPositions[firstStudPosY][firstStudPosX].getCenterPosition(), StudType.TILTED_CORNER_RIGHT);
 					stPos.addstud(studPos);
 					// if the corner is not needed because of the length, we will add an extra stud for stability
 				} else {

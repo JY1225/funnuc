@@ -252,7 +252,7 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					circle2.getStyleClass().add(CSS_CLASS_NORMALSTUD);
 					studs.add(circle2);
 					group.getChildren().add(circle2);
-				} else if (pos.getStudType() == StudType.TILTED_CORNER) {
+				} else if (pos.getStudType() == StudType.TILTED_CORNER || pos.getStudType() == StudType.TILTED_CORNER_RIGHT) {
 					SVGPath corner = new SVGPath();
 					corner.setContent(CORNER_PATH);
 					corner.getStyleClass().add(CSS_CLASS_CORNERSHAPE);
@@ -260,8 +260,14 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 					Translate tr = new Translate();
 					tr.setX(pos.getCenterPosition().getX() - 7.5);
 					tr.setY(width - pos.getCenterPosition().getY() - 40.5 + 24.749);
-					corner.getTransforms().addAll(tr);
-					corner.getTransforms().add(rt);
+	                corner.getTransforms().addAll(tr);
+					if (pos.getStudType() == StudType.TILTED_CORNER_RIGHT) {				    
+					    rt.setPivotY(15.751);
+					    rt.setPivotX(7.5);
+	                    corner.getTransforms().add(Translate.scale(-1, 1));
+	                    corner.getTransforms().add(new Translate(-layout.getHorizontalHoleDistance() - layout.getStudDiameter(), 0));
+					}
+	                corner.getTransforms().add(rt);
 					group.getChildren().add(corner);
 					// add first stud
 					Circle circle = new Circle(pos.getCenterPosition().getX(), width - pos.getCenterPosition().getY(), layout.getStudDiameter() / 2);
@@ -335,7 +341,8 @@ public class BasicStackPlateLayoutView<T extends AbstractFormPresenter<?, ?>> ex
 	}
 	
 	private synchronized void configureWorkPieces() {
-		for (StackPlateStackingPosition stackingPosition : basicStackPlate.getLayout().getStackingPositions()) {
+	    List<StackPlateStackingPosition> stackingPositions = new ArrayList<>(basicStackPlate.getLayout().getStackingPositions());
+		for (StackPlateStackingPosition stackingPosition : stackingPositions) {
 			if (stackingPosition.getWorkPiece() != null) {
 				IDrawableObject workPieceRepre = stackingPosition.getWorkPiece().getRepresentation();
 				Shape workPiece = workPieceRepre.createShape();
