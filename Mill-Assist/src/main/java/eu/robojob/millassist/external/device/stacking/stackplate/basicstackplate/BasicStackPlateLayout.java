@@ -811,7 +811,6 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 			final int amountOfStudsLeftOther, final int amountHorizontal, final int amountOfStudsVertical, 
 				final int amountVertical, final boolean cornerLength, final boolean cornerWidth) {
 		double a = horizontalHoleDistance/(Math.sqrt(2)) - studDiameter/2;
-		getRawStackingPositions().clear();
 		for (int i = 0; i < amountVertical; i++) {
 			for (int j = 0; j < amountHorizontal; j++) {
 				int amountOfStudsLeft = amountOfStudsLeftFirst + j * amountOfStudsLeftOther;
@@ -844,9 +843,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 					while (!ok) {
 						if (maxTimes <= 0) {
 							ok = true;
-							if (!cornerWidth) {
-								getRawStackingPositions().remove(stPos);	// remove the last work piece as it can not be supported correctly
-							}
+							getRawStackingPositions().remove(stPos);	// remove the last work piece as it can not be supported correctly
 						} else if ((studPositions[0].length > (maxTimes * 2 + firstStudPosX + 1)) && (studPositions.length > (maxTimes + firstStudPosY))) {
 							int positionX = maxTimes * 2 + firstStudPosX + 1;
 							int positionY = maxTimes + firstStudPosY;
@@ -866,7 +863,6 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 			final int amountOfStudsLeftOther, final int amountHorizontal, final int amountOfStudsVertical, 
 				final int amountVertical, final boolean cornerLength, final boolean cornerWidth) {
 		double a = horizontalHoleDistance/(Math.sqrt(2)) - studDiameter/2;
-		getStackingPositions().clear();
 		for (int i = 0; i < amountVertical; i++) {
 			for (int j = 0; j < amountHorizontal; j++) {
 				
@@ -890,22 +886,20 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 				int firstStudPosX = amountOfStudsLeft;
 				int firstStudPosY = amountOfStudsVertical * i;
 				StudPosition studPos = null;
+				if (firstStudPosX + 1 >= horizontalHoleAmount) {
+				    // second stud is placed over the table
+				    getRawStackingPositions().remove(stPos);
+				    break;
+				}
 				if (cornerLength || cornerWidth) {
 					studPos = new StudPosition(firstStudPosX, firstStudPosY, studPositions[firstStudPosY][firstStudPosX].getCenterPosition(), StudType.TILTED_CORNER_RIGHT);
 					stPos.addstud(studPos);
 					// if the corner is not needed because of the length, we will add an extra stud for stability
 				} else {
-					if(firstStudPosX < studPositions[firstStudPosY].length -1) {
 						studPos = new StudPosition(firstStudPosX, firstStudPosY, studPositions[firstStudPosY][firstStudPosX].getCenterPosition(), StudType.NORMAL);
 						StudPosition studPos2 = new StudPosition(firstStudPosX + 1, firstStudPosY, studPositions[firstStudPosY][firstStudPosX + 1].getCenterPosition(), StudType.NORMAL);
 						stPos.addstud(studPos);
-						stPos.addstud(studPos2);
-					}
-					else {
-						getStackingPositions().remove(stPos);
-						break;
-					}
-					
+						stPos.addstud(studPos2);				
 				}
 				if (!cornerLength) {
 					boolean ok = false;
@@ -913,9 +907,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 					while (!ok) {
 						if (maxTimes <= 0) {
 							ok = true;
-							if (!cornerWidth) {
-								getStackingPositions().remove(stPos);	// remove the last work piece as it can not be supported correctly
-							}
+							getRawStackingPositions().remove(stPos);	// remove the last work piece as it can not be supported correctly
 						} else if ((0 <= (firstStudPosX - maxTimes * 2)) && (studPositions.length > (maxTimes + firstStudPosY))) {
 							int positionX = firstStudPosX - maxTimes * 2;
 							int positionY = maxTimes + firstStudPosY;
