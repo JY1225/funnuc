@@ -1,17 +1,20 @@
 package eu.robojob.millassist.user;
 
-public class User {
+import java.util.ArrayList;
+import java.util.List;
+
+public class UserGroup {
 
     private int id;
     private String name;
-    private String email;
+    private List<String> emails;
     private UserEmailSettings emailSettings;
     private String imageURL;
 
-    public User(final int id, final String name, final String email, final String imageURL) {
+    public UserGroup(final int id, final String name, final List<String> emails, final String imageURL) {
         this.id = id;
         this.name = name;
-        this.email = email;
+        this.emails = emails;
         this.imageURL = imageURL;
     }
 
@@ -23,16 +26,23 @@ public class User {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public List<String> getEmails() {
+        return emails;
     }
 
-    public void setEmail(final String email) {
-        this.email = email;
+    public void setEmails(final List<String> emails) {
+        this.emails = emails;
     }
 
     public UserEmailSettings getEmailSettings() {
         return emailSettings;
+    }
+
+    public void addEmail(final String email) {
+        if(emails ==null) {
+            emails = new ArrayList<>();
+        }
+        emails.add(email);
     }
 
     public void setEmailSettings(final UserEmailSettings emailSettings) {
@@ -53,6 +63,15 @@ public class User {
 
     public void setId(final int id) {
         this.id = id;
+    }
+
+    public String getEmailsString() {
+        StringBuilder builder = new StringBuilder();
+        for(String email: emails) {
+            builder.append(email).append(";");
+        }
+        builder.deleteCharAt(builder.length()-1);
+        return builder.toString();
     }
 
 }

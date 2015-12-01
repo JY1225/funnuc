@@ -89,7 +89,7 @@ public class AutomateControllingThread extends AbstractFixedControllingThread {
             checkStatus();
             if (finished) {
                 processFlow.setMode(Mode.FINISHED);
-                EmailUtil.sendMailToAllUsers(EMailEvent.BATCH_END);
+                EmailUtil.sendMailToAllUsers(EMailEvent.BATCH_END, processFlow);
                 for (AbstractDevice device : processFlow.getDevices()) {
                     if (device instanceof AbstractCNCMachine) {
                         checkStatus();

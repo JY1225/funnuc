@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,7 +14,7 @@ import java.util.Set;
 import eu.robojob.millassist.positioning.Config;
 import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.UserFrame;
-import eu.robojob.millassist.user.User;
+import eu.robojob.millassist.user.UserGroup;
 import eu.robojob.millassist.user.UserEmailSettings;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 import eu.robojob.millassist.workpiece.RoundDimensions;
@@ -342,25 +344,25 @@ public class GeneralMapper {
         return userFrames;
     }
 
-    public static Set<User> getAllUsers() throws SQLException {
-        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM RBJ_USER");
+    public static Set<UserGroup> getAllUserGroups() throws SQLException {
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM RBJ_USER_GROUP");
         ResultSet results = stmt.executeQuery();
-        Set<User> users = new HashSet<User>();
-        User user = null;
+        Set<UserGroup> userGroups = new HashSet<UserGroup>();
+        UserGroup userGroup = null;
         while (results.next()) {
             int id = results.getInt("ID");
             String name = results.getString("NAME");
-            String email = results.getString("EMAIL");
+            String emails = results.getString("EMAIL");
             String imageUrl = results.getString("IMAGE_URL");
-            user = new User(id, name, email, imageUrl);
-            user.setEmailSettings(getUserEmailSettingsForUser(id));
-            users.add(user);
+            userGroup = new UserGroup(id, name, Arrays.asList(emails.split(";")), imageUrl);
+            userGroup.setEmailSettings(getUserEmailSettingsForUser(id));
+            userGroups.add(userGroup);
         }
-        return users;
+        return userGroups;
     }
 
     private static UserEmailSettings getUserEmailSettingsForUser(final int id) throws SQLException{
-        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM USER_EMAIL_SETTINGS WHERE USER_ID = ?");
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("SELECT * FROM USER_GROUP_EMAIL_SETTINGS WHERE USER_ID = ?");
         stmt.setInt(1, id);
         ResultSet results = stmt.executeQuery();
         UserEmailSettings result = null;
@@ -373,21 +375,21 @@ public class GeneralMapper {
         return result;
     }
 
-    public static void updateUser(final User user) throws SQLException {
-        if(user == null) {
+    public static void updateUserGroup(final UserGroup userGroup) throws SQLException {
+        if(userGroup == null) {
             return;
         }
-        if(user.getId() == 0) {
-            createUser(user);
+        if(userGroup.getId() == 0) {
+            createUser(userGroup);
         } else {
             ConnectionManager.getConnection().setAutoCommit(false);
-            PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE RBJ_USER SET NAME = ?, EMAIL = ?, IMAGE_URL = ? WHERE ID = ?");
-            stmt.setString(1, user.getName());
-            stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getImageURL());
-            stmt.setInt(4, user.getId());
+            PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE RBJ_USER_GROUP SET NAME = ?, EMAIL = ?, IMAGE_URL = ? WHERE ID = ?");
+            stmt.setString(1, userGroup.getName());
+            stmt.setString(2, userGroup.getEmailsString());
+            stmt.setString(3, userGroup.getImageURL());
+            stmt.setInt(4, userGroup.getId());
             stmt.executeUpdate();
-            updateEmailSettings(user.getId(),user.getEmailSettings());
+            updateEmailSettings(userGroup.getId(),userGroup.getEmailSettings());
             ConnectionManager.getConnection().commit();
             ConnectionManager.getConnection().setAutoCommit(true);
         }
@@ -395,7 +397,7 @@ public class GeneralMapper {
 
     private static void updateEmailSettings(final int userId, final UserEmailSettings settings) throws SQLException {
         ConnectionManager.getConnection().setAutoCommit(false);
-        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE USER_EMAIL_SETTINGS SET EMAIL_AT_BATCH_END = ?, EMAIL_AT_ERROR = ?, EMAIL_ERROR_DELAY = ? WHERE USER_ID = ?");
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("UPDATE USER_GROUP_EMAIL_SETTINGS SET EMAIL_AT_BATCH_END = ?, EMAIL_AT_ERROR = ?, EMAIL_ERROR_DELAY = ? WHERE USER_ID = ?");
         stmt.setBoolean(1, settings.isEmailAtBatchEnd());
         stmt.setBoolean(2, settings.isEmailAtError());
         stmt.setInt(3, settings.getEmailErrorDelay());
@@ -403,27 +405,27 @@ public class GeneralMapper {
         stmt.executeUpdate();
     }
 
-    private static void createUser(final User user) throws SQLException {
+    private static void createUser(final UserGroup userGroup) throws SQLException {
         ConnectionManager.getConnection().setAutoCommit(false);
-        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO RBJ_USER (NAME, EMAIL, IMAGE_URL) VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO RBJ_USER_GROUP (NAME, EMAIL, IMAGE_URL) VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS);
 
-        stmt.setString(1, user.getName());
-        stmt.setString(2, user.getEmail());
-        stmt.setString(3, user.getImageURL());
+        stmt.setString(1, userGroup.getName());
+        stmt.setString(2, userGroup.getEmailsString());
+        stmt.setString(3, userGroup.getImageURL());
         stmt.executeUpdate();
 
         ResultSet keys = stmt.getGeneratedKeys();
         if ((keys != null) && (keys.next())) {
-            user.setId(keys.getInt(1));
+            userGroup.setId(keys.getInt(1));
         }
 
-        createEmailSettings(user.getId(), user.getEmailSettings());
+        createEmailSettings(userGroup.getId(), userGroup.getEmailSettings());
         ConnectionManager.getConnection().commit();
         ConnectionManager.getConnection().setAutoCommit(true);
     }
 
     private static void createEmailSettings(final int userId, final UserEmailSettings settings) throws SQLException {
-        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO USER_EMAIL_SETTINGS (USER_ID, EMAIL_AT_BATCH_END, EMAIL_AT_ERROR, EMAIL_ERROR_DELAY) VALUES (?,?,?,?)");
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("INSERT INTO USER_GROUP_EMAIL_SETTINGS (USER_ID, EMAIL_AT_BATCH_END, EMAIL_AT_ERROR, EMAIL_ERROR_DELAY) VALUES (?,?,?,?)");
         stmt.setInt(1, userId);
         stmt.setBoolean(2, settings.isEmailAtBatchEnd());
         stmt.setBoolean(3, settings.isEmailAtError());
@@ -433,10 +435,10 @@ public class GeneralMapper {
 
     public static void deleteUser(final int userId) throws SQLException {
         ConnectionManager.getConnection().setAutoCommit(false);
-        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM USER_EMAIL_SETTINGS WHERE USER_ID = ?");
+        PreparedStatement stmt = ConnectionManager.getConnection().prepareStatement("DELETE FROM USER_GROUP_EMAIL_SETTINGS WHERE USER_ID = ?");
         stmt.setInt(1,userId);
         stmt.executeUpdate();
-        PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("DELETE FROM RBJ_USER WHERE ID = ?");
+        PreparedStatement stmt2 = ConnectionManager.getConnection().prepareStatement("DELETE FROM RBJ_USER_GROUP WHERE ID = ?");
         stmt2.setInt(1,userId);
         stmt2.executeUpdate();
         ConnectionManager.getConnection().commit();

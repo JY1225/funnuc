@@ -1,17 +1,18 @@
 package eu.robojob.millassist.ui.admin.general;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import eu.robojob.millassist.db.GeneralMapper;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
-import eu.robojob.millassist.user.User;
 import eu.robojob.millassist.user.UserEmailSettings;
+import eu.robojob.millassist.user.UserGroup;
 import eu.robojob.millassist.util.EmailUtil;
 
 public class EmailAdminPresenter  extends AbstractFormPresenter<EmailAdminView, GeneralMenuPresenter>{
 
     private boolean editMode;
-    private User selectedUser;
+    private UserGroup selectedUser;
 
     public EmailAdminPresenter(final EmailAdminView view) {
         super(view);
@@ -50,7 +51,7 @@ public class EmailAdminPresenter  extends AbstractFormPresenter<EmailAdminView, 
         editMode = !editMode;
     }
 
-    public void userSelected(final User user, final int index) {
+    public void userSelected(final UserGroup user, final int index) {
         if (!editMode) {
             selectedUser = user;
             getView().userSelected(selectedUser,index);
@@ -58,14 +59,14 @@ public class EmailAdminPresenter  extends AbstractFormPresenter<EmailAdminView, 
         }
     }
 
-    public void saveUser(final String name, final String email, final String imageURL, final boolean emailAtBatchEnd, final boolean emailError, final int erroDelay) {
+    public void saveUser(final String name, final List<String> emails, final String imageURL, final boolean emailAtBatchEnd, final boolean emailError, final int erroDelay) {
         if(selectedUser == null) {
-            User newUser = new User(0,name, email, imageURL);
+            UserGroup newUser = new UserGroup(0,name, emails, imageURL);
             UserEmailSettings settings = new UserEmailSettings(emailAtBatchEnd, emailError, erroDelay);
             newUser.setEmailSettings(settings);
             selectedUser = newUser;
         } else {
-            selectedUser.setEmail(email);
+            selectedUser.setEmails(emails);
             selectedUser.setName(name);
             selectedUser.setImageURL(imageURL);
             selectedUser.getEmailSettings().setEmailAtBatchEnd(emailAtBatchEnd);
@@ -73,7 +74,7 @@ public class EmailAdminPresenter  extends AbstractFormPresenter<EmailAdminView, 
             selectedUser.getEmailSettings().setEmailErrorDelay(erroDelay);
         }
         try {
-            GeneralMapper.updateUser(selectedUser);
+            GeneralMapper.updateUserGroup(selectedUser);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -81,10 +82,10 @@ public class EmailAdminPresenter  extends AbstractFormPresenter<EmailAdminView, 
         getView().refresh();
     }
 
-    public void copyUser(final String name, final String email, final String imageURL, final boolean emailAtBatchEnd, final boolean emailError, final int erroDelay) {
-        selectedUser = null;
-        saveUser(name, email, imageURL, emailAtBatchEnd, emailError, erroDelay);
-    }
+    //    public void copyUser(final String name, final List<String> emails, final String imageURL, final boolean emailAtBatchEnd, final boolean emailError, final int erroDelay) {
+    //        selectedUser = null;
+    //        saveUser(name, emails, imageURL, emailAtBatchEnd, emailError, erroDelay);
+    //    }
 
     public void deleteUser() {
         if(selectedUser != null) {

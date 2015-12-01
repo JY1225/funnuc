@@ -36,6 +36,10 @@ public final class PropertyManager {
         FULL_SCREEN("full-screen"),
         SCREEN_WIDTH("screen-width"),
         SCREEN_HEIGHT("screen-height"),
+        EMAIL_HOST("email-host"),
+        EMAIL_PORT("email-port"),
+        EMAIL_USERNAME("email-username"),
+        EMAIL_PASSWORD("email-password"),
         FROM_EMAIL_ADDRESS("from-email-address");
 
         private String settingsText;

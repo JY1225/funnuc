@@ -2,6 +2,9 @@ package eu.robojob.millassist.ui.admin.general;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javafx.beans.value.ChangeListener;
@@ -22,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -31,7 +35,7 @@ import eu.robojob.millassist.ui.controls.IconFlowSelector;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
 import eu.robojob.millassist.ui.controls.TextInputControlListener;
 import eu.robojob.millassist.ui.general.AbstractFormView;
-import eu.robojob.millassist.user.User;
+import eu.robojob.millassist.user.UserGroup;
 import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.Translator;
 import eu.robojob.millassist.util.UIConstants;
@@ -45,6 +49,7 @@ public class EmailAdminView extends AbstractFormView<EmailAdminPresenter>{
     private Label lblEmail;
     private FullTextField fulltxtEmail;
     private GridPane gpDetails;
+    private VBox vBoxEmails;
 
     // image
     private StackPane spImage;
@@ -66,6 +71,7 @@ public class EmailAdminView extends AbstractFormView<EmailAdminPresenter>{
     private Button btnEdit;
     private Button btnNew;
     private Button btnSave, btnTest, btnDelete;
+    private Button btnAddEmail;
 
     private static final String NAME = "EmailAdminView.name";
     private static final String EMAIL = "EmailAdminView.email";
@@ -97,6 +103,9 @@ public class EmailAdminView extends AbstractFormView<EmailAdminPresenter>{
     private static final double LBL_WIDTH = 25;
     private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
     private static final double BTN_WIDTH = BTN_HEIGHT * 3;
+    private static final double BTN_WIDTH_SMALL = BTN_HEIGHT;
+
+    private Set<FullTextField> emailFields = new HashSet<>();
 
 
     public EmailAdminView() {
@@ -166,62 +175,115 @@ public class EmailAdminView extends AbstractFormView<EmailAdminPresenter>{
         spDetails.setFitToWidth(true);
 
         gpDetails = new GridPane();
-        gpDetails.setAlignment(Pos.CENTER);
-        gpDetails.setVgap(10);
+        gpDetails.setVgap(VGAP);
+        gpDetails.setHgap(2*HGAP);
         spDetails.setContent(gpDetails);
+
+        gpDetails.add(createLeftDetails(), 0, 1);
+
+        VBox right = createRightDetails();
+
+        gpDetails.add(right, 1, 0,1,2);
+        GridPane.setHgrow(right, Priority.ALWAYS);
+        GridPane.setVgrow(right, Priority.ALWAYS);
+        gpDetails.setAlignment(Pos.TOP_CENTER);
+        GridPane.setHgrow(spDetails, Priority.NEVER);
+        GridPane.setVgrow(spDetails, Priority.ALWAYS);
+        GridPane.setHalignment(gpDetails, HPos.LEFT);
+
+    }
+
+    private GridPane createLeftDetails() {
         int column = 0;
         int row = 0;
-        gpDetails.add(spImage, column++, row);
         GridPane gpNameHeight = new GridPane();
         gpNameHeight.setVgap(10);
         gpNameHeight.setHgap(10);
-
+        gpNameHeight.add(spImage, column++,row);
+        column = 0;
+        row++;
         lblName = new Label(Translator.getTranslation(NAME));
-        gpNameHeight.add(lblName, 0, 0);
-        fulltxtName = new FullTextField(100);
+        gpNameHeight.add(lblName, column++, row);
+        fulltxtName = new FullTextField(32);
         fulltxtName.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
+        fulltxtName.setPrefWidth(UIConstants.TEXT_FIELD_HEIGHT * 5);
         fulltxtName.setOnChange(new ChangeListener<String>() {
             @Override
             public void changed(final ObservableValue<? extends String> arg0, final String arg1, final String arg2) {
                 validate();
             }
         });
-        gpNameHeight.add(fulltxtName, 1, 0);
-
-        lblEmail = new Label(Translator.getTranslation(EMAIL));
-        gpNameHeight.add(lblEmail, 0,1);
-        fulltxtEmail = new FullTextField(100);
-        fulltxtEmail.setOnChange(new ChangeListener<String>() {
-            @Override
-            public void changed(final ObservableValue<? extends String> arg0, final String arg1, final String arg2) {
-                validate();
-            }
-        });
-        fulltxtEmail.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
-        gpNameHeight.add(fulltxtEmail, 1, 1);
-        gpDetails.add(gpNameHeight, column++, row);
-
-        column = 0;
-        row++;
-        cbEmailEndBatch = new CheckBox(Translator.getTranslation(EMAIL_END_BATCH));
-        gpDetails.add(cbEmailEndBatch, column++, row, 2, 1);
-        column = 0;
-        row++;
-        cbEmailError = new CheckBox(Translator.getTranslation(EMAIL_ERROR));
-        gpDetails.add(cbEmailError, column++, row,2,1);
+        gpNameHeight.add(fulltxtName, column++, row);
         column = 0;
         row++;
         lblDelay = new Label(Translator.getTranslation(EMAIL_DELAY));
         ntfDelay = new IntegerTextField(3);
         ntfDelay.setPrefHeight(UIConstants.TEXT_FIELD_HEIGHT);
-        gpDetails.add(lblDelay, column++, row);
-        gpDetails.add(ntfDelay, column++, row,2,1);
+        gpNameHeight.add(lblDelay, column++, row);
+        gpNameHeight.add(ntfDelay, column++, row);
+        column = 0;
+        row++;
+        cbEmailEndBatch = new CheckBox(Translator.getTranslation(EMAIL_END_BATCH));
+        gpNameHeight.add(cbEmailEndBatch, column++, row, 2,1);
+        column = 0;
+        row++;
+        cbEmailError = new CheckBox(Translator.getTranslation(EMAIL_ERROR));
+        gpNameHeight.add(cbEmailError, column++, row, 2,1);
+        return gpNameHeight;
+    }
 
-        gpDetails.setAlignment(Pos.TOP_CENTER);
-        GridPane.setVgrow(spDetails, Priority.ALWAYS);
-        GridPane.setHalignment(gpDetails, HPos.CENTER);
-        gpDetails.setPadding(new Insets(10, 0, 10, 0));
+    private VBox createRightDetails() {
+        HBox emailHeader = new HBox(HGAP);
 
+        lblEmail = new Label(Translator.getTranslation(EMAIL));
+        //        gpDetails.add(lblEmail, 0, 1);
+        btnAddEmail = createButton(ADD_PATH, CSS_CLASS_FORM_BUTTON,Translator.getTranslation(NEW), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent arg0) {
+                vBoxEmails.getChildren().add(getEmailTextField(""));
+                validate();
+            }
+        });
+        //        gpDetails.add(btnAddEmail, 1, 1);
+        VBox vBoxEmail = new VBox(VGAP);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        emailHeader.getChildren().addAll(lblEmail, spacer, btnAddEmail);
+        // Create  email scroll pane
+        ScrollPane scpEmails = new ScrollPane();
+        scpEmails.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+        scpEmails.setHbarPolicy(ScrollBarPolicy.NEVER);
+        vBoxEmails = new VBox(VGAP);
+        vBoxEmails.getChildren().addAll(getEmailTextField(""));
+        vBoxEmail.getChildren().addAll(emailHeader, scpEmails);
+        VBox.setVgrow(scpEmails, Priority.ALWAYS);
+        scpEmails.setContent(vBoxEmails);
+        return vBoxEmail;
+    }
+
+    private HBox getEmailTextField(final String email) {
+        final HBox result = new HBox(HGAP);
+        final FullTextField textField = new FullTextField(100);
+        textField.setText(email);
+        emailFields.add(textField);
+        textField.setFocusListener(fulltxtName.getFocusListener());
+        textField.setOnChange(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> arg0, final String arg1, final String arg2) {
+                validate();
+            }
+        });
+        Button removeButton = createButton(DELETE_ICON_PATH, "","", BTN_WIDTH_SMALL, BTN_HEIGHT, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent arg0) {
+                vBoxEmails.getChildren().remove(result);
+                emailFields.remove(textField);
+                validate();
+            }
+        });
+        removeButton.getStyleClass().add("delete-btn");
+        result.getChildren().addAll(textField, removeButton);
+        return result;
     }
 
     private void createImageView() {
@@ -252,11 +314,19 @@ public class EmailAdminView extends AbstractFormView<EmailAdminPresenter>{
         spImage.getChildren().add(imageVw);
     }
 
+    private List<String> getEmails() {
+        List<String> result = new ArrayList<>();
+        for(FullTextField textField: emailFields) {
+            result.add(textField.getText());
+        }
+        return result;
+    }
+
     private void createActionButtons() {
         btnSave = createButton(SAVE_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(SAVE), BTN_WIDTH, BTN_HEIGHT, new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent arg0) {
-                getPresenter().saveUser(fulltxtName.getText(), fulltxtEmail.getText(), imagePath, cbEmailEndBatch.isSelected(), cbEmailError.isSelected(), Integer.parseInt(ntfDelay.getText()));
+                getPresenter().saveUser(fulltxtName.getText(), getEmails(), imagePath, cbEmailEndBatch.isSelected(), cbEmailError.isSelected(), Integer.parseInt(ntfDelay.getText()));
             }
         });
         btnTest = createButton(MAIL_PATH, CSS_CLASS_FORM_BUTTON, Translator.getTranslation(SEND_TEST), BTN_WIDTH + 40, BTN_HEIGHT, new EventHandler<ActionEvent>() {
@@ -284,25 +354,26 @@ public class EmailAdminView extends AbstractFormView<EmailAdminPresenter>{
     @Override
     public void setTextFieldListener(final TextInputControlListener listener) {
         ntfDelay.setFocusListener(listener);
-        fulltxtEmail.setFocusListener(listener);
         fulltxtName.setFocusListener(listener);
-
+        for(FullTextField ftf: emailFields) {
+            ftf.setFocusListener(listener);
+        }
     }
 
     @Override
     public void refresh() {
         ifsUsers.clearItems();
-        Set<User> users = null;
+        Set<UserGroup> users = null;
         try {
-            users = GeneralMapper.getAllUsers();
+            users = GeneralMapper.getAllUserGroups();
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         int itemIndex = 0;
-        for(final User user: users) {
+        for(final UserGroup user: users) {
             final int index = itemIndex;
-            ifsUsers.addItem(itemIndex, user.getName(), user.getImageURL(), user.getEmail(), new EventHandler<MouseEvent>(){
+            ifsUsers.addItem(itemIndex, user.getName(), user.getImageURL(), "", new EventHandler<MouseEvent>(){
                 @Override
                 public void handle(final MouseEvent arg0) {
                     getPresenter().userSelected(user, index);
@@ -316,7 +387,17 @@ public class EmailAdminView extends AbstractFormView<EmailAdminPresenter>{
 
     public void validate() {
         hideNotification();
-        if(!fulltxtName.getText().equals("") && !fulltxtEmail.getText().equals("")) {
+        boolean isValid = true;
+        for(String email: getEmails()) {
+            if("".equals(email)) {
+                isValid = false;
+                break;
+            }
+        }
+        if(getEmails().size() == 0) {
+            isValid = false;
+        }
+        if(!fulltxtName.getText().equals("") && isValid) {
             btnSave.setDisable(false);
             btnTest.setDisable(false);
         } else {
@@ -349,10 +430,16 @@ public class EmailAdminView extends AbstractFormView<EmailAdminPresenter>{
         }
     }
 
-    public void userSelected(final User user, final int index) {
+    public void userSelected(final UserGroup user, final int index) {
         ifsUsers.setSelected(index);
         fulltxtName.setText(user.getName());
-        fulltxtEmail.setText(user.getEmail());
+
+        vBoxEmails.getChildren().clear();
+        emailFields.clear();
+        for(String email: user.getEmails()) {
+            vBoxEmails.getChildren().add(getEmailTextField(email));
+        }
+
         String url = user.getImageURL();
         if (url != null) {
             url = url.replace("file:///", "");
@@ -372,7 +459,7 @@ public class EmailAdminView extends AbstractFormView<EmailAdminPresenter>{
     public void reset() {
         ifsUsers.deselectAll();
         fulltxtName.setText("");
-        fulltxtEmail.setText("");
+        //        fulltxtEmail.setText("");
         imagePath = null;
         imageVw.setImage(null);
         cbEmailEndBatch.setSelected(false);
@@ -380,6 +467,9 @@ public class EmailAdminView extends AbstractFormView<EmailAdminPresenter>{
         ntfDelay.setText("0");
         btnEdit.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
         btnNew.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
+        vBoxEmails.getChildren().clear();
+        emailFields.clear();
+        vBoxEmails.getChildren().add(getEmailTextField(""));
         validate();
     }
 
