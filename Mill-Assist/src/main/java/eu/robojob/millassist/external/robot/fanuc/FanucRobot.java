@@ -654,7 +654,7 @@ public class FanucRobot extends AbstractRobot {
 			payLoad1 += wp2.getWeight() * 10;
 			payLoad2 += wp2.getWeight() * 10;
 		}
-		payLoad2 = payLoad2 + weight2;
+		payLoad2 = payLoad2 + weight2 * 10;
 		values.add(getSpeed() + "");						// robot speed
 		values.add(df2.format(Math.ceil(payLoad1)));		// payload 1
 		values.add(df2.format(Math.ceil(payLoad2)));		// payload 2

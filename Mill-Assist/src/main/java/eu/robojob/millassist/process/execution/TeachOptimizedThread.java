@@ -189,8 +189,8 @@ public class TeachOptimizedThread extends TeachThread {
 			stackingDevice = (AbstractStackingDevice) pickFromStackingDeviceStep.getDevice();
 		}
 		if (stackingDevice instanceof BasicStackPlate) {
-			((BasicStackPlate) stackingDevice).getLayout().getRawStackingPositions().get(0).setWorkPiece(((BasicStackPlate) stackingDevice).getFinishedWorkPiece());
-			((BasicStackPlate) stackingDevice).getLayout().getRawStackingPositions().get(0).setAmount(1);
+			((BasicStackPlate) stackingDevice).getLayout().getStackingPositions().get(0).setWorkPiece(((BasicStackPlate) stackingDevice).getFinishedWorkPiece());
+			((BasicStackPlate) stackingDevice).getLayout().getStackingPositions().get(0).setAmount(1);
 		} else if (stackingDevice instanceof Conveyor) {
 			// FIXME implement
 			throw new IllegalStateException("Not yet implemented!");
@@ -199,7 +199,7 @@ public class TeachOptimizedThread extends TeachThread {
 		} else if (stackingDevice instanceof Pallet) {
 		    ((Pallet) stackingDevice).getGridLayout().getStackingPositions().get(0).setWorkPiece(((Pallet) stackingDevice).getFinishedWorkPiece());
 		}
-		getProcessFlow().setFinishedAmount(1);
+	    getProcessFlow().setFinishedAmount(1);
 		Coordinates originalCoordinates = stackingDevice.getLocation(
 				getProcessFlow().getPiecePlacementVisitor(pickFromStackingDeviceStep.getRobotSettings().getWorkPiece().getShape()),
 				putOnStackerStep.getRobotSettings().getWorkArea(), 
@@ -265,6 +265,7 @@ public class TeachOptimizedThread extends TeachThread {
 			logger.info("In IP point");
 			fRobot.finalizeMovePiece();
 			logger.info("finalized move");
+			putOnStackerStep.getRobotSettings().getGripperHead().getGripper().setWorkPiece(null);
 			putOnStackerStep.getProcessFlow().processProcessFlowEvent(new StatusChangedEvent(putOnStackerStep.getProcessFlow(), putOnStackerStep, StatusChangedEvent.ENDED, PROCESS_0_ID));
 			return relTeachedOffsetFinishedWp;
 		}
