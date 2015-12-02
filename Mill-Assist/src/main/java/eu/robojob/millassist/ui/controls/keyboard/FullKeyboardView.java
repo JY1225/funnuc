@@ -62,6 +62,7 @@ public class FullKeyboardView extends AbstractKeyboardView {
         addKey("0", KeyCode.DIGIT0, column++, row, 1, 1, "key-0", null);
         addKey(".", KeyCode.DECIMAL, column++, row, 1, 1, "key-decimal", null);
 
+
         column = 0;
         row++;
         addKey("Q", KeyCode.Q, column++, row, 1, 1, "key-Q", null);
@@ -103,6 +104,7 @@ public class FullKeyboardView extends AbstractKeyboardView {
         addKey("N", KeyCode.N, column++, row, 1, 1, "key-N", null);
         addKey("M", KeyCode.M, column++, row, 1, 1, "key-M", null);
         addKey("_", KeyCode.UNDERSCORE, column++, row, 1, 1, "key-underscore", null);
+        addKey("@", KeyCode.AT, column++, row, 1, 1, "key-at", null);
         addKey("", KeyCode.SPACE, column++, row, 2, 1, "key-space", null);
         column++;
         addKey("OK", KeyCode.ENTER, column++, row, 1, 1, "key-OK", null);
@@ -151,7 +153,7 @@ public class FullKeyboardView extends AbstractKeyboardView {
         addKey("J", KeyCode.J, column++, row, 1, 1, "key-J", null);
         addKey("K", KeyCode.K, column++, row, 1, 1, "key-K", null);
         addKey("L", KeyCode.L, column++, row, 1, 1, "key-L", null);
-        column++;
+        addKey("@", KeyCode.AT, column++, row, 1, 1, "key-at", null);
         column++;
         addKey("\u2190", KeyCode.BACK_SPACE, column++, row, 1, 1, "key-backspace", null);
 
