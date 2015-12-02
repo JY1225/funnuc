@@ -39,8 +39,9 @@ public class EmailUtil {
     public enum EMailEvent {
         ERROR, BATCH_END;
     }
-    public static void sendMailTest(final UserGroup user) {
-        sendMail("Testing RoboJob mail option.", "Your mail option is correctly configured.", user.getEmails());
+
+    public static void sendMailTest(final UserGroup userGroup) {
+        sendMail("Testing RoboJob mail option.", htmlToString("/html/mail_option_test_mail.html"), userGroup.getEmails());
     }
 
     public static void sendMailToAllUsers(final EMailEvent event, final ProcessFlow processFlow) {
@@ -52,22 +53,22 @@ public class EmailUtil {
                 message = message.replace("{{processName}}", processFlow.getName());
                 final String messageF = message;
                 final String subject = "Error occurred";
-                Set<UserGroup> users = null;
+                Set<UserGroup> userGroups = null;
                 try {
-                    users= GeneralMapper.getAllUserGroups();
+                    userGroups= GeneralMapper.getAllUserGroups();
                 } catch (SQLException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                for(final UserGroup user: users) {
-                    if(user.getEmailSettings().isEmailAtError()) {
+                for(final UserGroup userGroup: userGroups) {
+                    if(userGroup.getEmailSettings().isEmailAtError()) {
                         Timer timer = new Timer();
                         timer.schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                sendMail(subject, messageF, user.getEmails());
+                                sendMail(subject, messageF, userGroup.getEmails());
                             }
-                        }, 1000 * 60 * user.getEmailSettings().getEmailErrorDelay());
+                        }, 1000 * 60 * userGroup.getEmailSettings().getEmailErrorDelay());
                         errorTimers.add(timer);
                     }
                 }
@@ -78,17 +79,17 @@ public class EmailUtil {
             String messageBE = htmlToString("/html/batch_end_mail.html");
             messageBE = messageBE.replace("{{processName}}", processFlow.getName());
             String subjectBE = "Batch finished!";
-            Set<UserGroup> usersBE = null;
+            Set<UserGroup> userGroupsBE = null;
             try {
-                usersBE= GeneralMapper.getAllUserGroups();
+                userGroupsBE= GeneralMapper.getAllUserGroups();
             } catch (SQLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             Set<String> recipientsBE = new HashSet<>();
-            for(UserGroup user: usersBE) {
-                if(user.getEmailSettings().isEmailAtBatchEnd()) {
-                    recipientsBE.addAll(user.getEmails());
+            for(UserGroup userGroup: userGroupsBE) {
+                if(userGroup.getEmailSettings().isEmailAtBatchEnd()) {
+                    recipientsBE.addAll(userGroup.getEmails());
                 }
             }
             sendMail(subjectBE, messageBE , recipientsBE);
