@@ -46,6 +46,7 @@ public class CNCMachineMotionEnableMonitorThread implements Runnable, Monitoring
      * Boolean indicating whether this thread is currently monitoring
      */
     private boolean busyMonitoring;
+    private Object syncObject;
     private Logger logger = LogManager.getLogger(CNCMachineMotionEnableMonitorThread.class.getName());
 
     /**
@@ -62,12 +63,16 @@ public class CNCMachineMotionEnableMonitorThread implements Runnable, Monitoring
         this.putActionToMonitor = putActionToMonitor;
         this.isInterrupted = false;
         this.busyMonitoring = false;
+        syncObject = new Object();
     }
     
     public void startExecution(AbstractRobot robotToControl) {
         this.robot = robotToControl;
         busyMonitoring = true;
         logger.debug("Started monitoring in " + toString());
+        synchronized (syncObject) {
+            syncObject.notify();
+        }
     }
     
     @Override
@@ -81,6 +86,15 @@ public class CNCMachineMotionEnableMonitorThread implements Runnable, Monitoring
                     } else {
                         //checkStatusDropV1();
                         checkStatusDrop(CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK);
+                    }
+                }
+            } else {
+                synchronized (syncObject) {
+                    try {
+                        stopMonitoring();
+                        syncObject.wait();
+                    } catch (InterruptedException exception) {
+                        stopMonitoring();
                     }
                 }
             }
