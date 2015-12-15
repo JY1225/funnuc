@@ -320,7 +320,7 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int ERR_PREP_PICK_MACHINE_NOT_READY		=	BIT9;
 	public static final int ERR_PREP_PICK_OTHER_CMD_BUSY		= 	BIT10;
 	public static final int ERR_PREP_PICK_TIMEOUT				=	BIT11;
-	public static final int ERR_PREP_PICK_WRONG_ZONE_WA			=	BIT11;
+	public static final int ERR_PREP_PICK_WRONG_ZONE_WA			=	BIT12;
 	public static final int ERR_PREP_PICK_WORNG_FIXTURE			= 	BIT13;
 	public static final int ERR_PREP_PICK_ZONE_NOT_FREE			= 	BIT14;
 	public static final int ERR_PREP_PICK_CYCLE_NOT_FINISHED	=	BIT15;
