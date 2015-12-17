@@ -1,5 +1,8 @@
 package eu.robojob.millassist.ui.automate;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.Transition;
@@ -22,6 +25,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
+import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateLayout;
 import eu.robojob.millassist.ui.general.status.StatusView;
 import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.Translator;
@@ -91,6 +95,9 @@ public class AutomateStatusView extends HBox {
 	private static final String STOP = "StatusView.stop";
 	private static final String START = "AutomateView.start";
 	private static final String CONTINUE = "AutomateView.continue";
+	
+    private static Logger logger = LogManager.getLogger(AutomateStatusView.class.getName());
+
 	
 	public AutomateStatusView() {
 	}
@@ -290,7 +297,8 @@ public class AutomateStatusView extends HBox {
 		}
 		
 		if ((percentaged < 0) || (percentaged > 100)) {
-			throw new IllegalArgumentException("Illegal percentage value: [" + percentage + "]");
+		    logger.debug("Tried to set the percentage, but failed: Illegal percentage value: [" + percentage + "]");
+		    return;
 		}
 		
 		piePiecePath.getElements().clear();
