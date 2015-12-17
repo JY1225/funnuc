@@ -52,7 +52,24 @@ public class RoboSoft extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-
+        //        //        TODO REMOVE BEFORE BUILD!!!
+        //        try {
+        //            final Class<?> macFontFinderClass = Class.forName("com.sun.t2k.MacFontFinder");
+        //            final Field psNameToPathMap = macFontFinderClass.getDeclaredField("psNameToPathMap");
+        //            psNameToPathMap.setAccessible(true);
+        //            if (psNameToPathMap.get(null) == null) {
+        //                psNameToPathMap.set(
+        //                        null, new HashMap<String, String>());
+        //            }
+        //            final Field allAvailableFontFamilies = macFontFinderClass.getDeclaredField("allAvailableFontFamilies");
+        //            allAvailableFontFamilies.setAccessible(true);
+        //            if (allAvailableFontFamilies.get(null) == null) {
+        //                allAvailableFontFamilies.set(
+        //                        null, new String[] {});
+        //            }
+        //        } catch (final Exception e) {
+        //            // ignore
+        //        }
         File loggerConfig = new File("log4j2.xml");
         Configurator.initialize("logger", null, loggerConfig.toURI());
         logger.info("Started application.");
