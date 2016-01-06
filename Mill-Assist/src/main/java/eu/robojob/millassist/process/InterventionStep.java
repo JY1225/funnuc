@@ -21,6 +21,7 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 	private int frequency;
 	private DeviceInterventionSettings interventionSettings;
 	private String customMessage="";
+	private int nbVisited;
 	
 	private static Logger logger = LogManager.getLogger(InterventionStep.class.getName());
 		
@@ -95,21 +96,16 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 	}
 	
 	public boolean isInterventionNeeded(final int finAmount) {
-		int currentStepIndex = getProcessFlow().getStepIndex(this);
 		int finishedAmount = finAmount;
 		if(getDeviceSettings().getDevice() instanceof UnloadPallet) {
             finishedAmount += ((UnloadPallet)getDeviceSettings().getDevice()).getWorkPieceAmount(Type.FINISHED) - finAmount;
             return ((finishedAmount > 0) && (finishedAmount % frequency == 0));
         }
-		finishedAmount++;
-		if (currentStepIndex < getProcessFlow().getCurrentIndex(ProcessFlow.WORKPIECE_0_ID)) {
-			finishedAmount++;
+		if (nbVisited % frequency == 0) {
+		    resetNbVisited();
+		    return true;
 		}
-		if (currentStepIndex < getProcessFlow().getCurrentIndex(ProcessFlow.WORKPIECE_1_ID)) {
-			finishedAmount++;
-		}
-		
-		return ((finishedAmount > 0) && (finishedAmount % frequency == 0));
+		return false;
 	}
 
 	public void setDeviceSettings(final DeviceInterventionSettings interventionSettings) {
@@ -149,6 +145,14 @@ public class InterventionStep extends AbstractProcessStep implements DeviceStep 
 
     public String getCustomMessage() {
         return this.customMessage;
+    }
+    
+    public synchronized void resetNbVisited() {
+        nbVisited = 0;
+    }
+    
+    public synchronized void incNbVisited() {
+        nbVisited++;
     }
 
 }

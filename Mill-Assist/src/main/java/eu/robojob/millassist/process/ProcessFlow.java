@@ -2,6 +2,7 @@ package eu.robojob.millassist.process;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -87,6 +88,7 @@ public class ProcessFlow {
 	private Mode mode;
 	
 	private Map<Integer, Integer> currentIndices;
+	private List<Integer> interventionIndicices;
 	
 	private static Logger logger = LogManager.getLogger(ProcessFlow.class.getName());
 	
@@ -107,6 +109,7 @@ public class ProcessFlow {
 		this.finishedAmount = 0;
 		this.mode = Mode.CONFIG;
 		this.currentIndices = new HashMap<Integer, Integer>();
+		this.interventionIndicices = new ArrayList<Integer>();
 		this.creation = creation;
 		this.lastOpened = lastOpened;
 		this.type = Type.FIXED_AMOUNT;
@@ -138,16 +141,23 @@ public class ProcessFlow {
 		logger.info("Initializing [" + toString() + "].");
 		getClampingType().setChanged(false);
 		this.currentIndices = new HashMap<Integer, Integer>();
+		this.interventionIndicices = new ArrayList<Integer>();
 		//TODO more than two concurrent steps possible?
 		setCurrentIndex(WORKPIECE_0_ID, -1);
 		setCurrentIndex(WORKPIECE_1_ID, -1);
 		setCurrentIndex(WORKPIECE_2_ID, -1);
 		loadAllSettings();
 		setFinishedAmount(0);
+		int index = 0;
 		for (AbstractProcessStep step : processSteps) {
 			if (step instanceof ProcessingStep) {
 				((ProcessingStep) step).setNotProcessing();
 			}
+			if (step instanceof InterventionStep) {
+			    ((InterventionStep) step).resetNbVisited();
+			    interventionIndicices.add(index);
+			}
+			index++;
 		}
 		updateType();
 	}
@@ -834,5 +844,9 @@ public class ProcessFlow {
 		else {
 			return new CubicPlacementVisitor();
 		}
+	}
+	
+	public List<Integer> getInterventionIndices() {
+	    return Collections.unmodifiableList(interventionIndicices);
 	}
 }

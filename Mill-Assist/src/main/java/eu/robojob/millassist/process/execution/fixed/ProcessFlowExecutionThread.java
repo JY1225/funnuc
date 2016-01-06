@@ -71,6 +71,8 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	private int pickFromMachineStepIndex;
 	private int pickFromMachineBeforeReversalStepIndex = -1;
 	
+	private boolean jumpBackToStacker = false;
+	
 	private static Logger logger = LogManager.getLogger(ProcessFlowExecutionThread.class.getName());
 	
 	private static final int POLLING_INTERVAL = 500;
@@ -122,6 +124,9 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 				}
 				if (currentStep instanceof InterventionStep) {
 					executeInterventionStep((InterventionStep) currentStep);
+					if (jumpBackToStacker) {
+					    processFlow.setCurrentIndex(processId, pickFromStackerStepIndex - 1); 
+					}
 				} 
 				else if (currentStep instanceof PickStep && (((PickStep) currentStep).getDevice() instanceof ReversalUnit)) {
 					if (processFlow.getNbCNCInFlow() - 1 == nbCNCPassed) {
@@ -143,11 +148,22 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					//TODO - review (nbCNCPassed to use?)
 					if (morePutsToPerform((PutStep) currentStep) && processFlow.hasReversalUnit() && nbWPReversed < nbWPInMachine && nbWPReversed > 0) {
 						needsReversal = true;
-						processFlow.setCurrentIndex(processId, pickFromMachineBeforeReversalStepIndex-1);
+						if (processFlow.getInterventionIndices().contains(pickFromMachineBeforeReversalStepIndex - 1)) {
+						    processFlow.setCurrentIndex(processId, pickFromMachineBeforeReversalStepIndex-2);
+						} else {
+						    processFlow.setCurrentIndex(processId, pickFromMachineBeforeReversalStepIndex-1);
+						}
 					} else if (morePutsToPerform((PutStep) currentStep)) {
 						vacuumContinue = true;
-						processFlow.setCurrentIndex(processId, pickFromStackerStepIndex-1);
-					}
+						if (processFlow.getInterventionIndices().contains(processFlow.getCurrentIndex(processId) + 1)) {
+						    jumpBackToStacker = true;
+						} else {
+						    processFlow.setCurrentIndex(processId, pickFromStackerStepIndex-1);
+						    jumpBackToStacker = false;
+						} 
+					} else {
+                        jumpBackToStacker = false;
+                    }
 				} else if ((currentStep instanceof PickStep) && (((PickStep) currentStep).getDevice() instanceof AbstractCNCMachine)) {
 					checkStatus();
 					executePickFromMachineStep((PickStep) currentStep);
@@ -200,7 +216,12 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 					processFlow.incrementFinishedAmount();
 					nbWPInFlow--;
 					if (nbWPInMachine > 0) {
-						processFlow.setCurrentIndex(processId, pickFromMachineStepIndex);
+						logger.debug("Pick from machine again");
+						if (processFlow.getInterventionIndices().contains(pickFromMachineStepIndex - 1)) {
+		                    processFlow.setCurrentIndex(processId, pickFromMachineStepIndex - 1);
+						} else {
+						    processFlow.setCurrentIndex(processId, pickFromMachineStepIndex);
+						}
 					} else {
 						processFlow.setCurrentIndex(processId, 0);
 						nbCNCPassed = 0;
@@ -235,7 +256,8 @@ public class ProcessFlowExecutionThread implements Runnable, ProcessExecutor {
 	}
 	
 	public void executeInterventionStep(final InterventionStep interventionStep) throws AbstractCommunicationException, DeviceActionException, RobotActionException, InterruptedException {
-		if (interventionStep.isInterventionNeeded()) {
+		interventionStep.incNbVisited();
+	    if (interventionStep.isInterventionNeeded()) {
 			interventionStep.executeStep(processId, this);
 			canContinue = false;
 			checkStatus();
