@@ -248,9 +248,11 @@ public class UnloadPalletLayoutView<T extends AbstractFormPresenter<?, ?>> exten
      */
     @Override
     public void refresh() {
-        //The whole screen is refreshed!
-        unloadPallet.recalculateLayout();
-        unloadPallet.notifyLayoutChanged();
+        if (!(getPresenter() instanceof eu.robojob.millassist.ui.automate.device.stacking.pallet.UnloadPalletLayoutPresenter)) {
+            //The whole screen is refreshed!
+            unloadPallet.recalculateLayout();
+            unloadPallet.notifyLayoutChanged();
+        }
     }
 
 
