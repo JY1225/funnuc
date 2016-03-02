@@ -9,11 +9,6 @@ public class NegativeNumericKeyboardView extends NumericKeyboardView {
 	}
 	
 	@Override
-	public double getPreferedWidth() {
-		return 200;
-	}
-	
-	@Override
 	protected void buildKeyboard() {
 		this.setCache(true);
 		int row = 0;

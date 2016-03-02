@@ -37,6 +37,8 @@ public class GridPlateConfigureView extends AbstractFormView<GridPlateConfigureP
 	private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
 	private static final double BTN_WIDTH = BTN_HEIGHT * 3;
 	
+	private static final int PADDING = 45;
+	
 	private GridHolePane gridHolePane; 
 	private GeneralInfoGridPlateNode gridPlateGeneralInfo;
 	private OperationBox operationBox;
@@ -49,17 +51,20 @@ public class GridPlateConfigureView extends AbstractFormView<GridPlateConfigureP
 		gridPlateGeneralInfo = new GeneralInfoGridPlateNode();
 		gridPlateGeneralInfo.setParent(this);
 		gridHolePane = new GridHolePane();
-		gridHolePane.setAlignment(Pos.CENTER);
-		gridHolePane.setPadding(new Insets(0, 20, 0, 0));
 		operationBox = new OperationBox();
 		
 		borderPane = new BorderPane();
-		borderPane.setLeft(gridPlateGeneralInfo);
-		borderPane.setRight(gridHolePane);
+		HBox gridPlateConfigureBox = new HBox(PADDING);
+		gridPlateConfigureBox.getChildren().addAll(gridPlateGeneralInfo, gridHolePane);
+		gridPlateConfigureBox.setAlignment(Pos.CENTER);
+		borderPane.setCenter(gridPlateConfigureBox);
 		
 		borderPane.setBottom(operationBox);
 		borderPane.setTop(getTitleBar());
+		operationBox.setPadding(new Insets(PADDING));
+		
 		this.getChildren().add(borderPane);
+		
 		addActions();
 	}
 	
@@ -113,11 +118,11 @@ public class GridPlateConfigureView extends AbstractFormView<GridPlateConfigureP
 		});
 		hboxButtons.getChildren().addAll(btnEdit, btnNew);
 		HBox hboxSelectGridPlate = new HBox();
-		hboxSelectGridPlate.setSpacing(50);
-		hboxSelectGridPlate.setAlignment(Pos.CENTER_LEFT);
-		hboxSelectGridPlate.setPadding(new Insets(15,20,15,20));
+		hboxSelectGridPlate.setSpacing(PADDING);
+		hboxSelectGridPlate.setAlignment(Pos.CENTER);
 		
 		hboxSelectGridPlate.getChildren().addAll(cbbGridPlates, hboxButtons);
+		hboxSelectGridPlate.setPadding(new Insets(0, 0, PADDING, 0));
 		return hboxSelectGridPlate;
 	}
 	

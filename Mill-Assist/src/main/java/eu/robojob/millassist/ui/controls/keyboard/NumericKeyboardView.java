@@ -1,5 +1,6 @@
 package eu.robojob.millassist.ui.controls.keyboard;
 
+import eu.robojob.millassist.util.SizeManager;
 import javafx.scene.input.KeyCode;
 
 public class NumericKeyboardView extends AbstractKeyboardView {
@@ -10,7 +11,7 @@ public class NumericKeyboardView extends AbstractKeyboardView {
 	
 	@Override
 	public double getPreferedWidth() {
-		return 200;
+		return SizeManager.WIDTH_BOTTOM_LEFT;
 	}
 	
 	@Override
