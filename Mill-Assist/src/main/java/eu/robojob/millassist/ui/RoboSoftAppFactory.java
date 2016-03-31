@@ -36,8 +36,11 @@ import eu.robojob.millassist.ui.admin.device.UserFramesConfigurePresenter;
 import eu.robojob.millassist.ui.admin.device.UserFramesConfigureView;
 import eu.robojob.millassist.ui.admin.device.cnc.CNCMachineConfigurePresenter;
 import eu.robojob.millassist.ui.admin.device.cnc.CNCMachineConfigureView;
+import eu.robojob.millassist.ui.admin.general.EmailAdminPresenter;
+import eu.robojob.millassist.ui.admin.general.EmailAdminView;
 import eu.robojob.millassist.ui.admin.general.GeneralAdminPresenter;
-import eu.robojob.millassist.ui.admin.general.GeneralAdminView;
+import eu.robojob.millassist.ui.admin.general.GeneralMenuPresenter;
+import eu.robojob.millassist.ui.admin.general.GeneralMenuView;
 import eu.robojob.millassist.ui.admin.robot.RobotAdminPresenter;
 import eu.robojob.millassist.ui.admin.robot.RobotConfigurePresenter;
 import eu.robojob.millassist.ui.admin.robot.RobotConfigureView;
@@ -110,6 +113,7 @@ public final class RoboSoftAppFactory {
     private static AdminPresenter adminPresenter;
     private static MainMenuPresenter mainMenuPresenter;
     private static GeneralAdminPresenter generalAdminPresenter;
+    private static EmailAdminPresenter emailAdminPresenter;
     private static RobotAdminPresenter robotAdminPresenter;
     private static RobotConfigurePresenter robotConfigurePresenter;
     private static RobotGripperPresenter robotGripperPresenter;
@@ -382,11 +386,21 @@ public final class RoboSoftAppFactory {
 
     private static GeneralAdminPresenter getGeneralAdminPresenter() {
         if (generalAdminPresenter == null) {
-            GeneralAdminView view = new GeneralAdminView();
-            generalAdminPresenter = new GeneralAdminPresenter(view);
+            SubMenuAdminView view = new SubMenuAdminView();
+            GeneralMenuView menuView = new GeneralMenuView();
+            GeneralMenuPresenter generalMenuPresenter = new GeneralMenuPresenter(menuView, getEmailAdminPresenter());
+            generalAdminPresenter = new GeneralAdminPresenter(view, generalMenuPresenter);
         }
         return generalAdminPresenter;
     }
+    private static EmailAdminPresenter getEmailAdminPresenter() {
+        if(emailAdminPresenter == null) {
+            EmailAdminView emailAdminView = new EmailAdminView();
+            emailAdminPresenter = new EmailAdminPresenter(emailAdminView);
+        }
+        return emailAdminPresenter;
+    }
+
 
     private static DeviceAdminPresenter getDeviceAdminPresenter() {
         if (deviceAdminPresenter == null) {

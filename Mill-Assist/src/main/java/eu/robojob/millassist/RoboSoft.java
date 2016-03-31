@@ -55,11 +55,13 @@ public class RoboSoft extends Application {
         //        } catch (Exception e) {
         //            // ignore
         //        }
+
         launch(args);
     }
 
     @Override
     public void start(final Stage stage) throws Exception {
+
         File loggerConfig = new File("log4j2.xml");
         Configurator.initialize("logger", null, loggerConfig.toURI());
         logger.info("Started application.");

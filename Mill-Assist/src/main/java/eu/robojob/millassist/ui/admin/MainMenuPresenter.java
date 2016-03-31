@@ -35,8 +35,7 @@ public class MainMenuPresenter extends AbstractMenuPresenter<MainMenuView> {
 
 	@Override
 	public void openFirst() {
-		getView().setRobotMenuActive();
-		getParent().setContentNode(robotAdminPresenter.getView());
+		robotMenuClicked();
 	}
 
 	@Override
