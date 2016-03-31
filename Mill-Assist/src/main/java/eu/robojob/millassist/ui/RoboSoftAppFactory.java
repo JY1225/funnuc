@@ -93,429 +93,429 @@ import eu.robojob.millassist.ui.teach.flow.TeachProcessFlowView;
 
 public final class RoboSoftAppFactory {
 
-	private static MainPresenter mainPresenter;
-	private static MenuBarPresenter menuBarPresenter;
-	private static ConfigurePresenter configurePresenter;
-	private static ProcessConfigurePresenter processConfigurationPresenter;
-	private static TeachPresenter teachPresenter;
-	private static AutomatePresenter automatePresenter;
-	private static ConfigureProcessFlowPresenter configureProcessFlowPresenter;
-	private static TeachProcessFlowPresenter teachProcessFlowPresenter;
-	private static AutomateProcessFlowPresenter automateProcessFlowPresenter;
-	private static AlarmsPopUpPresenter alarmsPopUpPresenter;
-	private static RobotPopUpPresenter robotPopUpPresenter;
-	private static ProcessMenuPresenter processConfigurationMenuPresenter;
-	private static ProcessOpenPresenter processOpenPresenter;
-	private static ProcessSavePresenter processSavePresenter;
-	private static AdminPresenter adminPresenter;
-	private static MainMenuPresenter mainMenuPresenter;
-	private static GeneralAdminPresenter generalAdminPresenter;
-	private static RobotAdminPresenter robotAdminPresenter;
-	private static RobotConfigurePresenter robotConfigurePresenter;
-	private static RobotGripperPresenter robotGripperPresenter;
-	private static RobotDataPresenter robotDataPresenter;
-	private static DeviceAdminPresenter deviceAdminPresenter;
-	private static UserFramesConfigurePresenter userFramesConfigurePresenter;
-	private static BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
-	private static UnloadPalletConfigurePresenter unloadPalletConfigurePresenter;
-	private static PalletLayoutConfigurePresenter palletLayoutConfigurePresenter;
-	private static CNCMachineConfigurePresenter cncMachineConfigurePresenter;
-	private static CNCMachineClampingsPresenter cncMachineClampingsPresenter;
-	private static PrageDeviceConfigurePresenter prageDeviceConfigurePresenter;
-	private static OutputBinConfigurePresenter outputBinConfigurePresenter;
-	private static GridPlateConfigurePresenter gridPlateConfigurePresenter;
-	private static ReversalUnitConfigurePresenter reversalUnitConfigurePresenter;
-	private static PalletConfigurePresenter palletConfigurePresenter;
-	private static eu.robojob.millassist.ui.automate.device.DeviceMenuFactory automateDeviceMenuFactory;
-	private static eu.robojob.millassist.ui.teach.transport.TransportMenuFactory teachTransportMenuFactory;
-	
-	private static ProcessFlow processFlow;
-	private static ProcessFlowTimer processFlowTimer;
+    private static MainPresenter mainPresenter;
+    private static MenuBarPresenter menuBarPresenter;
+    private static ConfigurePresenter configurePresenter;
+    private static ProcessConfigurePresenter processConfigurationPresenter;
+    private static TeachPresenter teachPresenter;
+    private static AutomatePresenter automatePresenter;
+    private static ConfigureProcessFlowPresenter configureProcessFlowPresenter;
+    private static TeachProcessFlowPresenter teachProcessFlowPresenter;
+    private static AutomateProcessFlowPresenter automateProcessFlowPresenter;
+    private static AlarmsPopUpPresenter alarmsPopUpPresenter;
+    private static RobotPopUpPresenter robotPopUpPresenter;
+    private static ProcessMenuPresenter processConfigurationMenuPresenter;
+    private static ProcessOpenPresenter processOpenPresenter;
+    private static ProcessSavePresenter processSavePresenter;
+    private static AdminPresenter adminPresenter;
+    private static MainMenuPresenter mainMenuPresenter;
+    private static GeneralAdminPresenter generalAdminPresenter;
+    private static RobotAdminPresenter robotAdminPresenter;
+    private static RobotConfigurePresenter robotConfigurePresenter;
+    private static RobotGripperPresenter robotGripperPresenter;
+    private static RobotDataPresenter robotDataPresenter;
+    private static DeviceAdminPresenter deviceAdminPresenter;
+    private static UserFramesConfigurePresenter userFramesConfigurePresenter;
+    private static BasicStackPlateConfigurePresenter basicStackPlateConfigurePresenter;
+    private static UnloadPalletConfigurePresenter unloadPalletConfigurePresenter;
+    private static PalletLayoutConfigurePresenter palletLayoutConfigurePresenter;
+    private static CNCMachineConfigurePresenter cncMachineConfigurePresenter;
+    private static CNCMachineClampingsPresenter cncMachineClampingsPresenter;
+    private static PrageDeviceConfigurePresenter prageDeviceConfigurePresenter;
+    private static OutputBinConfigurePresenter outputBinConfigurePresenter;
+    private static GridPlateConfigurePresenter gridPlateConfigurePresenter;
+    private static ReversalUnitConfigurePresenter reversalUnitConfigurePresenter;
+    private static PalletConfigurePresenter palletConfigurePresenter;
+    private static eu.robojob.millassist.ui.automate.device.DeviceMenuFactory automateDeviceMenuFactory;
+    private static eu.robojob.millassist.ui.teach.transport.TransportMenuFactory teachTransportMenuFactory;
 
-	private static ProcessFlowManager processFlowManager;
-	private static DeviceManager deviceManager;
-	private static RobotManager robotManager;
-	
-	private static DeviceMenuFactory deviceMenuFactory;
-	private static TransportMenuFactory transportMenuFactory;
-	
-	private static KeyboardType keyboardType;
-		
-	private RoboSoftAppFactory() {	}
-	
-	public static void intialize(final DeviceManager deviceManager, final RobotManager robotManager, 
-			final ProcessFlowManager processFlowManager, final KeyboardType keyboardType) {
-		RoboSoftAppFactory.deviceManager = deviceManager;
-		RoboSoftAppFactory.robotManager = robotManager;
-		RoboSoftAppFactory.processFlowManager = processFlowManager;
-		RoboSoftAppFactory.keyboardType = keyboardType;
-	}
-	
-	public static MainPresenter getMainPresenter() {
-		if (mainPresenter == null) {
-			MainView mainView = new MainView();
-			MainPresenter tmpMainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter(), getAutomatePresenter(), 
-					getAlarmsPopUpPresenter(), getRobotPopUpPresenter(), getAdminPresenter());
-			tmpMainPresenter.loadProcessFlow(getProcessFlow());
-			mainPresenter = tmpMainPresenter;
-		}
-		return mainPresenter;
-	}
-	
-	private static AlarmsPopUpPresenter getAlarmsPopUpPresenter() {
-		if (alarmsPopUpPresenter == null) {
-			AlarmsPopUpView view = new AlarmsPopUpView();
-			alarmsPopUpPresenter = new AlarmsPopUpPresenter(view, getProcessFlow(), deviceManager, robotManager);
-		}
-		return alarmsPopUpPresenter;
-	}
-	
-	private static MenuBarPresenter getMenuBarPresenter() {
-		if (menuBarPresenter == null) {
-			MenuBarView processMenuBarView = new MenuBarView();
-			menuBarPresenter = new MenuBarPresenter(processMenuBarView);
-		}
-		return menuBarPresenter;
-	}
-	
-	private static ProcessFlowTimer getProcessFlowTimer() {
-		if (processFlowTimer == null) {
-			processFlowTimer = new ProcessFlowTimer(getProcessFlow());
-		}
-		return processFlowTimer;
-	}
-	
-	private static ConfigurePresenter getConfigurePresenter() {
-		if (configurePresenter == null) {
-			MainContentView processConfigureView = new MainContentView();
-			configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNegativeNumericKeyboardPresenter(), getConfigureProcessFlowPresenter(), 
-					getProcessConfigurationMenuPresenter(), getDeviceMenuFactory(), getTransportMenuFactory(), deviceManager);
-		}
-		return configurePresenter;
-	}
-	
-	private static TeachPresenter getTeachPresenter() {
-		if (teachPresenter == null) {
-			MainContentView view = new MainContentView();
-			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
-			teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, getGeneralInfoPresenter(), getTeachStatusPresenter(), processFlowManager, 
-					getTeachTransportMenuFactory(), getKeyboardPresenter(), getNegativeNumericKeyboardPresenter());
-		}
-		return teachPresenter;
-	}
-	
-	private static eu.robojob.millassist.ui.teach.transport.TransportMenuFactory getTeachTransportMenuFactory() {
-		if (teachTransportMenuFactory == null) {
-			teachTransportMenuFactory = new eu.robojob.millassist.ui.teach.transport.TransportMenuFactory(getProcessFlow(), new ProcessFlowAdapter(getProcessFlow()));
-		}
-		return teachTransportMenuFactory;
-	}
-	
-	private static GeneralInfoPresenter getGeneralInfoPresenter() {
-		GeneralInfoView generalInfoView = new GeneralInfoView(getProcessFlow());
-		GeneralInfoPresenter generalInfoPresenter = new GeneralInfoPresenter(generalInfoView);
-		return generalInfoPresenter;
-	}
-	
-	private static TeachStatusPresenter getTeachStatusPresenter() {
-		TeachStatusView teachStatusView = new TeachStatusView();
-		TeachStatusPresenter teachStatusPresenter = new TeachStatusPresenter(teachStatusView, getStatusPresenter());
-		return teachStatusPresenter;
-	}
-	
-	private static StatusPresenter getStatusPresenter() {
-		StatusView statusView = new StatusView();
-		StatusPresenter statusPresenter = new StatusPresenter(statusView);
-		return statusPresenter;
-	}
-	
-	private static AutomateStatusPresenter getAutomateStatusPresenter() {
-		AutomateStatusView automateStatusView = new AutomateStatusView();
-		TimingView timingView = new TimingView();
-		AutomateStatusPresenter automateStatusPresenter = new AutomateStatusPresenter(automateStatusView, getStatusPresenter(), timingView);
-		return automateStatusPresenter;
-	}
-	
-	private static AutomatePresenter getAutomatePresenter() {
-		if (automatePresenter == null) {
-			MainContentView view = new MainContentView();
-			DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
-			automatePresenter = new AutomatePresenter(view, getAutomateProcessFlowPresenter(), disconnectedDevicesView,
-					getProcessFlow(), getProcessFlowTimer(), getAutomateStatusPresenter(), getAutomateDeviceMenuFactory(), getNumericKeyboardPresenter());
-		}
-		return automatePresenter;
-	}
-	
-	private static eu.robojob.millassist.ui.automate.device.DeviceMenuFactory getAutomateDeviceMenuFactory() {
-		if (automateDeviceMenuFactory == null) {
-			automateDeviceMenuFactory = new eu.robojob.millassist.ui.automate.device.DeviceMenuFactory(getProcessFlow());
-		}
-		return automateDeviceMenuFactory; 
-	}
-	
-	private static RobotPopUpPresenter getRobotPopUpPresenter() {
-		if (robotPopUpPresenter == null) {
-			RobotPopUpView view = new RobotPopUpView();
-			// TODO review: now fixed robot
-			robotPopUpPresenter = new RobotPopUpPresenter(view, (FanucRobot) robotManager.getRobotByName("Fanuc M20iA"), getProcessFlow());
-		}
-		return robotPopUpPresenter;
-	}
-	
-	public static FullKeyboardPresenter getKeyboardPresenter() {
-		FullKeyboardView keyboardView = new FullKeyboardView(keyboardType);
-		FullKeyboardPresenter keyboardPresenter = new FullKeyboardPresenter(keyboardView);
-		return keyboardPresenter;
-	}
-	
-	private static NumericKeyboardPresenter getNumericKeyboardPresenter() {
-		NumericKeyboardView numericKeyboardView = new NumericKeyboardView();
-		NumericKeyboardPresenter numericKeyboardPresenter = new NumericKeyboardPresenter(numericKeyboardView);
-		return numericKeyboardPresenter;
-	}
-	
-	private static NumericKeyboardPresenter getNegativeNumericKeyboardPresenter() {
-		NegativeNumericKeyboardView numericKeyboardView = new NegativeNumericKeyboardView();
-		NumericKeyboardPresenter numericKeyboardPresenter = new NumericKeyboardPresenter(numericKeyboardView);
-		return numericKeyboardPresenter;
-	}
-	
-	private static ProcessConfigurePresenter getProcessConfigurePresenter() {
-		if (processConfigurationPresenter == null) {
-			ProcessConfigureView processConfigurationView = new ProcessConfigureView();
-			processConfigurationPresenter = new ProcessConfigurePresenter(processConfigurationView, getProcessFlow(), deviceManager);
-		}
-		return processConfigurationPresenter;
-	}
-	
-	private static ConfigureProcessFlowPresenter getConfigureProcessFlowPresenter() {
-		if (configureProcessFlowPresenter == null) {
-			ProcessFlowView processFlowView = new ProcessFlowView(1);
-			configureProcessFlowPresenter = new ConfigureProcessFlowPresenter(processFlowView);
-		}
-		return configureProcessFlowPresenter;
-	}
-	
-	private static TeachProcessFlowPresenter getTeachProcessFlowPresenter() {
-		if (teachProcessFlowPresenter == null) {
-			TeachProcessFlowView processFlowView = new TeachProcessFlowView(1);
-			teachProcessFlowPresenter = new TeachProcessFlowPresenter(processFlowView);
-		}
-		return teachProcessFlowPresenter;
-	}
-	
-	private static AutomateProcessFlowPresenter getAutomateProcessFlowPresenter() {
-		if (automateProcessFlowPresenter == null) {
-			AutomateProcessFlowView processFlowView = new AutomateProcessFlowView(deviceManager.getCNCMachines().iterator().next().getWayOfOperating().getNbOfSides());
-			automateProcessFlowPresenter = new AutomateProcessFlowPresenter(processFlowView, getAutomateDeviceMenuFactory());
-		}
-		return automateProcessFlowPresenter;
-	}
-	
-	private static ProcessMenuPresenter getProcessConfigurationMenuPresenter() {
-		if (processConfigurationMenuPresenter == null) {
-			ProcessMenuView processConfigurationMenuView = new ProcessMenuView();
-			processConfigurationMenuPresenter = new ProcessMenuPresenter(processConfigurationMenuView, getProcessConfigurePresenter(), getProcessSavePresenter(), 
-					getProcessOpenPresenter(), getProcessFlow(), processFlowManager);
-		}
-		return processConfigurationMenuPresenter;
-	}
+    private static ProcessFlow processFlow;
+    private static ProcessFlowTimer processFlowTimer;
 
-	private static ProcessSavePresenter getProcessSavePresenter() {
-		if (processSavePresenter == null) {
-			ProcessSaveView processSaveView = new ProcessSaveView();
-			processSavePresenter = new ProcessSavePresenter(processSaveView, processFlowManager, getProcessFlow());
-		}
-		return processSavePresenter;
-	}
-	
-	private static ProcessOpenPresenter getProcessOpenPresenter() {
-		if (processOpenPresenter == null) {
-			ProcessOpenView processOpenView = new ProcessOpenView();
-			//TODO update!
-			processOpenPresenter = new ProcessOpenPresenter(processOpenView, getProcessFlow(), processFlowManager);
-		}
-		return processOpenPresenter;
-	}
-	
-	private static ProcessFlow getProcessFlow() {
-		if (processFlow == null) {
-			processFlow = processFlowManager.getLastProcessFlow();
-			if (processFlow == null) {
-				processFlow = processFlowManager.createNewProcessFlow();
-			}
-			processFlow.initialize();
-			processFlowManager.setActiveProcessFlow(processFlow);
-		}
-		return processFlow;
-	}
-	
-	private static DeviceMenuFactory getDeviceMenuFactory() {
-		if (deviceMenuFactory == null) {
-			deviceMenuFactory = new DeviceMenuFactory(deviceManager);
-		}
-		return deviceMenuFactory;
-	}
-	
-	private static TransportMenuFactory getTransportMenuFactory() {
-		if (transportMenuFactory == null) {
-			transportMenuFactory = new TransportMenuFactory(getProcessFlow());
-		}
-		return transportMenuFactory;
-	}
-	
-	private static AdminPresenter getAdminPresenter() {
-		if (adminPresenter == null) {
-			AdminView view = new AdminView();
-			adminPresenter = new AdminPresenter(view, getMainMenuPresenter(), getKeyboardPresenter(), getNegativeNumericKeyboardPresenter());
-		}
-		return adminPresenter;
-	}
-	
-	private static MainMenuPresenter getMainMenuPresenter() {
-		if (mainMenuPresenter == null) {
-			MainMenuView view = new MainMenuView();
-			mainMenuPresenter = new MainMenuPresenter(view, getGeneralAdminPresenter(), getRobotAdminPresenter(), getDeviceAdminPresenter());
-		}
-		return mainMenuPresenter;
-	}
-	
-	private static GeneralAdminPresenter getGeneralAdminPresenter() {
-		if (generalAdminPresenter == null) {
-			GeneralAdminView view = new GeneralAdminView();
-			generalAdminPresenter = new GeneralAdminPresenter(view);
-		}
-		return generalAdminPresenter;
-	}
-	
-	private static DeviceAdminPresenter getDeviceAdminPresenter() {
-		if (deviceAdminPresenter == null) {
-			SubMenuAdminView view = new SubMenuAdminView(); 
-			DeviceMenuView menuView = new DeviceMenuView();
-			DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(menuView, getUserFramesConfigurePresenter(), getBasicStackPlateConfigurePresenter(), getUnloadPalletConfigurePresenter(), getPalletLayoutConfigurePresenter(),
-					getCNCMachineConfigurePresenter(), getCNCMachineClampingsPresenter(), getPrageDeviceConfigurePresenter(),
-					getOutputBinConfigurePresenter(), getGridPlateConfigurePresenter(), getReversalUnitConfigurePresenter(),getPalletConfigurePresenter() ,deviceManager);
-			deviceAdminPresenter = new DeviceAdminPresenter(view, deviceMenuPresenter);
-		}
-		return deviceAdminPresenter;
-	}
-	
-	private static OutputBinConfigurePresenter getOutputBinConfigurePresenter() {
-		OutputBinConfigureView view = new OutputBinConfigureView();
-		outputBinConfigurePresenter = new OutputBinConfigurePresenter(view, deviceManager);
-		return outputBinConfigurePresenter;
-	}
-	
-	private static GridPlateConfigurePresenter getGridPlateConfigurePresenter() {
-		GridPlateConfigureView view = new GridPlateConfigureView();
-		gridPlateConfigurePresenter = new GridPlateConfigurePresenter(view, deviceManager);
-		return gridPlateConfigurePresenter;
-	}
-	
-	private static UserFramesConfigurePresenter getUserFramesConfigurePresenter() {
-		if (userFramesConfigurePresenter == null) {
-			UserFramesConfigureView view = new UserFramesConfigureView();
-			userFramesConfigurePresenter = new UserFramesConfigurePresenter(view, deviceManager);
-		}
-		return userFramesConfigurePresenter;
-	}
-	
-	private static BasicStackPlateConfigurePresenter getBasicStackPlateConfigurePresenter() {
-		if (basicStackPlateConfigurePresenter == null) {
-			BasicStackPlateConfigureView view = new BasicStackPlateConfigureView();
-			basicStackPlateConfigurePresenter = new BasicStackPlateConfigurePresenter(view, deviceManager);
-		}
-		return basicStackPlateConfigurePresenter;
-	}
-	
-	private static UnloadPalletConfigurePresenter getUnloadPalletConfigurePresenter() {
+    private static ProcessFlowManager processFlowManager;
+    private static DeviceManager deviceManager;
+    private static RobotManager robotManager;
+
+    private static DeviceMenuFactory deviceMenuFactory;
+    private static TransportMenuFactory transportMenuFactory;
+
+    private static KeyboardType keyboardType;
+
+    private RoboSoftAppFactory() {	}
+
+    public static void intialize(final DeviceManager deviceManager, final RobotManager robotManager,
+            final ProcessFlowManager processFlowManager, final KeyboardType keyboardType) {
+        RoboSoftAppFactory.deviceManager = deviceManager;
+        RoboSoftAppFactory.robotManager = robotManager;
+        RoboSoftAppFactory.processFlowManager = processFlowManager;
+        RoboSoftAppFactory.keyboardType = keyboardType;
+    }
+
+    public static MainPresenter getMainPresenter() {
+        if (mainPresenter == null) {
+            MainView mainView = new MainView();
+            MainPresenter tmpMainPresenter = new MainPresenter(mainView, getMenuBarPresenter(), getConfigurePresenter(), getTeachPresenter(), getAutomatePresenter(),
+                    getAlarmsPopUpPresenter(), getRobotPopUpPresenter(), getAdminPresenter());
+            tmpMainPresenter.loadProcessFlow(getProcessFlow());
+            mainPresenter = tmpMainPresenter;
+        }
+        return mainPresenter;
+    }
+
+    private static AlarmsPopUpPresenter getAlarmsPopUpPresenter() {
+        if (alarmsPopUpPresenter == null) {
+            AlarmsPopUpView view = new AlarmsPopUpView();
+            alarmsPopUpPresenter = new AlarmsPopUpPresenter(view, getProcessFlow(), deviceManager, robotManager);
+        }
+        return alarmsPopUpPresenter;
+    }
+
+    private static MenuBarPresenter getMenuBarPresenter() {
+        if (menuBarPresenter == null) {
+            MenuBarView processMenuBarView = new MenuBarView();
+            menuBarPresenter = new MenuBarPresenter(processMenuBarView);
+        }
+        return menuBarPresenter;
+    }
+
+    private static ProcessFlowTimer getProcessFlowTimer() {
+        if (processFlowTimer == null) {
+            processFlowTimer = new ProcessFlowTimer(getProcessFlow());
+        }
+        return processFlowTimer;
+    }
+
+    private static ConfigurePresenter getConfigurePresenter() {
+        if (configurePresenter == null) {
+            MainContentView processConfigureView = new MainContentView();
+            configurePresenter = new ConfigurePresenter(processConfigureView, getKeyboardPresenter(), getNegativeNumericKeyboardPresenter(), getConfigureProcessFlowPresenter(),
+                    getProcessConfigurationMenuPresenter(), getDeviceMenuFactory(), getTransportMenuFactory(), deviceManager);
+        }
+        return configurePresenter;
+    }
+
+    private static TeachPresenter getTeachPresenter() {
+        if (teachPresenter == null) {
+            MainContentView view = new MainContentView();
+            DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
+            teachPresenter = new TeachPresenter(view, getTeachProcessFlowPresenter(), getProcessFlow(), disconnectedDevicesView, getGeneralInfoPresenter(), getTeachStatusPresenter(), processFlowManager,
+                    getTeachTransportMenuFactory(), getKeyboardPresenter(), getNegativeNumericKeyboardPresenter());
+        }
+        return teachPresenter;
+    }
+
+    private static eu.robojob.millassist.ui.teach.transport.TransportMenuFactory getTeachTransportMenuFactory() {
+        if (teachTransportMenuFactory == null) {
+            teachTransportMenuFactory = new eu.robojob.millassist.ui.teach.transport.TransportMenuFactory(getProcessFlow(), new ProcessFlowAdapter(getProcessFlow()));
+        }
+        return teachTransportMenuFactory;
+    }
+
+    private static GeneralInfoPresenter getGeneralInfoPresenter() {
+        GeneralInfoView generalInfoView = new GeneralInfoView(getProcessFlow());
+        GeneralInfoPresenter generalInfoPresenter = new GeneralInfoPresenter(generalInfoView);
+        return generalInfoPresenter;
+    }
+
+    private static TeachStatusPresenter getTeachStatusPresenter() {
+        TeachStatusView teachStatusView = new TeachStatusView();
+        TeachStatusPresenter teachStatusPresenter = new TeachStatusPresenter(teachStatusView, getStatusPresenter());
+        return teachStatusPresenter;
+    }
+
+    private static StatusPresenter getStatusPresenter() {
+        StatusView statusView = new StatusView();
+        StatusPresenter statusPresenter = new StatusPresenter(statusView);
+        return statusPresenter;
+    }
+
+    private static AutomateStatusPresenter getAutomateStatusPresenter() {
+        AutomateStatusView automateStatusView = new AutomateStatusView();
+        TimingView timingView = new TimingView();
+        AutomateStatusPresenter automateStatusPresenter = new AutomateStatusPresenter(automateStatusView, getStatusPresenter(), timingView);
+        return automateStatusPresenter;
+    }
+
+    private static AutomatePresenter getAutomatePresenter() {
+        if (automatePresenter == null) {
+            MainContentView view = new MainContentView();
+            DisconnectedDevicesView disconnectedDevicesView = new DisconnectedDevicesView();
+            automatePresenter = new AutomatePresenter(view, getAutomateProcessFlowPresenter(), disconnectedDevicesView,
+                    getProcessFlow(), getProcessFlowTimer(), getAutomateStatusPresenter(), getAutomateDeviceMenuFactory(), getNumericKeyboardPresenter());
+        }
+        return automatePresenter;
+    }
+
+    private static eu.robojob.millassist.ui.automate.device.DeviceMenuFactory getAutomateDeviceMenuFactory() {
+        if (automateDeviceMenuFactory == null) {
+            automateDeviceMenuFactory = new eu.robojob.millassist.ui.automate.device.DeviceMenuFactory(getProcessFlow());
+        }
+        return automateDeviceMenuFactory;
+    }
+
+    private static RobotPopUpPresenter getRobotPopUpPresenter() {
+        if (robotPopUpPresenter == null) {
+            RobotPopUpView view = new RobotPopUpView();
+            // TODO review: now fixed robot
+            robotPopUpPresenter = new RobotPopUpPresenter(view, (FanucRobot) robotManager.getRobotByName("Fanuc M20iA"), getProcessFlow());
+        }
+        return robotPopUpPresenter;
+    }
+
+    public static FullKeyboardPresenter getKeyboardPresenter() {
+        FullKeyboardView keyboardView = new FullKeyboardView(keyboardType);
+        FullKeyboardPresenter keyboardPresenter = new FullKeyboardPresenter(keyboardView);
+        return keyboardPresenter;
+    }
+
+    private static NumericKeyboardPresenter getNumericKeyboardPresenter() {
+        NumericKeyboardView numericKeyboardView = new NumericKeyboardView();
+        NumericKeyboardPresenter numericKeyboardPresenter = new NumericKeyboardPresenter(numericKeyboardView);
+        return numericKeyboardPresenter;
+    }
+
+    private static NumericKeyboardPresenter getNegativeNumericKeyboardPresenter() {
+        NegativeNumericKeyboardView numericKeyboardView = new NegativeNumericKeyboardView();
+        NumericKeyboardPresenter numericKeyboardPresenter = new NumericKeyboardPresenter(numericKeyboardView);
+        return numericKeyboardPresenter;
+    }
+
+    private static ProcessConfigurePresenter getProcessConfigurePresenter() {
+        if (processConfigurationPresenter == null) {
+            ProcessConfigureView processConfigurationView = new ProcessConfigureView();
+            processConfigurationPresenter = new ProcessConfigurePresenter(processConfigurationView, getProcessFlow(), deviceManager);
+        }
+        return processConfigurationPresenter;
+    }
+
+    private static ConfigureProcessFlowPresenter getConfigureProcessFlowPresenter() {
+        if (configureProcessFlowPresenter == null) {
+            ProcessFlowView processFlowView = new ProcessFlowView(1);
+            configureProcessFlowPresenter = new ConfigureProcessFlowPresenter(processFlowView);
+        }
+        return configureProcessFlowPresenter;
+    }
+
+    private static TeachProcessFlowPresenter getTeachProcessFlowPresenter() {
+        if (teachProcessFlowPresenter == null) {
+            TeachProcessFlowView processFlowView = new TeachProcessFlowView(1);
+            teachProcessFlowPresenter = new TeachProcessFlowPresenter(processFlowView);
+        }
+        return teachProcessFlowPresenter;
+    }
+
+    private static AutomateProcessFlowPresenter getAutomateProcessFlowPresenter() {
+        if (automateProcessFlowPresenter == null) {
+            AutomateProcessFlowView processFlowView = new AutomateProcessFlowView(deviceManager.getCNCMachines().iterator().next().getWayOfOperating().getNbOfSides());
+            automateProcessFlowPresenter = new AutomateProcessFlowPresenter(processFlowView, getAutomateDeviceMenuFactory());
+        }
+        return automateProcessFlowPresenter;
+    }
+
+    private static ProcessMenuPresenter getProcessConfigurationMenuPresenter() {
+        if (processConfigurationMenuPresenter == null) {
+            ProcessMenuView processConfigurationMenuView = new ProcessMenuView();
+            processConfigurationMenuPresenter = new ProcessMenuPresenter(processConfigurationMenuView, getProcessConfigurePresenter(), getProcessSavePresenter(),
+                    getProcessOpenPresenter(), getProcessFlow(), processFlowManager);
+        }
+        return processConfigurationMenuPresenter;
+    }
+
+    private static ProcessSavePresenter getProcessSavePresenter() {
+        if (processSavePresenter == null) {
+            ProcessSaveView processSaveView = new ProcessSaveView();
+            processSavePresenter = new ProcessSavePresenter(processSaveView, processFlowManager, getProcessFlow());
+        }
+        return processSavePresenter;
+    }
+
+    private static ProcessOpenPresenter getProcessOpenPresenter() {
+        if (processOpenPresenter == null) {
+            ProcessOpenView processOpenView = new ProcessOpenView();
+            //TODO update!
+            processOpenPresenter = new ProcessOpenPresenter(processOpenView, getProcessFlow(), processFlowManager);
+        }
+        return processOpenPresenter;
+    }
+
+    public static ProcessFlow getProcessFlow() {
+        if (processFlow == null) {
+            processFlow = processFlowManager.getLastProcessFlow();
+            if (processFlow == null) {
+                processFlow = processFlowManager.createNewProcessFlow();
+            }
+            processFlow.initialize();
+            processFlowManager.setActiveProcessFlow(processFlow);
+        }
+        return processFlow;
+    }
+
+    private static DeviceMenuFactory getDeviceMenuFactory() {
+        if (deviceMenuFactory == null) {
+            deviceMenuFactory = new DeviceMenuFactory(deviceManager);
+        }
+        return deviceMenuFactory;
+    }
+
+    private static TransportMenuFactory getTransportMenuFactory() {
+        if (transportMenuFactory == null) {
+            transportMenuFactory = new TransportMenuFactory(getProcessFlow());
+        }
+        return transportMenuFactory;
+    }
+
+    private static AdminPresenter getAdminPresenter() {
+        if (adminPresenter == null) {
+            AdminView view = new AdminView();
+            adminPresenter = new AdminPresenter(view, getMainMenuPresenter(), getKeyboardPresenter(), getNegativeNumericKeyboardPresenter());
+        }
+        return adminPresenter;
+    }
+
+    private static MainMenuPresenter getMainMenuPresenter() {
+        if (mainMenuPresenter == null) {
+            MainMenuView view = new MainMenuView();
+            mainMenuPresenter = new MainMenuPresenter(view, getGeneralAdminPresenter(), getRobotAdminPresenter(), getDeviceAdminPresenter());
+        }
+        return mainMenuPresenter;
+    }
+
+    private static GeneralAdminPresenter getGeneralAdminPresenter() {
+        if (generalAdminPresenter == null) {
+            GeneralAdminView view = new GeneralAdminView();
+            generalAdminPresenter = new GeneralAdminPresenter(view);
+        }
+        return generalAdminPresenter;
+    }
+
+    private static DeviceAdminPresenter getDeviceAdminPresenter() {
+        if (deviceAdminPresenter == null) {
+            SubMenuAdminView view = new SubMenuAdminView();
+            DeviceMenuView menuView = new DeviceMenuView();
+            DeviceMenuPresenter deviceMenuPresenter = new DeviceMenuPresenter(menuView, getUserFramesConfigurePresenter(), getBasicStackPlateConfigurePresenter(), getUnloadPalletConfigurePresenter(), getPalletLayoutConfigurePresenter(),
+                    getCNCMachineConfigurePresenter(), getCNCMachineClampingsPresenter(), getPrageDeviceConfigurePresenter(),
+                    getOutputBinConfigurePresenter(), getGridPlateConfigurePresenter(), getReversalUnitConfigurePresenter(),getPalletConfigurePresenter() ,deviceManager);
+            deviceAdminPresenter = new DeviceAdminPresenter(view, deviceMenuPresenter);
+        }
+        return deviceAdminPresenter;
+    }
+
+    private static OutputBinConfigurePresenter getOutputBinConfigurePresenter() {
+        OutputBinConfigureView view = new OutputBinConfigureView();
+        outputBinConfigurePresenter = new OutputBinConfigurePresenter(view, deviceManager);
+        return outputBinConfigurePresenter;
+    }
+
+    private static GridPlateConfigurePresenter getGridPlateConfigurePresenter() {
+        GridPlateConfigureView view = new GridPlateConfigureView();
+        gridPlateConfigurePresenter = new GridPlateConfigurePresenter(view, deviceManager);
+        return gridPlateConfigurePresenter;
+    }
+
+    private static UserFramesConfigurePresenter getUserFramesConfigurePresenter() {
+        if (userFramesConfigurePresenter == null) {
+            UserFramesConfigureView view = new UserFramesConfigureView();
+            userFramesConfigurePresenter = new UserFramesConfigurePresenter(view, deviceManager);
+        }
+        return userFramesConfigurePresenter;
+    }
+
+    private static BasicStackPlateConfigurePresenter getBasicStackPlateConfigurePresenter() {
+        if (basicStackPlateConfigurePresenter == null) {
+            BasicStackPlateConfigureView view = new BasicStackPlateConfigureView();
+            basicStackPlateConfigurePresenter = new BasicStackPlateConfigurePresenter(view, deviceManager);
+        }
+        return basicStackPlateConfigurePresenter;
+    }
+
+    private static UnloadPalletConfigurePresenter getUnloadPalletConfigurePresenter() {
         if (unloadPalletConfigurePresenter == null) {
             UnloadPalletConfigureView view = new UnloadPalletConfigureView();
             unloadPalletConfigurePresenter = new UnloadPalletConfigurePresenter(view, deviceManager);
         }
         return unloadPalletConfigurePresenter;
     }
-	
-	private static PalletConfigurePresenter getPalletConfigurePresenter() {
+
+    private static PalletConfigurePresenter getPalletConfigurePresenter() {
         if (palletConfigurePresenter == null) {
             PalletConfigureView view = new PalletConfigureView();
             palletConfigurePresenter = new PalletConfigurePresenter(view, deviceManager);
         }
         return palletConfigurePresenter;
     }
-	
-	private static PalletLayoutConfigurePresenter getPalletLayoutConfigurePresenter() {
+
+    private static PalletLayoutConfigurePresenter getPalletLayoutConfigurePresenter() {
         if (palletLayoutConfigurePresenter == null) {
             PalletLayoutConfigureView view = new PalletLayoutConfigureView();
             palletLayoutConfigurePresenter= new PalletLayoutConfigurePresenter(view, deviceManager);
         }
         return palletLayoutConfigurePresenter;
     }
-	
-	private static CNCMachineConfigurePresenter getCNCMachineConfigurePresenter() {
-		if (cncMachineConfigurePresenter == null) {
-			CNCMachineConfigureView view = new CNCMachineConfigureView();
-			cncMachineConfigurePresenter = new CNCMachineConfigurePresenter(view, deviceManager);
-		}
-		return cncMachineConfigurePresenter;
-	}
-	
-	private static CNCMachineClampingsPresenter getCNCMachineClampingsPresenter() {
-		if (cncMachineClampingsPresenter == null) {
-			CNCMachineClampingsView view = new CNCMachineClampingsView(deviceManager);
-			cncMachineClampingsPresenter = new CNCMachineClampingsPresenter(view, deviceManager);
-		}
-		return cncMachineClampingsPresenter;
-	}
-	
-	private static PrageDeviceConfigurePresenter getPrageDeviceConfigurePresenter() {
-		if (prageDeviceConfigurePresenter == null) {
-			PrageDeviceConfigureView view = new PrageDeviceConfigureView();
-			prageDeviceConfigurePresenter = new PrageDeviceConfigurePresenter(view, deviceManager);
-		}
-		return prageDeviceConfigurePresenter;
-	}
-	
-	private static ReversalUnitConfigurePresenter getReversalUnitConfigurePresenter() {
-		if (reversalUnitConfigurePresenter == null) {
-			ReversalUnitConfigureView view = new ReversalUnitConfigureView();
-			reversalUnitConfigurePresenter = new ReversalUnitConfigurePresenter(view, deviceManager);
-		}
-		return reversalUnitConfigurePresenter;
-	}
-	
-	private static RobotAdminPresenter getRobotAdminPresenter() {
-		if (robotAdminPresenter == null) {
-			SubMenuAdminView view = new SubMenuAdminView();
-			RobotMenuView menuView = new RobotMenuView();
-			RobotMenuPresenter robotMenuPresenter = new RobotMenuPresenter(menuView, getRobotConfigurePresenter(), getRobotGripperPresenter(),
-			        getRobotDataPresenter());
-			robotAdminPresenter = new RobotAdminPresenter(view, robotMenuPresenter);
-		}
-		return robotAdminPresenter;
-	}
 
-	private static RobotConfigurePresenter getRobotConfigurePresenter() {
-		if (robotConfigurePresenter == null) {
-			RobotConfigureView view = new RobotConfigureView();
-			robotConfigurePresenter = new RobotConfigurePresenter(view, robotManager);
-		}
-		return robotConfigurePresenter;
-	}
-	
-	private static RobotGripperPresenter getRobotGripperPresenter() {
-		if (robotGripperPresenter == null) {
-			RobotGripperView view = new RobotGripperView();
-			robotGripperPresenter = new RobotGripperPresenter(view, robotManager);
-		}
-		return robotGripperPresenter;
-	}
-	
-	private static RobotDataPresenter getRobotDataPresenter() {
-	    if (robotDataPresenter == null) {
-	        RobotDataView view = new RobotDataView();
-	        robotDataPresenter = new RobotDataPresenter(view, robotManager);
-	    }
-	    return robotDataPresenter;
-	}
+    private static CNCMachineConfigurePresenter getCNCMachineConfigurePresenter() {
+        if (cncMachineConfigurePresenter == null) {
+            CNCMachineConfigureView view = new CNCMachineConfigureView();
+            cncMachineConfigurePresenter = new CNCMachineConfigurePresenter(view, deviceManager);
+        }
+        return cncMachineConfigurePresenter;
+    }
+
+    private static CNCMachineClampingsPresenter getCNCMachineClampingsPresenter() {
+        if (cncMachineClampingsPresenter == null) {
+            CNCMachineClampingsView view = new CNCMachineClampingsView(deviceManager);
+            cncMachineClampingsPresenter = new CNCMachineClampingsPresenter(view, deviceManager);
+        }
+        return cncMachineClampingsPresenter;
+    }
+
+    private static PrageDeviceConfigurePresenter getPrageDeviceConfigurePresenter() {
+        if (prageDeviceConfigurePresenter == null) {
+            PrageDeviceConfigureView view = new PrageDeviceConfigureView();
+            prageDeviceConfigurePresenter = new PrageDeviceConfigurePresenter(view, deviceManager);
+        }
+        return prageDeviceConfigurePresenter;
+    }
+
+    private static ReversalUnitConfigurePresenter getReversalUnitConfigurePresenter() {
+        if (reversalUnitConfigurePresenter == null) {
+            ReversalUnitConfigureView view = new ReversalUnitConfigureView();
+            reversalUnitConfigurePresenter = new ReversalUnitConfigurePresenter(view, deviceManager);
+        }
+        return reversalUnitConfigurePresenter;
+    }
+
+    private static RobotAdminPresenter getRobotAdminPresenter() {
+        if (robotAdminPresenter == null) {
+            SubMenuAdminView view = new SubMenuAdminView();
+            RobotMenuView menuView = new RobotMenuView();
+            RobotMenuPresenter robotMenuPresenter = new RobotMenuPresenter(menuView, getRobotConfigurePresenter(), getRobotGripperPresenter(),
+                    getRobotDataPresenter());
+            robotAdminPresenter = new RobotAdminPresenter(view, robotMenuPresenter);
+        }
+        return robotAdminPresenter;
+    }
+
+    private static RobotConfigurePresenter getRobotConfigurePresenter() {
+        if (robotConfigurePresenter == null) {
+            RobotConfigureView view = new RobotConfigureView();
+            robotConfigurePresenter = new RobotConfigurePresenter(view, robotManager);
+        }
+        return robotConfigurePresenter;
+    }
+
+    private static RobotGripperPresenter getRobotGripperPresenter() {
+        if (robotGripperPresenter == null) {
+            RobotGripperView view = new RobotGripperView();
+            robotGripperPresenter = new RobotGripperPresenter(view, robotManager);
+        }
+        return robotGripperPresenter;
+    }
+
+    private static RobotDataPresenter getRobotDataPresenter() {
+        if (robotDataPresenter == null) {
+            RobotDataView view = new RobotDataView();
+            robotDataPresenter = new RobotDataPresenter(view, robotManager);
+        }
+        return robotDataPresenter;
+    }
 }

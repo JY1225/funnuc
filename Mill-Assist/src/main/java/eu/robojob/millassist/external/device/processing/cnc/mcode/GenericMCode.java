@@ -4,67 +4,67 @@ import java.util.Set;
 
 public class GenericMCode {
 
-	private int id;
-	private int index;
-	private String name;
-	private Set<Integer> robotServiceInputsRequired;
-	private Set<Integer> robotServiceOutputsUsed;
-	
-	public GenericMCode(final int id, final int index, final String name, final Set<Integer> robotServiceInputsRequired,
-		final Set<Integer> robotServiceOutputsUsed) {
-		this.id = id;
-		this.index = index;
-		this.name = name;
-		this.robotServiceInputsRequired = robotServiceInputsRequired;
-		this.robotServiceOutputsUsed = robotServiceOutputsUsed;
-	}
-	
-	public int getId() {
-		return id;
-	}
+    private int id;
+    private int index;
+    private String name;
+    private Set<Integer> robotServiceInputsRequired;
+    private Set<Integer> robotServiceOutputsUsed;
 
-	public void setId(final int id) {
-		this.id = id;
-	}
+    public GenericMCode(final int id, final int index, final String name, final Set<Integer> robotServiceInputsRequired,
+            final Set<Integer> robotServiceOutputsUsed) {
+        this.id = id;
+        this.index = index;
+        this.name = name;
+        this.robotServiceInputsRequired = robotServiceInputsRequired;
+        this.robotServiceOutputsUsed = robotServiceOutputsUsed;
+    }
 
-	public int getIndex() {
-		return index;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public void setIndex(final int index) {
-		this.index = index;
-	}
+    public void setId(final int id) {
+        this.id = id;
+    }
 
-	public boolean isActive(final Set<Integer> activeRobotInputs) {
-		if (activeRobotInputs.containsAll(robotServiceInputsRequired) 
-				&& robotServiceInputsRequired.containsAll(activeRobotInputs)) {
-			return true;
-		}
-		return false;
-	}
+    public int getIndex() {
+        return index;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setIndex(final int index) {
+        this.index = index;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public boolean isActive(final Set<Integer> activeRobotInputs) {
+        if (activeRobotInputs.containsAll(robotServiceInputsRequired)
+                && robotServiceInputsRequired.containsAll(activeRobotInputs)) {
+            return true;
+        }
+        return false;
+    }
 
-	public Set<Integer> getRobotServiceInputsRequired() {
-		return robotServiceInputsRequired;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setRobotServiceInputsRequired(final Set<Integer> robotServiceInputsRequired) {
-		this.robotServiceInputsRequired = robotServiceInputsRequired;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public Set<Integer> getRobotServiceOutputsUsed() {
-		return robotServiceOutputsUsed;
-	}
+    public Set<Integer> getRobotServiceInputsRequired() {
+        return robotServiceInputsRequired;
+    }
 
-	public void setRobotServiceOutputsUsed(final Set<Integer> robotServiceOutputsUsed) {
-		this.robotServiceOutputsUsed = robotServiceOutputsUsed;
-	}
-	
+    public void setRobotServiceInputsRequired(final Set<Integer> robotServiceInputsRequired) {
+        this.robotServiceInputsRequired = robotServiceInputsRequired;
+    }
+
+    public Set<Integer> getRobotServiceOutputsUsed() {
+        return robotServiceOutputsUsed;
+    }
+
+    public void setRobotServiceOutputsUsed(final Set<Integer> robotServiceOutputsUsed) {
+        this.robotServiceOutputsUsed = robotServiceOutputsUsed;
+    }
+
 }

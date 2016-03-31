@@ -8,6 +8,8 @@ import org.apache.logging.log4j.Logger;
 
 import eu.robojob.millassist.external.device.stacking.IncorrectWorkPieceDataException;
 import eu.robojob.millassist.external.device.stacking.pallet.Pallet;
+import eu.robojob.millassist.process.ProcessFlowManager;
+import eu.robojob.millassist.ui.RoboSoftAppFactory;
 import eu.robojob.millassist.util.PropertyManager;
 import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
@@ -57,7 +59,7 @@ public abstract class AbstractStackPlateLayout {
         setLayers(layers);
         if (rawWorkPiece != null) {
             IWorkPieceDimensions dimensions = rawWorkPiece.getDimensions();
-            if (dimensions != null && dimensions.isValidDimension()) {
+            if ((dimensions != null) && dimensions.isValidDimension()) {
                 configureStackingPositions(dimensions, orientation);
             } else {
                 throw new IncorrectWorkPieceDataException(IncorrectWorkPieceDataException.INCORRECT_DATA);
@@ -105,23 +107,27 @@ public abstract class AbstractStackPlateLayout {
      * Get the maximum amount of pieces possible to place on the stackPlate. In case of multiple layers, a place must be
      * foreseen to put the finished pieces (not on top of the raw ones). This means, that one of the many stacking
      * positions can have only 1 piece. In case of only one layer, this condition is trivial.
-     * 
+     *
      * @return - amount of layers * (amount of stacking positions - 1) + 1 extra piece
      */
     public int getMaxPiecesPossibleAmount() {
         // First position can only have 1 piece, because the robot must have place to put the finished products
         // TODO - kunnen we enkel finishedPositions hebben?
-        return getLayers() * (rawStackingPositions.size() - 1) + 1;
+        if(usedForFinished()) {
+            return (getLayers() * (rawStackingPositions.size() - 1)) + 1;
+        } else {
+            return getLayers() * rawStackingPositions.size();
+        }
     }
 
     /**
      * Calculate the amount of workpieces of a certain type that is currently situated on the stackPlate.
-     * 
+     *
      * @param workPieceType
      *            (RAW or FINISHED)
      * @return - amount of pieces of the given type that is present on the stackPlate
      */
-    public int getWorkPieceAmount(Type workPieceType) {
+    public int getWorkPieceAmount(final Type workPieceType) {
         int amount = 0;
         for (StackPlateStackingPosition position : getStackingPositions()) {
             if ((position.hasWorkPiece()) && (position.getWorkPiece().getType().equals(workPieceType))) {
@@ -167,7 +173,7 @@ public abstract class AbstractStackPlateLayout {
      * @param isAddOperation
      *            - flag to indicate whether the function is called from the ADD/REPLACE function
      */
-    public void placeRawWorkPieces(final WorkPiece rawWorkPiece, final int amount, boolean resetFirst,
+    public void placeRawWorkPieces(final WorkPiece rawWorkPiece, final int amount, final boolean resetFirst,
             boolean isAddOperation) {
         logger.debug("Adding raw workpieces: [" + amount + "].");
         int placedAmount = 0;
@@ -185,26 +191,38 @@ public abstract class AbstractStackPlateLayout {
             }
 
             StackPlateStackingPosition stPos = getStackingPositions().get(stackingPos);
-            while (placedAmount < amount && stackingPos != 0) {
-                stPos = getStackingPositions().get(stackingPos);
-                while (placedAmount < amount && addOneWorkPiece(rawWorkPiece, stPos, getLayers(), false)) {
+            if(usedForFinished()) {
+                while ((placedAmount < amount) && (stackingPos != 0)) {
+                    stPos = getStackingPositions().get(stackingPos);
+                    while ((placedAmount < amount) && addOneWorkPiece(rawWorkPiece, stPos, getLayers(), false)) {
+                        placedAmount++;
+                    }
+                    stackingPos--;
+                }
+                if((stackingPos == 0) && (placedAmount < amount) && placeFirstPiece(rawWorkPiece, resetFirst)) {
                     placedAmount++;
                 }
-                stackingPos--;
-            }
-            if(stackingPos == 0 && placedAmount < amount && placeFirstPiece(rawWorkPiece, resetFirst)) {
-                placedAmount++;
+            } else {
+                while (placedAmount < amount) {
+                    stPos = getStackingPositions().get(stackingPos);
+                    while ((placedAmount < amount) && addOneWorkPiece(rawWorkPiece, stPos, getLayers(), false)) {
+                        placedAmount++;
+                    }
+                    stackingPos--;
+                }
             }
         } else {
             stackingPos = 0;
-            if (amount > 0 && placeFirstPiece(rawWorkPiece, resetFirst)) {
+            if ((amount > 0) && usedForFinished() && placeFirstPiece(rawWorkPiece, resetFirst)) {
                 placedAmount++;
             }
-            stackingPos++;
+            if(usedForFinished()) {
+                stackingPos++;
+            }
             StackPlateStackingPosition stPos = getStackingPositions().get(0);
-            while (placedAmount < amount && stackingPos < getStackingPositions().size()) {
+            while ((placedAmount < amount) && (stackingPos < getStackingPositions().size())) {
                 stPos = getStackingPositions().get(stackingPos);
-                while (placedAmount < amount && addOneWorkPiece(rawWorkPiece, stPos, getLayers(), false)) {
+                while ((placedAmount < amount) && addOneWorkPiece(rawWorkPiece, stPos, getLayers(), false)) {
                     placedAmount++;
                 }
                 stackingPos++;
@@ -222,7 +240,7 @@ public abstract class AbstractStackPlateLayout {
         int lastRawPosition = getStackingPositions().size() - 1;
         for (int i = getStackingPositions().size() - 1; i != 0; i--) {
             position = getStackingPositions().get(i);
-            if (position.getWorkPiece() != null && position.getWorkPiece().getType().equals(WorkPiece.Type.RAW)) {
+            if ((position.getWorkPiece() != null) && position.getWorkPiece().getType().equals(WorkPiece.Type.RAW)) {
                 lastRawPosition = i;
                 if (position.getAmount() < getLayers()) {
                     lastRawPosition--;
@@ -230,11 +248,11 @@ public abstract class AbstractStackPlateLayout {
                 break;
             }
         }
-        if (lastRawPosition != getStackingPositions().size() - 1) {
+        if (lastRawPosition != (getStackingPositions().size() - 1)) {
             StackPlateStackingPosition stPos = null;
-            while (placedAmount < amount && lastRawPosition < getStackingPositions().size() - 1) {
+            while ((placedAmount < amount) && (lastRawPosition < (getStackingPositions().size() - 1))) {
                 stPos = getStackingPositions().get(lastRawPosition + 1);
-                while (placedAmount < amount && addOneWorkPiece(rawWorkPiece, stPos, getLayers(), false)) {
+                while ((placedAmount < amount) && addOneWorkPiece(rawWorkPiece, stPos, getLayers(), false)) {
                     placedAmount++;
                 }
                 lastRawPosition++;
@@ -254,21 +272,21 @@ public abstract class AbstractStackPlateLayout {
      * @param isAddOperation
      *            - flag to indicate whether the function is called from the ADD/REPLACE function
      */
-    public void placeFinishedWorkPieces(final WorkPiece finishedWorkPiece, final int amount, boolean resetFirst,
-            boolean isAddOperation) {
+    public void placeFinishedWorkPieces(final WorkPiece finishedWorkPiece, final int amount, final boolean resetFirst,
+            final boolean isAddOperation) {
         logger.debug("Adding finished workpieces: [" + amount + "].");
         int placedAmount = 0;
         int stackingPos = 0;
         // For any number of layers, we only put 1 workPiece on the first position. This ensures that the robot
         // places finished products always at the same position
-        if (amount > 0 && placeFirstPiece(finishedWorkPiece, resetFirst)) {
+        if ((amount > 0) && placeFirstPiece(finishedWorkPiece, resetFirst)) {
             placedAmount++;
         }
         stackingPos++;
         StackPlateStackingPosition stPos = getStackingPositions().get(0);
-        while (placedAmount < amount && stackingPos < getStackingPositions().size()) {
+        while ((placedAmount < amount) && (stackingPos < getStackingPositions().size())) {
             stPos = getStackingPositions().get(stackingPos);
-            while (placedAmount < amount && addOneWorkPiece(finishedWorkPiece, stPos, getLayers(), false)) {
+            while ((placedAmount < amount) && addOneWorkPiece(finishedWorkPiece, stPos, getLayers(), false)) {
                 placedAmount++;
             }
             stackingPos++;
@@ -281,10 +299,10 @@ public abstract class AbstractStackPlateLayout {
     /**
      * In case the last stack of pieces does not hold the maximum, we can try to transfer pieces from the first stack to
      * the last one. This ensures that there is always a position free to put finished pieces.
-     * 
+     *
      * @param lastPosition
      */
-    private void transferFirstToLast(int lastPosition) {
+    private void transferFirstToLast(final int lastPosition) {
         // If the final stack of pieces (in case of multiple layers) does not hold the maximum, try to move pieces from
         // the
         // first raw stack to the last raw stack (min of first stack is always 1)
@@ -296,7 +314,7 @@ public abstract class AbstractStackPlateLayout {
                 int amountToTransfer2 = 0;
                 for (StackPlateStackingPosition stPlatePosition : getStackingPositions()) {
                     // Find the first stacking position that has raw workpieces
-                    if (stPlatePosition.getWorkPiece() != null
+                    if ((stPlatePosition.getWorkPiece() != null)
                             && stPlatePosition.getWorkPiece().getType().equals(Type.RAW)) {
                         firstStackingPosition = stPlatePosition;
                         amountToTransfer2 = stPlatePosition.getAmount() - 1;
@@ -304,7 +322,7 @@ public abstract class AbstractStackPlateLayout {
                     }
                 }
                 int amountToTransfer = Math.min(amountToTransfer1, amountToTransfer2);
-                if (firstStackingPosition != null && !firstStackingPosition.equals(getStackingPositions().get(0))) {
+                if ((firstStackingPosition != null) && !firstStackingPosition.equals(getStackingPositions().get(0))) {
                     lastStackingPosition.setAmount(lastStackingPosition.getAmount() + amountToTransfer);
                     firstStackingPosition.setAmount(lastStackingPosition.getAmount() - amountToTransfer);
                 }
@@ -312,7 +330,7 @@ public abstract class AbstractStackPlateLayout {
         }
     }
 
-    private boolean placeFirstPiece(final WorkPiece workPiece, boolean isEmptyPiece) {
+    private boolean placeFirstPiece(final WorkPiece workPiece, final boolean isEmptyPiece) {
         if (isEmptyPiece) {
             resetWorkPieceAt(0);
             return false;
@@ -321,7 +339,7 @@ public abstract class AbstractStackPlateLayout {
         }
     }
 
-    public void resetWorkPieceAt(int positionIndex) {
+    public void resetWorkPieceAt(final int positionIndex) {
         getStackingPositions().get(positionIndex).setWorkPiece(null);
         getStackingPositions().get(positionIndex).setAmount(0);
     }
@@ -336,8 +354,8 @@ public abstract class AbstractStackPlateLayout {
      *            - the maximum number of pieces stacked on each other
      * @return
      */
-    protected boolean addOneWorkPiece(final WorkPiece workPiece, StackPlateStackingPosition position,
-            int maxNbOfPieces, boolean overwrite) {
+    protected boolean addOneWorkPiece(final WorkPiece workPiece, final StackPlateStackingPosition position,
+            final int maxNbOfPieces, final boolean overwrite) {
         if (position.hasWorkPiece()) {
             if (position.getWorkPiece().getType().equals(workPiece.getType())) {
                 if (position.getAmount() < maxNbOfPieces) {
@@ -400,7 +418,7 @@ public abstract class AbstractStackPlateLayout {
 
     /**
      * Removes the given number of finished work pieces from the pallet.
-     * 
+     *
      * @param amount
      *            The amount of finished work pieces that will be removed from the pallet
      */
@@ -410,9 +428,9 @@ public abstract class AbstractStackPlateLayout {
         int stackingPos = getFinishedStackingPositions().size() - 1;
 
         StackPlateStackingPosition stPos = getFinishedStackingPositions().get(stackingPos);
-        while (removedAmount < amount && stackingPos < getFinishedStackingPositions().size()) {
+        while ((removedAmount < amount) && (stackingPos < getFinishedStackingPositions().size())) {
             stPos = getFinishedStackingPositions().get(stackingPos);
-            while (removedAmount < amount && removeOneWorkPiece(stPos, finishedWorkPiece)) {
+            while ((removedAmount < amount) && removeOneWorkPiece(stPos, finishedWorkPiece)) {
                 removedAmount++;
             }
             stackingPos--;
@@ -422,7 +440,7 @@ public abstract class AbstractStackPlateLayout {
     public int getNumberOfStackingPositionsWithRawWorkPiece() {
         int result = 0;
         for (StackPlateStackingPosition position : getStackingPositions()) {
-            if (position.getWorkPiece() != null && position.getWorkPiece().getType().equals(WorkPiece.Type.RAW)) {
+            if ((position.getWorkPiece() != null) && position.getWorkPiece().getType().equals(WorkPiece.Type.RAW)) {
                 result++;
             }
         }
@@ -432,7 +450,7 @@ public abstract class AbstractStackPlateLayout {
     public int getNumberOfStackingPositionsWithFinishedWorkPiece() {
         int result = 0;
         for (StackPlateStackingPosition position : getStackingPositions()) {
-            if (position.getWorkPiece() != null && position.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)) {
+            if ((position.getWorkPiece() != null) && position.getWorkPiece().getType().equals(WorkPiece.Type.FINISHED)) {
                 result++;
             }
         }
@@ -441,7 +459,7 @@ public abstract class AbstractStackPlateLayout {
 
     /**
      * Removes the given number of finished work pieces from the pallet.
-     * 
+     *
      * @param amount
      *            The amount of finished work pieces that will be removed from the pallet
      */
@@ -451,9 +469,9 @@ public abstract class AbstractStackPlateLayout {
         int stackingPos = 0;
 
         StackPlateStackingPosition stPos = getRawStackingPositions().get(0);
-        while (removedAmount < amount && stackingPos < getRawStackingPositions().size()) {
+        while ((removedAmount < amount) && (stackingPos < getRawStackingPositions().size())) {
             stPos = getRawStackingPositions().get(stackingPos);
-            while (removedAmount < amount && removeOneWorkPiece(stPos, rawWorkPiece)) {
+            while ((removedAmount < amount) && removeOneWorkPiece(stPos, rawWorkPiece)) {
                 removedAmount++;
             }
             stackingPos++;
@@ -462,12 +480,12 @@ public abstract class AbstractStackPlateLayout {
 
     /**
      * Removes a single work piece from the pallet.
-     * 
+     *
      * @param position
      *            The position from which a work piece will be removed
      * @return A boolean indicating if the work piece is removed from that position on the pallet
      */
-    private boolean removeOneWorkPiece(StackPlateStackingPosition position, WorkPiece workPiece) {
+    private boolean removeOneWorkPiece(final StackPlateStackingPosition position, final WorkPiece workPiece) {
         if (position.hasWorkPiece() && position.getWorkPiece().getType().equals(workPiece.getType())) {
             if (position.getAmount() > 0) {
                 position.decrementAmount();
@@ -510,7 +528,7 @@ public abstract class AbstractStackPlateLayout {
         return this.orientation;
     }
 
-    public void setOrientation(float orientation) {
+    public void setOrientation(final float orientation) {
         this.orientation = orientation;
     }
 
@@ -534,7 +552,7 @@ public abstract class AbstractStackPlateLayout {
         return this.layers;
     }
 
-    public void setLayers(int layers) {
+    public void setLayers(final int layers) {
         this.layers = layers;
     }
 
@@ -542,7 +560,7 @@ public abstract class AbstractStackPlateLayout {
         return stackingPositions;
     }
 
-    public void getStackingPositions(List<StackPlateStackingPosition> stackingPositions) {
+    public void getStackingPositions(final List<StackPlateStackingPosition> stackingPositions) {
         this.stackingPositions = stackingPositions;
     }
 
@@ -550,7 +568,7 @@ public abstract class AbstractStackPlateLayout {
         return rawStackingPositions;
     }
 
-    public void setRawStackingPositions(List<StackPlateStackingPosition> stackingPositions) {
+    public void setRawStackingPositions(final List<StackPlateStackingPosition> stackingPositions) {
         this.rawStackingPositions = stackingPositions;
     }
 
@@ -558,7 +576,7 @@ public abstract class AbstractStackPlateLayout {
         return finishedStackingPositions;
     }
 
-    public void setFinishedStackingPositions(List<StackPlateStackingPosition> stackingPositions) {
+    public void setFinishedStackingPositions(final List<StackPlateStackingPosition> stackingPositions) {
         this.finishedStackingPositions = stackingPositions;
     }
 
@@ -574,7 +592,7 @@ public abstract class AbstractStackPlateLayout {
         return stackPlate;
     }
 
-    public void setStackPlate(AbstractStackPlate stackPlate) {
+    public void setStackPlate(final AbstractStackPlate stackPlate) {
         this.stackPlate = stackPlate;
     }
 
@@ -582,8 +600,18 @@ public abstract class AbstractStackPlateLayout {
         return this.pallet;
     }
 
-    public void setPallet(Pallet pallet) {
+    public void setPallet(final Pallet pallet) {
         this.pallet = pallet;
+    }
+
+    public boolean usedForFinished() {
+        boolean usedForFinished = true;
+        if(getStackPlate() != null) {
+            usedForFinished = RoboSoftAppFactory.getProcessFlow().hasBasicStackPlateForFinishedPieces();
+        } else if(getPallet() != null) {
+            usedForFinished = RoboSoftAppFactory.getProcessFlow().hasPalletForFinishedPieces();
+        }
+        return usedForFinished;
     }
 
 }
