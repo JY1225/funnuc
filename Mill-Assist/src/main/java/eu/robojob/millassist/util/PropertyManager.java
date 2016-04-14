@@ -40,7 +40,8 @@ public final class PropertyManager {
         EMAIL_PORT("email-port"),
         EMAIL_USERNAME("email-username"),
         EMAIL_PASSWORD("email-password"),
-        FROM_EMAIL_ADDRESS("from-email-address");
+        FROM_EMAIL_ADDRESS("from-email-address"),
+        EMAIL_OPTION("has-email-option");
 
         private String settingsText;
 
@@ -86,6 +87,10 @@ public final class PropertyManager {
 
     public static final String getValue(final Setting setting) {
         return properties.getProperty(setting.getSettingsText());
+    }
+
+    public static final void addProperty(final String key, final String value) {
+        properties.put(key, value);
     }
 
 }

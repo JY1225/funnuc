@@ -45,6 +45,9 @@ public class EmailUtil {
     }
 
     public static void sendMailToAllUsers(final EMailEvent event, final ProcessFlow processFlow) {
+        if(!PropertyManager.hasSettingValue(Setting.EMAIL_OPTION, "true")) {
+            return;
+        }
         switch (event) {
         case ERROR:
             if(errorTimers.size() == 0) {
@@ -92,7 +95,9 @@ public class EmailUtil {
                     recipientsBE.addAll(userGroup.getEmails());
                 }
             }
-            sendMail(subjectBE, messageBE , recipientsBE);
+            if(recipientsBE.size() != 0) {
+                sendMail(subjectBE, messageBE , recipientsBE);
+            }
             break;
         default:
             break;

@@ -2,6 +2,8 @@ package eu.robojob.millassist;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -141,6 +143,13 @@ public class RoboSoft extends Application {
                     } else if (keyboardTypePropertyVal.equals("quertz")) {
                         keyboardType = KeyboardType.QWERTZ_DE;
                     }
+
+                    DatabaseMetaData md = ConnectionManager.getConnection().getMetaData();
+                    ResultSet rs = md.getTables(null, null, "USER_GROUP_EMAIL_SETTINGS", null);
+                    if(rs.next()){
+                        PropertyManager.addProperty(Setting.EMAIL_OPTION.getSettingsText(), "true");
+                    }
+
                     RoboSoftAppFactory.intialize(deviceManager, robotManager, processFlowManager, keyboardType);
                     final MainPresenter mainPresenter = RoboSoftAppFactory.getMainPresenter();
                     mainPresenter.showConfigure();
