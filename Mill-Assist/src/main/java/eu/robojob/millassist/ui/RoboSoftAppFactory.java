@@ -261,7 +261,7 @@ public final class RoboSoftAppFactory {
         if (robotPopUpPresenter == null) {
             RobotPopUpView view = new RobotPopUpView();
             // TODO review: now fixed robot
-            robotPopUpPresenter = new RobotPopUpPresenter(view, (FanucRobot) robotManager.getRobotByName("Fanuc M20iA"), getProcessFlow());
+            robotPopUpPresenter = new RobotPopUpPresenter(view, (FanucRobot) robotManager.getRobots().iterator().next(), getProcessFlow());
         }
         return robotPopUpPresenter;
     }
