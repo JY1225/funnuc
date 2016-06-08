@@ -191,7 +191,7 @@ public class RoboSoft extends Application {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-
+                System.exit(0);
             }
         });
         logger.info("Closed application.");
