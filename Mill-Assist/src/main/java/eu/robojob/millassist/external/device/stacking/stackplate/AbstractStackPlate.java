@@ -93,7 +93,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
     @Override
     public boolean canPut(final DevicePutSettings putSettings) throws AbstractCommunicationException, DeviceActionException, InterruptedException {
         for (StackPlateStackingPosition stackingPos : getLayout().getStackingPositions()) {
-            if (stackingPos.getWorkPiece() == null) {
+            if (stackingPos.getAmount() < getLayout().getLayers()) {
                 return true;
             }
         }
