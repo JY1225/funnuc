@@ -72,16 +72,22 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
             }
         } else if(unloadType == UnloadType.LAYERWISE) {
             List<StackPlateStackingPosition> stackPositions = stackPlate.getLayout().getStackingPositions();
+            int currentLayer = -1;
+            StackPlateStackingPosition resPos = null;
             for (StackPlateStackingPosition stackingPos : stackPositions) {
-                if ((stackingPos.getWorkPiece() != null) && (stackingPos.getWorkPiece().getType() == type)
-                        && (stackingPos.getAmount() == stackPlate.getCurrentLayer())) {
-                    Coordinates c = new Coordinates(stackingPos.getPickPosition());
-                    c.offset(workArea.getDefaultClamping().getRelativePosition());
-                    if(stackPositions.indexOf(stackingPos) == (stackPositions.size()-1)) {
-                        stackPlate.decrementCurrentLayer();
+                if (stackingPos.getWorkPiece() != null && stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.RAW)) {
+                    if (stackingPos.getAmount() > currentLayer) {
+                        currentLayer = stackingPos.getAmount();
+                        resPos = stackingPos;
                     }
-                    return c;
                 }
+            }
+            if (resPos != null) {
+                // Pick location is correct
+                stackPlate.setCurrentPickLocation(resPos);
+                Coordinates c = new Coordinates(resPos.getPickPosition());
+                c.offset(workArea.getDefaultClamping().getRelativePosition());
+                return c;
             }
         }
         return null;
@@ -160,19 +166,22 @@ public abstract class AbstractPiecePlacementVisitor<T extends IWorkPieceDimensio
             }
         } else if(unloadType == UnloadType.LAYERWISE){
             List<StackPlateStackingPosition> stackPositions = stackPlate.getLayout().getStackingPositions();
+            int currentLayer = -1;
+            StackPlateStackingPosition resPos = null;
             for (StackPlateStackingPosition stackingPos : stackPositions) {
-                if ((stackingPos.getWorkPiece() != null)
-                        && (stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.RAW))
-                        && (stackingPos.getAmount() == stackPlate.getCurrentLayer())) {
-                    // Pick location is correct
-                    stackPlate.setCurrentPickLocation(stackingPos);
-                    Coordinates c = new Coordinates(stackingPos.getPickPosition());
-                    c.offset(workArea.getDefaultClamping().getRelativePosition());
-                    if(stackPositions.indexOf(stackingPos) == (stackPositions.size()-1))  {
-                        stackPlate.decrementCurrentLayer();
+                if (stackingPos.getWorkPiece() != null && stackingPos.getWorkPiece().getType().equals(WorkPiece.Type.RAW)) {
+                    if (stackingPos.getAmount() > currentLayer) {
+                        currentLayer = stackingPos.getAmount();
+                        resPos = stackingPos;
                     }
-                    return c;
                 }
+            }
+            if (resPos != null) {
+                // Pick location is correct
+                stackPlate.setCurrentPickLocation(resPos);
+                Coordinates c = new Coordinates(resPos.getPickPosition());
+                c.offset(workArea.getDefaultClamping().getRelativePosition());
+                return c;
             }
         }
         return null;

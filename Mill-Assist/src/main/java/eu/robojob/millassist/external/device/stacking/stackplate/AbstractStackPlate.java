@@ -40,7 +40,6 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
     private StackPlateStackingPosition currentPutLocation;
 
     private UnloadType unloadType;
-    private int currentLayer;
 
     private static Logger logger = LogManager.getLogger(AbstractStackPlate.class.getName());
 
@@ -129,20 +128,20 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
 
     @Override
     public synchronized void pickFinished(final DevicePickSettings pickSettings, final int processId) {
-        currentPickLocation.setAmount(currentPickLocation.getAmount() - 1);
-        if (currentPickLocation.getAmount() == 0) {
-            currentPickLocation.setWorkPiece(null);
+        this.currentPickLocation.setAmount(this.currentPickLocation.getAmount() - 1);
+        if (this.currentPickLocation.getAmount() == 0) {
+            this.currentPickLocation.setWorkPiece(null);
         }
-        currentPickLocation = null;
+        this.currentPickLocation = null;
         notifyLayoutChanged();
         logger.info("pick finished!!");
     }
 
     @Override
     public synchronized void putFinished(final DevicePutSettings putSettings) {
-        currentPutLocation.setWorkPiece(getFinishedWorkPiece());
-        currentPutLocation.setAmount(currentPutLocation.getAmount() + 1);
-        currentPutLocation = null;
+        this.currentPutLocation.setWorkPiece(getFinishedWorkPiece());
+        this.currentPutLocation.setAmount(this.currentPutLocation.getAmount() + 1);
+        this.currentPutLocation = null;
         notifyLayoutChanged();
         logger.info("put finished!");
     }
@@ -210,8 +209,8 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
     @Override
     public AbstractStackPlateDeviceSettings getDeviceSettings() {
         int gridId = 0;
-        if(layout instanceof GridPlateLayout) {
-            gridId = ((GridPlateLayout) layout).getGridPlate().getId();
+        if(this.layout instanceof GridPlateLayout) {
+            gridId = ((GridPlateLayout) this.layout).getGridPlate().getId();
         }
         return new AbstractStackPlateDeviceSettings(getRawWorkPiece(), getFinishedWorkPiece(), getLayout().getOrientation(), getLayout().getLayers(),
                 getLayout().getWorkPieceAmount(WorkPiece.Type.RAW), getWorkAreas().get(0).getDefaultClamping().getHeight(), gridId);
@@ -222,7 +221,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
     }
 
     public synchronized StackPlateStackingPosition getCurrentPickLocation() {
-        return currentPickLocation;
+        return this.currentPickLocation;
     }
 
     public synchronized void setCurrentPutLocation(final StackPlateStackingPosition stackingPos) {
@@ -230,7 +229,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
     }
 
     public synchronized StackPlateStackingPosition getCurrentPutLocation() {
-        return currentPutLocation;
+        return this.currentPutLocation;
     }
 
     protected synchronized void resetCurrentPickLocation() {
@@ -352,7 +351,7 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
     @Override
     public float getZSafePlane(final IWorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
         float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ();
-        float wpHeight = layout.getLayers() *  dimensions.getZSafe();
+        float wpHeight = this.layout.getLayers() *  dimensions.getZSafe();
         if (wpHeight > workArea.getDefaultClamping().getHeight()) {
             zSafePlane += wpHeight;
         } else {
@@ -384,22 +383,10 @@ public abstract class AbstractStackPlate extends AbstractStackingDevice {
     }
 
     public UnloadType getUnloadType() {
-        return unloadType;
+        return this.unloadType;
     }
 
     public void setUnloadType(final UnloadType unloadType) {
         this.unloadType = unloadType;
-    }
-
-    public int getCurrentLayer() {
-        return currentLayer;
-    }
-
-    public void setCurrentLayer(final int currentLayer) {
-        this.currentLayer = currentLayer;
-    }
-
-    public void decrementCurrentLayer() {
-        this.currentLayer--;
     }
 }

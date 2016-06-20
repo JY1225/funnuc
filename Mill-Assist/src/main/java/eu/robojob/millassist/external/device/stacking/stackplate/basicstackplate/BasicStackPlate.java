@@ -77,9 +77,6 @@ public class BasicStackPlate extends AbstractStackPlate {
             setUnloadType(UnloadType.LAYERWISE);
         }
         System.out.println(getUnloadType());
-        if(getUnloadType() == UnloadType.LAYERWISE) {
-            setCurrentLayer(basicLayout.getLayers());
-        }
     }
 
     @Override
@@ -137,7 +134,7 @@ public class BasicStackPlate extends AbstractStackPlate {
     @Override
     public float getR(double orientation) {
         if (hasGridPlate()) {
-            float deltaR = basicLayout.getTiltedR() - basicLayout.getHorizontalR();
+            float deltaR = this.basicLayout.getTiltedR() - this.basicLayout.getHorizontalR();
             if (orientation >= 90) {
                 orientation = orientation - 90;
                 if (deltaR > 0) {
@@ -153,15 +150,16 @@ public class BasicStackPlate extends AbstractStackPlate {
                 }
             }
         }
-        if(orientation == 45)
-            return basicLayout.getTiltedR();
-        else
-            return basicLayout.getHorizontalR();
+        if(orientation == 45) {
+            return this.basicLayout.getTiltedR();
+        } else {
+            return this.basicLayout.getHorizontalR();
+        }
     }
 
     @Override
     public float getRRound() {
-        return basicLayout.getHorizontalR();
+        return this.basicLayout.getHorizontalR();
     }
 
     public void addRawWorkPieces(final int amount, final boolean reset) {
