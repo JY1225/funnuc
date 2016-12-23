@@ -32,6 +32,11 @@ public final class Translator {
 		locale = new Locale("se");
 		messages = ResourceBundle.getBundle("messages", locale);
 	}
+	
+	public static void setLanguageFR() {
+	    locale = new Locale("fr");
+	    messages = ResourceBundle.getBundle("messages", locale);
+	}
 	//TODO - stop remove here
 	
 	//TODO - uncomment in case we want to use the language files outside the program

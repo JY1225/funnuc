@@ -120,6 +120,8 @@ public class RoboSoft extends Application {
                         Translator.setLanguageDE();
                     } else if (PropertyManager.hasSettingValue(Setting.LANGUAGE, "se")) {
                         Translator.setLanguageSE();
+                    } else if (PropertyManager.hasSettingValue(Setting.LANGUAGE, "fr")) {
+                        Translator.setLanguageFR();
                     } else {
                         Translator.setLanguageNL();
                     }
