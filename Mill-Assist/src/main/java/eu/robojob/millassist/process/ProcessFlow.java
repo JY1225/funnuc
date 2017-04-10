@@ -761,21 +761,20 @@ public class ProcessFlow {
 			return false;
 		}
 		PickStep pickFromStacker = null;
-		PickStep pickFromMachine = null;
-		PutStep putToMachine = null;
+		PickStep finalPickFromMachine = null;
 		boolean isConcurrentExecutionPossible = false;
 		for (AbstractProcessStep step : getProcessSteps()) {
-			if ((step instanceof PickStep) && (((PickStep) step).getDevice() instanceof AbstractStackingDevice)) {
-				pickFromStacker = (PickStep) step;
-			}  else if ((step instanceof PickStep) && ((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
-				pickFromMachine = (PickStep) step;
-			} else if ((step instanceof PutStep) && ((PutStep) step).getDevice() instanceof AbstractCNCMachine) {
-				putToMachine = (PutStep) step;
-			}
+		    if (step instanceof PickStep) {
+		        if (((PickStep) step).getDevice() instanceof AbstractStackingDevice) {
+		            pickFromStacker = (PickStep) step;
+		        } else if (((PickStep) step).getDevice() instanceof AbstractCNCMachine) {
+		            finalPickFromMachine = (PickStep) step;
+		        }
+		    }
 		}
-		float totalWorkPieceWeight = pickFromStacker.getRobotSettings().getWorkPiece().getWeight() + pickFromMachine.getRobotSettings().getWorkPiece().getWeight();
-		if (totalWorkPieceWeight < pickFromMachine.getRobot().getMaxWorkPieceWeight()) {
-			if (pickFromMachine.getRobotSettings().getGripperHead().equals(putToMachine.getRobotSettings().getGripperHead())) {
+		float totalWorkPieceWeight = pickFromStacker.getRobotSettings().getWorkPiece().getWeight() + finalPickFromMachine.getRobotSettings().getWorkPiece().getWeight();
+		if (totalWorkPieceWeight < finalPickFromMachine.getRobot().getMaxWorkPieceWeight()) {
+			if (finalPickFromMachine.getRobotSettings().getGripperHead().equals(pickFromStacker.getRobotSettings().getGripperHead())) {
 				isConcurrentExecutionPossible = false; 
 			} else {
 				isConcurrentExecutionPossible = true;
