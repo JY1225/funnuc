@@ -2,6 +2,15 @@ package eu.robojob.millassist.ui.admin.device;
 
 import java.util.List;
 
+import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
+import eu.robojob.millassist.positioning.Coordinates;
+import eu.robojob.millassist.ui.controls.FullTextField;
+import eu.robojob.millassist.ui.controls.IntegerTextField;
+import eu.robojob.millassist.ui.controls.NumericTextField;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,15 +24,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
-import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate.BasicStackPlate;
-import eu.robojob.millassist.positioning.Coordinates;
-import eu.robojob.millassist.ui.controls.FullTextField;
-import eu.robojob.millassist.ui.controls.IntegerTextField;
-import eu.robojob.millassist.ui.controls.NumericTextField;
-import eu.robojob.millassist.ui.controls.TextInputControlListener;
-import eu.robojob.millassist.ui.general.AbstractFormView;
-import eu.robojob.millassist.util.Translator;
-import eu.robojob.millassist.util.UIConstants;
 
 public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPlateConfigurePresenter> {
 
@@ -47,6 +47,8 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 	private NumericTextField numtxtVerticalPaddingBottom;
 	private Label lblHorizontalHoleDistance;
 	private NumericTextField numtxtHorizontalHoleDistance;
+    private Label lblVerticalHoleDistance;
+    private NumericTextField numtxtVerticalHoleDistance;
 	private Label lblInterferenceDistance;
 	private NumericTextField numtxtInterferenceDistance;
 	private Label lblOverflowPercentage;
@@ -151,6 +153,8 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numtxtVerticalPaddingBottom = new NumericTextField(5);
 		lblHorizontalHoleDistance = new Label(Translator.getTranslation(HORIZONTALHOLEDISTANCE));
 		numtxtHorizontalHoleDistance = new NumericTextField(5);
+        lblVerticalHoleDistance = new Label("Vertical hole distance");
+        numtxtVerticalHoleDistance = new NumericTextField(5);
 		lblInterferenceDistance = new Label(Translator.getTranslation(INTERFERENCEDISTANCE));
 		numtxtInterferenceDistance = new NumericTextField(5);
 		lblOverflowPercentage = new Label(Translator.getTranslation(OVERFLOWPERCENTAGE));
@@ -199,7 +203,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 			public void handle(final ActionEvent arg0) {
 				getPresenter().saveData(fulltxtName.getText(), cbbUserFrames.valueProperty().get(), Integer.parseInt(itxtHorizontalHoleAmount.getText()), 
 						Integer.parseInt(itxtVerticalHoleAmount.getText()), Float.parseFloat(numtxtHoleDiameter.getText()), Float.parseFloat(numtxtStudDiameter.getText()),
-						Float.parseFloat(numtxtHorizontalHoleDistance.getText()), Float.parseFloat(numtxtHorizontalPadding.getText()), 
+						Float.parseFloat(numtxtHorizontalHoleDistance.getText()), Float.parseFloat(numtxtVerticalHoleDistance.getText()), Float.parseFloat(numtxtHorizontalPadding.getText()), 
 						Float.parseFloat(numtxtVerticalPaddingTop.getText()), Float.parseFloat(numtxtVerticalPaddingBottom.getText()), 
 						Float.parseFloat(numtxtInterferenceDistance.getText()), Float.parseFloat(numtxtOverflowPercentage.getText()), 
 						Float.parseFloat(numTxtHorizontalR.getText()), Float.parseFloat(numTxtTiltedR.getText()), 
@@ -233,6 +237,9 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		column = 0; row++;
 		getContents().add(lblHorizontalHoleDistance, column++, row);
 		getContents().add(numtxtHorizontalHoleDistance, column++, row);
+        column = 0; row++;
+        getContents().add(lblVerticalHoleDistance, column++, row);
+        getContents().add(numtxtVerticalHoleDistance, column++, row);
 		column++;
 		getContents().add(lblHorizontalPadding, column++, row);
 		getContents().add(numtxtHorizontalPadding, column++, row);
@@ -297,6 +304,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 		numtxtVerticalPaddingTop.setFocusListener(listener);
 		numtxtVerticalPaddingBottom.setFocusListener(listener);
 		numtxtHorizontalHoleDistance.setFocusListener(listener);
+		numtxtVerticalHoleDistance.setFocusListener(listener);
 		numtxtInterferenceDistance.setFocusListener(listener);
 		numtxtOverflowPercentage.setFocusListener(listener);
 		numTxtHorizontalR.setFocusListener(listener);
@@ -326,6 +334,7 @@ public class BasicStackPlateConfigureView extends AbstractFormView<BasicStackPla
 			numtxtVerticalPaddingTop.setText(basicStackPlate.getBasicLayout().getVerticalPaddingTop() + "");
 			numtxtVerticalPaddingBottom.setText(basicStackPlate.getBasicLayout().getVerticalPaddingBottom() + "");
 			numtxtHorizontalHoleDistance.setText(basicStackPlate.getBasicLayout().getHorizontalHoleDistance() + "");
+			numtxtVerticalHoleDistance.setText(basicStackPlate.getBasicLayout().getVerticalHoleDistance() + "");
 			numtxtInterferenceDistance.setText(basicStackPlate.getBasicLayout().getInterferenceDistance() + "");
 			numtxtOverflowPercentage.setText(basicStackPlate.getBasicLayout().getOverflowPercentage() + "");
 			numTxtHorizontalR.setText(basicStackPlate.getBasicLayout().getHorizontalR() + "");

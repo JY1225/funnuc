@@ -1,5 +1,7 @@
 package eu.robojob.millassist.ui.general.flow;
 
+import eu.robojob.millassist.ui.general.model.DeviceInformation;
+import eu.robojob.millassist.util.Translator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -11,8 +13,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.TextAlignment;
-import eu.robojob.millassist.ui.general.model.DeviceInformation;
-import eu.robojob.millassist.util.Translator;
 
 public class DeviceButton extends VBox {
 	
@@ -100,9 +100,9 @@ public class DeviceButton extends VBox {
 		this.getChildren().add(mainButton);
 		this.getChildren().add(deviceName);
 		this.setPadding(new Insets(-8, -(LABEL_WIDTH - BUTTON_WIDTH) / 2, 0, -(LABEL_WIDTH - BUTTON_WIDTH) / 2));
-		this.setPrefWidth(BUTTON_WIDTH);
-		this.setMinWidth(BUTTON_WIDTH);
-		this.setMaxWidth(BUTTON_WIDTH);
+		this.setPrefWidth(BUTTON_WIDTH + 20);
+		this.setMinWidth(BUTTON_WIDTH + 20);
+		this.setMaxWidth(BUTTON_WIDTH + 20);
 		this.setAlignment(Pos.CENTER);
 		
 		this.getStyleClass().add(CSS_CLASS_DEVICE_BUTTON_WRAPPER);

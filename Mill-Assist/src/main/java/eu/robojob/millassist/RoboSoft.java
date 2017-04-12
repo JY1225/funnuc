@@ -1,20 +1,9 @@
 package eu.robojob.millassist;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.util.HashMap;
 import java.util.Locale;
-
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.scene.Cursor;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,6 +31,14 @@ import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.util.SizeManager;
 import eu.robojob.millassist.util.StdErrLog;
 import eu.robojob.millassist.util.Translator;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.Cursor;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class RoboSoft extends Application {
 
@@ -49,14 +46,14 @@ public class RoboSoft extends Application {
 
 
     public static void main(final String[] args) {
-        //        try {
-        //            Class<?> macFontFinderClass = Class.forName("com.sun.t2k.MacFontFinder");
-        //            Field psNameToPathMap = macFontFinderClass.getDeclaredField("psNameToPathMap");
-        //            psNameToPathMap.setAccessible(true);
-        //            psNameToPathMap.set(null, new HashMap<String, String>());
-        //        } catch (Exception e) {
-        //            // ignore
-        //        }
+//                try {
+//                    Class<?> macFontFinderClass = Class.forName("com.sun.t2k.MacFontFinder");
+//                    Field psNameToPathMap = macFontFinderClass.getDeclaredField("psNameToPathMap");
+//                    psNameToPathMap.setAccessible(true);
+//                    psNameToPathMap.set(null, new HashMap<String, String>());
+//                } catch (Exception e) {
+//                    // ignore
+//                }
 
         launch(args);
     }

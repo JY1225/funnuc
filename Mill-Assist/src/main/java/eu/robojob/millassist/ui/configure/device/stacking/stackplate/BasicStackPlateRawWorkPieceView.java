@@ -1,18 +1,5 @@
 package eu.robojob.millassist.ui.configure.device.stacking.stackplate;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.SVGPath;
 import eu.robojob.millassist.external.device.stacking.stackplate.AbstractStackPlateDeviceSettings;
 import eu.robojob.millassist.ui.configure.device.stacking.AbstractRawWorkPiecePresenter;
 import eu.robojob.millassist.ui.controls.IntegerTextField;
@@ -28,6 +15,19 @@ import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.Material;
 import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.SVGPath;
 
 public class BasicStackPlateRawWorkPieceView extends AbstractFormView<AbstractRawWorkPiecePresenter<?>> {
 
@@ -293,7 +293,11 @@ public class BasicStackPlateRawWorkPieceView extends AbstractFormView<AbstractRa
             }
         });
         btnTilted.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_CENTER);
-        orientationsBox.getChildren().add(btnTilted);
+        if (getPresenter() instanceof BasicStackPlateRawWorkPiecePresenter) {
+            if (((BasicStackPlateRawWorkPiecePresenter) getPresenter()).getStackPlate().getBasicLayout().canUseTiltedOrientation()) {
+                orientationsBox.getChildren().add(btnTilted);
+            }
+        }
         orientationsBox.setAlignment(Pos.CENTER_LEFT);
         btnVertical = createButton(VERTICAL_ICON, CSS_CLASS_BUTTON_ORIENTATION, "90°", BTN_WIDTH*0.9, BTN_HEIGHT, new EventHandler<ActionEvent>() {
             @Override

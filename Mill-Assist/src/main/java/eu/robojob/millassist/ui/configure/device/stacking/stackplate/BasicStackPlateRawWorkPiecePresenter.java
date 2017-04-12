@@ -49,7 +49,7 @@ public class BasicStackPlateRawWorkPiecePresenter extends AbstractRawWorkPiecePr
         return false;
     }
 
-    private BasicStackPlate getStackPlate() {
+    public BasicStackPlate getStackPlate() {
         return ((BasicStackPlate) pickStep.getDevice());
     }
 

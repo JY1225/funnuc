@@ -10,9 +10,9 @@ import eu.robojob.millassist.external.device.stacking.stackplate.basicstackplate
 import eu.robojob.millassist.external.device.stacking.stackplate.strategy.basicStackPlate.ABasicStackPlateStrategy;
 import eu.robojob.millassist.external.device.stacking.stackplate.strategy.basicStackPlate.RoundPieceBasicStackerStrategy;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
+import eu.robojob.millassist.workpiece.RectangularDimensions;
 import eu.robojob.millassist.workpiece.RoundDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece;
-import eu.robojob.millassist.workpiece.RectangularDimensions;
 import eu.robojob.millassist.workpiece.WorkPiece.WorkPieceShape;
 
 public class BasicStackPlateLayout extends AbstractStackPlateLayout {
@@ -49,7 +49,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 //	private static Logger logger = LogManager.getLogger(BasicStackPlateLayout.class.getName());
 		
 	public BasicStackPlateLayout(final int horizontalHoleAmount, final int verticalHoleAmount, final float holeDiameter, final float studDiameter, final float horizontalPadding,
-			final float verticalPaddingTop, final float verticalPaddingBottom, final float horizontalHoleDistance, final float interferenceDistance, final float overflowPercentage,
+			final float verticalPaddingTop, final float verticalPaddingBottom, final float horizontalHoleDistance, final float verticalHoleDistance, final float interferenceDistance, final float overflowPercentage,
 				final float horizontalR, final float tiltedR, final double maxOverflow, final double maxUnderflow, final double minOverlap) {
 		super();
 		this.horizontalPadding = horizontalPadding;
@@ -60,7 +60,7 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		this.holeDiameter = holeDiameter;
 		this.studDiameter = studDiameter;
 		this.horizontalHoleDistance = horizontalHoleDistance;
-		this.verticalHoleDistance = 2 * horizontalHoleDistance;		// this is always the case with this Basic Stack Plate (so tilted layout results in a 45° angle)
+		this.verticalHoleDistance = verticalHoleDistance;
 		this.interferenceDistance = interferenceDistance;
 		this.overFlowPercentage = overflowPercentage;
 		this.maxOverflow = maxOverflow;
@@ -97,6 +97,10 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 		}
 	}
 	
+	public boolean canUseTiltedOrientation() {
+        return (horizontalHoleDistance == verticalHoleDistance / 2);
+    }
+	
 	/**
 	 * Calculate the width of the stackPlate starting from the origin point of the stacker
 	 */
@@ -130,7 +134,10 @@ public class BasicStackPlateLayout extends AbstractStackPlateLayout {
 	 */
 	@Override
 	public void configureStackingPositions(final WorkPiece rawWorkPiece, final WorkPiece finishedWorkPiece, final float orientation, final int layers) throws IncorrectWorkPieceDataException {
-		clearStuds();		
+	    if ((orientation != 0) && (orientation != 90)  && (!canUseTiltedOrientation())) {
+            throw new IllegalArgumentException("Tilted orientation is not possilbe");
+        }
+        clearStuds();
 		getRawStackingPositions().clear();
 		getFinishedStackingPositions().clear();
 		getStackingPositions().clear();

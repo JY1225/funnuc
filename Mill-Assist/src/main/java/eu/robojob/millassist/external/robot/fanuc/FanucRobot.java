@@ -17,21 +17,21 @@ import eu.robojob.millassist.external.communication.socket.SocketResponseTimedOu
 import eu.robojob.millassist.external.communication.socket.SocketWrongResponseException;
 import eu.robojob.millassist.external.device.Clamping;
 import eu.robojob.millassist.external.device.SimpleWorkArea;
+import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
+import eu.robojob.millassist.external.robot.AbstractRobot;
 import eu.robojob.millassist.external.robot.AbstractRobotActionSettings.ApproachType;
+import eu.robojob.millassist.external.robot.AirblowSquare;
+import eu.robojob.millassist.external.robot.GripperBody;
+import eu.robojob.millassist.external.robot.GripperHead;
+import eu.robojob.millassist.external.robot.RobotActionException;
+import eu.robojob.millassist.external.robot.RobotAlarm;
+import eu.robojob.millassist.external.robot.RobotConstants;
 import eu.robojob.millassist.external.robot.RobotData.RobotIPPoint;
 import eu.robojob.millassist.external.robot.RobotData.RobotRefPoint;
 import eu.robojob.millassist.external.robot.RobotData.RobotRegister;
 import eu.robojob.millassist.external.robot.RobotData.RobotSpecialPoint;
 import eu.robojob.millassist.external.robot.RobotData.RobotToolFrame;
 import eu.robojob.millassist.external.robot.RobotData.RobotUserFrame;
-import eu.robojob.millassist.external.device.processing.reversal.ReversalUnit;
-import eu.robojob.millassist.external.robot.AbstractRobot;
-import eu.robojob.millassist.external.robot.GripperBody;
-import eu.robojob.millassist.external.robot.GripperHead;
-import eu.robojob.millassist.external.robot.RobotActionException;
-import eu.robojob.millassist.external.robot.AirblowSquare;
-import eu.robojob.millassist.external.robot.RobotAlarm;
-import eu.robojob.millassist.external.robot.RobotConstants;
 import eu.robojob.millassist.external.robot.RobotDataManager;
 import eu.robojob.millassist.external.robot.RobotMonitoringThread;
 import eu.robojob.millassist.external.robot.RobotPickSettings;
@@ -42,8 +42,8 @@ import eu.robojob.millassist.positioning.Coordinates;
 import eu.robojob.millassist.positioning.RobotPosition;
 import eu.robojob.millassist.threading.ThreadManager;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
-import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
+import eu.robojob.millassist.workpiece.WorkPiece;
 import eu.robojob.millassist.workpiece.WorkPiece.Dimensions;
 
 public class FanucRobot extends AbstractRobot {
@@ -62,7 +62,7 @@ public class FanucRobot extends AbstractRobot {
     private static final int WRITE_REGISTER_TIMEOUT = 2 * 5000;
     private static final int IOACTION_TIMEOUT = 2 * 60 * 1000;
 
-    private static final List<Integer> VALID_USERFRAMES = Arrays.asList(1, 3, 4, 6, 8, 11, 12, 13, 14, 15);
+    private static final List<Integer> VALID_USERFRAMES = Arrays.asList(1, 3, 4, 6, 8, 9, 11, 12, 13, 14, 15);
 
     private static final String HEAD_A_ID = "A";
     private static final String HEAD_B_ID = "B";
