@@ -1,8 +1,10 @@
 package eu.robojob.millassist;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.Locale;
 
 import org.apache.logging.log4j.LogManager;
@@ -46,14 +48,14 @@ public class RoboSoft extends Application {
 
 
     public static void main(final String[] args) {
-//                try {
-//                    Class<?> macFontFinderClass = Class.forName("com.sun.t2k.MacFontFinder");
-//                    Field psNameToPathMap = macFontFinderClass.getDeclaredField("psNameToPathMap");
-//                    psNameToPathMap.setAccessible(true);
-//                    psNameToPathMap.set(null, new HashMap<String, String>());
-//                } catch (Exception e) {
-//                    // ignore
-//                }
+                try {
+                    Class<?> macFontFinderClass = Class.forName("com.sun.t2k.MacFontFinder");
+                    Field psNameToPathMap = macFontFinderClass.getDeclaredField("psNameToPathMap");
+                    psNameToPathMap.setAccessible(true);
+                    psNameToPathMap.set(null, new HashMap<String, String>());
+                } catch (Exception e) {
+                    // ignore
+                }
 
         launch(args);
     }

@@ -472,12 +472,16 @@ public final class CNCMachineConstantsDevIntv2 {
     public static final int CFG_MACHINE_USE_IN_CYCLE            =   BIT9;
 	public static final int CFG_MACHINE_NEGATIVE_MACHINE_ALARM	= 	BIT10;
 	public static final int CFG_MACHINE_SIMULATED				= 	BIT11;
-	public static final int CFG_DOORS_1_USE_TIMERS				= 	BIT12;	
-	public static final int CFG_DOORS_1_USE_UNLOCK				= 	BIT13;	
-	public static final int CFG_DOORS_2_USE_TIMERS				= 	BIT14;	
-	public static final int CFG_DOORS_2_USE_UNLOCK				= 	BIT15;	
 
 	public static final int CONFIG_2 = 36;
+	public static final int CFG_DOORS_1_USE_TIMERS              =   BIT0;  
+    public static final int CFG_DOORS_1_USE_UNLOCK              =   BIT1;  
+    public static final int CFG_DOORS_1_USE_UNLOCK_FOR_LOCK     =   BIT2;  
+    public static final int CFG_DOORS_2_USE_TIMERS              =   BIT8;  
+    public static final int CFG_DOORS_2_USE_UNLOCK              =   BIT9;
+    public static final int CFG_DOORS_2_USE_UNLOCK_FOR_LOCK     =   BIT10;    
+	
+	public static final int CONFIG_3 = 37;
 	public static final int CFG_MACHINE_ZONE_1_WA_1_FIX_1		= 	BIT0;
 	public static final int CFG_MACHINE_ZONE_1_WA_1_FIX_2		= 	BIT1;
 	public static final int CFG_MACHINE_ZONE_1_WA_1_FIX_3		= 	BIT2;
@@ -495,7 +499,7 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int CFG_MACHINE_ZONE_2_WA_2_FIX_3		= 	BIT14;	
 	public static final int CFG_MACHINE_ZONE_2_WA_2_FIX_4		= 	BIT15;
 	
-	public static final int CONFIG_3 = 37;
+	public static final int CONFIG_4 = 38;
 	public static final int CFG_MACHINE_ZONE_1_WA_1_PUT_USE_CONDITION	= 	BIT0;
 	public static final int CFG_MACHINE_ZONE_1_WA_1_PUT_CONDITION_VAL	= 	BIT1;
 	public static final int CFG_MACHINE_ZONE_1_WA_1_PICK_USE_CONDITION	= 	BIT2;
@@ -513,7 +517,7 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int CFG_MACHINE_ZONE_2_WA_2_PICK_USE_CONDITION	= 	BIT14;	
 	public static final int CFG_MACHINE_ZONE_2_WA_2_PICK_CONDITION_VAL	= 	BIT15;
 	
-	public static final int CONFIG_4 = 38;
+	public static final int CONFIG_5 = 39;
 	public static final int CFG_FIX_1_USE_TIMERS				= 	BIT0;
 	public static final int CFG_FIX_1_USE_TIMERS_MEMORY			= 	BIT1;
 	public static final int CFG_FIX_1_USE_CLAMPED_SENSOR		= 	BIT2;
@@ -524,7 +528,7 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int CFG_SELECTABLE_PRESSURE_LEVEL       =   BIT15;
 	// BITS 7-15 UNUSED
 	
-	public static final int CONFIG_5 = 39;
+	public static final int CONFIG_6 = 40;
 	public static final int CFG_FIX_2_USE_TIMERS				= 	BIT0;
 	public static final int CFG_FIX_2_USE_TIMERS_MEMORY			= 	BIT1;
 	public static final int CFG_FIX_2_USE_CLAMPED_SENSOR		= 	BIT2;
@@ -534,7 +538,7 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int CFG_FIX_2_AIRBLOW_PICK_DOOR_CLOSED	= 	BIT6;
 	// BITS 7-15 UNUSED
 	
-	public static final int CONFIG_6 = 40;
+	public static final int CONFIG_7 = 41;
 	public static final int CFG_FIX_3_USE_TIMERS				= 	BIT0;
 	public static final int CFG_FIX_3_USE_TIMERS_MEMORY			= 	BIT1;
 	public static final int CFG_FIX_3_USE_CLAMPED_SENSOR		= 	BIT2;
@@ -544,7 +548,7 @@ public final class CNCMachineConstantsDevIntv2 {
 	public static final int CFG_FIX_3_AIRBLOW_PICK_DOOR_CLOSED	= 	BIT6;
 	// BITS 7-15 UNUSED
 	
-	public static final int CONFIG_7 = 41;
+	public static final int CONFIG_8 = 42;
 	public static final int CFG_FIX_4_USE_TIMERS				= 	BIT0;
 	public static final int CFG_FIX_4_USE_TIMERS_MEMORY			= 	BIT1;
 	public static final int CFG_FIX_4_USE_CLAMPED_SENSOR		= 	BIT2;

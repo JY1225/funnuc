@@ -281,16 +281,16 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		
 		if (pickSettings.getMachineAirblow()) {
 			logger.debug("Set machine airblow for pick");
-			setValue(CNCMachineConstantsDevIntv2.CONFIG_4, CNCMachineConstantsDevIntv2.CFG_FIX_1_AIRBLOW_PICK);
-			setValue(CNCMachineConstantsDevIntv2.CONFIG_5, CNCMachineConstantsDevIntv2.CFG_FIX_2_AIRBLOW_PICK);
-			setValue(CNCMachineConstantsDevIntv2.CONFIG_6, CNCMachineConstantsDevIntv2.CFG_FIX_3_AIRBLOW_PICK);
-			setValue(CNCMachineConstantsDevIntv2.CONFIG_7, CNCMachineConstantsDevIntv2.CFG_FIX_4_AIRBLOW_PICK);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_5, CNCMachineConstantsDevIntv2.CFG_FIX_1_AIRBLOW_PICK);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_6, CNCMachineConstantsDevIntv2.CFG_FIX_2_AIRBLOW_PICK);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_7, CNCMachineConstantsDevIntv2.CFG_FIX_3_AIRBLOW_PICK);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_8, CNCMachineConstantsDevIntv2.CFG_FIX_4_AIRBLOW_PICK);
 		} else {
 			logger.debug("Reset machine airblow for pick");
-			resetValue(CNCMachineConstantsDevIntv2.CONFIG_4, CNCMachineConstantsDevIntv2.CFG_FIX_1_AIRBLOW_PICK);
-			resetValue(CNCMachineConstantsDevIntv2.CONFIG_5, CNCMachineConstantsDevIntv2.CFG_FIX_2_AIRBLOW_PICK);
-			resetValue(CNCMachineConstantsDevIntv2.CONFIG_6, CNCMachineConstantsDevIntv2.CFG_FIX_3_AIRBLOW_PICK);
-			resetValue(CNCMachineConstantsDevIntv2.CONFIG_7, CNCMachineConstantsDevIntv2.CFG_FIX_4_AIRBLOW_PICK);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_5, CNCMachineConstantsDevIntv2.CFG_FIX_1_AIRBLOW_PICK);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_6, CNCMachineConstantsDevIntv2.CFG_FIX_2_AIRBLOW_PICK);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_7, CNCMachineConstantsDevIntv2.CFG_FIX_3_AIRBLOW_PICK);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_8, CNCMachineConstantsDevIntv2.CFG_FIX_4_AIRBLOW_PICK);
 		}
 		
 		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PICK_OK);
@@ -326,16 +326,16 @@ public class CNCMillingMachineDevIntv2 extends AbstractCNCMachine {
 		
 		if (putSettings.getMachineAirblow()) {
 			logger.debug("Set machine airblow for put");
-			setValue(CNCMachineConstantsDevIntv2.CONFIG_4, CNCMachineConstantsDevIntv2.CFG_FIX_1_AIRBLOW_PUT);
-			setValue(CNCMachineConstantsDevIntv2.CONFIG_5, CNCMachineConstantsDevIntv2.CFG_FIX_2_AIRBLOW_PUT);
-			setValue(CNCMachineConstantsDevIntv2.CONFIG_6, CNCMachineConstantsDevIntv2.CFG_FIX_3_AIRBLOW_PUT);
-			setValue(CNCMachineConstantsDevIntv2.CONFIG_7, CNCMachineConstantsDevIntv2.CFG_FIX_4_AIRBLOW_PUT);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_5, CNCMachineConstantsDevIntv2.CFG_FIX_1_AIRBLOW_PUT);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_6, CNCMachineConstantsDevIntv2.CFG_FIX_2_AIRBLOW_PUT);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_7, CNCMachineConstantsDevIntv2.CFG_FIX_3_AIRBLOW_PUT);
+			setValue(CNCMachineConstantsDevIntv2.CONFIG_8, CNCMachineConstantsDevIntv2.CFG_FIX_4_AIRBLOW_PUT);
 		} else {
 			logger.debug("Reset machine airblow for put");
-			resetValue(CNCMachineConstantsDevIntv2.CONFIG_4, CNCMachineConstantsDevIntv2.CFG_FIX_1_AIRBLOW_PUT);
-			resetValue(CNCMachineConstantsDevIntv2.CONFIG_5, CNCMachineConstantsDevIntv2.CFG_FIX_2_AIRBLOW_PUT);
-			resetValue(CNCMachineConstantsDevIntv2.CONFIG_6, CNCMachineConstantsDevIntv2.CFG_FIX_3_AIRBLOW_PUT);
-			resetValue(CNCMachineConstantsDevIntv2.CONFIG_7, CNCMachineConstantsDevIntv2.CFG_FIX_4_AIRBLOW_PUT);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_5, CNCMachineConstantsDevIntv2.CFG_FIX_1_AIRBLOW_PUT);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_6, CNCMachineConstantsDevIntv2.CFG_FIX_2_AIRBLOW_PUT);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_7, CNCMachineConstantsDevIntv2.CFG_FIX_3_AIRBLOW_PUT);
+			resetValue(CNCMachineConstantsDevIntv2.CONFIG_8, CNCMachineConstantsDevIntv2.CFG_FIX_4_AIRBLOW_PUT);
 		}
 		
 		resetStatusValue(CNCMachineConstantsDevIntv2.IPC_OK, CNCMachineConstantsDevIntv2.IPC_PREPARE_FOR_PUT_OK);
