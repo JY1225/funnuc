@@ -41,7 +41,8 @@ public final class PropertyManager {
         EMAIL_USERNAME("email-username"),
         EMAIL_PASSWORD("email-password"),
         FROM_EMAIL_ADDRESS("from-email-address"),
-        EMAIL_OPTION("has-email-option");
+        EMAIL_OPTION("has-email-option"),
+        SWITCH_UNLOADPALLET_LAYOUT_TYPE("switch-unloadpallet-layout-type");
 
         private String settingsText;
 

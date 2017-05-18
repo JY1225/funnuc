@@ -1,6 +1,5 @@
 package eu.robojob.millassist.ui.configure.device.stacking.pallet;
 
-import javafx.application.Platform;
 import eu.robojob.millassist.external.device.DeviceInterventionSettings;
 import eu.robojob.millassist.external.device.stacking.AbstractStackingDevice;
 import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletLayoutType;
@@ -20,8 +19,10 @@ import eu.robojob.millassist.process.event.StatusChangedEvent;
 import eu.robojob.millassist.ui.general.AbstractFormPresenter;
 import eu.robojob.millassist.ui.general.NotificationBox.Type;
 import eu.robojob.millassist.ui.general.device.stacking.pallet.UnloadPalletLayoutView;
+import eu.robojob.millassist.util.PropertyManager;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.util.Translator;
-import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
+import javafx.application.Platform;
 
 public class UnloadPalletLayoutPresenter extends
         AbstractFormPresenter<UnloadPalletLayoutView<UnloadPalletLayoutPresenter>, UnloadPalletMenuPresenter> implements
@@ -196,7 +197,10 @@ public class UnloadPalletLayoutPresenter extends
             PickStep pickStep = (PickStep) e.getStep();
             if (pickStep.getDevice() instanceof AbstractStackingDevice) {
                 if (pickStep.getProcessFlow().getDeviceSettings().get(unloadPallet) instanceof UnloadPalletDeviceSettings) {
-                    if (pickStep.getProcessFlow().getClampingType().isChanged()) {
+                    boolean switchTypes = PropertyManager.hasSettingValue(Setting.SWITCH_UNLOADPALLET_LAYOUT_TYPE, "true");
+                    boolean clampingTypeChanged = pickStep.getProcessFlow().getClampingType().isChanged();
+                    
+                    if ((clampingTypeChanged && !switchTypes) || (!clampingTypeChanged && switchTypes)) {
                         unloadPallet.getPalletLayout().setLayoutType(PalletLayoutType.NOT_SHIFTED_HORIZONTAL);
                     } else {
                         unloadPallet.getPalletLayout().setLayoutType(PalletLayoutType.NOT_SHIFTED_VERTICAL);

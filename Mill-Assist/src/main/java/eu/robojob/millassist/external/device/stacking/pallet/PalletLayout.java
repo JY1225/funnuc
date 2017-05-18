@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 import eu.robojob.millassist.external.device.stacking.pallet.strategy.AbstractPalletUnloadStrategy;
 import eu.robojob.millassist.external.device.stacking.pallet.strategy.CubicPiecePalletUnloadStrategy;
 import eu.robojob.millassist.external.device.stacking.pallet.strategy.RoundPiecePalletUnloadStrategy;
+import eu.robojob.millassist.util.PropertyManager;
+import eu.robojob.millassist.util.PropertyManager.Setting;
 import eu.robojob.millassist.workpiece.IWorkPieceDimensions;
 import eu.robojob.millassist.workpiece.RectangularDimensions;
 import eu.robojob.millassist.workpiece.RoundDimensions;
@@ -220,7 +222,11 @@ public class PalletLayout {
         this.horizontalR = horizontalR;
         this.verticalR = verticalR;
         this.name = name;
-        this.layoutType = PalletLayoutType.NOT_SHIFTED_VERTICAL;
+        if (PropertyManager.hasSettingValue(Setting.SWITCH_UNLOADPALLET_LAYOUT_TYPE, "true")) {
+            this.layoutType = PalletLayoutType.NOT_SHIFTED_HORIZONTAL;            
+        } else {
+            this.layoutType = PalletLayoutType.NOT_SHIFTED_VERTICAL;
+        }
         this.cardBoardThickness = 0;
     }
     
