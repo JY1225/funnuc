@@ -419,5 +419,15 @@ public class PalletLayout {
     public void setCardBoardThickness(float cardBoardThickness) {
         this.cardBoardThickness = cardBoardThickness;
     }
+    
+    public int getNumberOfLayersPresent() {
+        int result = 0;
+        for (PalletStackingPosition stackingPosition : stackingPositions) {
+            if (stackingPosition.getAmount() > result) {
+                result = stackingPosition.getAmount();
+            }
+        }
+        return result;
+    }
 
 }

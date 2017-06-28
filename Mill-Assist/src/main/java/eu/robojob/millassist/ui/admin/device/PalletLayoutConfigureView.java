@@ -3,6 +3,14 @@ package eu.robojob.millassist.ui.admin.device;
 import java.util.List;
 import java.util.Set;
 
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
+import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletType;
+import eu.robojob.millassist.ui.controls.FullTextField;
+import eu.robojob.millassist.ui.controls.NumericTextField;
+import eu.robojob.millassist.ui.controls.TextInputControlListener;
+import eu.robojob.millassist.ui.general.AbstractFormView;
+import eu.robojob.millassist.util.Translator;
+import eu.robojob.millassist.util.UIConstants;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -19,14 +27,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout;
-import eu.robojob.millassist.external.device.stacking.pallet.PalletLayout.PalletType;
-import eu.robojob.millassist.ui.controls.FullTextField;
-import eu.robojob.millassist.ui.controls.NumericTextField;
-import eu.robojob.millassist.ui.controls.TextInputControlListener;
-import eu.robojob.millassist.ui.general.AbstractFormView;
-import eu.robojob.millassist.util.Translator;
-import eu.robojob.millassist.util.UIConstants;
 
 public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConfigurePresenter>{
 
@@ -71,12 +71,10 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
     private NumericTextField minInterferenceTextField;
     
     private Label horizontalRLabel;
-    private Button zeroButton;
-    private Button oneEightyButton;
+    private NumericTextField horizontalRTextField;
     
     private Label verticalRLabel;
-    private Button minusButton;
-    private Button plusButton;
+    private NumericTextField verticalRTextField;
     
     private Button btnSave;
     private Button btnRemove;
@@ -107,9 +105,6 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
     private static final double BTN_HEIGHT = UIConstants.BUTTON_HEIGHT;
     private static final double BTN_WIDTH = BTN_HEIGHT * 3;
     
-    private float horizontalRValue;
-    private float verticalRValue;
-
     public PalletLayoutConfigureView() {
         stdPalletTypes = FXCollections.observableArrayList();
         layouts = FXCollections.observableArrayList();
@@ -172,68 +167,15 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
         minInterferenceTextField = new NumericTextField(4);
         
         horizontalRLabel = new Label(Translator.getTranslation(HOR_R));
-//        horizontalRTextField = new NumericTextField(4);
-        HBox horizontalRBox = new HBox();
-        zeroButton = createButton("0°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                horizontalRValue = 0;
-                oneEightyButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                if(!zeroButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
-                    zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            }
-        });
-        zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-        horizontalRBox.getChildren().add(zeroButton);
-        
-        oneEightyButton = createButton("+180°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT,new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                horizontalRValue = 180;
-                zeroButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                if(!oneEightyButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
-                    oneEightyButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            }
-        });
-        oneEightyButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-        horizontalRBox.getChildren().add(oneEightyButton);
-        
-        
-        HBox verticalRBox = new HBox();
-        minusButton = createButton("-90°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                verticalRValue = -90;
-                plusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                if(!minusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
-                    minusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            }
-        });
-        minusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_LEFT);
-        verticalRBox.getChildren().add(minusButton);
-        
-        plusButton = createButton("+90°", UIConstants.BUTTON_HEIGHT*2, UIConstants.BUTTON_HEIGHT,new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                verticalRValue = 90;
-                minusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                if(!plusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
-                    plusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            }
-        });
-        plusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_BAR_RIGHT);
-        verticalRBox.getChildren().add(plusButton);
+        horizontalRTextField = new NumericTextField(4);
         
         verticalRLabel = new Label(Translator.getTranslation(VER_R));
+        verticalRTextField = new NumericTextField(4);
         
         btnSave = createButton(SAVE_PATH, "", Translator.getTranslation(SAVE), UIConstants.BUTTON_HEIGHT * 3, UIConstants.BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                getPresenter().saveData(nameTextField.getText(),Float.parseFloat(widthNumbericTextField.getText()),Float.parseFloat(lengthNumbericTextField.getText()), Float.parseFloat(heightNumbericTextField.getText()),Float.parseFloat(borderNumbericTextField.getText()),Float.parseFloat(xOffsetNumbericTextField.getText()),Float.parseFloat(yOffsetNumbericTextField.getText()), Float.parseFloat(minInterferenceTextField.getText()), horizontalRValue, verticalRValue);
+                getPresenter().saveData(nameTextField.getText(),Float.parseFloat(widthNumbericTextField.getText()),Float.parseFloat(lengthNumbericTextField.getText()), Float.parseFloat(heightNumbericTextField.getText()),Float.parseFloat(borderNumbericTextField.getText()),Float.parseFloat(xOffsetNumbericTextField.getText()),Float.parseFloat(yOffsetNumbericTextField.getText()), Float.parseFloat(minInterferenceTextField.getText()), Float.parseFloat(horizontalRTextField.getText()), Float.parseFloat(verticalRTextField.getText()));
             }
         });
         
@@ -279,10 +221,10 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
         fieldsPane.add(minInterferenceTextField, column++, row, 3, 1);
         column = 0; row++;
         fieldsPane.add(horizontalRLabel, column++, row);
-        fieldsPane.add(horizontalRBox, column++, row, 3, 1);
+        fieldsPane.add(horizontalRTextField, column++, row, 3, 1);
         column = 0; row++;
         fieldsPane.add(verticalRLabel, column++, row);
-        fieldsPane.add(verticalRBox, column++, row, 3, 1);
+        fieldsPane.add(verticalRTextField, column++, row, 3, 1);
         column = 0; row++;
         
         form = new VBox();
@@ -351,6 +293,8 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
         xOffsetNumbericTextField.setFocusListener(listener);
         yOffsetNumbericTextField.setFocusListener(listener);
         minInterferenceTextField.setFocusListener(listener);
+        horizontalRTextField.setFocusListener(listener);
+        verticalRTextField.setFocusListener(listener);
     }
 
     /**
@@ -429,31 +373,8 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
             xOffsetNumbericTextField.setText(layout.getMinXGap()+"");
             yOffsetNumbericTextField.setText(layout.getMinYGap()+"");
             minInterferenceTextField.setText(layout.getMinInterferenceDistance()+"");
-            
-            
-            if(layout.getHorizontalR() == 0) {
-                if(!zeroButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
-                    zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                    oneEightyButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            } else {
-                if(!oneEightyButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
-                    oneEightyButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                    zeroButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            }
-            
-            if(layout.getVerticalR() == -90) {
-                if(!minusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
-                    minusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                    plusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            } else {
-                if(!plusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)){
-                    plusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                    minusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-                }
-            }
+            horizontalRTextField.setText(layout.getHorizontalR() + "");
+            verticalRTextField.setText(layout.getVerticalR() + "");
         }
     }
     
@@ -472,16 +393,8 @@ public class PalletLayoutConfigureView extends AbstractFormView<PalletLayoutConf
         xOffsetNumbericTextField.clear();
         yOffsetNumbericTextField.clear();
         minInterferenceTextField.clear();
-        oneEightyButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-        plusButton.getStyleClass().remove(CSS_CLASS_FORM_BUTTON_ACTIVE);
-        if(!zeroButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
-            zeroButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-        }
-        if(!minusButton.getStyleClass().contains(CSS_CLASS_FORM_BUTTON_ACTIVE)) {
-            minusButton.getStyleClass().add(CSS_CLASS_FORM_BUTTON_ACTIVE);
-        }
-        horizontalRValue = 0;
-        verticalRValue = -90;
+        horizontalRTextField.clear();
+        verticalRTextField.clear();
         stdPalletTypeComboBox.getSelectionModel().clearSelection();
     }
 

@@ -190,7 +190,7 @@ public abstract class AbstractPallet extends AbstractStackingDevice {
     @Override
     public float getZSafePlane(final IWorkPieceDimensions dimensions, final SimpleWorkArea workArea, final ApproachType approachType) throws IllegalArgumentException {
         float zSafePlane = workArea.getDefaultClamping().getRelativePosition().getZ(); 
-        float wpHeight = dimensions.getZSafe(); 
+        float wpHeight = dimensions.getZSafe() * (palletLayout.getNumberOfLayersPresent() + 1);
         zSafePlane += palletLayout.getPalletHeight();
         if (wpHeight > workArea.getDefaultClamping().getHeight()) {
             zSafePlane += wpHeight;
